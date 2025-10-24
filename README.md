@@ -533,7 +533,7 @@ HOOKDECK_SIGNING_SECRET=
     <tr>
       <td align="center" width="50%">
         <a href="docs/media/acadelia.mp4">
-          <img src="docs/media/acadelia0.gif" alt="Demo: Teórico + Matemático (MP4)" width="420">
+          <img src="docs/media/acadelia0.gif" alt="Demo: Teórico + Matemático (MP4)" width="400">
         </a><br/>
         <sub><em>Teórico + Matemático</em> ·
           <a href="docs/media/acadelia.mp4">abrir MP4</a>
@@ -541,7 +541,7 @@ HOOKDECK_SIGNING_SECRET=
       </td>
       <td align="center" width="50%">
         <a href="docs/media/acadelia1.mp4">
-          <img src="docs/media/acadelia1.gif" alt="Demo: Flujo PDF (MP4)" width="420">
+          <img src="docs/media/acadelia1.gif" alt="Demo: Flujo PDF (MP4)" width="400">
         </a><br/>
         <sub><em>Flujo PDF</em> ·
           <a href="docs/media/acadelia1.mp4">abrir MP4</a>
@@ -551,7 +551,7 @@ HOOKDECK_SIGNING_SECRET=
     <tr>
       <td align="center" width="50%">
         <a href="docs/media/acadelia2.mp4">
-          <img src="docs/media/acadelia2.gif" alt="Demo: Mermaid, código, búsqueda de imágenes (MP4)" width="420">
+          <img src="docs/media/acadelia2.gif" alt="Demo: Mermaid, código, búsqueda de imágenes (MP4)" width="400">
         </a><br/>
         <sub><em>Mermaid, examenes, búsqueda de imágenes</em> ·
           <a href="docs/media/acadelia2.mp4">abrir MP4</a>
@@ -559,7 +559,7 @@ HOOKDECK_SIGNING_SECRET=
       </td>
       <td align="center" width="50%">
         <a href="docs/media/acadelia3.mp4">
-          <img src="docs/media/acadelia3.gif" alt="Demo: Tienda / pagos (MP4)" width="420">
+          <img src="docs/media/acadelia3.gif" alt="Demo: Tienda / pagos (MP4)" width="400">
         </a><br/>
         <sub><em>Tienda / pagos</em> ·
           <a href="docs/media/acadelia3.mp4">abrir MP4</a>
