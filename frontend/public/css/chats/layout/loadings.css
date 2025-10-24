@@ -1,0 +1,2974 @@
+/* ===================================================================
+   VARIABLES CSS COMPARTIDAS - LOADERS ACADEL OPTIMIZADOS
+   Eliminación de redundancia manteniendo identidad visual única
+   =================================================================== */
+
+:root {
+  /* === VARIABLES COMPARTIDAS ENTRE LOADERS === */
+  
+  /* Contenedores principales */
+  --loading-padding: clamp(10px, 3vw, 15px);
+  --loading-backdrop-blur: 3px;
+  --loading-transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Contenidos de loaders */
+  --loading-content-width: min(90vw, 520px);
+  --loading-content-max-width: 520px;
+  --loading-content-min-width: 280px;
+  --loading-content-padding: clamp(20px, 4vw, 40px);
+  --loading-content-border-radius: 12px;
+  --loading-content-border-width: clamp(4px, 1vw, 10px);
+  --loading-content-shadow: 0 clamp(8px, 2vw, 15px) clamp(20px, 5vw, 45px) rgba(0, 0, 0, 0.4);
+  --loading-content-entrance-duration: 1.2s;
+  
+  /* Avatares */
+  --loading-avatar-size: clamp(80px, 15vw, 130px);
+  --loading-avatar-margin: clamp(15px, 3vw, 28px);
+  --loading-avatar-border-width: clamp(3px, 1vw, 6px);
+  --loading-avatar-shadow: 0 clamp(4px, 1vw, 10px) clamp(12px, 3vw, 30px) rgba(0, 0, 0, 0.4);
+  --loading-avatar-badge-size: clamp(28px, 6vw, 40px);
+  --loading-avatar-badge-font: clamp(16px, 3vw, 26px);
+  --loading-avatar-badge-offset: clamp(-8px, -2vw, -14px);
+  
+  /* Textos principales */
+  --loading-text-size: clamp(13px, 2.5vw, 17px);
+  --loading-text-padding: clamp(10px, 2vw, 18px) clamp(12px, 3vw, 22px);
+  --loading-text-border-radius: 8px;
+  --loading-text-line-height: 1.4;
+  --loading-text-transition: all 0.6s ease;
+  
+  /* Contenedores de mensajes */
+  --loading-message-margin: clamp(15px, 3vw, 28px);
+  --loading-message-min-height: clamp(50px, 8vw, 80px);
+  
+  /* Barras de progreso */
+  --loading-progress-margin: clamp(15px, 3vw, 28px);
+  --loading-progress-padding: clamp(12px, 3vw, 22px);
+  --loading-progress-border-radius: 12px;
+  --loading-progress-bar-height: clamp(10px, 2vw, 16px);
+  --loading-progress-bar-border-radius: clamp(5px, 1vw, 8px);
+  --loading-progress-bar-transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  --loading-progress-label-size: clamp(12px, 2vw, 16px);
+  --loading-progress-percent-size: clamp(14px, 3vw, 20px);
+  
+  /* Pasos/Steps */
+  --loading-steps-gap: clamp(6px, 1.5vw, 12px);
+  --loading-steps-margin: clamp(15px, 3vw, 28px);
+  --loading-step-padding: clamp(6px, 1.5vw, 12px) clamp(8px, 2vw, 18px);
+  --loading-step-gap: clamp(8px, 2vw, 18px);
+  --loading-step-border-radius: 8px;
+  --loading-step-icon-size: clamp(14px, 3vw, 20px);
+  --loading-step-text-size: clamp(11px, 2vw, 15px);
+  --loading-step-transition: all 0.5s ease;
+  
+  /* Frases motivacionales */
+  --loading-frase-size: clamp(10px, 2vw, 14px);
+  --loading-frase-padding: clamp(8px, 2vw, 16px);
+  --loading-frase-border-radius: 8px;
+  --loading-frase-line-height: 1.4;
+  
+  /* Efectos flotantes */
+  --loading-floating-size: clamp(20px, 4vw, 36px);
+  --loading-floating-duration: 6s;
+  
+  /* Efectos de partículas */
+  --loading-particle-size: clamp(60px, 12vw, 140px);
+  --loading-particle-duration: 1.2s;
+  
+  /* Símbolos de fondo */
+  --loading-background-symbols-size: clamp(60px, 12vw, 160px);
+  --loading-background-symbols-duration: 25s;
+  
+  /* Responsividad específica */
+  --loading-mobile-content-width: 95vw;
+  --loading-mobile-max-width: 380px;
+  --loading-tablet-content-width: 85vw;
+  --loading-tablet-max-width: 480px;
+  --loading-desktop-max-width: 550px;
+  
+  /* Z-index */
+  --loading-z-index-modal: 9999;
+}
+
+/* ===================================================================
+   ESTILOS BASE COMPARTIDOS (aplicados a través de nombres específicos)
+   =================================================================== */
+
+/* === CONTENEDORES PRINCIPALES BASE === */
+.acadel-initial-loader,
+.acadel-library-loader,
+.acadel-biblioteca-loader,
+.acadel-tech-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--loading-z-index-modal);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  opacity: 1;
+  transition: var(--loading-transition);
+  overflow: hidden;
+  pointer-events: none;
+  padding: var(--loading-padding);
+  backdrop-filter: blur(var(--loading-backdrop-blur));
+}
+
+/* === CONTENIDOS BASE === */
+.acadel-loader-content,
+.acadel-library-content,
+.acadel-biblioteca-content,
+.acadel-tech-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--loading-content-width);
+  max-width: var(--loading-content-max-width);
+  min-width: var(--loading-content-min-width);
+  text-align: center;
+  position: relative;
+  z-index: var(--loading-z-index-modal);
+  border-radius: var(--loading-content-border-radius);
+  padding: var(--loading-content-padding);
+  box-shadow: var(--loading-content-shadow);
+  animation-duration: var(--loading-content-entrance-duration);
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  /* Evitar que el aura del avatar se salga del contenedor */
+  overflow: hidden;
+}
+
+/* === AVATARES BASE === */
+.acadel-loader-avatar,
+.acadel-library-avatar,
+.acadel-bibliotecario-avatar,
+.acadel-tech-avatar {
+  width: var(--loading-avatar-size);
+  height: var(--loading-avatar-size);
+  border-radius: 50%;
+  margin-bottom: var(--loading-avatar-margin);
+  border-width: var(--loading-avatar-border-width);
+  border-style: solid;
+  box-shadow: var(--loading-avatar-shadow);
+  animation-duration: 4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  position: relative;
+  filter: sepia(0.1) brightness(1.1) contrast(1.05);
+}
+
+.acadel-loader-avatar::after,
+.acadel-library-avatar::after,
+.acadel-bibliotecario-avatar::after {
+  position: absolute;
+  top: var(--loading-avatar-badge-offset);
+  right: var(--loading-avatar-badge-offset);
+  font-size: var(--loading-avatar-badge-font);
+  border-radius: 50%;
+  width: var(--avatar-badge-size);
+  height: var(--avatar-badge-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation-duration: 6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 2px solid;
+}
+
+/* === CONTENEDORES DE MENSAJES BASE === */
+.acadel-mensaje-container,
+.acadel-library-mensaje-container,
+.acadel-tech-message-container {
+  margin-bottom: var(--loading-message-margin);
+  min-height: var(--loading-message-min-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* === TEXTOS BASE === */
+.acadel-loader-text,
+.acadel-library-text,
+.acadel-biblioteca-text,
+.acadel-tech-text {
+  font-size: var(--loading-text-size);
+  font-weight: 400;
+  line-height: var(--loading-text-line-height);
+  transition: var(--loading-text-transition);
+  padding: var(--loading-text-padding);
+  border-radius: var(--loading-text-border-radius);
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === CONTENEDORES DE PROGRESO BASE === */
+.acadel-progress-container,
+.acadel-library-progress-container,
+.acadel-catalogo-container,
+.acadel-tech-progress-container {
+  width: 100%;
+  margin-bottom: var(--loading-progress-margin);
+  border-radius: var(--loading-progress-border-radius);
+  padding: var(--loading-progress-padding);
+  position: relative;
+  transform: rotate(-0.1deg);
+}
+
+/* === ETIQUETAS DE PROGRESO BASE === */
+.acadel-progress-equation,
+.acadel-library-progress-formula,
+.acadel-catalogo-label,
+.acadel-tech-progress-label {
+  font-size: var(--loading-progress-label-size);
+  text-align: center;
+  margin-bottom: clamp(8px, 2vw, 14px);
+  font-weight: 600;
+  transform: rotate(0.1deg);
+}
+
+/* === BARRAS DE PROGRESO BASE === */
+.acadel-progress-bar,
+.acadel-library-progress-bar,
+.acadel-catalogo-bar,
+.acadel-tech-progress-bar {
+  position: relative;
+  height: var(--loading-progress-bar-height);
+  border-radius: var(--loading-progress-bar-border-radius);
+  width: 0%;
+  transition: var(--loading-progress-bar-transition);
+  overflow: hidden;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.2);
+  border: 1px solid;
+}
+
+/* === PORCENTAJES DE PROGRESO BASE === */
+.acadel-progress-percent,
+.acadel-library-progress-percent,
+.acadel-catalogo-percent,
+.acadel-tech-progress-percent {
+  display: block;
+  text-align: center;
+  margin-top: clamp(6px, 1.5vw, 12px);
+  font-size: var(--loading-progress-percent-size);
+  font-weight: bold;
+  transform: rotate(-0.1deg);
+}
+
+/* === CONTENEDORES DE PASOS BASE === */
+.acadel-steps-container,
+.acadel-library-steps-container,
+.acadel-biblioteca-steps,
+.acadel-tech-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--loading-steps-gap);
+  margin-bottom: var(--loading-steps-margin);
+  width: 100%;
+}
+
+/* === PASOS BASE === */
+.acadel-step,
+.acadel-library-step,
+.acadel-tech-step {
+  display: flex;
+  align-items: center;
+  gap: var(--loading-step-gap);
+  padding: var(--loading-step-padding);
+  border-radius: var(--loading-step-border-radius);
+  opacity: 0.4;
+  transition: var(--loading-step-transition);
+  border-left: 3px solid transparent;
+  transform: rotate(-0.05deg);
+  border-width: 1px;
+  border-style: dashed;
+  /* Centrar mejor los pasos */
+  margin: 0 auto;
+  width: calc(100% - 10px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.acadel-step.active,
+.acadel-library-step.active,
+.acadel-tech-step.active {
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.acadel-step.current,
+.acadel-library-step.current,
+.acadel-tech-step.current {
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* === ICONOS DE PASOS BASE === */
+.acadel-step-icon,
+.acadel-library-step-icon,
+.acadel-tech-step-icon {
+  font-size: var(--loading-step-icon-size);
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  flex-shrink: 0;
+}
+
+/* === TEXTOS DE PASOS BASE === */
+.acadel-step-text,
+.acadel-library-step-text,
+.acadel-tech-step-text {
+  font-size: var(--loading-step-text-size);
+  font-weight: 400;
+  flex: 1;
+}
+
+/* === FRASES MOTIVACIONALES BASE === */
+.acadel-frase-motivacional,
+.acadel-library-frase-motivacional,
+.acadel-frase-bibliotecario,
+.acadel-tech-description {
+  font-size: var(--loading-frase-size);
+  font-style: italic;
+  text-align: center;
+  line-height: var(--loading-frase-line-height);
+  padding: var(--loading-frase-padding);
+  border-radius: var(--loading-frase-border-radius);
+  transform: rotate(0.2deg);
+  animation-duration: 4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===================================================================
+   PIZARRÓN MATEMÁTICO DEL PROFESOR ACADEL - COLORES Y EFECTOS ÚNICOS
+   =================================================================== */
+
+/* Contenedor principal con fondo verde translúcido */
+.acadel-initial-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(164, 172, 134, 0.95) 0%, 
+    rgba(164, 172, 134, 0.90) 50%,
+    rgba(164, 172, 134, 0.95) 100%
+  );
+}
+
+.acadel-initial-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  animation: background-shimmer 4s ease-in-out infinite;
+}
+
+/* Pizarrón clásico verde */
+.acadel-loader-content {
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.02) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.03) 0%, transparent 50%),
+    linear-gradient(45deg, #1a4b3a 0%, #2d5a47 50%, #1a4b3a 100%);
+  border-color: #8B4513;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(2px, 0.5vw, 4px) #A0522D,
+    inset 0 0 0 var(--loading-content-border-width) #8B4513,
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation-name: chalkboard-entrance;
+}
+
+.acadel-loader-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(255,255,255,0.01) 1px,
+      transparent 2px,
+      transparent clamp(30px, 4vw, 40px)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(255,255,255,0.005) 1px,
+      transparent 2px,
+      transparent clamp(30px, 4vw, 40px)
+    );
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.acadel-loader-content::after {
+  content: '';
+  position: absolute;
+  top: clamp(8px, 2vw, 12px);
+  right: clamp(10px, 3vw, 18px);
+  width: clamp(20px, 4vw, 35px);
+  height: clamp(15px, 3vw, 25px);
+  background: radial-gradient(ellipse, rgba(255,255,255,0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Avatar del profesor con marco vintage */
+.acadel-loader-avatar {
+  border-color: #F5DEB3;
+  box-shadow: 
+    var(--loading-avatar-shadow),
+    inset 0 0 0 clamp(2px, 0.5vw, 3px) #DEB887,
+    0 0 0 clamp(4px, 1vw, 8px) rgba(139, 69, 19, 0.3);
+  animation-name: professor-portrait-effect;
+}
+
+.acadel-loader-avatar::after {
+  content: '🧮';
+  background: #F5DEB3;
+  border-color: #DEB887;
+  animation-name: chalk-tool-rotation;
+}
+
+/* Textos de tiza blanca */
+.acadel-loader-text {
+  color: #F5F5DC;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Bradley Hand', cursive;
+  text-shadow: 
+    0 0 1px #F5F5DC,
+    0 0 2px rgba(245, 245, 220, 0.8),
+    0 0 3px rgba(245, 245, 220, 0.6),
+    0 1px 0 rgba(0, 0, 0, 0.3);
+  background: rgba(245, 245, 220, 0.03);
+  border: 1px dashed rgba(245, 245, 220, 0.2);
+  transform: rotate(-0.3deg);
+}
+
+.acadel-loader-text::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(245,245,220,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(245,245,220,0.05) 0%, transparent 50%);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.acadel-loader-text.pensando {
+  animation: chalk-writing 0.8s ease;
+  transform: rotate(-0.3deg) scale(1.01);
+}
+
+/* Progreso matemático */
+.acadel-progress-container {
+  background: rgba(245, 245, 220, 0.03);
+  border: 2px dashed rgba(245, 245, 220, 0.2);
+}
+
+.acadel-progress-equation {
+  color: #F5F5DC;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  text-shadow: 
+    0 0 1px #F5F5DC,
+    0 0 2px rgba(245, 245, 220, 0.7),
+    0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.acadel-progress-bar {
+  background: linear-gradient(90deg, 
+    #F5F5DC 0%,
+    #FFFACD 30%,
+    #F0E68C 60%,
+    #F5F5DC 100%
+  );
+  border-color: rgba(245, 245, 220, 0.6);
+}
+
+.acadel-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: chalk-shine 3s ease-in-out infinite;
+}
+
+.acadel-progress-percent {
+  color: #F5F5DC;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  text-shadow: 
+    0 0 1px #F5F5DC,
+    0 0 2px rgba(245, 245, 220, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Pasos del pizarrón */
+.acadel-step {
+  background: rgba(245, 245, 220, 0.02);
+  border-color: rgba(245, 245, 220, 0.1);
+}
+
+.acadel-step.active {
+  background: rgba(245, 245, 220, 0.05);
+  border-left-color: #F5F5DC;
+  border-color: rgba(245, 245, 220, 0.3);
+  box-shadow: 0 2px 8px rgba(245, 245, 220, 0.1);
+}
+
+.acadel-step.current {
+  animation-name: chalk-step-highlight;
+}
+
+.acadel-step.active .acadel-step-icon {
+  animation: chalk-icon-draw 0.8s ease;
+}
+
+.acadel-step-text {
+  color: #F5F5DC;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  text-shadow: 
+    0 0 1px #F5F5DC,
+    0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Frase motivacional de tiza */
+.acadel-frase-motivacional {
+  color: #F0E68C;
+  background: rgba(240, 230, 140, 0.03);
+  border: 2px dashed rgba(240, 230, 140, 0.3);
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  text-shadow: 
+    0 0 1px #F0E68C,
+    0 0 2px rgba(240, 230, 140, 0.8),
+    0 1px 0 rgba(0, 0, 0, 0.3);
+  animation-name: motivational-chalk-glow;
+}
+
+.acadel-frase-motivacional::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(4px, 1vw, 8px);
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(240, 230, 140, 0.6) 20%, 
+    rgba(240, 230, 140, 0.8) 50%, 
+    rgba(240, 230, 140, 0.6) 80%, 
+    transparent 100%
+  );
+  border-radius: 1px;
+  transform: rotate(-0.1deg);
+}
+
+/* Transición de salida */
+.acadel-initial-loader.fade-out-acadel {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+/* Efectos de tiza */
+.chalk-dust-effect {
+  position: absolute;
+  width: var(--loading-particle-size);
+  height: var(--loading-particle-size);
+  background: radial-gradient(
+    circle, 
+    rgba(245, 245, 220, 0.25) 0%, 
+    rgba(245, 245, 220, 0.15) 30%, 
+    rgba(245, 245, 220, 0.08) 60%, 
+    transparent 80%
+  );
+  border-radius: 50%;
+  animation: chalk-dust-disperse var(--loading-particle-duration) ease-out forwards;
+  pointer-events: none;
+  z-index: 15;
+  box-shadow: 
+    0 0 clamp(10px, 2vw, 20px) rgba(245, 245, 220, 0.2),
+    inset 0 0 clamp(5px, 1vw, 10px) rgba(245, 245, 220, 0.1);
+}
+
+/* Ecuaciones flotantes */
+.floating-equation {
+  position: absolute;
+  font-size: var(--loading-floating-size);
+  color: rgba(245, 245, 220, 0.15);
+  font-family: 'Times New Roman', serif;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 5;
+  animation: float-chalk-symbol var(--loading-floating-duration) ease-in-out infinite;
+  text-shadow: 
+    0 0 1px rgba(245, 245, 220, 0.3),
+    0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Símbolos matemáticos de fondo */
+.acadel-initial-loader::after {
+  content: '∫ ∂ ∑ √ π ∞ ≠ ≤ ≥ ± × ÷ Δ ∇ ∴ ∀ ∃';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: var(--loading-background-symbols-size);
+  color: rgba(245, 245, 220, 0.015);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: space-around;
+  z-index: 1;
+  animation: chalkboard-background-symbols var(--loading-background-symbols-duration) linear infinite;
+  pointer-events: none;
+  font-family: 'Times New Roman', serif;
+  text-shadow: 0 0 1px rgba(245, 245, 220, 0.03);
+}
+
+/* ===================================================================
+   BIBLIOTECA ACADÉMICA DEL PROFESOR ACADEL - COLORES Y EFECTOS ÚNICOS
+   =================================================================== */
+
+/* Contenedor principal con fondo marrón vintage */
+.acadel-library-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(139, 69, 19, 0.95) 0%,
+    rgba(160, 82, 45, 0.90) 50%,
+    rgba(139, 69, 19, 0.95) 100%
+  );
+}
+
+.acadel-library-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(255,248,220,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255,248,220,0.10) 0%, transparent 50%);
+  animation: library-ambient 5s ease-in-out infinite;
+}
+
+/* Escritorio académico vintage */
+.acadel-library-content {
+  background: 
+    linear-gradient(45deg, rgba(139,69,19,0.03) 0%, transparent 50%),
+    linear-gradient(-45deg, rgba(160,82,45,0.02) 0%, transparent 50%),
+    linear-gradient(90deg, #D2B48C 0%, #DEB887 30%, #F5DEB3 50%, #DEB887 70%, #D2B48C 100%);
+  border-color: #8B4513;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(3px, 0.6vw, 5px) #DAA520,
+    inset 0 0 0 var(--loading-content-border-width) #B8860B,
+    inset 0 3px 6px rgba(0, 0, 0, 0.15);
+  animation-name: academic-desk-entrance;
+}
+
+.acadel-library-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(139,69,19,0.02) 1px,
+      transparent 2px,
+      transparent clamp(25px, 3vw, 35px)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(160,82,45,0.015) 1px,
+      transparent 2px,
+      transparent clamp(40px, 5vw, 60px)
+    );
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.acadel-library-content::after {
+  content: '🖋️';
+  position: absolute;
+  top: clamp(10px, 2vw, 15px);
+  right: clamp(12px, 3vw, 20px);
+  font-size: clamp(16px, 3vw, 24px);
+  filter: sepia(0.3) brightness(0.8);
+  pointer-events: none;
+}
+
+/* Avatar académico */
+.acadel-library-avatar {
+  border-color: #DAA520;
+  box-shadow: 
+    var(--loading-avatar-shadow),
+    inset 0 0 0 clamp(2px, 0.5vw, 3px) #B8860B,
+    0 0 0 clamp(4px, 1vw, 8px) rgba(218, 165, 32, 0.2);
+  animation-name: academic-portrait-effect;
+  filter: sepia(0.15) brightness(1.05) contrast(1.08);
+}
+
+.acadel-library-avatar::after {
+  content: '📚';
+  background: #F5DEB3;
+  border-color: #DAA520;
+  animation-name: academic-tools-rotation;
+  animation-duration: 7s;
+}
+
+/* Textos académicos */
+.acadel-library-text {
+  color: #8B4513;
+  font-family: 'Times New Roman', 'Georgia', 'Book Antiqua', serif;
+  text-shadow: 
+    0 1px 2px rgba(139, 69, 19, 0.3),
+    0 0 1px rgba(139, 69, 19, 0.6);
+  background: rgba(139, 69, 19, 0.04);
+  border: 2px solid rgba(139, 69, 19, 0.2);
+  transform: rotate(-0.2deg);
+}
+
+.acadel-library-text::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: 
+    radial-gradient(circle at 25% 30%, rgba(139,69,19,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 70%, rgba(160,82,45,0.05) 0%, transparent 50%);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.acadel-library-text.estudiando {
+  animation: academic-writing 0.9s ease;
+  transform: rotate(-0.2deg) scale(1.01);
+}
+
+/* Progreso académico */
+.acadel-library-progress-container {
+  background: rgba(139, 69, 19, 0.05);
+  border: 3px solid rgba(139, 69, 19, 0.25);
+}
+
+.acadel-library-progress-formula {
+  color: #8B4513;
+  font-family: 'Times New Roman', 'Georgia', serif;
+  text-shadow: 
+    0 1px 2px rgba(139, 69, 19, 0.3),
+    0 0 1px rgba(139, 69, 19, 0.5);
+}
+
+.acadel-library-progress-bar {
+  background: linear-gradient(90deg, 
+    #DAA520 0%,
+    #F4A460 30%,
+    #FFD700 60%,
+    #DAA520 100%
+  );
+  border-color: rgba(218, 165, 32, 0.7);
+}
+
+.acadel-library-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  animation: academic-shine 3.5s ease-in-out infinite;
+}
+
+.acadel-library-progress-percent {
+  color: #8B4513;
+  font-family: 'Times New Roman', 'Georgia', serif;
+  text-shadow: 
+    0 1px 2px rgba(139, 69, 19, 0.3),
+    0 0 1px rgba(139, 69, 19, 0.6);
+}
+
+/* Pasos académicos */
+.acadel-library-step {
+  background: rgba(139, 69, 19, 0.03);
+  border-color: rgba(139, 69, 19, 0.15);
+}
+
+.acadel-library-step.active {
+  background: rgba(139, 69, 19, 0.08);
+  border-left-color: #8B4513;
+  border-color: rgba(139, 69, 19, 0.3);
+  box-shadow: 0 3px 10px rgba(139, 69, 19, 0.15);
+}
+
+.acadel-library-step.current {
+  animation-name: academic-step-highlight;
+  animation-duration: 2.2s;
+}
+
+.acadel-library-step.active .acadel-library-step-icon {
+  animation: academic-icon-reveal 0.9s ease;
+}
+
+.acadel-library-step-text {
+  color: #8B4513;
+  font-family: 'Times New Roman', 'Georgia', serif;
+  text-shadow: 0 1px 2px rgba(139, 69, 19, 0.2);
+}
+
+/* Frase motivacional académica */
+.acadel-library-frase-motivacional {
+  color: #A0522D;
+  background: rgba(160, 82, 45, 0.05);
+  border: 3px solid rgba(160, 82, 45, 0.3);
+  font-family: 'Times New Roman', 'Georgia', serif;
+  text-shadow: 
+    0 1px 2px rgba(160, 82, 45, 0.3),
+    0 0 1px rgba(160, 82, 45, 0.6);
+  animation-name: academic-motivational-glow;
+  animation-duration: 4.5s;
+}
+
+.acadel-library-frase-motivacional::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(6px, 1.5vw, 10px);
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(160, 82, 45, 0.6) 20%, 
+    rgba(160, 82, 45, 0.8) 50%, 
+    rgba(160, 82, 45, 0.6) 80%, 
+    transparent 100%
+  );
+  border-radius: 1px;
+  transform: rotate(-0.1deg);
+}
+
+/* Transición de salida */
+.acadel-library-loader.fade-out-library {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+/* Efectos de libros volando */
+.acadel-book-effect {
+  position: absolute;
+  width: var(--loading-particle-size);
+  height: var(--loading-particle-size);
+  background: radial-gradient(
+    circle, 
+    rgba(139, 69, 19, 0.3) 0%, 
+    rgba(160, 82, 45, 0.2) 30%, 
+    rgba(218, 165, 32, 0.1) 60%, 
+    transparent 80%
+  );
+  border-radius: 50%;
+  animation: academic-books-disperse 1.4s ease-out forwards;
+  pointer-events: none;
+  z-index: 15;
+  box-shadow: 
+    0 0 clamp(12px, 2.5vw, 25px) rgba(139, 69, 19, 0.25),
+    inset 0 0 clamp(6px, 1.2vw, 12px) rgba(218, 165, 32, 0.15);
+}
+
+.acadel-book-effect::before {
+  content: '📚';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(16px, 3vw, 24px);
+  animation: book-icon-spin 1.4s ease-out forwards;
+}
+
+/* Teorías flotantes */
+.floating-theory {
+  position: absolute;
+  font-size: clamp(16px, 3.5vw, 28px);
+  color: rgba(139, 69, 19, 0.2);
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-weight: bold;
+  font-style: italic;
+  pointer-events: none;
+  z-index: 5;
+  animation: float-academic-theory 6.5s ease-in-out infinite;
+  text-shadow: 
+    0 1px 2px rgba(139, 69, 19, 0.2),
+    0 0 1px rgba(139, 69, 19, 0.3);
+}
+
+/* Términos académicos de fondo */
+.acadel-library-loader::after {
+  content: '📚 📜 🔍 ⚗️ 🧠 💡 📖 📝 🎓 🏛️ 📊 🔬 💭 ✒️ 📑';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: var(--loading-background-symbols-size);
+  color: rgba(139, 69, 19, 0.02);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: space-around;
+  z-index: 1;
+  animation: academic-background-symbols 30s linear infinite;
+  pointer-events: none;
+  text-shadow: 0 0 1px rgba(139, 69, 19, 0.04);
+}
+
+/* ===================================================================
+   BIBLIOTECA DIGITAL DEL PROFESOR ACADEL - COLORES Y EFECTOS ÚNICOS
+   =================================================================== */
+
+/* Contenedor principal con fondo biblioteca vintage */
+.acadel-biblioteca-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(139, 115, 85, 0.95) 0%,
+    rgba(160, 130, 98, 0.90) 50%,
+    rgba(139, 115, 85, 0.95) 100%
+  );
+}
+
+.acadel-biblioteca-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(184, 134, 11, 0.05) 0%, transparent 50%);
+  animation: biblioteca-shimmer 5s ease-in-out infinite;
+}
+
+/* Biblioteca clásica */
+.acadel-biblioteca-content {
+  background: 
+    linear-gradient(180deg, rgba(101, 67, 33, 0.02) 0%, transparent 30%),
+    linear-gradient(0deg, rgba(101, 67, 33, 0.02) 0%, transparent 30%),
+    linear-gradient(45deg, #2d1b10 0%, #4a3728 50%, #2d1b10 100%);
+  border-color: #8B4513;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(3px, 0.6vw, 5px) #A0522D,
+    inset 0 0 0 var(--loading-content-border-width) #8B4513,
+    inset 0 3px 6px rgba(0, 0, 0, 0.3);
+  animation-name: biblioteca-entrance;
+  animation-duration: 1.4s;
+}
+
+.acadel-biblioteca-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(139, 69, 19, 0.1) 1px,
+      transparent 2px,
+      transparent clamp(40px, 5vw, 60px)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(139, 69, 19, 0.05) 1px,
+      transparent 2px,
+      transparent clamp(80px, 10vw, 120px)
+    );
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.acadel-biblioteca-content::after {
+  content: '📚';
+  position: absolute;
+  top: clamp(8px, 2vw, 12px);
+  right: clamp(12px, 3vw, 20px);
+  font-size: clamp(16px, 3vw, 24px);
+  opacity: 0.6;
+  pointer-events: none;
+  animation: book-sway 4s ease-in-out infinite;
+}
+
+/* Avatar del bibliotecario */
+.acadel-bibliotecario-avatar {
+  border-color: #DAA520;
+  box-shadow: 
+    var(--loading-avatar-shadow),
+    inset 0 0 0 clamp(2px, 0.5vw, 3px) #B8860B,
+    0 0 0 clamp(4px, 1vw, 8px) rgba(218, 165, 32, 0.2);
+  animation-name: bibliotecario-pulse;
+  filter: sepia(0.15) brightness(1.05) contrast(1.1);
+}
+
+.acadel-bibliotecario-avatar::after {
+  content: '👓';
+  background: #DAA520;
+  border-color: #B8860B;
+  animation-name: bibliotecario-tools;
+  animation-duration: 8s;
+}
+
+/* Textos de biblioteca */
+.acadel-biblioteca-text {
+  color: #F5E6D3;
+  font-family: 'Georgia', 'Times New Roman', 'Book Antiqua', serif;
+  text-shadow: 
+    0 0 1px #F5E6D3,
+    0 0 2px rgba(245, 230, 211, 0.8),
+    0 0 3px rgba(245, 230, 211, 0.6),
+    0 2px 0 rgba(0, 0, 0, 0.4);
+  background: rgba(245, 230, 211, 0.05);
+  border: 2px solid rgba(218, 165, 32, 0.3);
+  transform: rotate(-0.2deg);
+}
+
+.acadel-biblioteca-text::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: 
+    radial-gradient(circle at 25% 30%, rgba(218, 165, 32, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, rgba(184, 134, 11, 0.06) 0%, transparent 60%);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.acadel-biblioteca-text.organizando {
+  animation: organizando-biblioteca 0.9s ease;
+  transform: rotate(-0.2deg) scale(1.01);
+}
+
+/* Progreso de catalogación */
+.acadel-catalogo-container {
+  background: rgba(245, 230, 211, 0.04);
+  border: 2px solid rgba(218, 165, 32, 0.25);
+}
+
+.acadel-catalogo-label {
+  color: #F5E6D3;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 1px #F5E6D3,
+    0 0 2px rgba(245, 230, 211, 0.7),
+    0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.acadel-catalogo-bar {
+  background: linear-gradient(90deg, 
+    #DAA520 0%,
+    #F4E4BC 30%,
+    #D4AF37 60%,
+    #DAA520 100%
+  );
+  border-color: rgba(218, 165, 32, 0.6);
+}
+
+.acadel-catalogo-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: catalogo-shine 3.5s ease-in-out infinite;
+}
+
+.acadel-catalogo-percent {
+  color: #F5E6D3;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 1px #F5E6D3,
+    0 0 2px rgba(245, 230, 211, 0.8),
+    0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Pasos de organización */
+.acadel-step {
+  background: rgba(245, 230, 211, 0.03);
+  border-color: rgba(218, 165, 32, 0.15);
+}
+
+.acadel-step.active {
+  background: rgba(245, 230, 211, 0.08);
+  border-left-color: #DAA520;
+  border-color: rgba(218, 165, 32, 0.4);
+  box-shadow: 0 3px 12px rgba(218, 165, 32, 0.15);
+}
+
+.acadel-step.current {
+  animation-name: biblioteca-step-highlight;
+  animation-duration: 2.5s;
+}
+
+.acadel-step.active .acadel-step-icon {
+  animation: biblioteca-icon-organize 0.9s ease;
+}
+
+.acadel-step-text {
+  color: #F5E6D3;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 1px #F5E6D3,
+    0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Frase del bibliotecario */
+.acadel-frase-bibliotecario {
+  color: #DDD8C7;
+  background: rgba(221, 216, 199, 0.04);
+  border: 2px dashed rgba(221, 216, 199, 0.3);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 1px #DDD8C7,
+    0 0 2px rgba(221, 216, 199, 0.8),
+    0 2px 0 rgba(0, 0, 0, 0.3);
+  animation-name: bibliotecario-wisdom;
+  animation-duration: 5s;
+}
+
+.acadel-frase-bibliotecario::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(6px, 1.2vw, 10px);
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(221, 216, 199, 0.6) 25%, 
+    rgba(221, 216, 199, 0.8) 50%, 
+    rgba(221, 216, 199, 0.6) 75%, 
+    transparent 100%
+  );
+  border-radius: 1px;
+  transform: rotate(-0.1deg);
+}
+
+/* Transición de salida */
+.acadel-biblioteca-loader.fade-out-biblioteca {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+/* Efectos de polvo de libros */
+.book-dust-effect {
+  position: absolute;
+  width: var(--loading-particle-size);
+  height: var(--loading-particle-size);
+  background: radial-gradient(
+    circle, 
+    rgba(245, 230, 211, 0.3) 0%, 
+    rgba(245, 230, 211, 0.18) 30%, 
+    rgba(245, 230, 211, 0.1) 60%, 
+    transparent 80%
+  );
+  border-radius: 50%;
+  animation: book-dust-disperse 1.4s ease-out forwards;
+  pointer-events: none;
+  z-index: 15;
+  box-shadow: 
+    0 0 clamp(12px, 2.5vw, 25px) rgba(245, 230, 211, 0.25),
+    inset 0 0 clamp(6px, 1.2vw, 12px) rgba(245, 230, 211, 0.15);
+}
+
+/* Documentos flotantes */
+.floating-document {
+  position: absolute;
+  font-size: clamp(22px, 4.5vw, 36px);
+  color: rgba(245, 230, 211, 0.18);
+  pointer-events: none;
+  z-index: 5;
+  animation: float-document 7s ease-in-out infinite;
+  text-shadow: 
+    0 0 1px rgba(245, 230, 211, 0.3),
+    0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Símbolos de biblioteca de fondo */
+.acadel-biblioteca-loader::after {
+  content: '📚 📖 📄 📑 📋 🗂️ 📁 🗃️ 📊 📝 📒 📓 📔 📗 📘 📙';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: var(--loading-background-symbols-size);
+  color: rgba(245, 230, 211, 0.02);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: space-around;
+  z-index: 1;
+  animation: biblioteca-background-symbols 30s linear infinite;
+  pointer-events: none;
+  text-shadow: 0 0 1px rgba(245, 230, 211, 0.04);
+}
+
+/* ===================================================================
+   TERMINAL TECNOLÓGICO DEL AGENTE ACADEL - COLORES Y EFECTOS ÚNICOS
+   =================================================================== */
+
+/* Contenedor principal tecnológico */
+.acadel-tech-loader {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, 
+      rgba(15, 23, 42, 0.95) 0%, 
+      rgba(30, 41, 59, 0.90) 50%,
+      rgba(15, 23, 42, 0.95) 100%
+    );
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+.acadel-tech-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(59, 130, 246, 0.03) 1px,
+      transparent 2px,
+      transparent 100px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(16, 185, 129, 0.02) 1px,
+      transparent 2px,
+      transparent 100px
+    );
+  animation: tech-grid-flow 20s linear infinite;
+}
+
+/* Terminal futurista */
+.acadel-tech-content {
+  background: 
+    linear-gradient(145deg, 
+      rgba(30, 41, 59, 0.9) 0%, 
+      rgba(51, 65, 85, 0.8) 50%, 
+      rgba(30, 41, 59, 0.9) 100%
+    );
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 clamp(20px, 4vw, 40px) rgba(59, 130, 246, 0.1);
+  animation-name: terminal-startup;
+  animation-duration: 1.5s;
+  overflow: hidden;
+}
+
+.acadel-tech-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(59, 130, 246, 0.8) 20%, 
+    rgba(16, 185, 129, 0.8) 50%,
+    rgba(59, 130, 246, 0.8) 80%, 
+    transparent 100%
+  );
+  animation: tech-scan-line 3s ease-in-out infinite;
+  z-index: 5;
+}
+
+/* Avatar tecnológico */
+.acadel-tech-avatar {
+  border: 3px solid rgba(59, 130, 246, 0.6);
+  box-shadow: 
+    0 0 clamp(10px, 2vw, 20px) rgba(59, 130, 246, 0.3),
+    inset 0 0 clamp(8px, 1.5vw, 12px) rgba(16, 185, 129, 0.2),
+    0 clamp(4px, 0.8vw, 6px) clamp(15px, 3vw, 25px) rgba(0, 0, 0, 0.3);
+  animation-name: tech-avatar-pulse;
+  animation-duration: 3s;
+  filter: brightness(1.1) contrast(1.05) saturate(1.1);
+}
+
+.acadel-tech-avatar::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(59, 130, 246, 0.4) 0deg,
+    rgba(16, 185, 129, 0.4) 90deg,
+    rgba(168, 85, 247, 0.4) 180deg,
+    rgba(59, 130, 246, 0.4) 270deg,
+    rgba(59, 130, 246, 0.4) 360deg
+  );
+  animation: tech-avatar-rotate 8s linear infinite;
+  z-index: -1;
+}
+
+/* Textos tecnológicos */
+.acadel-tech-text {
+  color: #e2e8f0;
+  font-family: 'SF Mono', 'Monaco', 'Roboto Mono', monospace;
+  text-shadow: 
+    0 0 10px rgba(59, 130, 246, 0.5),
+    0 0 20px rgba(16, 185, 129, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(10px);
+  padding-left: clamp(24px, 5vw, 36px);
+}
+
+.acadel-tech-text::before {
+  content: '>';
+  position: absolute;
+  left: clamp(8px, 2vw, 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(16, 185, 129, 0.8);
+  font-weight: bold;
+  animation: cursor-blink 1.5s infinite;
+}
+
+.acadel-tech-text.processing {
+  animation: data-processing 0.8s ease;
+  border-color: rgba(16, 185, 129, 0.6);
+  text-shadow: 
+    0 0 15px rgba(16, 185, 129, 0.6),
+    0 0 25px rgba(59, 130, 246, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Progreso tecnológico */
+.acadel-tech-progress-container {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.acadel-tech-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(8px, 2vw, 12px);
+}
+
+.acadel-tech-progress-label {
+  color: #94a3b8;
+  font-family: 'SF Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.acadel-tech-progress-percent {
+  color: #10b981;
+  font-family: 'SF Mono', monospace;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.acadel-tech-progress-bar {
+  background: linear-gradient(90deg, 
+    rgba(59, 130, 246, 0.8) 0%,
+    rgba(16, 185, 129, 0.8) 50%,
+    rgba(168, 85, 247, 0.8) 100%
+  );
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 
+    0 0 clamp(10px, 2vw, 15px) rgba(59, 130, 246, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.acadel-tech-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: tech-progress-shine 2s ease-in-out infinite;
+}
+
+/* Pasos tecnológicos */
+.acadel-tech-step {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.acadel-tech-step.active {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 
+    0 clamp(2px, 0.5vw, 4px) clamp(8px, 2vw, 12px) rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.acadel-tech-step.current {
+  animation-name: tech-step-pulse;
+}
+
+.acadel-tech-step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(24px, 5vw, 32px);
+  height: clamp(24px, 5vw, 32px);
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  flex-shrink: 0;
+  transition: all 0.4s ease;
+}
+
+.acadel-tech-step.active .acadel-tech-step-indicator {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 clamp(8px, 2vw, 12px) rgba(16, 185, 129, 0.4);
+}
+
+.acadel-tech-step-icon {
+  transition: all 0.4s ease;
+}
+
+.acadel-tech-step.active .acadel-tech-step-icon {
+  animation: tech-icon-activate 0.6s ease;
+}
+
+.acadel-tech-step-text {
+  color: #e2e8f0;
+  font-family: 'SF Mono', monospace;
+  text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+}
+
+/* Terminal de estado */
+.acadel-tech-terminal {
+  width: 100%;
+  margin-bottom: clamp(16px, 3vw, 24px);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  overflow: hidden;
+  box-shadow: 
+    0 clamp(4px, 1vw, 6px) clamp(12px, 3vw, 20px) rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(16, 185, 129, 0.1);
+}
+
+.acadel-tech-terminal-content {
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: clamp(10px, 2vw, 12px);
+  color: #10b981;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  min-height: clamp(50px, 8vw, 70px);
+  max-height: clamp(70px, 12vw, 100px);
+  overflow-y: auto;
+  text-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+  
+  /* NUEVAS LÍNEAS PARA OCULTAR SCROLLBAR */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer y Edge */
+}
+
+/* NUEVA REGLA PARA WEBKIT (Chrome, Safari) */
+.acadel-tech-terminal-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Descripción del agente */
+.acadel-tech-description {
+  color: #94a3b8;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  font-family: 'SF Mono', monospace;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+  animation-name: description-glow;
+}
+
+/* Transición de salida */
+.acadel-tech-loader.fade-out-tech {
+  opacity: 0;
+  transform: scale(0.98) translateY(-10px);
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+/* Efectos de flujo de datos */
+.data-stream-effect {
+  position: absolute;
+  font-size: clamp(10px, 2vw, 12px);
+  color: rgba(16, 185, 129, 0.7);
+  font-family: 'SF Mono', monospace;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 15;
+  animation: data-stream-flow 1.5s ease-out forwards;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* Elementos tecnológicos flotantes */
+.floating-tech-element {
+  position: absolute;
+  font-size: clamp(14px, 3vw, 18px);
+  color: rgba(59, 130, 246, 0.2);
+  font-family: 'SF Mono', monospace;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 5;
+  animation: float-tech-element var(--loading-floating-duration) ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Elementos de fondo tecnológico */
+.acadel-tech-loader::after {
+  content: '{ } [ ] </> && || -> => AI ML NLP API SQL JSON HTTP HTTPS REST GraphQL MongoDB PostgreSQL';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: clamp(40px, 8vw, 80px);
+  color: rgba(59, 130, 246, 0.02);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: space-around;
+  z-index: 1;
+  animation: tech-background-flow 30s linear infinite;
+  pointer-events: none;
+  font-family: 'SF Mono', monospace;
+  text-shadow: 0 0 1px rgba(59, 130, 246, 0.05);
+  word-spacing: 20px;
+}
+
+/* ===================================================================
+   ANIMACIONES COMPARTIDAS Y ESPECÍFICAS
+   =================================================================== */
+
+/* Animaciones de fondo */
+@keyframes background-shimmer {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@keyframes library-ambient {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.02); }
+}
+
+@keyframes biblioteca-shimmer {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.02); }
+}
+
+@keyframes tech-grid-flow {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* Animaciones de entrada */
+@keyframes chalkboard-entrance {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95) rotateX(5deg); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1) rotateX(0deg); 
+  }
+}
+
+@keyframes academic-desk-entrance {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95) rotateX(3deg); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1) rotateX(0deg); 
+  }
+}
+
+@keyframes biblioteca-entrance {
+  0% { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.9) rotateX(10deg); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1) rotateX(0deg); 
+  }
+}
+
+@keyframes terminal-startup {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.98);
+    box-shadow: 
+      0 0 0 rgba(0, 0, 0, 0),
+      inset 0 0 0 rgba(255, 255, 255, 0),
+      0 0 0 rgba(59, 130, 246, 0);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+    box-shadow: 
+      var(--loading-content-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 clamp(20px, 4vw, 40px) rgba(59, 130, 246, 0.1);
+  }
+}
+
+/* Animaciones de avatares */
+@keyframes professor-portrait-effect {
+  0%, 100% { 
+    transform: scale(1);
+    filter: sepia(0.1) brightness(1.1) contrast(1.05);
+  }
+  50% { 
+    transform: scale(1.02);
+    filter: sepia(0.15) brightness(1.15) contrast(1.1);
+  }
+}
+
+@keyframes academic-portrait-effect {
+  0%, 100% { 
+    transform: scale(1);
+    filter: sepia(0.15) brightness(1.05) contrast(1.08);
+  }
+  50% { 
+    transform: scale(1.03);
+    filter: sepia(0.2) brightness(1.1) contrast(1.12);
+  }
+}
+
+@keyframes bibliotecario-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: sepia(0.15) brightness(1.05) contrast(1.1);
+  }
+  50% { 
+    transform: scale(1.03);
+    filter: sepia(0.2) brightness(1.1) contrast(1.15);
+  }
+}
+
+@keyframes tech-avatar-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 clamp(10px, 2vw, 20px) rgba(59, 130, 246, 0.3),
+      inset 0 0 clamp(8px, 1.5vw, 12px) rgba(16, 185, 129, 0.2),
+      0 clamp(4px, 0.8vw, 6px) clamp(15px, 3vw, 25px) rgba(0, 0, 0, 0.3);
+  }
+  50% { 
+    transform: scale(1.02);
+    box-shadow: 
+      0 0 clamp(15px, 3vw, 30px) rgba(59, 130, 246, 0.5),
+      inset 0 0 clamp(12px, 2.5vw, 18px) rgba(16, 185, 129, 0.3),
+      0 clamp(6px, 1.2vw, 10px) clamp(20px, 4vw, 35px) rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Animaciones de herramientas */
+@keyframes chalk-tool-rotation {
+  0% { transform: rotate(0deg); content: '🧮'; }
+  20% { content: '📐'; }
+  40% { content: '📊'; transform: rotate(72deg); }
+  60% { content: '∑'; }
+  80% { content: '📏'; transform: rotate(144deg); }
+  100% { content: '🧮'; transform: rotate(360deg); }
+}
+
+@keyframes academic-tools-rotation {
+  0% { transform: rotate(0deg); content: '📚'; }
+  20% { content: '🔍'; }
+  40% { content: '📜'; transform: rotate(72deg); }
+  60% { content: '⚗️'; }
+  80% { content: '🧠'; transform: rotate(144deg); }
+  100% { content: '📚'; transform: rotate(360deg); }
+}
+
+@keyframes bibliotecario-tools {
+  0% { transform: rotate(0deg); content: '👓'; }
+  20% { content: '🔍'; }
+  40% { content: '📋'; transform: rotate(72deg); }
+  60% { content: '🖋️'; }
+  80% { content: '📖'; transform: rotate(144deg); }
+  100% { content: '👓'; transform: rotate(360deg); }
+}
+
+@keyframes tech-avatar-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animaciones de texto */
+@keyframes chalk-writing {
+  0% { transform: rotate(-0.3deg) scale(1); opacity: 0.8; }
+  25% { transform: rotate(0deg) scale(1.01); opacity: 0.9; }
+  50% { transform: rotate(0.3deg) scale(1.02); opacity: 1; }
+  75% { transform: rotate(-0.1deg) scale(1.01); opacity: 1; }
+  100% { transform: rotate(-0.3deg) scale(1); opacity: 1; }
+}
+
+@keyframes academic-writing {
+  0% { transform: rotate(-0.2deg) scale(1); opacity: 0.85; }
+  25% { transform: rotate(0.1deg) scale(1.01); opacity: 0.95; }
+  50% { transform: rotate(0.2deg) scale(1.02); opacity: 1; }
+  75% { transform: rotate(-0.1deg) scale(1.01); opacity: 1; }
+  100% { transform: rotate(-0.2deg) scale(1); opacity: 1; }
+}
+
+@keyframes organizando-biblioteca {
+  0% { transform: rotate(-0.2deg) scale(1); opacity: 0.8; }
+  25% { transform: rotate(0.1deg) scale(1.01); opacity: 0.9; }
+  50% { transform: rotate(0.3deg) scale(1.02); opacity: 1; }
+  75% { transform: rotate(-0.1deg) scale(1.01); opacity: 1; }
+  100% { transform: rotate(-0.2deg) scale(1); opacity: 1; }
+}
+
+@keyframes data-processing {
+  0% { transform: scale(1); opacity: 1; }
+  25% { transform: scale(1.01); opacity: 0.9; }
+  50% { transform: scale(1.02); opacity: 1; }
+  75% { transform: scale(1.01); opacity: 0.95; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* Animaciones de brillo */
+@keyframes chalk-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes academic-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes catalogo-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes tech-progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes tech-scan-line {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* Animaciones de pasos */
+@keyframes chalk-step-highlight {
+  0%, 100% { 
+    transform: translateX(clamp(2px, 0.5vw, 4px)) rotate(0deg); 
+    box-shadow: 0 2px 8px rgba(245, 245, 220, 0.1);
+  }
+  50% { 
+    transform: translateX(clamp(3px, 0.8vw, 6px)) rotate(0.1deg); 
+    box-shadow: 0 3px 12px rgba(245, 245, 220, 0.2);
+  }
+}
+
+@keyframes academic-step-highlight {
+  0%, 100% { 
+    transform: translateX(clamp(2px, 0.5vw, 4px)) rotate(0deg); 
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.15);
+  }
+  50% { 
+    transform: translateX(clamp(3px, 0.8vw, 6px)) rotate(0.1deg); 
+    box-shadow: 0 4px 14px rgba(139, 69, 19, 0.25);
+  }
+}
+
+@keyframes biblioteca-step-highlight {
+  0%, 100% { 
+    transform: translateX(clamp(2px, 0.5vw, 4px)) rotate(0deg); 
+    box-shadow: 0 3px 12px rgba(218, 165, 32, 0.15);
+  }
+  50% { 
+    transform: translateX(clamp(3px, 0.8vw, 6px)) rotate(0.1deg); 
+    box-shadow: 0 4px 16px rgba(218, 165, 32, 0.25);
+  }
+}
+
+@keyframes tech-step-pulse {
+  0%, 100% { 
+    transform: translateX(clamp(2px, 0.5vw, 4px));
+    box-shadow: 
+      0 clamp(2px, 0.5vw, 4px) clamp(8px, 2vw, 12px) rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  50% { 
+    transform: translateX(clamp(3px, 0.8vw, 6px));
+    box-shadow: 
+      0 clamp(4px, 1vw, 6px) clamp(12px, 3vw, 18px) rgba(59, 130, 246, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Animaciones de iconos */
+@keyframes chalk-icon-draw {
+  0% { transform: scale(0.8) rotate(-10deg); opacity: 0.5; }
+  50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes academic-icon-reveal {
+  0% { transform: scale(0.8) rotate(-8deg); opacity: 0.6; }
+  50% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes biblioteca-icon-organize {
+  0% { transform: scale(0.8) rotate(-15deg); opacity: 0.5; }
+  50% { transform: scale(1.2) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes tech-icon-activate {
+  0% { transform: scale(0.8) rotate(-45deg); opacity: 0.5; }
+  50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Animaciones de frases motivacionales */
+@keyframes motivational-chalk-glow {
+  0%, 100% { 
+    border-color: rgba(240, 230, 140, 0.3);
+    text-shadow: 
+      0 0 1px #F0E68C,
+      0 0 2px rgba(240, 230, 140, 0.8),
+      0 1px 0 rgba(0, 0, 0, 0.3);
+  }
+  50% { 
+    border-color: rgba(240, 230, 140, 0.5);
+    text-shadow: 
+      0 0 1px #F0E68C,
+      0 0 3px rgba(240, 230, 140, 1),
+      0 0 5px rgba(240, 230, 140, 0.6),
+      0 1px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes academic-motivational-glow {
+  0%, 100% { 
+    border-color: rgba(160, 82, 45, 0.3);
+    text-shadow: 
+      0 1px 2px rgba(160, 82, 45, 0.3),
+      0 0 1px rgba(160, 82, 45, 0.6);
+  }
+  50% { 
+    border-color: rgba(160, 82, 45, 0.5);
+    text-shadow: 
+      0 1px 3px rgba(160, 82, 45, 0.4),
+      0 0 2px rgba(160, 82, 45, 0.8),
+      0 0 4px rgba(160, 82, 45, 0.6);
+  }
+}
+
+@keyframes bibliotecario-wisdom {
+  0%, 100% { 
+    border-color: rgba(221, 216, 199, 0.3);
+    text-shadow: 
+      0 0 1px #DDD8C7,
+      0 0 2px rgba(221, 216, 199, 0.8),
+      0 2px 0 rgba(0, 0, 0, 0.3);
+  }
+  50% { 
+    border-color: rgba(221, 216, 199, 0.5);
+    text-shadow: 
+      0 0 1px #DDD8C7,
+      0 0 3px rgba(221, 216, 199, 1),
+      0 0 5px rgba(221, 216, 199, 0.6),
+      0 2px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes description-glow {
+  0%, 100% { 
+    border-color: rgba(59, 130, 246, 0.2);
+    text-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+  }
+  50% { 
+    border-color: rgba(59, 130, 246, 0.4);
+    text-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* Animaciones de efectos */
+@keyframes book-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* Animaciones de partículas */
+@keyframes chalk-dust-disperse {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+  20% {
+    opacity: 0.8;
+    transform: scale(0.6) rotate(45deg);
+  }
+  60% {
+    opacity: 0.6;
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2) rotate(360deg);
+  }
+}
+
+@keyframes academic-books-disperse {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  25% {
+    opacity: 0.9;
+    transform: scale(0.7) rotate(90deg);
+  }
+  70% {
+    opacity: 0.7;
+    transform: scale(1.3) rotate(270deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2) rotate(360deg);
+  }
+}
+
+@keyframes book-dust-disperse {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(0.7) rotate(90deg);
+  }
+  65% {
+    opacity: 0.6;
+    transform: scale(1.3) rotate(270deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2) rotate(360deg);
+  }
+}
+
+@keyframes book-icon-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.2); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) scale(0.8); }
+}
+
+@keyframes data-stream-flow {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+
+/* Animaciones de elementos flotantes */
+@keyframes float-chalk-symbol {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(0deg) scale(0.7);
+  }
+  15% {
+    opacity: 0.5;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) rotate(180deg) scale(1);
+  }
+}
+
+@keyframes float-academic-theory {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(0deg) scale(0.8);
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) rotate(180deg) scale(1.1);
+  }
+}
+
+@keyframes float-document {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(0deg) scale(0.8);
+  }
+  18% {
+    opacity: 0.6;
+  }
+  82% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) rotate(180deg) scale(1.1);
+  }
+}
+
+@keyframes float-tech-element {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(0deg) scale(0.8);
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) rotate(180deg) scale(1);
+  }
+}
+
+/* Animaciones de símbolos de fondo */
+@keyframes chalkboard-background-symbols {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.015; }
+  50% { opacity: 0.025; }
+  100% { transform: rotate(1deg) scale(1.01); opacity: 0.015; }
+}
+
+@keyframes academic-background-symbols {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.02; }
+  50% { opacity: 0.035; }
+  100% { transform: rotate(0.5deg) scale(1.01); opacity: 0.02; }
+}
+
+@keyframes biblioteca-background-symbols {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.02; }
+  50% { opacity: 0.03; }
+  100% { transform: rotate(0.5deg) scale(1.01); opacity: 0.02; }
+}
+
+@keyframes tech-background-flow {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.02; }
+  50% { opacity: 0.04; }
+  100% { transform: rotate(2deg) scale(1.01); opacity: 0.02; }
+}
+
+/* ===================================================================
+   TEMA OSCURO - ADAPTACIONES ESPECÍFICAS PARA CADA LOADER
+   =================================================================== */
+
+/* === PIZARRÓN MATEMÁTICO - TEMA OSCURO === */
+body[data-theme="dark"] .acadel-initial-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(20, 20, 20, 0.95) 0%, 
+    rgba(25, 25, 25, 0.90) 50%,
+    rgba(20, 20, 20, 0.95) 100%
+  );
+}
+
+body[data-theme="dark"] .acadel-loader-content {
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.01) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.02) 0%, transparent 50%),
+    linear-gradient(45deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+  border-color: #654321;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(2px, 0.5vw, 4px) #8B4513,
+    inset 0 0 0 var(--loading-content-border-width) #654321,
+    inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="dark"] .acadel-loader-content::after {
+  background: radial-gradient(ellipse, rgba(255,255,255,0.02) 0%, transparent 70%);
+}
+
+body[data-theme="dark"] .acadel-loader-avatar {
+  filter: sepia(0.05) brightness(0.9) contrast(1.1);
+}
+
+body[data-theme="dark"] .acadel-loader-avatar::after {
+  background: #2F2F2F;
+  border-color: #8B4513;
+}
+
+body[data-theme="dark"] .acadel-progress-bar {
+  background: linear-gradient(90deg, 
+    #E5E5E5 0%,
+    #F5F5F5 30%,   
+    #FFFFFF 60%,   
+    #E5E5E5 100%   
+  );
+  border-color: rgba(229, 229, 229, 0.8);
+}
+
+body[data-theme="dark"] .acadel-initial-loader::after {
+  color: rgba(255, 255, 255, 0.012);
+}
+
+body[data-theme="dark"] .chalk-dust-effect {
+  background: radial-gradient(
+    circle, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.12) 30%, 
+    rgba(255, 255, 255, 0.06) 60%, 
+    transparent 80%
+  );
+  box-shadow: 
+    0 0 clamp(10px, 2vw, 20px) rgba(255, 255, 255, 0.15),
+    inset 0 0 clamp(5px, 1vw, 10px) rgba(255, 255, 255, 0.08);
+}
+
+/* === BIBLIOTECA ACADÉMICA - TEMA OSCURO === */
+body[data-theme="dark"] .acadel-library-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(40, 20, 10, 0.95) 0%,
+    rgba(50, 25, 15, 0.90) 50%,
+    rgba(40, 20, 10, 0.95) 100%
+  );
+}
+
+body[data-theme="dark"] .acadel-library-content {
+  background: 
+    linear-gradient(45deg, rgba(40,20,10,0.05) 0%, transparent 50%),
+    linear-gradient(-45deg, rgba(50,25,15,0.03) 0%, transparent 50%),
+    linear-gradient(90deg, #654321 0%, #8B4513 30%, #A0522D 50%, #8B4513 70%, #654321 100%);
+  border-color: #654321;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(3px, 0.6vw, 5px) #B8860B,
+    inset 0 0 0 var(--loading-content-border-width) #5D4E37,
+    inset 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .acadel-library-content::after {
+  filter: sepia(0.5) brightness(0.7);
+}
+
+body[data-theme="dark"] .acadel-library-avatar {
+  filter: sepia(0.1) brightness(0.85) contrast(1.15);
+  border-color: #B8860B;
+}
+
+body[data-theme="dark"] .acadel-library-avatar::after {
+  background: #5D4E37;
+  border-color: #B8860B;
+}
+
+body[data-theme="dark"] .acadel-library-text {
+  color: #DEB887;
+  text-shadow: 
+    0 1px 2px rgba(222, 184, 135, 0.3),
+    0 0 1px rgba(222, 184, 135, 0.6);
+  border: 2px solid rgba(214, 192, 92, 0.3);
+}
+
+body[data-theme="dark"] .acadel-library-step.active {
+  border: 2px solid rgba(214, 192, 92, 0.3);
+}
+
+body[data-theme="dark"] .acadel-library-step {
+  border: 2px dashed rgba(214, 192, 92, 0.3);
+}
+
+body[data-theme="dark"] .acadel-library-progress-container {
+  border: 3px solid rgba(214, 192, 92, 0.3);
+}
+
+body[data-theme="dark"] .acadel-library-progress-bar {
+  background: linear-gradient(90deg, 
+    #B8860B 0%,
+    #DAA520 30%,   
+    #FFD700 60%,   
+    #B8860B 100%   
+  );
+  border-color: rgba(184, 134, 11, 0.8);
+}
+
+body[data-theme="dark"] .acadel-library-step-text,
+body[data-theme="dark"] .acadel-library-progress-formula,
+body[data-theme="dark"] .acadel-library-progress-percent {
+  color: #DEB887;
+  text-shadow: 
+    0 1px 2px rgba(222, 184, 135, 0.3),
+    0 0 1px rgba(222, 184, 135, 0.6);
+}
+
+body[data-theme="dark"] .acadel-library-frase-motivacional {
+  color: #CD853F;
+  text-shadow: 
+    0 1px 2px rgba(205, 133, 63, 0.3),
+    0 0 1px rgba(205, 133, 63, 0.6);
+}
+
+body[data-theme="dark"] .acadel-library-loader::after {
+  color: rgba(222, 184, 135, 0.015);
+}
+
+body[data-theme="dark"] .acadel-book-effect {
+  background: radial-gradient(
+    circle, 
+    rgba(222, 184, 135, 0.25) 0%, 
+    rgba(205, 133, 63, 0.18) 30%, 
+    rgba(184, 134, 11, 0.1) 60%, 
+    transparent 80%
+  );
+  box-shadow: 
+    0 0 clamp(12px, 2.5vw, 25px) rgba(222, 184, 135, 0.2),
+    inset 0 0 clamp(6px, 1.2vw, 12px) rgba(184, 134, 11, 0.12);
+}
+
+/* === BIBLIOTECA DIGITAL - TEMA OSCURO === */
+body[data-theme="dark"] .acadel-biblioteca-loader {
+  background: linear-gradient(
+    135deg, 
+    rgba(30, 20, 10, 0.95) 0%, 
+    rgba(40, 25, 15, 0.90) 50%,
+    rgba(30, 20, 10, 0.95) 100%
+  );
+}
+
+body[data-theme="dark"] .acadel-biblioteca-content {
+  background: 
+    linear-gradient(180deg, rgba(70, 45, 25, 0.02) 0%, transparent 30%),
+    linear-gradient(0deg, rgba(70, 45, 25, 0.02) 0%, transparent 30%),
+    linear-gradient(45deg, #1a1208 0%, #2d1e12 50%, #1a1208 100%);
+  border-color: #654321;
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 0 0 clamp(3px, 0.6vw, 5px) #8B4513,
+    inset 0 0 0 var(--loading-content-border-width) #654321,
+    inset 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="dark"] .acadel-biblioteca-content::after {
+  opacity: 0.4;
+}
+
+body[data-theme="dark"] .acadel-bibliotecario-avatar {
+  filter: sepia(0.1) brightness(0.85) contrast(1.15);
+}
+
+body[data-theme="dark"] .acadel-bibliotecario-avatar::after {
+  background: #B8860B;
+  border-color: #DAA520;
+}
+
+body[data-theme="dark"] .acadel-catalogo-bar {
+  background: linear-gradient(90deg, 
+    #B8860B 0%,
+    #DAA520 30%,   
+    #F4E4BC 60%,   
+    #B8860B 100%   
+  );
+  border-color: rgba(184, 134, 11, 0.8);
+}
+
+body[data-theme="dark"] .acadel-biblioteca-loader::after {
+  color: rgba(245, 230, 211, 0.015);
+}
+
+body[data-theme="dark"] .book-dust-effect {
+  background: radial-gradient(
+    circle, 
+    rgba(184, 134, 11, 0.25) 0%, 
+    rgba(184, 134, 11, 0.15) 30%, 
+    rgba(184, 134, 11, 0.08) 60%, 
+    transparent 80%
+  );
+  box-shadow: 
+    0 0 clamp(12px, 2.5vw, 25px) rgba(184, 134, 11, 0.2),
+    inset 0 0 clamp(6px, 1.2vw, 12px) rgba(184, 134, 11, 0.1);
+}
+
+/* === TERMINAL TECNOLÓGICO - TEMA OSCURO === */
+body[data-theme="dark"] .acadel-tech-loader {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.98) 0%, 
+      rgba(15, 15, 15, 0.95) 50%,
+      rgba(0, 0, 0, 0.98) 100%
+    );
+}
+
+body[data-theme="dark"] .acadel-tech-content {
+  background: 
+    linear-gradient(145deg, 
+      rgba(10, 10, 10, 0.95) 0%, 
+      rgba(25, 25, 25, 0.9) 50%, 
+      rgba(10, 10, 10, 0.95) 100%
+    );
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 
+    var(--loading-content-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 clamp(20px, 4vw, 40px) rgba(99, 102, 241, 0.15);
+}
+
+body[data-theme="dark"] .acadel-tech-avatar {
+  border-color: rgba(99, 102, 241, 0.8);
+  box-shadow: 
+    0 0 clamp(15px, 3vw, 25px) rgba(99, 102, 241, 0.4),
+    inset 0 0 clamp(12px, 2.5vw, 18px) rgba(34, 197, 94, 0.2),
+    0 clamp(6px, 1.2vw, 10px) clamp(20px, 4vw, 30px) rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="dark"] .acadel-tech-progress-bar {
+  background: linear-gradient(90deg, 
+    rgba(99, 102, 241, 0.9) 0%,
+    rgba(34, 197, 94, 0.9) 50%,
+    rgba(147, 51, 234, 0.9) 100%
+  );
+  box-shadow: 
+    0 0 clamp(12px, 2.5vw, 18px) rgba(99, 102, 241, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .acadel-tech-loader::after {
+  color: rgba(99, 102, 241, 0.015);
+}
+
+/* ===================================================================
+   MEDIA QUERIES RESPONSIVAS OPTIMIZADAS
+   =================================================================== */
+
+/* === PANTALLAS MUY PEQUEÑAS (MÓVILES VERTICALES) === */
+@media (max-width: 320px) {
+  :root {
+    --loading-content-padding: 15px;
+    --loading-content-min-width: 260px;
+    --loading-text-size: 12px;
+    --loading-text-padding: 8px 10px;
+    --loading-frase-size: 9px;
+    --loading-frase-padding: 6px;
+  }
+}
+
+/* === PANTALLAS PEQUEÑAS (MÓVILES) === */
+@media (max-width: 480px) {
+  :root {
+    --loading-padding: 10px;
+    --loading-content-width: var(--loading-mobile-content-width);
+    --loading-content-max-width: var(--loading-mobile-max-width);
+    --loading-step-gap: 10px;
+    --loading-step-padding: 8px 12px;
+    --loading-floating-size: 24px;
+  }
+  
+  .acadel-loader-content,
+  .acadel-library-content,
+  .acadel-biblioteca-content,
+  .acadel-tech-content {
+    width: var(--loading-mobile-content-width);
+    max-width: var(--loading-mobile-max-width);
+  }
+}
+
+/* === PANTALLAS MEDIANAS (TABLETS) === */
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --loading-content-width: var(--loading-tablet-content-width);
+    --loading-content-max-width: var(--loading-tablet-max-width);
+  }
+  
+  .acadel-loader-content,
+  .acadel-library-content,
+  .acadel-biblioteca-content {
+    width: var(--loading-tablet-content-width);
+    max-width: var(--loading-tablet-max-width);
+  }
+  
+  .acadel-tech-content {
+    width: 90vw;
+    max-width: 500px;
+  }
+}
+
+/* === PANTALLAS GRANDES (DESKTOP) === */
+@media (min-width: 1200px) {
+  :root {
+    --loading-content-max-width: var(--loading-desktop-max-width);
+    --loading-avatar-size: 140px;
+    --loading-floating-size: clamp(32px, 4vw, 40px);
+  }
+  
+  .acadel-loader-content,
+  .acadel-library-content,
+  .acadel-biblioteca-content {
+    max-width: var(--loading-desktop-max-width);
+  }
+  
+  .acadel-tech-content {
+    max-width: 650px;
+  }
+  
+  .floating-theory {
+    font-size: 32px;
+  }
+  
+  .floating-document {
+    font-size: 40px;
+  }
+  
+  .floating-tech-element {
+    font-size: 20px;
+  }
+}
+
+/* === LAPTOPS ESTÁNDAR (1024px - 1380px) - DISEÑO COMPACTO === */
+@media (min-width: 1024px) and (max-width: 1380px) {
+  :root {
+    --loading-padding: 10px;
+    --loading-content-width: 65vw;
+    --loading-content-max-width: 520px;
+    --loading-content-min-width: 420px;
+    --loading-content-padding: 20px 30px;
+    --loading-avatar-size: 85px;
+    --loading-avatar-margin: 15px;
+    --loading-avatar-badge-size: 30px;
+    --loading-avatar-badge-font: clamp(16px, 3vw, 18px);
+    --loading-avatar-badge-offset: -8px;
+    --loading-message-margin: 15px;
+    --loading-message-min-height: 70px;
+    --loading-text-size: 15px;
+    --loading-text-padding: 12px 18px;
+    --loading-progress-margin: 15px;
+    --loading-progress-padding: 15px;
+    --loading-progress-label-size: 14px;
+    --loading-progress-percent-size: 16px;
+    --loading-progress-bar-height: 12px;
+    --loading-steps-gap: 8px;
+    --loading-steps-margin: 15px;
+    --loading-step-padding: 8px 12px;
+    --loading-step-icon-size: 16px;
+    --loading-step-text-size: 13px;
+    --loading-frase-size: 12px;
+    --loading-frase-padding: 12px;
+    --loading-floating-size: 28px;
+    --loading-particle-size: 100px;
+    --loading-background-symbols-size: 100px;
+  }
+  
+  .acadel-tech-content {
+    width: 70vw;
+    max-width: 520px;
+    min-width: 450px;
+  }
+  
+  .acadel-tech-message-container {
+    min-height: 50px;
+  }
+  
+  .acadel-tech-progress-info {
+    margin-bottom: 10px;
+  }
+  
+  .acadel-tech-progress-label {
+    font-size: 13px;
+  }
+  
+  .acadel-tech-progress-percent {
+    font-size: 15px;
+  }
+  
+  .acadel-tech-progress-bar {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
+  .acadel-tech-step-indicator {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .acadel-tech-step-icon {
+    font-size: 13px;
+  }
+  
+  .acadel-tech-terminal {
+    margin-bottom: 14px;
+  }
+  
+  .acadel-tech-terminal-content {
+    padding: 10px 14px;
+    font-size: 11px;
+    min-height: 60px;
+    max-height: 100px;
+  }
+  
+  .acadel-tech-loader::after {
+    font-size: 50px;
+    word-spacing: 10px;
+  }
+  
+  .floating-tech-element {
+    font-size: 16px;
+  }
+  
+  .data-stream-effect {
+    font-size: 10px;
+  }
+}
+
+/* === AJUSTE PARA ALTURAS MUY LIMITADAS === */
+@media (min-width: 1024px) and (max-width: 1380px) and (max-height: 768px) {
+  :root {
+    --loading-content-padding: 15px 25px;
+    --loading-avatar-margin: 12px;
+    --loading-message-margin: 12px;
+    --loading-message-min-height: 60px;
+    --loading-progress-margin: 12px;
+    --loading-progress-padding: 12px;
+    --loading-steps-gap: 6px;
+    --loading-steps-margin: 12px;
+    --loading-step-padding: 6px 10px;
+    --loading-frase-size: 11px;
+    --loading-frase-padding: 10px;
+  }
+  
+  .acadel-loader-content,
+  .acadel-library-content,
+  .acadel-biblioteca-content,
+  .acadel-tech-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .acadel-tech-terminal {
+    margin-bottom: 10px;
+  }
+  
+  .acadel-tech-terminal-content {
+    min-height: 40px;
+    max-height: 60px;
+    padding: 8px 12px;
+  }
+}
+
+/* === ORIENTACIÓN LANDSCAPE EN MÓVILES === */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root {
+    --loading-content-padding: clamp(12px, 3vw, 20px) clamp(20px, 5vw, 28px);
+    --loading-avatar-size: clamp(70px, 12vw, 80px);
+    --loading-avatar-margin: clamp(10px, 2vw, 15px);
+    --loading-message-margin: clamp(10px, 2vw, 15px);
+    --loading-message-min-height: clamp(40px, 6vw, 50px);
+    --loading-progress-margin: clamp(10px, 2vw, 15px);
+    --loading-steps-gap: clamp(5px, 1vw, 8px);
+    --loading-steps-margin: clamp(10px, 2vw, 15px);
+  }
+  
+  .acadel-loader-content,
+  .acadel-library-content,
+  .acadel-biblioteca-content,
+  .acadel-tech-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .acadel-tech-terminal {
+    margin-bottom: 8px;
+  }
+  
+  .acadel-tech-terminal-content {
+    min-height: 30px;
+    max-height: 50px;
+  }
+}
+
+/* === ACCESIBILIDAD - MOVIMIENTO REDUCIDO === */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --loading-transition: opacity 0.3s ease;
+    --loading-content-entrance-duration: 0.5s;
+  }
+  
+  .acadel-loader-avatar,
+  .acadel-library-avatar,
+  .acadel-bibliotecario-avatar,
+  .acadel-tech-avatar,
+  .floating-equation,
+  .floating-theory,
+  .floating-document,
+  .floating-tech-element,
+  .chalk-dust-effect,
+  .acadel-book-effect,
+  .book-dust-effect,
+  .data-stream-effect,
+  .acadel-step,
+  .acadel-library-step,
+  .acadel-tech-step,
+  .acadel-progress-bar::after,
+  .acadel-library-progress-bar::after,
+  .acadel-catalogo-bar::after,
+  .acadel-tech-progress-bar::after,
+  .acadel-tech-content::after {
+    animation: none !important;
+  }
+  
+  .acadel-initial-loader.fade-out-acadel,
+  .acadel-library-loader.fade-out-library,
+  .acadel-biblioteca-loader.fade-out-biblioteca,
+  .acadel-tech-loader.fade-out-tech {
+    transition: var(--loading-transition);
+  }
+}
+
+/* ===================================================================
+   OVERLAY DE ELIMINACIÓN DE CHAT - UNIFICADO
+   =================================================================== */
+
+.delete-chat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.delete-chat-overlay.active {
+  opacity: 1;
+}
+
+.delete-chat-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  background: var(--card-bg, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color, #e0e0e0);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.delete-chat-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--border-color, #e0e0e0);
+  border-top: 4px solid var(--primary-color, #e74c3c);
+  border-radius: 50%;
+  animation: deleteSpinRotate 1s linear infinite;
+  position: relative;
+}
+
+.delete-chat-spinner::after {
+  content: '🗑️';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  animation: deleteSpinBounce 2s ease-in-out infinite;
+}
+
+.delete-chat-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color, #333333);
+  margin: 0;
+}
+
+.delete-chat-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary, #666666);
+  margin: 0;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Animaciones del overlay */
+@keyframes deleteSpinRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes deleteSpinBounce {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes deleteOverlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes deleteSpinSlowDown {
+  0% { transform: rotate(0deg); animation-timing-function: linear; }
+  100% { transform: rotate(180deg); animation-timing-function: ease-out; }
+}
+
+/* Estados del spinner */
+.delete-chat-spinner.processing {
+  border-top-color: #f39c12;
+  animation-duration: 0.8s;
+}
+
+.delete-chat-spinner.success {
+  border-top-color: #27ae60;
+  animation: deleteSpinSlowDown 0.5s ease-out;
+}
+
+/* Animación de entrada */
+.delete-chat-overlay {
+  animation: deleteOverlayFadeIn 0.3s ease-out;
+}
+
+/* Tema oscuro para overlay */
+[data-theme="dark"] .delete-chat-spinner-container {
+  background: var(--card-bg-dark, #2c2c2c);
+  border-color: var(--border-color-dark, #404040);
+}
+
+[data-theme="dark"] .delete-chat-spinner {
+  border-color: var(--border-color-dark, #404040);
+  border-top-color: var(--primary-color, #e74c3c);
+}
+
+[data-theme="dark"] .delete-chat-text {
+  color: var(--text-color-dark, #ffffff);
+}
+
+[data-theme="dark"] .delete-chat-subtitle {
+  color: var(--text-secondary-dark, #cccccc);
+}
+
+/* Responsivo para overlay */
+@media (max-width: 768px) {
+  .delete-chat-spinner-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .delete-chat-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .delete-chat-spinner::after {
+    font-size: 16px;
+  }
+  
+  .delete-chat-text {
+    font-size: 16px;
+  }
+  
+  .delete-chat-subtitle {
+    font-size: 13px;
+  }
+}
+
+/* Accesibilidad para overlay */
+@media (prefers-reduced-motion: reduce) {
+  .delete-chat-spinner {
+    animation-duration: 2s;
+  }
+  
+  .delete-chat-spinner::after {
+    animation: none;
+  }
+  
+  .delete-chat-overlay {
+    animation: none;
+    transition: opacity 0.2s ease;
+  }
+}
+
+/* ===================================================================
+   INDICADOR DE ARCHIVO TRUNCADO
+   =================================================================== */
+
+.file-truncated-indicator {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: all 0.2s ease;
+  animation: pulse-warning 2s infinite;
+}
+
+.file-truncated-indicator:hover {
+  background: linear-gradient(135deg, #f57c00, #ef6c00);
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.file-truncated-indicator::before {
+  content: "!";
+  color: white;
+  font-weight: 900;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+}
+
+@keyframes pulse-warning {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.file-truncated {
+  position: relative;
+  border: 2px dashed #ff9800;
+  opacity: 0.8;
+}
+
+/* Accesibilidad para indicador */
+@media (prefers-reduced-motion: reduce) {
+  .file-truncated-indicator {
+    animation: none;
+  }
+}

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="/scripts/immediate-theme.js" nonce="<%= nonce %>"></script>
+    <title>Acadelia - Tienda</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <!-- Cargar los estilos originales primero -->
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="/css/tienda.css">
+</head>
+<body>
+<header>
+        <div class="logo">
+            <a href="/principal" class="logo-link" aria-label="Principal">
+            <div class="logo-img"></div>
+        </div>
+
+    <div class="nav-buttons">
+        <a href="/misavas" class="nav-btn">
+            <i class='bx bx-book-reader'></i>
+            Mis AVAs
+        </a>
+
+        <a href="/principal" class="nav-btn">
+            <i class='bx bx-home'></i>
+            Inicio
+        </a>
+        
+        <div class="dropdown">
+            <button class="nav-btn" id="accountBtn">
+                <i class='bx bx-user'></i>
+                Mi Cuenta
+            </button>
+            <div class="dropdown-content">
+                <a href="/cuenta" class="dropdown-item">
+                    <i class='bx bx-cog'></i>
+                    Configuraciones
+                </a>
+                <a href="/contact" class="dropdown-item">
+                    <i class='bx bx-conversation'></i>
+                    Contáctanos
+                </a>
+                <a href="" class="dropdown-item">
+                    <i class='bx bx-log-out'></i>
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+
+        <div class="theme-toggle-container" id="themeToggle">
+            <div class="theme-slider"></div>
+            <i class='bx bx-sun theme-icon'></i>
+            <i class='bx bx-moon theme-icon'></i>
+        </div>
+    </div>
+    
+    <button class="menu-toggle" id="menuToggle" title="Menú principal">
+        <i class='bx bx-menu'></i>
+    </button>
+
+    <div class="mobile-theme-toggle" id="mobileThemeToggle" style="display: none;">
+    <div class="theme-toggle-container">
+        <div class="theme-slider"></div>
+        <i class='bx bx-sun theme-icon'></i>
+        <i class='bx bx-moon theme-icon'></i>
+    </div>
+    <span>Cambiar tema</span>
+</div>
+</header>
+
+    <main class="main-content">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar productos...">
+            <i class='bx bx-search' id="searchIcon"></i>
+        </div>
+
+        <div class="controls-container">
+            <div class="billing-toggle-container">
+                <div class="inline-flex items-center rounded-lg p-1">
+                    <button id="monthlyBtn" class="active" data-cycle="month">Mensual</button>
+                    <button id="yearlyBtn" data-cycle="year">Anual (Ahorra 20%)</button>
+                </div>
+            </div>
+
+            <div class="iva-notice-compact" id="mainIvaNotice">
+    <i class="iva-icon">💰</i>
+    <span class="iva-text">
+        <strong>Precios sin IVA</strong> - Se calcula según tu país durante el pago
+    </span>
+</div>
+
+<!-- Aviso flotante compacto -->
+<div class="floating-iva-notice" id="floatingIvaNotice">
+    <i>💰</i> Precios sin IVA
+</div>
+          
+            <button class="regresar-btn" id="regresarBtn" style="display:none">
+                <i class='bx bx-left-arrow-alt'></i>
+                Volver
+            </button>
+            <div class="country-selector-container">
+                <div class="custom-select">
+                    <div class="select-selected" data-value="ES">
+                        <img src="/images/flags/es.png" alt="España" class="flag-img">
+                        <span>España</span>
+                    </div>
+                    <div class="select-items select-hide">
+                        <div class="select-item" data-value="ES">
+                            <img src="/images/flags/es.png" alt="España" class="flag-img">
+                            <span>España</span>
+                        </div>
+                        <div class="select-item" data-value="US">
+                            <img src="/images/flags/us.png" alt="Estados Unidos" class="flag-img">
+                            <span>Estados Unidos</span>
+                        </div>
+                        <div class="select-item" data-value="AR">
+                            <img src="/images/flags/ar.png" alt="Argentina" class="flag-img">
+                            <span>Argentina</span>
+                        </div>
+                        <div class="select-item" data-value="BO">
+                            <img src="/images/flags/bo.png" alt="Bolivia" class="flag-img">
+                            <span>Bolivia</span>
+                        </div>
+                        <div class="select-item" data-value="CL">
+                            <img src="/images/flags/cl.png" alt="Chile" class="flag-img">
+                            <span>Chile</span>
+                        </div>
+                        <div class="select-item" data-value="CO">
+                            <img src="/images/flags/co.png" alt="Colombia" class="flag-img">
+                            <span>Colombia</span>
+                        </div>
+                        <div class="select-item" data-value="CR">
+                            <img src="/images/flags/cr.png" alt="Costa Rica" class="flag-img">
+                            <span>Costa Rica</span>
+                        </div>
+                        <div class="select-item" data-value="EC">
+                            <img src="/images/flags/ec.png" alt="Ecuador" class="flag-img">
+                            <span>Ecuador</span>
+                        </div>
+                        <div class="select-item" data-value="SV">
+                            <img src="/images/flags/sv.png" alt="El Salvador" class="flag-img">
+                            <span>El Salvador</span>
+                        </div>
+                        <div class="select-item" data-value="GT">
+                            <img src="/images/flags/gt.png" alt="Guatemala" class="flag-img">
+                            <span>Guatemala</span>
+                        </div>
+                        <div class="select-item" data-value="HN">
+                            <img src="/images/flags/hn.png" alt="Honduras" class="flag-img">
+                            <span>Honduras</span>
+                        </div>
+                        <div class="select-item" data-value="MX">
+                            <img src="/images/flags/mx.png" alt="México" class="flag-img">
+                            <span>México</span>
+                        </div>
+                        <div class="select-item" data-value="PA">
+                            <img src="/images/flags/pa.png" alt="Panamá" class="flag-img">
+                            <span>Panamá</span>
+                        </div>
+                        <div class="select-item" data-value="PY">
+                            <img src="/images/flags/py.png" alt="Paraguay" class="flag-img">
+                            <span>Paraguay</span>
+                        </div>
+                        <div class="select-item" data-value="PE">
+                            <img src="/images/flags/pe.png" alt="Perú" class="flag-img">
+                            <span>Perú</span>
+                        </div>
+                        <div class="select-item" data-value="PR">
+                            <img src="/images/flags/pr.png" alt="Puerto Rico" class="flag-img">
+                            <span>Puerto Rico</span>
+                        </div>
+                        <div class="select-item" data-value="UY">
+                            <img src="/images/flags/uy.png" alt="Uruguay" class="flag-img">
+                            <span>Uruguay</span>
+                        </div>
+                    </div>
+                    <select id="countrySelect" style="display: none;">
+                        <option value="ES">España</option>
+                        <option value="US">Estados Unidos</option>
+                        <option value="AR">Argentina</option>
+                        <option value="BO">Bolivia</option>
+                        <option value="CL">Chile</option>
+                        <option value="CO">Colombia</option>
+                        <option value="CR">Costa Rica</option>
+                        <option value="EC">Ecuador</option>
+                        <option value="SV">El Salvador</option>
+                        <option value="GT">Guatemala</option>
+                        <option value="HN">Honduras</option>
+                        <option value="MX">México</option>
+                        <option value="PA">Panamá</option>
+                        <option value="PY">Paraguay</option>
+                        <option value="PE">Perú</option>
+                        <option value="PR">Puerto Rico</option>
+                        <option value="UY">Uruguay</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    
+        <div class="carousel-container">
+            <button class="carousel-button prev" id="prevBtn">
+                <i class='bx bx-chevron-left'></i>
+            </button>
+            
+            <div class="carousel-track-container">
+                <div class="carousel-track" id="track">
+                    <!-- Los productos se insertarán dinámicamente aquí -->
+                </div>
+            </div>
+            
+            <button class="carousel-button next" id="nextBtn">
+                <i class='bx bx-chevron-right'></i>
+            </button>
+        </div>
+
+        <div class="extra-space"></div>
+  
+
+        <section class="ava-comparison">
+            <div class="comparison-header">
+                <h2>Potencia tu Aprendizaje con Nuestros AVAs</h2>
+                <p>Descubre cómo nuestros Asistentes Virtuales Académicos transformarán tu experiencia educativa</p>
+            </div>
+        
+            <div class="comparison-grid">
+                <div class="comparison-column theoretical-ava">
+                    <div class="column-header">
+                        <i class='bx bx-book-open'></i>
+                        <h3>Asistente Teórico</h3>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Especialización en humanidades y ciencias sociales</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Análisis conceptuales avanzados</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Mapas conceptuales interactivos</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Búsqueda académica inteligente</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Generación de evaluaciones personalizadas</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Creación de imágenes explicativas</span>
+                        </li>
+                    </ul>
+                </div>
+        
+                <div class="comparison-column mathematical-ava">
+                    <div class="column-header">
+                        <i class='bx bx-calculator'></i>
+                        <h3>Asistente Matemático</h3>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Resolución paso a paso de problemas complejos</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Calculadora científica de alta precisión</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Visualización de funciones y gráficas</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Soporte para múltiples ramas matemáticas</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Conversión entre sistemas de medida</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Ejercicios prácticos personalizados</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="comparison-grid">
+                <div class="comparison-column pdf-tool">
+                    <div class="column-header">
+                        <i class='bx bx-file'></i>
+                        <h3>Asistente de Documentos</h3>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Análisis inteligente de documentos PDF</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Resúmenes automáticos de alto valor</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Búsqueda avanzada dentro de tus archivos</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Conversación interactiva con tus documentos</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Extracción de conceptos clave</span>
+                        </li>
+                    </ul>
+                </div>
+        
+                <div class="comparison-column search-agent">
+                    <div class="column-header">
+                        <i class='bx bx-search-alt-2'></i>
+                        <h3>Agente Inteligente + YouTube</h3>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Transcripción y análisis de videos</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Resúmenes con marcas de tiempo precisas</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Búsqueda académica avanzada</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Acceso al asistente matemático completo</span>
+                        </li>
+                        <li>
+                            <i class='bx bx-check-circle'></i>
+                            <span>Extracción y síntesis de información</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="comparison-cta">
+                <p>Potencia tu experiencia académica con <strong>Acadelia</strong>. Nuestros AVAs combinan funcionalidades avanzadas para transformar tu manera de estudiar y aprender.</p>
+                
+                <div class="shared-features">
+                    <span><i class='bx bx-image'></i> Análisis visual</span>
+                    <span><i class='bx bx-chat'></i> Contexto inteligente</span>
+                    <span><i class='bx bx-book-reader'></i> IA especializada</span>
+                    <span><i class='bx bx-search-alt'></i> Búsqueda precisa</span>
+                </div>
+                
+                <button class="choose-ava-btn">Descubre tu AVA Ideal</button>
+            </div>
+        </section>
+
+    </main>
+ 
+    
+
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="copyright">© Acadelia.</span>
+            <div class="social-icons">
+                <a href="#" class="social-link"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                    <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                    </svg></a>
+                <a href="#" class="social-link"><i class='bx bxl-facebook'></i></a>
+                <a href="#" class="social-link"><i class='bx bxl-instagram'></i></a>
+                <a href="#" class="social-link"><i class='bx bx-envelope'></i></a>
+            </div>
+        </div>
+    </footer>
+
+    
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"  async defer></script>
+    <script src="/scripts/paddle.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/tienda.js" nonce="<%= nonce %>"></script>
+    <!-- Scripts -->
+    <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/theme-principal.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/materias.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

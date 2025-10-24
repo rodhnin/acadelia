@@ -1,0 +1,67 @@
+/* Estilos para el wrapper de bloques de código */
+.code-block-wrapper {
+  position: relative;
+  margin: 15px 0;
+}
+
+/* Estilos para etiquetas de lenguaje de código */
+.code-language-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: rgba(164, 172, 134, 0.2);
+  color: var(--color-text);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 0 var(--border-radius-md) 0 var(--border-radius-md);
+  font-family: var(--font-family-code);
+  font-weight: 500;
+  z-index: 1;
+  opacity: 0.8;
+  text-transform: lowercase;
+}
+
+/* Ajuste para tema oscuro */
+[data-theme="dark"] .code-language-tag {
+  background-color: rgba(92, 88, 88, 0.3);
+}
+
+/* Estilo para pre dentro del wrapper */
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  border-radius: var(--border-radius-md);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .code-block-wrapper pre {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Añadir padding superior para acomodar la etiqueta */
+.code-block-wrapper pre code {
+  display: block;
+  padding: 30px 15px 12px 15px;
+  overflow-x: auto;
+  line-height: 1.6;
+  background-color: transparent;
+}
+
+/* Para mensajes del sistema */
+.message-system .code-block-wrapper pre code {
+  padding: 25px 12px 10px 12px;
+}
+
+/* Para componente de explicación */
+.explanation-container .code-block-wrapper .code-language-tag,
+.explanation-content .code-block-wrapper .code-language-tag {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+}
+
+.explanation-container .code-block-wrapper pre code,
+.explanation-content .code-block-wrapper pre code {
+  padding: 25px 12px 10px 12px;
+  font-size: 0.9em;
+}

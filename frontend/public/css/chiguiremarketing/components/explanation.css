@@ -1,0 +1,146 @@
+/* ======================================
+   COMPONENTE DE EXPLICACIÓN
+   ====================================== */
+.explanation-container {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 15px;
+  margin: 15px 0;
+  border-top: 1px solid rgba(164, 172, 134, 0.2);
+}
+
+.explanation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.explanation-header h3 {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.explanation-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.explain-level-btn {
+  background-color: transparent;
+  border: 1px solid rgba(164, 172, 134, 0.3);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text);
+}
+
+.explain-level-btn.active {
+  background-color: var(--color-primary-light);
+  color: white;
+  border-color: transparent;
+}
+
+.agents-used-section {
+  margin-bottom: 15px;
+}
+
+.agents-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.agents-header h4 {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.agents-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.agent-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+}
+
+.agent-badge.active {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.agent-badge.inactive {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #999;
+}
+
+.agent-reasoning {
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 8px;
+  opacity: 0.8;
+}
+
+.explanation-content {
+  margin-bottom: 15px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.visualization-container {
+  margin-top: 15px;
+}
+
+.visualization-toggle {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-primary-light);
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.mermaid-container {
+  margin-top: 15px;
+  overflow-x: auto;
+}
+
+/* Tooltip */
+.tooltip-trigger {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip-trigger:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 100;
+}

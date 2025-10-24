@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="/scripts/immediate-theme.js" nonce="<%= nonce %>"></script>
+    <title>Acadelia - Historial de Pagos</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="stylesheet" href="/css/payment-history.css">
+    <link rel="stylesheet" href="/css/alertas.css">
+</head>
+<body>
+    <!-- Sidebar mejorado -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <a href="/principal" class="logo-link" aria-label="Principal">
+                    <div class="logo-img"></div>
+                </a>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+    
+        <ul class="sidebar-menu">
+            <!-- Opciones para móvil -->
+            <li class="responsive-item">
+                <a href="/principal" class="nav-btn">
+                    <i class='bx bx-home'></i> Inicio
+                </a>
+            </li>
+            <li class="responsive-item">
+                <a href="/misavas" class="nav-btn">
+                    <i class='bx bx-book-reader'></i> Mis Avas
+                </a>
+            </li>
+            <li class="responsive-item">
+                <a href="/tienda" class="nav-btn">
+                    <i class='bx bx-cart'></i> Tienda
+                </a>
+            </li>
+    
+            <li class="responsive-item">
+                <div class="theme-toggle-container" id="mobileThemeToggle">
+                    <div class="theme-slider"></div>
+                    <i class='bx bx-sun theme-icon'></i>
+                    <i class='bx bx-moon theme-icon'></i>
+                </div>
+            </li>
+    
+            <!-- Opciones principales -->
+            <li><a href="/cuenta"><i class='bx bxs-edit-alt'></i> Perfil</a></li>
+            <li><a href="/estatus"><i class='bx bxs-bar-chart-alt-2'></i> Status</a></li>
+            <li><a href="/paymenthistory" class="active"><i class='bx bx-history'></i> Historial de pago</a></li>
+        </ul>
+        
+        <div class="logout">
+            <a href="#"><i class='bx bx-log-out'></i> Cerrar sesión</a>
+        </div>
+    </aside>
+    
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class='bx bx-menu'></i>
+    </button>
+    
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Contenido principal - diseño mejorado -->
+    <main class="main-content">
+        <div class="content-box payment-history">
+            <div class="payment-header">
+                <h2>Historial de Pagos</h2>
+                <div class="payment-filter">
+                    <select>
+                        <option value="all">Todos los pagos</option>
+                        <option value="successful">Pagos exitosos</option>
+                        <option value="failed">Pagos fallidos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="payment-list">
+                <!-- Pago exitoso 1 -->
+                <div class="payment-item successful">
+                    <div class="payment-info">
+                        <div class="payment-icon">
+                            <i class='bx bxs-credit-card'></i>
+                            <i class='bx bx-check-shield'></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Plan Premium - Mensual</h3>
+                            <span class="payment-date"></span>
+                        </div>
+                    </div>
+                    <div class="payment-status">
+                        <div class="payment-amount"></div>
+                        <div class="status-badge success">
+                            <i class='bx bx-check'></i>
+                            Exitoso
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pago exitoso 2 -->
+                <div class="payment-item successful">
+                    <div class="payment-info">
+                        <div class="payment-icon">
+                            <i class='bx bxs-credit-card'></i>
+                            <i class='bx bx-check-shield'></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Plan Premium - Mensual</h3>
+                            <span class="payment-date"></span>
+                        </div>
+                    </div>
+                    <div class="payment-status">
+                        <div class="payment-amount"></div>
+                        <div class="status-badge success">
+                            <i class='bx bx-check'></i>
+                            Exitoso
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pago fallido -->
+                <div class="payment-item failed">
+                    <div class="payment-info">
+                        <div class="payment-icon">
+                            <i class='bx bxs-credit-card'></i>
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Plan Premium - Mensual</h3>
+                            <span class="payment-date"></span>
+                        </div>
+                    </div>
+                    <div class="payment-status">
+                        <div class="payment-amount"></div>
+                        <div class="status-badge failed">
+                            <i class='bx bx-x'></i>
+                            Fallido
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="copyright">© Acadelia.</span>
+            <div class="social-icons">
+                <a href="#" class="social-link" aria-label="Twitter">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                        <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                    </svg>
+                </a>
+                <a href="#" class="social-link" aria-label="Facebook">
+                    <i class='bx bxl-facebook'></i>
+                </a>
+                <a href="#" class="social-link" aria-label="Instagram">
+                    <i class='bx bxl-instagram'></i>
+                </a>
+                <a href="#" class="social-link" aria-label="Email">
+                    <i class='bx bx-envelope'></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+
+    <!-- Scripts - manteniendo los mismos scripts para preservar funcionalidad -->
+    <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/payment.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/theme-principal.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/logout.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/sidebar.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

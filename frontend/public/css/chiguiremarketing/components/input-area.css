@@ -1,0 +1,298 @@
+/* ======================================
+   ÁREA DE ENTRADA - INPUT EXPANDIBLE
+   ====================================== */
+.fixed-space {
+  flex-shrink: 0; /* No se comprime */
+  background-color: var(--color-primary);
+  position: relative; /* Ya no sticky */
+  width: 100%;
+  z-index: 130;
+  padding: 15px 0;
+  border-top: 1px solid rgba(164, 172, 134, 0.1);
+}
+
+.input-container {
+  z-index: 140;
+  display: flex;
+  width: 100%;
+  margin: 0;
+  position: relative;
+}
+
+.input-box {
+  position: relative;
+  max-width: 800px;
+  background: var(--color-background);
+  border-radius: var(--border-radius-pill);
+  padding: 14px 18px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(164, 172, 134, 0.1);
+  overflow: visible;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+  min-height: 60px;
+}
+
+.input-box:focus-within {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(164, 172, 134, 0.1), 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: inputFocusGlow 0.4s ease-out;
+}
+
+.auto-expand {
+  position: relative;
+  width: 100%;
+  z-index: 100;
+}
+
+.input-box textarea {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  line-height: 1.5;
+  width: calc(100% - 50px);
+  max-height: 150px;
+  min-height: 24px;
+  overflow-y: auto;
+  color: var(--color-text);
+  resize: none;
+  font-family: var(--font-family-base);
+  padding: 8px 0;
+  /* Transición suave para height */
+  transition: height 0.2s ease;
+}
+
+.input-box textarea::placeholder {
+  color: var(--color-text);
+  opacity: 0.6;
+}
+
+.input-box button {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background-color: var(--color-primary-light);
+  box-shadow: 0 2px 8px rgba(164, 172, 134, 0.3);
+  z-index: 5;
+  color: white;
+}
+
+.input-box button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.4);
+  animation: buttonHoverBounce 0.3s ease-out;
+}
+
+.input-box button:active {
+  transform: scale(0.95);
+}
+
+.input-box button i {
+  font-size: 18px;
+}
+
+.warning-message {
+  font-size: 12px;
+  opacity: 0.6;
+  display: flex;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 10px;
+  color: var(--color-text);
+}
+
+/* Estilo para botón en modo cancelación */
+.input-box button.cancel-mode {
+  background-color: #e57373;
+}
+
+.input-box button.cancel-mode:hover {
+  background-color: #ef5350;
+}
+
+.chat-button-label {
+  font-size: 12px;
+  opacity: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.2s ease;
+  color: var(--color-text);
+  white-space: nowrap;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+button:hover .chat-button-label {
+  opacity: 0.9;
+}
+
+/* ======================================
+   ESTILOS PARA INPUT DESHABILITADO
+   ====================================== */
+
+/* Estado deshabilitado del textarea */
+.input-box textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(164, 172, 134, 0.05);
+  color: var(--color-text);
+  pointer-events: none;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+/* Placeholder cuando está deshabilitado */
+.input-box textarea:disabled::placeholder {
+  color: var(--color-text);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* Container del input cuando está deshabilitado */
+.input-box:has(textarea:disabled) {
+  border-color: rgba(164, 172, 134, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(164, 172, 134, 0.02);
+}
+
+/* Evitar efectos de focus cuando está deshabilitado */
+.input-box:has(textarea:disabled):focus-within {
+  border-color: rgba(164, 172, 134, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: none;
+}
+
+/* Botón en modo cancelar - estilo mejorado */
+.input-box button.cancel-mode {
+  background-color: #ff7043;
+  box-shadow: 0 2px 8px rgba(255, 112, 67, 0.3);
+  animation: cancelButtonPulse 2s infinite ease-in-out;
+}
+
+.input-box button.cancel-mode:hover {
+  background-color: #ff5722;
+  box-shadow: 0 4px 12px rgba(255, 112, 67, 0.4);
+  transform: scale(1.05);
+}
+
+/* Animación para el botón de cancelar */
+@keyframes cancelButtonPulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(255, 112, 67, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 12px rgba(255, 112, 67, 0.5);
+  }
+}
+
+/* Indicador visual sutil de que está procesando */
+.input-box:has(textarea:disabled)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary-light),
+    transparent
+  );
+  animation: processingIndicator 2s infinite linear;
+  border-radius: var(--border-radius-pill) var(--border-radius-pill) 0 0;
+  opacity: 0.6;
+}
+
+@keyframes processingIndicator {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Tema oscuro - ajustes para input deshabilitado */
+body[data-theme="dark"] .input-box textarea:disabled {
+  background-color: rgba(164, 172, 134, 0.08);
+}
+
+body[data-theme="dark"] .input-box:has(textarea:disabled) {
+  background: rgba(164, 172, 134, 0.04);
+  border-color: rgba(164, 172, 134, 0.12);
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 768px) {
+  .input-box textarea:disabled {
+    font-size: 14px;
+  }
+  
+  .input-box button.cancel-mode {
+    animation-duration: 1.5s; /* Animación más rápida en móviles */
+  }
+}
+
+/* Accesibilidad - mejor contraste para usuarios con problemas visuales */
+@media (prefers-contrast: high) {
+  .input-box textarea:disabled {
+    opacity: 0.8;
+    border: 2px solid rgba(164, 172, 134, 0.4);
+  }
+  
+  .input-box button.cancel-mode {
+    border: 2px solid #ff5722;
+  }
+}
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .input-box button.cancel-mode {
+    animation: none;
+  }
+  
+  .input-box:has(textarea:disabled)::before {
+    animation: none;
+    background: var(--color-primary-light);
+    opacity: 0.3;
+  }
+  
+  .input-box textarea:disabled {
+    transition: none;
+  }
+}
+
+/* Clase de utilidad para forzar estado deshabilitado */
+.input-disabled {
+  pointer-events: none;
+  user-select: none;
+}
+
+.input-disabled .input-box textarea {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(164, 172, 134, 0.05);
+}
+
+.input-disabled .input-box {
+  border-color: rgba(164, 172, 134, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}

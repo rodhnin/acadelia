@@ -1,0 +1,1850 @@
+/* ======================================
+   SISTEMA UNIFICADO DE MODALES ACADEL
+   ====================================== */
+
+/* Backdrop universal para todos los modales */
+.modal, 
+.custom-modal,
+.search-modal-container,
+.feedback-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.4) 0%, 
+    rgba(15, 15, 15, 0.6) 100%);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-index-modal);
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Estados activos universales */
+.modal.active, 
+.custom-modal.show,
+.search-modal-container.visible,
+.feedback-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* Contenedores principales unificados */
+.modal-content,
+.search-modal-box,
+.feedback-modal-content {
+  background: var(--color-background);
+  border-radius: 16px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 90vh;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 12px 25px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(164, 172, 134, 0.1);
+  overflow: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+/* Contenedor especial para modal de búsqueda (más ancho) */
+.search-modal-box {
+  max-width: 600px;
+  width: 95%;
+}
+
+/* Estados activos para contenedores */
+.modal.active .modal-content,
+.custom-modal.show .modal-content,
+.search-modal-container.visible .search-modal-box,
+.feedback-modal.show .feedback-modal-content {
+  transform: translateY(0) scale(1);
+}
+
+/* Headers unificados con estilo académico */
+.modal-header,
+.search-modal-header,
+.feedback-modal-header {
+  position: relative;
+  padding: 24px 28px 20px;
+  border-bottom: 2px solid var(--color-primary-light);
+  background: linear-gradient(135deg, 
+    var(--color-primary) 0%, 
+    rgba(164, 172, 134, 0.05) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Íconos contextuales para headers */
+.modal-header::before,
+.search-modal-header::before,
+.feedback-modal-header::before {
+  content: "📚";
+  position: absolute;
+  left: 20px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* Íconos específicos */
+.search-modal-header::before {
+  content: "🔍";
+}
+
+.feedback-modal-header::before {
+  content: "💭";
+}
+
+.confirmation-modal .modal-header::before {
+  content: "⚠️";
+}
+
+.empty-chat-modal .modal-header::before {
+  content: "📝";
+}
+
+/* Títulos unificados */
+.modal-header h3,
+.search-modal-title,
+.feedback-modal-header h3 {
+  margin: 0 0 0 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  letter-spacing: -0.025em;
+}
+
+/* Botones de cierre unificados */
+.close-modal,
+.search-modal-close,
+.feedback-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+  padding: 0;
+}
+
+.close-modal:hover,
+.search-modal-close:hover,
+.feedback-modal-close:hover {
+  opacity: 1;
+  background: rgba(164, 172, 134, 0.1);
+  transform: scale(1.05);
+}
+
+/* Cuerpos de modales unificados */
+.modal-body,
+.search-modal-body,
+.feedback-modal-body {
+  padding: 32px 28px;
+  position: relative;
+  color: var(--color-text);
+}
+
+/* Líneas decorativas superiores */
+.modal-body::before,
+.search-modal-body::before,
+.feedback-modal-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-primary-light) 0%, 
+    rgba(164, 172, 134, 0.3) 100%);
+  border-radius: 2px;
+}
+
+/* Líneas específicas por tipo */
+.confirmation-modal .modal-body::before {
+  background: linear-gradient(90deg, 
+    #d32f2f 0%, 
+    rgba(211, 47, 47, 0.3) 100%);
+}
+
+.empty-chat-modal .modal-body::before {
+  background: linear-gradient(90deg, 
+    var(--color-info) 0%, 
+    rgba(2, 136, 209, 0.3) 100%);
+}
+
+.search-modal-body::before {
+  background: linear-gradient(90deg, 
+    #2196F3 0%, 
+    rgba(33, 150, 243, 0.3) 100%);
+}
+
+.feedback-modal-body::before {
+  background: linear-gradient(90deg, 
+    #FF9800 0%, 
+    rgba(255, 152, 0, 0.3) 100%);
+}
+
+/* Estilos específicos del modal de búsqueda */
+.search-modal-body {
+  text-align: left;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Input de búsqueda mejorado */
+.search-input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input-field {
+  width: 100%;
+  padding: 12px 16px 12px 45px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(164, 172, 134, 0.3);
+  font-size: 14px;
+  background: rgba(164, 172, 134, 0.05);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-input-field:focus {
+  outline: none;
+  border-color: var(--color-primary-light);
+  background: rgba(164, 172, 134, 0.1);
+  box-shadow: 0 0 0 3px rgba(164, 172, 134, 0.1);
+}
+
+.search-input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary-light);
+  font-size: 16px;
+}
+
+/* Botón de nuevo chat estilizado */
+.search-new-chat {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  color: var(--color-text);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  font-weight: 500;
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.1) 0%, 
+    rgba(164, 172, 134, 0.05) 100%);
+  border: 1.5px solid rgba(164, 172, 134, 0.2);
+}
+
+.search-new-chat:hover {
+  background: rgba(164, 172, 134, 0.15);
+  border-color: rgba(164, 172, 134, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.2);
+}
+
+.search-new-chat i {
+  margin-right: 12px;
+  font-size: 18px;
+  color: var(--color-primary-light);
+}
+
+/* Lista de chats mejorada */
+.search-chat-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.search-date-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 20px 0 15px;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(164, 172, 134, 0.2);
+}
+
+.search-chat-item {
+  display: flex;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.search-chat-item:hover {
+  background: rgba(164, 172, 134, 0.1);
+  border-color: rgba(164, 172, 134, 0.2);
+  transform: translateX(4px);
+}
+
+.search-chat-icon {
+  margin-right: 15px;
+  font-size: 16px;
+  min-width: 20px;
+  color: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-chat-info {
+  flex: 1;
+}
+
+.search-chat-title {
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.search-chat-date {
+  font-size: 12px;
+  color: var(--text-color-light, #777);
+  opacity: 0.8;
+}
+
+/* Feedback textarea mejorado */
+.feedback-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 1.5px solid rgba(164, 172, 134, 0.3);
+  border-radius: 10px;
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  resize: vertical;
+  background: rgba(164, 172, 134, 0.05);
+  color: var(--color-text);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.feedback-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-light);
+  background: rgba(164, 172, 134, 0.1);
+  box-shadow: 0 0 0 3px rgba(164, 172, 134, 0.1);
+}
+
+.feedback-textarea::placeholder {
+  color: rgba(164, 172, 134, 0.7);
+  font-style: italic;
+}
+
+/* Footers unificados */
+.modal-footer, 
+.modal-buttons,
+.search-modal-footer,
+.feedback-modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 0;
+  border-top: 1px solid rgba(164, 172, 134, 0.1);
+  background: rgba(240, 239, 231, 0.3);
+  padding: 15px
+}
+
+/* Botones unificados con estilo académico */
+.btn, 
+.modal-buttons button,
+.search-btn,
+.feedback-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-family-base);
+  letter-spacing: 0.025em;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  min-width: 100px;
+  text-align: center;
+  margin: 0;
+}
+
+/* Botones primarios */
+.btn-primary, 
+.modal-buttons button#modalConfirm,
+.confirm-btn,
+.search-btn-primary,
+.feedback-submit-btn {
+  background: linear-gradient(135deg, 
+    var(--color-primary-light) 0%, 
+    #8fa76b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.3);
+}
+
+.btn-primary:hover,
+.modal-buttons button#modalConfirm:hover,
+.confirm-btn:hover,
+.search-btn-primary:hover,
+.feedback-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(164, 172, 134, 0.4);
+  background: linear-gradient(135deg, 
+    #8fa76b 0%, 
+    var(--color-primary-light) 100%);
+}
+
+/* Botones secundarios */
+.btn-secondary,
+.modal-buttons button#modalCancel,
+.modal-buttons button#emptyModalClose,
+.cancel-btn,
+.search-btn-secondary,
+.feedback-cancel-btn {
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.1) 0%, 
+    rgba(164, 172, 134, 0.05) 100%);
+  color: var(--color-text);
+  border: 1.5px solid rgba(164, 172, 134, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:hover,
+.modal-buttons button#modalCancel:hover,
+.modal-buttons button#emptyModalClose:hover,
+.cancel-btn:hover,
+.search-btn-secondary:hover,
+.feedback-cancel-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(164, 172, 134, 0.15);
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Efectos de click */
+.btn:active, 
+.modal-buttons button:active,
+.search-btn:active,
+.feedback-btn:active {
+  transform: translateY(0);
+  transition-duration: 0.1s;
+}
+
+/* Efectos de micro-interacción */
+.btn::before,
+.modal-buttons button::before,
+.search-btn::before,
+.feedback-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+}
+
+.btn:hover::before,
+.modal-buttons button:hover::before,
+.search-btn:hover::before,
+.feedback-btn:hover::before {
+  width: 100px;
+  height: 100px;
+}
+
+/* Mensajes vacíos */
+.search-empty-result {
+  font-size: 15px;
+  text-align: center;
+  color: var(--color-text);
+  opacity: 0.7;
+  padding: 40px 20px;
+  font-style: italic;
+}
+
+/* Scrollbars personalizados */
+.search-chat-list::-webkit-scrollbar,
+.search-modal-body::-webkit-scrollbar,
+.feedback-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-chat-list::-webkit-scrollbar-track,
+.search-modal-body::-webkit-scrollbar-track,
+.feedback-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-chat-list::-webkit-scrollbar-thumb,
+.search-modal-body::-webkit-scrollbar-thumb,
+.feedback-modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 172, 134, 0.3);
+  border-radius: 3px;
+}
+
+.search-chat-list::-webkit-scrollbar-thumb:hover,
+.search-modal-body::-webkit-scrollbar-thumb:hover,
+.feedback-modal-body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 172, 134, 0.5);
+}
+
+/* Animaciones de entrada */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal.active .modal-content,
+.custom-modal.show .modal-content,
+.search-modal-container.visible .search-modal-box,
+.feedback-modal.show .feedback-modal-content {
+  animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ======================================
+   TEMA OSCURO UNIFICADO
+   ====================================== */
+
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .search-modal-box,
+[data-theme="dark"] .feedback-modal-content {
+  background-color: var(--color-primary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 12px 25px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .search-modal-header,
+[data-theme="dark"] .feedback-modal-header {
+  background: linear-gradient(135deg, 
+    rgba(92, 88, 88, 0.3) 0%, 
+    rgba(92, 88, 88, 0.1) 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .modal-footer,
+[data-theme="dark"] .modal-buttons,
+[data-theme="dark"] .search-modal-footer,
+[data-theme="dark"] .feedback-modal-footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+  background: rgba(26, 26, 26, 0.5);
+}
+
+[data-theme="dark"] .search-input-field,
+[data-theme="dark"] .feedback-textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .search-input-field:focus,
+[data-theme="dark"] .feedback-textarea:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .search-new-chat {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .search-new-chat:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="dark"] .search-chat-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .btn-secondary,
+[data-theme="dark"] .modal-buttons button#modalCancel,
+[data-theme="dark"] .modal-buttons button#emptyModalClose,
+[data-theme="dark"] .cancel-btn,
+[data-theme="dark"] .search-btn-secondary,
+[data-theme="dark"] .feedback-cancel-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .btn-secondary:hover,
+[data-theme="dark"] .modal-buttons button#modalCancel:hover,
+[data-theme="dark"] .modal-buttons button#emptyModalClose:hover,
+[data-theme="dark"] .cancel-btn:hover,
+[data-theme="dark"] .search-btn-secondary:hover,
+[data-theme="dark"] .feedback-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ======================================
+   BOTONES DE INTERACCIÓN DE MENSAJES
+   ====================================== */
+
+.response-actions {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  bottom: -15px;
+  left: 50px;
+  background: transparent;
+  z-index: 10;
+  gap: 12px;
+}
+
+.ai-message {
+  position: relative;
+  margin-bottom: 35px;
+}
+
+.ai-message:hover .response-actions {
+  visibility: visible;
+  opacity: 1;
+}
+
+.response-action-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-light, #999);
+  transition: color 0.2s, transform 0.1s;
+  opacity: 0.8;
+}
+
+.response-action-btn:hover {
+  color: #656d4a;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.response-action-btn i {
+  font-size: 16px;
+}
+
+.response-action-btn.active {
+  color: var(--color-primary, #656d4a);
+  opacity: 1;
+}
+
+.thumbs-up-btn.active i {
+  color: #30a46c;
+}
+
+.thumbs-down-btn.active i {
+  color: #e54d2e;
+}
+
+.response-action-btn {
+  position: relative;
+}
+
+.response-action-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-tooltip, #333);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.response-action-btn:hover::after {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0.5s;
+}
+
+.ai-message.message-rated .response-actions {
+  visibility: visible;
+  opacity: 0.5;
+}
+
+.ai-message.message-rated:hover .response-actions {
+  opacity: 1;
+}
+
+.ai-message.rated-positive {
+  border-left: 3px solid #30a46c;
+}
+
+.ai-message.rated-negative {
+  border-left: 3px solid #e54d2e;
+}
+
+/* Estilos para los botones de interacción en mensajes del usuario */
+.user-response-actions {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  top: 10px;
+  left: -25px;
+  background: transparent;
+  z-index: 10;
+  gap: 12px;
+}
+
+.user-message {
+  position: relative;
+}
+
+.user-message:hover .user-response-actions {
+  visibility: visible;
+  opacity: 1;
+}
+
+.user-message .response-action-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-light, #999);
+  transition: color 0.2s, transform 0.1s;
+  opacity: 0.8;
+}
+
+.user-message .response-action-btn:hover {
+  color: #4a656d;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.user-message .edit-btn:hover i {
+  color: #4a85d9;
+}
+
+/* ======================================
+   RESPONSIVE DESIGN Y ACCESIBILIDAD
+   ====================================== */
+
+/* Bloquear scroll cuando modal está abierto */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Focus visible para accesibilidad */
+.btn:focus-visible,
+.modal-buttons button:focus-visible,
+.search-btn:focus-visible,
+.feedback-btn:focus-visible,
+.close-modal:focus-visible,
+.search-modal-close:focus-visible,
+.feedback-modal-close:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .modal-content,
+  .search-modal-box,
+  .feedback-modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer,
+  .search-modal-header,
+  .search-modal-body,
+  .search-modal-footer,
+  .feedback-modal-header,
+  .feedback-modal-body,
+  .feedback-modal-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .modal-buttons,
+  .modal-footer,
+  .search-modal-footer,
+  .feedback-modal-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .btn,
+  .modal-buttons button,
+  .search-btn,
+  .feedback-btn {
+    width: 100%;
+  }
+}
+
+/* =========================
+   MENSAJE EN MODO EDICIÓN
+   ========================= */
+
+/* Contenedor principal del mensaje en edición */
+.user-message.acadel-editing-mode {
+  position: relative;
+  margin: 20px 0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: rgba(164, 172, 134, 0.02);
+  border-radius: 12px;
+  padding: 8px;
+  border: 2px solid rgba(164, 172, 134, 0.1);
+  box-shadow: 0 4px 16px rgba(164, 172, 134, 0.1);
+  /* Orientación para mensajes de usuario (derecha) - MÁS ANCHO */
+  margin-left: auto;
+  margin-right: 10px;
+  max-width: 95%;
+  min-width: 600px;
+}
+
+/* Contenido original oculto durante edición */
+.user-message.acadel-editing-mode .message-content {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* OCULTAR BOTONES DE EDICIÓN DURANTE MODO EDICIÓN */
+.user-message.acadel-editing-mode .user-response-actions {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ======================================
+   PANEL DE EDICIÓN ACADEL
+   ====================================== */
+
+/* Contenedor principal del editor */
+.acadel-edit-panel {
+  position: relative;
+  background: var(--color-background);
+  border-radius: 16px;
+  padding: 24px 32px; /* Más padding horizontal */
+  margin: 4px;
+  box-shadow: 
+    0 8px 32px rgba(164, 172, 134, 0.15),
+    0 4px 16px rgba(164, 172, 134, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(164, 172, 134, 0.2);
+  backdrop-filter: blur(8px);
+  animation: acadelEditSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  min-height: 120px;
+  min-width: 580px; /* Ancho mínimo más grande */
+  width: 100%;
+  /* Asegurar que esté por encima de otros elementos */
+  z-index: 100;
+  /* Orientación para usuario (derecha) */
+  direction: ltr;
+  text-align: left;
+}
+
+/* Header del panel con ícono académico */
+.acadel-edit-panel::before {
+  content: "✏️";
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font-size: 16px;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* Indicador de modo edición */
+.acadel-edit-panel::after {
+  content: "Modo Edición Acadel";
+  position: absolute;
+  top: 8px;
+  right: 20px;
+  font-size: 11px;
+  color: var(--color-primary-light);
+  opacity: 0.8;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ======================================
+   BARRA DE PROGRESO MEJORADA
+   ====================================== */
+
+/* Línea de progreso de edición - MEJORADA PARA CONTROL DE VISIBILIDAD */
+.acadel-edit-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--color-primary-light) 0%, 
+    #8fa76b 100%);
+  border-radius: 16px 16px 0 0;
+  animation: acadelEditProgress 0.4s ease forwards;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Estado oculto de la barra de progreso */
+.acadel-edit-progress.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Estado de progreso completado */
+.acadel-edit-progress.completed {
+  background: linear-gradient(90deg, 
+    #4caf50 0%, 
+    #81c784 100%);
+  animation: acadelProgressComplete 0.6s ease forwards;
+}
+
+/* Animación de progreso completado */
+@keyframes acadelProgressComplete {
+  0% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+/* ======================================
+   TEXTAREA ACADÉMICO
+   ====================================== */
+
+/* Campo de texto principal */
+.acadel-edit-textarea {
+  width: 100%;
+  min-height: 120px;
+  max-height: 500px;
+  padding: 20px 24px 20px 50px; /* Espacio para el ícono */
+  border: 2px solid rgba(164, 172, 134, 0.2);
+  border-radius: 12px;
+  font-family: var(--font-family-base);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.03) 0%, 
+    rgba(164, 172, 134, 0.01) 100%);
+  resize: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+
+/* Focus del textarea */
+.acadel-edit-textarea:focus {
+  border-color: var(--color-primary-light);
+  background: rgba(164, 172, 134, 0.05);
+  box-shadow: 
+    0 0 0 3px rgba(164, 172, 134, 0.1),
+    0 4px 12px rgba(164, 172, 134, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Placeholder del textarea */
+.acadel-edit-textarea::placeholder {
+  color: rgba(164, 172, 134, 0.6);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ======================================
+   CONTROLES DE EDICIÓN
+   ====================================== */
+
+/* Contenedor de controles */
+.acadel-edit-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(164, 172, 134, 0.1);
+  position: relative;
+  z-index: 3;
+}
+
+/* Grupo de botones */
+.acadel-edit-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Estilos base para botones */
+.acadel-edit-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-family-base);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.025em;
+  min-width: 100px;
+  justify-content: center;
+  z-index: 3;
+}
+
+/* Botón de confirmación */
+.acadel-edit-confirm {
+  background: linear-gradient(135deg, 
+    var(--color-primary-light) 0%, 
+    #8fa76b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.3);
+}
+
+.acadel-edit-confirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(164, 172, 134, 0.4);
+  background: linear-gradient(135deg, 
+    #8fa76b 0%, 
+    var(--color-primary-light) 100%);
+}
+
+/* Botón de cancelación */
+.acadel-edit-cancel {
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.1) 0%, 
+    rgba(164, 172, 134, 0.05) 100%);
+  color: var(--color-text);
+  border: 1.5px solid rgba(164, 172, 134, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.acadel-edit-cancel:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(164, 172, 134, 0.15);
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Botones deshabilitados */
+.acadel-edit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Efectos de click */
+.acadel-edit-btn:active:not(:disabled) {
+  transform: translateY(0);
+  transition-duration: 0.1s;
+}
+
+/* ======================================
+   CONTADOR DE CARACTERES ACADÉMICO
+   ====================================== */
+
+.acadel-character-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-color-light, #777);
+  opacity: 0.8;
+  z-index: 3;
+  position: relative;
+}
+
+.acadel-character-counter i {
+  font-size: 14px;
+  color: var(--color-primary-light);
+}
+
+/* Estado de advertencia para contador */
+.acadel-character-counter.warning {
+  color: #ff9800;
+}
+
+.acadel-character-counter.danger {
+  color: #f44336;
+  font-weight: 600;
+}
+
+/* ======================================
+   INDICADORES VISUALES
+   ====================================== */
+
+/* Indicador de estado de guardado */
+.acadel-edit-status {
+  position: absolute;
+  top: 12px;
+  right: 140px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-primary-light);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 4;
+}
+
+.acadel-edit-status.show {
+  opacity: 1;
+}
+
+.acadel-edit-status i {
+  font-size: 12px;
+}
+
+/* ======================================
+   ANIMACIONES ACADÉMICAS
+   ====================================== */
+
+/* Animación de entrada del panel */
+@keyframes acadelEditSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Animación del progreso */
+@keyframes acadelEditProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Animación de salida */
+@keyframes acadelEditSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+    filter: blur(4px);
+  }
+}
+
+.acadel-edit-panel.exit {
+  animation: acadelEditSlideOut 0.3s ease forwards;
+}
+
+/* ======================================
+   EFECTOS DE MICRO-INTERACCIÓN
+   ====================================== */
+
+/* Efecto de ondas en botones */
+.acadel-edit-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.acadel-edit-btn:hover:not(:disabled)::before {
+  width: 120px;
+  height: 120px;
+}
+
+/* ======================================
+   TEMA OSCURO ACADÉMICO
+   ====================================== */
+
+[data-theme="dark"] .user-message.acadel-editing-mode {
+  background: rgba(92, 88, 88, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .acadel-edit-panel {
+  background: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .acadel-edit-panel::after {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .acadel-edit-textarea {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadel-edit-textarea:focus {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 0 3px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .acadel-edit-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .acadel-edit-controls {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .acadel-edit-cancel {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadel-edit-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .acadel-character-counter {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ======================================
+   RESPONSIVE DESIGN
+   ====================================== */
+
+@media (max-width: 768px) {
+  .user-message.acadel-editing-mode {
+    margin-right: 5px;
+    max-width: 98%;
+    min-width: 320px; /* Ancho mínimo para móviles */
+  }
+  
+  .acadel-edit-panel {
+    padding: 16px 20px; /* Menos padding en móviles */
+    margin: 2px;
+    min-width: 300px;
+  }
+  
+  .acadel-edit-panel::before {
+    top: 8px;
+    left: 12px;
+    font-size: 14px;
+  }
+  
+  .acadel-edit-panel::after {
+    top: 0px;
+    right: 12px;
+    font-size: 10px;
+  }
+  
+  .acadel-edit-textarea {
+    padding: 16px 20px 16px 40px;
+    font-size: 14px;
+    min-height: 100px;
+    max-height: 350px;
+  }
+  
+  .acadel-edit-controls {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .acadel-edit-buttons {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .acadel-edit-btn {
+    flex: 1;
+    min-width: auto;
+  }
+  
+  .acadel-character-counter {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-message.acadel-editing-mode {
+    margin-right: 2px;
+    max-width: 90%;
+    min-width: 280px;
+  }
+  
+  .acadel-edit-panel {
+    padding: 12px 16px;
+    border-radius: 12px;
+    min-width: 260px;
+  }
+  
+  .acadel-edit-textarea {
+    padding: 12px 16px 12px 35px;
+    min-height: 80px;
+    max-height: 300px;
+  }
+  
+  .acadel-edit-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* ======================================
+   ESTADOS ESPECIALES
+   ====================================== */
+
+/* Estado de carga durante procesamiento */
+.acadel-edit-panel.processing {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.acadel-edit-panel.processing::before {
+  content: "⚙️";
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Estado de error */
+.acadel-edit-panel.error {
+  border-color: #f44336;
+  box-shadow: 
+    0 8px 32px rgba(244, 67, 54, 0.15),
+    0 4px 16px rgba(244, 67, 54, 0.1);
+}
+
+.acadel-edit-panel.error .acadel-edit-progress {
+  background: linear-gradient(90deg, #f44336 0%, #e57373 100%);
+}
+
+.acadel-edit-panel.error::before {
+  content: "❌";
+}
+
+/* Estado de éxito */
+.acadel-edit-panel.success {
+  border-color: #4caf50;
+  box-shadow: 
+    0 8px 32px rgba(76, 175, 80, 0.15),
+    0 4px 16px rgba(76, 175, 80, 0.1);
+}
+
+.acadel-edit-panel.success .acadel-edit-progress {
+  background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);
+}
+
+.acadel-edit-panel.success::before {
+  content: "✅";
+}
+
+/* ======================================
+   SCROLLBAR PERSONALIZADO
+   ====================================== */
+
+.acadel-edit-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.acadel-edit-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.acadel-edit-textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 172, 134, 0.3);
+  border-radius: 3px;
+}
+
+.acadel-edit-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 172, 134, 0.5);
+}
+
+[data-theme="dark"] .acadel-edit-textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .acadel-edit-textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ======================================
+   LIMPIAR CLASES ANTIGUAS
+   ====================================== */
+
+/* Asegurar que las clases antiguas no interfieran */
+.user-message.editing-message,
+.edit-overlay,
+.edit-message-textarea,
+.edit-buttons {
+  display: none !important;
+}
+
+/* ======================================
+   MODAL DE COPIA MANUAL DE ACADEL 🦫
+   ====================================== */
+
+/* Contenedor principal de la modal de copia */
+.acadel-copy-modal .modal-content {
+  max-width: 650px;
+  width: 95%;
+  max-height: 85vh;
+}
+
+/* Header específico para modal de copia */
+.acadel-copy-modal .modal-header::before {
+  content: "📋";
+  position: absolute;
+  left: 20px;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* Introducción de Acadel */
+.acadel-copy-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.08) 0%, 
+    rgba(164, 172, 134, 0.03) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(164, 172, 134, 0.15);
+}
+
+.acadel-copy-avatar {
+  font-size: 32px;
+  flex-shrink: 0;
+  animation: acadelWave 2s ease-in-out infinite;
+}
+
+.acadel-copy-message p {
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.acadel-copy-instructions {
+  font-size: 14px;
+  color: var(--text-color-light, #666);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--color-primary-light);
+}
+
+.acadel-copy-instructions kbd {
+  background: var(--color-primary-light);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenido de copia */
+.acadel-copy-content {
+  margin-bottom: 24px;
+}
+
+.acadel-copy-label {
+  display: block;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.acadel-copy-textarea {
+  width: 100%;
+  min-height: 200px;
+  max-height: 300px;
+  padding: 16px;
+  border: 2px solid rgba(164, 172, 134, 0.3);
+  border-radius: 10px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-text);
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.05) 0%, 
+    rgba(164, 172, 134, 0.02) 100%);
+  resize: vertical;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+}
+
+.acadel-copy-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-light);
+  background: rgba(164, 172, 134, 0.08);
+  box-shadow: 
+    0 0 0 3px rgba(164, 172, 134, 0.1),
+    0 4px 12px rgba(164, 172, 134, 0.15);
+  transform: translateY(-1px);
+}
+
+.acadel-copy-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.acadel-copy-textarea::-webkit-scrollbar-track {
+  background: rgba(164, 172, 134, 0.1);
+  border-radius: 4px;
+}
+
+.acadel-copy-textarea::-webkit-scrollbar-thumb {
+  background: rgba(164, 172, 134, 0.4);
+  border-radius: 4px;
+}
+
+.acadel-copy-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(164, 172, 134, 0.6);
+}
+
+/* Tips de Acadel */
+.acadel-copy-tips {
+  background: rgba(240, 239, 231, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(164, 172, 134, 0.1);
+}
+
+.acadel-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.acadel-tip:last-child {
+  margin-bottom: 0;
+}
+
+.acadel-tip i {
+  color: var(--color-primary-light);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.acadel-tip kbd {
+  background: var(--color-primary-light);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin: 0 2px;
+}
+
+/* Botones específicos de la modal */
+.acadel-copy-modal .modal-footer {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.acadel-copy-got-it {
+  background: linear-gradient(135deg, 
+    var(--color-primary-light) 0%, 
+    #8fa76b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.3);
+  flex: 1;
+}
+
+.acadel-copy-got-it:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(164, 172, 134, 0.4);
+  background: linear-gradient(135deg, 
+    #8fa76b 0%, 
+    var(--color-primary-light) 100%);
+}
+
+.acadel-copy-select-all {
+  background: linear-gradient(135deg, 
+    rgba(33, 150, 243, 0.1) 0%, 
+    rgba(33, 150, 243, 0.05) 100%);
+  color: #2196F3;
+  border: 1.5px solid rgba(33, 150, 243, 0.3);
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.acadel-copy-select-all:hover {
+  background: rgba(33, 150, 243, 0.15);
+  border-color: rgba(33, 150, 243, 0.5);
+  transform: translateY(-1px);
+}
+
+.acadel-copy-select-all.selected {
+  background: linear-gradient(135deg, 
+    #4CAF50 0%, 
+    #66BB6A 100%);
+  color: white;
+  border-color: #4CAF50;
+}
+
+/* Estados de botones de copia mejorados */
+.copy-button.processing {
+  background: linear-gradient(135deg, 
+    rgba(255, 152, 0, 0.1) 0%, 
+    rgba(255, 152, 0, 0.05) 100%);
+  color: #FF9800;
+  border-color: rgba(255, 152, 0, 0.3);
+}
+
+.copy-button.processing i {
+  animation: spin 1s linear infinite;
+}
+
+/* Animaciones específicas */
+@keyframes acadelWave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ======================================
+   TEMA OSCURO PARA MODAL DE COPIA
+   ====================================== */
+
+[data-theme="dark"] .acadel-copy-intro {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .acadel-copy-instructions {
+  background: rgba(255, 255, 255, 0.08);
+  border-left-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] .acadel-copy-instructions kbd {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadel-copy-textarea {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadel-copy-textarea:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 0 3px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .acadel-copy-textarea::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .acadel-copy-textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .acadel-copy-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .acadel-copy-tips {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .acadel-tip kbd {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadel-copy-select-all {
+  background: rgba(33, 150, 243, 0.1);
+  border-color: rgba(33, 150, 243, 0.3);
+  color: #64B5F6;
+}
+
+[data-theme="dark"] .acadel-copy-select-all:hover {
+  background: rgba(33, 150, 243, 0.2);
+  border-color: rgba(33, 150, 243, 0.5);
+}
+
+[data-theme="dark"] .copy-button.processing {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: rgba(255, 152, 0, 0.3);
+  color: #FFB74D;
+}
+
+/* ======================================
+   RESPONSIVE DESIGN PARA MODAL DE COPIA
+   ====================================== */
+
+@media (max-width: 768px) {
+  .acadel-copy-modal .modal-content {
+    max-width: 95%;
+    margin: 10px;
+  }
+  
+  .acadel-copy-intro {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .acadel-copy-avatar {
+    font-size: 28px;
+  }
+  
+  .acadel-copy-textarea {
+    min-height: 150px;
+    max-height: 200px;
+    font-size: 12px;
+  }
+  
+  .acadel-copy-modal .modal-footer {
+    flex-direction: column;
+  }
+  
+  .acadel-tip {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .acadel-copy-intro {
+    padding: 16px;
+  }
+  
+  .acadel-copy-instructions {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .acadel-copy-textarea {
+    padding: 12px;
+    min-height: 120px;
+  }
+  
+  .acadel-copy-modal .modal-header h3 {
+    font-size: 16px;
+  }
+}

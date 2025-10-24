@@ -1,0 +1,35 @@
+/* ======================================
+   MAIN CSS - IMPORTA TODOS LOS MÓDULOS
+   ====================================== */
+
+/* Base */
+@import '/css/chiguiremarketing/base/variables-marketing.css';
+@import '/css/chiguiremarketing/base/reset-marketing.css';
+@import '/css/chiguiremarketing/base/typography-marketing.css';
+
+/* Layout */
+@import '/css/chiguiremarketing/layout/sidebar-marketing.css';
+@import '/css/chiguiremarketing/layout/header-marketing.css';
+@import '/css/chiguiremarketing/layout/main-content-marketing.css';
+
+/* Componentes */
+@import '/css/chiguiremarketing/components/welcome-screen.css';
+@import '/css/chiguiremarketing/components/chat-messages.css';
+@import '/css/chiguiremarketing/components/input-area.css';
+@import '/css/chiguiremarketing/components/markdown.css';
+@import '/css/chiguiremarketing/components/cards.css';
+@import '/css/chiguiremarketing/components/explanation.css';
+@import '/css/chiguiremarketing/components/modals-marketing.css';
+@import '/css/chiguiremarketing/components/mermaid-marketing.css';
+@import '/css/chiguiremarketing/components/code-blocks.css';
+@import '/css/chiguiremarketing/components/information-modal.css';
+@import '/css/chiguiremarketing/components/profiles-modal.css';
+@import '/css/chiguiremarketing/components/content-modal.css';
+@import '/css/chiguiremarketing/components/trend-modal.css';
+@import '/css/chiguiremarketing/components/memory-modal.css';
+
+/* Utilidades */
+@import '/css/chiguiremarketing/utils/animations-marketing.css';
+@import '/css/chiguiremarketing/utils/responsive-marketing.css';
+@import '/css/chiguiremarketing/utils/helpers-marketing.css';
+@import '/css/chiguiremarketing/utils/notifications-marketing.css';

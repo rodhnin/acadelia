@@ -1,0 +1,1232 @@
+/* Contenedor principal del chat */
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Estilos básicos para los elementos de mensaje */
+.message {
+  position: relative;
+  width: 100%;
+  margin: 25px auto;
+  animation: render-fade 0.3s ease; /* Animación de aparición */
+}
+
+/* Estilo para el contenido de los mensajes */
+.message-content {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  font-size: 15px;
+}
+
+/* Estilo común para mensajes del usuario y la IA */
+.user-message{
+  max-width: calc(100%);
+  padding: 12px 12px;
+  border-radius: var(--border-radius-lg);
+  box-sizing: border-box;
+}
+
+.ai-message {
+  max-width: calc(100%);
+  padding: 12px 16px;
+  border-radius: var(--border-radius-lg);
+  box-sizing: border-box;
+}
+
+/* Contenedor del mensaje del usuario con alineación izquierda */
+.user-message .message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea el contenido a la izquierda */
+  width: 100%;
+}
+
+/* Estilo específico para mensajes del usuario */
+.user-message {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin-right: 0;
+  width: fit-content;
+  max-width: 650px;
+}
+
+/* Estilo específico para mensajes de la IA */
+.ai-message {
+  color: var(--color-text);
+  margin-right: auto;
+  padding-left: calc(var(--avatar-size) + 16px);
+  min-height: 60px;
+}
+
+/* Estilo para el avatar de la IA */
+.ai-profile {
+  position: absolute;
+  max-width: 40px;
+  left: 5px;
+  top: 15px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  background: var(--avatar-path) center / cover no-repeat;
+  overflow: hidden;
+  font-size: 0 !important;
+  text-indent: -9999px;
+}
+
+/* Imagen del avatar de la IA */
+.ai-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Estilo especial cuando la IA está "pensando" */
+.ai-profile.thinking {
+  background-image: none; /* Eliminamos la imagen de fondo por defecto */
+  animation: softPulse 1.5s infinite ease-in-out;
+}
+
+/* Diferentes imágenes según el tema */
+body[data-theme="dark"] .ai-profile.thinking {
+  background: var(--avatar-loading-path-dark) center / cover no-repeat;
+}
+
+body[data-theme="light"] .ai-profile.thinking, 
+body:not([data-theme="dark"]) .ai-profile.thinking {
+  background: var(--avatar-loading-path-light) center / cover no-repeat;
+}
+
+/* Ocultar imagen real durante estado de "pensando" */
+.ai-profile.thinking img {
+  opacity: 0;
+}
+
+/* Ajuste para mensajes en procesamiento */
+.message.ai-message.processing .message-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Animación de puntos cuando está escribiendo */
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: typing 1s infinite ease-in-out;
+}
+
+/* Retraso en la animación para cada punto */
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Estilo para adjuntos tipo PDF */
+.pdf-attachment {
+  display: flex;
+  align-items: center;
+  background: var(--color-background);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-md);
+  margin: 8px 0;
+  animation: slideIn 0.3s ease;
+}
+
+/* Texto dentro de adjuntos PDF */
+.pdf-attachment span {
+  flex-grow: 1;
+  font-size: 0.9em;
+  color: var(--color-text);
+}
+
+/* Botón para eliminar adjuntos */
+.remove-pdf {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Estilo para enlaces dentro de mensajes */
+.message-content a {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* Efecto hover para enlaces */
+.message-content a:hover,
+.message-content a:visited:hover {
+  background-color: var(--color-link);
+  color: white;
+}
+
+/* Enlaces visitados */
+.message-content a:visited {
+  color: var(--color-link-visited);
+}
+
+/* Animaciones diversas */
+@keyframes render-fade {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes typing {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(20px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo básico para enlaces */
+.message-content a {
+  color: #3490dc; /* Azul */
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0 2px;
+  border-radius: 3px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover para enlaces */
+.message-content a:hover {
+  background-color: #3490dc;
+  color: white;
+}
+
+/* Visitado para enlaces */
+.message-content a:visited {
+  color: #8e44ad; /* Púrpura */
+}
+
+/* Hover para enlaces visitados */
+.message-content a:visited:hover {
+  background-color: #8e44ad;
+  color: white;
+}
+
+/* Estilos para la nube de pensamiento */
+.thought-bubble {
+  position: relative;
+  background: var(--color-background);
+  border-radius: 15px;
+  padding: 10px 15px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  min-width: 60px;
+  animation: pulseBubble 1.5s infinite ease-in-out;
+}
+
+/* Cola de la nube de pensamiento */
+.thought-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 15px;
+  height: 15px;
+  background: var(--color-background);
+  border-radius: 50%;
+  box-shadow: -5px 5px 0 -2px var(--color-background),
+              -10px 10px 0 -5px var(--color-background);
+}
+
+/* Contenedor de puntos en la nube */
+.thought-bubbles {
+  display: flex;
+  gap: 3px;
+  margin: 0 auto;
+}
+
+/* Puntos dentro de la nube de pensamiento */
+.thought-bubble-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: floatDot 1.5s infinite ease-in-out;
+}
+
+/* Retraso para animaciones de puntos */
+.thought-bubble-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thought-bubble-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Animación de pulsación para la nube */
+@keyframes pulseBubble {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+/* Animación de flotación para los puntos */
+@keyframes floatDot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Estilo para botones en modo cancelación */
+.input-box button.cancel-mode {
+  background-color: #e57373; /* Color rojo más suave */
+}
+
+/* Hover para botones de cancelación */
+.input-box button.cancel-mode:hover {
+  background-color: #ef5350; /* Rojo más intenso en hover */
+}
+
+/* Animación para perfil pensando */
+.ai-profile.thinking {
+  animation: softPulse 1.5s infinite ease-in-out;
+}
+
+/* Animación de pulsación suave */
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Configuración de avatar para tema oscuro */
+body[data-theme="dark"] {
+  --avatar-loading-path: var(--avatar-loading-path-dark);
+}
+
+/* Configuración de avatar para tema claro */
+body[data-theme="light"], body:not([data-theme="dark"]) {
+  --avatar-loading-path: var(--avatar-loading-path-light);
+}
+
+/* Ocultar botones mientras se procesa el mensaje */
+.ai-message.processing .response-actions {
+  display: none !important;
+}
+
+/* Asegurar que los botones sigan ocultos en hover */
+.ai-message.processing:hover .response-actions {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+
+
+/* Blockquotes */
+blockquote {
+  padding: 10px 15px;
+  margin: 0 0 20px;
+  border-left: 5px solid #9fc8f2;
+  background-color:var(--color-background);
+  border-radius: 0 4px 4px 0;
+  opacity:0.8;
+  font-style: italic;
+}
+
+/* Párrafos dentro de blockquotes */
+blockquote p {
+  margin-bottom: 0;
+}
+
+/* Saltos de línea en blockquotes */
+blockquote br {
+  margin-top: 8px;
+  display: block;
+  content: "";
+}
+
+/* Texto tachado */
+del {
+  text-decoration: line-through;
+  color: #777;
+}
+
+/* Líneas horizontales */
+hr {
+  height: 1px;
+  border: none;
+  background-color: #ddd;
+  margin: 1.5em 0;
+}
+
+/* Listas de tareas */
+.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+
+/* Checkboxes en listas de tareas */
+.task-list-item input[type="checkbox"] {
+  margin-right: 8px;
+  margin-top: 4px;
+}
+
+/* Texto de ítems completados */
+.task-list-item input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: #666;
+}
+
+/* Estilos generales para listas anidadas */
+ul, ol {
+  padding-left: 25px;
+  margin-bottom: 10px;
+}
+
+/* Espacio para listas anidadas */
+ul ul, ol ol, ul ol, ol ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* Elementos de lista */
+li {
+  margin-bottom: 5px;
+}
+
+/* Estilo para imágenes en markdown */
+.markdown-image {
+  max-width: 100%;
+  margin: 10px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Listas numeradas principales */
+ol.main-list {
+  list-style-type: decimal;
+  padding-left: 30px;
+  margin-bottom: 16px;
+  counter-reset: item;
+}
+
+/* Elementos principales numerados (títulos de secciones) */
+.main-list-item {
+  font-weight: 500;
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 5px;
+}
+
+/* Negrita en elementos de lista principal */
+.main-list-item strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Sublistas con viñetas dentro de listas numeradas */
+.sub-list {
+  list-style-type: none;
+  padding-left: 25px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+/* Elementos de sublista */
+.sub-list li {
+  position: relative;
+  padding-left: 15px;
+  margin-bottom: 6px;
+}
+
+/* Viñetas para sublistas */
+.sub-list li:before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Elementos de sublista */
+.sub-item {
+  margin: 4px 0;
+  position: relative;
+}
+
+/* Listas con viñetas independientes */
+ul.bullet-list {
+  list-style-type: disc;
+  margin-left: 0;
+  padding-left: 20px;
+}
+
+/* Elementos de lista con viñetas */
+ul.bullet-list li {
+  margin-bottom: 8px;
+  padding-left: 5px;
+}
+
+/* Listas anidadas con viñetas */
+ul.bullet-list ul {
+  list-style-type: circle;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-left: 20px;
+}
+
+/* Tercer nivel de listas con viñetas */
+ul.bullet-list ul ul {
+  list-style-type: square;
+}
+
+/* Números en sublistas */
+.sublist-number {
+  display: inline-block;
+  min-width: 28px;
+  color: var(--color-text-secondary, #4a4a4a);
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+/* Tema oscuro para números en sublistas */
+body[data-theme="dark"] .sublist-number {
+  color: var(--color-text-secondary, #aaa);
+}
+
+/* Tema oscuro para viñetas */
+body[data-theme="dark"] ul.bullet-list li::marker,
+body[data-theme="dark"] .sub-list li:before {
+  color: var(--color-text-secondary, #aaa);
+}
+
+/* Listas jerárquicas con mejor detección */
+.hierarchy-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Elementos de primer nivel en jerarquía */
+.hierarchy-list > li {
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Viñetas de primer nivel */
+.hierarchy-list > li::before {
+  content: "•";
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+  font-weight: bold;
+  color: var(--color-primary, #333);
+}
+
+/* Sublistas en jerarquía */
+.subitem-list {
+  list-style-type: none;
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+/* Elementos de sublista en jerarquía */
+.subitem-list > li {
+  margin-bottom: 6px;
+  font-weight: normal;
+  padding-left: 20px;
+  position: relative;
+}
+
+/* Viñetas de sublista */
+.subitem-list > li::before {
+  content: "•";
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  color: var(--color-text-secondary, #666);
+  font-size: 0.9em;
+}
+
+/* Estilo para categorías principales */
+.category-main {
+  font-size: 1.05em;
+}
+
+/* Tema oscuro para listas jerárquicas */
+body[data-theme="dark"] .hierarchy-list > li::before {
+  color: var(--color-primary-light, #ccc);
+}
+
+/* Tema oscuro para viñetas en sublistas */
+body[data-theme="dark"] .subitem-list > li::before {
+  color: var(--color-text-secondary, #999);
+}
+
+[data-theme="dark"] .feedback-btn:hover{
+  color: rgba(238, 238, 238, 0.9);
+}
+
+.feedback-btn:hover{
+filter: brightness(0.92);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.feedback-modal-close:hover{
+  filter: brightness(0.92);
+   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+   background-color: var(--text-color-light, #fdfdfd);
+   border-radius: 15px;
+ }
+
+ .ai-message .message-content p {
+  margin: 1rem 0; 
+  }
+
+ .ai-message .message-content{
+  margin: 1rem 0; 
+  }
+
+
+
+/* Gestión de elementos específicos que podrían causar desbordamiento */
+.user-message .message-content img,
+.user-message .message-content pre,
+.user-message .message-content table,
+.user-message .message-content blockquote,
+.user-message .message-content .table-container,
+.user-message .message-content div[class^="math-"] {
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+/* Permitir scroll horizontal solo para código y tablas */
+.user-message .message-content pre,
+.user-message .message-content .table-container {
+  overflow-x: auto;
+}
+
+/* Corrección para expresiones matemáticas (LaTeX) */
+.user-message .message-content .math-block,
+.user-message .message-content [data-latex="true"] {
+  overflow-x: auto;
+  display: block;
+  max-width: 90%;
+  padding: 2px 0;
+}
+
+/* Arreglo para media queries existentes */
+@media (max-width: 768px) {
+  .user-message .message-content {
+    max-width: 90%; /* Sobrescribir el max-width: 200px */
+    width: auto;
+  }
+}
+
+
+
+
+
+  
+  @media (max-width: 768px) {
+    .main-header {
+      flex-direction: column;
+   
+    
+   
+    }
+    
+    .header-title {
+      font-size: 10px;
+      margin-top:-10px
+
+    }
+    
+  
+    .new-chat-label {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header-title {
+      font-size: 10px;
+      margin-top:-10px
+
+    }
+    
+    .header-subtitle {
+      font-size: 15px;
+    }
+    
+    .input-box textarea {
+      width:78% !important;
+    }
+
+  }
+  
+
+
+  /* Responsive styles for Main Content */
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 15px;
+      width: 100%;
+    }
+    
+    .main-content.sidebar-pinned {
+      transform: translateX(40px);
+    }
+    
+    .input-box {
+      padding: 10px 15px;
+    }
+    
+    .input-box textarea {
+      font-size: 14px;
+            width:85%
+
+    }
+    
+    .attachments-wrapper {
+      right: -95%;
+    }
+    
+    .attachment-options {
+      padding: 0 10px;
+    }
+
+    
+    
+    .attachment-option {
+      margin: 0 5px;
+    }
+    
+    .file-preview-container,
+    .file-upload-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+    
+    .warning-message {
+      margin-left: 10px;
+      text-align: center;
+      display: block;
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main-content {
+      padding: 10px;
+    }
+    
+    .input-box {
+      padding: 8px 12px;
+      align-items: flex-end; /* Alinear elementos en la parte inferior */
+
+    }
+    
+    
+    .input-box button:nth-child(2) {
+      right: 10px;
+    }
+    
+    .input-box button:nth-child(3) {
+      right: 50px;
+    }
+    
+    .attachments-wrapper {
+      right: -92.5%;
+      bottom: -65px;
+    }
+    
+    .attachment-options {
+      right: 5px;
+    }
+    
+    .file-preview {
+      max-width: 80px;
+      height: 80px;
+    }
+    
+    .welcome-message {
+      max-width: 90%;
+      padding: 15px;
+    }
+    
+    .centered-input-container {
+      width: 90%;
+    }
+    
+    .suggestions-container {
+      width: 95%;
+      gap: 8px;
+    }
+    
+    .warning-message {
+      margin-left: -10px;
+      text-align: center;
+      display: block;
+      font-size:8px
+    }
+    
+
+    .suggestion-item {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .preview-title{
+      word-break:break-word
+      }
+  }
+  
+  /* Responsive styles for file upload and preview */
+  @media (max-width: 768px) {
+    .drag-drop-area {
+      padding: 15px;
+    }
+    
+    .upload-main-text {
+      font-size: 14px;
+    }
+    
+    .upload-secondary-text {
+      font-size: 12px;
+    }
+    
+    .preview-modal-content {
+      width: 95%;
+      max-width: 95%;
+    }
+    
+    .preview-body {
+      max-height: 50vh;
+    }
+  }
+  
+  /* Responsive styles for welcome screen */
+  @media (max-width: 768px) {
+    .welcome-attachments-wrapper {
+      right: -93%;
+    }
+    
+    .welcome-file-preview-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+    
+    .welcome-file-upload-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+  }
+  
+  /* Fix for search modal on mobile */
+  @media (max-width: 768px) {
+    .search-modal-box {
+      width: 90%;
+      max-width: 90%;
+    }
+    
+    .search-input-wrapper {
+      padding: 8px;
+    }
+
+    .user-message .message-content {
+      max-width: 550px;
+    }
+    .search-chat-list {
+      max-height: 40vh;
+    }
+  }
+
+
+  @media (max-width: 468px) {
+    .welcome-attachments-wrapper {
+      right: -90%;
+    }
+    .message-text{
+      max-width:300px; 
+  }
+  }
+  
+
+      /* Make header-right vertical in responsive mode */
+@media (max-width: 768px) {
+  .header-right {
+    align-items: flex-end;
+    gap: 15px;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+  }
+  
+
+
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  
+  .action-button, 
+  .theme-toggle, 
+  #new-chat-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+   /* For very small screens */
+@media (max-width: 480px) {
+  
+  .action-button, 
+  .theme-toggle, 
+  #new-chat-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+   /* Make header-right vertical in responsive mode */
+   @media (max-width: 480px) {
+    .header-right {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+      position: absolute;
+      top: 19px;
+      right: 28px;
+    }
+    
+    .action-button, 
+    .theme-toggle, 
+    #new-chat-btn {
+      margin: 0;
+    }
+  
+    .action-button{
+    margin-right: 20px; /* Make room for vertical buttons */
+      font-size:20px
+  
+  }
+    
+    .new-chat-container {
+  display:none
+    }
+  
+    .theme-toggle{
+  margin-right: -25px;  /* Make room for vertical buttons */
+    margin-top: -30px;
+   font-size:20px
+    }
+
+   }
+    
+  
+ @media (max-width: 950px) {
+ .user-message .message-content {
+  max-width: 600px;
+}
+}
+
+/* Estilos para el botón de attachments responsive */
+
+/* Ocultar el botón responsive en pantallas grandes y mostrar el normal */
+.attachments-wrapper-mobile {
+  display: none;
+}
+
+/* Media query para mostrar/ocultar los botones según el tamaño de pantalla */
+@media (max-width: 480px) {
+  /* Ocultar el botón normal en modo responsive */
+  .attachments-wrapper {
+    display: none;
+  }
+  
+  /* Mostrar el botón responsive */
+  .attachments-wrapper-mobile {
+    display: flex;
+    position: absolute;
+    right: 30px; /* Posición ajustada para móviles */
+    bottom: 75px; /* Posición ajustada para móviles */
+    z-index: 150;
+    width: 0px; /* Ancho real del botón */
+    height: 0px; /* Alto real del botón */
+    border-radius: 100%;
+    transition: all 0.3s ease;
+    justify-content: center;
+    z-index: 150;
+
+  }
+  
+  /* Contenedor del botón principal */
+  .attachment-button-mobile {
+    height: 100%;
+  }
+  
+  /* Botón específico */
+  .attach-btn-mobile {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Icono dentro del botón */
+  .attach-btn-mobile i {
+    font-size: 18px;
+    color: var(--color-text, #ffffff);
+  }
+  
+  /* Menú de opciones - posicionado absolutamente */
+  .attachment-options-mobile {
+    position: absolute;
+    right: 15px; /* Posicionado junto al botón */
+    bottom: -40px; /* Alineado con el botón */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background-color: var(--color-primary, #656d4a);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+  }
+  
+  /* Clase activa para mostrar las opciones en click */
+  .attachments-wrapper-mobile.active .attachment-options-mobile {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Rotación del botón en estado activo */
+  .attachments-wrapper-mobile.active .attach-btn-mobile {
+    transform: rotate(45deg);
+  }
+  
+  /* Cada opción individual */
+  .attachment-options-mobile .attachment-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 8px 0;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Animación secuencial de las opciones */
+  .attachments-wrapper-mobile.active .attachment-option {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  /* Retraso para cada opción (efecto cascada) */
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(3) {
+    transition-delay: 0.15s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(4) {
+    transition-delay: 0.2s;
+  }
+  
+  /* Icono de cada opción */
+  .attachment-options-mobile .attachment-option i {
+    font-size: 22px;
+    color: var(--color-text);
+    margin-right: 1px;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Texto de cada opción */
+  .attachment-options-mobile .attachment-option span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  /* Efecto hover/active en cada opción */
+  .attachment-options-mobile .attachment-option:active i,
+  .attachment-options-mobile .attachment-option:hover i {
+    transform: scale(1.1);
+  }
+}
+@media (max-width: 480px) {
+  .centered-textarea.auto-expand {
+  width: 72% !important; 
+}
+}
+
+@media  (max-width: 850px) {
+  .centered-textarea.auto-expand {
+    width: 78% !important;
+  }
+}
+
+
+@media  (max-width: 850px) {
+  /* Ocultar el botón normal en modo responsive */
+  .attachments-wrapper {
+    display: none;
+  }
+  
+  /* Mostrar el botón responsive */
+  .attachments-wrapper-mobile {
+    display: flex;
+    position: absolute;
+    right: 35px; /* Posición ajustada para móviles */
+    top: 65px; /* Posición ajustada para móviles */
+    z-index: 150;
+    width: 0px; /* Ancho real del botón */
+    height: 0px; /* Alto real del botón */
+    border-radius: 100%;
+    transition: all 0.3s ease;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Contenedor del botón principal */
+  .attachment-button-mobile {
+    height: 100%;
+  }
+  
+  /* Botón específico */
+  .attach-btn-mobile {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Icono dentro del botón */
+  .attach-btn-mobile i {
+    font-size: 18px;
+    color: var(--color-text, #ffffff);
+  }
+  
+  /* Menú de opciones - posicionado absolutamente */
+  .attachment-options-mobile {
+    position: absolute;
+    right: 15px; /* Posicionado junto al botón */
+    bottom: -45px; /* Alineado con el botón */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background-color: var(--color-primary, #656d4a);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+  }
+  
+  /* Clase activa para mostrar las opciones en click */
+  .attachments-wrapper-mobile.active .attachment-options-mobile {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Rotación del botón en estado activo */
+  .attachments-wrapper-mobile.active .attach-btn-mobile {
+    transform: rotate(45deg);
+  }
+  
+  /* Cada opción individual */
+  .attachment-options-mobile .attachment-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 8px 0;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Animación secuencial de las opciones */
+  .attachments-wrapper-mobile.active .attachment-option {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  /* Retraso para cada opción (efecto cascada) */
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(3) {
+    transition-delay: 0.15s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(4) {
+    transition-delay: 0.2s;
+  }
+  
+  /* Icono de cada opción */
+  .attachment-options-mobile .attachment-option i {
+    font-size: 22px;
+    color: var(--color-text);
+    margin-right: 1px;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Texto de cada opción */
+  .attachment-options-mobile .attachment-option span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  /* Efecto hover/active en cada opción */
+  .attachment-options-mobile .attachment-option:active i,
+  .attachment-options-mobile .attachment-option:hover i {
+    transform: scale(1.1);
+  }
+}
+
+.chat-messages {
+  height: calc(100vh - 150px); /* Ajusta 150px según la altura de header y fixed-space */
+  overflow-y: auto;
+  padding: 10px;
+  box-sizing: border-box;
+}

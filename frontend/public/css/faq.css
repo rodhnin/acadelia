@@ -1,0 +1,551 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  text-decoration: none; /* Evita el subrayado en los enlaces */
+}
+
+:root {
+  --primary-color: linear-gradient(300deg, #656d4a, #a4ac86);
+  --secondary-color: #a4ac86;
+  --third-color: #656d4a;
+  --text-color: #333;
+  --bg-color: #f0efe7;
+  --hover-color: #e2ddd6;
+  --logo: url("/images/Imagotipo.webp");
+  --button-color: #656d4a;
+  --button-hover: #515742;
+  --background: url("/images/imagen.png");
+  --marron: #582f0e;
+  --marron-oscuro: #442409;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--text-color);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background-color: var(--bg-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Estilos para el header responsivo */
+
+
+
+/* Ocultar el header al hacer scroll hacia abajo */
+.hidden {
+  transform: translateY(-100%);
+}
+
+
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-logo {
+  width: 200px;
+  height: 50px;
+  background-image: var(--logo);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.mobile-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+
+
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo-img {
+  width: 200px;
+  height: 50px;
+  background-image: var(--logo);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: auto; /* Asegura que los botones estén a la derecha */
+}
+.faq-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  text-decoration: none; /* Evita el subrayado en los enlaces */
+}
+
+.faq-btn:hover {
+  background-color: var(--marron-oscuro);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ingresar-btn {
+  position: relative;
+  background-color: var(--marron);
+  border: 2px solid var(--marron);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s cubic-bezier(0, 0, 0.58, 1);
+  transform-style: preserve-3d;
+  vertical-align: middle;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Efecto 3D (pseudo-elemento) */
+.ingresar-btn::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: var(--marron-oscuro);
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--marron), 0 0.4em 0 0 rgba(0, 0, 0, 0.1);
+  transform: translate3d(0, 0.4em, -1em);
+  transition: all 0.3s cubic-bezier(0, 0, 0.58, 1);
+  z-index: -1;
+}
+
+.ingresar-btn:hover {
+  background-color: var(--marron-oscuro);
+  border-color: var(--marron-oscuro);
+  transform: translateY(-2px) translate(0, 0.25em);
+}
+
+.ingresar-btn:hover::before {
+  box-shadow: 0 0 0 2px var(--marron), 0 0.3em 0 0 rgba(0, 0, 0, 0.08);
+  transform: translate3d(0, 0.3em, -1em);
+}
+
+.ingresar-btn:active {
+  transform: translateY(0) translate(0, 0.5em);
+}
+
+.ingresar-btn:active::before {
+  box-shadow: 0 0 0 2px var(--marron), 0 0 #ffe3e2;
+  transform: translate3d(0, 0, -1em);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .ingresar-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 13px;
+  }
+
+  .ingresar-btn i {
+    font-size: 0.9em;
+  }
+}
+
+.faq-btn:hover {
+  background-color: transparent;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+
+  #main-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .nav-buttons {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .logo-container img {
+    width: 50px;
+    height: 50px;
+  }
+ }
+
+
+/* Mantener los estilos existentes del header y footer */
+/* ... tu CSS existente ... */
+
+/* Estilos específicos para el FAQ */
+.faq-container {
+  min-height: 100vh;
+  background-color: #f0efe7;
+  padding: 6rem 1rem;
+}
+
+.faq-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.faq-header h1 {
+  font-size: 2.5rem;
+  color: #656d4a;
+ font-family: "Parkinsans", sans-serif; /* Fuente principal + fallback */
+  font-weight: 800; /* Peso ExtraBold */
+}
+
+
+.faq-header h1 span {
+  color: #582f0e;
+}
+
+.faq-content {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-bottom: 1px solid #1f1f1f;
+  margin-bottom: 1rem;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  background: none;
+  border: none;
+  color: #656d4a;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.faq-question:hover {
+  color: #582f0e;
+}
+
+.faq-question span {
+  flex: 1;
+  padding-right: 1rem;
+}
+
+.faq-question i {
+  font-size: 1.5rem;
+  color: #656d4a;
+}
+
+.faq-question .bx-x {
+  display: none;
+}
+
+.faq-item.active .bx-plus {
+  display: none;
+}
+
+.faq-item.active .bx-x {
+  display: block;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px;
+  padding-bottom: 1rem;
+}
+
+.faq-answer p {
+  color: #111214;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .faq-header h1 {
+    font-size: 2rem;
+  }
+
+  .faq-question {
+    font-size: 1.1rem;
+  }
+}
+
+/* Animación de fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-item.active .faq-answer {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+ 
+
+    header {
+    height:80px;
+}
+  .social-link {
+    font-size: 1.5rem;
+  }
+
+  .desktop-logo {
+    width: 100px;
+    height: 50px;
+    margin-top:20px
+    }
+}
+
+
+
+.faq-question:hover,
+.faq-item.active .faq-question {
+  color: #582f0e;
+  transition: color 0.3s ease;
+}
+
+
+/* Footer */
+.site-footer {
+  background: var(--bg-color);
+  border-top: 1px solid rgba(88, 47, 14, 0.1);
+  padding: 4rem 5%;
+  text-align: center;
+  padding: 3rem 5%;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+
+
+.copyright {
+  transform: translateX(2px);
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.footer-social {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-link {
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  padding: 0.5rem;
+  left: 0;
+}
+
+.social-link:hover {
+  color: var(--marron);
+  transform: translateY(-3px);
+}
+
+.footer-legal {
+  text-align: right;
+}
+
+.legal-title {
+  font-size: 1.2rem;
+  color: var(--marron);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.legal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.legal-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  padding: 0.3rem 0;
+  position: relative;
+}
+
+.legal-link:hover {
+  color: var(--marron);
+  transform: translateX(5px);
+}
+
+.legal-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--marron);
+  transition: width 0.3s ease;
+}
+
+.legal-link:hover::after {
+  width: 100%;
+}
+
+
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+
+
+
+/* Para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .copyright {
+transform:none
+  }
+
+    .social-icons {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 480px) {
+
+}
+
+.footer-logo .logo-img {
+  width: 180px;
+  height: 45px;
+  filter: grayscale(100%) brightness(0.5);
+  bottom: 10px;
+  transform: translateX(32px);
+  opacity: 0.8;
+}
+
+/* Ajustes para pantallas medianas (tablets) */
+@media (max-width: 768px) {
+  .footer-logo .logo-img {
+    transform: none;
+    position:static;
+    margin-left:20.2%
+  }
+
+.social-link {
+  color: var(--text-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  padding: 0.5rem;
+}
+}
+
+
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-legal {
+    margin-top: 2rem;
+    text-align: center;
+
+  }
+}
+
+
+
+
+
+/* Agregar al final de contac.css - Prevenir flash del botón ingresar */
+.ingresar-btn, 
+.mobile-menu .ingresar-btn {
+    visibility: hidden;
+}
+
+/* Mostrar botones cuando se confirme que el usuario NO está autenticado */
+body.show-login-buttons .ingresar-btn,
+body.show-login-buttons .mobile-menu .ingresar-btn {
+    visibility: visible;
+}

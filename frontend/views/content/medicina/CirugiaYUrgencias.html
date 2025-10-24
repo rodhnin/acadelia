@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Ava - Cirugía y Urgencias</title>
+    <base href="/" />
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Highlight.js CSS - Tema que se ajusta automáticamente al tema de la app -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css" id="hljs-light-theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" id="hljs-dark-theme" disabled>
+    
+    <!-- Highlight.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+</head>
+<body>
+    <!-- Hamburger menu toggle button (only for mobile) -->
+  <button id="mobile-sidebar-toggle" class="mobile-hamburger-menu" aria-label="Toggle navigation menu">
+    <i class='bx bx-menu'></i>
+  </button>
+
+  <!-- Overlay for closing the sidebar when clicking outside (only for mobile) -->
+  <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay"></div>
+
+  
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+          <div class="logo-container">
+              <h1 class="sidebar-title">Acadelia</h1>
+              <button class="search-button" id="sidebarSearchBtn">
+                <i class='bx bx-search'></i>
+              </button>
+              <button class="pin-button">
+                  <i class='bx bxs-arrow-to-right'></i>
+              </button>
+              <button class="unpin-button">
+                  <i class='bx bxs-arrow-from-right'></i>
+              </button>
+          </div>
+          <div class="sidebar-item new-chat-btn">
+              <i class='bx bx-comment-add'></i>
+              <span class="item-text">Nuevo Chat</span>
+          </div>
+      </div>
+      
+      <div class="sidebar-items" id="chatList">
+          <!-- Lista de chats (se llenará dinámicamente) -->
+      </div>
+      
+      <div class="sidebar-footer">
+          <div class="sidebar-item" id="accountItem">
+              <i class='bx bxs-user-account'></i>
+              <span class="item-text">Mi Cuenta</span>
+          </div>
+          <div class="account-options">
+              <a href="/contact" class="account-option">
+                  <i class='bx bx-conversation'></i>
+                  <span>Contáctanos</span>
+              </a>
+              <a href="/principal" class="account-option">
+                  <i class='bx bxs-left-arrow-square'></i>
+                  <span>Salir</span>
+              </a>
+          </div>
+      </div>
+  </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="main-header">
+        <!-- Left section (can be empty or for balance) -->
+        <div class="header-left"></div>
+        
+        <!-- Middle section with title and subtitle -->
+        <div class="header-center">
+          <span class="header-title">Cirugía y Urgencias</span>
+          <div class="header-subtitle">Asistente virtual academico</div>
+        </div>
+        
+        <!-- Right section with buttons -->
+        <div class="header-right">
+          <div class="dropdown-menu">
+            <button class="action-button">
+              <i class='bx bx-dots-vertical'></i>
+            </button>
+            <div class="dropdown-content">
+              <button class="dropdown-item">
+                <i class='bx bx-edit'></i>
+                <span>Renombrar</span>
+              </button>
+              <button class="dropdown-item">
+                <i class='bx bx-trash'></i>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+          
+          <button id="themeToggle" class="theme-toggle">
+            <i class='bx bxs-moon'></i>
+          </button>
+          
+          <div class="new-chat-container">
+            <button id="new-chat-btn">
+              <i class='bx bx-comment-add'></i>
+            </button>
+            <span class="new-chat-label">Nuevo chat</span>
+          </div>
+        </div>
+      </header>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages">
+        </div>
+
+        <!-- Input Area -->
+        <div class="fixed-space">
+          <div class="input-container">
+            <!-- Nuevo contenedor para archivos y área de arrastre -->
+            <div class="file-area-container">
+              <!-- Los contenedores que comparten el mismo espacio -->
+              <div class="file-preview-container"></div>
+              <div class="file-upload-container">
+                <div class="drag-drop-area" id="drag-drop-area">
+                  <i class='bx bx-upload upload-icon'></i>
+                  <p class="upload-main-text">Arrastra tus archivos aquí</p>
+                  <div class="upload-details">
+                    <p class="upload-secondary-text">Imágenes, documentos o archivos de código</p>
+                    <p class="upload-secondary-text">Máximo 3 archivos por chat y 10MB cada uno</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="preview-container"></div>
+          
+            <!-- Input oculto para manejar la selección de archivos cuando se hace clic en el área -->
+            
+            <!-- Contenedor para botón de adjuntos (versión mejorada) -->
+            <div class="attachments-wrapper">
+              <div class="attachment-button">
+                <button class="attach-btn" aria-label="Adjuntar archivo">
+                  <i class='bx bx-paperclip'></i>
+                </button>
+                
+                <!-- Opciones de adjuntos (ahora posicionadas absolutamente) -->
+                <div class="attachment-options">
+                  <label for="image-upload" class="attachment-option" title="Subir imagen">
+                    <i class='bx bx-image'></i>
+                    <span>Imagen</span>
+                  </label>
+                  <div class="attachment-option camera-option" id="camera-option" title="Tomar foto">
+                    <i class='bx bx-camera'></i>
+                    <span>Tomar foto</span>
+                  </div>
+                  <label for="document-upload" class="attachment-option" title="Subir documento">
+                    <i class='bx bx-file'></i>
+                    <span>Documento</span>
+                  </label>
+                  <label for="code-upload" class="attachment-option" title="Subir código">
+                    <i class='bx bx-code-alt'></i>
+                    <span>Código</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- AGREGA EL BOTÓN RESPONSIVE AQUÍ -->
+<div class="attachments-wrapper-mobile">
+  <div class="attachment-options-mobile">
+    <div class="attachment-option" id="image-option-mobile">
+      <i class="bx bx-image"></i>
+      <span>Imagen</span>
+      <input type="file" id="image-upload-mobile" accept="image/jpeg,image/png,image/webp" style="display: none;">
+    </div>
+    <div class="attachment-option" id="document-option-mobile">
+      <i class="bx bx-file"></i>
+      <span>Documento</span>
+      <input type="file" id="document-upload-mobile" accept=".txt,.docx" style="display: none;">
+    </div>
+    <div class="attachment-option" id="code-option-mobile">
+      <i class="bx bx-code-alt"></i>
+      <span>Código</span>
+      <input type="file" id="code-upload-mobile" accept=".js,.py,.html,.css,.java,.cpp,.php,.rb,.ts,.go,.swift,.json,.xml,.sql" style="display: none;">
+    </div>
+    <div class="attachment-option" id="camera-option-mobile">
+      <i class="bx bx-camera"></i>
+      <span>Cámara</span>
+    </div>
+  </div>
+  <div class="attachment-button-mobile">
+    <button class="attach-btn-mobile">
+      <i class="bx bx-paperclip"></i>
+    </button>
+  </div>
+</div>
+
+            <!-- Input box con sus botones originales - ESTRUCTURA ORIGINAL -->
+            <div class="input-box auto-expand">
+              <textarea 
+              id="messageInput" 
+              name="chatMessage" 
+              data-replicated-value=" " 
+              placeholder="Envía un mensaje a Acadelia"></textarea>
+              <button><i class='bx bx-up-arrow-alt'></i>
+                <span class="chat-button-label">Enviar</span>
+              </button>
+              
+              <!-- Inputs ocultos para manejar archivos -->
+              <input type="file" id="image-upload" accept="image/png,image/jpeg,image/jpg,image/webp" hidden>
+              <input type="file" id="document-upload" accept=".txt,.docx" hidden>
+              <input type="file" id="code-upload" accept=".js,.py,.html,.css,.java,.c,.cpp,.h,.php,.rb,.ts,.go,.swift,.json,.xml,.sql,.sh" hidden>
+            </div>
+          </div>
+          <span class="warning-message">Acadelia puede cometer errores. Comprueba la información importante.</span>
+          
+    <!-- Modal de Confirmación -->
+<div id="confirmationModal" class="modal">
+  <div class="modal-content">
+    <p id="modalMessage">¿Estás seguro de eliminar este chat?</p>
+    <div class="modal-buttons">
+      <button id="modalConfirm">Sí</button>
+      <button id="modalCancel">No</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Chat Vacío -->
+<div id="emptyChatModal" class="modal">
+  <div class="modal-content">
+    <p>Este chat está vacío.</p>
+    <div class="modal-buttons">
+      <button id="emptyModalClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+        </div>
+    </div>
+
+    <!-- Modal de búsqueda con identificadores únicos y chatlist -->
+<div id="searchModalContainer" class="search-modal-container">
+  <div class="search-modal-box">
+      <div class="search-modal-header">
+          <h3 class="search-modal-title">Buscar Chats</h3>
+          <button class="search-modal-close" id="closeSearchModal">&times;</button>
+      </div>
+      <div class="search-modal-body">
+          <div class="search-input-wrapper">
+              <input type="text" id="chatSearchInput" placeholder="Buscar por título o contenido..." class="search-input-field">
+              <i class='bx bx-search search-input-icon'></i>
+          </div>
+          
+          <!-- Botón de nuevo chat -->
+          <div class="search-new-chat">
+              <i class='bx bx-comment-add'></i>
+              <span>Nuevo chat</span>
+          </div>
+          
+          <!-- Lista de chats que se generará dinámicamente -->
+          <div id="searchChatList" class="search-chat-list">
+              <!-- Aquí se generarán dinámicamente los chats -->
+          </div>
+          
+          <div class="search-results-container" id="searchResults">
+              <!-- Los resultados de búsqueda se mostrarán aquí -->
+          </div>
+      </div>
+      <div class="search-modal-footer">
+          <button class="search-btn search-btn-primary" id="searchButton">Buscar</button>
+          <button class="search-btn search-btn-secondary" id="cancelSearchButton">Cancelar</button>
+      </div>
+  </div>
+</div>
+
+<!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/chats/shared/acadel-notifications-manager.js" nonce="<%= nonce %>"></script>
+  <script type="module" src="/scripts/chats/teorico/index-teorico.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/initialize-highlighting.js" nonce="<%= nonce %>"></script>
+
+</body>
+</html>

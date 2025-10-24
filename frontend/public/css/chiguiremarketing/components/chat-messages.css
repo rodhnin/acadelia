@@ -1,0 +1,536 @@
+/* ======================================
+   CHAT MESSAGES - DISEÑO DE BURBUJAS
+   ====================================== */
+.chat-messages {
+  flex: 1; /* Toma todo el espacio disponible */
+  overflow-y: auto; /* Scroll vertical cuando sea necesario */
+  overflow-x: hidden; /* Sin scroll horizontal */
+  height: 0; /* Truco CSS para forzar que use flex: 1 */
+  padding: 20px 0;
+  margin-bottom: 20px;
+  /* Scroll suave */
+  scroll-behavior: smooth;
+  /* Estilo del scrollbar para mejor UX */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(164, 172, 134, 0.3) transparent;
+}
+
+/* Estilo del scrollbar para Webkit (Chrome, Safari) */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 172, 134, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 172, 134, 0.5);
+}
+
+/* Estilos básicos para los elementos de mensaje */
+.message {
+  position: relative;
+  width: 100%;
+  margin: 20px 0;
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mensaje del usuario - Burbuja a la derecha */
+.message-user {
+  align-items: flex-end;
+  animation-name: messageSlideInRight;
+}
+
+.message-user .message-content {
+  background-color: var(--color-user-bubble);
+  border: 1px solid var(--color-user-bubble-border);
+  border-radius: var(--border-radius-bubble);
+  border-top-right-radius: 50px;
+  padding: 12px 16px;
+  max-width: 70%;
+  min-width: 100px;
+  box-shadow: var(--shadow-bubble);
+  word-wrap: break-word;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text);
+  position: relative;
+}
+
+/* Mensaje de la IA - Burbuja a la izquierda con avatar */
+.message-assistant {
+  align-items: flex-start;
+  padding-left: calc(var(--avatar-size) + 12px);
+  position: relative;
+  animation-name: messageSlideInLeft;
+}
+
+.message-assistant .message-content {
+  background-color: var(--color-assistant-bubble);
+  border: 1px solid var(--color-assistant-bubble-border);
+  border-radius: var(--border-radius-bubble);
+  padding: 12px 16px;
+  max-width: 95%;
+  min-width: 200px;
+  box-shadow: var(--shadow-bubble);
+  word-wrap: break-word;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+  position: relative;
+}
+
+/* ======================================
+   AVATAR DE IA Y THINKING GIF - CORREGIDO COMPLETAMENTE
+   ====================================== */
+
+/* Avatar de la IA - Estado normal */
+.ai-profile {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  background: var(--avatar-path) center / cover no-repeat;
+  overflow: hidden;
+  font-size: 0 !important;
+  text-indent: -9999px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--color-background);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+/* Imagen del avatar de la IA */
+.ai-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Estado thinking - RESETEO COMPLETO Y APLICACIÓN FORZADA */
+.message-assistant .ai-profile.thinking {
+  background-image: none !important;
+  background: none !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 8px !important;
+  width: var(--avatar-size) !important;
+  height: var(--avatar-size) !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 2px solid var(--color-background) !important;
+  z-index: 1 !important;
+  animation: thinkingPulse 2s infinite ease-in-out;
+}
+
+/* Aplicar gif thinking según tema - CON MÁXIMA ESPECIFICIDAD */
+body[data-theme="dark"] .message-assistant .ai-profile.thinking {
+  background: var(--avatar-loading-path-dark) center / cover no-repeat !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+body[data-theme="light"] .message-assistant .ai-profile.thinking,
+body:not([data-theme="dark"]) .message-assistant .ai-profile.thinking {
+  background: var(--avatar-loading-path-light) center / cover no-repeat !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Asegurar que las imágenes dentro del avatar thinking se oculten */
+.ai-profile.thinking img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Efectos de ripple para el avatar thinking */
+.ai-profile.thinking::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(164, 172, 134, 0.2) 0%,
+    rgba(164, 172, 134, 0.1) 50%,
+    transparent 70%
+  );
+  animation: thinkingRipple 2s infinite ease-out;
+  z-index: -1;
+}
+
+/* Mensajes del sistema */
+.message-system {
+  align-items: center;
+  margin: 30px 0;
+}
+
+.message-system .message-content {
+  background-color: rgba(164, 172, 134, 0.08);
+  border: 1px solid rgba(164, 172, 134, 0.2);
+  border-radius: var(--border-radius-lg);
+  padding: 15px 20px;
+  text-align: center;
+  font-style: italic;
+  opacity: 0.9;
+  max-width: 90%;
+}
+
+/* ======================================
+   ANIMACIONES PARA CONTENEDOR DE MENSAJE
+   ====================================== */
+
+/* Animación sutil para contenedor de mensaje mientras se espera */
+.message-assistant.processing {
+  animation: messageProcessing 2s infinite ease-in-out;
+}
+
+.message-assistant.processing .message-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.message-assistant.processing .message-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(164, 172, 134, 0.1),
+    transparent
+  );
+  animation: shimmerEffect 1.5s infinite;
+}
+
+/* Pulso suave en el contenedor del mensaje */
+.message-content.loading {
+  animation: contentPulse 1.5s infinite ease-in-out;
+}
+
+/* ======================================
+   ESTILOS PARA ESTADO TYPING
+   ====================================== */
+.chat-status {
+  position: absolute;
+  top: -30px;
+  left: calc(var(--avatar-size) + 12px);
+  font-size: 13px;
+  color: var(--color-text);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+  font-style: italic;
+}
+
+.chat-status.typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chat-status.typing::after {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--color-text);
+  animation: typingDot 1.4s infinite ease-in-out;
+  animation-fill-mode: both;
+  margin-left: 2px;
+}
+
+.chat-status.typing::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--color-text);
+  animation: typingDot 1.4s infinite ease-in-out 0.2s;
+  animation-fill-mode: both;
+  margin-right: 2px;
+}
+
+/* ======================================
+   MATHJAX RESPONSIVO PARA CHAT
+   ====================================== */
+
+/* Contenedor base para contenido matemático */
+.message-content {
+  /* Asegurar que el contenedor respete los límites */
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Estilo específico para elementos MathJax */
+.message-content .MathJax,
+.message-content .MathJax_Display,
+.message-content mjx-container {
+  /* Permitir que las expresiones matemáticas se adapten */
+  max-width: 100% !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  
+  /* Scroll suave para expresiones largas */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(164, 172, 134, 0.3) transparent;
+}
+
+/* Estilo del scrollbar para expresiones matemáticas */
+.message-content .MathJax::-webkit-scrollbar,
+.message-content mjx-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.message-content .MathJax::-webkit-scrollbar-track,
+.message-content mjx-container::-webkit-scrollbar-track {
+  background: rgba(164, 172, 134, 0.1);
+  border-radius: 3px;
+}
+
+.message-content .MathJax::-webkit-scrollbar-thumb,
+.message-content mjx-container::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 172, 134, 0.4);
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+.message-content .MathJax::-webkit-scrollbar-thumb:hover,
+.message-content mjx-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 172, 134, 0.6);
+}
+
+/* Expresiones display math (bloques centrados) */
+.message-content .MathJax_Display,
+.message-content mjx-container[display="true"] {
+  /* Centrar pero permitir scroll si es necesario */
+  margin: 1em auto !important;
+  padding: 8px 12px;
+  text-align: center;
+  
+  /* Fondo sutil para diferenciar */
+  background: rgba(164, 172, 134, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(164, 172, 134, 0.1);
+  
+  /* Transición suave */
+  transition: all 0.3s ease;
+}
+
+/* Hover effect para expresiones display */
+.message-content .MathJax_Display:hover,
+.message-content mjx-container[display="true"]:hover {
+  background: rgba(164, 172, 134, 0.08);
+  border-color: rgba(164, 172, 134, 0.2);
+  box-shadow: 0 2px 8px rgba(164, 172, 134, 0.1);
+}
+
+/* Expresiones inline math */
+.message-content .MathJax[style*="display: inline"],
+.message-content mjx-container[display="false"] {
+  /* Inline math debe fluir con el texto */
+  display: inline-block !important;
+  vertical-align: middle;
+  max-width: calc(100% - 20px);
+}
+
+/* Para elementos MathJax muy específicos */
+.message-content .MathJax > span {
+  max-width: 100% !important;
+}
+
+/* Contenedor de la expresión matemática */
+.message-content .math-content {
+  /* Asegurar que el contenedor padre respete límites */
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ======================================
+   RESPONSIVIDAD PARA DIFERENTES TAMAÑOS
+   ====================================== */
+
+/* En dispositivos pequeños, hacer las matemáticas más compactas */
+@media (max-width: 768px) {
+  .message-content .MathJax,
+  .message-content mjx-container {
+    /* Reducir ligeramente el tamaño en móviles */
+    font-size: 0.9em !important;
+  }
+  
+  .message-content .MathJax_Display,
+  .message-content mjx-container[display="true"] {
+    /* Menos padding en móviles */
+    padding: 6px 8px;
+    margin: 0.8em auto !important;
+  }
+  
+  /* Asegurar que el mensaje del asistente sea más estrecho en móviles */
+  .message-assistant .message-content {
+    max-width: 100% !important;
+  }
+}
+
+/* En dispositivos muy pequeños */
+@media (max-width: 480px) {
+  .message-content .MathJax,
+  .message-content mjx-container {
+    font-size: 0.85em !important;
+  }
+  
+  .message-content .MathJax_Display,
+  .message-content mjx-container[display="true"] {
+    padding: 4px 6px;
+    margin: 0.6em auto !important;
+  }
+}
+
+/* ======================================
+   INDICADORES VISUALES PARA SCROLL
+   ====================================== */
+
+/* Indicador sutil de que hay contenido scrolleable */
+.message-content .MathJax[scrollWidth],
+.message-content mjx-container[scrollWidth] {
+  position: relative;
+}
+
+/* Sombra para indicar scroll horizontal disponible */
+.message-content .MathJax::after,
+.message-content mjx-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to left, 
+    rgba(164, 172, 134, 0.1) 0%, 
+    transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Mostrar indicador cuando hay overflow */
+.message-content .MathJax:hover::after,
+.message-content mjx-container:hover::after {
+  opacity: 1;
+}
+
+/* ======================================
+   ANIMACIONES PARA MATEMÁTICAS
+   ====================================== */
+
+/* Animación suave cuando aparece contenido matemático */
+.message-content .MathJax,
+.message-content mjx-container {
+  animation: mathFadeIn 0.5s ease-out;
+}
+
+@keyframes mathFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================
+   MEJORAS PARA EXPRESIONES ESPECÍFICAS
+   ====================================== */
+
+/* Expresiones con fracciones complejas */
+.message-content .MathJax .frac,
+.message-content mjx-container mjx-frac {
+  max-width: 100% !important;
+}
+
+/* Expresiones con integrales largas */
+.message-content .MathJax .integral,
+.message-content mjx-container mjx-mo[data-c="∫"] {
+  /* Permitir que se adapten mejor */
+  white-space: nowrap;
+}
+
+/* Expresiones con matrices */
+.message-content .MathJax .matrix,
+.message-content mjx-container mjx-table {
+  max-width: 100% !important;
+  overflow-x: auto;
+}
+
+/* ======================================
+   TEMA OSCURO - AJUSTES ESPECÍFICOS
+   ====================================== */
+
+body[data-theme="dark"] .message-content .MathJax_Display,
+body[data-theme="dark"] .message-content mjx-container[display="true"] {
+  background: rgba(164, 172, 134, 0.08);
+  border-color: rgba(164, 172, 134, 0.15);
+}
+
+body[data-theme="dark"] .message-content .MathJax_Display:hover,
+body[data-theme="dark"] .message-content mjx-container[display="true"]:hover {
+  background: rgba(164, 172, 134, 0.12);
+  border-color: rgba(164, 172, 134, 0.25);
+  box-shadow: 0 2px 8px rgba(164, 172, 134, 0.15);
+}
+
+/* ======================================
+   FALLBACK PARA EXPRESIONES PROBLEMÁTICAS
+   ====================================== */
+
+/* Si una expresión es demasiado larga, forzar break */
+.message-content .MathJax[style*="width"],
+.message-content mjx-container[style*="width"] {
+  /* Forzar que respete el contenedor padre */
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+/* Para casos extremos donde nada más funciona */
+.message-content .math-overflow-fix {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-width: 100% !important;
+  
+  /* Scroll personalizado */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(164, 172, 134, 0.4) transparent;
+}
+
+/* Clase de utilidad para aplicar manualmente si es necesario */
+.math-responsive {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  box-sizing: border-box !important;
+}

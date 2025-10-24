@@ -1,0 +1,34 @@
+/* ======================================
+   MAIN CSS - IMPORTA TODOS LOS MÓDULOS
+   ====================================== */
+
+/* Base */
+@import '/css/chats/base/variables.css';
+@import '/css/chats/base/reset.css';
+@import '/css/chats/base/typography.css';
+
+/* Layout */
+@import '/css/chats/layout/sidebar.css';
+@import '/css/chats/layout/main-content.css';
+@import '/css/chats/layout/preview-content.css';
+@import '/css/chats/layout/header.css';
+@import '/css/chats/layout/notificaciones-acadel.css';
+@import '/css/chats/layout/loadings.css';
+@import '/css/chats/layout/welcome.css';
+
+/* Componentes */
+@import '/css/chats/components/chat.css';
+@import '/css/chats/components/code.css';
+@import '/css/chats/components/tables.css';
+@import '/css/chats/components/math.css';
+@import '/css/chats/components/modals.css';
+@import '/css/chats/components/concept-maps.css';
+@import '/css/chats/components/exam-render.css';
+@import '/css/chats/components/imagen.css';
+@import '/css/chats/components/youtube-panel.css';
+@import '/css/chats/components/pdf-panel.css';
+@import '/css/chats/components/variantes.css';
+
+/* Utilidades */
+@import '/css/chats/utils/animations.css';
+@import '/css/chats/utils/helpers.css';

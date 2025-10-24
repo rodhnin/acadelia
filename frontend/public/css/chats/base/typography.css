@@ -1,0 +1,203 @@
+/* ======================================
+   TIPOGRAFÍA
+   ====================================== */
+
+/* Elementos de texto básicos */
+p, span, li, td, th {
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+
+}
+
+/* Encabezados */
+h1 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.text-section{
+margin: 1rem 0
+}
+
+.text-section h3{
+margin: 1rem 0
+}
+
+h4, h5, h6 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Párrafos y listas */
+
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6,
+.message-content ul {
+  margin: 1.5rem 0;
+}
+
+.inline-code {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-sm);
+    /* CAMBIOS PRINCIPALES: */
+    white-space: pre-wrap; /* En lugar de nowrap */
+    word-break: break-word;
+    overflow-wrap: anywhere; /* Más agresivo que break-word */
+    max-width: 100%; /* En lugar de 600px fijo */
+    margin: 0 2px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+    line-height: 1.3;
+}
+
+/* Hover effect para el código en línea */
+.inline-code:hover {
+  background-color: var(--color-secondary-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Adaptación para el tema oscuro */
+[data-theme="dark"] .inline-code {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .inline-code:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Tamaños de texto utilizados en distintos contextos */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-md { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+
+/* Pesos de fuente */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Estilos de texto */
+.text-italic { font-style: italic; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+/* Estilos para texto matemático */
+.math-text {
+  font-family: var(--font-family-math);
+}
+
+/* ======================================
+   ESTILOS PARA SALTOS DE LÍNEA EN MARKDOWN
+   ====================================== */
+
+/* Ajustes para saltos de línea generados por el procesador Markdown */
+br[data-nl], 
+br[data-markdown-seq] {
+  display: block;
+  content: "";
+  margin-top: 0.5rem; /* Espacio vertical más compacto (ajusta según necesites) */
+}
+
+/* Estilos para saltos de línea en texto plano */
+br[data-nl="plaintext"] {
+  display: block;
+  content: "";
+  margin-top: 0.4rem; /* Espacio para saltos de línea en texto plano */
+}
+
+/* Saltos de línea entre elementos Markdown del mismo tipo */
+br[data-markdown-seq="true"] {
+  margin-top: 0.3rem; /* Espacio más compacto entre elementos Markdown consecutivos */
+}
+
+/* Saltos de línea originales */
+br[data-nl="original"] {
+  margin-top: 0.5rem; /* Espacio estándar para saltos normales */
+}
+
+/* Para evitar espacios grandes cuando un elemento ocupa toda una línea */
+p > br:only-child {
+  display: none;
+}
+
+/* Asegurar que los párrafos con saltos no tengan demasiado margen */
+.message-content p {
+  margin-bottom: 0.2rem; /* Reducir margen inferior de párrafos */
+}
+
+/* Evitar doble espaciado en listas markdown */
+.message-content ul li,
+.message-content ol li {
+  margin-bottom: 0.3rem; /* Reducir espacio entre ítems de lista */
+}
+
+
+
+/* Ajuste específico para bloques de matemáticas */
+.math-block {
+  margin: 1rem 0; /* Consistente con otros elementos de bloque */
+}
+
+/* Salto de línea específico después de elementos en negrita */
+br[data-bold-break="true"] {
+  display: block;
+  content: "";
+  margin-top: 0.6rem; /* Un poco más de espacio para elementos en negrita */
+}
+
+/* Asegurar que los elementos en negrita al inicio de línea tengan espacio adecuado */
+p > strong:first-child {
+  display: inline-block;
+  margin-right: 0.2rem;
+}
+
+/* Estilos específicos para saltos de línea antes de listas */
+br[data-before-list="true"] {
+  display: block;
+  content: "";
+  margin-top: 1rem; /* Espacio generoso antes de listas */
+}
+
+/* Asegurar que los elementos de lista tengan espacio adecuado */
+.message-content ul,
+.message-content ol {
+  margin-top: 0.5rem; /* Espacio adicional arriba de las listas */
+  margin-bottom: 1rem; /* Espacio después de las listas */
+}
+
+/* Espacio después del último elemento de una lista */
+.message-content ul li:last-child,
+.message-content ol li:last-child {
+  margin-bottom: 0.5rem;
+}
+
+/* Espacio después de párrafos que preceden a listas */
+.message-content p + ul,
+.message-content p + ol {
+  margin-top: 1rem;
+}

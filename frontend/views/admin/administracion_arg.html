@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Panel de Administración</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="/css/admin-panel.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+<body>
+    <!-- Header Minimalista -->
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo-img"></div>
+                <div class="admin-title">Panel de Administración</div>
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class='bx bx-menu'></i>
+                </button>
+            </div>
+            
+            <div class="header-actions">
+                <div class="theme-toggle-container" id="themeToggle">
+                    <div class="theme-slider"></div>
+                    <i class='bx bx-sun theme-icon'></i>
+                    <i class='bx bx-moon theme-icon'></i>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="user-avatar">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <div class="user-dropdown">
+                        <a href="/principal" class="dropdown-item">
+                            <i class='bx bx-home'></i>
+                            Dashboard Principal
+                        </a>
+                        <a href="/cuenta" class="dropdown-item">
+                            <i class='bx bx-cog'></i>
+                            Configuraciones
+                        </a>
+                        <a href="" class="dropdown-item logout-btn">
+                            <i class='bx bx-log-out'></i>
+                            Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <!-- Sidebar Hermoso -->
+        <aside class="admin-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-section="dashboard">
+                        <a href="#" class="nav-item-link">
+                            <i class='bx bx-tachometer'></i>
+                            <span class="nav-item-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="transfers">
+                        <a href="#" class="nav-item-link">
+                            <i class='bx bx-transfer'></i>
+                            <span class="nav-item-text">Transferencias</span>
+                            <span class="pending-badge" id="pendingCount">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="payments">
+                        <a href="#" class="nav-item-link">
+                            <i class='bx bx-money'></i>
+                            <span class="nav-item-text">Todos los Pagos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="subscriptions">
+                        <a href="#" class="nav-item-link">
+                            <i class='bx bx-crown'></i>
+                            <span class="nav-item-text">Suscripciones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-section="users">
+                        <a href="#" class="nav-item-link">
+                            <i class='bx bx-user-circle'></i>
+                            <span class="nav-item-text">Usuarios</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <div class="admin-content">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h1>Panel de Administración</h1>
+                    <p>Gestión integral de usuarios y transacciones del sistema</p>
+                </div>
+
+                <!-- Stats Cards Mejoradas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class='bx bx-transfer'></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingTransfers">-</h3>
+                            <p>Transferencias Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <!-- ✅ REMOVIDA: Tarjeta de "Ingresos del Mes" -->
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class='bx bx-user'></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalUsers">-</h3>
+                            <p>Usuarios Únicos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class='bx bx-crown'></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeSubscriptions">-</h3>
+                            <p>Suscripciones Activas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones Rápidas Mejoradas -->
+                <div class="quick-actions">
+                    <h2>Acciones Rápidas</h2>
+                    <div class="action-grid">
+                        <button class="action-btn" data-action="transfers">
+                            <i class='bx bx-transfer'></i>
+                            <span>Revisar Transferencias</span>
+                        </button>
+                        <button class="action-btn" data-action="users">
+                            <i class='bx bx-search'></i>
+                            <span>Buscar Usuario</span>
+                        </button>
+                        <button class="action-btn" data-action="payments">
+                            <i class='bx bx-money'></i>
+                            <span>Ver Todos los Pagos</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transfers Section -->
+            <section id="transfers-section" class="content-section">
+                <div class="section-header">
+                    <h1>Transferencias Bancarias</h1>
+                    <p>Verificación y aprobación de transferencias manuales pendientes</p>
+                </div>
+
+                <!-- Filtros Mejorados -->
+                <div class="filters-bar">
+                    <div class="search-group">
+                        <input type="text" id="transferSearch" placeholder="Buscar por usuario, email o referencia...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                    <button class="filter-btn" id="refreshTransfers">
+                        <i class='bx bx-refresh'></i>
+                        Actualizar
+                    </button>
+                </div>
+
+                <!-- Tabla de Transferencias Mejorada -->
+                <div class="table-container">
+                    <table class="admin-table" id="transfersTable">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Carrera</th>
+                                <th>Monto</th>
+                                <th>Fecha Transfer.</th>
+                                <th>Comprobante</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transfersTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="loading-state" id="transfersLoading">
+                        <i class='bx bx-loader-alt'></i>
+                        <h3>Cargando transferencias</h3>
+                        <p>Obteniendo las últimas transacciones...</p>
+                    </div>
+                    
+                    <div class="empty-state" id="transfersEmpty" style="display: none;">
+                        <i class='bx bx-check-circle'></i>
+                        <h3>¡Todo al día!</h3>
+                        <p>No hay transferencias pendientes de revisión</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- All Payments Section -->
+            <section id="payments-section" class="content-section">
+                <div class="section-header">
+                    <h1>Historial de Pagos</h1>
+                    <p>Registro completo de todas las transacciones del sistema</p>
+                </div>
+
+                <!-- Filtros de Pagos -->
+                <div class="filters-bar">
+                    <div class="search-group">
+                        <input type="text" id="paymentsSearch" placeholder="Buscar pagos por usuario o ID...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                    <select id="paymentStatusFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="completado">Completado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="procesando">Procesando</option>
+                        <option value="en_revision_manual">En Revisión</option>
+                        <option value="fallido">Fallido</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                    <select id="paymentMethodFilter">
+                        <option value="">Todos los métodos</option>
+                        <option value="uala_bis">Ualá Bis</option>
+                        <option value="bank_transfer">Transferencia</option>
+                    </select>
+                </div>
+
+                <!-- Tabla de Pagos -->
+                <div class="table-container">
+                    <table class="admin-table" id="paymentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación Mejorada -->
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        <span id="paymentsInfo">Mostrando 0 de 0 pagos</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="paymentsPrevBtn" disabled>
+                            <i class='bx bx-chevron-left'></i>
+                        </button>
+                        <span class="pagination-numbers" id="paymentsPages"></span>
+                        <button class="pagination-btn" id="paymentsNextBtn" disabled>
+                            <i class='bx bx-chevron-right'></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subscriptions Section -->
+            <section id="subscriptions-section" class="content-section">
+                <div class="section-header">
+                    <h1>Gestión de Suscripciones</h1>
+                    <p>Administración de planes y suscripciones de usuarios</p>
+                </div>
+                
+                <!-- Content will be loaded dynamically -->
+                <div class="loading-state">
+                    <i class='bx bx-loader-alt'></i>
+                    <h3>Cargando suscripciones</h3>
+                    <p>Preparando la información de suscripciones...</p>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="content-section">
+                <div class="section-header">
+                    <h1>Búsqueda de Usuarios</h1>
+                    <p>Herramientas para encontrar y gestionar usuarios del sistema</p>
+                </div>
+
+                <!-- Búsqueda de Usuarios -->
+                <div class="user-search">
+                    <div class="filters-bar">
+                        <div class="search-group">
+                            <input type="text" id="userSearchInput" placeholder="Buscar por email, nombre o apellido...">
+                            <i class='bx bx-search'></i>
+                        </div>
+                        <button class="search-btn" id="userSearchBtn">
+                            <i class='bx bx-search'></i>
+                            Buscar Usuario
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resultados de Búsqueda -->
+                <div id="userResults" class="user-results">
+                    <div class="empty-state">
+                        <i class='bx bx-search-alt-2'></i>
+                        <h3>Búsqueda de Usuarios</h3>
+                        <p>Utiliza el buscador para encontrar usuarios específicos</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Detalles de Transferencia -->
+    <div class="modal-overlay" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles de Transferencia</h2>
+                <button class="modal-close" id="closeTransferModal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body" id="transferModalBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="rejectTransferBtn">
+                    <i class='bx bx-x'></i>
+                    Rechazar
+                </button>
+                <button class="btn btn-success" id="approveTransferBtn">
+                    <i class='bx bx-check'></i>
+                    Aprobar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Razón de Rechazo -->
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Motivo del Rechazo</h2>
+                <button class="modal-close" id="closeRejectModal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="rejectReason">Especifica el motivo del rechazo:</label>
+                    <textarea id="rejectReason" placeholder="Ej: Monto incorrecto, datos no coinciden, comprobante ilegible..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelRejectBtn">Cancelar</button>
+                <button class="btn btn-danger" id="confirmRejectBtn">
+                    <i class='bx bx-x'></i>
+                    Confirmar Rechazo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="userModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Detalles del Usuario</h2>
+            <button class="modal-close" id="closeUserModal">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+        <div class="modal-body" id="userModalBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="document.getElementById('userModal').classList.remove('show')">
+                <i class='bx bx-x'></i>
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Scripts -->
+    <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-theme-integration.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/admin-panel.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/theme-principal.js" nonce="<%= nonce %>"></script>
+</body>
+</html>alertas

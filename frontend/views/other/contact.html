@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Contáctanos</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/contac.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <a href="/" class="logo-link" aria-label="Paginadeinicio">
+              <div class="logo-img desktop-logo"></div>
+            </a>
+          </div>
+  <nav class="nav-buttons desktop-nav">
+    <a href="faq"> <button class="faq-btn">
+        <i class='bx bx-help-circle'></i>
+        FAQ
+    </button>
+</a>
+    
+    <a href="/login">
+        <button class="ingresar-btn">
+            <i class='bx bx-log-in'></i>
+            Ingresar
+        </button>
+        </a>
+  </nav>
+  <div class="mobile-nav" style="display: none;">
+    <button class="menu-toggle">☰</button>
+    <div class="mobile-menu" style="display: none;">
+      <a href="/other/faq" class="faq-btn">FAQ</a>
+      <a href="/auth/login" class="ingresar-btn">Ingresar</a>
+    </div>
+  </div>   
+                        <!-- header responsibe -->
+  
+
+    </header>
+
+
+    <main class="contact-container">
+        <div class="contact-content">
+            <div class="contact-form-section">
+                <h1>¿Necesita contactarnos?</h1>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="fullName">Nombre Completo</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Acadelia" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Razón para contactarnos</label>
+                        <div class="select-wrapper">
+                            <select id="reason" name="reason" required>
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="support">Technical Support</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="partnership">Partnership Inquiry</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo</label>
+                        <input type="email" id="email" name="email" placeholder="Ejemplo@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Mensaje</label>
+                        <textarea id="message" name="message" placeholder="Tu mensaje" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Enviar Mensaje</button>
+                </form>
+                <div id="mensajeExito" class="mensaje-estilo"></div>
+
+            </div>
+            <div class="contact-image-section">
+                <div class="image-grid">
+                    <img src="/images/chiguire-info-image.webp"  alt="Image 1">
+                    <img src="/images/chigui-image.webp" alt="Image 2">
+                    <img src="/images/contac-image.webp" alt="Image 3">
+                    <img src="/images/chicon-image.webp" alt="Image 4">
+              
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Columna Izquierda -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-img"></div>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                            <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                            </svg>                    </a>
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class='bx bxl-instagram-alt'></i>
+                    </a>
+                    <a href="mailto:contacto@ejemplo.com" class="social-link" aria-label="Email">
+                        <i class='bx bx-envelope'></i>
+                    </a>
+                </div>
+                <p class="copyright">© Acadelia.</p>
+            </div>
+    
+            <!-- Columna Derecha -->
+            <div class="footer-legal">
+                <h3 class="legal-title">Legal y Seguridad</h3>
+                <div class="legal-links">
+                    <a href="/cookie_privacy" class="legal-link">Política y Privacidad</a>
+                    <a href="/terminos_condiciones" class="legal-link">Terminos y Condiciones</a>
+                    <a href="/contact" class="legal-link">Contáctanos</a>
+
+
+                </div>
+            </div>
+        </div>
+    </footer>
+    </main>
+    
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+
+    <script src="/scripts/contacto.js" nonce="<%= nonce %>"></script>   
+    <script src="/scripts/autenticarcontact.js" nonce="<%= nonce %>"></script>
+
+    </body>
+    </html>

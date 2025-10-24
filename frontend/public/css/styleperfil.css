@@ -1,0 +1,584 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+:root {
+  /* Paleta de colores consistente con los otros diseños */
+  --primary-color: #656d4a;
+  --secondary-color: #a4ac86;
+  --primary-gradient: linear-gradient(135deg, #656d4a, #a4ac86);
+  --dark-green: #414833;
+  --bg-color: #f0efe7;
+  --marron: #582f0e;
+  --marron-oscuro: #442409;
+  --text-color: #333;
+  --light-text: #f0efe7;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --input-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  --transition: all 0.4s ease;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  overflow-x: hidden;
+  padding: 2rem 0;
+}
+
+/* Contenedor principal */
+.page-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo */
+.logo-container {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.logo-link {
+  display: block;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+  transition: filter 0.3s ease;
+}
+
+.logo:hover {
+  filter: brightness(1.1);
+}
+
+/* Wrapper principal */
+.wrapper {
+  background-color: var(--bg-color);
+  width: 850px;
+  max-width: 100%;
+  min-height: 550px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Contenedor de paneles laterales */
+.panels-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  min-height: 100%;
+  padding: 0 40px;
+  text-align: center;
+  position: absolute;
+  transition: transform 0.9s ease-in-out;
+  z-index: 7;
+}
+
+.left-panel {
+  transform: translateX(-10%);
+  pointer-events: all;
+  opacity: 1;
+  left: 0;
+}
+
+/* Paneles de imagen */
+.panel-image {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+  object-fit: cover;
+  aspect-ratio: 4/3;
+}
+
+.panel-content {
+  color: var(--light-text);
+  z-index: 8;
+}
+
+.panel h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.panel p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 300px;
+}
+
+/* Superposición (overlay) */
+.wrapper::before {
+  content: "";
+  position: absolute;
+  width: 2000px;
+  height: 1000px;
+  top: 0%;
+  right: 50%;
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  z-index: 6;
+  transition: 1.8s ease-in-out;
+  transform-origin: bottom right;
+}
+
+/* Contenedor de formularios */
+.forms-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.profile-container {
+  right: 0;
+  z-index: 2;
+}
+
+/* Estilos para formularios */
+form {
+  background-color: var(--bg-color);
+  width: 100%;
+  max-width: 380px;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-description {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.input-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.input-box input, 
+.input-box select {
+  width: 100%;
+  height: 45px;
+  background: var(--bg-color);
+  border: none;
+  outline: none;
+  padding: 0 15px 0 40px;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: var(--input-shadow);
+  transition: var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Clase específica para inputs tipo date con valor */
+.input-box input[type="date"].has-value,
+.input-box input[type="date"]:valid {
+  color: var(--text-color);
+}
+
+.input-box input:focus,
+.input-box select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(101, 109, 74, 0.2);
+}
+
+.input-box label {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: #888;
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label,
+.input-box select:focus ~ label,
+.input-box select:valid ~ label {
+  top: -10px;
+  left: 15px;
+  font-size: 0.8rem;
+  background: var(--bg-color);
+  padding: 0 5px;
+  color: var(--primary-color);
+}
+
+.input-box i {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #888;
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+.input-box input:focus ~ i,
+.input-box input:valid ~ i,
+.input-box select:focus ~ i,
+.input-box select:valid ~ i {
+  color: var(--primary-color);
+}
+
+/* Calendar icon specific */
+#calendarIcon {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Botón principal */
+.btn {
+  width: 100%;
+  height: 50px;
+  background: var(--marron);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  margin-top: 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 30px;
+  background: var(--marron-oscuro);
+  z-index: -1;
+  transition: var(--transition);
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: var(--marron-oscuro);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn i {
+  font-size: 1.2rem;
+}
+
+/* Modal de éxito */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--bg-color);
+  margin: auto;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  position: relative;
+  box-shadow: var(--box-shadow);
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.close-btn:hover {
+  color: var(--marron);
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  background: #4caf50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.success-icon i {
+  font-size: 40px;
+  color: white;
+}
+
+.modal h2 {
+  color: var(--marron);
+  margin-bottom: 1rem;
+}
+
+.modal p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Alertas personalizadas */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 400px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 10000;
+  opacity: 0;
+  transform: translateX(120%);
+  transition: all 0.4s ease;
+}
+
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.alert-success {
+  background: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+  color: #2e7d32;
+}
+
+.alert-error {
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.alert-warning {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  color: #ef6c00;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  color: #1565c0;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.alert-content {
+  flex-grow: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 870px) {
+  .wrapper {
+    min-height: 680px;
+    height: auto;
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .panels-container {
+    display: none;
+  }
+
+  .wrapper::before {
+    display: none;
+  }
+
+  .profile-container {
+    width: 100%;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+  }
+  
+  .logo-container {
+    top: -50px;
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  form h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    width: 95%;
+    padding: 0;
+  }
+
+  .logo-container {
+    top: -45px;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
+  .profile-container {
+    padding: 1rem;
+  }
+
+  .input-box {
+    margin-bottom: 1.2rem;
+  }
+
+  .input-box input,
+  .input-box select {
+    font-size: 0.9rem;
+    height: 42px;
+  }
+
+  .btn {
+    height: 45px;
+    font-size: 0.95rem;
+  }
+
+  .form-description {
+    font-size: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+}
+
+/* Datepicker customization */
+input[type="date"] {
+  color: var(--text-color);
+  font-family: "Poppins", sans-serif;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Estilos para cuando el campo tiene valor */
+input[type="date"]:valid {
+  color: var(--text-color);
+}
+
+/* Cuando el campo está vacío */
+input[type="date"]:invalid {
+  color: transparent;
+}
+
+@media (min-width: 1024px) and (max-width: 1600px) {
+  .extra-space {
+      display: block;
+      height: 35px;
+  }
+}

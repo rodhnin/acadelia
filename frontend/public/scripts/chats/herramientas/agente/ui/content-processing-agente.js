@@ -1,0 +1,2013 @@
+/**
+ * content-processing.js - Módulo para procesamiento de contenido multimodal agente
+ * ACTUALIZADO: Con soporte completo para documentos clickeables
+ */
+
+import { parseMarkdownToHTML } from '../utils/markdown-agente.js';
+
+// Variable para almacenar la función initializeFileAttachmentHandlers
+let _initializeFileAttachmentHandlers = null;
+
+/**
+ * Módulo para procesamiento de contenido multimodal con soporte para documentos clickeables
+ */
+const contentProcessing = {
+  // Método para inicializar la referencia a initializeFileAttachmentHandlers
+  initialize(config) {
+    if (config && typeof config.initializeFileAttachmentHandlers === 'function') {
+      _initializeFileAttachmentHandlers = config.initializeFileAttachmentHandlers;
+    }
+  },
+
+  // Caché para mejorar rendimiento de JSON parsing
+  _parseCache: new Map(),
+  _cacheLimit: 50,
+
+  /**
+   * Parsea JSON preservando expresiones matemáticas/LaTeX
+   * @param {string} jsonText - Texto JSON que puede contener expresiones LaTeX
+   * @returns {Object|string} - Objeto parseado o texto original si falla
+   */
+  parseJsonPreservingMath(jsonText) {
+    // Validaciones rápidas iniciales
+    if (typeof jsonText !== 'string') return jsonText;
+    if (!jsonText.trim().startsWith('{') && !jsonText.trim().startsWith('[')) {
+      return jsonText;
+    }
+
+    // Usar caché para mejorar rendimiento
+    const cacheKey = jsonText.length > 100
+      ? jsonText.substring(0, 50) + jsonText.length + jsonText.substring(jsonText.length - 50)
+      : jsonText;
+
+    if (this._parseCache.has(cacheKey)) {
+      return this._parseCache.get(cacheKey);
+    }
+
+    // Intentar parsear directamente primero
+    let result;
+    try {
+      result = JSON.parse(jsonText);
+    } catch (e) {
+      // Si falla, probar estrategias alternativas
+      try {
+        // Caso 1: JSON con comillas extras
+        if (jsonText.trim().startsWith('"') && jsonText.trim().endsWith('"')) {
+          const innerJson = jsonText.slice(1, -1).replace(/\\"/g, '"');
+          return this.parseJsonPreservingMath(innerJson);
+        }
+
+        // Caso 2: JSON con LaTeX - usar tokens para preservar expresiones
+        const replacements = [
+          { pattern: /\\\\int/g, token: "__INT__" },
+          { pattern: /\\\\frac/g, token: "__FRAC__" },
+          { pattern: /\\\\sin/g, token: "__SIN__" },
+          { pattern: /\\\\cos/g, token: "__COS__" },
+          { pattern: /\\\\tan/g, token: "__TAN__" },
+          { pattern: /\\\\cot/g, token: "__COT__" },
+          { pattern: /\\\\sec/g, token: "__SEC__" },
+          { pattern: /\\\\csc/g, token: "__CSC__" },
+          { pattern: /\\\\ln/g, token: "__LN__" },
+          { pattern: /\\\\log/g, token: "__LOG__" },
+          { pattern: /\\\\exp/g, token: "__EXP__" },
+          { pattern: /\\\\quad/g, token: "__QUAD__" },
+          { pattern: /\\\\neq/g, token: "__NEQ__" },
+          { pattern: /\\\|/g, token: "__PIPE__" },
+          { pattern: /\\{/g, token: "__LBRACE__" },
+          { pattern: /\\}/g, token: "__RBRACE__" },
+          { pattern: /\\\\/g, token: "__BSLASH__" }
+        ];
+
+        // Aplicar reemplazos y parsear
+        let processedJson = jsonText;
+        for (const { pattern, token } of replacements) {
+          processedJson = processedJson.replace(pattern, token);
+        }
+
+        const parsed = JSON.parse(processedJson);
+
+        // Restaurar tokens a expresiones LaTeX originales
+        const restoreTokens = (obj) => {
+          if (typeof obj === 'string') {
+            let result = obj;
+            const originalMap = {
+              "__INT__": "\\\\int", "__FRAC__": "\\\\frac", "__SIN__": "\\\\sin",
+              "__COS__": "\\\\cos", "__TAN__": "\\\\tan", "__COT__": "\\\\cot",
+              "__SEC__": "\\\\sec", "__CSC__": "\\\\csc", "__LN__": "\\\\ln",
+              "__LOG__": "\\\\log", "__EXP__": "\\\\exp", "__QUAD__": "\\\\quad",
+              "__NEQ__": "\\\\neq", "__PIPE__": "\\|", "__LBRACE__": "\\{",
+              "__RBRACE__": "\\}", "__BSLASH__": "\\\\"
+            };
+
+            for (const token in originalMap) {
+              result = result.replace(new RegExp(token, 'g'), originalMap[token]);
+            }
+            return result;
+          } else if (Array.isArray(obj)) {
+            return obj.map(restoreTokens);
+          } else if (obj && typeof obj === 'object') {
+            const result = {};
+            for (const key in obj) {
+              result[key] = restoreTokens(obj[key]);
+            }
+            return result;
+          }
+          return obj;
+        };
+
+        result = restoreTokens(parsed);
+      } catch (error) {
+        // Si todo falla, devolver el texto original
+        result = jsonText;
+      }
+    }
+
+    // Guardar en caché y mantener límite
+    this._parseCache.set(cacheKey, result);
+    if (this._parseCache.size > this._cacheLimit) {
+      const firstKey = this._parseCache.keys().next().value;
+      this._parseCache.delete(firstKey);
+    }
+
+    return result;
+  },
+
+  /**
+   * ⭐ NUEVO: Detecta y procesa contenido multimodal con soporte para documentos ⭐
+   * @param {string} content - Contenido a analizar
+   * @param {boolean} isAIResponse - Si es respuesta de IA o mensaje de usuario
+   * @returns {string} - Contenido procesado en formato HTML o contenido original
+   */
+detectMultimodalContent(content, isAIResponse = false) {
+  // Validación inicial
+  if (typeof content !== 'string') return content;
+  
+  // PUNTO CRÍTICO: Si es respuesta de IA, siempre devolver el contenido original sin procesar
+  if (isAIResponse) {
+    return content;
+  }
+  
+  // Verificación rápida para exámenes
+  if ((content.includes('"type":"exam"') || content.includes('"exam":')) &&
+      (content.includes('"questions":[') || content.includes('"questions":'))) {
+    try {
+      const parsedExam = this.parseJsonPreservingMath(content);
+      if (parsedExam && (parsedExam.type === 'exam' || parsedExam.exam)) {
+        return content;
+      }
+    } catch (e) {
+      console.warn('Error al intentar procesar examen:', e);
+    }
+  }
+  
+  // Verificar directamente si es un JSON completo
+  let originalJsonData = null;
+  if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
+    try {
+      originalJsonData = this.parseJsonPreservingMath(content);
+      console.log("JSON detectado y parseado exitosamente");
+    } catch (e) {
+      console.warn('Error al parsear contenido como JSON:', e);
+    }
+  }
+  
+  // Detección multimodal estándar
+  const hasMultimodalHTML = content.includes('<div class="multimodal-container">');
+  const isJson = content.startsWith('{') && content.endsWith('}');
+  
+  // ⭐ NUEVO: Detección mejorada de imágenes Y documentos ⭐
+  let hasImageIndicator = false;
+  let hasDocumentIndicator = false;
+
+  // Verificar si hay un JSON con hasImage: true o hasDocuments: true
+  if (originalJsonData) {
+    hasImageIndicator = originalJsonData.hasImage === true;
+    hasDocumentIndicator = originalJsonData.hasDocuments === true;
+  }
+  // Verificar palabras clave en texto plano
+  else if (content.includes('imagen adjunta') || content.includes('imágenes adjuntas')) {
+    const isInCode = content.includes('```') &&
+      content.includes('imagen adjunta') &&
+      content.indexOf('```') < content.indexOf('imagen adjunta');
+
+    const isInExample = /ejemplo.*imagen adjunta|imagen adjunta.*ejemplo/i.test(content);
+
+    hasImageIndicator = !isInCode && !isInExample &&
+      (/\bimagen adjunta\b/i.test(content) ||
+       /\bimágenes adjuntas\b/i.test(content));
+  }
+
+  // ⭐ NUEVO: Detectar documentos ⭐
+  if (content.includes('documento adjunto') || content.includes('documentos adjuntos') ||
+      content.includes('archivo adjunto') || content.includes('archivos adjuntos')) {
+    hasDocumentIndicator = true;
+  }
+
+  // ⭐ AGREGAR DESPUÉS DE hasDocumentIndicator: DETECCIÓN DE AUDIO ⭐
+  const hasAudioIndicator = this._hasAudioContent(content);
+
+  // ⭐ DETECCIÓN DE AUDIO EN JSON ⭐
+  let hasAudioInJson = false;
+  if (originalJsonData) {
+    hasAudioInJson = originalJsonData.hasAudio === true ||
+      (originalJsonData.audioFiles && Array.isArray(originalJsonData.audioFiles)) ||
+      originalJsonData.type === 'audio';
+  }
+
+  // Si hay indicadores de audio, procesarlo
+  if (hasAudioIndicator || hasAudioInJson) {
+    console.log('Detectado contenido de audio, procesando...');
+    
+    if (originalJsonData && (hasAudioInJson || originalJsonData.audioFiles)) {
+      return this._formatMultimodalContent(originalJsonData);
+    } else {
+      // Procesar texto con audio
+      return this._formatAudioContent(content);
+    }
+  }
+
+  // Si no hay indicadores, devolver contenido original
+  if (!hasMultimodalHTML && !hasImageIndicator && !hasDocumentIndicator && 
+      !(originalJsonData && (originalJsonData.hasImage || originalJsonData.hasDocuments))) {
+    return content;
+  }
+
+  // Si ya es HTML multimodal, no modificar
+  if (hasMultimodalHTML) {
+    return content;
+  }
+
+  // ⭐ CASO PARA JSON MULTIMODAL COMPLETO CON IMÁGENES Y/O DOCUMENTOS ⭐
+  if (originalJsonData) {
+    // Verificar si es multimodal con imágenes
+    if (originalJsonData.hasImage === true &&
+        originalJsonData.images &&
+        Array.isArray(originalJsonData.images) &&
+        originalJsonData.images.length > 0) {
+      
+      return this._formatMultimodalContent(originalJsonData);
+    }
+
+    // ⭐ NUEVO: Verificar si es multimodal con documentos ⭐
+    if (originalJsonData.hasDocuments === true &&
+        originalJsonData.documents &&
+        Array.isArray(originalJsonData.documents) &&
+        originalJsonData.documents.length > 0) {
+      
+      return this._formatMultimodalContent(originalJsonData);
+    }
+
+    // Si tiene flag pero no array válido
+    if (originalJsonData.hasImage === true || originalJsonData.hasDocuments === true) {
+      return this._formatMultimodalContent(originalJsonData);
+    }
+  }
+
+  // CASO PARA JSON ESTRUCTURADO CON IMÁGENES O DOCUMENTOS
+  if ((isJson) && (hasImageIndicator || hasDocumentIndicator)) {
+    try {
+      const jsonData = this._extractMultimodalJson(content);
+      if (jsonData) {
+        return this._formatMultimodalContent(jsonData);
+      }
+    } catch (err) {
+      console.warn('Error procesando JSON multimodal:', err);
+    }
+  }
+
+  // Si no se pudo procesar, devolver contenido original
+  return content;
+},
+
+  /**
+   * ⭐ NUEVO: Extrae información de imágenes Y documentos de JSON ⭐
+   * @private
+   */
+  _extractMultimodalJson(content) {
+    // CASO 1: JSON doblemente serializado
+    if (content.startsWith('"') && content.endsWith('"') && content.includes('\\"')) {
+      try {
+        const parsedOuter = JSON.parse(content);
+        
+        if (typeof parsedOuter === 'string') {
+          if ((parsedOuter.startsWith('{') || parsedOuter.startsWith('[')) &&
+              (parsedOuter.endsWith('}') || parsedOuter.endsWith(']'))) {
+            try {
+              const innerParsed = JSON.parse(parsedOuter);
+              
+              if (innerParsed && (
+                (innerParsed.images && Array.isArray(innerParsed.images)) ||
+                (innerParsed.documents && Array.isArray(innerParsed.documents))
+              )) {
+                innerParsed.hasImage = innerParsed.images && innerParsed.images.length > 0;
+                innerParsed.hasDocuments = innerParsed.documents && innerParsed.documents.length > 0;
+                return innerParsed;
+              }
+
+              return innerParsed;
+            } catch (e) {
+              return { text: parsedOuter };
+            }
+          } else {
+            return { text: parsedOuter };
+          }
+        } else if (typeof parsedOuter === 'object' && parsedOuter !== null) {
+          return parsedOuter;
+        }
+
+        return parsedOuter;
+      } catch (e) {
+        console.warn('Error procesando JSON doblemente serializado:', e);
+      }
+    }
+    
+    // CASO 2: JSON directo
+    if (content.startsWith('{') && content.endsWith('}')) {
+      try {
+        const parsed = this.parseJsonPreservingMath(content);
+
+        if (parsed) {
+          // Imágenes o documentos directos en raíz
+          if ((parsed.images && Array.isArray(parsed.images)) ||
+              (parsed.documents && Array.isArray(parsed.documents))) {
+            return parsed;
+          }
+
+          // Imágenes o documentos en data o message
+          if (parsed.data && (
+            (parsed.data.images && Array.isArray(parsed.data.images)) ||
+            (parsed.data.documents && Array.isArray(parsed.data.documents))
+          )) {
+            parsed.images = parsed.data.images || parsed.images;
+            parsed.documents = parsed.data.documents || parsed.documents;
+            return parsed;
+          }
+
+          if (parsed.message && (
+            (parsed.message.images && Array.isArray(parsed.message.images)) ||
+            (parsed.message.documents && Array.isArray(parsed.message.documents))
+          )) {
+            parsed.images = parsed.message.images || parsed.images;
+            parsed.documents = parsed.message.documents || parsed.documents;
+            return parsed;
+          }
+        }
+
+        return parsed;
+      } catch (e) {
+        console.warn('Error procesando JSON directo:', e);
+      }
+    }
+
+    // CASO 3: Extracción por patrones regulares
+    const hasImageMatch = content.match(/[\"']hasImage[\"']\s*:\s*(true|false)/);
+    const hasDocumentsMatch = content.match(/[\"']hasDocuments[\"']\s*:\s*(true|false)/);
+    const imageCountMatch = content.match(/[\"']imageCount[\"']\s*:\s*(\d+)/);
+    const documentCountMatch = content.match(/[\"']documentCount[\"']\s*:\s*(\d+)/);
+    const imagesPathMatch = content.match(/[\"']path[\"']\s*:\s*[\"']([^\"']*)[\"']/);
+
+    if (hasImageMatch || hasDocumentsMatch || imageCountMatch || documentCountMatch || imagesPathMatch) {
+      const result = {
+        text: '',
+        hasImage: hasImageMatch ? hasImageMatch[1] === 'true' : false,
+        hasDocuments: hasDocumentsMatch ? hasDocumentsMatch[1] === 'true' : false,
+        imageCount: imageCountMatch ? parseInt(imageCountMatch[1], 10) : 0,
+        documentCount: documentCountMatch ? parseInt(documentCountMatch[1], 10) : 0
+      };
+
+      // Extraer imágenes si se encuentran
+      if (imagesPathMatch) {
+        result.images = [{
+          path: imagesPathMatch[1],
+          type: 'image'
+        }];
+      }
+
+      return result;
+    }
+
+    return null;
+  },
+
+  /**
+   * ⭐ NUEVO: Formatea contenido multimodal con imágenes Y documentos ⭐
+   * @private
+   * @param {Object} jsonData - Datos JSON con estructura multimodal
+   * @returns {string} HTML formateado
+   */
+_formatMultimodalContent(jsonData) {
+  if (!jsonData) return '';
+
+  // Extraer datos
+  const text = jsonData.text || '';
+  const images = jsonData.images || [];
+  const documents = jsonData.documents || [];
+  const audioFiles = jsonData.audioFiles || []; // ⭐ NUEVO: soporte para audio
+  const hasImages = images.length > 0 || jsonData.hasImage === true;
+  const hasDocuments = documents.length > 0 || jsonData.hasDocuments === true;
+  const hasAudio = audioFiles.length > 0 || jsonData.hasAudio === true; // ⭐ NUEVO
+  const imageCount = jsonData.imageCount || jsonData.totalImageCount || images.length || 0;
+  const documentCount = jsonData.documentCount || jsonData.totalDocumentCount || documents.length || 0;
+  const audioCount = jsonData.audioCount || jsonData.totalAudioCount || audioFiles.length || 0; // ⭐ NUEVO
+
+  // Crear estructura HTML base
+  let html = '<div class="multimodal-container">';
+
+  // Agregar texto si existe y no es una consulta predeterminada
+  const cleanedText = text.trim();
+  const isDefaultQuery = ["Consulta con imagen", "Analiza esta imagen:", "Consulta con archivos adjuntos", ""].includes(cleanedText);
+
+  if (!isDefaultQuery && cleanedText) {
+    html += `<div class="multimodal-text">${parseMarkdownToHTML ? parseMarkdownToHTML(cleanedText) : cleanedText}</div>`;
+  }
+
+  // Contenedor para adjuntos
+  html += `<div class="multimodal-attachments">`;
+
+  // ⭐ PROCESAR IMÁGENES ⭐
+  if (images.length > 0) {
+    // Filtrar imágenes válidas con path
+    const validImages = images.filter(img => img && img.path);
+
+    if (validImages.length > 0) {
+    html += `<div class="chat-image-gallery">`;
+    validImages.forEach(img => {
+      html += `
+        <div class="chat-image-item clickable" onclick="window.showFullImage('${_escapeHtml(img.path)}')">
+          <img src="${_escapeHtml(img.path)}" alt="Imagen adjunta">
+        </div>
+      `;
+    });
+    html += `</div>`;
+    } else {
+      // Mostrar indicador genérico si hay imágenes pero sin path
+      const fileConfig = this._getFileIconAndColor('image');
+      const imgCount = imageCount || images.length;
+      const imageLabel = imgCount === 1 ? 'imagen' : 'imágenes';
+
+      html += `
+      <div class="attachment-indicator image">
+        <i class="bx ${fileConfig.icon}"></i>
+        <span>${imgCount} ${imageLabel} adjunta${imgCount !== 1 ? 's' : ''}</span>
+      </div>
+    `;
+    }
+  } else if (hasImages) {
+    // Mostrar indicador genérico si hay flag de imagen pero no array
+    const fileConfig = this._getFileIconAndColor('image');
+    const imgCount = imageCount || 1;
+    const imageLabel = imgCount === 1 ? 'imagen' : 'imágenes';
+
+    html += `
+    <div class="attachment-indicator image">
+      <i class="bx ${fileConfig.icon}"></i>
+      <span>${imgCount} ${imageLabel} adjunta${imgCount !== 1 ? 's' : ''}</span>
+    </div>
+  `;
+  }
+
+  // ⭐ PROCESAR DOCUMENTOS ⭐
+  if (documents.length > 0) {
+    // Filtrar documentos válidos con fileId
+    const validDocuments = documents.filter(doc => doc && doc.fileId);
+
+    if (validDocuments.length > 0) {
+      html += `<div class="document-previews">`;
+
+      validDocuments.forEach(doc => {
+        const fileConfig = this._getFileIconAndColor(doc.attachmentType || 'document');
+        const fileName = this._truncateFileName(doc.originalName || 'Documento', 25);
+        
+        html += `
+        <div class="document-preview clickable" 
+             data-file-id="${doc.fileId}" 
+             data-file-name="${doc.originalName || 'Documento'}"
+             data-attachment-type="${doc.attachmentType || 'document'}"
+             data-language="${doc.language || ''}"
+             title="${doc.originalName || 'Documento'}">
+          <i class="bx ${fileConfig.icon} document-icon"></i>
+          <span class="document-name">${fileName}</span>
+          <small class="document-size">${this._formatFileSize(doc.fileSize || 0)}</small>
+        </div>
+      `;
+      });
+
+      html += `</div>`;
+    } else {
+      // Mostrar indicador genérico si hay documentos pero sin fileId
+      const fileConfig = this._getFileIconAndColor('document');
+      const docCount = documentCount || documents.length;
+      const documentLabel = docCount === 1 ? 'documento' : 'documentos';
+
+      html += `
+      <div class="attachment-indicator document">
+        <i class="bx ${fileConfig.icon}"></i>
+        <span>${docCount} ${documentLabel} adjunto${docCount !== 1 ? 's' : ''}</span>
+      </div>
+    `;
+    }
+  } else if (hasDocuments) {
+    // Mostrar indicador genérico si hay flag de documento pero no array
+    const fileConfig = this._getFileIconAndColor('document');
+    const docCount = documentCount || 1;
+    const documentLabel = docCount === 1 ? 'documento' : 'documentos';
+
+    html += `
+    <div class="attachment-indicator document">
+      <i class="bx ${fileConfig.icon}"></i>
+      <span>${docCount} ${documentLabel} adjunto${docCount !== 1 ? 's' : ''}</span>
+    </div>
+  `;
+  }
+
+  // ⭐ PROCESAR ARCHIVOS DE AUDIO - NUEVO ⭐
+  if (audioFiles.length > 0) {
+    // Filtrar archivos de audio válidos
+    const validAudioFiles = audioFiles.filter(audio => audio && (audio.fileName || audio.originalName));
+
+    if (validAudioFiles.length > 0) {
+      html += `<div class="audio-files-section">`;
+      
+      validAudioFiles.forEach(audio => {
+        const fileName = this._truncateFileName(audio.originalName || audio.fileName || 'Audio', 25);
+        const duration = audio.duration || 'No disponible';
+        const format = audio.format ? audio.format.split('/')[1]?.toUpperCase() || 'AUDIO' : 'AUDIO';
+        const size = this._formatFileSize(audio.size || 0);
+        const source = audio.source || 'archivo de audio';
+        
+        html += `
+          <div class="enhanced-audio-item">
+            <div class="audio-preview-visual">
+              <div class="audio-icon-wrapper">
+                <i class="bx bxs-music"></i>
+                <span class="format-badge">${format}</span>
+              </div>
+              <div class="audio-waveform">
+                <div class="wave-bar" style="height: 20%"></div>
+                <div class="wave-bar" style="height: 45%"></div>
+                <div class="wave-bar" style="height: 70%"></div>
+                <div class="wave-bar" style="height: 35%"></div>
+                <div class="wave-bar" style="height: 80%"></div>
+                <div class="wave-bar" style="height: 25%"></div>
+              </div>
+            </div>
+            
+            <div class="audio-info-section">
+              <h5 class="audio-title">${fileName}</h5>
+              <div class="audio-specs">
+                <span class="spec-item"><i class="bx bx-time"></i> ${duration}</span>
+                <span class="spec-item"><i class="bx bx-data"></i> ${size}</span>
+                <span class="spec-item"><i class="bx bx-check-circle"></i> Transcrito</span>
+              </div>
+              <div class="audio-source">
+                <i class="bx bx-info-circle"></i>
+                <span>Fuente: ${source}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+    } else {
+      // Mostrar indicador genérico si hay audio pero sin datos completos
+      const fileConfig = this._getFileIconAndColor('audio');
+      const audCount = audioCount || audioFiles.length;
+      const audioLabel = audCount === 1 ? 'archivo de audio' : 'archivos de audio';
+
+      html += `
+      <div class="attachment-indicator audio">
+        <i class="bx ${fileConfig.icon}"></i>
+        <span>${audCount} ${audioLabel} adjunto${audCount !== 1 ? 's' : ''}</span>
+      </div>
+    `;
+    }
+  } else if (hasAudio) {
+    // Mostrar indicador genérico si hay flag de audio pero no array
+    const fileConfig = this._getFileIconAndColor('audio');
+    const audCount = audioCount || 1;
+    const audioLabel = audCount === 1 ? 'archivo de audio' : 'archivos de audio';
+
+    html += `
+    <div class="attachment-indicator audio">
+      <i class="bx ${fileConfig.icon}"></i>
+      <span>${audCount} ${audioLabel} adjunto${audCount !== 1 ? 's' : ''}</span>
+    </div>
+  `;
+  }
+
+  // Cerrar contenedores
+  html += '</div></div>';
+
+  return html;
+},
+
+/**
+ * Detecta si el contenido tiene información de audio
+ */
+_hasAudioContent(content) {
+  return content.includes('Archivo de audio grabado:') ||
+         content.includes('Archivo de audio subido:') ||
+         content.includes('Subió archivo de audio:') ||  // ← NUEVO PATRÓN
+         content.includes('📊 Detalles del archivo:') ||
+         (content.includes('Duración:') && content.includes('Formato:') && content.includes('audio'));
+},
+
+/**
+ * Extrae información de audio del texto
+ */
+_extractAudioDataFromText(content) {
+  const audioData = {
+    fileName: 'Audio',
+    duration: 'No disponible',
+    format: 'AUDIO',
+    size: 'No disponible',
+    source: 'archivo de audio',
+    timestamp: new Date().toLocaleString()
+  };
+
+  // Extraer nombre del archivo - PATRÓN ACTUALIZADO
+  const nameMatch = content.match(/Subió archivo de audio:\s*([^\n]+)/) ||
+                   content.match(/Archivo de audio subido:\s*([^\n]+)/) ||
+                   content.match(/Archivo de audio grabado:\s*([^\n]+)/) ||
+                   content.match(/\*\*Nombre:\*\*\s*([^\n]+)/);
+  if (nameMatch) {
+    audioData.fileName = nameMatch[1].trim();
+  }
+
+  // Extraer duración
+  const durationMatch = content.match(/\*\*Duración:\*\*\s*([^\n]+)/);
+  if (durationMatch) {
+    audioData.duration = durationMatch[1].trim();
+  }
+
+  // Extraer tamaño
+  const sizeMatch = content.match(/\*\*Tamaño:\*\*\s*([^\n]+)/);
+  if (sizeMatch) {
+    audioData.size = sizeMatch[1].trim();
+  }
+
+  // Extraer formato
+  const formatMatch = content.match(/\*\*Formato:\*\*\s*([^\n]+)/);
+  if (formatMatch) {
+    audioData.format = formatMatch[1].trim();
+  }
+
+  // Determinar fuente
+  if (content.includes('grabado')) {
+    audioData.source = 'grabación directa';
+  } else if (content.includes('subido') || content.includes('Subió')) {
+    audioData.source = 'archivo subido';
+  }
+
+  // Si no se pudo extraer formato, intentar desde el nombre del archivo
+  if (!audioData.format && audioData.fileName) {
+    const extension = audioData.fileName.split('.').pop();
+    if (extension) {
+      audioData.format = extension.toUpperCase();
+    }
+  }
+
+  return audioData;
+},
+
+/**
+ * Formatea contenido que contiene audio
+ */
+_formatAudioContent(content) {
+  const audioData = this._extractAudioDataFromText(content);
+  
+  // Extraer texto descriptivo si existe
+  const textMatch = content.match(/^([^*]+)(?=\*\*)/);
+  const descriptiveText = textMatch ? textMatch[1].trim() : '';
+
+  let html = '<div class="multimodal-container audio-focused">';
+
+  // Agregar texto descriptivo si existe
+  if (descriptiveText) {
+    html += `<div class="multimodal-text">${this._escapeHtml(descriptiveText)}</div>`;
+  }
+
+  // Agregar el componente de audio mejorado
+  html += `
+    <div class="multimodal-attachments">
+      <div class="enhanced-audio-item standalone">
+        <div class="audio-preview-visual">
+          <div class="audio-icon-wrapper">
+            <i class="bx bxs-music"></i>
+            <span class="format-badge">${audioData.format}</span>
+          </div>
+          <div class="audio-waveform mini">
+            <div class="wave-bar" style="height: 30%"></div>
+            <div class="wave-bar" style="height: 60%"></div>
+            <div class="wave-bar" style="height: 40%"></div>
+            <div class="wave-bar" style="height: 80%"></div>
+            <div class="wave-bar" style="height: 20%"></div>
+          </div>
+        </div>
+        
+        <div class="audio-info-section">
+          <h5 class="audio-title" title="${this._escapeHtml(audioData.fileName)}">${this._escapeHtml(audioData.fileName)}</h5>
+          <div class="audio-specs">
+            <span class="spec-item"><i class="bx bx-check-circle"></i> Transcrito</span>
+          </div>
+          <div class="audio-source">
+            <i class="bx bx-info-circle"></i>
+            <span title="${this._escapeHtml(audioData.source)}">Fuente: ${this._escapeHtml(audioData.source)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  html += '</div>';
+  return html;
+},
+
+  /**
+   * ⭐ NUEVO: Limpia y procesa elementos multimodales existentes en el DOM ⭐
+   * @param {HTMLElement} container - Contenedor con elementos multimodales
+   * @param {boolean} isAIMessage - Si es mensaje de IA
+   * @returns {boolean} - true si se realizaron cambios
+   */
+  cleanMultimodalExistingContent(container, isAIMessage = false) {
+    // Detectar automáticamente si es mensaje de IA si no se especifica
+    if (isAIMessage === undefined) {
+      isAIMessage = container.closest('.ai-message') !== null;
+    }
+
+    // PUNTO CRÍTICO: Si es mensaje de IA, NO procesar nada
+    if (isAIMessage) {
+      return false;
+    }
+
+    // Verificar si hay contenedores multimodales para limpiar
+    const multimodalContainers = container.querySelectorAll('.multimodal-container');
+    if (multimodalContainers.length === 0) return false;
+
+    // Limpiar cada contenedor multimodal
+    multimodalContainers.forEach(multimodal => {
+      this._cleanStandardMultimodal(multimodal);
+    });
+
+    return true;
+  },
+
+  /**
+   * ⭐ NUEVO: Procesa mensajes existentes para hacer documentos clickeables ⭐
+   * @param {HTMLElement} container - Contenedor de mensajes (opcional, por defecto todo el chat)
+   */
+  processExistingDocuments(container = null) {
+    const searchContainer = container || document.querySelector('.chat-messages');
+    if (!searchContainer) return;
+
+    console.log('🔍 Procesando documentos existentes...');
+
+    // Buscar todos los documentos no clickeables
+    const documentPreviews = searchContainer.querySelectorAll('.document-preview:not(.clickable)');
+    
+    documentPreviews.forEach(docElement => {
+      const fileId = docElement.dataset.fileId;
+      if (fileId) {
+        // Hacer clickeable
+        docElement.classList.add('clickable');
+        
+        // Añadir evento de click si no existe
+        if (!docElement.onclick) {
+          docElement.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.handleDocumentClick(docElement);
+          });
+        }
+        
+        console.log(`✅ Documento procesado: ${docElement.dataset.fileName || 'Sin nombre'}`);
+      }
+    });
+
+    // También buscar indicadores genéricos de documentos en mensajes JSON
+    const userMessages = searchContainer.querySelectorAll('.user-message');
+    userMessages.forEach(messageElement => {
+      try {
+        // Buscar elementos con texto JSON
+        const textElements = messageElement.querySelectorAll('.message-text, .multimodal-text');
+        textElements.forEach(textElement => {
+          const originalText = textElement.dataset.originalText;
+          if (originalText) {
+            try {
+              const decodedText = decodeURIComponent(originalText);
+              const parsedContent = this.parseJsonPreservingMath(decodedText);
+              
+              if (parsedContent && parsedContent.hasDocuments && parsedContent.documents) {
+                // Re-procesar el mensaje con documentos clickeables
+                const multimodalHTML = this._formatMultimodalContent(parsedContent);
+                
+                // Reemplazar el contenido actual
+                const messageContent = messageElement.querySelector('.message-content');
+                if (messageContent) {
+                  messageContent.innerHTML = multimodalHTML;
+                  
+                  // Activar eventos de click para los nuevos documentos
+                  this.activateDocumentEvents(messageContent);
+                  
+                  console.log(`✅ Mensaje reprocessado con ${parsedContent.documents.length} documentos`);
+                }
+              }
+            } catch (e) {
+              console.warn('Error al reprocesar mensaje:', e);
+            }
+          }
+        });
+      } catch (e) {
+        console.warn('Error al procesar mensaje de usuario:', e);
+      }
+    });
+  },
+
+  /**
+   * ⭐ NUEVO: Activa eventos de click para documentos en un contenedor ⭐
+   * @param {HTMLElement} container - Contenedor que contiene documentos
+   */
+  activateDocumentEvents(container) {
+    const documentPreviews = container.querySelectorAll('.document-preview.clickable');
+    
+    documentPreviews.forEach(docElement => {
+      // Remover eventos existentes para evitar duplicados
+      docElement.removeEventListener('click', this.handleDocumentClick);
+      
+      // Añadir nuevo evento
+      docElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleDocumentClick(docElement);
+      });
+    });
+  },
+
+/**
+ * ⭐ FUNCIÓN MEJORADA: Maneja el click en un documento con mejor soporte para HTML ⭐
+ * Reemplaza el método handleDocumentClick existente
+ */
+async handleDocumentClick(docElement) {
+  const fileId = docElement.dataset.fileId;
+  const fileName = docElement.dataset.fileName || 'Documento';
+  const attachmentType = docElement.dataset.attachmentType || 'document';
+  const language = docElement.dataset.language || '';
+
+  if (!fileId) {
+    acadelError("📂 ¡Archivo perdido!", "Acadel no encuentra la referencia del documento");
+    return;
+  }
+
+    if (docElement.dataset.loading === 'true') {
+    console.log('Documento ya está cargando');
+    return;
+  }
+
+  // Marcar como cargando
+  docElement.dataset.loading = 'true';
+
+  const originalContent = docElement.innerHTML;
+  const loadingNotificationId = acadelLoading("📂 Abriendo documento", `Acadel está leyendo "${fileName}" para ti`);
+  docElement.innerHTML = `
+    <i class="bx bx-loader-alt bx-spin document-icon"></i>
+    <span class="document-name">Cargando...</span>
+  `;
+
+  try {
+    console.log(`🔍 Haciendo petición a: /api/documents/${fileId}/content`);
+    
+    const response = await fetch(`/api/documents/${fileId}/content`);
+    
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const documentData = await extractDocumentContent(response, fileName);
+    
+    console.log('📄 Documento procesado exitosamente');
+    
+    if (!documentData.success) {
+      throw new Error(documentData.error || 'Error al obtener contenido del documento');
+    }
+
+    // Extraer contenido
+    let content = null;
+    
+    if (documentData.file && documentData.file.extractedContent) {
+      content = documentData.file.extractedContent;
+    } else if (documentData.content) {
+      content = documentData.content;
+    } else if (documentData.extractedContent) {
+      content = documentData.extractedContent;
+    }
+
+    if (!content) {
+      throw new Error('El documento está vacío');
+    }
+
+    console.log(`✅ Contenido final limpio: ${content.length} caracteres`);
+    
+    // ⭐ VALIDACIÓN FINAL DE LIMPIEZA ⭐
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (['html', 'htm'].includes(fileExtension)) {
+      console.log('🔍 Validación final de HTML...');
+      
+      // Verificar que no queden residuos JSON
+      if (content.includes('","createdAt":"') || content.includes('","updatedAt":"')) {
+        console.warn('⚠️ Detectados residuos de metadatos, limpiando...');
+        
+        // Limpieza adicional como precaución
+        content = content
+          .replace(/","createdAt":"[^"]*".*$/, '')
+          .replace(/","updatedAt":"[^"]*".*$/, '')
+          .replace(/","accessed_at":"[^"]*".*$/, '')
+          .replace(/","[^"]*":[^,}]*$/, ''); // Cualquier campo suelto al final
+      }
+      
+      console.log(`🎯 Primeros 150 caracteres: ${content.substring(0, 150)}`);
+      console.log(`🎯 Últimos 150 caracteres: ${content.substring(Math.max(0, content.length - 150))}`);
+    }
+
+    // Preparar datos para preview
+    const fileInfo = documentData.file || {};
+    const finalFileName = fileInfo.originalName || fileName;
+    const finalLanguage = fileInfo.language || language;
+    const finalAttachmentType = fileInfo.attachmentType || attachmentType;
+
+    let previewData;
+    let previewType = 'code';
+
+    if (this._isHtmlFile(fileExtension)) {
+      // HTML: Usar formato de código simple
+      previewData = {
+        title: finalFileName,
+        code: content,
+        language: 'html',
+        isDocument: true
+      };
+      console.log('🌐 Configurado como HTML (código simple)');
+      
+    } else if (this._isCodeFile(fileExtension, finalAttachmentType)) {
+      // Código: Formato original
+      previewData = {
+        title: finalFileName,
+        code: content,
+        language: this._detectLanguageFromFileName(finalFileName),
+        isDocument: true
+      };
+      console.log('🔧 Configurado como código');
+      
+    } else {
+      // Texto: Usar formato especial
+      previewData = {
+        title: finalFileName,
+        codeContent: this._formatTextContent(content, finalFileName, fileExtension),
+        isDocument: true
+      };
+      console.log('📄 Configurado como documento de texto');
+    }
+
+    // Abrir preview panel
+    try {
+      const { showPreviewPanel } = await import('../components/preview-panel-agente.js');
+      
+      console.log('🚀 Abriendo preview panel...');
+      showPreviewPanel(previewData, previewType);
+      console.log('✅ Preview panel abierto exitosamente - Contenido 100% limpio');
+      // Cerrar notificación de loading si existe
+      if (loadingNotificationId) {
+        acadelCerrar(loadingNotificationId);
+      }
+            // Mostrar éxito contextual según tipo de archivo
+      const fileExtension = fileName.split('.').pop().toLowerCase();
+      if (['html', 'htm'].includes(fileExtension)) {
+        acadelExito("🌐 ¡Página web abierta!", `Acadel cargó "${fileName}" perfectamente`);
+      } else if (['js', 'ts', 'py', 'java', 'cpp', 'css'].includes(fileExtension)) {
+        acadelExito("💻 ¡Código listo!", `Acadel tiene "${fileName}" preparado para revisar`);
+      } else {
+        acadelExito("📄 ¡Documento abierto!", `Acadel leyó "${fileName}" completamente`);
+      }
+      docElement.innerHTML = originalContent;
+      
+    } catch (importError) {
+      if (loadingNotificationId) {
+        acadelCerrar(loadingNotificationId);
+      }
+      acadelError("📂 ¡Problema con el visor!", "Acadel no pudo abrir el panel, pero el documento está bien");
+      this._showSimpleModal(finalFileName, content, previewData.language || 'text');
+    }
+
+  } catch (error) {
+    console.error('❌ Error al cargar documento:', error);
+    
+    const errorData = {
+      title: `Error: ${fileName}`,
+      codeContent: this._formatErrorContent(fileName, error.message),
+      isDocument: true
+    };
+    
+    try {
+      const { showPreviewPanel } = await import('../components/preview-panel-agente.js');
+      showPreviewPanel(errorData, 'code');
+    } catch (importError) {
+      acadelError("📂 ¡No pude abrir el documento!", "Acadel tuvo problemas cargando el archivo, pero no te preocupes");
+    }
+  } finally {
+        // Cerrar notificación de loading si aún existe
+    if (loadingNotificationId) {
+      acadelCerrar(loadingNotificationId);
+    }
+    // Solo restaurar contenido original si hubo error
+    // Si fue exitoso, el contenido ya se cambió en el try
+    if (docElement.innerHTML.includes('Cargando...')) {
+      docElement.innerHTML = originalContent;
+    }
+    
+    // Limpiar marca de carga
+    delete docElement.dataset.loading;
+  }
+},
+
+  /**
+   * ⭐ NUEVO: Formatea contenido de documento para preview ⭐
+   * @private
+   */
+  _formatDocumentContent(content, fileName, attachmentType) {
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    
+    // Para archivos de código, usar highlight.js
+    if (['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'cpp', 'c', 'css', 'html', 'xml', 'json'].includes(fileExtension)) {
+      return `
+        <div class="code-header">
+          <span class="code-language">${this._detectLanguageFromFileName(fileName)}</span>
+        </div>
+        <pre><code class="language-${fileExtension}">${this._escapeHtml(content)}</code></pre>
+      `;
+    }
+    
+    // Para otros tipos de archivos, mostrar como texto plano con formato
+    return `
+      <div class="document-header">
+        <span class="document-type">${attachmentType.toUpperCase()}</span>
+        <span class="document-name">${fileName}</span>
+      </div>
+      <div class="document-content">
+        <pre>${this._escapeHtml(content)}</pre>
+      </div>
+    `;
+  },
+
+  /**
+   * ⭐ NUEVO: Detecta lenguaje de programación por nombre de archivo ⭐
+   * @private
+   */
+  _detectLanguageFromFileName(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    
+    const languageMap = {
+      'js': 'javascript',
+      'jsx': 'javascript',
+      'ts': 'typescript',
+      'tsx': 'typescript',
+      'py': 'python',
+      'java': 'java',
+      'cpp': 'cpp',
+      'c': 'c',
+      'css': 'css',
+      'html': 'html',
+      'xml': 'xml',
+      'json': 'json',
+      'php': 'php',
+      'rb': 'ruby',
+      'go': 'go',
+      'rs': 'rust',
+      'swift': 'swift',
+      'kt': 'kotlin',
+      'scala': 'scala',
+      'sh': 'bash',
+      'sql': 'sql'
+    };
+    
+    return languageMap[extension] || 'text';
+  },
+
+  /**
+   * ⭐ NUEVO: Escapa HTML para mostrar contenido como texto ⭐
+   * @private
+   */
+  _escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  },
+
+  /**
+   * ⭐ NUEVO: Trunca nombre de archivo ⭐
+   * @private
+   */
+  _truncateFileName(fileName, maxLength) {
+    if (fileName.length <= maxLength) return fileName;
+    
+    const extension = fileName.split('.').pop();
+    const nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+    const maxNameLength = maxLength - extension.length - 4; // -4 para "..." y "."
+    
+    if (maxNameLength <= 0) return '...' + extension;
+    
+    return nameWithoutExt.substring(0, maxNameLength) + '...' + extension;
+  },
+
+  /**
+   * ⭐ NUEVO: Formatea tamaño de archivo ⭐
+   * @private
+   */
+  _formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  },
+
+  /**
+   * Limpia un contenedor multimodal estándar
+   * @private
+   */
+  _cleanStandardMultimodal(multimodal) {
+    try {
+      // Eliminar <br> y espacios innecesarios
+      let nextSibling = multimodal.nextSibling;
+      while (nextSibling) {
+        const currentSibling = nextSibling;
+        nextSibling = nextSibling.nextSibling;
+
+        if (currentSibling.nodeName === 'BR' ||
+          (currentSibling.nodeType === 3 && currentSibling.textContent.trim() === '')) {
+          currentSibling.parentNode.removeChild(currentSibling);
+        }
+      }
+
+      // Limpiar texto dentro del contenedor
+      const textElement = multimodal.querySelector('.multimodal-text');
+      if (textElement && !textElement.hasAttribute('data-cleaned')) {
+        const originalText = textElement.innerText || textElement.textContent || '';
+        textElement.innerHTML = originalText.trim();
+        textElement.setAttribute('data-cleaned', 'true');
+      }
+
+      // ⭐ NUEVO: Activar eventos para documentos ⭐
+      this.activateDocumentEvents(multimodal);
+
+      // Inicializar eventos para archivos adjuntos si existen
+      if (multimodal.querySelector('.file-name-clickable')) {
+        this._initializeFileHandlers(multimodal);
+      }
+    } catch (error) {
+      console.error('Error al limpiar mensaje multimodal:', error);
+    }
+  },
+
+  /**
+   * Inicializa los manejadores de eventos para archivos adjuntos
+   * @private
+   */
+  _initializeFileHandlers(container) {
+    if (typeof _initializeFileAttachmentHandlers === 'function') {
+      _initializeFileAttachmentHandlers(container);
+    } else if (container.querySelector('.file-name-clickable')) {
+      setTimeout(() => {
+        if (typeof _initializeFileAttachmentHandlers === 'function') {
+          _initializeFileAttachmentHandlers(container);
+        }
+      }, 100);
+    }
+  },
+
+  /**
+   * Obtiene el ícono y color para un tipo de archivo
+   * @private
+   */
+  _getFileIconAndColor(fileType) {
+    const iconMap = {
+      'document': { icon: 'bxs-file-txt', color: '#3498db' },
+      'code': { icon: 'bx-code-alt', color: '#e74c3c' },
+      'image': { icon: 'bx-image', color: '#10b981' },
+      'pdf': { icon: 'bxs-file-pdf', color: '#e74c3c' },
+      'excel': { icon: 'bxs-spreadsheet', color: '#27ae60' },
+      'zip': { icon: 'bxs-file-archive', color: '#f39c12' },
+      'audio': { icon: 'bxs-music', color: '#9b59b6' },
+      'video': { icon: 'bxs-video', color: '#e67e22' }
+    };
+
+    return iconMap[fileType] || iconMap['document'];
+  },
+
+  /**
+ * Verifica si es un archivo de código
+ */
+_isCodeFile(extension, attachmentType) {
+  const codeExtensions = ['js', 'jsx', 'ts', 'tsx', 'py', 'java', 'cpp', 'c', 'css', 'php', 'rb', 'go', 'rs', 'swift', 'kt', 'scala', 'json', 'xml', 'yaml', 'yml'];
+  return attachmentType === 'code' || codeExtensions.includes(extension);
+},
+
+/**
+ * Verifica si es un archivo HTML
+ */
+_isHtmlFile(extension) {
+  return ['html', 'htm'].includes(extension);
+},
+
+/**
+ * Formatea contenido HTML con estructura especial
+ */
+_formatHtmlContent(content, fileName) {
+  // Limpiar y validar el contenido antes de formatearlo
+  let cleanContent = content;
+  
+  // Si el contenido parece estar mal escapado, intentar limpiarlo
+  if (cleanContent.includes('\\n') || cleanContent.includes('\\r') || cleanContent.includes('\\"')) {
+    cleanContent = cleanContent
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+      .replace(/\\t/g, '\t')
+      .replace(/\\"/g, '"')
+      .replace(/\\'/g, "'")
+      .replace(/\\\\/g, '\\');
+  }
+  
+  // Contar líneas y detectar características del HTML
+  const lines = cleanContent.split('\n').length;
+  const hasDoctype = cleanContent.toLowerCase().includes('<!doctype');
+  const hasHtmlTag = cleanContent.toLowerCase().includes('<html');
+  const hasBodyTag = cleanContent.toLowerCase().includes('<body');
+  const hasHeadTag = cleanContent.toLowerCase().includes('<head');
+  
+  // Analizar el tipo de archivo HTML
+  let htmlType = 'HTML';
+  if (hasDoctype && hasHtmlTag && hasBodyTag && hasHeadTag) {
+    htmlType = 'HTML Completo';
+  } else if (hasHtmlTag) {
+    htmlType = 'HTML Parcial';
+  } else if (cleanContent.includes('<div') || cleanContent.includes('<span')) {
+    htmlType = 'Fragmento HTML';
+  }
+  
+  // Detectar frameworks o librerías
+  const frameworks = [];
+  if (cleanContent.includes('bootstrap')) frameworks.push('Bootstrap');
+  if (cleanContent.includes('jquery')) frameworks.push('jQuery');
+  if (cleanContent.includes('vue')) frameworks.push('Vue.js');
+  if (cleanContent.includes('react')) frameworks.push('React');
+  if (cleanContent.includes('angular')) frameworks.push('Angular');
+  
+  const frameworkInfo = frameworks.length > 0 ? ` • ${frameworks.join(', ')}` : '';
+  
+  return `
+    <div class="code-header">
+      <span class="code-language">HTML</span>
+      <span class="file-info">${this._escapeHtml(fileName)} (${this._formatFileSize(cleanContent.length)})</span>
+    </div>
+    <div class="html-content-wrapper">
+      <div class="html-info">
+        <i class="bx bx-code-alt"></i>
+        <span>${htmlType} - ${lines} líneas${frameworkInfo}</span>
+      </div>
+      <pre><code class="language-html">${this._escapeHtml(cleanContent)}</code></pre>
+    </div>
+  `;
+},
+
+
+/**
+ * Formatea contenido de texto con header mejorado
+ */
+_formatTextContent(content, fileName, extension) {
+  const lines = content.split('\n').length;
+  const words = content.split(/\s+/).filter(w => w.length > 0).length;
+  const chars = content.length;
+  
+  // Detectar tipo de archivo por extensión
+  const fileTypeMap = {
+    'txt': 'Documento de Texto',
+    'md': 'Markdown',
+    'csv': 'Datos CSV',
+    'json': 'Datos JSON',
+    'xml': 'Documento XML',
+    'log': 'Archivo de Log',
+    'conf': 'Archivo de Configuración',
+    'ini': 'Archivo de Configuración',
+    'yaml': 'Archivo YAML',
+    'yml': 'Archivo YAML'
+  };
+  
+  const fileType = fileTypeMap[extension] || 'Documento';
+  
+  // Análisis básico del contenido
+  const analysis = [];
+  if (extension === 'json') {
+    try {
+      JSON.parse(content);
+      analysis.push('JSON válido');
+    } catch (e) {
+      analysis.push('JSON con errores');
+    }
+  }
+  
+  if (extension === 'csv') {
+    const commas = (content.match(/,/g) || []).length;
+    const semicolons = (content.match(/;/g) || []).length;
+    const delimiter = commas > semicolons ? 'comas' : 'punto y coma';
+    analysis.push(`Separador: ${delimiter}`);
+  }
+  
+  if (content.includes('http://') || content.includes('https://')) {
+    analysis.push('Contiene URLs');
+  }
+  
+  if (content.includes('@') && content.includes('.com')) {
+    analysis.push('Contiene emails');
+  }
+  
+  const analysisText = analysis.length > 0 ? ` • ${analysis.join(' • ')}` : '';
+  
+  return `
+    <div class="document-header">
+      <div class="document-info">
+        <i class="bx bx-file-txt"></i>
+        <div class="document-details">
+          <h3>${this._escapeHtml(fileName)}</h3>
+          <div class="document-stats">
+            <span><i class="bx bx-text"></i> ${lines} líneas</span>
+            <span><i class="bx bx-chat"></i> ${words} palabras</span>
+            <span><i class="bx bx-data"></i> ${this._formatFileSize(chars)}</span>
+            <span><i class="bx bx-file"></i> ${fileType}</span>
+          </div>
+          ${analysisText ? `<div style="margin-top: 4px; font-size: 0.8rem; color: #6c757d;">${analysisText}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="document-content">
+      <pre class="text-content">${this._escapeHtml(content)}</pre>
+    </div>
+  `;
+},
+
+/**
+ * Formatea contenido de error
+ */
+_formatErrorContent(fileName, errorMessage) {
+  return `
+    <div class="error-header">
+      <i class="bx bx-error-circle"></i>
+      <h3>Error al cargar: ${this._escapeHtml(fileName)}</h3>
+    </div>
+    <div class="error-content">
+      <div class="error-message">
+        <p><strong>Mensaje de error:</strong></p>
+        <pre>${this._escapeHtml(errorMessage)}</pre>
+      </div>
+      <div class="error-suggestions">
+        <p><strong>Posibles soluciones:</strong></p>
+        <ul>
+          <li>Verificar que el archivo no esté corrupto</li>
+          <li>Intentar subir el archivo nuevamente</li>
+          <li>Contactar soporte si el problema persiste</li>
+        </ul>
+      </div>
+    </div>
+  `;
+},
+
+/**
+ * Detecta lenguaje de programación por nombre de archivo
+ */
+_detectLanguageFromFileName(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  
+  const languageMap = {
+    'js': 'javascript',
+    'jsx': 'javascript', 
+    'ts': 'typescript',
+    'tsx': 'typescript',
+    'py': 'python',
+    'java': 'java',
+    'cpp': 'cpp',
+    'c': 'c',
+    'css': 'css',
+    'html': 'html',
+    'htm': 'html',
+    'xml': 'xml',
+    'json': 'json',
+    'php': 'php',
+    'rb': 'ruby',
+    'go': 'go',
+    'rs': 'rust',
+    'swift': 'swift',
+    'kt': 'kotlin',
+    'scala': 'scala',
+    'sh': 'bash',
+    'sql': 'sql',
+    'yaml': 'yaml',
+    'yml': 'yaml'
+  };
+  
+  return languageMap[extension] || 'text';
+},
+
+/**
+ * Formatea tamaño de archivo
+ */
+_formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+  
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+},
+
+/**
+ * Escapa HTML para mostrar contenido como texto
+ */
+_escapeHtml(text) {
+  if (!text) return '';
+  
+  // Crear un elemento temporal para escapar el texto
+  const div = document.createElement('div');
+  
+  // Si el texto es muy largo (más de 100KB), procesarlo por chunks para evitar problemas de rendimiento
+  if (text.length > 100000) {
+    let result = '';
+    const chunkSize = 10000;
+    
+    for (let i = 0; i < text.length; i += chunkSize) {
+      const chunk = text.substring(i, i + chunkSize);
+      div.textContent = chunk;
+      result += div.innerHTML;
+    }
+    
+    return result;
+  } else {
+    div.textContent = text;
+    return div.innerHTML;
+  }
+},
+
+// ⭐ MODAL SIMPLE MEJORADO ⭐
+_showSimpleModal(fileName, content, language) {
+  console.log('📱 Mostrando modal simple mejorado');
+  
+  // Detectar tipo de archivo
+  const extension = fileName.split('.').pop().toLowerCase();
+  const isHtml = this._isHtmlFile(extension);
+  const isCode = this._isCodeFile(extension, 'code');
+  
+  // Crear modal
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  `;
+  
+  const modalContent = document.createElement('div');
+  modalContent.style.cssText = `
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  `;
+  
+  // Header con información del archivo
+  const header = document.createElement('div');
+  header.style.cssText = `
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+  `;
+  
+  const fileInfo = document.createElement('div');
+  fileInfo.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+  
+  const icon = isHtml ? 'bx-code-alt' : isCode ? 'bx-code-curly' : 'bx-file-txt';
+  const lines = content.split('\n').length;
+  const size = this._formatFileSize(content.length);
+  
+  fileInfo.innerHTML = `
+    <i class="bx ${icon}" style="font-size: 1.5rem; color: #007bff;"></i>
+    <div>
+      <h3 style="margin: 0; color: #333;">${this._escapeHtml(fileName)}</h3>
+      <small style="color: #666;">${lines} líneas • ${size}</small>
+    </div>
+  `;
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.style.cssText = `
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    color: #666;
+  `;
+  closeBtn.innerHTML = '×';
+  closeBtn.onmouseover = () => closeBtn.style.background = '#e9ecef';
+  closeBtn.onmouseout = () => closeBtn.style.background = 'none';
+  
+  header.appendChild(fileInfo);
+  header.appendChild(closeBtn);
+  
+  // Contenido
+  const contentDiv = document.createElement('div');
+  contentDiv.style.cssText = `
+    flex: 1;
+    padding: 20px;
+    overflow: auto;
+    background: #ffffff;
+  `;
+  
+  const pre = document.createElement('pre');
+  pre.style.cssText = `
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    background: ${isCode || isHtml ? '#f8f9fa' : '#fff'};
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+  `;
+  
+  const code = document.createElement('code');
+  code.textContent = content;
+  code.className = `language-${language}`;
+  
+  pre.appendChild(code);
+  contentDiv.appendChild(pre);
+  modalContent.appendChild(header);
+  modalContent.appendChild(contentDiv);
+  modal.appendChild(modalContent);
+  
+  // Eventos de cierre
+  closeBtn.onclick = () => {
+    document.body.removeChild(modal);
+    console.log('📱 Modal cerrado');
+  };
+  
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      document.body.removeChild(modal);
+    }
+  };
+  
+  const escapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      document.body.removeChild(modal);
+      document.removeEventListener('keydown', escapeHandler);
+    }
+  };
+  document.addEventListener('keydown', escapeHandler);
+  
+  document.body.appendChild(modal);
+  
+  // Aplicar highlighting
+  if (window.hljs && (isCode || isHtml)) {
+    setTimeout(() => {
+      try {
+        window.hljs.highlightElement(code);
+        console.log('🎨 Highlighting aplicado');
+      } catch (e) {
+        console.warn('⚠️ Error aplicando highlighting:', e);
+      }
+    }, 100);
+  }
+}
+};
+
+/**
+ * ⭐ FUNCIÓN SUPER ROBUSTA: Extractor de contenido que NO trunca HTML ⭐
+ * Reemplaza completamente la lógica de extracción en handleDocumentClick
+ */
+async function extractDocumentContent(response, fileName) {
+  console.log('🔍 Iniciando extracción robusta de contenido...');
+  
+  const rawText = await response.text();
+  
+  console.log(`📄 Texto crudo obtenido: ${rawText.length} caracteres`);
+  console.log('📄 Primeros 300 caracteres:', rawText.substring(0, 300));
+  
+  // Intento 1: JSON parsing directo
+  try {
+    const documentData = JSON.parse(rawText);
+    console.log('✅ JSON parseado directamente');
+    return documentData;
+    
+  } catch (jsonError) {
+    console.log('❌ Error en JSON directo, intentando métodos alternativos...');
+    console.log('❌ Error específico:', jsonError.message);
+    
+    // MÉTODO MEJORADO: Extracción más inteligente
+    if (rawText.includes('{"success":true') && rawText.includes('"extractedContent":')) {
+      console.log('🔧 Método mejorado: Extracción inteligente de JSON...');
+      
+      try {
+        // Buscar el marcador de inicio del contenido
+        const contentMarker = '"extractedContent":"';
+        const contentStartIndex = rawText.indexOf(contentMarker);
+        
+        if (contentStartIndex === -1) {
+          throw new Error('No se encontró extractedContent');
+        }
+        
+        const contentDataStart = contentStartIndex + contentMarker.length;
+        
+        // ⭐ LISTA COMPLETA DE MARCADORES DE METADATOS ⭐
+        let endMarkers = [
+          '","language":"html"',
+          '","language":"',
+          '","attachmentType":"',
+          '","createdAt":"',     // ← NUEVO: Para eliminar timestamps
+          '","updatedAt":"',     // ← NUEVO: Para eliminar timestamps
+          '","accessed_at":"',   // ← NUEVO: Para eliminar timestamps  
+          '","created_at":"',    // ← NUEVO: Snake_case variant
+          '","updated_at":"',    // ← NUEVO: Snake_case variant
+          '","fileSize":',       // ← NUEVO: Para eliminar metadata de tamaño
+          '","mimeType":"',      // ← NUEVO: Para eliminar tipo MIME
+          '","isScanned":',      // ← NUEVO: Para eliminar flags de seguridad
+          '","scanResult":',     // ← NUEVO: Para eliminar resultados de scan
+          '","isSafe":',         // ← NUEVO: Para eliminar flags de seguridad
+          '","isProcessed":',    // ← NUEVO: Para eliminar flags de procesamiento
+          '"}]',
+          '"}',
+          '","'
+        ];
+        
+        let contentEnd = rawText.length - 1;
+        let foundMarker = null;
+        
+        // Buscar desde atrás hacia adelante
+        for (const marker of endMarkers) {
+          const lastIndex = rawText.lastIndexOf(marker);
+          if (lastIndex > contentDataStart && lastIndex < contentEnd) {
+            contentEnd = lastIndex;
+            foundMarker = marker;
+            break;
+          }
+        }
+        
+        console.log(`🎯 Marcador final encontrado: "${foundMarker}" en posición ${contentEnd}`);
+        
+        // Extraer el contenido completo
+        let extractedContent = rawText.substring(contentDataStart, contentEnd);
+        
+        console.log(`🎯 Contenido extraído: ${extractedContent.length} caracteres (RAW)`);
+        
+        // ⭐ VALIDACIÓN DE TAMAÑO ANTES DE DECODIFICAR ⭐
+        if (extractedContent.length < 500) {
+          console.warn('⚠️ Contenido parece muy corto, intentando método alternativo...');
+          throw new Error('Contenido truncado detectado');
+        }
+        
+        // ⭐ LIMPIEZA AVANZADA DE RESIDUOS ⭐
+        // Eliminar cualquier residuo de metadatos que pueda haber quedado al final
+        const metadataPatterns = [
+          /","createdAt":"[^"]*".*$/,
+          /","updatedAt":"[^"]*".*$/,
+          /","accessed_at":"[^"]*".*$/,
+          /","created_at":"[^"]*".*$/,
+          /","updated_at":"[^"]*".*$/,
+          /","fileSize":\d+.*$/,
+          /","mimeType":"[^"]*".*$/,
+          /","isScanned":(true|false).*$/,
+          /","scanResult":"[^"]*".*$/,
+          /","isSafe":(true|false).*$/,
+          /","isProcessed":(true|false).*$/,
+          /","processingError":"[^"]*".*$/,
+          /"\}.*$/  // Cualquier cosa después de }
+        ];
+        
+        // Aplicar limpieza de residuos
+        for (const pattern of metadataPatterns) {
+          extractedContent = extractedContent.replace(pattern, '');
+        }
+        
+        console.log('🎯 Primeros 200 caracteres después de limpieza:', extractedContent.substring(0, 200));
+        console.log('🎯 Últimos 100 caracteres después de limpieza:', extractedContent.substring(Math.max(0, extractedContent.length - 100)));
+        
+        // Decodificar caracteres escapados
+        extractedContent = extractedContent
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t')
+          .replace(/\\"/g, '"')
+          .replace(/\\'/g, "'")
+          .replace(/\\\\/g, '\\');
+        
+        console.log(`✅ Contenido decodificado final: ${extractedContent.length} caracteres`);
+        
+        // ⭐ VALIDACIÓN FINAL PARA HTML ⭐
+        if (fileName.toLowerCase().endsWith('.html') || fileName.toLowerCase().endsWith('.htm')) {
+          if (extractedContent.includes('<!DOCTYPE html') || extractedContent.includes('<html')) {
+            console.log('✅ HTML válido detectado');
+            
+            // Verificar si termina correctamente
+            if (extractedContent.includes('</html>')) {
+              console.log('✅ HTML tiene etiqueta de cierre correcta');
+            } else if (extractedContent.trim().endsWith('>')) {
+              console.log('✅ HTML termina con etiqueta válida');
+            } else {
+              console.warn('⚠️ HTML podría estar incompleto, pero continuando...');
+            }
+          }
+        }
+        
+        const result = {
+          success: true,
+          file: {
+            extractedContent: extractedContent,
+            originalName: fileName,
+            language: 'html',
+            attachmentType: 'code'
+          }
+        };
+        
+        return result;
+        
+      } catch (method1Error) {
+        console.warn('❌ Método mejorado falló:', method1Error.message);
+      }
+    }
+    
+    // MÉTODO 2: Búsqueda directa más agresiva
+    if (rawText.includes('<!DOCTYPE html') || rawText.includes('<html')) {
+      console.log('🔧 Método 2: Búsqueda directa más agresiva...');
+      
+      try {
+        // Buscar desde el primer DOCTYPE o html
+        let htmlStart = rawText.indexOf('<!DOCTYPE html');
+        if (htmlStart === -1) {
+          htmlStart = rawText.indexOf('<html');
+        }
+        
+        if (htmlStart === -1) {
+          throw new Error('No se encontró inicio de HTML');
+        }
+        
+        // ⭐ BÚSQUEDA MEJORADA DEL FINAL ⭐
+        let htmlEnd = rawText.lastIndexOf('</html>');
+        if (htmlEnd !== -1) {
+          htmlEnd += 7; // incluir "</html>"
+          console.log('🎯 Encontrado </html> en posición:', htmlEnd);
+        } else {
+          // Si no hay </html>, buscar otros marcadores del final
+          const endPatterns = [
+            '","language"',
+            '","attachmentType"',
+            '","createdAt"',
+            '","updatedAt"',
+            '","fileSize"',
+            '"}',
+            '}'
+          ];
+          
+          for (const pattern of endPatterns) {
+            const lastIndex = rawText.lastIndexOf(pattern);
+            if (lastIndex > htmlStart) {
+              htmlEnd = lastIndex;
+              console.log(`🎯 Encontrado marcador alternativo "${pattern}" en posición:`, lastIndex);
+              break;
+            }
+          }
+          
+          if (!htmlEnd) {
+            htmlEnd = rawText.length - 10; // seguro hacia atrás
+            console.log('🎯 Usando posición segura hacia atrás:', htmlEnd);
+          }
+        }
+        
+        let extractedHtml = rawText.substring(htmlStart, htmlEnd);
+        
+        // ⭐ LIMPIEZA ESPECÍFICA PARA HTML ⭐
+        // Eliminar cualquier residuo JSON que pueda haber quedado
+        extractedHtml = extractedHtml
+          .replace(/","createdAt":"[^"]*".*$/, '')
+          .replace(/","updatedAt":"[^"]*".*$/, '')
+          .replace(/","[^"]*":[^,}]*.*$/, '') // Cualquier otro campo JSON
+          .replace(/\}.*$/, ''); // Cualquier cosa después de }
+        
+        // Limpiar caracteres escapados
+        extractedHtml = extractedHtml
+          .replace(/\\r\\n/g, '\n')
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t')
+          .replace(/\\"/g, '"')
+          .replace(/\\'/g, "'")
+          .replace(/\\\\/g, '\\');
+        
+        console.log(`✅ HTML extraído y limpio: ${extractedHtml.length} caracteres`);
+        
+        const result = {
+          success: true,
+          file: {
+            extractedContent: extractedHtml,
+            originalName: fileName,
+            language: 'html',
+            attachmentType: 'code'
+          }
+        };
+        
+        return result;
+        
+      } catch (method2Error) {
+        console.warn('❌ Método 2 falló:', method2Error.message);
+      }
+    }
+    
+    // Si todo falla
+    throw new Error(`No se pudo extraer el contenido. Error: ${jsonError.message}`);
+  }
+}
+
+
+/**
+ * ⭐ NUEVA: Procesa mensajes inmediatamente sin delays ⭐
+ */
+function processMessagesImmediately(container = null) {
+  const searchContainer = container || document.querySelector('.chat-messages');
+  if (!searchContainer) return;
+
+  console.log('⚡ Procesamiento inmediato de mensajes iniciado...');
+
+  // Buscar todos los mensajes que puedan contener JSON
+  const userMessages = searchContainer.querySelectorAll('.user-message');
+  
+  userMessages.forEach(messageElement => {
+    try {
+      // Buscar elementos con texto que pueda ser JSON
+      const textElements = messageElement.querySelectorAll('.message-text, .message-content, .multimodal-text');
+      
+      textElements.forEach(textElement => {
+        const content = textElement.textContent || textElement.innerHTML;
+        
+        // Verificar si parece JSON multimodal SIN procesar
+        if (content && 
+            typeof content === 'string' && 
+            !textElement.hasAttribute('data-processed') &&
+            content.trim().startsWith('{') &&
+            (content.includes('hasDocuments') || 
+             content.includes('documents') || 
+             content.includes('hasImage') || 
+             content.includes('images'))) {
+          
+          console.log('⚡ Procesando JSON inmediatamente...');
+          
+          // Procesar inmediatamente
+          const processedContent = contentProcessing.detectMultimodalContent(content, false);
+          
+          if (processedContent !== content) {
+            textElement.innerHTML = processedContent;
+            textElement.setAttribute('data-processed', 'true');
+            
+            // Activar eventos de click inmediatamente
+            contentProcessing.activateDocumentEvents(textElement);
+            
+            console.log('✅ JSON procesado inmediatamente');
+          }
+        }
+        
+        // También verificar data-original-text
+        const originalText = textElement.dataset?.originalText;
+        if (originalText && !textElement.hasAttribute('data-processed')) {
+          try {
+            const decodedText = decodeURIComponent(originalText);
+            if (decodedText.trim().startsWith('{') && 
+                (decodedText.includes('hasDocuments') || decodedText.includes('documents'))) {
+              
+              const processedHTML = contentProcessing.detectMultimodalContent(decodedText, false);
+              if (processedHTML !== decodedText) {
+                textElement.innerHTML = processedHTML;
+                textElement.setAttribute('data-processed', 'true');
+                
+                contentProcessing.activateDocumentEvents(textElement);
+                console.log('✅ originalText procesado inmediatamente');
+              }
+            }
+          } catch (e) {
+            console.warn('Error al procesar originalText:', e);
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error al procesar mensaje inmediatamente:', error);
+    }
+  });
+}
+
+/**
+ * ⭐ NUEVA: Procesa un elemento de mensaje inmediatamente ⭐
+ */
+function processMessageElementImmediately(messageElement) {
+  try {
+    // Buscar elementos que puedan contener JSON
+    const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
+    
+    textElements.forEach(textElement => {
+      const content = textElement.textContent || textElement.innerHTML;
+      
+      // Solo procesar si parece JSON y no ha sido procesado
+      if (content && 
+          typeof content === 'string' && 
+          !textElement.hasAttribute('data-processed') &&
+          content.trim().startsWith('{') &&
+          (content.includes('hasDocuments') || 
+           content.includes('documents') || 
+           content.includes('hasImage') || 
+           content.includes('images'))) {
+        
+        console.log('⚡ Procesamiento inmediato de JSON detectado');
+        
+        // Procesar inmediatamente
+        try {
+          const processedContent = contentProcessing.detectMultimodalContent(content, false);
+          
+          if (processedContent !== content) {
+            textElement.innerHTML = processedContent;
+            textElement.setAttribute('data-processed', 'true');
+            
+            // Activar eventos inmediatamente
+            contentProcessing.activateDocumentEvents(textElement);
+            
+            console.log('✅ JSON procesado inmediatamente');
+          }
+        } catch (processingError) {
+          console.warn('Error en procesamiento inmediato:', processingError);
+          
+          // Fallback: procesar en el siguiente frame
+          requestAnimationFrame(() => {
+            const processedContent = contentProcessing.detectMultimodalContent(content, false);
+            
+            if (processedContent !== content) {
+              textElement.innerHTML = processedContent;
+              textElement.setAttribute('data-processed', 'true');
+              contentProcessing.activateDocumentEvents(textElement);
+            }
+          });
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error al procesar elemento inmediatamente:', error);
+  }
+}
+
+// AGREGAR al objeto contentProcessing:
+contentProcessing.processMessagesImmediately = processMessagesImmediately;
+contentProcessing.processMessageElementImmediately = processMessageElementImmediately;
+
+// AGREGAR a las exportaciones al final del archivo:
+export { processMessagesImmediately, processMessageElementImmediately };
+
+// Exportar el objeto principal
+export default contentProcessing;
+
+// También exportar funciones individuales para un uso más directo
+export const detectMultimodalContent = (content, isAIResponse) =>
+  contentProcessing.detectMultimodalContent(content, isAIResponse);
+
+export const cleanMultimodalExistingContent = (container, isAIMessage) =>
+  contentProcessing.cleanMultimodalExistingContent(container, isAIMessage);
+
+export const parseJsonPreservingMath = (jsonText) =>
+  contentProcessing.parseJsonPreservingMath(jsonText);
+
+// ⭐ NUEVAS EXPORTACIONES ⭐
+export const processExistingDocuments = (container) =>
+  contentProcessing.processExistingDocuments(container);
+
+export const activateDocumentEvents = (container) =>
+  contentProcessing.activateDocumentEvents(container);
+
+export const handleDocumentClick = (docElement) =>
+  contentProcessing.handleDocumentClick(docElement);

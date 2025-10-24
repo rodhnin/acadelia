@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <title>Acadelia - Asistentes Virtuales Académicos</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="/scripts/verificacion.js" nonce="<%= nonce %>"></script>
+    <link rel="stylesheet" href="/css/PaginaInicioStyle.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+
+
+
+</head>
+<body>
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <header>
+        <div class="logo-container">
+            <div class="logo-img desktop-logo"></div>
+        </div>
+        <nav class="nav-buttons desktop-nav">
+            <a href="/faq">
+                <button class="faq-btn">
+                    <i class='bx bx-help-circle'></i>
+                    FAQ
+                </button>
+            </a>
+            <a href="/login">
+                <button class="ingresar-btn">
+                    <i class='bx bx-log-in'></i>
+                    Ingresar
+                </button>
+            </a>
+        </nav>
+        <div class="mobile-nav" style="display: none;">
+            <button class="menu-toggle">☰</button>
+            <div class="mobile-menu" style="display: none;">
+                <a href="/faq" class="faq-btn">FAQ</a>
+                <a href="/login" class="ingresar-btn">Ingresar</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- SECCIÓN HERO MEJORADA -->
+        <section class="hero-main">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-text" data-aos="fade-up" data-aos-delay="100">
+                    <div class="hero-badge">
+                        <i class='bx bx-rocket'></i>
+                        <span>Tu camino hacia la excelencia académica</span>
+                    </div>
+                    <h1>Potencia tu <span class="highlight">rendimiento académico</span> con inteligencia artificial</h1>
+                    <p>Accede a Asistentes Virtuales Académicos especializados para mejorar tus resultados y alcanzar tu máximo potencial de forma personalizada.</p>
+                    <div class="hero-cta">
+                        <div class="hero-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">97%</span>
+                                <span class="stat-label">Mejoran calificaciones</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">10+</span>
+                                <span class="stat-label">Chats especializados</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">24/7</span>
+                                <span class="stat-label">Disponibilidad</span>
+                            </div>
+                        </div>
+                        <div class="hero-buttons">
+                            <a href="/precios">
+                                <button class="ingresar-btn primary-btn">
+                                    <i class='bx bx-crown'></i>
+                                    Ver planes AVA
+                                </button>
+                            </a>
+                            <a href="/login">
+                                <button class="faq-btn secondary-btn">
+                                    <i class='bx bx-play-circle'></i>
+                                    Regístrate
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-cards" data-aos="fade-up" data-aos-delay="300">
+                    <div class="ava-card">
+                        <div class="card-icon">
+                            <i class='bx bx-book-reader'></i>
+                        </div>
+                        <h3>Aprende a tu ritmo</h3>
+                        <p>Accede a chats personalizados y explicaciones detalladas de tus materias.</p>
+                    </div>
+                    <div class="ava-card highlighted">
+                        <div class="card-badge">Recomendado</div>
+                        <div class="card-icon">
+                            <i class='bx bx-brain'></i>
+                        </div>
+                        <h3>Asistentes Virtuales</h3>
+                        <p>10 chats con conocimiento específico para cada carrera universitaria.</p>
+                    </div>
+                    <div class="ava-card">
+                        <div class="card-icon">
+                            <i class='bx bx-line-chart'></i>
+                        </div>
+                        <h3>Mejora tus resultados</h3>
+                        <p>Exámenes de práctica, explicaciones y resolución de ejercicios paso a paso.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 1: PRESENTACIÓN GENERAL -->
+        <section class="nueva-seccion" id="beneficios">
+            <div class="section-inner">
+                <div class="content-left" data-aos="fade-right">
+                    <h2>Aprende, Crece, Destaca.</h2>
+                    <p class="descripcion-ava">Plataforma educativa inteligente que combina tecnología avanzada con metodologías pedagógicas personalizadas para optimizar tu proceso de aprendizaje.</p>
+                    <div class="features-grid">
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class='bx bx-time'></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Ahorra tiempo</h4>
+                                <p>Obtén respuestas inmediatas sin largas búsquedas</p>
+                            </div>
+                        </div>
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class='bx bx-bulb'></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Comprensión profunda</h4>
+                                <p>Explicaciones adaptadas a tu nivel de conocimiento</p>
+                            </div>
+                        </div>
+                        <div class="feature-box">
+                            <div class="feature-icon">
+                                <i class='bx bx-medal'></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Excelencia académica</h4>
+                                <p>Supera tus objetivos y destaca en tus estudios</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-right" data-aos="fade-left">
+                    <div class="image-container">
+                        <img src="/images/salon-image.webp" alt="Plataforma Acadelia" class="feature-image">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: ASISTENTES VIRTUALES DESTACADOS -->
+        <section class="nueva-seccion highlight-section">
+            <div class="section-inner">
+                <div class="content-right" data-aos="fade-left">
+                    <div class="text-content">
+                        <div class="ava-label">
+                            <i class='bx bx-diamond'></i> DESTACADO
+                        </div>
+                        <h2>Asistentes Virtuales Académicos</h2>
+                        <p class="descripcion-ava">Plataforma inteligente con asistentes especializados que dominan materias específicas de tu carrera, combinando tecnología avanzada con metodologías pedagógicas para optimizar tu aprendizaje.</p>
+                        
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <i class='bx bx-check-shield'></i>
+                                <div>
+                                    <h4>Contenido académico verificado</h4>
+                                    <p>Material revisado por expertos en cada materia</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <i class='bx bx-target-lock'></i>
+                                <div>
+                                    <h4>Respuestas precisas y detalladas</h4>
+                                    <p>Obtén la información exacta que necesitas</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <i class='bx bx-customize'></i>
+                                <div>
+                                    <h4>Personalizado para cada carrera</h4>
+                                    <p>10 asistentes especializados en tus materias</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="/precios" class="ava-link">
+                            <button class="ingresar-btn">
+                                <i class='bx bx-crown'></i>
+                                Conoce el plan AVA
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="content-left" data-aos="fade-right">
+                    <div class="image-container with-dots">
+                        <img src="/images/ava-image.webp" alt="Asistente Virtual Académico" class="feature-image">
+                        <div class="dot-decoration dot-1"></div>
+                        <div class="dot-decoration dot-2"></div>
+                        <div class="dot-decoration dot-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: NUESTROS SERVICIOS -->
+        <section class="nueva-seccion">
+            <div class="section-inner">
+                <div class="content-left" data-aos="fade-right">
+                    <div class="image-container with-shadow">
+                        <img src="/images/service-image.webp" alt="Nuestros Servicios" class="feature-image">
+                    </div>
+                </div>
+                <div class="content-right" data-aos="fade-left">
+                    <div class="text-content">
+                        <h2>Nuestros servicios</h2>
+                        <p class="descripcion-ava">Ofrecemos soluciones integrales adaptadas a las necesidades académicas modernas, combinando innovación tecnológica con excelencia educativa para garantizar resultados óptimos en tu desarrollo académico.</p>
+                        
+                        <div class="services-grid">
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class='bx bx-conversation'></i>
+                                </div>
+                                <h4>Chats especializados</h4>
+                                <p>Asistentes con conocimiento específico para tu carrera</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class='bx bx-search-alt'></i>
+                                </div>
+                                <h4>Búsqueda avanzada</h4>
+                                <p>Acceso a información académica verificada</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class='bx bx-file'></i>
+                                </div>
+                                <h4>Análisis de PDFs</h4>
+                                <p>Interactúa con tus documentos de estudio</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">
+                                    <i class='bx bx-math'></i>
+                                </div>
+                                <h4>Herramientas matemáticas</h4>
+                                <p>Resolución paso a paso de ejercicios complejos</p>
+                            </div>
+                        </div>
+                        <a href="/precios" class="plane-link">
+                            <button class="pricing-link">
+                                <i class='bx bx-list-ul'></i>
+                                Ver todos los precios
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: RESPALDADO POR LA CIENCIA -->
+        <section class="nueva-seccion science-section">
+            <div class="section-inner">
+                <div class="content-right" data-aos="fade-left">
+                    <div class="text-content">
+                        <h2>Respaldado por la ciencia</h2>
+                        <p class="descripcion-ava">Utilizamos una combinación de métodos de enseñanza respaldados por investigaciones científicas y contenido atractivo para crear chats que enseñan eficazmente sobre cualquier materia específica.</p>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class='bx bx-check-circle'></i>
+                                <p><strong>Aprendizaje adaptativo</strong> basado en algoritmos de inteligencia artificial</p>
+                            </div>
+                            <div class="feature-item">
+                                <i class='bx bx-check-circle'></i>
+                                <p><strong>Microaprendizaje</strong> con lecciones cortas y efectivas</p>
+                            </div>
+                            <div class="feature-item">
+                                <i class='bx bx-check-circle'></i>
+                                <p><strong>Gamificación</strong> para mantener la motivación y el compromiso</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-left" data-aos="fade-right">
+                    <div class="image-container">
+                        <img src="/images/section3-image.webp" alt="Metodología científica" class="feature-image">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: VIDEOS -->
+        <section class="nueva-seccion testimonios-section">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Videos demostrativos</h2>
+                <p>Descubre todas las funcionalidades de Acadelia en acción</p>
+            </div>
+            
+            <div class="media-container" data-aos="fade-up">
+                <div class="media-content">
+                    <div class="media-display">
+                        <!-- Video 1: AVA's -->
+                        <video id="media-1" class="active" autoplay muted loop playsinline>
+                            <source src="/images/acadelia.mp4" type="video/mp4">
+                            Tu navegador no soporta videos HTML5.
+                        </video>
+                        
+                        <!-- Video 2: Herramientas -->
+                        <video id="media-2" muted loop playsinline>
+                            <source src="/images/acadelia1.mp4" type="video/mp4">
+                            Tu navegador no soporta videos HTML5.
+                        </video>
+                        
+                        <!-- Video 3: Funcionalidades -->
+                        <video id="media-3" muted loop playsinline>
+                            <source src="/images/acadelia2.mp4" type="video/mp4">
+                            Tu navegador no soporta videos HTML5.
+                        </video>
+                        
+                        <!-- Video 4: Tienda -->
+                        <video id="media-4" muted loop playsinline>
+                            <source src="/images/acadelia3.mp4" type="video/mp4">
+                            Tu navegador no soporta videos HTML5.
+                        </video>
+                    </div>
+                </div>
+                
+                <div class="media-options">
+                    <button class="media-option active" data-media="media-1">
+                        <i class='bx bx-conversation'></i> AVA's
+                    </button>
+                    <button class="media-option" data-media="media-2">
+                        <i class='bx bx-wrench'></i> Herramientas
+                    </button>
+                    <button class="media-option" data-media="media-3">
+                        <i class='bx bx-brain'></i> Funcionalidades
+                    </button>
+                    <button class="media-option" data-media="media-4">
+                        <i class='bx bx-store'></i> Tienda
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- NUEVA SECCIÓN: CTA FINAL -->
+        <section class="cta-section">
+            <div class="cta-overlay"></div>
+            <div class="section-inner">
+                <div class="cta-content" data-aos="fade-up">
+                    <h2>¿Listo para mejorar tu rendimiento académico?</h2>
+                    <p>Únete a miles de estudiantes que ya han transformado su forma de aprender con Acadelia</p>
+                    <div class="cta-buttons">
+                        <a href="/precios">
+                            <button class="ingresar-btn">
+                                <i class='bx bx-crown'></i>
+                                Comenzar con AVA
+                            </button>
+                        </a>
+                        <a href="/contact">
+                            <button class="faq-btn outline-btn">
+                                <i class='bx bx-support'></i>
+                                Hablar con un asesor
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div class="footer-container">
+                <!-- Columna Izquierda -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-img"></div>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                                <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                                </svg>
+                                                    </a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class='bx bxl-facebook'></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class='bx bxl-instagram-alt'></i>
+                        </a>
+                        <a href="/cdn-cgi/l/email-protection#cba8a4a5bfaaa8bfa48baea1aea6bba7a4e5a8a4a6" class="social-link" aria-label="Email">
+                            <i class='bx bx-envelope'></i>
+                        </a>
+                    </div>
+                    <p class="copyright">© Acadelia.</p>
+                </div>
+        
+                <!-- Columna Derecha -->
+                <div class="footer-legal">
+                    <h3 class="legal-title">Legal y Seguridad</h3>
+                    <div class="legal-links">
+                        <a href="/cookie_privacy" class="legal-link">Política y Privacidad</a>
+                        <a href="/terminos_condiciones" class="legal-link">Terminos y Condiciones</a>
+                        <a href="/contact" class="legal-link">Contáctanos</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent-initializer.js" nonce="<%= nonce %>"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/PaginaInicioscript.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

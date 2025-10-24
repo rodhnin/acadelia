@@ -1,0 +1,383 @@
+/* Estilos para contenedor de imágenes */
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  max-width: 100%;
+}
+
+/* Estilo de la imagen generada */
+.response-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Leyenda de la imagen */
+.image-caption {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* Prompt de la imagen (texto más pequeño) */
+.image-prompt {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.7;
+  max-width: 80%;
+}
+
+/* Botón de descarga de imagen */
+.download-image-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: var(--text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.download-image-btn i {
+  font-size: 1.1rem;
+}
+
+/* Estilos para errores al cargar imágenes */
+.image-error {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: rgba(229, 57, 53, 0.1);
+  border-left: 4px solid 
+#e53935;
+  border-radius: 8px;
+  color: 
+#e53935;
+  margin: 1rem 0;
+}
+
+.image-error i {
+  font-size: 1.5rem;
+}
+
+.image-error a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+/* Estilos para modo oscuro */
+[data-theme="dark"] .image-container {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .image-error {
+  background-color: rgba(229, 57, 53, 0.2);
+  color: 
+#ff6b6b;
+}
+
+[data-theme="dark"] .image-error a {
+  color: 
+#90caf9;
+}
+
+/* Animación de carga para imágenes */
+.response-image {
+  /* Modificar para quitar la transición de opacidad */
+  opacity: 1; /* En lugar de 0 */
+  transform: scale(0.95);
+  transition: transform 0.3s ease; /* Eliminar 'opacity 0.3s ease,' */
+}
+
+.response-image.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Estilos para la vista previa de imágenes */
+.image-preview {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.image-preview:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.image-fullscreen-modal {
+  opacity: 1;
+  z-index: var(--z-index-modal) !important
+}
+
+
+
+/* Mejora para el contenedor multimodal */
+.multimodal-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Evitar que las imágenes sean demasiado pequeñas */
+.image-preview img {
+  min-width: 150px; 
+  min-height: 100px;
+  object-fit: cover;
+}
+
+/* Estilos para imágenes expiradas */
+.expired-image-placeholder {
+  display: flex !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  background-color: rgba(0, 0, 0, 0.05);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  cursor: default;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.expired-image-placeholder i.bx {
+  font-size: 1.5rem;
+  color: #3498db;
+  opacity: 0.8;
+}
+
+.expired-image-placeholder span {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  padding: 0 5px;
+}
+
+[data-theme="dark"] .expired-image-placeholder {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .expired-image-placeholder i.bx {
+  color: #90caf9;
+}
+
+[data-theme="dark"] .expired-image-placeholder span {
+  color: #ccc;
+}
+
+/* Asegurar que los contenedores de imagen tengan posición relativa */
+.image-preview {
+  position: relative;
+  min-height: 100px;
+}
+
+.image-fullscreen-modal img {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* Mejorar responsive en móviles */
+@media (max-width: 768px) {
+  .image-fullscreen-modal img {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
+  
+  .image-fullscreen-modal button {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* Añadir al final del archivo de estilos para imágenes más pequeñas */
+
+/* Estilos específicos para imágenes generadas por DALL-E */
+.multimodal-container .image-preview {
+  margin: 0 auto; /* Centrar imagen */
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  width: 600px;
+  height: 600px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.multimodal-container .image-preview:hover {
+  transform: scale(1.02); /* Efecto hover más sutil */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.multimodal-container .image-preview .markdown-image {
+  width: 100%;
+  width: 700px !important;
+  height: auto;
+  min-height: unset; /* Sobrescribir min-height */
+  min-width: unset; /* Sobrescribir min-width */
+  object-fit: contain;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.multimodal-container .image-preview .markdown-image.loaded {
+  opacity: 1;
+}
+
+/* Mantener el overlay con buen tamaño */
+.multimodal-container .image-preview .image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  opacity: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+/* Efecto hover para overlay */
+.multimodal-container .image-preview:hover .image-overlay {
+  background-color: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+    width: 100%;
+
+}
+
+
+/* Contenedor simplificado */
+.multimodal-container .multimodal-attachments {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .multimodal-container .image-preview {
+    max-width: 300px;
+  }
+  
+  .multimodal-container .image-preview .markdown-image {
+    max-width: 300px;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .multimodal-container .image-preview {
+    max-width: 260px;
+  }
+  
+  .multimodal-container .image-preview .markdown-image {
+    max-width: 260px;
+  }
+}
+
+/* Para multimodal-attachments sin márgenes */
+.multimodal-attachments.no-margin-top {
+  margin-top: 0;
+}
+
+/* Renombramos la clase de error para evitar conflictos */
+.message-error-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(231, 76, 60, 0.1);
+  margin-bottom: 10px;
+}
+
+/* Clases para modales */
+.modal-matematico {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-matematico-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+@media (max-width: 480px) {
+  .expired-image-placeholder {
+   max-height: 300px !important;
+    max-width: 300px ;
+  }
+  
+  .multimodal-container .image-preview {
+  height: 300px !important;
+    max-width: 300px ;
+  }
+ 
+}
+
+  @media (max-width: 1024px) {
+  .expired-image-placeholder {
+   max-height: 400px !important;
+    max-width: 500px !important;
+
+  }
+
+.image-placeholder {
+     max-height: 400px !important;
+    max-width: 500px !important;
+
+  }
+     }

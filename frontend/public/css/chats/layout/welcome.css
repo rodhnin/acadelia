@@ -1,0 +1,953 @@
+/* ======================================
+   WELCOME MESSAGE STYLES - GIF PROTAGONISTA
+   ====================================== */
+
+/* Estilos para el mensaje de bienvenida */
+.welcome-message {
+  padding: 2px;
+  margin: 15px auto 20px;
+  max-width: 85%;
+  animation: fadeInUp 0.5s ease forwards;
+  overflow: hidden;
+}
+
+.welcome-container {
+  background-color: var(--color-background);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  position: relative;
+}
+
+/* ======================================
+   GIF PROTAGONISTA - LA ESTRELLA ABSOLUTA
+   ====================================== */
+
+.welcome-icon {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+  height: 220px; /* Altura principal para el GIF */
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.welcome-profile-image {
+  width: 60px;
+  height: 60px;
+}
+
+.welcome-avatar {
+  width: 80%;
+  background-image: var(--avatar-welcome);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+    transform: scale(1.6); /* Escalar la imagen un 10% más grande */
+margin-top: -25px
+  
+  /* SIN overlays, SIN elementos encima, GIF LIMPIO */
+}
+
+/* ======================================
+   BOXICON DISCRETO - NO INTRUSIVO
+   ====================================== */
+
+.header-icon {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.header-icon:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ======================================
+   CONTENIDO DE TEXTO - ABAJO DEL GIF
+   ====================================== */
+
+.welcome-content {
+  padding: 30px;
+  text-align: center;
+  background: var(--color-background);
+  border-radius: 0 0 20px 20px;
+}
+
+.welcome-content h2 {
+  margin: 0 0 16px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text, #333333);
+  line-height: 1.3;
+}
+
+.welcome-content p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary, #666666);
+  line-height: 1.6;
+  max-width: 100%;
+}
+
+/* ======================================
+   ESTILOS PARA EL INPUT CENTRADO (MANTENER INTACTO)
+   ====================================== */
+
+.centered-input-container {
+  width: 75%;
+  max-width: 600px;
+  position: relative;
+  margin: 20px auto;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+.centered-textarea {
+  width: 100%;
+  background-color: var(--color-background);
+  resize: none;
+  font-size: 16px;
+  color: var(--color-text, #333333);
+  outline: none;
+  transition: all 0.3s ease;
+  height: 56px;
+  line-height: 1.5;
+}
+
+.centered-textarea:focus {
+  border-color: var(--color-primary, #a4ac86);
+}
+
+.centered-textarea::placeholder {
+  color: var(--color-text-secondary, #999999);
+}
+
+.centered-send-button {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary, #a4ac86);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.initial-loader-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.centered-send-button:hover {
+  background-color: var(--color-primary-dark, #8a9164);
+  transform: scale(1.05);
+}
+
+.centered-send-button i {
+  font-size: 20px;
+}
+
+.centered-textarea.auto-expand {
+  min-height: 56px;
+  transition: height 0.2s ease;
+  overflow-y: auto;
+  width: 85%;
+  max-height: 100px;
+}
+
+/* ======================================
+   CONTENEDOR DE SUGERENCIAS
+   ====================================== */
+
+.suggestions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px auto 30px;
+  width: 80%;
+  max-width: 800px;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+.suggestion-item {
+  padding: 12px 20px;
+  background-color: var(--color-background);
+  border-top: 1px solid #ffffff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text);
+}
+
+.suggestion-item:hover {
+  opacity: 0.8;
+  background-color: rgba(164, 172, 134, 0.1);
+  filter: brightness(0.92);
+  box-shadow: 0 3px 8px rgba(121, 121, 121, 0.18);
+}
+
+.suggestion-item i {
+  font-size: 18px;
+}
+
+/* ======================================
+   ESTADO ACTIVO DE BIENVENIDA
+   ====================================== */
+
+body.welcome-active .fixed-space {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ======================================
+   TEMA OSCURO
+   ====================================== */
+
+body[data-theme="dark"] .welcome-content h2 {
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .welcome-content p {
+  color: var(--color-text-secondary);
+}
+
+body[data-theme="dark"] .centered-textarea {
+  background-color: var(--color-background, #1f1f1c);
+  border-color: var(--color-primary, #a4ac8670);
+  color: var(--color-text, #e0e0e0);
+}
+
+body[data-theme="dark"] .suggestion-item {
+  border-color: rgb(235 236 232 / 12%);
+}
+
+body[data-theme="dark"] .suggestion-item:hover {
+  background-color: var(--bg-hover-dark, #eddbdb4a);
+}
+
+/* ======================================
+   BOTONES DE TEXTAREA DE BIENVENIDA (MANTENER INTACTO)
+   ====================================== */
+
+#welcome-input-box button {
+  position: absolute;
+  top: 12px;
+  border: none;
+  border-radius: 20%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--color-primary-light);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+}
+
+#welcome-input-box button:nth-child(2) {
+  right: 16px;
+  font-size: 22px;
+}
+
+#welcome-input-box button:nth-child(3) {
+  right: 56px;
+  font-size: 20px;
+}
+
+#welcome-input-box button:hover {
+  filter: brightness(0.92);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+#welcome-input-box button i {
+  color: var(--color-primary);
+}
+
+body[data-theme="dark"] #welcome-input-box button {
+  background-color: var(--color-text);
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.12);
+}
+
+/* ======================================
+   WELCOME ATTACHMENTS WRAPPER (MANTENER INTACTO)
+   ====================================== */
+
+.welcome-attachments-wrapper {
+  position: relative;
+  right: -94%;
+  bottom: -65px;
+  z-index: 150;
+  width: 0px;
+  height: 0px;
+  border-radius: 100%;
+  background-color: var(--color-primary, #656d4a);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-attachment-button {
+  height: 100%;
+}
+
+.welcome-attach-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.welcome-attach-btn i {
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.welcome-attachment-options {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-primary, #656d4a);
+  border-radius: 20px;
+  padding: 0 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(20px);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.welcome-attachments-wrapper:hover .attachment-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.welcome-attachments-wrapper:hover .welcome-attach-btn {
+  transform: rotate(45deg);
+}
+
+.welcome-attachment-options:hover ~ .attach-btn {
+  transform: rotate(0deg);
+}
+
+.welcome-attachment-options:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.welcome-attachment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  height: 100%;
+}
+
+.welcome-attachments-wrapper:hover .attachment-option,
+.welcome-attachment-options:hover .attachment-option {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.welcome-attachments-wrapper:hover .attachment-option:nth-child(1),
+.welcome-attachment-options:hover .attachment-option:nth-child(1) {
+  transition-delay: 0.05s;
+}
+.welcome-attachments-wrapper:hover .attachment-option:nth-child(2),
+.welcome-attachment-options:hover .attachment-option:nth-child(2) {
+  transition-delay: 0.1s;
+}
+.welcome-attachments-wrapper:hover .attachment-option:nth-child(3),
+.welcome-attachment-options:hover .attachment-option:nth-child(3) {
+  transition-delay: 0.15s;
+}
+.welcome-attachments-wrapper:hover .attachment-option:nth-child(4),
+.welcome-attachment-options:hover .attachment-option:nth-child(4) {
+  transition-delay: 0.2s;
+}
+
+.welcome-attachment-option i {
+  font-size: 22px;
+  color: var(--color-text);
+  transition: transform 0.2s ease;
+}
+
+.welcome-attachment-option span {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  font-size: 11px;
+  color: white;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-attachment-option:hover span {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.welcome-attachment-option:hover i {
+  transform: translateY(-3px);
+}
+
+.welcome-attachment-option span::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+body[data-theme="dark"] .welcome-attachments-wrapper,
+body[data-theme="dark"] .welcome-attachment-options {
+  background-color: var(--color-primary, #a4ac86);
+}
+
+/* ======================================
+   WELCOME FILE PREVIEW (MANTENER INTACTO)
+   ====================================== */
+
+.welcome-file-preview-container {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px;
+  border: none;
+  box-shadow: 0 5px 10px rgb(201 188 188 / 79%);
+  width: 95%;
+  margin-left: 15px;
+  margin-top: -110px;
+  background-color: var(--color-primary);
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+}
+
+.welcome-file-preview-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.welcome-file-preview-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.welcome-file-preview-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+.welcome-file-preview-container:empty {
+  display: none;
+}
+
+.welcome-file-preview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 150px;
+  height: 120px;
+}
+
+.welcome-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.welcome-document-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  width: 150px;
+}
+
+.welcome-document-preview i:not(.file-preview-remove):not(.bx-x) {
+  font-size: 32px;
+  color: var(--color-primary-light);
+  margin-bottom: 5px;
+}
+
+.welcome-document-preview-name {
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.welcome-file-preview-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.welcome-file-preview-remove:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ======================================
+   CONTENEDOR DE VISTA PREVIA MATH (MANTENER INTACTO)
+   ====================================== */
+
+.welcome-preview-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto 8px;
+  background: var(--color-background);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-dropdown);
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+
+.welcome-preview-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.welcome-preview-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.welcome-preview-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 20px;
+}
+
+.welcome-preview-container.visible {
+  display: block;
+}
+
+.welcome-math-preview {
+  color: var(--color-text);
+  font-family: var(--font-family-math);
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+/* ======================================
+   ÁREA DE ARRASTRAR Y SOLTAR (MANTENER INTACTO)
+   ====================================== */
+
+.welcome-file-upload-container {
+  width: 95%;
+  max-width: 800px;
+  position: absolute;
+  display: none;
+  padding: 15px;
+  border-top: 1px solid var(--border-color, #ddd);
+  box-shadow: 0 5px 10px rgb(201 188 188 / 79%);
+  border-radius: 15px;
+  bottom: 115px;
+  margin-left: 15px;
+  background-color: var(--color-primary);
+}
+
+body[data-theme="dark"] .welcome-file-upload-container {
+  border-top: 1px solid #363636;
+}
+
+.welcome-file-upload-container.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.welcome-drag-drop-area {
+  width: 100%;
+  max-height: 95px;
+  border: 2px dashed var(--border-color, #ddd);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: var(--bg-secondary, rgb(164 172 134 / 44%));
+  cursor: pointer;
+}
+
+.welcome-file-upload-container.dragging .drag-drop-area {
+  background-color: var(--color-primary-light, rgba(3, 136, 209, 0.1));
+  border-color: var(--color-primary, #0388d1);
+}
+
+.welcome-upload-main-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0px;
+  color: var(--color-text);
+}
+
+.welcome-upload-details {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.welcome-upload-secondary-text {
+  font-size: 13px;
+  margin: 0px;
+  color: var(--color-text);
+}
+
+/* ======================================
+   WELCOME MODAL (MANTENER INTACTO)
+   ====================================== */
+
+.welcome-preview-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-preview-modal.show {
+  display: flex;
+}
+
+.welcome-preview-modal-content {
+  background-color: var(--color-background);
+  border-radius: 12px;
+  width: 800px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+}
+
+.welcome-preview-title {
+  border-radius: var(--border-radius-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-primary);
+  font-family: var(--font-family-code);
+  font-size: var(--font-size-xs);
+}
+
+.welcome-preview-title i {
+  font-size: 15px;
+  margin: 5px;
+  color: var(--color-text);
+}
+
+.welcome-preview-close-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.welcome-preview-body {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  max-height: 60vh;
+  max-width: 100%;
+}
+
+.welcome-preview-body.image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-preview-body.image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.welcome-preview-body.document-preview {
+  white-space: pre-wrap;
+  font-family: monospace !important;
+  line-height: 1.5;
+  width: 100%;
+  word-break: break-word;
+  overflow: auto;
+  flex-grow: 1;
+  font-size: var(--font-size-xs);
+}
+
+.welcome-preview-body.code-preview {
+  padding: 0;
+}
+
+.welcome-preview-body.code-preview pre {
+  margin: auto;
+  padding: 20px !important;
+  border-radius: 0;
+  font-size: 14px;
+}
+
+/* ======================================
+   WELCOME CAMERA STYLES (MANTENER INTACTO)
+   ====================================== */
+
+#welcome-camera-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#welcome-camera-container.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#welcome-camera-stream {
+  max-width: 90vw;
+  max-height: 70vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+#welcome-camera-container .camera-controls {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+#welcome-camera-container .camera-controls button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#welcome-capture-photo {
+  background: var(--primary-color, #4f46e5);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+#welcome-capture-photo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+#welcome-close-camera {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+#welcome-close-camera:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* ======================================
+   WELCOME THEME DARK MODE (MANTENER INTACTO)
+   ====================================== */
+
+body[data-theme="dark"] .welcome-file-preview-container {
+  box-shadow: 0 5px 10px rgb(0 0 0 / 79%);
+}
+
+/* ======================================
+   WELCOME RESPONSIVE (MANTENER INTACTO)
+   ====================================== */
+
+@media (min-width: 1000px) and (max-width: 1360px) {
+  .welcome-attachments-wrapper {
+    left: 93.4% !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 540px) {
+  .centered-input-container {
+    width: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-icon {
+    height: 300px;
+  }
+  
+  .welcome-content {
+    padding: 20px;
+  }
+  
+  .welcome-content h2 {
+    font-size: 22px;
+  }
+  
+  .welcome-content p {
+    font-size: 14px;
+  }
+  
+  .header-icon {
+    font-size: 24px;
+    padding: 8px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  #welcome-camera-stream {
+    max-width: 95vw;
+    max-height: 60vh;
+  }
+  
+  #welcome-camera-container .camera-controls button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-icon {
+    height: 250px;
+  }
+  
+  .welcome-content h2 {
+    font-size: 20px;
+  }
+  
+  .welcome-content p {
+    font-size: 13px;
+  }
+}
+
+/* ======================================
+   WELCOME ANIMATIONS (MANTENER INTACTO)
+   ====================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

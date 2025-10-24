@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>Eliminar Cuenta | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/delete-account.css">
+</head>
+<body>
+  
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="delete-container">
+    <div class="delete-tape"></div>
+    <div class="delete-text">
+      <div class="delete-badge">
+        <i class='bx bx-error-circle'></i>
+        Eliminación permanente de cuenta
+      </div>
+      <h1 class="delete-title">¿Realmente deseas dejarnos?</h1>
+      <h2 class="delete-subtitle">El Profesor Acadel está muy triste por tu decisión</h2>
+      
+      <div class="warning-box">
+        <i class='bx bx-error'></i>
+        <div>
+          <h3>¿Tienes una suscripción activa?</h3>
+          <p>Si tienes una suscripción activa, por favor contáctanos antes de eliminar tu cuenta para gestionar el reembolso o cancelación adecuada de tus servicios.</p>
+          <a href="/contact" class="contact-link">
+            <button class="contact-btn">
+              <i class='bx bx-support'></i>
+              Contactar con soporte
+            </button>
+          </a>
+        </div>
+      </div>
+      
+      <p class="delete-description">
+        Eliminar tu cuenta es una acción <strong>permanente e irreversible</strong>. Esta acción eliminará:
+      </p>
+      
+      <ul class="deletion-consequences">
+        <li><i class='bx bx-x'></i> Todos tus datos personales</li>
+        <li><i class='bx bx-x'></i> Tu historial de conversaciones con los AVAs</li>
+        <li><i class='bx bx-x'></i> Acceso a tus AVAs comprados</li>
+        <li><i class='bx bx-x'></i> Historial de pagos y transacciones</li>
+        <li><i class='bx bx-x'></i> Cualquier crédito o beneficio acumulado</li>
+      </ul>
+      
+      <div class="professor-quote">
+        <p>"Como guardián del conocimiento, me entristece profundamente verte partir. Hemos compartido un viaje de aprendizaje que valoraré siempre. Si hay algo que pueda hacer para mejorar tu experiencia, por favor házmelo saber antes de tomar esta decisión definitiva."</p>
+        <div class="author">— Profesor Acadel, con gran pesar</div>
+      </div>
+      
+      <div class="confirmation-box">
+        <h3><i class='bx bx-question-mark'></i> ¿Estás absolutamente seguro?</h3>
+        <p>Si hay algo que podamos hacer para mejorar tu experiencia, nos encantaría escucharte antes de que tomes esta decisión final.</p>
+        
+        <div class="button-group">
+          <a href="/" class="home-btn">
+            <i class='bx bx-home'></i>
+            Volver al inicio
+          </a>
+          <button class="delete-btn" id="openDeleteModal">
+            <i class='bx bx-trash'></i>
+            Eliminar mi cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="delete-image">
+      <img src="/images/sad-professor.webp" alt="Profesor Acadel Triste" />
+    </div>
+  </div>
+  
+  <!-- Modal de Confirmación -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class='bx bx-error-circle'></i> Confirmar eliminación</h2>
+        <button class="close-modal" id="closeConfirmModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="warning-text">Esta acción es <strong>irreversible</strong>. Una vez eliminada tu cuenta, todos tus datos se perderán para siempre.</p>
+        
+        <div class="confirm-input">
+          <label for="confirmText">Para confirmar, escribe "ELIMINAR" en el campo de abajo:</label>
+          <input type="text" id="confirmText" placeholder="Escribe ELIMINAR">
+        </div>
+        
+        <div class="checkbox-confirmation">
+          <input type="checkbox" id="confirmCheck">
+          <label for="confirmCheck">Entiendo que perderé todo mi progreso, datos y que esta acción no se puede deshacer</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" id="cancelDelete">
+          <i class='bx bx-x'></i>
+          Cancelar
+        </button>
+        <button class="confirm-delete-btn" id="finalConfirmDelete" disabled>
+          <i class='bx bx-trash'></i>
+          Confirmar eliminación
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Código de Verificación -->
+  <div class="modal-overlay" id="verificationModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class='bx bx-check-shield'></i> Verificación final</h2>
+        <button class="close-modal" id="closeVerificationModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="email-sent-message">
+          <i class='bx bx-envelope'></i>
+          <p>Hemos enviado un código de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada e introduce el código a continuación.</p>
+        </div>
+        
+        <div class="verification-input">
+          <label for="verificationCode">Código de verificación:</label>
+          <input type="text" id="verificationCode" placeholder="Introduce el código de 6 dígitos">
+        </div>
+        
+        <p class="verification-help">¿No has recibido el código? <button class="resend-btn" id="resendCode">Reenviar código</button></p>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" id="cancelVerification">
+          <i class='bx bx-x'></i>
+          Cancelar
+        </button>
+        <button class="confirm-delete-btn" id="submitVerificationCode">
+          <i class='bx bx-check'></i>
+          Verificar y eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Carga -->
+  <div class="loading-modal" id="loadingModal">
+    <div class="loading-content">
+      <div class="loading-spinner">
+        <i class='bx bx-loader-alt bx-spin'></i>
+      </div>
+      <p id="loadingText">Procesando tu solicitud...</p>
+    </div>
+  </div>
+  
+  <!-- Modal de Éxito -->
+  <div class="success-modal" id="successModal">
+    <div class="success-content">
+      <div class="success-icon">
+        <i class='bx bx-check'></i>
+      </div>
+      <h2>¡Cuenta eliminada!</h2>
+      <p>Tu cuenta ha sido eliminada exitosamente. Lamentamos verte partir.</p>
+      <p class="redirect-text">Serás redirigido en <span id="countdown">5</span> segundos...</p>
+    </div>
+  </div>
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <!-- Scripts -->
+  <script src="/scripts/autenticardelete.js"  nonce="<%= nonce %>"></script>
+  <script src="/scripts/delete-account.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

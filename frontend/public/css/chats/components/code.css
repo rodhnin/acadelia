@@ -1,0 +1,218 @@
+/* ======================================
+   BLOQUES DE CÓDIGO
+   ====================================== */
+
+/* Contenedor de bloques de código */
+.code-block {
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  max-width: 1000px;
+}
+
+.code-block:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Encabezado de los bloques de código */
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.code-language {
+  font-family: var(--font-family-code);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+}
+
+/* Botón para copiar código */
+.copy-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: #edf2f7;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: #4a5568;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.copy-button:hover {
+  background-color: #e2e8f0;
+}
+
+.copy-button i {
+  font-size: var(--font-size-sm);
+}
+
+/* Bloques pre/code - Dejar que highlight.js maneje los estilos */
+pre {
+  margin: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
+  /* Remover background y padding - lo maneja highlight.js */
+}
+
+/* Forzar fuente personalizada para todos los elementos de código */
+code {
+  font-family: var(--font-family-code) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.5 !important;
+}
+
+/* Asegurar que pre también use la fuente personalizada */
+pre {
+  font-family: var(--font-family-code) !important;
+background-color: #FFFF
+}
+
+/* Texto entre bloques de código */
+.between-code {
+  padding: 12px 16px;
+  background-color: transparent;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.code-intro, .code-outro {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.code-outro {
+  border-bottom: none;
+  margin-top: 15px;
+}
+
+/* Mensajes de error en código */
+.code-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid var(--color-error);
+}
+
+.code-error i {
+  font-size: 1.5rem;
+}
+
+/* Ajustes para highlight.js - Forzar fuente personalizada */
+.hljs {
+  /* Forzar fuente personalizada sobre los temas de highlight.js */
+  font-family: var(--font-family-code) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.5 !important;
+  overflow: visible !important;
+}
+
+/* Asegurar que todos los elementos dentro de hljs usen la fuente personalizada */
+.hljs * {
+  font-family: inherit !important;
+}
+
+/* Ajustes para tema oscuro - Solo para el contenedor */
+[data-theme="dark"] .code-header {
+  background-color: #1f1f1c;
+  border-bottom-color: #1f1f1c;
+}
+
+[data-theme="dark"] .code-language {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .copy-button {
+  background-color: #1f1f1c;
+  border-color: #1f1f1c;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .copy-button:hover {
+  background-color: #434341;
+}
+
+[data-theme="dark"] .code-block {
+  background: #252525;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Animación al cargar bloques de código */
+.code-block {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Asegurar que el tema de highlight.js se respete PERO mantenga nuestra fuente */
+.hljs[data-highlighted="yes"] {
+  /* Permitir que highlight.js controle colores y background */
+  background: inherit !important;
+  color: inherit !important;
+  /* PERO mantener nuestra fuente personalizada */
+  font-family: var(--font-family-code) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.5 !important;
+}
+
+/* Forzar fuente en todos los elementos de sintaxis de highlight.js */
+.hljs .hljs-keyword,
+.hljs .hljs-built_in,
+.hljs .hljs-selector-tag,
+.hljs .hljs-name,
+.hljs .hljs-comment,
+.hljs .hljs-string,
+.hljs .hljs-attribute,
+.hljs .hljs-literal,
+.hljs .hljs-number,
+.hljs .hljs-type,
+.hljs .hljs-class,
+.hljs .hljs-function,
+.hljs .hljs-variable,
+.hljs .hljs-template-variable {
+  font-family: inherit !important;
+}
+
+/* Ajustes adicionales para mejor integración con los temas */
+.code-block .hljs {
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+}
+
+/* Si no hay header, redondear esquinas superiores también */
+.code-block:not(:has(.code-header)) .hljs {
+  border-radius: var(--border-radius-md);
+}
+
+[data-theme="dark"] pre {
+background-color:#282c34
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>403 - Acceso Prohibido | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/403.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="error-container">
+    <div class="security-tape"></div>
+    <div class="error-text">
+      <div class="security-badge">
+        <i class='bx bx-shield-x'></i>
+        Acceso denegado: Se requiere rol de administrador
+      </div>
+      <h1 class="error-title">Acceso Prohibido</h1>
+      <h2 class="error-subtitle">Esta área está restringida para tu nivel de acceso</h2>
+      
+      <p class="error-description">
+        El Profesor Acadel está haciendo guardia en esta sección. Según el libro de normas académicas, necesitas credenciales de administrador para acceder a esta área restringida.
+      </p>
+      
+      <div class="error-quote">
+        <p>"En mis 15 años como guardia de seguridad académica, he aprendido que cada permiso tiene su propósito. No es nada personal, simplemente estoy siguiendo el protocolo de seguridad establecido en el Manual de Regulaciones Académicas, sección 4.03, párrafo 2."</p>
+        <div class="author">— Profesor Acadel, Oficial de Seguridad Académica</div>
+      </div>
+      
+      <a href="/" class="home-btn">
+        <i class='bx bx-home'></i>
+        Volver a un área autorizada
+      </a>
+      
+      <div class="access-info">
+        <h3><i class='bx bx-info-circle'></i> Información de acceso:</h3>
+        <ul>
+          <li>Esta página requiere permisos de administrador para ser visualizada.</li>
+          <li>Si crees que deberías tener acceso, verifica que hayas iniciado sesión correctamente.</li>
+          <li>Si necesitas acceso a esta área, contacta con el administrador del sistema.</li>
+          <li>Recuerda que los permisos están diseñados para proteger datos sensibles y mantener la integridad del sistema.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="error-image">
+      <img src="/images/403.webp" alt="Profesor Acadel Guardia de Seguridad" />
+    </div>
+  </div>
+
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/403.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

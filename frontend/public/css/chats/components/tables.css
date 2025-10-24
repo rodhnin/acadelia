@@ -1,0 +1,380 @@
+/* INICIO: Contenedor de tablas */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  background: #ffffff;
+  transition: all var(--transition-normal);
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Efecto hover para contenedor de tabla */
+.table-container:hover {
+  box-shadow: var(--shadow-md);
+}
+/* FIN: Contenedor de tablas */
+
+/* INICIO: Estilos básicos para tablas estándar */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family-base);
+  font-size: 0.9rem;
+  cursor: default;
+  background-color: #ffffff;
+  table-layout: fixed; /* Control de ancho de columnas */
+}
+
+/* Encabezados de tabla */
+.data-table th {
+  background-color: #f0f4f8;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 2px solid #e2e8f0;
+  border-right: 2px solid #e2e8f0;
+  /* Propiedades para envolver texto */
+  white-space: normal;
+  word-wrap: break-word; 
+  overflow-wrap: break-word;
+  hyphens: auto;
+  min-width: 100px;
+  max-width: 250px;
+  line-height: 1.4;
+}
+
+/* Quitar borde derecho del último encabezado */
+.data-table th:last-child {
+  border-right: none;
+}
+
+/* Truncado con elipsis para encabezados muy largos */
+.data-table th.truncate-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Celdas de datos */
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+  vertical-align: middle;
+  line-height: 1.6;
+  border-right: 1px solid #e2e8f0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Quitar borde derecho de la última celda */
+.data-table td:last-child {
+  border-right: none;
+}
+
+/* Efecto hover en filas */
+.data-table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Quitar borde inferior de la última fila */
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Leyenda de tabla */
+.table-caption {
+  padding: 12px 16px;
+  text-align: center;
+  color: #718096;
+  font-style: italic;
+  font-size: 0.9rem;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+/* Explicación para tablas */
+.table-explanation {
+  padding: 12px 16px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+  color: #4a5568;
+  line-height: 1.5;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+}
+
+/* Bordes redondeados para tabla */
+.data-table tr:first-child th:first-child {
+  border-top-left-radius: var(--border-radius-md);
+}
+
+.data-table tr:first-child th:last-child {
+  border-top-right-radius: var(--border-radius-md);
+}
+
+.data-table tr:last-child td:first-child {
+  border-bottom-left-radius: var(--border-radius-md);
+}
+
+.data-table tr:last-child td:last-child {
+  border-bottom-right-radius: var(--border-radius-md);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .data-table th {
+    min-width: 80px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+  
+
+  .table-container {
+    transition:none !important;
+   }
+
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Clases para anchos de columnas específicos */
+.data-table th.col-xs { width: 5%; }
+.data-table th.col-sm { width: 10%; }
+.data-table th.col-md { width: 15%; }
+.data-table th.col-lg { width: 20%; }
+.data-table th.col-xl { width: 25%; }
+
+/* Tooltip para encabezados truncados */
+.data-table th[title] {
+  cursor: help;
+}
+/* FIN: Estilos básicos para tablas estándar */
+
+/* INICIO: Soporte para MathJax en tablas */
+.data-table td .MathJax_Display {
+  display: inline !important;
+  text-align: left !important;
+}
+
+.data-table td .MathJax {
+  display: inline-block !important;
+  text-align: left !important;
+  margin: 0 !important;
+}
+
+.data-table td .MathJax_CHTML {
+  font-size: 90% !important;
+}
+/* FIN: Soporte para MathJax en tablas */
+
+/* INICIO: Mensajes de error en tablas */
+.table-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid var(--color-error);
+}
+
+.table-error i {
+  font-size: 1.5rem;
+}
+/* FIN: Mensajes de error en tablas */
+
+/* INICIO: Adaptación tema oscuro para tablas */
+[data-theme="dark"] .table-container {
+  background: #2d3748;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .data-table {
+  background-color: #2d3748;
+}
+
+[data-theme="dark"] .data-table th {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  border-bottom-color: #4a5568;
+  border-right-color: #4a5568;
+}
+
+[data-theme="dark"] .data-table td {
+  border-bottom-color: #4a5568;
+  border-right-color: #4a5568;
+  color: #cbd5e0;
+}
+
+[data-theme="dark"] .data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .table-caption,
+[data-theme="dark"] .table-explanation {
+  color: #a0aec0;
+  border-top-color: #4a5568;
+  background-color: #2d3748;
+}
+
+[data-theme="dark"] .table-error {
+  background-color: rgba(197, 48, 48, 0.1);
+  color: #fc8181;
+  border-left-color: #fc8181;
+}
+/* FIN: Adaptación tema oscuro para tablas */
+
+/* INICIO: Compatibilidad con tablas de Markdown */
+/* La clase markdown-table hereda los estilos principales de data-table */
+.markdown-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family-base);
+  font-size: 0.9rem;
+  cursor: default;
+  background-color: #ffffff;
+  table-layout: fixed;
+}
+
+/* Encabezados de markdown-table */
+.markdown-table th {
+  background-color: #f0f4f8;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 2px solid #e2e8f0;
+  border-right: 2px solid #e2e8f0;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  min-width: 100px;
+  max-width: 250px;
+  line-height: 1.4;
+}
+
+/* Quitar borde derecho del último encabezado */
+.markdown-table th:last-child {
+  border-right: none;
+}
+
+/* Celdas de markdown-table */
+.markdown-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+  vertical-align: middle;
+  line-height: 1.6;
+  border-right: 1px solid #e2e8f0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Quitar borde derecho de la última celda */
+.markdown-table td:last-child {
+  border-right: none;
+}
+
+/* Efecto hover en filas para markdown-table */
+.markdown-table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Quitar borde inferior de la última fila */
+.markdown-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Filas alternas para markdown-table */
+.markdown-table tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Tema oscuro para markdown-table */
+[data-theme="dark"] .markdown-table {
+  background-color: #2d3748;
+}
+
+[data-theme="dark"] .markdown-table th {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  border-bottom-color: #4a5568;
+  border-right-color: #4a5568;
+}
+
+[data-theme="dark"] .markdown-table td {
+  border-bottom-color: #4a5568;
+  border-right-color: #4a5568;
+  color: #cbd5e0;
+}
+
+[data-theme="dark"] .markdown-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .markdown-table tr:nth-child(even) {
+  background-color: #2c3747;
+}
+
+/* Botón para copiar tabla */
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-copy-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #edf2f7;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-copy-button:hover {
+  background-color: #e2e8f0;
+}
+
+/* Tema oscuro para el botón de copia */
+[data-theme="dark"] .table-header {
+  background-color: #2d3748;
+  border-bottom-color: #4a5568;
+}
+
+[data-theme="dark"] .table-copy-button {
+  background-color: #4a5568;
+  border-color: #2d3748;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .table-copy-button:hover {
+  background-color: #2d3748;
+}
+/* FIN: Compatibilidad con tablas de Markdown */

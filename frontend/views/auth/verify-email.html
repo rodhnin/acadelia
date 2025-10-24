@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificación de Correo - Acadelia</title>
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  
+  <!-- Boxicons -->
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <!-- Poppins Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+
+<link rel="stylesheet" href="/css/verifyemail.css">
+</head>
+
+<body>
+  <div class="page-container">
+    <!-- Logo principal -->
+    <div class="logo-container">
+      <a href="/" class="logo-link">
+        <img src="/images/Imagotipo.webp" alt="Acadelia" class="logo">
+      </a>
+    </div>
+
+    <!-- Wrapper para resultado de verificación (inicialmente en estado de carga) -->
+    <div class="wrapper" id="verification-result-wrapper">
+      <div class="confirmation-container">
+        <div class="confirmation-box" id="verification-loading">
+          <div class="icon-box" style="background-color: var(--info-bg); color: var(--info-color);">
+            <i class='bx bx-loader-alt bx-spin'></i>
+          </div>
+          <h2>Verificando correo electrónico</h2>
+          <p>Estamos procesando tu solicitud de verificación. Por favor espera un momento...</p>
+        </div>
+
+        <!-- Contenido para verificación exitosa (inicialmente oculto) -->
+        <div class="confirmation-box" id="verification-success" style="display: none;">
+          <div class="icon-box success">
+            <i class='bx bx-check'></i>
+          </div>
+          <h2>¡Correo verificado con éxito!</h2>
+          <p>Tu dirección de correo electrónico ha sido verificada correctamente. Ahora puedes iniciar sesión en tu cuenta de Acadelia y comenzar a disfrutar de todos nuestros servicios.</p>
+          
+          <div style="margin-top: 20px;">
+            <a href="/login" class="btn">
+              Iniciar sesión
+            </a>
+          </div>
+        </div>
+
+        <!-- Contenido para verificación fallida (inicialmente oculto) -->
+        <div class="confirmation-box" id="verification-error" style="display: none;">
+          <div class="icon-box" style="background-color: var(--error-bg); color: var(--error-color);">
+            <i class='bx bx-error'></i>
+          </div>
+          <h2>Error en la verificación</h2>
+          <p>No hemos podido verificar tu correo electrónico. Es posible que el enlace haya expirado o ya haya sido utilizado.</p>
+          
+          <p id="error-message" style="color: var(--error-color); font-size: 0.9rem; font-weight: 500; margin-top: 10px; padding: 10px; background-color: rgba(211, 47, 47, 0.05); border-radius: 8px;"></p>
+          
+          <div style="margin-top: 20px;">
+            <a href="/login" class="btn" style="display: inline-block; background: var(--primary-color);">
+              Volver al inicio de sesión
+            </a>
+          </div>
+          
+          <p style="margin-top: 20px; font-size: 0.9rem;">
+            ¿Necesitas un nuevo enlace de verificación? <a href="/login" class="link-style">Solicítalo aquí</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/verifyemail.js"  nonce="<%= nonce %>"></script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="/scripts/immediate-theme.js" nonce="<%= nonce %>"></script>
+    <title>Acadelia - Gestión de cuenta</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="./css/stylecuenta.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+
+<body>
+    <!-- Sidebar mejorado -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <a href="/principal" class="logo-link" aria-label="Principal">
+                    <div class="logo-img"></div>
+                </a>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <i class='bx bx-x'></i>
+            </button>
+        </div>
+    
+        <ul class="sidebar-menu">
+            <!-- Opciones para móvil -->
+            <li class="responsive-item">
+                <a href="/principal" class="nav-btn">
+                    <i class='bx bx-home'></i> Inicio
+                </a>
+            </li>
+            <li class="responsive-item">
+                <a href="/misavas" class="nav-btn">
+                    <i class='bx bx-book-reader'></i> Mis Avas
+                </a>
+            </li>
+            <li class="responsive-item">
+                <a href="/tienda" class="nav-btn">
+                    <i class='bx bx-cart'></i> Tienda
+                </a>
+            </li>
+    
+            <li class="responsive-item">
+                <div class="theme-toggle-container" id="mobileThemeToggle">
+                    <div class="theme-slider"></div>
+                    <i class='bx bx-sun theme-icon'></i>
+                    <i class='bx bx-moon theme-icon'></i>
+                </div>
+            </li>
+    
+            <!-- Opciones principales -->
+            <li><a href="#" class="active"><i class='bx bxs-edit-alt'></i> Perfil</a></li>
+            <li><a href="/estatus"><i class='bx bxs-bar-chart-alt-2'></i> Status</a></li>
+            <li><a href="/paymenthistory"><i class='bx bx-history'></i> Historial de pago</a></li>
+        </ul>
+        
+        <div class="logout">
+            <a href="#"><i class='bx bx-log-out'></i> Cerrar sesión</a>
+        </div>
+    </aside>
+    
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class='bx bx-menu'></i>
+    </button>
+    
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <!-- Contenedor de perfil -->
+        <div class="content-box profile-view-container">
+            <!-- Vista para completar perfil (nueva) -->
+            <div class="profile-complete-section hidden" id="profileCompleteSection">
+                <div class="profile-header">
+                    <h2>¡Completa tu perfil!</h2>
+                    <div class="complete-profile-info">
+                        <p>Para disfrutar de todas las funcionalidades de Acadelia, necesitamos que completes tu información personal.</p>
+                    </div>
+                </div>
+
+                <form class="profile-complete-form" id="profileCompleteForm">
+                    <input type="hidden" name="_token" value="<%= csrfToken %>">
+                    
+                    <div class="form-group">
+                        <label for="completeName">Nombre</label>
+                        <i class='bx bx-user'></i>
+                        <input type="text" 
+                               id="completeName" 
+                               name="nombre" 
+                               autocomplete="given-name"
+                               placeholder="Ingresa tu nombre"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="completeLastName">Apellido</label>
+                        <i class='bx bx-user'></i>
+                        <input type="text" 
+                               id="completeLastName" 
+                               name="apellido" 
+                               autocomplete="family-name"
+                               placeholder="Ingresa tu apellido"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="completeCountry">País</label>
+                        <i class='bx bx-globe'></i>
+                        <select id="completeCountry" 
+                                name="pais" 
+                                autocomplete="country"
+                                required>
+                            <option value="" disabled selected hidden>Seleccione un país</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="completeUniversity">Universidad</label>
+                        <i class='bx bx-building-house'></i>
+                        <select id="completeUniversity" 
+                                name="universidad" 
+                                autocomplete="organization"
+                                required>
+                            <option value="" disabled selected hidden>Primero seleccione un país</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="completeBirthdate" class="date-label">Fecha de Nacimiento</label>
+                        <i class='bx bx-calendar'></i>
+                        <input type="date" 
+                               id="completeBirthdate" 
+                               name="fecha" 
+                               autocomplete="bday"
+                               required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn complete-profile-btn">
+                            <i class='bx bx-check'></i>
+                            Completar Perfil
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Vista normal del perfil (existente) -->
+            <div class="profile-existing-section" id="profileExistingSection">
+                <div class="profile-header">
+                    <h2>Mi Perfil</h2>
+                    <div class="header-buttons">
+                        <button class="password-btn" id="changePasswordBtn">
+                            <i class='bx bx-lock-alt'></i>
+                            Cambiar Contraseña
+                        </button>
+                        <button class="edit-toggle-btn" id="editToggleBtn">
+                            <i class='bx bx-edit-alt'></i>
+                            Editar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="profile-content">
+                    <!-- Vista de solo lectura -->
+                    <div class="profile-view" id="profileView">
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-envelope'></i>
+                                <span>Correo</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bxs-user-circle'></i>
+                                <span>Rol</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-user'></i>
+                                <span>Nombre</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-user'></i>
+                                <span>Apellido</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-globe'></i>
+                                <span>País</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-buildings'></i>
+                                <span>Universidad</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+
+                        <div class="profile-field">
+                            <div class="field-label">
+                                <i class='bx bx-calendar'></i>
+                                <span>Fecha de Nacimiento</span>
+                            </div>
+                            <div class="field-value"></div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de cambio de contraseña -->
+                    <form id="changePasswordForm" class="hidden">
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <!-- Campo de username oculto para accesibilidad -->
+                        <input type="text" 
+                               name="username" 
+                               autocomplete="username" 
+                               style="display: none;" 
+                               aria-hidden="true" 
+                               tabindex="-1">
+                        <div class="password-form-header">
+                            <h2>Cambiar contraseña</h2>
+                            <p>Ingresa tu contraseña actual para verificar tu identidad.</p>
+                        </div>
+                        
+                        <div class="form-group" id="currentPasswordGroup">
+                            <label for="currentPassword">Contraseña Actual</label>
+                            <div class="input-wrapper">
+                                <input type="password" 
+                                       id="currentPassword" 
+                                       name="currentPassword" 
+                                       autocomplete="current-password"
+                                       required>
+                                <button type="button" class="toggle-password">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newPassword">Contraseña Nueva</label>
+                            <div class="input-wrapper">
+                                <input type="password" 
+                                       id="newPassword" 
+                                       name="newPassword" 
+                                       autocomplete="new-password"
+                                       required disabled>
+                                <button type="button" class="toggle-password">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Contraseña</label>
+                            <div class="input-wrapper">
+                                <input type="password" 
+                                       id="confirmPassword" 
+                                       name="confirmPassword" 
+                                       autocomplete="new-password"
+                                       required disabled>
+                                <button type="button" class="toggle-password">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelPasswordChange">Cancelar</button>
+                            <button type="submit" class="submit-btn">Guardar Cambios</button>
+                        </div>
+                    </form>
+                    
+                    <!-- Vista de edición -->
+                    <form class="profile-edit hidden" id="profileEdit">
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <div class="form-group hidden">
+                            <label for="Rol">Rol</label>
+                            <i class='bx bx-user-circle'></i>
+                            <input type="text" 
+                                   id="Rol" 
+                                   name="Rol" 
+                                   value="" 
+                                   autocomplete="off"
+                                   readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <i class='bx bx-user'></i>
+                            <input type="text" 
+                                   id="nombre" 
+                                   name="nombre" 
+                                   value="" 
+                                   autocomplete="given-name"
+                                   >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apellido">Apellido</label>
+                            <i class='bx bx-user'></i>
+                            <input type="text" 
+                                   id="apellido" 
+                                   name="apellido" 
+                                   value="" 
+                                   autocomplete="family-name"
+                                 >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pais">País</label>
+                            <i class='bx bx-globe'></i>
+                            <select id="pais" 
+                                    name="pais" 
+                                    autocomplete="country"
+                                    required>
+                                <option value="" disabled selected hidden>Seleccione un país</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="universidad">Universidad</label>
+                            <i class='bx bx-building-house'></i>
+                            <select id="universidad" 
+                                    name="universidad" 
+                                    autocomplete="organization"
+                                    required>
+                                <option value="" disabled selected hidden>Seleccione una universidad</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha" class="date-label">Fecha de Nacimiento</label>
+                            <i class='bx bx-calendar'></i>
+                            <input type="date" 
+                                   id="fecha" 
+                                   name="fecha" 
+                                   value="" 
+                                   autocomplete="bday"
+                                   readonly>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelEdit">Cancelar</button>
+                            <button type="submit" class="submit-btn">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de gestión de cookies -->
+        <div class="content-box security-section-container">
+            <div class="section-header">
+                <h2>Configuración de Cookies</h2>
+            </div>
+            
+            <div class="security-options">
+                <div class="security-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class='bx bx-cookie'></i>
+                            <i class='bx bx-shield'></i>
+                        </div>
+                        <div class="option-text">
+                            <h3>Preferencias de Cookies</h3>
+                            <p>Acadelia usa cookies para mejorar tu experiencia de aprendizaje. Personaliza qué cookies permites mientras navegas por nuestra plataforma. Las cookies esenciales siempre están activas para el funcionamiento del sitio.</p>
+                        </div>
+                    </div>
+                    <div class="option-action">
+                        <button id="open-cookie-settings" class="ingresar-btn">
+                            <i class='bx bx-cookie'></i>
+                            Gestionar cookies
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de eliminación de cuenta -->
+        <div class="content-box security-section-container">
+            <div class="section-header">
+                <h2>Eliminación de Cuenta</h2>
+            </div>
+            
+            <div class="security-options">
+                <div class="security-option">
+                    <div class="option-info">
+                        <div class="option-icon">
+                            <i class='bx bx-user-x'></i>
+                            <i class='bx bx-trash'></i>
+                        </div>
+                        <div class="option-text">
+                            <h3>Eliminar mi cuenta de Acadelia</h3>
+                            <p>Si deseas eliminar permanentemente tu cuenta y todos tus datos personales de Acadelia, puedes hacerlo desde el área de eliminación de cuenta. Recuerda que esta acción es irreversible y perderás acceso a todos tus AVAs, conversaciones e historial.</p>
+                        </div>
+                    </div>
+                    <div class="option-action">
+                        <button class="danger-btn" id="deleteAccountBtn">
+                            <i class='bx bx-trash'></i>
+                            Eliminar cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="extra-space"></div>
+
+        <footer class="main-footer">
+            <div class="footer-content">
+                <span class="copyright">© Acadelia.</span>
+                <div class="social-icons">
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                            <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class='bx bxl-instagram'></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Email">
+                        <i class='bx bx-envelope'></i>
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-helpers.js" nonce="<%= nonce %>"></script>
+
+    <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/cuenta.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/principal.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/logout.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/theme-principal.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/sidebar.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent-initializer.js" nonce="<%= nonce %>"></script>
+    <script src="./scripts/cookie-manager.js" nonce="<%= nonce %>"></script>
+</body>
+
+</html>

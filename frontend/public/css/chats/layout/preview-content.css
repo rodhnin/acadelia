@@ -1,0 +1,1673 @@
+
+/* Estilos para el panel de previsualización - Split View /
+/* Contenedor principal del panel */
+.preview-panel {
+  position: fixed;
+  top: 70px;
+  right: -50%;
+  width: 45%;
+  height: 90%;
+  background-color: var(--color-primary);
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  border-radius: 16px;
+}
+
+.preview-panel.open {
+  right: 0;
+}
+
+
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-40%); /* Desplaza el contenido a la izquierda */
+}
+
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-37%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 760px; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+/* Mover el attachments-wrapper dentro de la misma condición */
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  left: 95%; /* Mueve el attachments-wrapper 50px hacia la derecha */
+  transition: left 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .chat-messages {
+  max-width: 100%;
+}
+/* Cabecera del panel */
+.preview-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-color, #e1e4e8);
+  background-color: var(--bg-primary, #ffffff);
+  border-radius: var(--border-radius-lg);
+}
+
+.preview-panel-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: normal;
+  max-width:700px;
+  word-break:break-word
+}
+
+.preview-panel-controls {
+  display: flex;
+  gap: 15px;
+}
+
+/* Controles de previsualización */
+.preview-control {
+  background: none;
+  border: none;
+  font-size: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-color, #333);
+  transition: background-color 0.2s;
+  width: 32px;
+  height: 32px;
+  border-radius: 15px;
+}
+
+.preview-control:hover {
+  filter: brightness(0.92);  
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18); 
+  background-color: #fdfdfd;
+  border-radius: 15px;
+}
+
+/* Ocultar temporalmente los controles de zoom */
+.preview-control.zoom-out,
+.preview-control.reset-view,
+.preview-control.zoom-in {
+  display: none;
+}
+
+/* Contenido del panel */
+.preview-panel-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+  transition: transform 0.2s ease;
+  font-size: 0.95rem;
+}
+
+/* Ajuste para código */
+.code-content-preview {
+  margin-top: -15px;
+  margin: 1rem 0
+}
+
+
+/* Notificación de copia */
+.copy-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 0px;
+  background-color: var(--color-success, #4caf50);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  border-left: 4px solid #2E7D32;
+}
+
+.copy-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Estilos específicos para contenedores */
+.exam-preview-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.concept-map-preview-container {
+  padding: 10px;
+  overflow: auto;
+  min-height: 400px;
+}
+
+.code-block-preview {
+  background-color: var(--bg-code, #f6f8fa);
+  border-radius: 8px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.code-block-preview .code-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: var(--bg-code-header, #e1e4e8);
+  font-size: 14px;
+}
+
+.code-block-preview pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.table-preview-container {
+  overflow-x: auto;
+  padding: 10px;
+  margin-top: -30px;
+  
+}
+
+.table-preview-container p, h3, h2, h4{
+ margin: 1.5rem 0
+}
+
+.preview-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.preview-table th, 
+.preview-table td {
+  border: 1px solid var(--border-color, #ddd);
+  padding: 8px;
+  text-align: left;
+}
+
+.preview-table th {
+  background-color: var(--bg-table-header, #f2f2f2);
+  color: var(--text-color, #333);
+}
+
+.preview-table tr:nth-child(even) {
+  background-color: var(--bg-table-alt, #f9f9f9);
+}
+
+.table-caption {
+  margin-top: 8px;
+  font-style: italic;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+/* Estilos para botones de expansión */
+.expand-content-btn {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+  box-shadow: var(--shadow-md);
+}
+
+.expand-content-btn:hover {
+  background-color: var(--color-primary-light-hover, #b3e5fc);
+}
+
+.expand-content-btn i {
+  font-size: 16px;
+}
+
+.code-expand-btn,
+.table-expand-btn {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+}
+
+/* Errores */
+.preview-error,
+.file-error {
+  padding: 16px;
+  background-color: var(--bg-error, #fff0f0);
+  border-left: 4px solid var(--color-error, #e74c3c);
+  margin: 10px 0;
+  color: var(--text-color, #333);
+  border-radius: 4px;
+}
+
+.preview-error i,
+.file-error i {
+  margin-right: 8px;
+  color: var(--color-error, #e74c3c);
+}
+
+/* Estilos para modo oscuro */
+body[data-theme="dark"] .preview-panel {
+  background-color: var(--bg-secondary-dark, #1e2126);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .preview-panel-header {
+  background-color: var(--bg-primary-dark, #282c34);
+  border-color: var(--border-color-dark, #3e4451);
+}
+
+body[data-theme="dark"] .preview-control {
+  color: var(--text-color-dark, #e5e7ea);
+}
+
+body[data-theme="dark"] .preview-control:hover {
+  background-color: var(--bg-hover-dark, #eddbdb4a);
+}
+
+body[data-theme="dark"] .expand-content-btn {
+  background-color: var(--color-primary-dark-light, #0d3a58);
+  color: var(--color-primary-dark, #61afef);
+}
+
+body[data-theme="dark"] .expand-content-btn:hover {
+  background-color: var(--color-primary-dark-light-hover, #154563);
+}
+
+body[data-theme="dark"] .code-block-preview {
+  background-color: var(--bg-code-dark, #282c34);
+}
+
+body[data-theme="dark"] .code-block-preview .code-header {
+  background-color: var(--bg-code-header-dark, #3e4451);
+}
+
+body[data-theme="dark"] .preview-table th {
+  background-color: var(--bg-table-header-dark, #3e4451);
+}
+
+body[data-theme="dark"] .preview-table td {
+  border-color: var(--border-color-dark, #3e4451);
+}
+
+body[data-theme="dark"] .preview-table tr:nth-child(even) {
+  background-color: var(--bg-table-alt-dark, #2c313a);
+}
+
+body[data-theme="dark"] .copy-notification {
+  background-color: var(--color-success-dark, #2e7d32);
+}
+
+
+
+
+
+/* Ajustes para móviles - vista vertical apilada */
+@media (min-width: 320px) and (max-width: 520px) {
+  .preview-panel {
+    width: 90%;
+    height: 70%;
+    right: auto;
+    bottom: -100%; /* Inicia fuera de la pantalla (abajo) */
+    left: 50%; /* Centra horizontalmente */
+    transform: translateX(-50%); /* Ajusta el centrado */
+    transition: bottom 0.3s ease; /* Transición suave para el desplazamiento */
+    margin-left: 0; /* Elimina el margen izquierdo */
+    position: fixed; /* Asegura que esté fijo en la pantalla */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    background: white; /* Fondo para que sea visible */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Sombra para efecto visual */
+    visibility: hidden; /* Oculta el panel inicialmente */
+  }
+
+  /* Cuando se añade la clase .open, el panel sube y se hace visible */
+  .preview-panel.open {
+    bottom: 10%; /* Sube hasta el 10% desde abajo (centrado verticalmente) */
+    visibility: visible; /* Muestra el panel */
+  }
+
+  /* Desactiva los estilos que no deben afectar en esta resolución */
+  body.preview-panel-active .main-content,
+  body.preview-panel-active .sidebar.pinned + .main-content,
+  body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper,
+  body.preview-panel-active .chat-messages {
+    transform: none !important; /* Anula transformaciones */
+    width: auto !important; /* Anula width */
+    left: auto !important; /* Anula left */
+    transition: none !important; /* Anula transiciones */
+  }
+
+
+   body.preview-panel-active .sidebar-title {
+    overflow: visible !important; /* Asegura que el contenido no esté oculto */
+    z-index: 1002; /* Asegura que el header esté por debajo del sidebar-title */
+  }
+
+
+
+  
+ /* Asegura que el header no se vea afectado */
+ body.preview-panel-active .main-header {
+  width: auto !important; /* Mantiene el ancho original */
+       z-index: 1;
+      }
+
+  /* Asegura que el .main-content no se expanda al 100% */
+body.preview-panel-active .main-content {
+    width: auto !important; /* Mantiene el ancho original */
+    max-width: 100%!important; /* Anula cualquier max-width */
+  }
+}
+
+
+
+@media (min-width: 1380px) and (max-width: 1440px) {
+  .preview-panel {
+    width: 45%;
+  }
+  body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+    max-width: 350px;
+  }
+  
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-40%); /* Desplaza el contenido a la izquierda */
+}
+
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-36%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 500px; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left:93%;
+
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:8px;
+  margin-left:95px
+  }
+
+  
+  
+}
+
+@media (min-width: 1380px) and (max-width: 1440px) {
+  .main-content { 
+    max-width: 760px; /* Ancho máximo para el main content */
+    width: 100%;  
+  }
+
+  .user-message .message-content {
+    max-width: 600px;
+}
+.attachments-wrapper {
+      right: -95.5%;
+}
+
+  }
+
+
+  @media (min-width: 1570px) and (max-width: 1610px) {
+    .preview-panel {
+      width: 45%;
+    }
+  
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-39%); /* Desplaza el contenido a la izquierda */
+  max-width:50%; 
+}
+    
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  margin-left:75px
+  }
+    
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-35%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 39%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+  max-width: 490px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left: 95% !important;
+
+}
+  
+  
+}
+
+@media (min-width: 1570px) and (max-width: 1600px) {
+  .main-content { 
+    max-width: 790px; /* Ancho máximo para el main content */
+    width: 100%;  
+  }
+
+  .welcome-attachments-wrapper{
+    right: -93.7%;
+
+  }
+  .user-message .message-content {
+    max-width: 800px;
+}
+.attachments-wrapper {
+      right: -95.5%;
+}
+
+  }
+/* Ajustes para la resolución de 760px a 990px */
+@media (min-width: 760px) and (max-width: 853px) {
+  .preview-panel {
+    width: 50%; /* Mantiene el ancho del panel */
+    height:78%
+
+  }
+
+ /* Anula los estilos que causan movimiento o cambios de tamaño */
+ body.preview-panel-active .main-content:not(.main-header),
+ body.preview-panel-active .sidebar.pinned + .main-content:not(.main-header),
+ body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper:not(.main-header),
+ body.preview-panel-active .chat-messages:not(.main-header) {
+   max-width: auto !important; /* Anula max-width */
+   width: auto !important; /* Mantiene el ancho original */
+   left: auto !important; /* Anula posicionamiento horizontal */
+ }
+
+ /* Asegura que el .main-content no se mueva ni cambie de tamaño */
+ body.preview-panel-active .main-content:not(.main-header) {
+   max-width: 100% !important; /* Anula cualquier max-width */
+   transform: none !important; /* Anula transformaciones */
+ }
+
+
+  /* Anula el movimiento del sidebar */
+  body.preview-panel-active .sidebar.pinned {
+    transform: none !important; /* Anula transformaciones */
+    transition: none !important; /* Elimina cualquier transición */
+  }
+
+  /* Anula el movimiento del attachments-wrapper */
+  body.preview-panel-active .attachments-wrapper {
+    left: auto !important; /* Anula posicionamiento horizontal */
+    transition: none !important; /* Elimina cualquier transición */
+  }
+
+
+  body.preview-panel-active .sidebar-title {
+    overflow: visible !important; /* Asegura que el contenido no esté oculto */
+    z-index: 1002; /* Asegura que el header esté por debajo del sidebar-title */
+  }
+
+
+
+  
+ /* Asegura que el header no se vea afectado */
+ body.preview-panel-active .main-header {
+  width: auto !important; /* Mantiene el ancho original */
+       z-index: 1; /* Asegura que el header esté por debajo del sidebar-title */
+
+}
+ }
+
+ /* Ajustes para la resolución de 760px a 990px */
+@media (min-width: 855px) and (max-width: 990px) {
+  .preview-panel {
+    width: 50%; /* Mantiene el ancho del panel */
+    height:84%
+
+  }
+  body.preview-panel-active .sidebar.pinned + .main-content {
+    transform: translateX(22%) !important; /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 70%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+ body.preview-panel-active .main-content {
+   transform: none !important; /* Anula transformaciones */
+ }
+
+/* Segundo estilo (con cambios) */
+body .sidebar.pinned + .main-content {
+  transform: translateX(22%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 70%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+  
+
+body .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left:95%;
+
+}
+
+  body .sidebar.pinned + .main-content .user-message .message-content {
+  max-width: 480px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:8px;
+  margin-left:95px
+  }
+
+}
+
+@media (min-width: 1200px) and (max-width: 1270px) {
+  .preview-panel {
+    width: 40% !important;
+    height: 80% !important;
+  }
+
+
+  .warning-message{
+     margin-left:115px;
+   }
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+transform: translateX(-28%); /* Desplaza el contenido a la izquierda */
+   max-width: 50%; /* Ancho máximo para el main content */ 
+}
+
+body.preview-panel-active .main-content .warning-message{
+  font-size:10px;
+  margin-left:55px
+  }
+
+body.preview-panel-active .main-content  .user-message .message-content {
+   max-width: 460px; /* Ancho máximo para el main content */ 
+
+}
+body.preview-panel-active .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+}
+/* Segundo estilo (con cambios) */
+
+body.preview-panel-active .sidebar.pinned + .main-content {
+transform: translateX(-20%); /* Ajusta el desplazamiento si el sidebar está fijo */
+max-width: 40%; /* Ancho máximo para el main content */
+width: 100%; /* Asegura que ocupe el ancho disponible */
+transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+max-width: 350px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+
+}
+
+ body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:10px;
+  margin-left:25px
+  }
+
+ .main-content{
+  max-width:60%;
+ }
+
+  .attachments-wrapper {
+     left: 95% !important;
+}
+
+   .user-message .message-content {
+    max-width: 600px;
+}
+ }
+
+/* Ajustes para la resolución de 760px a 990px */
+@media (min-width: 521px) and (max-width: 759px) {
+  .preview-panel {
+    width: 50%; /* Mantiene el ancho del panel */
+    height:77%
+
+  }
+
+ /* Anula los estilos que causan movimiento o cambios de tamaño */
+ body.preview-panel-active .main-content:not(.main-header),
+ body.preview-panel-active .sidebar.pinned + .main-content:not(.main-header),
+ body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper:not(.main-header),
+ body.preview-panel-active .chat-messages:not(.main-header) {
+   max-width: 100% !important; /* Anula max-width */
+   width: auto !important; /* Mantiene el ancho original */
+   left: auto !important; /* Anula posicionamiento horizontal */
+ }
+
+ /* Asegura que el .main-content no se mueva ni cambie de tamaño */
+ body.preview-panel-active .main-content:not(.main-header) {
+   max-width: auto !important; /* Anula cualquier max-width */
+   transform: none !important; /* Anula transformaciones */
+ }
+
+
+  /* Anula el movimiento del sidebar */
+  body.preview-panel-active .sidebar.pinned {
+    transform: none !important; /* Anula transformaciones */
+    transition: none !important; /* Elimina cualquier transición */
+  }
+
+  /* Anula el movimiento del attachments-wrapper */
+  body.preview-panel-active .attachments-wrapper {
+    left: auto !important; /* Anula posicionamiento horizontal */
+    transition: none !important; /* Elimina cualquier transición */
+  }
+
+
+  body.preview-panel-active .sidebar-title {
+    overflow: visible !important; /* Asegura que el contenido no esté oculto */
+    z-index: 1002; /* Asegura que el header esté por debajo del sidebar-title */
+  }
+
+
+
+  
+ /* Asegura que el header no se vea afectado */
+ body.preview-panel-active .main-header {
+  width: auto !important; /* Mantiene el ancho original */
+  max-width: 700px !important; /* Anula cualquier max-width */
+       z-index: 1; /* Asegura que el header esté por debajo del sidebar-title */
+
+}
+ }
+
+ @media (min-width: 1271px) and (max-width: 1379px) {
+  .preview-panel {
+    width: 45% !important;
+    height: 83% !important;
+  }
+ /* Estilos para la edición inline del título */
+    .header-subtitle {
+      font-size: 14px !important;
+    }
+
+    .header-title {
+      font-size: 12px !important;
+    }
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+transform: translateX(-37%); /* Desplaza el contenido a la izquierda */ 
+    max-width:50% !important;
+
+}
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content .warning-message{
+  font-size:12px;
+  margin-left:57px
+  }
+
+ body.preview-panel-active .main-content .user-message .message-content {
+max-width: 520px;
+}  
+
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+transform: translateX(-33%); /* Ajusta el desplazamiento si el sidebar está fijo */
+max-width: 35% !important; /* Ancho máximo para el main content */
+transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+max-width: 340px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+
+}
+
+ body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:10px;
+  margin-left:5px
+  }
+
+ .main-content{
+  max-width:57%;
+ }
+
+.warning-message{
+     margin-left:11px;
+   }
+   
+  .attachments-wrapper {
+     left: 95% !important;
+}
+
+   .user-message .message-content {
+    max-width: 620px;
+}
+ }
+
+ 
+ @media (min-width: 1000px) and (max-width: 1100px) {
+  .preview-panel {
+    width: 35% !important;
+    height: 80% !important;
+  }
+
+ body.preview-panel-active .main-content .user-message .message-content {
+max-width: 420px;
+}  
+
+ body.preview-panel-active  .main-content .warning-message{
+  font-size:11px;
+  margin-left:15px
+  }
+
+   
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+transform: translateX(-22%); /* Desplaza el contenido a la izquierda */
+max-width:55%
+}
+
+body.preview-panel-active .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 92.5% !important;
+}
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+transform: translateX(-10%); /* Ajusta el desplazamiento si el sidebar está fijo */
+max-width: 40%; /* Ancho máximo para el main content */
+width: 100%; /* Asegura que ocupe el ancho disponible */
+transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+   
+body.preview-panel-active .sidebar.pinned + .main-content .header-subtitle {
+font-size:11px !important;  
+  
+}
+body.preview-panel-active .sidebar.pinned + .main-content .header-title {
+font-size:10px !important;  
+  
+}   
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+max-width: 250px;
+}
+
+
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+
+}
+
+ body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:9px;
+  margin-left:5px
+  }
+
+ .main-content{
+  max-width:60%;
+ }
+
+   .warning-message{
+     margin-left:45px;
+   }
+
+  .attachments-wrapper {
+     left: 95% !important;
+}
+
+   .user-message .message-content {
+    max-width: 470px;
+}
+ }
+
+ @media (min-width: 1441px) and (max-width: 1510px) {
+  .preview-panel {
+    width: 45%;
+  }
+  body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+    max-width: 440px;
+  }
+  
+
+body.preview-panel-active .main-content .user-message .message-content {
+    max-width: 540px;
+}
+   
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-37%); /* Desplaza el contenido a la izquierda */
+    max-width: 45%; /* Ancho máximo para el main content */
+
+}
+
+   body.preview-panel-active .main-content .warning-message{
+  margin-left:75px
+  }
+
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-34%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 38%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left:93%;
+
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:10px;
+  margin-left:65px
+  }
+  
+}
+
+ @media (min-width: 1511px) and (max-width: 1569px) {
+  .preview-panel {
+    width: 45%;
+  }
+  body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+    max-width: 440px;
+  }
+  
+
+body.preview-panel-active .main-content .user-message .message-content {
+    max-width: 580px;
+}
+   
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-38%); /* Desplaza el contenido a la izquierda */
+    max-width: 48%; /* Ancho máximo para el main content */
+
+}
+
+   body.preview-panel-active .main-content .warning-message{
+  margin-left:105px
+  }
+
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-35%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 38.2%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left:93%;
+
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:10px;
+  margin-left:65px
+  }
+ 
+}
+
+@media (min-width: 1611px) and (max-width: 1700px) {
+    .preview-panel {
+      width: 45%;
+    }
+  
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-38%); /* Desplaza el contenido a la izquierda */
+  max-width:50%;
+}
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  margin-left:75px
+  }
+    
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-35%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 40%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+  max-width: 520px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left: 95% !important;
+
+}
+
+body.preview-panel-active .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left: 95.5% !important;
+
+}
+  
+  
+}
+
+@media (min-width: 1701px) and (max-width: 1800px) {
+    .preview-panel {
+      width: 45%;
+    }
+  
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-38%); /* Desplaza el contenido a la izquierda */
+}
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  margin-left:125px
+  }
+    
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-35%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 40.5%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+  max-width: 550px;
+}
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left: 95% !important;
+
+}
+  
+  
+}
+
+
+@media (min-width: 1801px) and (max-width: 1850px) {
+    .preview-panel {
+      width: 45%;
+    }
+  
+
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+  transform: translateX(-38%); /* Desplaza el contenido a la izquierda */
+}
+body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  margin-left:125px
+  }
+    
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+  transform: translateX(-36%); /* Ajusta el desplazamiento si el sidebar está fijo */
+  max-width: 41%; /* Ancho máximo para el main content */
+  width: 100%; /* Asegura que ocupe el ancho disponible */
+  transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+  position: relative; /* Permite moverlo con left/right */
+  transition: all 0.3s ease; /* Transición suave */
+  left: 95% !important;
+
+}
+  
+  
+}
+
+
+ 
+ @media (min-width: 1101px) and (max-width: 1150px) {
+  .preview-panel {
+    width: 36% !important;
+    height: 80% !important;
+  }
+
+ body.preview-panel-active .main-content .user-message .message-content {
+max-width: 480px;
+}  
+
+ body.preview-panel-active  .main-content .warning-message{
+  font-size:11px;
+  margin-left:75px
+  }
+
+   
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+transform: translateX(-22%); /* Desplaza el contenido a la izquierda */
+max-width:55%;
+ 
+}
+
+   
+
+body.preview-panel-active .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 92.5% !important;
+}
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+transform: translateX(-10%); /* Ajusta el desplazamiento si el sidebar está fijo */
+max-width: 43%; /* Ancho máximo para el main content */
+width: 100%; /* Asegura que ocupe el ancho disponible */
+transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+   
+body.preview-panel-active .sidebar.pinned + .main-content .header-subtitle {
+font-size:11px !important;  
+  
+}
+body.preview-panel-active .sidebar.pinned + .main-content .header-title {
+font-size:10px !important;  
+  
+}   
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+max-width: 340px;
+}
+
+
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+
+}
+
+ body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:9px;
+  margin-left:25px
+  }
+
+ .main-content{
+  max-width:62%;
+ }
+
+   .warning-message{
+     margin-left:75px;
+   }
+
+  .attachments-wrapper {
+     left: 95% !important;
+}
+
+   .user-message .message-content {
+    max-width: 520px;
+}
+ }
+
+
+ @media (min-width: 1151px) and (max-width: 1199px) {
+  .preview-panel {
+    width: 40% !important;
+    height: 80% !important;
+  }
+
+ body.preview-panel-active .main-content .user-message .message-content {
+max-width: 480px;
+}  
+
+ body.preview-panel-active  .main-content .warning-message{
+  font-size:11px;
+  margin-left:75px
+  }
+
+   
+/* Primer estilo (sin cambios) */
+body.preview-panel-active .main-content {
+transform: translateX(-26%); /* Desplaza el contenido a la izquierda */
+max-width:55%;
+ 
+}
+
+   
+
+body.preview-panel-active .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 92.5% !important;
+}
+/* Segundo estilo (con cambios) */
+body.preview-panel-active .sidebar.pinned + .main-content {
+transform: translateX(-19%); /* Ajusta el desplazamiento si el sidebar está fijo */
+max-width: 39%; /* Ancho máximo para el main content */
+width: 100%; /* Asegura que ocupe el ancho disponible */
+transition: transform 0.3s ease, max-width 0.3s ease; /* Transición suave */
+}
+   
+body.preview-panel-active .sidebar.pinned + .main-content .header-subtitle {
+font-size:11px !important;  
+  
+}
+body.preview-panel-active .sidebar.pinned + .main-content .header-title {
+font-size:10px !important;  
+  
+}   
+
+body.preview-panel-active .sidebar.pinned + .main-content .user-message .message-content {
+max-width: 340px;
+}
+
+
+
+body.preview-panel-active .sidebar.pinned + .main-content .attachments-wrapper {
+position: relative; /* Permite moverlo con left/right */
+transition: all 0.3s ease; /* Transición suave */
+left: 93% !important;
+
+}
+
+ body.preview-panel-active .sidebar.pinned + .main-content .warning-message{
+  font-size:9px;
+  margin-left:25px
+  }
+
+ .main-content{
+  max-width:65%;
+ }
+
+   .warning-message{
+     margin-left:125px;
+   }
+
+  .attachments-wrapper {
+     left: 95% !important;
+}
+
+   .user-message .message-content {
+    max-width: 580px;
+}
+ }
+
+
+ .code-content-preview h3,
+ .code-content-preview h4,
+.code-content-preview ol,
+.code-content-preview blockquote{
+  margin: 1rem 0;
+}
+
+
+/* ==========================================
+   AVISOS DE CHAT - TOKENS Y ACCESO
+   ========================================== */
+
+   .chat-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border-left: 4px solid;
+    background: var(--surface-color, #f8f9fa);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.3s ease;
+    animation: slideInNotice 0.4s ease-out;
+  }
+  
+  /* Animación de entrada */
+  @keyframes slideInNotice {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* Variantes por tipo */
+  .chat-notice.warning {
+    border-left-color: #f39c12;
+    background: linear-gradient(135deg, 
+      rgba(243, 156, 18, 0.08) 0%, 
+      rgba(243, 156, 18, 0.03) 100%);
+  }
+  
+  .chat-notice.error {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, 
+      rgba(231, 76, 60, 0.08) 0%, 
+      rgba(231, 76, 60, 0.03) 100%);
+  }
+  
+  .chat-notice.info {
+    border-left-color: #3498db;
+    background: linear-gradient(135deg, 
+      rgba(52, 152, 219, 0.08) 0%, 
+      rgba(52, 152, 219, 0.03) 100%);
+  }
+  
+  /* Icono del aviso */
+  .notice-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  
+  .notice-icon i {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .chat-notice.warning .notice-icon i {
+    color: #f39c12;
+  }
+  
+  .chat-notice.error .notice-icon i {
+    color: #e74c3c;
+  }
+  
+  .chat-notice.info .notice-icon i {
+    color: #3498db;
+  }
+  
+  /* Contenido del aviso */
+  .notice-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .notice-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color, #333);
+    margin: 0;
+    line-height: 1.3;
+  }
+  
+  .notice-message {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #666);
+    line-height: 1.4;
+    margin: 0;
+  }
+  
+  .notice-details {
+    font-size: 0.85rem;
+    color: var(--text-tertiary, #888);
+    line-height: 1.4;
+    margin: 0;
+    font-style: italic;
+  }
+  
+  /* Acciones del aviso */
+  .notice-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .notice-action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .chat-notice.warning .notice-action-btn {
+    background: rgba(243, 156, 18, 0.1);
+    color: #e67e22;
+    border: 1px solid rgba(243, 156, 18, 0.2);
+  }
+  
+  .chat-notice.warning .notice-action-btn:hover {
+    background: rgba(243, 156, 18, 0.15);
+    border-color: rgba(243, 156, 18, 0.3);
+  }
+  
+  .chat-notice.error .notice-action-btn {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+  }
+  
+  .chat-notice.error .notice-action-btn:hover {
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.3);
+  }
+  
+  .chat-notice.info .notice-action-btn {
+    background: rgba(52, 152, 219, 0.1);
+    color: #2980b9;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+  }
+  
+  .chat-notice.info .notice-action-btn:hover {
+    background: rgba(52, 152, 219, 0.15);
+    border-color: rgba(52, 152, 219, 0.3);
+  }
+  
+  /* Botón de cerrar */
+  .notice-close {
+    flex-shrink: 0;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  
+  .notice-close-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--text-tertiary, #888);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .notice-close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-secondary, #666);
+  }
+  
+  .notice-close-btn i {
+    font-size: 16px;
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .chat-notice {
+      padding: 12px;
+      gap: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+    }
+  
+    .notice-title {
+      font-size: 0.9rem;
+    }
+  
+    .notice-message {
+      font-size: 0.85rem;
+    }
+  
+    .notice-action-btn {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Modo oscuro */
+  @media (prefers-color-scheme: dark) {
+    .chat-notice {
+      background: var(--surface-dark, #2c2c2c);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+  
+    .notice-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  /* Efectos adicionales */
+  .chat-notice:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .chat-notice.error {
+    animation: slideInNotice 0.4s ease-out, pulseError 2s ease-in-out 0.5s;
+  }
+  
+  @keyframes pulseError {
+    0%, 100% { 
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+    }
+    50% { 
+      box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3); 
+    }
+  }
+
+  /* ==========================================
+   INDICADOR DE TRUNCAMIENTO
+   ========================================== */
+
+.truncation-info {
+  margin-top: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border-color, #e1e5e9);
+}
+
+.truncation-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-tertiary, #888);
+  font-style: italic;
+}
+
+.truncation-notice i {
+  color: var(--warning-color, #f39c12);
+  font-size: 1rem;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .truncation-info {
+    border-top-color: var(--border-dark, #444);
+  }
+}
+
+/* ==========================================
+   ERRORES DE EDICIÓN POR TOKENS
+   ========================================== */
+
+   .edit-error-container {
+    padding: 20px;
+    border: 2px solid #e74c3c;
+    border-radius: 12px;
+    background: linear-gradient(135deg, 
+      rgba(231, 76, 60, 0.05) 0%, 
+      rgba(231, 76, 60, 0.02) 100%);
+    margin: 16px 0;
+  }
+  
+  .edit-error-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #c0392b;
+  }
+  
+  .edit-error-header i {
+    font-size: 1.2rem;
+    color: #e74c3c;
+  }
+  
+  .edit-error-message {
+    margin: 12px 0;
+    color: var(--text-color, #333);
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+  
+  .edit-error-suggestions {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    background: rgba(231, 76, 60, 0.03);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  
+  .edit-error-suggestions li {
+    margin: 8px 0;
+    color: var(--text-secondary, #666);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .edit-error-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .edit-error-actions .new-chat-btn {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+  }
+  
+  .edit-error-actions .new-chat-btn:hover {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .edit-error-actions .new-chat-btn i {
+    font-size: 1rem;
+  }
+  
+  /* Animación de entrada para errores de edición */
+  .edit-error-container {
+    animation: editErrorSlideIn 0.4s ease-out;
+  }
+  
+  @keyframes editErrorSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .edit-error-container {
+      padding: 16px;
+      margin: 12px 0;
+    }
+    
+    .edit-error-header {
+      font-size: 0.95rem;
+    }
+    
+    .edit-error-message {
+      font-size: 0.9rem;
+    }
+    
+    .edit-error-suggestions li {
+      font-size: 0.85rem;
+    }
+    
+    .edit-error-actions .new-chat-btn {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+  }
+  
+  /* Modo oscuro */
+  @media (prefers-color-scheme: dark) {
+    .edit-error-container {
+      background: linear-gradient(135deg, 
+        rgba(231, 76, 60, 0.08) 0%, 
+        rgba(231, 76, 60, 0.03) 100%);
+      border-color: #e74c3c;
+    }
+    
+    .edit-error-suggestions {
+      background: rgba(231, 76, 60, 0.05);
+    }
+    
+    .edit-error-message {
+      color: var(--text-color-dark, #e1e5e9);
+    }
+    
+    .edit-error-suggestions li {
+      color: var(--text-secondary-dark, #a8a8a8);
+    }
+  }

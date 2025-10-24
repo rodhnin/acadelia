@@ -1,0 +1,3797 @@
+/* ======================================
+   20 EXPERIENCIAS VISUALES ÚNICAS
+   MATEMÁTICAS, INGENIERÍA Y MEDICINA
+   ====================================== */
+
+/* ======================================
+   🔬 MATEMÁTICAS E INGENIERÍA
+   ====================================== */
+
+/* 1. FÍSICA Y FENÓMENOS NATURALES - Azul Cuántico */
+.physics-welcome .welcome-container {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+  box-shadow: 0 3px 3px rgba(59, 130, 246, 0.4);
+  border: 2px solid rgba(96, 165, 250, 0.3);
+}
+
+.physics-welcome .header-icon {
+  color: #60a5fa;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(30, 58, 138, 0.6));
+  animation: atomicPulse 2s ease-in-out infinite;
+}
+
+@keyframes atomicPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+  50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+}
+
+.physics-welcome .welcome-content h2 {
+  color: #60a5fa;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.physics-welcome .suggestion-item {
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+}
+
+.physics-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1));
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* 2. ÁLGEBRA Y ANÁLISIS - Púrpura Matemático */
+.algebra-welcome .welcome-container {
+  background: linear-gradient(135deg, #581c87 0%, #8b5cf6 50%, #a78bfa 100%);
+  box-shadow: 0 3px 3px rgba(139, 92, 246, 0.4);
+  border: 2px solid rgba(167, 139, 250, 0.3);
+}
+
+.algebra-welcome .header-icon {
+  color: #a78bfa;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(88, 28, 135, 0.6));
+  animation: mathematicalRotate 3s linear infinite;
+}
+
+@keyframes mathematicalRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.algebra-welcome .welcome-content h2 {
+  color: #a78bfa;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.algebra-welcome .suggestion-item {
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.05));
+}
+
+.algebra-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+  border-color: #8b5cf6;
+  transform: translateY(-3px) rotate(1deg);
+}
+
+/* 3. CÁLCULO - Ámbar Diferencial */
+.calculus-welcome .welcome-container {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  box-shadow: 0 3px 3px rgba(245, 158, 11, 0.4);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+}
+
+.calculus-welcome .header-icon {
+  color: #fbbf24;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.6));
+  animation: calcuIntegrate 4s ease-in-out infinite;
+}
+
+@keyframes calcuIntegrate {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  25% { transform: translateY(-5px) scaleY(1.1); }
+  75% { transform: translateY(5px) scaleY(0.9); }
+}
+
+.calculus-welcome .welcome-content h2 {
+  color: #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.calculus-welcome .suggestion-item {
+  border: 2px solid rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+}
+
+.calculus-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+  border-color: #f59e0b;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+/* 4. QUÍMICA - Verde Molecular */
+.chemistry-welcome .welcome-container {
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 50%, #4ade80 100%);
+  box-shadow: 0 3px 3px rgba(34, 197, 94, 0.4);
+  border: 2px solid rgba(74, 222, 128, 0.3);
+}
+
+.chemistry-welcome .header-icon {
+  color: #4ade80;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(21, 128, 61, 0.6));
+  animation: molecularBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes molecularBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(90deg); }
+  50% { transform: translateY(0) rotate(180deg); }
+  75% { transform: translateY(-4px) rotate(270deg); }
+}
+
+.chemistry-welcome .welcome-content h2 {
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+.chemistry-welcome .suggestion-item {
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(74, 222, 128, 0.05));
+}
+
+.chemistry-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(74, 222, 128, 0.1));
+  border-color: #22c55e;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* 5. ESTADÍSTICA Y PROBABILIDAD - Azul Marino Analítico */
+.statistics-welcome .welcome-container {
+  background: linear-gradient(135deg, #1e293b 0%, #475569 50%, #64748b 100%);
+  box-shadow: 0 3px 3px rgba(71, 85, 105, 0.4);
+  border: 2px solid rgba(100, 116, 139, 0.3);
+}
+
+.statistics-welcome .header-icon {
+  color: #64748b;
+  background: linear-gradient(135deg, rgba(71, 85, 105, 0.4), rgba(30, 41, 59, 0.6));
+  animation: statisticalPulse 3s ease-in-out infinite;
+}
+
+@keyframes statisticalPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.15) rotate(180deg); opacity: 0.8; }
+}
+
+.statistics-welcome .welcome-content h2 {
+  color: #64748b;
+  text-shadow: 0 0 10px rgba(71, 85, 105, 0.3);
+}
+
+.statistics-welcome .suggestion-item {
+  border: 2px solid rgba(71, 85, 105, 0.3);
+  background: linear-gradient(135deg, rgba(71, 85, 105, 0.1), rgba(100, 116, 139, 0.05));
+}
+
+.statistics-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(71, 85, 105, 0.2), rgba(100, 116, 139, 0.1));
+  border-color: #475569;
+  box-shadow: 0 8px 25px rgba(71, 85, 105, 0.3);
+}
+
+/* 6. MECÁNICA Y RESISTENCIA DE MATERIALES - Púrpura Estructural */
+.mechanics-welcome .welcome-container {
+  background: linear-gradient(135deg, #6b21a8 0%, #8b5cf6 50%, #a855f7 100%);
+  box-shadow: 0 3px 3px rgba(139, 92, 246, 0.4);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.mechanics-welcome .header-icon {
+  color: #a855f7;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(107, 33, 168, 0.6));
+  animation: structuralOscillate 2s ease-in-out infinite;
+}
+
+@keyframes structuralOscillate {
+  0%, 100% { transform: translateX(0) scaleX(1); }
+  50% { transform: translateX(5px) scaleX(1.1); }
+}
+
+.mechanics-welcome .welcome-content h2 {
+  color: #a855f7;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.mechanics-welcome .suggestion-item {
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.05));
+}
+
+.mechanics-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.1));
+  border-color: #8b5cf6;
+  transform: translateY(-3px) skewX(2deg);
+}
+
+/* 7. ELECTRICIDAD Y ELECTRÓNICA - Amarillo Eléctrico */
+.electronics-welcome .welcome-container {
+  background: linear-gradient(135deg, #ca8a04 0%, #eab308 50%, #facc15 100%);
+  box-shadow: 0 3px 3px rgba(234, 179, 8, 0.4);
+  border: 2px solid rgba(250, 204, 21, 0.3);
+}
+
+.electronics-welcome .header-icon {
+  color: #facc15;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(202, 138, 4, 0.6));
+  animation: electricSpark 1.5s ease-in-out infinite;
+}
+
+@keyframes electricSpark {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
+  }
+  50% { 
+    transform: scale(1.2); 
+    box-shadow: 0 0 30px rgba(234, 179, 8, 0.8), 0 0 40px rgba(250, 204, 21, 0.6);
+  }
+}
+
+.electronics-welcome .welcome-content h2 {
+  color: #eab308;
+  text-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+}
+
+.electronics-welcome .suggestion-item {
+  border: 2px solid rgba(234, 179, 8, 0.3);
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(250, 204, 21, 0.05));
+}
+
+.electronics-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(250, 204, 21, 0.1));
+  border-color: #eab308;
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.3);
+}
+
+/* 8. MATEMÁTICAS AVANZADAS - Verde Azulado Complejo */
+.advanced-math-welcome .welcome-container {
+  background: linear-gradient(135deg, #047857 0%, #10b981 50%, #34d399 100%);
+  box-shadow: 0 3px 3px rgba(16, 185, 129, 0.4);
+  border: 2px solid rgba(52, 211, 153, 0.3);
+}
+
+.advanced-math-welcome .header-icon {
+  color: #34d399;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(4, 120, 87, 0.6));
+  animation: infinityRotate 4s linear infinite;
+}
+
+@keyframes infinityRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.advanced-math-welcome .welcome-content h2 {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.advanced-math-welcome .suggestion-item {
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+}
+
+.advanced-math-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  border-color: #10b981;
+  transform: translateY(-3px) rotateY(5deg);
+}
+
+/* 9. COMPUTACIÓN Y SISTEMAS - Azul Tecnológico */
+.computer-science-welcome .welcome-container {
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%);
+  box-shadow: 0 3px 3px rgba(59, 130, 246, 0.4);
+  border: 2px solid rgba(96, 165, 250, 0.3);
+}
+
+.computer-science-welcome .header-icon {
+  color: #60a5fa;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(29, 78, 216, 0.6));
+  animation: digitalGlitch 2s ease-in-out infinite;
+}
+
+@keyframes digitalGlitch {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-2px); }
+  20% { transform: translateX(2px); }
+  30% { transform: translateX(-1px); }
+  40% { transform: translateX(1px); }
+  50% { transform: translateX(0); }
+}
+
+.computer-science-welcome .welcome-content h2 {
+  color: #3b82f6;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.computer-science-welcome .suggestion-item {
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+}
+
+.computer-science-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1));
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* 10. REDES Y SEGURIDAD - Rojo Ciberseguridad */
+.networks-security-welcome .welcome-container {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #f87171 100%);
+  box-shadow: 0 3px 3px rgba(220, 38, 38, 0.4);
+  border: 2px solid rgba(248, 113, 113, 0.3);
+}
+
+.networks-security-welcome .header-icon {
+  color: #f87171;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(185, 28, 28, 0.6));
+  animation: securityScan 3s ease-in-out infinite;
+}
+
+@keyframes securityScan {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+  }
+  33% { 
+    transform: scale(1.1) rotate(120deg); 
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.7);
+  }
+  66% { 
+    transform: scale(1.05) rotate(240deg); 
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+  }
+}
+
+.networks-security-welcome .welcome-content h2 {
+  color: #dc2626;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+.networks-security-welcome .suggestion-item {
+  border: 2px solid rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(248, 113, 113, 0.05));
+}
+
+.networks-security-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(248, 113, 113, 0.1));
+  border-color: #dc2626;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+
+/* ======================================
+   💰 NUEVAS VARIANTES DE ECONOMÍA
+   COLORES ÚNICOS Y DIFERENCIADOS
+   ====================================== */
+
+/* 1. MICROECONOMÍA - Verde Esmeralda Mercado */
+.microeconomia-welcome .welcome-container {
+  background: linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%);
+  box-shadow: 0 3px 3px rgba(5, 150, 105, 0.4);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.microeconomia-welcome .header-icon {
+  color: #10b981;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.4), rgba(6, 95, 70, 0.6));
+  animation: marketPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes marketPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(5, 150, 105, 0.5);
+  }
+  50% { 
+    transform: scale(1.12); 
+    box-shadow: 0 0 25px rgba(5, 150, 105, 0.8), 0 0 35px rgba(16, 185, 129, 0.6);
+  }
+}
+
+.microeconomia-welcome .welcome-content h2 {
+  color: #059669;
+  text-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
+}
+
+.microeconomia-welcome .suggestion-item {
+  border: 2px solid rgba(5, 150, 105, 0.3);
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.microeconomia-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.2), rgba(16, 185, 129, 0.1));
+  border-color: #059669;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 2. ECONOMETRÍA - Azul Acero Analítico */
+.econometria-welcome .welcome-container {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  box-shadow: 0 3px 3px rgba(30, 41, 59, 0.4);
+  border: 2px solid rgba(51, 65, 85, 0.3);
+}
+
+.econometria-welcome .header-icon {
+  color: #64748b;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
+  animation: dataAnalysis 3s linear infinite;
+}
+
+@keyframes dataAnalysis {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.05); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  75% { transform: rotate(270deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.econometria-welcome .welcome-content h2 {
+  color: #475569;
+  text-shadow: 0 0 10px rgba(30, 41, 59, 0.3);
+}
+
+.econometria-welcome .suggestion-item {
+  border: 2px solid rgba(30, 41, 59, 0.3);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.1), rgba(51, 65, 85, 0.05));
+}
+
+.econometria-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.2), rgba(51, 65, 85, 0.1));
+  border-color: #1e293b;
+  box-shadow: 0 8px 25px rgba(30, 41, 59, 0.3);
+  transform: translateY(-3px) rotateX(5deg);
+}
+
+/* 3. ECONOMÍA INTERNACIONAL - Azul Océano Global */
+.economia-internacional-welcome .welcome-container {
+  background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 50%, #0ea5e9 100%);
+  box-shadow: 0 3px 3px rgba(2, 132, 199, 0.4);
+  border: 2px solid rgba(14, 165, 233, 0.3);
+}
+
+.economia-internacional-welcome .header-icon {
+  color: #0ea5e9;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(12, 74, 110, 0.6));
+  animation: globalRotate 4s ease-in-out infinite;
+}
+
+@keyframes globalRotate {
+  0%, 100% { 
+    transform: rotateY(0deg) scale(1); 
+  }
+  25% { 
+    transform: rotateY(90deg) scale(1.08); 
+  }
+  50% { 
+    transform: rotateY(180deg) scale(1.15); 
+  }
+  75% { 
+    transform: rotateY(270deg) scale(1.08); 
+  }
+}
+
+.economia-internacional-welcome .welcome-content h2 {
+  color: #0284c7;
+  text-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
+}
+
+.economia-internacional-welcome .suggestion-item {
+  border: 2px solid rgba(2, 132, 199, 0.3);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.1), rgba(14, 165, 233, 0.05));
+}
+
+.economia-internacional-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(14, 165, 233, 0.1));
+  border-color: #0284c7;
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.3);
+  transform: translateY(-3px) rotateY(8deg);
+}
+
+/* 4. FINANZAS Y ECONOMÍA MONETARIA - Dorado Financiero */
+.finanzas-welcome .welcome-container {
+  background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%);
+  box-shadow: 0 3px 3px rgba(217, 119, 6, 0.4);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.finanzas-welcome .header-icon {
+  color: #fbbf24;
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.4), rgba(146, 64, 14, 0.6));
+  animation: goldenGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes goldenGlow {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.15); 
+    box-shadow: 0 0 35px rgba(217, 119, 6, 0.8), 0 0 50px rgba(245, 158, 11, 0.6);
+    filter: brightness(1.2);
+  }
+}
+
+.finanzas-welcome .welcome-content h2 {
+  color: #d97706;
+  text-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+}
+
+.finanzas-welcome .suggestion-item {
+  border: 2px solid rgba(217, 119, 6, 0.3);
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(245, 158, 11, 0.05));
+}
+
+.finanzas-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(245, 158, 11, 0.1));
+  border-color: #d97706;
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3);
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* 5. CÁLCULO ECONÓMICO - Violeta Matemático */
+.calculo-economico-welcome .welcome-container {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #a855f7 100%);
+  box-shadow: 0 3px 3px rgba(124, 58, 237, 0.4);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.calculo-economico-welcome .header-icon {
+  color: #a855f7;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(88, 28, 135, 0.6));
+  animation: mathematicalWave 3s ease-in-out infinite;
+}
+
+@keyframes mathematicalWave {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg) scale(1); 
+  }
+  25% { 
+    transform: translateY(-3px) rotate(90deg) scale(1.05); 
+  }
+  50% { 
+    transform: translateY(0) rotate(180deg) scale(1.1); 
+  }
+  75% { 
+    transform: translateY(3px) rotate(270deg) scale(1.05); 
+  }
+}
+
+.calculo-economico-welcome .welcome-content h2 {
+  color: #7c3aed;
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+}
+
+.calculo-economico-welcome .suggestion-item {
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.05));
+}
+
+.calculo-economico-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.1));
+  border-color: #7c3aed;
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+  transform: translateY(-3px) skewY(2deg);
+}
+
+/* ======= VARIABLES CSS PARA CADA VARIANTE ECONÓMICA ======= */
+
+html.microeconomia-variant {
+  --theme-accent: #059669;
+  --theme-accent-light: rgba(5, 150, 105, 0.2);
+  --theme-accent-dark: #065f46;
+}
+
+html.econometria-variant {
+  --theme-accent: #1e293b;
+  --theme-accent-light: rgba(30, 41, 59, 0.2);
+  --theme-accent-dark: #0f172a;
+}
+
+html.economiainternacional-variant {
+  --theme-accent: #0284c7;
+  --theme-accent-light: rgba(2, 132, 199, 0.2);
+  --theme-accent-dark: #0c4a6e;
+}
+
+html.finanzas-variant {
+  --theme-accent: #d97706;
+  --theme-accent-light: rgba(217, 119, 6, 0.2);
+  --theme-accent-dark: #92400e;
+}
+
+html.calculoeconomico-variant {
+  --theme-accent: #7c3aed;
+  --theme-accent-light: rgba(124, 58, 237, 0.2);
+  --theme-accent-dark: #581c87;
+}
+
+/* ======= EFECTOS HOVER PARA VARIANTES ECONÓMICAS ======= */
+
+/* Microeconomía */
+.microeconomia-welcome-suggestions .suggestion-item:hover,
+.microeconomia-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(5, 150, 105, 0.1);
+  border-color: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.2);
+}
+
+/* Econometría */
+.econometria-welcome-suggestions .suggestion-item:hover,
+.econometria-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(30, 41, 59, 0.1);
+  border-color: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(30, 41, 59, 0.2);
+}
+
+/* Economía Internacional */
+.economia-internacional-welcome-suggestions .suggestion-item:hover,
+.economia-internacional-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(2, 132, 199, 0.1);
+  border-color: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.2);
+}
+
+/* Finanzas */
+.finanzas-welcome-suggestions .suggestion-item:hover,
+.finanzas-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(217, 119, 6, 0.2);
+}
+
+/* Cálculo Económico */
+.calculo-economico-welcome-suggestions .suggestion-item:hover,
+.calculo-economico-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+}
+
+/* ======================================
+   🧠 NUEVAS VARIANTES TEÓRICAS DE PSICOLOGÍA
+   COLORES ÚNICOS Y DIFERENCIADOS
+   ====================================== */
+
+/* 1. DSM-5 Y PSICOLOGÍA CLÍNICA - Azul Clínico Profundo */
+.dsm5-welcome .welcome-container {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  box-shadow: 0 3px 3px rgba(37, 99, 235, 0.4);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.dsm5-welcome .header-icon {
+  color: #3b82f6;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(30, 58, 138, 0.6));
+  animation: clinicalDiagnosis 3s ease-in-out infinite;
+}
+
+@keyframes clinicalDiagnosis {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+  }
+  25% { 
+    transform: scale(1.05) rotate(90deg); 
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.7);
+  }
+  50% { 
+    transform: scale(1.1) rotate(180deg); 
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.9);
+  }
+  75% { 
+    transform: scale(1.05) rotate(270deg); 
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.7);
+  }
+}
+
+.dsm5-welcome .welcome-content h2 {
+  color: #2563eb;
+  text-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+}
+
+.dsm5-welcome .suggestion-item {
+  border: 2px solid rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.dsm5-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.1));
+  border-color: #2563eb;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 2. EPISTEMOLOGÍA GENÉTICA - Verde Sage Sabiduría */
+.epistemologia-welcome .welcome-container {
+  background: linear-gradient(135deg, #365314 0%, #65a30d 50%, #84cc16 100%);
+  box-shadow: 0 3px 3px rgba(101, 163, 13, 0.4);
+  border: 2px solid rgba(132, 204, 22, 0.3);
+}
+
+.epistemologia-welcome .header-icon {
+  color: #84cc16;
+  background: linear-gradient(135deg, rgba(101, 163, 13, 0.4), rgba(54, 83, 20, 0.6));
+  animation: wisdomGlow 4s ease-in-out infinite;
+}
+
+@keyframes wisdomGlow {
+  0%, 100% { 
+    transform: scale(1) rotateY(0deg); 
+    box-shadow: 0 0 15px rgba(101, 163, 13, 0.5);
+  }
+  25% { 
+    transform: scale(1.08) rotateY(90deg); 
+    box-shadow: 0 0 25px rgba(101, 163, 13, 0.7);
+  }
+  50% { 
+    transform: scale(1.15) rotateY(180deg); 
+    box-shadow: 0 0 35px rgba(101, 163, 13, 0.9);
+  }
+  75% { 
+    transform: scale(1.08) rotateY(270deg); 
+    box-shadow: 0 0 25px rgba(101, 163, 13, 0.7);
+  }
+}
+
+.epistemologia-welcome .welcome-content h2 {
+  color: #65a30d;
+  text-shadow: 0 0 10px rgba(101, 163, 13, 0.3);
+}
+
+.epistemologia-welcome .suggestion-item {
+  border: 2px solid rgba(101, 163, 13, 0.3);
+  background: linear-gradient(135deg, rgba(101, 163, 13, 0.1), rgba(132, 204, 22, 0.05));
+}
+
+.epistemologia-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(101, 163, 13, 0.2), rgba(132, 204, 22, 0.1));
+  border-color: #65a30d;
+  box-shadow: 0 8px 25px rgba(101, 163, 13, 0.3);
+  transform: translateY(-3px) rotateX(5deg);
+}
+
+/* 3. PSICOPATOLOGÍA - Rojo Carmesí Patológico */
+.psicopatologia-welcome .welcome-container {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #ef4444 100%);
+  box-shadow: 0 3px 3px rgba(220, 38, 38, 0.4);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.psicopatologia-welcome .header-icon {
+  color: #ef4444;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(153, 27, 27, 0.6));
+  animation: pathologicalScan 2.5s ease-in-out infinite;
+}
+
+@keyframes pathologicalScan {
+  0%, 100% { 
+    transform: scale(1) translateX(0); 
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+  }
+  25% { 
+    transform: scale(1.1) translateX(3px); 
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.7);
+  }
+  50% { 
+    transform: scale(1.15) translateX(-3px); 
+    box-shadow: 0 0 40px rgba(220, 38, 38, 0.9);
+  }
+  75% { 
+    transform: scale(1.1) translateX(3px); 
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.7);
+  }
+}
+
+.psicopatologia-welcome .welcome-content h2 {
+  color: #dc2626;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+.psicopatologia-welcome .suggestion-item {
+  border: 2px solid rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+}
+
+.psicopatologia-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(239, 68, 68, 0.1));
+  border-color: #dc2626;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+  transform: translateY(-3px) skewX(2deg);
+}
+
+/* 4. EXPLORACIÓN Y DIAGNÓSTICO PSICOLÓGICO - Naranja Amber Evaluativo */
+.psic-diagnostico-welcome .welcome-container {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #f97316 100%);
+  box-shadow: 0 3px 3px rgba(234, 88, 12, 0.4);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+}
+
+.psic-diagnostico-welcome .header-icon {
+  color: #f97316;
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(194, 65, 12, 0.6));
+  animation: diagnosticTarget 3s ease-in-out infinite;
+}
+
+@keyframes diagnosticTarget {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(234, 88, 12, 0.5);
+  }
+  33% { 
+    transform: scale(1.1) rotate(120deg); 
+    box-shadow: 0 0 25px rgba(234, 88, 12, 0.7);
+  }
+  66% { 
+    transform: scale(1.2) rotate(240deg); 
+    box-shadow: 0 0 35px rgba(234, 88, 12, 0.9);
+  }
+}
+
+.psic-diagnostico-welcome .welcome-content h2 {
+  color: #ea580c;
+  text-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+}
+
+.psic-diagnostico-welcome .suggestion-item {
+  border: 2px solid rgba(234, 88, 12, 0.3);
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.1), rgba(249, 115, 22, 0.05));
+}
+
+.psic-diagnostico-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(249, 115, 22, 0.1));
+  border-color: #ea580c;
+  box-shadow: 0 8px 25px rgba(234, 88, 12, 0.3);
+  transform: translateY(-3px) rotate(2deg);
+}
+
+/* 5. NEUROPSICOLOGÍA - Púrpura Neural Cerebral */
+.neuropsicologia-welcome .welcome-container {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 50%, #8b5cf6 100%);
+  box-shadow: 0 3px 3px rgba(124, 58, 237, 0.4);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.neuropsicologia-welcome .header-icon {
+  color: #8b5cf6;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(88, 28, 135, 0.6));
+  animation: neuralPulse 2s ease-in-out infinite;
+}
+
+@keyframes neuralPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.2); 
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.8), 0 0 60px rgba(139, 92, 246, 0.6);
+    filter: brightness(1.3);
+  }
+}
+
+.neuropsicologia-welcome .welcome-content h2 {
+  color: #7c3aed;
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+}
+
+.neuropsicologia-welcome .suggestion-item {
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.05));
+}
+
+.neuropsicologia-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(139, 92, 246, 0.1));
+  border-color: #7c3aed;
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* 6. PSICOANÁLISIS - Dorado Profundo Analítico */
+.psicoanalisis-welcome .welcome-container {
+  background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%);
+  box-shadow: 0 3px 3px rgba(217, 119, 6, 0.4);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.psicoanalisis-welcome .header-icon {
+  color: #f59e0b;
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.4), rgba(146, 64, 14, 0.6));
+  animation: analyticSpin 4s linear infinite;
+}
+
+@keyframes analyticSpin {
+  0% { 
+    transform: rotate(0deg) scale(1); 
+    box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
+  }
+  25% { 
+    transform: rotate(90deg) scale(1.1); 
+    box-shadow: 0 0 25px rgba(217, 119, 6, 0.7);
+  }
+  50% { 
+    transform: rotate(180deg) scale(1.2); 
+    box-shadow: 0 0 35px rgba(217, 119, 6, 0.9);
+  }
+  75% { 
+    transform: rotate(270deg) scale(1.1); 
+    box-shadow: 0 0 25px rgba(217, 119, 6, 0.7);
+  }
+  100% { 
+    transform: rotate(360deg) scale(1); 
+    box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
+  }
+}
+
+.psicoanalisis-welcome .welcome-content h2 {
+  color: #d97706;
+  text-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+}
+
+.psicoanalisis-welcome .suggestion-item {
+  border: 2px solid rgba(217, 119, 6, 0.3);
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(245, 158, 11, 0.05));
+}
+
+.psicoanalisis-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(245, 158, 11, 0.1));
+  border-color: #d97706;
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3);
+  transform: translateY(-3px) rotateY(5deg);
+}
+
+/* 7. PSICOLOGÍA GENERAL - Azul Royal Fundacional */
+.psicologia-general-welcome .welcome-container {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+  box-shadow: 0 3px 3px rgba(59, 130, 246, 0.4);
+  border: 2px solid rgba(96, 165, 250, 0.3);
+}
+
+.psicologia-general-welcome .header-icon {
+  color: #60a5fa;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(30, 64, 175, 0.6));
+  animation: foundationalGlow 3.5s ease-in-out infinite;
+}
+
+@keyframes foundationalGlow {
+  0%, 100% { 
+    transform: scale(1) rotateZ(0deg); 
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+  33% { 
+    transform: scale(1.1) rotateZ(120deg); 
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+  }
+  66% { 
+    transform: scale(1.15) rotateZ(240deg); 
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.9);
+  }
+}
+
+.psicologia-general-welcome .welcome-content h2 {
+  color: #3b82f6;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.psicologia-general-welcome .suggestion-item {
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+}
+
+.psicologia-general-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1));
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 8. PSICOLOGÍA SOCIAL - Verde Esmeralda Social */
+.psicologia-social-welcome .welcome-container {
+  background: linear-gradient(135deg, #047857 0%, #10b981 50%, #34d399 100%);
+  box-shadow: 0 3px 3px rgba(16, 185, 129, 0.4);
+  border: 2px solid rgba(52, 211, 153, 0.3);
+}
+
+.psicologia-social-welcome .header-icon {
+  color: #34d399;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(4, 120, 87, 0.6));
+  animation: socialNetwork 3s ease-in-out infinite;
+}
+
+@keyframes socialNetwork {
+  0%, 100% { 
+    transform: scale(1) translateY(0); 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+  }
+  25% { 
+    transform: scale(1.05) translateY(-3px); 
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.7);
+  }
+  50% { 
+    transform: scale(1.1) translateY(-6px); 
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.9);
+  }
+  75% { 
+    transform: scale(1.05) translateY(-3px); 
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.7);
+  }
+}
+
+.psicologia-social-welcome .welcome-content h2 {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.psicologia-social-welcome .suggestion-item {
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+}
+
+.psicologia-social-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  border-color: #10b981;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  transform: translateY(-3px) skewY(1deg);
+}
+
+/* 9. PSICOLOGÍA EVOLUTIVA - Celeste Desarrollo */
+.psicologia-evolutiva-welcome .welcome-container {
+  background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 50%, #38bdf8 100%);
+  box-shadow: 0 3px 3px rgba(14, 165, 233, 0.4);
+  border: 2px solid rgba(56, 189, 248, 0.3);
+}
+
+.psicologia-evolutiva-welcome .header-icon {
+  color: #38bdf8;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(3, 105, 161, 0.6));
+  animation: evolutiveGrowth 4s ease-in-out infinite;
+}
+
+@keyframes evolutiveGrowth {
+  0% { 
+    transform: scale(0.8) rotate(0deg); 
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+  }
+  25% { 
+    transform: scale(1) rotate(90deg); 
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg); 
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.7);
+  }
+  75% { 
+    transform: scale(1.1) rotate(270deg); 
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.6);
+  }
+  100% { 
+    transform: scale(0.8) rotate(360deg); 
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+  }
+}
+
+.psicologia-evolutiva-welcome .welcome-content h2 {
+  color: #0ea5e9;
+  text-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
+
+.psicologia-evolutiva-welcome .suggestion-item {
+  border: 2px solid rgba(14, 165, 233, 0.3);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(56, 189, 248, 0.05));
+}
+
+.psicologia-evolutiva-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(56, 189, 248, 0.1));
+  border-color: #0ea5e9;
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+  transform: translateY(-3px) rotateX(3deg);
+}
+
+/* 10. ESTADÍSTICA EN PSICOLOGÍA - Violeta Analítico */
+.psicostats-welcome .welcome-container {
+  background: linear-gradient(135deg, #6b21a8 0%, #8b5cf6 50%, #a78bfa 100%);
+  box-shadow: 0 3px 3px rgba(139, 92, 246, 0.4);
+  border: 2px solid rgba(167, 139, 250, 0.3);
+}
+
+.psicostats-welcome .header-icon {
+  color: #a78bfa;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(107, 33, 168, 0.6));
+  animation: statisticalAnalysis 3s ease-in-out infinite;
+}
+
+@keyframes statisticalAnalysis {
+  0%, 100% { 
+    transform: scale(1) rotateY(0deg); 
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+  25% { 
+    transform: scale(1.05) rotateY(90deg); 
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.7);
+  }
+  50% { 
+    transform: scale(1.15) rotateY(180deg); 
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.9);
+  }
+  75% { 
+    transform: scale(1.05) rotateY(270deg); 
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.7);
+  }
+}
+
+.psicostats-welcome .welcome-content h2 {
+  color: #8b5cf6;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.psicostats-welcome .suggestion-item {
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.05));
+}
+
+.psicostats-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+  border-color: #8b5cf6;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* ======= VARIABLES CSS PARA VARIANTES DE PSICOLOGÍA ======= */
+
+html.dsm5-variant {
+  --theme-accent: #2563eb;
+  --theme-accent-light: rgba(37, 99, 235, 0.2);
+  --theme-accent-dark: #1e3a8a;
+}
+
+html.epistemologia-variant {
+  --theme-accent: #65a30d;
+  --theme-accent-light: rgba(101, 163, 13, 0.2);
+  --theme-accent-dark: #365314;
+}
+
+html.psicopatologia-variant {
+  --theme-accent: #dc2626;
+  --theme-accent-light: rgba(220, 38, 38, 0.2);
+  --theme-accent-dark: #991b1b;
+}
+
+html.psicdiagnostico-variant {
+  --theme-accent: #ea580c;
+  --theme-accent-light: rgba(234, 88, 12, 0.2);
+  --theme-accent-dark: #c2410c;
+}
+
+html.neuropsicologia-variant {
+  --theme-accent: #7c3aed;
+  --theme-accent-light: rgba(124, 58, 237, 0.2);
+  --theme-accent-dark: #581c87;
+}
+
+html.psicoanalisis-variant {
+  --theme-accent: #d97706;
+  --theme-accent-light: rgba(217, 119, 6, 0.2);
+  --theme-accent-dark: #92400e;
+}
+
+html.psicologiageneral-variant {
+  --theme-accent: #3b82f6;
+  --theme-accent-light: rgba(59, 130, 246, 0.2);
+  --theme-accent-dark: #1e40af;
+}
+
+html.psicologiasocial-variant {
+  --theme-accent: #10b981;
+  --theme-accent-light: rgba(16, 185, 129, 0.2);
+  --theme-accent-dark: #047857;
+}
+
+html.psicologiaevolutiva-variant {
+  --theme-accent: #0ea5e9;
+  --theme-accent-light: rgba(14, 165, 233, 0.2);
+  --theme-accent-dark: #0369a1;
+}
+
+html.psicostats-variant {
+  --theme-accent: #8b5cf6;
+  --theme-accent-light: rgba(139, 92, 246, 0.2);
+  --theme-accent-dark: #6b21a8;
+}
+
+/* ======= EFECTOS HOVER PARA VARIANTES DE PSICOLOGÍA ======= */
+
+/* DSM-5 */
+.dsm5-welcome-suggestions .suggestion-item:hover,
+.dsm5-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(37, 99, 235, 0.1);
+  border-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+}
+
+/* Epistemología */
+.epistemologia-welcome-suggestions .suggestion-item:hover,
+.epistemologia-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(101, 163, 13, 0.1);
+  border-color: #65a30d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(101, 163, 13, 0.2);
+}
+
+/* Psicopatología */
+.psicopatologia-welcome-suggestions .suggestion-item:hover,
+.psicopatologia-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+}
+
+/* Diagnóstico Psicológico */
+.psic-diagnostico-welcome-suggestions .suggestion-item:hover,
+.psic-diagnostico-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(234, 88, 12, 0.1);
+  border-color: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(234, 88, 12, 0.2);
+}
+
+/* Neuropsicología */
+.neuropsicologia-welcome-suggestions .suggestion-item:hover,
+.neuropsicologia-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+}
+
+/* Psicoanálisis */
+.psicoanalisis-welcome-suggestions .suggestion-item:hover,
+.psicoanalisis-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(217, 119, 6, 0.2);
+}
+
+/* Psicología General */
+.psicologia-general-welcome-suggestions .suggestion-item:hover,
+.psicologia-general-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Psicología Social */
+.psicologia-social-welcome-suggestions .suggestion-item:hover,
+.psicologia-social-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+}
+
+/* Psicología Evolutiva */
+.psicologia-evolutiva-welcome-suggestions .suggestion-item:hover,
+.psicologia-evolutiva-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(14, 165, 233, 0.1);
+  border-color: #0ea5e9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(14, 165, 233, 0.2);
+}
+
+/* Estadística en Psicología */
+.psicostats-welcome-suggestions .suggestion-item:hover,
+.psicostats-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: #8b5cf6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.2);
+}
+
+/* ======= BOTONES DE ACCIÓN PARA VARIANTES DE PSICOLOGÍA ======= */
+
+.dsm5-welcome .action-button { 
+  background-color: #2563eb; 
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+.dsm5-welcome .action-button:hover { background-color: #1e3a8a; }
+
+.epistemologia-welcome .action-button { 
+  background-color: #65a30d;
+  box-shadow: 0 4px 15px rgba(101, 163, 13, 0.3);
+}
+.epistemologia-welcome .action-button:hover { background-color: #365314; }
+
+.psicopatologia-welcome .action-button { 
+  background-color: #dc2626;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+.psicopatologia-welcome .action-button:hover { background-color: #991b1b; }
+
+.psic-diagnostico-welcome .action-button { 
+  background-color: #ea580c;
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+}
+.psic-diagnostico-welcome .action-button:hover { background-color: #c2410c; }
+
+.neuropsicologia-welcome .action-button { 
+  background-color: #7c3aed;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+}
+.neuropsicologia-welcome .action-button:hover { background-color: #581c87; }
+
+.psicoanalisis-welcome .action-button { 
+  background-color: #d97706;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+}
+.psicoanalisis-welcome .action-button:hover { background-color: #92400e; }
+
+.psicologia-general-welcome .action-button { 
+  background-color: #3b82f6;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+.psicologia-general-welcome .action-button:hover { background-color: #1e40af; }
+
+.psicologia-social-welcome .action-button { 
+  background-color: #10b981;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+.psicologia-social-welcome .action-button:hover { background-color: #047857; }
+
+.psicologia-evolutiva-welcome .action-button { 
+  background-color: #0ea5e9;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+.psicologia-evolutiva-welcome .action-button:hover { background-color: #0369a1; }
+
+.psicostats-welcome .action-button { 
+  background-color: #8b5cf6; 
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+.psicostats-welcome .action-button:hover { background-color: #6b21a8; }
+
+/* ======= AVATARES PARA VARIANTES DE PSICOLOGÍA ======= */
+
+.dsm5-welcome .welcome-avatar {
+  border-color: #2563eb;
+}
+.dsm5-welcome .welcome-header-icon {
+  color: #2563eb;
+}
+
+.epistemologia-welcome .welcome-avatar {
+  border-color: #65a30d;
+}
+.epistemologia-welcome .welcome-header-icon {
+  color: #65a30d;
+}
+
+.psicopatologia-welcome .welcome-avatar {
+  border-color: #dc2626;
+}
+.psicopatologia-welcome .welcome-header-icon {
+  color: #dc2626;
+}
+
+.psic-diagnostico-welcome .welcome-avatar {
+  border-color: #ea580c;
+}
+.psic-diagnostico-welcome .welcome-header-icon {
+  color: #ea580c;
+}
+
+.neuropsicologia-welcome .welcome-avatar {
+  border-color: #7c3aed;
+}
+.neuropsicologia-welcome .welcome-header-icon {
+  color: #7c3aed;
+}
+
+.psicoanalisis-welcome .welcome-avatar {
+  border-color: #d97706;
+}
+.psicoanalisis-welcome .welcome-header-icon {
+  color: #d97706;
+}
+
+.psicologia-general-welcome .welcome-avatar {
+  border-color: #3b82f6;
+}
+.psicologia-general-welcome .welcome-header-icon {
+  color: #3b82f6;
+}
+
+.psicologia-social-welcome .welcome-avatar {
+  border-color: #10b981;
+}
+.psicologia-social-welcome .welcome-header-icon {
+  color: #10b981;
+}
+
+.psicologia-evolutiva-welcome .welcome-avatar {
+  border-color: #0ea5e9;
+}
+.psicologia-evolutiva-welcome .welcome-header-icon {
+  color: #0ea5e9;
+}
+
+.psicostats-welcome .welcome-avatar {
+  border-color: #8b5cf6;
+}
+.psicostats-welcome .welcome-header-icon {
+  color: #8b5cf6;
+}
+
+/* ======= RESPONSIVE PARA VARIANTES DE PSICOLOGÍA ======= */
+
+@media (max-width: 480px) {
+  [class*="dsm5"],
+  [class*="epistemologia"],
+  [class*="psicopatologia"],
+  [class*="psic-diagnostico"],
+  [class*="neuropsicologia"],
+  [class*="psicoanalisis"],
+  [class*="psicologia-general"],
+  [class*="psicologia-social"],
+  [class*="psicologia-evolutiva"],
+  [class*="psicostats"] {
+    .suggestion-item {
+      padding: 12px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsm5-welcome .header-icon,
+  .epistemologia-welcome .header-icon,
+  .psicopatologia-welcome .header-icon,
+  .psic-diagnostico-welcome .header-icon,
+  .neuropsicologia-welcome .header-icon,
+  .psicoanalisis-welcome .header-icon,
+  .psicologia-general-welcome .header-icon,
+  .psicologia-social-welcome .header-icon,
+  .psicologia-evolutiva-welcome .header-icon,
+  .psicostats-welcome .header-icon {
+    animation: none;
+  }
+}
+
+/* ======= BOTONES DE ACCIÓN PARA VARIANTES ECONÓMICAS ======= */
+
+.microeconomia-welcome .action-button { 
+  background-color: #059669; 
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+.microeconomia-welcome .action-button:hover { background-color: #065f46; }
+
+.econometria-welcome .action-button { 
+  background-color: #1e293b;
+  box-shadow: 0 4px 15px rgba(30, 41, 59, 0.3);
+}
+.econometria-welcome .action-button:hover { background-color: #0f172a; }
+
+.economia-internacional-welcome .action-button { 
+  background-color: #0284c7;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+}
+.economia-internacional-welcome .action-button:hover { background-color: #0c4a6e; }
+
+.finanzas-welcome .action-button { 
+  background-color: #d97706;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+}
+.finanzas-welcome .action-button:hover { background-color: #92400e; }
+
+.calculo-economico-welcome .action-button { 
+  background-color: #7c3aed;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+}
+.calculo-economico-welcome .action-button:hover { background-color: #581c87; }
+
+/* ======= AVATARES PARA VARIANTES ECONÓMICAS ======= */
+
+.microeconomia-welcome .welcome-avatar {
+  border-color: #059669;
+}
+.microeconomia-welcome .welcome-header-icon {
+  color: #059669;
+}
+
+.econometria-welcome .welcome-avatar {
+  border-color: #1e293b;
+}
+.econometria-welcome .welcome-header-icon {
+  color: #1e293b;
+}
+
+.economia-internacional-welcome .welcome-avatar {
+  border-color: #0284c7;
+}
+.economia-internacional-welcome .welcome-header-icon {
+  color: #0284c7;
+}
+
+.finanzas-welcome .welcome-avatar {
+  border-color: #d97706;
+}
+.finanzas-welcome .welcome-header-icon {
+  color: #d97706;
+}
+
+.calculo-economico-welcome .welcome-avatar {
+  border-color: #7c3aed;
+}
+.calculo-economico-welcome .welcome-header-icon {
+  color: #7c3aed;
+}
+
+/* ======= RESPONSIVE PARA VARIANTES ECONÓMICAS ======= */
+
+@media (max-width: 480px) {
+  [class*="econom"],
+  [class*="finanz"],
+  [class*="calculo-economico"] {
+    .suggestion-item {
+      padding: 12px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .microeconomia-welcome .header-icon,
+  .econometria-welcome .header-icon,
+  .economia-internacional-welcome .header-icon,
+  .finanzas-welcome .header-icon,
+  .calculo-economico-welcome .header-icon {
+    animation: none;
+  }
+}
+
+/* ======================================
+   🏛️ NUEVAS VARIANTES TEÓRICAS DE ECONOMÍA
+   COLORES ÚNICOS Y COMPLETAMENTE DIFERENCIADOS
+   ====================================== */
+
+/* 1. ECONOMÍA DEL SECTOR PÚBLICO - Rosa Institucional */
+.sector-publico-welcome .welcome-container {
+  background: linear-gradient(135deg, #ad1457 0%, #e91e63 50%, #ec407a 100%);
+  box-shadow: 0 3px 3px rgba(233, 30, 99, 0.4);
+  border: 2px solid rgba(236, 64, 122, 0.3);
+}
+
+.sector-publico-welcome .header-icon {
+  color: #ec407a;
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.4), rgba(173, 20, 87, 0.6));
+  animation: institutionalPulse 3s ease-in-out infinite;
+}
+
+@keyframes institutionalPulse {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    box-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
+  }
+  25% { 
+    transform: scale(1.05) rotate(90deg); 
+    box-shadow: 0 0 30px rgba(233, 30, 99, 0.7);
+  }
+  50% { 
+    transform: scale(1.1) rotate(180deg); 
+    box-shadow: 0 0 40px rgba(233, 30, 99, 0.9);
+  }
+  75% { 
+    transform: scale(1.05) rotate(270deg); 
+    box-shadow: 0 0 30px rgba(233, 30, 99, 0.7);
+  }
+}
+
+.sector-publico-welcome .welcome-content h2 {
+  color: #e91e63;
+  text-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+}
+
+.sector-publico-welcome .suggestion-item {
+  border: 2px solid rgba(233, 30, 99, 0.3);
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(236, 64, 122, 0.05));
+}
+
+.sector-publico-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.2), rgba(236, 64, 122, 0.1));
+  border-color: #e91e63;
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 2. ECONOMÍA LABORAL - Marrón Terracota Industrial */
+.economia-laboral-welcome .welcome-container {
+  background: linear-gradient(135deg, #5d2e1a 0%, #8d4e2a 50%, #a0603a 100%);
+  box-shadow: 0 3px 3px rgba(141, 78, 42, 0.4);
+  border: 2px solid rgba(160, 96, 58, 0.3);
+}
+
+.economia-laboral-welcome .header-icon {
+  color: #a0603a;
+  background: linear-gradient(135deg, rgba(141, 78, 42, 0.4), rgba(93, 46, 26, 0.6));
+  animation: industrialWork 2.5s ease-in-out infinite;
+}
+
+@keyframes industrialWork {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+    box-shadow: 0 0 15px rgba(141, 78, 42, 0.5);
+  }
+  25% { 
+    transform: translateY(-4px) scale(1.05); 
+    box-shadow: 0 0 20px rgba(141, 78, 42, 0.7);
+  }
+  50% { 
+    transform: translateY(0) scale(1.1); 
+    box-shadow: 0 0 25px rgba(141, 78, 42, 0.8);
+  }
+  75% { 
+    transform: translateY(4px) scale(1.05); 
+    box-shadow: 0 0 20px rgba(141, 78, 42, 0.7);
+  }
+}
+
+.economia-laboral-welcome .welcome-content h2 {
+  color: #8d4e2a;
+  text-shadow: 0 0 10px rgba(141, 78, 42, 0.3);
+}
+
+.economia-laboral-welcome .suggestion-item {
+  border: 2px solid rgba(141, 78, 42, 0.3);
+  background: linear-gradient(135deg, rgba(141, 78, 42, 0.1), rgba(160, 96, 58, 0.05));
+}
+
+.economia-laboral-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(141, 78, 42, 0.2), rgba(160, 96, 58, 0.1));
+  border-color: #8d4e2a;
+  box-shadow: 0 8px 25px rgba(141, 78, 42, 0.3);
+  transform: translateY(-3px) skewX(2deg);
+}
+
+/* 3. HISTORIA ECONÓMICA - Verde Oliva Clásico */
+.historia-economica-welcome .welcome-container {
+  background: linear-gradient(135deg, #4a5511 0%, #827717 50%, #9e9117 100%);
+  box-shadow: 0 3px 3px rgba(130, 119, 23, 0.4);
+  border: 2px solid rgba(158, 145, 23, 0.3);
+}
+
+.historia-economica-welcome .header-icon {
+  color: #9e9117;
+  background: linear-gradient(135deg, rgba(130, 119, 23, 0.4), rgba(74, 85, 17, 0.6));
+  animation: historicalFlow 4s ease-in-out infinite;
+}
+
+@keyframes historicalFlow {
+  0%, 100% { 
+    transform: rotateY(0deg) scale(1); 
+    opacity: 1;
+  }
+  25% { 
+    transform: rotateY(90deg) scale(1.05); 
+    opacity: 0.9;
+  }
+  50% { 
+    transform: rotateY(180deg) scale(1.1); 
+    opacity: 0.8;
+  }
+  75% { 
+    transform: rotateY(270deg) scale(1.05); 
+    opacity: 0.9;
+  }
+}
+
+.historia-economica-welcome .welcome-content h2 {
+  color: #827717;
+  text-shadow: 0 0 10px rgba(130, 119, 23, 0.3);
+}
+
+.historia-economica-welcome .suggestion-item {
+  border: 2px solid rgba(130, 119, 23, 0.3);
+  background: linear-gradient(135deg, rgba(130, 119, 23, 0.1), rgba(158, 145, 23, 0.05));
+}
+
+.historia-economica-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(130, 119, 23, 0.2), rgba(158, 145, 23, 0.1));
+  border-color: #827717;
+  box-shadow: 0 8px 25px rgba(130, 119, 23, 0.3);
+  transform: translateY(-3px) rotateZ(2deg);
+}
+
+/* 4. DESARROLLO ECONÓMICO - Celeste Desarrollo */
+.desarrollo-economico-welcome .welcome-container {
+  background: linear-gradient(135deg, #006064 0%, #00acc1 50%, #26c6da 100%);
+  box-shadow: 0 3px 3px rgba(0, 172, 193, 0.4);
+  border: 2px solid rgba(38, 198, 218, 0.3);
+}
+
+.desarrollo-economico-welcome .header-icon {
+  color: #26c6da;
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.4), rgba(0, 96, 100, 0.6));
+  animation: developmentGrow 3s ease-in-out infinite;
+}
+
+@keyframes developmentGrow {
+  0%, 100% { 
+    transform: scale(1) translateY(0); 
+    box-shadow: 0 0 15px rgba(0, 172, 193, 0.5);
+  }
+  33% { 
+    transform: scale(1.08) translateY(-2px); 
+    box-shadow: 0 0 25px rgba(0, 172, 193, 0.7);
+  }
+  66% { 
+    transform: scale(1.15) translateY(-4px); 
+    box-shadow: 0 0 35px rgba(0, 172, 193, 0.9);
+  }
+}
+
+.desarrollo-economico-welcome .welcome-content h2 {
+  color: #00acc1;
+  text-shadow: 0 0 10px rgba(0, 172, 193, 0.3);
+}
+
+.desarrollo-economico-welcome .suggestion-item {
+  border: 2px solid rgba(0, 172, 193, 0.3);
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.1), rgba(38, 198, 218, 0.05));
+}
+
+.desarrollo-economico-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(0, 172, 193, 0.2), rgba(38, 198, 218, 0.1));
+  border-color: #00acc1;
+  box-shadow: 0 8px 25px rgba(0, 172, 193, 0.3);
+  transform: translateY(-3px) scale(1.03);
+}
+
+/* 5. MACROECONOMÍA - Índigo Profundo */
+.macroeconomia-welcome .welcome-container {
+  background: linear-gradient(135deg, #1a237e 0%, #3f51b5 50%, #5c6bc0 100%);
+  box-shadow: 0 3px 3px rgba(63, 81, 181, 0.4);
+  border: 2px solid rgba(92, 107, 192, 0.3);
+}
+
+.macroeconomia-welcome .header-icon {
+  color: #5c6bc0;
+  background: linear-gradient(135deg, rgba(63, 81, 181, 0.4), rgba(26, 35, 126, 0.6));
+  animation: macroOscillate 3.5s ease-in-out infinite;
+}
+
+@keyframes macroOscillate {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1); 
+    box-shadow: 0 0 20px rgba(63, 81, 181, 0.5);
+  }
+  20% { 
+    transform: rotate(72deg) scale(1.05); 
+    box-shadow: 0 0 25px rgba(63, 81, 181, 0.6);
+  }
+  40% { 
+    transform: rotate(144deg) scale(1.1); 
+    box-shadow: 0 0 30px rgba(63, 81, 181, 0.7);
+  }
+  60% { 
+    transform: rotate(216deg) scale(1.05); 
+    box-shadow: 0 0 25px rgba(63, 81, 181, 0.6);
+  }
+  80% { 
+    transform: rotate(288deg) scale(1.02); 
+    box-shadow: 0 0 22px rgba(63, 81, 181, 0.55);
+  }
+}
+
+.macroeconomia-welcome .welcome-content h2 {
+  color: #3f51b5;
+  text-shadow: 0 0 10px rgba(63, 81, 181, 0.3);
+}
+
+.macroeconomia-welcome .suggestion-item {
+  border: 2px solid rgba(63, 81, 181, 0.3);
+  background: linear-gradient(135deg, rgba(63, 81, 181, 0.1), rgba(92, 107, 192, 0.05));
+}
+
+.macroeconomia-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(63, 81, 181, 0.2), rgba(92, 107, 192, 0.1));
+  border-color: #3f51b5;
+  box-shadow: 0 8px 25px rgba(63, 81, 181, 0.3);
+  transform: translateY(-3px) rotateX(5deg);
+}
+
+/* ======= VARIABLES CSS PARA VARIANTES TEÓRICAS DE ECONOMÍA ======= */
+
+html.sectorpublico-variant {
+  --theme-accent: #e91e63;
+  --theme-accent-light: rgba(233, 30, 99, 0.2);
+  --theme-accent-dark: #ad1457;
+}
+
+html.economialaboral-variant {
+  --theme-accent: #8d4e2a;
+  --theme-accent-light: rgba(141, 78, 42, 0.2);
+  --theme-accent-dark: #5d2e1a;
+}
+
+html.historiaeconomica-variant {
+  --theme-accent: #827717;
+  --theme-accent-light: rgba(130, 119, 23, 0.2);
+  --theme-accent-dark: #4a5511;
+}
+
+html.desarrolloeconomico-variant {
+  --theme-accent: #00acc1;
+  --theme-accent-light: rgba(0, 172, 193, 0.2);
+  --theme-accent-dark: #006064;
+}
+
+html.macroeconomia-variant {
+  --theme-accent: #3f51b5;
+  --theme-accent-light: rgba(63, 81, 181, 0.2);
+  --theme-accent-dark: #1a237e;
+}
+
+/* ======= EFECTOS HOVER PARA VARIANTES TEÓRICAS DE ECONOMÍA ======= */
+
+/* Sector Público */
+.sector-publico-welcome-suggestions .suggestion-item:hover,
+.sector-publico-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(233, 30, 99, 0.1);
+  border-color: #e91e63;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(233, 30, 99, 0.2);
+}
+
+/* Economía Laboral */
+.economia-laboral-welcome-suggestions .suggestion-item:hover,
+.economia-laboral-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(141, 78, 42, 0.1);
+  border-color: #8d4e2a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(141, 78, 42, 0.2);
+}
+
+/* Historia Económica */
+.historia-economica-welcome-suggestions .suggestion-item:hover,
+.historia-economica-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(130, 119, 23, 0.1);
+  border-color: #827717;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(130, 119, 23, 0.2);
+}
+
+/* Desarrollo Económico */
+.desarrollo-economico-welcome-suggestions .suggestion-item:hover,
+.desarrollo-economico-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(0, 172, 193, 0.1);
+  border-color: #00acc1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 172, 193, 0.2);
+}
+
+/* Macroeconomía */
+.macroeconomia-welcome-suggestions .suggestion-item:hover,
+.macroeconomia-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(63, 81, 181, 0.1);
+  border-color: #3f51b5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(63, 81, 181, 0.2);
+}
+
+/* ======= BOTONES DE ACCIÓN PARA VARIANTES TEÓRICAS DE ECONOMÍA ======= */
+
+.sector-publico-welcome .action-button { 
+  background-color: #e91e63; 
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+}
+.sector-publico-welcome .action-button:hover { background-color: #ad1457; }
+
+.economia-laboral-welcome .action-button { 
+  background-color: #8d4e2a;
+  box-shadow: 0 4px 15px rgba(141, 78, 42, 0.3);
+}
+.economia-laboral-welcome .action-button:hover { background-color: #5d2e1a; }
+
+.historia-economica-welcome .action-button { 
+  background-color: #827717;
+  box-shadow: 0 4px 15px rgba(130, 119, 23, 0.3);
+}
+.historia-economica-welcome .action-button:hover { background-color: #4a5511; }
+
+.desarrollo-economico-welcome .action-button { 
+  background-color: #00acc1;
+  box-shadow: 0 4px 15px rgba(0, 172, 193, 0.3);
+}
+.desarrollo-economico-welcome .action-button:hover { background-color: #006064; }
+
+.macroeconomia-welcome .action-button { 
+  background-color: #3f51b5;
+  box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3);
+}
+.macroeconomia-welcome .action-button:hover { background-color: #1a237e; }
+
+/* ======= AVATARES PARA VARIANTES TEÓRICAS DE ECONOMÍA ======= */
+
+.sector-publico-welcome .welcome-avatar {
+  border-color: #e91e63;
+}
+.sector-publico-welcome .welcome-header-icon {
+  color: #e91e63;
+}
+
+.economia-laboral-welcome .welcome-avatar {
+  border-color: #8d4e2a;
+}
+.economia-laboral-welcome .welcome-header-icon {
+  color: #8d4e2a;
+}
+
+.historia-economica-welcome .welcome-avatar {
+  border-color: #827717;
+}
+.historia-economica-welcome .welcome-header-icon {
+  color: #827717;
+}
+
+.desarrollo-economico-welcome .welcome-avatar {
+  border-color: #00acc1;
+}
+.desarrollo-economico-welcome .welcome-header-icon {
+  color: #00acc1;
+}
+
+.macroeconomia-welcome .welcome-avatar {
+  border-color: #3f51b5;
+}
+.macroeconomia-welcome .welcome-header-icon {
+  color: #3f51b5;
+}
+
+/* ======= EFECTOS ESPECIALES TEMÁTICOS ======= */
+
+/* Sector Público - Efecto institucional */
+.sector-publico-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Historia Económica - Efecto pergamino */
+.historia-economica-welcome .welcome-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.historia-economica-welcome .welcome-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255,248,220,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Desarrollo Económico - Efecto crecimiento */
+.desarrollo-economico-welcome .suggestion-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+@keyframes macroWaves {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+}
+
+/* ======= RESPONSIVE PARA VARIANTES TEÓRICAS DE ECONOMÍA ======= */
+
+@media (max-width: 480px) {
+  [class*="sector-publico"],
+  [class*="economia-laboral"],
+  [class*="historia-economica"],
+  [class*="desarrollo-economico"],
+  [class*="macroeconomia"] {
+    .suggestion-item {
+      padding: 12px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sector-publico-welcome .header-icon,
+  .economia-laboral-welcome .header-icon,
+  .historia-economica-welcome .header-icon,
+  .desarrollo-economico-welcome .header-icon,
+  .macroeconomia-welcome .header-icon {
+    animation: none;
+  }
+  
+  .macroeconomia-welcome .welcome-container::before {
+    animation: none;
+  }
+}
+
+/* ======================================
+   🩺 MEDICINA TEÓRICA
+   ====================================== */
+
+/* 11. EPIDEMIOLOGÍA - Naranja Salud Pública */
+.epidemiology-welcome .welcome-container {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #fb923c 100%);
+  box-shadow: 0 3px 3px rgba(234, 88, 12, 0.4);
+  border: 2px solid rgba(251, 146, 60, 0.3);
+}
+
+.epidemiology-welcome .header-icon {
+  color: #fb923c;
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(194, 65, 12, 0.6));
+  animation: epidemicWave 3s ease-in-out infinite;
+}
+
+@keyframes epidemicWave {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(180deg); }
+}
+
+.epidemiology-welcome .welcome-content h2 {
+  color: #ea580c;
+  text-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+}
+
+.epidemiology-welcome .suggestion-item {
+  border: 2px solid rgba(234, 88, 12, 0.3);
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.1), rgba(251, 146, 60, 0.05));
+}
+
+.epidemiology-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(251, 146, 60, 0.1));
+  border-color: #ea580c;
+  box-shadow: 0 8px 25px rgba(234, 88, 12, 0.3);
+}
+
+/* 12. MATEMÁTICAS MÉDICAS - Gris Plata Investigación */
+.medical-math-welcome .welcome-container {
+  background: linear-gradient(135deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%);
+  box-shadow: 0 3px 3px rgba(107, 114, 128, 0.4);
+  border: 2px solid rgba(156, 163, 175, 0.3);
+}
+
+.medical-math-welcome .header-icon {
+  color: #9ca3af;
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.4), rgba(75, 85, 99, 0.6));
+  animation: researchPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes researchPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.medical-math-welcome .welcome-content h2 {
+  color: #6b7280;
+  text-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
+}
+
+.medical-math-welcome .suggestion-item {
+  border: 2px solid rgba(107, 114, 128, 0.3);
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(156, 163, 175, 0.05));
+}
+
+.medical-math-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(156, 163, 175, 0.1));
+  border-color: #6b7280;
+  box-shadow: 0 8px 25px rgba(107, 114, 128, 0.3);
+}
+
+/* 13. CIENCIAS APLICADAS - Rojo Biomédico */
+.applied-sciences-welcome .welcome-container {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+  box-shadow: 0 3px 3px rgba(239, 68, 68, 0.4);
+  border: 2px solid rgba(248, 113, 113, 0.3);
+}
+
+.applied-sciences-welcome .header-icon {
+  color: #f87171;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.6));
+  animation: biomedicalFlow 3s ease-in-out infinite;
+}
+
+@keyframes biomedicalFlow {
+  0%, 100% { transform: translateY(0) scale(1); }
+  33% { transform: translateY(-3px) scale(1.05); }
+  66% { transform: translateY(3px) scale(0.95); }
+}
+
+.applied-sciences-welcome .welcome-content h2 {
+  color: #ef4444;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.applied-sciences-welcome .suggestion-item {
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.05));
+}
+
+.applied-sciences-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(248, 113, 113, 0.1));
+  border-color: #ef4444;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+/* 14. CIENCIAS BÁSICAS FUNDAMENTALES - Turquesa Integrador */
+.basic-sciences-welcome .welcome-container {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #5eead4 100%);
+  box-shadow: 0 3px 3px rgba(20, 184, 166, 0.4);
+  border: 2px solid rgba(94, 234, 212, 0.3);
+}
+
+.basic-sciences-welcome .header-icon {
+  color: #5eead4;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.4), rgba(15, 118, 110, 0.6));
+  animation: fundamentalSpiral 4s ease-in-out infinite;
+}
+
+@keyframes fundamentalSpiral {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.basic-sciences-welcome .welcome-content h2 {
+  color: #14b8a6;
+  text-shadow: 0 0 10px rgba(20, 184, 166, 0.3);
+}
+
+.basic-sciences-welcome .suggestion-item {
+  border: 2px solid rgba(20, 184, 166, 0.3);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(94, 234, 212, 0.05));
+}
+
+.basic-sciences-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(94, 234, 212, 0.1));
+  border-color: #14b8a6;
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* 15. PATOLOGÍA Y FISIOPATOLOGÍA - Rojo Intenso Clínico */
+.pathology-welcome .welcome-container {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #ef4444 100%);
+  box-shadow: 0 3px 3px rgba(220, 38, 38, 0.4);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.pathology-welcome .header-icon {
+  color: #ef4444;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(153, 27, 27, 0.6));
+  animation: pathologicalPulse 2s ease-in-out infinite;
+}
+
+@keyframes pathologicalPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+  }
+  50% { 
+    transform: scale(1.15); 
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+  }
+}
+
+.pathology-welcome .welcome-content h2 {
+  color: #dc2626;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+.pathology-welcome .suggestion-item {
+  border: 2px solid rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+}
+
+.pathology-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(239, 68, 68, 0.1));
+  border-color: #dc2626;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+/* 16. SEMIOLOGÍA Y DIAGNÓSTICO - Naranja Dorado Observación */
+.semiology-welcome .welcome-container {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 50%, #fb923c 100%);
+  box-shadow: 0 3px 3px rgba(234, 88, 12, 0.4);
+  border: 2px solid rgba(251, 146, 60, 0.3);
+}
+
+.semiology-welcome .header-icon {
+  color: #fb923c;
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(194, 65, 12, 0.6));
+  animation: diagnosticScan 3s ease-in-out infinite;
+}
+
+@keyframes diagnosticScan {
+  0%, 100% { transform: translateX(0) scale(1); }
+  25% { transform: translateX(3px) scale(1.05); }
+  50% { transform: translateX(-3px) scale(1.1); }
+  75% { transform: translateX(3px) scale(1.05); }
+}
+
+.semiology-welcome .welcome-content h2 {
+  color: #ea580c;
+  text-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+}
+
+.semiology-welcome .suggestion-item {
+  border: 2px solid rgba(234, 88, 12, 0.3);
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.1), rgba(251, 146, 60, 0.05));
+}
+
+.semiology-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.2), rgba(251, 146, 60, 0.1));
+  border-color: #ea580c;
+  transform: translateY(-3px) rotate(1deg);
+}
+
+/* 17. MEDICINA INTERNA - Azul Marino Profundo */
+.internal-medicine-welcome .welcome-container {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  box-shadow: 0 3px 3px rgba(51, 65, 85, 0.4);
+  border: 2px solid rgba(71, 85, 105, 0.3);
+}
+
+.internal-medicine-welcome .header-icon {
+  color: #475569;
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.4), rgba(30, 41, 59, 0.6));
+  animation: internalFlow 4s ease-in-out infinite;
+}
+
+@keyframes internalFlow {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.05); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  75% { transform: rotate(270deg) scale(1.05); }
+}
+
+.internal-medicine-welcome .welcome-content h2 {
+  color: #334155;
+  text-shadow: 0 0 10px rgba(51, 65, 85, 0.3);
+}
+
+.internal-medicine-welcome .suggestion-item {
+  border: 2px solid rgba(51, 65, 85, 0.3);
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.1), rgba(71, 85, 105, 0.05));
+}
+
+.internal-medicine-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.2), rgba(71, 85, 105, 0.1));
+  border-color: #334155;
+  box-shadow: 0 8px 25px rgba(51, 65, 85, 0.3);
+}
+
+/* 18. ESPECIALIDADES MÉDICAS I - Coral Pediátrico */
+.specialties-med1-welcome .welcome-container {
+  background: linear-gradient(135deg, #7c125c 0%, #c20caa 50%, #ea0cdf 100%);
+  box-shadow: 0 3px 3px rgba(194, 65, 12, 0.4);
+  border: 2px solid rgba(234, 88, 12, 0.3);
+}
+
+.specialties-med1-welcome .header-icon {
+  color: #c051f0;
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.4), rgba(124, 45, 18, 0.6));
+  animation: specialtyRotate 3s linear infinite;
+}
+
+@keyframes specialtyRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.specialties-med1-welcome .welcome-content h2 {
+  color: #a437d3;
+  text-shadow: 0 0 10px rgba(194, 65, 12, 0.3);
+}
+
+.specialties-med1-welcome .suggestion-item {
+  border: 2px solid rgba(194, 65, 12, 0.3);
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.1), rgba(234, 88, 12, 0.05));
+}
+
+.specialties-med1-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.2), rgba(234, 88, 12, 0.1));
+  border-color: #a437d3;
+  transform: translateY(-3px) skewY(1deg);
+}
+
+/* 19. ESPECIALIDADES MÉDICAS II - Ámbar Neurológico */
+.specialties-med2-welcome .welcome-container {
+  background: linear-gradient(135deg, #a16207 0%, #d97706 50%, #f59e0b 100%);
+  box-shadow: 0 3px 3px rgba(217, 119, 6, 0.4);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.specialties-med2-welcome .header-icon {
+  color: #f59e0b;
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.4), rgba(161, 98, 7, 0.6));
+  animation: neuroSynapse 2.5s ease-in-out infinite;
+}
+
+@keyframes neuroSynapse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+  }
+  50% { 
+    transform: scale(1.2); 
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.8), 0 0 30px rgba(245, 158, 11, 0.6);
+  }
+}
+
+.specialties-med2-welcome .welcome-content h2 {
+  color: #d97706;
+  text-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+}
+
+.specialties-med2-welcome .suggestion-item {
+  border: 2px solid rgba(217, 119, 6, 0.3);
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(245, 158, 11, 0.05));
+}
+
+.specialties-med2-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(245, 158, 11, 0.1));
+  border-color: #d97706;
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3);
+}
+
+/* 20. CIRUGÍA Y URGENCIAS - Rojo Urgente */
+.surgery-emergency-welcome .welcome-container {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #ef4444 100%);
+  box-shadow: 0 3px 3px rgba(220, 38, 38, 0.4);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.surgery-emergency-welcome .header-icon {
+  color: #ef4444;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(185, 28, 28, 0.6));
+  animation: emergencyAlert 1.5s ease-in-out infinite;
+}
+
+@keyframes emergencyAlert {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+  }
+  25% { 
+    transform: scale(1.1) rotate(90deg); 
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+  }
+  50% { 
+    transform: scale(1.2) rotate(180deg); 
+    box-shadow: 0 0 35px rgba(220, 38, 38, 1);
+  }
+  75% { 
+    transform: scale(1.1) rotate(270deg); 
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+  }
+}
+
+.surgery-emergency-welcome .welcome-content h2 {
+  color: #dc2626;
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+.surgery-emergency-welcome .suggestion-item {
+  border: 2px solid rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+}
+
+.surgery-emergency-welcome .suggestion-item:hover {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(239, 68, 68, 0.1));
+  border-color: #dc2626;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* ======================================
+   EFECTOS GLOBALES PARA TODAS LAS VARIANTES
+   ====================================== */
+
+/* Mejora en tema oscuro para todas las variantes */
+body[data-theme="dark"] .welcome-container {
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .welcome-content h2,
+body[data-theme="dark"] .welcome-content p {
+  color: white;
+}
+
+body[data-theme="dark"] .header-icon {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive mejorado para todas las variantes */
+@media (max-width: 768px) {
+  [class*="-welcome"] .welcome-container {
+    margin: 10px auto;
+  }
+  
+  [class*="-welcome"] .header-icon {
+    font-size: 24px;
+    padding: 8px;
+  }
+  
+  [class*="-welcome"] .suggestion-item {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Efecto de entrada escalonada para todas las variantes */
+[class*="-welcome"] .welcome-container {
+  animation: slideInScale 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes slideInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ======= VARIANTES CHAT MATEMÁTICO EXISTENTES (COMPATIBILIDAD) ======= */
+
+/* Estilos específicos para Física y Fenómenos Naturales */
+.physics-welcome .welcome-avatar {
+  border-color: #3498db; /* Azul - Asociado con la física teórica */
+}
+.physics-welcome .welcome-header-icon {
+  color: #3498db;
+}
+.physics-welcome-suggestions .suggestion-item {
+  border-color: #3498db;
+}
+
+/* Estilos específicos para Álgebra y Análisis */
+.algebra-welcome .welcome-avatar {
+  border-color: #9b59b6; /* Morado - Asociado con matemática abstracta */
+}
+.algebra-welcome .welcome-header-icon {
+  color: #9b59b6;
+}
+.algebra-welcome-suggestions .suggestion-item {
+  border-color: #9b59b6;
+}
+
+/* Estilos específicos para Cálculo y Matemáticas Avanzadas */
+.calculus-welcome .welcome-avatar {
+  border-color: #f39c12; /* Ámbar - Asociado con cambio y dinámicas */
+}
+.calculus-welcome .welcome-header-icon {
+  color: #f39c12;
+}
+.calculus-welcome-suggestions .suggestion-item {
+  border-color: #f39c12;
+}
+
+/* Estilos específicos para Química */
+.chemistry-welcome .welcome-avatar {
+  border-color: #27ae60; /* Verde - Asociado con elementos y naturaleza */
+}
+.chemistry-welcome .welcome-header-icon {
+  color: #27ae60;
+}
+.chemistry-welcome-suggestions .suggestion-item {
+  border-color: #27ae60;
+}
+
+/* Estilos específicos para Estadística y Probabilidad */
+.statistics-welcome .welcome-avatar {
+  border-color: #34495e; /* Azul oscuro - Asociado con análisis de datos */
+}
+.statistics-welcome .welcome-header-icon {
+  color: #34495e;
+}
+.statistics-welcome-suggestions .suggestion-item {
+  border-color: #34495e;
+}
+
+/* Estilos específicos para Ciencias Básicas Aplicadas */
+.applied-sciences-welcome .welcome-avatar {
+  border-color: #e74c3c; /* Rojo - Asociado con medicina y aplicaciones */
+}
+.applied-sciences-welcome .welcome-header-icon {
+  color: #e74c3c;
+}
+.applied-sciences-welcome-suggestions .suggestion-item {
+  border-color: #e74c3c;
+}
+
+/* ======= NUEVAS VARIANTES MATEMÁTICAS AGREGADAS (COMPATIBILIDAD) ======= */
+
+/* Estilos específicos para Mecánica y Resistencia de Materiales */
+.mechanics-welcome .welcome-avatar {
+  border-color: #8e44ad; /* Púrpura intenso - Asociado con ingeniería estructural */
+}
+.mechanics-welcome .welcome-header-icon {
+  color: #8e44ad;
+}
+.mechanics-welcome-suggestions .suggestion-item {
+  border-color: #8e44ad;
+}
+
+/* Estilos específicos para Electricidad, Electrónica y Control */
+.electronics-welcome .welcome-avatar {
+  border-color: #f1c40f; /* Amarillo eléctrico - Asociado con electricidad */
+}
+.electronics-welcome .welcome-header-icon {
+  color: #f1c40f;
+}
+.electronics-welcome-suggestions .suggestion-item {
+  border-color: #f1c40f;
+}
+
+/* Estilos específicos para Matemáticas Avanzadas */
+.advanced-math-welcome .welcome-avatar {
+  border-color: #16a085; /* Verde azulado - Asociado con matemáticas superiores */
+}
+.advanced-math-welcome .welcome-header-icon {
+  color: #16a085;
+}
+.advanced-math-welcome-suggestions .suggestion-item {
+  border-color: #16a085;
+}
+
+/* Estilos específicos para Computación y Sistemas */
+.computer-science-welcome .welcome-avatar {
+  border-color: #2980b9; /* Azul tecnológico - Asociado con programación */
+}
+.computer-science-welcome .welcome-header-icon {
+  color: #2980b9;
+}
+.computer-science-welcome-suggestions .suggestion-item {
+  border-color: #2980b9;
+}
+
+/* Estilos específicos para Redes y Seguridad Informática */
+.networks-security-welcome .welcome-avatar {
+  border-color: #c0392b; /* Rojo seguridad - Asociado con ciberseguridad */
+}
+.networks-security-welcome .welcome-header-icon {
+  color: #c0392b;
+}
+.networks-security-welcome-suggestions .suggestion-item {
+  border-color: #c0392b;
+}
+
+/* Estilos específicos para Salud Pública y Epidemiología */
+.epidemiology-welcome .welcome-avatar {
+  border-color: #d35400; /* Naranja salud - Asociado con salud pública */
+}
+.epidemiology-welcome .welcome-header-icon {
+  color: #d35400;
+}
+.epidemiology-welcome-suggestions .suggestion-item {
+  border-color: #d35400;
+}
+
+/* Estilos específicos para Matemáticas y Métodos Cuantitativos en Medicina */
+.medical-math-welcome .welcome-avatar {
+  border-color: #7f8c8d; /* Gris médico - Asociado con investigación clínica */
+}
+.medical-math-welcome .welcome-header-icon {
+  color: #7f8c8d;
+}
+.medical-math-welcome-suggestions .suggestion-item {
+  border-color: #7f8c8d;
+}
+
+/* ======= VARIANTES CHAT TEÓRICO MÉDICO EXISTENTES (COMPATIBILIDAD) ======= */
+
+/* Estilos específicos para Ciencias Básicas Fundamentales */
+.basic-sciences-welcome .welcome-avatar {
+  border-color: #1abc9c; /* Turquesa - Integración de ciencias fundamentales */
+}
+.basic-sciences-welcome .welcome-header-icon {
+  color: #1abc9c;
+}
+.basic-sciences-welcome-suggestions .suggestion-item {
+  border-color: #1abc9c;
+}
+
+/* Estilos específicos para Patología y Fisiopatología */
+.pathology-welcome .welcome-avatar {
+  border-color: #c0392b; /* Rojo intenso - Patología y enfermedades */
+}
+.pathology-welcome .welcome-header-icon {
+  color: #c0392b;
+}
+.pathology-welcome-suggestions .suggestion-item {
+  border-color: #c0392b;
+}
+
+/* Estilos específicos para Semiología y Diagnóstico */
+.semiology-welcome .welcome-avatar {
+  border-color: #e67e22; /* Naranja/Dorado - Observación clínica y diagnóstico */
+}
+.semiology-welcome .welcome-header-icon {
+  color: #e67e22;
+}
+.semiology-welcome-suggestions .suggestion-item {
+  border-color: #e67e22;
+}
+
+/* Estilos específicos para Medicina Interna */
+.internal-medicine-welcome .welcome-avatar {
+  border-color: #2c3e50; /* Azul marino - Profundidad de medicina interna */
+}
+.internal-medicine-welcome .welcome-header-icon {
+  color: #2c3e50;
+}
+.internal-medicine-welcome-suggestions .suggestion-item {
+  border-color: #2c3e50;
+}
+
+/* Estilos específicos para Especialidades Médicas I */
+.specialties-med1-welcome .welcome-avatar {
+  border-color: #8e44ad; /* Púrpura especializado */
+}
+.specialties-med1-welcome .welcome-header-icon {
+  color: #8e44ad;
+}
+.specialties-med1-welcome-suggestions .suggestion-item {
+  border-color: #8e44ad;
+}
+
+/* Estilos específicos para Especialidades Médicas II */
+.specialties-med2-welcome .welcome-avatar {
+  border-color: #f39c12; /* Ámbar neurológico */
+}
+.specialties-med2-welcome .welcome-header-icon {
+  color: #f39c12;
+}
+.specialties-med2-welcome-suggestions .suggestion-item {
+  border-color: #f39c12;
+}
+
+/* Estilos específicos para Cirugía y Urgencias */
+.surgery-emergency-welcome .welcome-avatar {
+  border-color: #e74c3c; /* Rojo urgente */
+}
+.surgery-emergency-welcome .welcome-header-icon {
+  color: #e74c3c;
+}
+.surgery-emergency-welcome-suggestions .suggestion-item {
+  border-color: #e74c3c;
+}
+
+/* ======= EFECTOS HOVER PARA VARIANTES MATEMÁTICAS EXISTENTES ======= */
+
+/* Física */
+.physics-welcome-suggestions .suggestion-item:hover,
+.physics-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #3498db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+}
+
+/* Álgebra */
+.algebra-welcome-suggestions .suggestion-item:hover,
+.algebra-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(155, 89, 182, 0.1);
+  border-color: #9b59b6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(155, 89, 182, 0.2);
+}
+
+/* Cálculo */
+.calculus-welcome-suggestions .suggestion-item:hover,
+.calculus-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(243, 156, 18, 0.1);
+  border-color: #f39c12;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(243, 156, 18, 0.2);
+}
+
+/* Química */
+.chemistry-welcome-suggestions .suggestion-item:hover,
+.chemistry-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(39, 174, 96, 0.1);
+  border-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.2);
+}
+
+/* Estadística */
+.statistics-welcome-suggestions .suggestion-item:hover,
+.statistics-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(52, 73, 94, 0.1);
+  border-color: #34495e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 73, 94, 0.2);
+}
+
+/* Ciencias Aplicadas */
+.applied-sciences-welcome-suggestions .suggestion-item:hover,
+.applied-sciences-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* ======= EFECTOS HOVER PARA NUEVAS VARIANTES MATEMÁTICAS ======= */
+
+/* Mecánica y Resistencia de Materiales */
+.mechanics-welcome-suggestions .suggestion-item:hover,
+.mechanics-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(142, 68, 173, 0.1);
+  border-color: #8e44ad;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(142, 68, 173, 0.2);
+}
+
+/* Electricidad, Electrónica y Control */
+.electronics-welcome-suggestions .suggestion-item:hover,
+.electronics-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(241, 196, 15, 0.1);
+  border-color: #f1c40f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(241, 196, 15, 0.2);
+}
+
+/* Matemáticas Avanzadas */
+.advanced-math-welcome-suggestions .suggestion-item:hover,
+.advanced-math-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(22, 160, 133, 0.1);
+  border-color: #16a085;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(22, 160, 133, 0.2);
+}
+
+/* Computación y Sistemas */
+.computer-science-welcome-suggestions .suggestion-item:hover,
+.computer-science-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(41, 128, 185, 0.1);
+  border-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(41, 128, 185, 0.2);
+}
+
+/* Redes y Seguridad Informática */
+.networks-security-welcome-suggestions .suggestion-item:hover,
+.networks-security-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(192, 57, 43, 0.1);
+  border-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(192, 57, 43, 0.2);
+}
+
+/* Salud Pública y Epidemiología */
+.epidemiology-welcome-suggestions .suggestion-item:hover,
+.epidemiology-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(211, 84, 0, 0.1);
+  border-color: #d35400;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(211, 84, 0, 0.2);
+}
+
+/* Matemáticas y Métodos Cuantitativos en Medicina */
+.medical-math-welcome-suggestions .suggestion-item:hover,
+.medical-math-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(127, 140, 141, 0.1);
+  border-color: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(127, 140, 141, 0.2);
+}
+
+/* ======= EFECTOS HOVER PARA VARIANTES TEÓRICAS MÉDICAS ======= */
+
+/* Ciencias Básicas Fundamentales */
+.basic-sciences-welcome-suggestions .suggestion-item:hover,
+.basic-sciences-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(26, 188, 156, 0.1);
+  border-color: #1abc9c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(26, 188, 156, 0.2);
+}
+
+/* Patología y Fisiopatología */
+.pathology-welcome-suggestions .suggestion-item:hover,
+.pathology-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(192, 57, 43, 0.1);
+  border-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(192, 57, 43, 0.2);
+}
+
+/* Semiología y Diagnóstico */
+.semiology-welcome-suggestions .suggestion-item:hover,
+.semiology-welcome-suggestions .suggestion-item:focus {
+  background-color: rgb(200 180 162 / 10%);
+  border-color: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(230, 126, 34, 0.2);
+}
+
+/* Medicina Interna */
+.internal-medicine-welcome-suggestions .suggestion-item:hover,
+.internal-medicine-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(44, 62, 80, 0.1);
+  border-color: #2c3e50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44, 62, 80, 0.2);
+}
+
+/* Especialidades Médicas I */
+.specialties-med1-welcome-suggestions .suggestion-item:hover,
+.specialties-med1-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(142, 68, 173, 0.1);
+  border-color: #8e44ad;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(142, 68, 173, 0.2);
+}
+
+/* Especialidades Médicas II */
+.specialties-med2-welcome-suggestions .suggestion-item:hover,
+.specialties-med2-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(243, 156, 18, 0.1);
+  border-color: #f39c12;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(243, 156, 18, 0.2);
+}
+
+/* Cirugía y Urgencias */
+.surgery-emergency-welcome-suggestions .suggestion-item:hover,
+.surgery-emergency-welcome-suggestions .suggestion-item:focus {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* ======= ESTILOS GLOBALES PARA HTML POR VARIANTE ======= */
+
+/* Variables CSS para cada variante */
+html.fisica-variant {
+  --theme-accent: #3498db;
+  --theme-accent-light: rgba(52, 152, 219, 0.2);
+}
+
+html.algebra-variant {
+  --theme-accent: #9b59b6;
+  --theme-accent-light: rgba(155, 89, 182, 0.2);
+}
+
+html.calculo-variant {
+  --theme-accent: #f39c12;
+  --theme-accent-light: rgba(243, 156, 18, 0.2);
+}
+
+html.quimica-variant {
+  --theme-accent: #27ae60;
+  --theme-accent-light: rgba(39, 174, 96, 0.2);
+}
+
+html.estadistica-variant {
+  --theme-accent: #34495e;
+  --theme-accent-light: rgba(52, 73, 94, 0.2);
+}
+
+html.cienciasaplicadas-variant {
+  --theme-accent: #e74c3c;
+  --theme-accent-light: rgba(231, 76, 60, 0.2);
+}
+
+html.resistenciamateriales-variant {
+  --theme-accent: #8e44ad;
+  --theme-accent-light: rgba(142, 68, 173, 0.2);
+  --theme-accent-dark: #732d91;
+}
+
+html.electricidadelectronica-variant {
+  --theme-accent: #f1c40f;
+  --theme-accent-light: rgba(241, 196, 15, 0.2);
+  --theme-accent-dark: #d4ac0d;
+}
+
+html.matematicaavz-variant {
+  --theme-accent: #16a085;
+  --theme-accent-light: rgba(22, 160, 133, 0.2);
+  --theme-accent-dark: #138d75;
+}
+
+html.computacionsistemas-variant {
+  --theme-accent: #2980b9;
+  --theme-accent-light: rgba(41, 128, 185, 0.2);
+  --theme-accent-dark: #21618c;
+}
+
+html.redesseguridad-variant {
+  --theme-accent: #c0392b;
+  --theme-accent-light: rgba(192, 57, 43, 0.2);
+  --theme-accent-dark: #a93226;
+}
+
+html.epidemiologia-variant {
+  --theme-accent: #d35400;
+  --theme-accent-light: rgba(211, 84, 0, 0.2);
+  --theme-accent-dark: #ba4a00;
+}
+
+html.matematicamedica-variant {
+  --theme-accent: #7f8c8d;
+  --theme-accent-light: rgba(127, 140, 141, 0.2);
+  --theme-accent-dark: #566573;
+}
+
+html.cienciasbasicas-variant {
+  --theme-accent: #1abc9c;
+  --theme-accent-light: rgba(26, 188, 156, 0.2);
+  --theme-accent-dark: #16a085;
+}
+
+html.patologia-variant {
+  --theme-accent: #c0392b;
+  --theme-accent-light: rgba(192, 57, 43, 0.2);
+  --theme-accent-dark: #a93226;
+}
+
+html.semiologia-variant {
+  --theme-accent: #e67e22;
+  --theme-accent-light: rgba(230, 126, 34, 0.2);
+  --theme-accent-dark: #d35400;
+}
+
+html.medicinainterna-variant {
+  --theme-accent: #2c3e50;
+  --theme-accent-light: rgba(44, 62, 80, 0.2);
+  --theme-accent-dark: #1b2631;
+}
+
+html.especialidadesmed1-variant {
+  --theme-accent: #8e44ad;
+  --theme-accent-light: rgba(142, 68, 173, 0.2);
+  --theme-accent-dark: #732d91;
+}
+
+html.especialidadesmed2-variant {
+  --theme-accent: #f39c12;
+  --theme-accent-light: rgba(243, 156, 18, 0.2);
+  --theme-accent-dark: #d68910;
+}
+
+html.cirugiayurgencias-variant {
+  --theme-accent: #e74c3c;
+  --theme-accent-light: rgba(231, 76, 60, 0.2);
+  --theme-accent-dark: #cb4335;
+}
+
+/* ======= COMPONENTES ADICIONALES CON COLORES TEMÁTICOS ======= */
+
+/* Botones de acción para todas las variantes */
+.physics-welcome .action-button { background-color: #3498db; }
+.algebra-welcome .action-button { background-color: #9b59b6; }
+.calculus-welcome .action-button { background-color: #f39c12; }
+.chemistry-welcome .action-button { background-color: #27ae60; }
+.statistics-welcome .action-button { background-color: #34495e; }
+.applied-sciences-welcome .action-button { background-color: #e74c3c; }
+.mechanics-welcome .action-button { 
+  background-color: #8e44ad; 
+  box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+}
+.electronics-welcome .action-button { 
+  background-color: #f1c40f;
+  box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
+}
+.advanced-math-welcome .action-button { 
+  background-color: #16a085;
+  box-shadow: 0 4px 15px rgba(22, 160, 133, 0.3);
+}
+.computer-science-welcome .action-button { 
+  background-color: #2980b9;
+  box-shadow: 0 4px 15px rgba(41, 128, 185, 0.3);
+}
+.networks-security-welcome .action-button { 
+  background-color: #c0392b;
+  box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3);
+}
+.epidemiology-welcome .action-button { 
+  background-color: #d35400;
+  box-shadow: 0 4px 15px rgba(211, 84, 0, 0.3);
+}
+.medical-math-welcome .action-button { 
+  background-color: #7f8c8d;
+  box-shadow: 0 4px 15px rgba(127, 140, 141, 0.3);
+}
+.basic-sciences-welcome .action-button { 
+  background-color: #1abc9c; 
+  box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);
+}
+.pathology-welcome .action-button { 
+  background-color: #c0392b;
+  box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3);
+}
+.semiology-welcome .action-button { 
+  background-color: #e67e22;
+  box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+}
+.internal-medicine-welcome .action-button { 
+  background-color: #2c3e50;
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+}
+.specialties-med1-welcome .action-button { 
+  background-color: #8e44ad;
+  box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+}
+.specialties-med2-welcome .action-button { 
+  background-color: #f39c12;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+.surgery-emergency-welcome .action-button { 
+  background-color: #e74c3c;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+/* Estados hover para botones */
+.physics-welcome .action-button:hover { background-color: #2980b9; }
+.algebra-welcome .action-button:hover { background-color: #8e44ad; }
+.calculus-welcome .action-button:hover { background-color: #e67e22; }
+.chemistry-welcome .action-button:hover { background-color: #27ae60; }
+.statistics-welcome .action-button:hover { background-color: #2c3e50; }
+.applied-sciences-welcome .action-button:hover { background-color: #c0392b; }
+.mechanics-welcome .action-button:hover { background-color: #732d91; }
+.electronics-welcome .action-button:hover { background-color: #d4ac0d; }
+.advanced-math-welcome .action-button:hover { background-color: #138d75; }
+.computer-science-welcome .action-button:hover { background-color: #21618c; }
+.networks-security-welcome .action-button:hover { background-color: #a93226; }
+.epidemiology-welcome .action-button:hover { background-color: #ba4a00; }
+.medical-math-welcome .action-button:hover { background-color: #566573; }
+.basic-sciences-welcome .action-button:hover { background-color: #16a085; }
+.pathology-welcome .action-button:hover { background-color: #a93226; }
+.semiology-welcome .action-button:hover { background-color: #d35400; }
+.internal-medicine-welcome .action-button:hover { background-color: #1b2631; }
+.specialties-med1-welcome .action-button:hover { background-color: #732d91; }
+.specialties-med2-welcome .action-button:hover { background-color: #d68910; }
+.surgery-emergency-welcome .action-button:hover { background-color: #cb4335; }
+
+/* ======= RESPONSIVE DESIGN PARA TODAS LAS VARIANTES ======= */
+
+@media (max-width: 480px) {
+  [class*="-welcome"] .suggestion-item {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Respeto por preferencias de movimiento reducido */
+  [class*="-welcome"] .header-icon:hover {
+    transform: none;
+  }
+  
+  [class*="-welcome"] .suggestion-item:hover {
+    transform: none;
+  }
+  
+  [class*="-welcome"] .header-icon {
+    animation: none;
+  }
+}
+
+
+
+.physics-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.algebra-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.calculus-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.chemistry-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.statistics-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.mechanics-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.electronics-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.advanced-math-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.computer-science-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.networks-security-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.microeconomia-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.econometria-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.economia-internacional-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.finanzas-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.calculo-economico-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.economia-laboral-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.historia-economica-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.desarrollo-economico-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+
+
+.epidemiology-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.medical-math-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.applied-sciences-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.basic-sciences-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.pathology-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.semiology-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.internal-medicine-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.specialties-med1-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.specialties-med2-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.surgery-emergency-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.macroeconomia-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+
+.physics-welcome-suggestions .suggestion-item {
+  border-color: #3498db;
+}
+
+.algebra-welcome-suggestions .suggestion-item {
+  border-color: #9b59b6;
+}
+
+.calculus-welcome-suggestions .suggestion-item {
+  border-color: #f39c12;
+}
+
+.chemistry-welcome-suggestions .suggestion-item {
+  border-color: #27ae60;
+}
+
+.statistics-welcome-suggestions .suggestion-item {
+  border-color: #34495e;
+}
+
+.mechanics-welcome-suggestions .suggestion-item {
+  border-color: #8e44ad;
+}
+
+.electronics-welcome-suggestions .suggestion-item {
+  border-color: #f1c40f;
+}
+
+.advanced-math-welcome-suggestions .suggestion-item {
+  border-color: #16a085;
+}
+
+.computer-science-welcome-suggestions .suggestion-item {
+  border-color: #2980b9;
+}
+
+.networks-security-welcome-suggestions .suggestion-item {
+  border-color: #c0392b;
+}
+
+.microeconomia-welcome-suggestions .suggestion-item {
+  border-color: #059669;
+}
+
+.econometria-welcome-suggestions .suggestion-item {
+  border-color: #1e293b;
+}
+
+.economia-internacional-welcome-suggestions .suggestion-item {
+  border-color: #0284c7;
+}
+
+.finanzas-welcome-suggestions .suggestion-item {
+  border-color: #d97706;
+}
+
+.calculo-economico-welcome-suggestions .suggestion-item {
+  border-color: #7c3aed;
+}
+
+.sector-publico-welcome-suggestions .suggestion-item {
+  border-color: #e91e63;
+}
+
+.economia-laboral-welcome-suggestions .suggestion-item {
+  border-color: #8d4e2a;
+}
+
+.historia-economica-welcome-suggestions .suggestion-item {
+  border-color: #827717;
+}
+
+.desarrollo-economico-welcome-suggestions .suggestion-item {
+  border-color: #00acc1;
+}
+
+.macroeconomia-welcome-suggestions .suggestion-item {
+  border-color: #3f51b5;
+}
+
+.epidemiology-welcome-suggestions .suggestion-item {
+  border-color: #ea580c;
+}
+
+.medical-math-welcome-suggestions .suggestion-item {
+  border-color: #6b7280;
+}
+
+.applied-sciences-welcome-suggestions .suggestion-item {
+  border-color: #ef4444;
+}
+
+.basic-sciences-welcome-suggestions .suggestion-item {
+  border-color: #14b8a6;
+}
+
+.pathology-welcome-suggestions .suggestion-item {
+  border-color: #dc2626;
+}
+
+.semiology-welcome-suggestions .suggestion-item {
+  border-color: #ea580c;
+}
+
+.internal-medicine-welcome-suggestions .suggestion-item {
+  border-color: #334155;
+}
+
+.specialties-med1-welcome-suggestions .suggestion-item {
+  border-color: #c20caa;
+}
+
+.specialties-med2-welcome-suggestions .suggestion-item {
+  border-color: #d97706;
+}
+
+.surgery-emergency-welcome-suggestions .suggestion-item {
+  border-color: #dc2626;
+}
+
+/* ======= EFECTOS ::BEFORE PARA VARIANTES DE PSICOLOGÍA ======= */
+
+.dsm5-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.epistemologia-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicopatologia-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psic-diagnostico-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.neuropsicologia-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicoanalisis-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicologia-general-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicologia-social-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicologia-evolutiva-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.psicostats-welcome .welcome-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ======= BORDER-COLOR PARA SUGGESTION-ITEMS DE PSICOLOGÍA ======= */
+
+.dsm5-welcome-suggestions .suggestion-item {
+  border-color: #2563eb;
+}
+
+.epistemologia-welcome-suggestions .suggestion-item {
+  border-color: #65a30d;
+}
+
+.psicopatologia-welcome-suggestions .suggestion-item {
+  border-color: #dc2626;
+}
+
+.psic-diagnostico-welcome-suggestions .suggestion-item {
+  border-color: #ea580c;
+}
+
+.neuropsicologia-welcome-suggestions .suggestion-item {
+  border-color: #7c3aed;
+}
+
+.psicoanalisis-welcome-suggestions .suggestion-item {
+  border-color: #d97706;
+}
+
+.psicologia-general-welcome-suggestions .suggestion-item {
+  border-color: #3b82f6;
+}
+
+.psicologia-social-welcome-suggestions .suggestion-item {
+  border-color: #10b981;
+}
+
+.psicologia-evolutiva-welcome-suggestions .suggestion-item {
+  border-color: #0ea5e9;
+}
+
+.psicostats-welcome-suggestions .suggestion-item {
+  border-color: #8b5cf6;
+}

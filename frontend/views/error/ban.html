@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>Cuenta Suspendida | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/ban.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="ban-container">
+    <div class="ban-tape"></div>
+    <div class="ban-text">
+      <div class="ban-badge">
+        <i class='bx bx-shield-x'></i>
+        Cuenta suspendida
+      </div>
+      <h1 class="ban-title">Acceso restringido</h1>
+      <h2 class="ban-subtitle">El Comité Disciplinario de Acadelia ha revisado tu caso</h2>
+      
+      <p class="ban-description">
+        Lamentamos informarte que tu cuenta ha sido suspendida por violar las normas y políticas de nuestra comunidad académica. El Profesor Acadel, en representación del Comité Disciplinario, ha determinado que es necesaria esta medida para mantener el ambiente de aprendizaje seguro y respetuoso que caracteriza a Acadelia.
+      </p>
+      
+      <div class="ban-quote">
+        <p>"En Acadelia valoramos el aprendizaje colaborativo y el intercambio de conocimientos, pero esto debe ocurrir dentro del marco de nuestro reglamento académico. Una suspensión no es un castigo definitivo, sino una oportunidad para reflexionar y retomar el camino del aprendizaje responsable."</p>
+        <div class="author">— Profesor Acadel, Comité Disciplinario</div>
+      </div>
+      
+      <div class="ban-details">
+        <div class="detail-row">
+          <div class="detail-label">Estado:</div>
+          <div class="detail-value"><span class="detail-highlight">Suspendido</span></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Fecha de inicio:</div>
+          <div class="detail-value"><%= new Date().toLocaleDateString('es-ES') %></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Duración:</div>
+          <div class="detail-value">30 días</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Motivo:</div>
+          <div class="detail-value">Violación a los términos y condiciones de uso</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Referencia:</div>
+          <div class="detail-value">#<%= Math.floor(10000 + Math.random() * 90000) %></div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <a href="/contacto" class="appeal-btn">
+          <i class='bx bx-conversation'></i>
+          Solicitar una revisión
+        </a>
+      </div>
+      
+      <div class="ban-info">
+        <h3><i class='bx bx-book-bookmark'></i> Información importante:</h3>
+        <ul>
+          <li>Durante el período de suspensión no podrás acceder a tu cuenta ni a los servicios exclusivos de Acadelia.</li>
+          <li>Si crees que esta medida se ha tomado por error, puedes solicitar una revisión de tu caso.</li>
+          <li>Cualquier intento de eludir esta restricción mediante la creación de nuevas cuentas resultará en una suspensión permanente.</li>
+          <li>Para más información, consulta nuestros <a href="/terminos_condiciones" style="color: var(--ban-blue); font-weight: 600;">Términos y Condiciones</a>.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="ban-image">
+      <img src="/images/BANEADO.webp" alt="Profesor Acadel Juez" />
+    </div>
+  </div>
+
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/ban.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

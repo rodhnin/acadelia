@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>Sitio en Mantenimiento | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/503.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-img"></div>
+    </div>
+  </header>
+  
+  <div class="maintenance-container">
+    <div class="maintenance-tape"></div>
+    <div class="maintenance-text">
+      <div class="maintenance-badge">
+        <i class='bx bx-wrench'></i>
+        Sitio en mantenimiento
+      </div>
+      <h1 class="maintenance-title">Mantenimiento en curso</h1>
+      <h2 class="maintenance-subtitle">¡El Profesor Acadel está mejorando la plataforma!</h2>
+      
+      <p class="maintenance-description">
+        Nuestro experto en educación digital está actualizando Acadelia para brindarte una mejor experiencia académica. Como puedes ver, está muy concentrado reparando nuestros servidores.
+      </p>
+      
+      <div class="maintenance-progress">
+        <div class="progress-title">
+          <span>Progreso de mejoras</span>
+          <span class="eta-timer">00:42:15</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar"></div>
+        </div>
+        <div class="progress-tasks">
+          <div class="task-item completed">
+            <i class='bx bx-check-circle'></i>
+            <span>Actualización de base de datos académica</span>
+          </div>
+          <div class="task-item completed">
+            <i class='bx bx-check-circle'></i>
+            <span>Mejora del sistema de respuestas</span>
+          </div>
+          <div class="task-item in-progress">
+            <i class='bx bx-loader-alt bx-spin'></i>
+            <span>Optimización de los asistentes virtuales</span>
+          </div>
+          <div class="task-item pending">
+            <i class='bx bx-time'></i>
+            <span>Incorporación de nuevos recursos educativos</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="maintenance-quote">
+        <p>"Este robot académico necesita unos ajustes para funcionar a su máximo potencial. ¡Es como preparar a un estudiante para los exámenes finales! Necesita todos los tornillos bien apretados y el mejor conocimiento instalado."</p>
+        <div class="author">— Profesor Acadel, Ingeniero Académico</div>
+      </div>
+      
+      <div class="maintenance-note">
+        <h3><i class='bx bx-bulb'></i> Mientras esperamos:</h3>
+        <p>El equipo de Acadelia está trabajando para volver lo antes posible. Puedes recibir una notificación cuando estemos de vuelta dejándonos tu correo electrónico o siguiéndonos en nuestras redes sociales.</p>
+      </div>
+      
+      <div class="subscribe-form">
+        <h3 class="subscribe-title">¿Te avisamos cuando volvamos?</h3>
+        <div class="form-group">
+          <input type="email" class="subscribe-input" placeholder="tucorreo@ejemplo.com">
+          <button class="subscribe-btn">
+            <i class='bx bx-bell'></i>
+            Notificarme
+          </button>
+        </div>
+        <p class="form-note">Solo te enviaremos un correo cuando el sistema vuelva a estar disponible.</p>
+      </div>
+      
+      <div class="social-links">
+        <a href="#" class="social-link" aria-label="Twitter">
+          <i class='bx bxl-twitter'></i>
+        </a>
+        <a href="#" class="social-link" aria-label="Facebook">
+          <i class='bx bxl-facebook'></i>
+        </a>
+        <a href="#" class="social-link" aria-label="Instagram">
+          <i class='bx bxl-instagram'></i>
+        </a>
+      </div>
+    </div>
+    
+    <div class="maintenance-image">
+      <img src="/images/503.webp" alt="Profesor Acadel reparando robot">
+    </div>
+    <div class="maintenance-tape-bottom"></div>
+  </div>
+  
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/503.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

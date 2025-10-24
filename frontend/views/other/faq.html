@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/faq.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <a href="/" class="logo-link" aria-label="Paginadeinicio">
+              <div class="logo-img desktop-logo"></div>
+            </a>
+          </div>
+
+    <a href="/login">
+        <button class="ingresar-btn">
+            <i class='bx bx-log-in'></i>
+            Ingresar
+        </button>
+        </a>
+  </nav>
+  <div class="mobile-nav" style="display: none;">
+    <button class="menu-toggle">☰</button>
+    <div class="mobile-menu" style="display: none;">
+      <a href="/faq" class="faq-btn">FAQ</a>
+      <a href="/login" class="ingresar-btn">Ingresar</a>
+    </div>
+  </div>   
+                        <!-- header responsibe -->
+
+    </header>
+
+    <main class="faq-container">
+        <div class="faq-header">
+            <h1>Frequently Asked <span>Questions</span></h1>
+        </div>
+
+        <div class="faq-content">
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>¿Cómo uso Acadelia?</span>
+                    <i class='bx bx-plus'></i>
+                    <i class='bx bx-x'></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Acadelia es una plataforma intuitiva de asistencia académica. Simplemente crea una cuenta, inicia sesión y elige entre nuestros asistentes gratuitos o adquiere un asistente especializado para tu carrera. ¡Empieza a aprender de inmediato!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>¿Qué hace Acadelia diferente?</span>
+                    <i class='bx bx-plus'></i>
+                    <i class='bx bx-x'></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Acadelia se destaca por integrar conocimiento verificado, extraído de material certidicado y complementado con herramientas especializadas. Nuestros asistentes virtuales están diseñados específicamente para ofrecer respuestas precisas y personalizadas en diversas áreas académicas, llevando la excelencia a otro nivel.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    <span>¿Puedo usar Acadelia gratis? ¿Cuáles son los beneficios de pagar una suscripción?</span>
+                    <i class='bx bx-plus'></i>
+                    <i class='bx bx-x'></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Sí, Acadelia ofrece dos opciones gratuitas: interactúa con tu PDF y utiliza nuestro agente de búsqueda en línea para investigaciones, ambas con uso limitado. Con una suscripción, obtendrás acceso ilimitado a estas herramientas y a los chats especializados en cada materia para tu carrera, asegurando una experiencia de aprendizaje más completa y personalizada.</p>
+                </div>
+            </div>
+
+            <!-- Añade más preguntas siguiendo el mismo patrón -->
+        </div>
+
+
+
+
+        
+    
+
+</main>
+
+    
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Columna Izquierda -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-img"></div>
+                </div>
+                <div class="social-icons">
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                            <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                            </svg>
+                                            </a>
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class='bx bxl-instagram-alt'></i>
+                    </a>
+                    <a href="mailto:contacto@ejemplo.com" class="social-link" aria-label="Email">
+                        <i class='bx bx-envelope'></i>
+                    </a>
+                </div>
+                <p class="copyright">© Acadelia.</p>
+            </div>
+    
+            <!-- Columna Derecha -->
+            <div class="footer-legal">
+                <h3 class="legal-title">Legal y Seguridad</h3>
+                <div class="legal-links">
+                    <a href="/cookie_privacy" class="legal-link">Política y Privacidad</a>
+                    <a href="/terminos_condiciones" class="legal-link">Terminos y Condiciones</a>
+                    <a href="/contact" class="legal-link">Contáctanos</a>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+        </main>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    
+    <script src="/scripts/autenticarcontact.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/faq.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent-initializer.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent.js" nonce="<%= nonce %>"></script>
+
+    </body>
+</html>

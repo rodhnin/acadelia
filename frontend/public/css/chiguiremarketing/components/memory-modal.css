@@ -1,0 +1,3585 @@
+/* ======================================
+   MODAL DE MEMORIA IA - DASHBOARD CORPORATIVO
+   ====================================== */
+
+/* Override para modal de memoria - Tamaño completo */
+#memoryModal.modal {
+  padding: 20px;
+}
+
+#memoryModal .modal-content {
+  width: 95vw;
+  max-width: 1400px;
+  height: 90vh;
+  max-height: 90vh;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  background: var(--color-background);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#memoryModal .modal-header {
+  padding: 20px 30px;
+  border-bottom: 2px solid var(--color-primary-light);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  position: relative;
+  flex-shrink: 0;
+}
+
+#memoryModal .modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#memoryModal .modal-header h2::before {
+  content: '🧠';
+  font-size: 28px;
+}
+
+#memoryModal .modal-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-circle);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+}
+
+#memoryModal .modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+#memoryModal .modal-body {
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scroll personalizado */
+#memoryModal .modal-body::-webkit-scrollbar {
+  width: 12px;
+}
+
+#memoryModal .modal-body::-webkit-scrollbar-track {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  margin: 4px;
+}
+
+#memoryModal .modal-body::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 6px;
+  border: 2px solid var(--color-background);
+}
+
+#memoryModal .modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
+}
+
+/* Memory Dashboard Container */
+.memory-dashboard-container {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+}
+
+.memory-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.05);
+  flex-shrink: 0;
+}
+
+.memory-dashboard-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.memory-dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.memory-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.memory-search-input {
+  padding: 8px 12px 8px 32px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  width: 180px;
+  transition: all var(--transition-fast);
+}
+
+.memory-search-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.memory-search-bar i {
+  position: absolute;
+  left: 10px;
+  color: #6366f1;
+  font-size: 14px;
+}
+
+.memory-type-filter,
+.memory-source-filter {
+  padding: 8px 12px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 120px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memory-type-filter option,
+.memory-source-filter option {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memory-type-filter:focus,
+.memory-source-filter:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.memory-sort-select {
+  padding: 8px 12px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 120px;
+}
+
+.memory-sort-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.memory-refresh-button {
+  background: #6366f1;
+  border: none;
+  border-radius: var(--border-radius-circle);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.memory-refresh-button:hover {
+  background: #5b56f1;
+  transform: rotate(180deg) scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.memory-reset-button {
+  background: #ef4444;
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.memory-reset-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Summary Cards */
+.memory-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  padding: 20px 30px;
+  background: rgba(99, 102, 241, 0.03);
+  flex-shrink: 0;
+}
+
+.memory-summary-card {
+  background: var(--color-background);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  min-width: 0;
+}
+
+.memory-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.memory-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.memory-card-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #6366f1;
+}
+
+.memory-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.memory-card-label {
+  font-size: 11px;
+  color: var(--color-text);
+  opacity: 0.7;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+/* Lista de insights */
+.memory-list-section {
+  background: var(--color-background);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+  height: 600px;
+  margin: 25px 30px;
+}
+
+.memory-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.memory-list-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.memory-list-header h2 i {
+  font-size: 20px;
+  color: #6366f1;
+}
+
+.memory-list-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.memory-view-toggle {
+  display: flex;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.memory-view-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memory-view-btn.active {
+  background: #6366f1;
+  color: white;
+}
+
+.memory-view-btn:hover:not(.active) {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.memory-content {
+  flex: 1;
+  padding: 20px 25px;
+  overflow-y: auto;
+  min-height: 450px;
+}
+
+.memory-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.memory-content::-webkit-scrollbar-track {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 4px;
+}
+
+.memory-content::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 4px;
+}
+
+/* Grid View */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.memory-card {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.memory-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    rgba(99, 102, 241, 0.5) 0%, 
+    rgba(99, 102, 241, 0.8) var(--importance-width, 70%), 
+    rgba(99, 102, 241, 0.1) var(--importance-width, 70%)
+  );
+}
+
+.memory-card:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.memory-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.memory-card-type-badge {
+  background: #6366f1;
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.memory-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.memory-card-edit,
+.memory-card-delete {
+  background: transparent;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-circle);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text);
+}
+
+.memory-card-edit:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.memory-card-delete:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.memory-card-content {
+  margin-bottom: 15px;
+}
+
+.memory-card-insight {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.memory-card-importance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.memory-importance-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.memory-importance-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 3px;
+  transition: width var(--transition-fast);
+}
+
+.memory-importance-value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #6366f1;
+  min-width: 40px;
+}
+
+.memory-card-metadata {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.memory-card-source,
+.memory-card-quality {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.memory-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.memory-card-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.memory-card-id {
+  font-family: var(--font-family-code);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--border-radius-sm);
+}
+
+/* List View */
+.memory-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.memory-table th,
+.memory-table td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.memory-table th {
+  background: rgba(99, 102, 241, 0.05);
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.memory-table tr:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.memory-table td {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.memory-insight-cell {
+  max-width: 280px;
+  width: 35%;
+}
+
+.memory-importance-cell {
+  width: 120px;
+}
+
+.memory-date-cell {
+  width: 120px;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.memory-actions-cell {
+  width: 120px;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+/* Ajustar columna FUENTE para que sea más compacta */
+.memory-table th:nth-child(4),
+.memory-table td:nth-child(4) {
+  width: 140px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Asegurar que TIPO tenga buen ancho */
+.memory-table th:nth-child(2),
+.memory-table td:nth-child(2) {
+  width: 160px;
+}
+
+.memory-insight-preview {
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.memory-type-badge {
+  background: #6366f1;
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.memory-actions-cell {
+  width: 120px;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.memory-action-btn {
+  background: transparent;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-circle);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text);
+  margin: 0 2px;
+  font-size: 13px;
+}
+
+.memory-action-btn:hover {
+  transform: scale(1.1);
+}
+
+.memory-view-btn:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.memory-edit-btn:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.memory-delete-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+/* Loading States */
+.memory-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+}
+
+.memory-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(99, 102, 241, 0.3);
+  border-left-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.memory-loading p {
+  color: var(--color-text);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* No Data State */
+.memory-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text);
+  opacity: 0.6;
+  text-align: center;
+  padding: 40px;
+}
+
+.memory-no-data i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #6366f1;
+}
+
+.memory-no-data span {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+/* ======================================
+   MODAL DE DETALLES DE MEMORIA
+   ====================================== */
+
+.memory-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: calc(var(--z-index-modal) + 200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.memory-detail-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.memory-detail-modal.active .memory-detail-content {
+  transform: scale(1) translateY(0);
+}
+
+.memory-detail-content {
+  background: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  border: 2px solid #6366f1;
+  transform: scale(0.9) translateY(-20px);
+  transition: all var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+}
+
+.memory-detail-header {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 25px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  position: relative;
+  flex-shrink: 0;
+  padding-right: 80px;
+}
+
+.memory-detail-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--border-radius-circle);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.memory-detail-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.memory-detail-main-info {
+  text-align: center;
+  margin-bottom: 20px;
+  max-width: calc(100% - 60px); /* Restar espacio del botón */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.memory-detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  line-height: 1.3;
+  
+  /* 🆕 ARREGLADO: Truncamiento mejorado */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%; /* Usar todo el ancho disponible del contenedor */
+  cursor: help;
+  position: relative;
+  
+  /* 🆕 NUEVO: Asegurar que el texto no se extienda fuera */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.memory-detail-title[data-full-title]:hover::after {
+  content: attr(data-full-title);
+  position: absolute;
+  top: calc(100% + 10px); /* Más espacio desde el título */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: normal;
+  max-width: 400px;
+  min-width: 200px;
+  word-wrap: break-word;
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  line-height: 1.4;
+  text-shadow: none;
+  text-align: left;
+  
+  /* 🆕 NUEVO: Animación suave */
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+/* 🆕 ARREGLADO: Flecha del tooltip */
+.memory-detail-title[data-full-title]:hover::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.95);
+  z-index: 1001;
+  
+  /* 🆕 NUEVO: Animación suave */
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+/* 🆕 NUEVO: Animación para el tooltip */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 🆕 NUEVO: Ajuste para títulos muy largos en pantallas pequeñas */
+@media (max-width: 768px) {
+  .memory-detail-header {
+    padding: 20px;
+    padding-right: 70px; /* Menos espacio en móvil */
+  }
+  
+  .memory-detail-close {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    top: 15px;
+    right: 15px;
+  }
+  
+  .memory-detail-main-info {
+    max-width: calc(100% - 50px);
+  }
+  
+  .memory-detail-title {
+    font-size: 20px;
+  }
+  
+  .memory-detail-title[data-full-title]:hover::after {
+    max-width: 280px;
+    font-size: 13px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .memory-detail-title[data-full-title]:hover::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-detail-header {
+    padding: 15px;
+    padding-right: 60px;
+  }
+  
+  .memory-detail-close {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    top: 12px;
+    right: 12px;
+  }
+  
+  .memory-detail-title {
+    font-size: 18px;
+  }
+  
+  .memory-detail-title[data-full-title]:hover::after {
+    max-width: 250px;
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}
+
+.memory-detail-importance-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.memory-detail-importance-bar {
+  width: 120px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.memory-detail-importance-fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+}
+
+.memory-detail-importance-text {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.memory-detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.memory-detail-body {
+  padding: 25px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.memory-detail-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.memory-detail-body::-webkit-scrollbar-track {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 4px;
+}
+
+.memory-detail-body::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 4px;
+}
+
+.memory-detail-section {
+  margin-bottom: 30px;
+}
+
+.memory-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.memory-detail-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+  padding-bottom: 8px;
+}
+
+/* Cards de información */
+.memory-info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.memory-info-card {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.memory-info-card:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.25);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.memory-info-card-header {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #6366f1;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.memory-info-card-header i {
+  font-size: 18px;
+}
+
+.memory-info-card-content {
+  padding: 16px;
+}
+
+.memory-info-card-content p {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--color-text);
+  font-size: 0.9rem
+}
+
+/* Grid de métricas */
+.memory-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.memory-metric-card {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all var(--transition-fast);
+}
+
+.memory-metric-card:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.memory-metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.memory-metric-icon.importance-icon {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.memory-metric-icon.quality-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.memory-metric-icon.date-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.memory-metric-content {
+  font-size: 1.4rem;
+  flex: 1;
+}
+
+.memory-metric-value {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.memory-metric-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 4px;
+}
+
+.memory-metric-description {
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
+/* Información adicional */
+.memory-additional-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.memory-additional-item {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  transition: all var(--transition-fast);
+}
+
+.memory-additional-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.memory-additional-key {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.memory-additional-value {
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.memory-additional-value pre {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  overflow-x: auto;
+  font-size: var(--font-size-xs);
+  white-space: pre-wrap;
+}
+
+.memory-detail-json-viewer {
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: var(--font-family-code);
+  font-size: 12px;
+  line-height: 1.4;
+    background: rgba(99, 102, 241, 0.1);
+
+}
+
+.memory-detail-json-viewer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.memory-detail-json-viewer::-webkit-scrollbar-track {
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 3px;
+}
+
+.memory-detail-json-viewer::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 3px;
+}
+
+/* ======================================
+   MODAL DE REINICIO DE MEMORIA
+   ====================================== */
+
+.memory-reset-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: calc(var(--z-index-modal) + 300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+}
+
+.memory-reset-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.memory-reset-content {
+  background: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  border: 2px solid #ef4444;
+}
+
+.memory-reset-header {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 20px 25px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memory-reset-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.memory-reset-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--border-radius-circle);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.memory-reset-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.memory-reset-body {
+  padding: 25px;
+}
+
+.memory-reset-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.memory-reset-warning i {
+  font-size: 24px;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.memory-reset-warning p {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.memory-reset-details {
+  margin-bottom: 20px;
+}
+
+.memory-reset-details h4 {
+  color: var(--color-text);
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.memory-reset-details ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.memory-reset-details li {
+  margin-bottom: 4px;
+}
+
+.memory-reset-confirmation {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+}
+
+.memory-reset-confirmation h4 {
+  color: #ef4444;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.memory-reset-confirmation p {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.memory-reset-footer {
+  padding: 20px 25px;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.memory-reset-cancel,
+.memory-reset-confirm {
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.memory-reset-cancel {
+  background: transparent;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--color-text);
+}
+
+.memory-reset-cancel:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.memory-reset-confirm {
+  background: #ef4444;
+  color: white;
+}
+
+.memory-reset-confirm:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ======================================
+   MODAL DE EDICIÓN DE MEMORIA
+   ====================================== */
+
+.memory-edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: calc(var(--z-index-modal) + 250);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+}
+
+.memory-edit-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.memory-edit-content {
+  background: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  border: 2px solid #6366f1;
+}
+
+.memory-edit-header {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 20px 25px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memory-edit-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.memory-edit-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--border-radius-circle);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.memory-edit-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.memory-edit-body {
+  padding: 25px;
+}
+
+.memory-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.memory-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.memory-edit-field label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.memory-edit-insight,
+.memory-edit-source {
+  padding: 12px 16px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  resize: vertical;
+  transition: all var(--transition-fast);
+}
+
+.memory-edit-insight:focus,
+.memory-edit-source:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.memory-edit-importance {
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.2);
+  outline: none;
+}
+
+.memory-edit-importance::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.memory-edit-importance::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.memory-edit-importance-value {
+  font-weight: 600;
+  color: #6366f1;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.memory-edit-type {
+  padding: 12px 16px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.memory-edit-type:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.memory-edit-footer {
+  padding: 20px 25px;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.memory-edit-cancel,
+.memory-edit-save {
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.memory-edit-cancel {
+  background: transparent;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--color-text);
+}
+
+.memory-edit-cancel:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.memory-edit-save {
+  background: #6366f1;
+  color: white;
+}
+
+.memory-edit-save:hover {
+  background: #5b56f1;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ======================================
+   MODAL DE CONFIRMACIÓN PARA ELIMINAR INSIGHT
+   ====================================== */
+
+.memory-delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: calc(var(--z-index-modal) + 275);
+  display: none; /* Oculta por defecto */
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.memory-delete-modal.active {
+  display: flex; /* Mostrar cuando esté activa */
+  opacity: 1;
+  visibility: visible;
+}
+
+.memory-delete-modal.active .memory-delete-content {
+  transform: scale(1) translateY(0);
+}
+
+.memory-delete-content {
+  background: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  border: 2px solid #f59e0b;
+  transform: scale(0.9) translateY(-20px);
+  transition: all var(--transition-smooth);
+}
+
+.memory-delete-header {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 18px 20px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memory-delete-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.memory-delete-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--border-radius-circle);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.memory-delete-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.memory-delete-body {
+  padding: 20px;
+}
+
+.memory-delete-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--border-radius-md);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.memory-delete-warning i {
+  font-size: 20px;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.memory-delete-warning p {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.memory-delete-preview {
+  margin-bottom: 16px;
+}
+
+.memory-delete-preview h4 {
+  color: var(--color-text);
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.memory-delete-insight-preview {
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+}
+
+.memory-delete-insight-preview .memory-card-type-badge {
+  background: #6366f1;
+  color: white;
+  padding: 3px 6px;
+  border-radius: var(--border-radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.memory-insight-text {
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 8px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.memory-insight-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.memory-delete-confirmation {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+}
+
+.memory-delete-confirmation p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 13px;
+  text-align: center;
+}
+
+.memory-delete-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.memory-delete-cancel,
+.memory-delete-confirm {
+  padding: 8px 16px;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  font-size: 13px;
+}
+
+.memory-delete-cancel {
+  background: transparent;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--color-text);
+}
+
+.memory-delete-cancel:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.memory-delete-confirm {
+  background: #f59e0b;
+  color: white;
+}
+
+.memory-delete-confirm:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.memory-delete-confirm:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .memory-summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  #memoryModal .modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  #memoryModal.modal {
+    padding: 0;
+  }
+  
+  .memory-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px;
+    gap: 12px;
+  }
+  
+  .memory-dashboard-header {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .memory-dashboard-header h1 {
+    font-size: 20px;
+  }
+  
+  .memory-dashboard-controls {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .memory-search-input {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  .memory-type-filter,
+  .memory-source-filter,
+  .memory-sort-select {
+    flex: 1;
+    min-width: 100px;
+  }
+  
+  .memory-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .memory-list-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 15px 20px;
+  }
+  
+  .memory-list-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .memory-actions-cell {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    width: 120px;
+    padding: 8px 2px;
+  }
+  
+  .memory-action-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  /* Ajustar columnas en móvil */
+  .memory-table th:nth-child(4),
+  .memory-table td:nth-child(4) {
+    width: 100px;
+    font-size: 11px;
+  }
+  
+  .memory-insight-cell {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-summary-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .memory-card-value {
+    font-size: 20px;
+  }
+  
+  .memory-card-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  
+  .memory-reset-content,
+  .memory-edit-content {
+    width: 95%;
+    margin: 20px;
+  }
+}
+
+/* Responsive para modal de eliminación */
+@media (max-width: 480px) {
+  .memory-delete-content {
+    width: 95%;
+    margin: 15px;
+  }
+  
+  .memory-delete-header {
+    padding: 15px 18px;
+  }
+  
+  .memory-delete-body {
+    padding: 18px;
+  }
+  
+  .memory-insight-meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .memory-summary-card,
+body[data-theme="dark"] .memory-list-section {
+  background: var(--color-secondary);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .memory-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .memory-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body[data-theme="dark"] #memoryModal .modal-header {
+  background: linear-gradient(135deg, #6366f1 0%, var(--color-secondary) 100%);
+}
+
+body[data-theme="dark"] #memoryModal .modal-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] #memoryModal .modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: var(--color-secondary);
+}
+
+body[data-theme="dark"] .memory-table th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .memory-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .memory-detail-json-viewer {
+  background: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .memory-delete-content {
+  background: var(--color-secondary);
+  border-color: #f59e0b;
+}
+
+body[data-theme="dark"] .memory-delete-warning {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+body[data-theme="dark"] .memory-delete-insight-preview {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+body[data-theme="dark"] .memory-delete-confirmation {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.15);
+}
+
+/* ======================================
+   ESTILOS MEJORADOS PARA ANÁLISIS DE TENDENCIAS
+   ====================================== */
+
+/* 🆕 ELIMINADO: Indicador de análisis de tendencia redundante */
+/* Se eliminó .trend-analysis-indicator para evitar redundancia */
+
+/* 🆕 NUEVO: Tarjeta especializada para análisis de tendencias */
+.memory-card.trend-analysis-card {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.08) 0%, 
+    rgba(255, 165, 0, 0.05) 50%,
+    rgba(99, 102, 241, 0.05) 100%
+  );
+  border: 2px solid rgba(255, 107, 107, 0.2);
+  box-shadow: 
+    0 4px 20px rgba(255, 107, 107, 0.15),
+    0 0 0 1px rgba(255, 165, 0, 0.1);
+  transform: scale(1.02);
+  margin: 8px 4px;
+}
+
+.memory-card.trend-analysis-card::before {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 107, 0.8) 0%, 
+    rgba(255, 165, 0, 0.8) var(--importance-width, 70%), 
+    rgba(255, 107, 107, 0.2) var(--importance-width, 70%)
+  );
+  height: 5px;
+}
+
+.memory-card.trend-analysis-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.12) 0%, 
+    rgba(255, 165, 0, 0.08) 50%,
+    rgba(99, 102, 241, 0.08) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.4);
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: 
+    0 8px 25px rgba(255, 107, 107, 0.25),
+    0 0 0 2px rgba(255, 165, 0, 0.2);
+}
+
+/* 🆕 NUEVO: Badge especial para análisis de tendencias */
+.memory-card-type-badge.trend-type-badge {
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  position: relative;
+}
+
+.memory-card-type-badge.trend-type-badge::after {
+  content: '🔥';
+  position: absolute;
+  right: -8px;
+  top: -4px;
+  font-size: 14px;
+  animation: fireFlicker 1.8s ease-in-out infinite;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  25% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  75% { transform: scale(0.95) rotate(-1deg); opacity: 0.9; }
+}
+
+/* 🆕 NUEVO: Insight enriquecido para tendencias */
+.memory-card-insight.trend-insight {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid #ff6b6b;
+  margin-bottom: 16px;
+  white-space: pre-line;
+  max-height: none;
+  line-clamp: none;
+  -webkit-box-orient: none;
+  overflow: visible;
+  display: block;
+}
+
+body[data-theme="dark"] .memory-card-insight.trend-insight {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--color-text);
+}
+
+/* 🆕 NUEVO: Información enriquecida de tendencias MEJORADA */
+.trend-enriched-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(255, 107, 107, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(255, 107, 107, 0.1);
+}
+
+.trend-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 107, 107, 0.15);
+}
+
+.trend-header-info > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.trend-header-info i {
+  color: #ff6b6b;
+  font-size: 14px;
+  min-width: 16px;
+}
+
+.trend-theme {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #ff6b6b !important;
+}
+
+.trend-popularity span {
+  color: #ffa500;
+  font-weight: 600;
+}
+
+/* 🆕 NUEVO: Secciones de oportunidades y canales */
+.trend-opportunities-preview,
+.trend-channels-preview {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  border-left: 3px solid #ff6b6b;
+}
+
+body[data-theme="dark"] .trend-opportunities-preview,
+body[data-theme="dark"] .trend-channels-preview {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.trend-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ff6b6b;
+  margin-bottom: 8px;
+}
+
+.trend-section-title i {
+  font-size: 14px;
+}
+
+.trend-opportunities-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trend-opportunities-list li {
+  background: rgba(255, 107, 107, 0.08);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 22px;
+}
+
+.trend-opportunities-list li::before {
+  content: '•';
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.trend-opportunities-list li:last-child {
+  margin-bottom: 0;
+}
+
+.trend-channels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trend-channel-item {
+  background: rgba(255, 165, 0, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 10px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 22px;
+}
+
+.trend-channel-item::before {
+  content: '📱';
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  font-size: 10px;
+}
+
+.trend-more-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #6366f1;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.trend-more-info:hover {
+  color: #ff6b6b;
+  transform: translateX(2px);
+}
+
+.trend-more-info i {
+  font-size: 12px;
+}
+
+/* 🆕 NUEVO: Tarjeta de resumen para análisis de tendencias */
+.memory-summary-card.trend-analysis-summary {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.1) 0%, 
+    rgba(255, 165, 0, 0.05) 100%
+  );
+  border: 2px solid rgba(255, 107, 107, 0.2);
+  position: relative;
+}
+
+.memory-summary-card.trend-analysis-summary::before {
+  background: linear-gradient(90deg, #ff6b6b, #ffa500);
+  height: 4px;
+}
+
+.memory-summary-card.trend-analysis-summary.has-trends {
+  animation: trendCardPulse 3s ease-in-out infinite;
+}
+
+@keyframes trendCardPulse {
+  0%, 100% { 
+    box-shadow: var(--shadow-sm);
+    border-color: rgba(255, 107, 107, 0.2);
+  }
+  50% { 
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.15);
+    border-color: rgba(255, 107, 107, 0.4);
+  }
+}
+
+.memory-summary-card.trend-analysis-summary .memory-card-icon {
+  color: #ff6b6b;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.memory-summary-card.trend-analysis-summary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.2);
+}
+
+/* 🆕 NUEVO: Filas de tabla para análisis de tendencias */
+.memory-table .memory-row.trend-analysis-row {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 107, 0.05) 0%, 
+    rgba(255, 165, 0, 0.02) 100%
+  );
+  border-left: 4px solid #ff6b6b;
+}
+
+.memory-table .memory-row.trend-analysis-row:hover {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 107, 0.08) 0%, 
+    rgba(255, 165, 0, 0.04) 100%
+  );
+}
+
+.trend-row-indicator {
+  color: #ff6b6b !important;
+  margin-right: 6px;
+  animation: trendPulse 2s ease-in-out infinite;
+}
+
+/* 🆕 NUEVO: Badge de tipo en tabla para tendencias */
+.memory-table .memory-type-badge.trend-type-badge {
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+  position: relative;
+}
+
+/* 🆕 NUEVO: Efectos especiales para grids con análisis de tendencias */
+.memory-grid:has(.trend-analysis-card) {
+  background: radial-gradient(circle at 20% 80%, 
+    rgba(255, 107, 107, 0.03) 0%, 
+    transparent 50%
+  ),
+  radial-gradient(circle at 80% 20%, 
+    rgba(255, 165, 0, 0.02) 0%, 
+    transparent 50%
+  );
+}
+
+/* 🆕 NUEVO: Hover mejorado para tarjetas de tendencias */
+.memory-card.trend-analysis-card .memory-card-actions button {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+.memory-card.trend-analysis-card .memory-card-actions button:hover {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+  color: white;
+  transform: scale(1.15);
+}
+
+/* 🆕 ELIMINADO: Efectos hover problemáticos del grid */
+/* Se eliminaron las reglas que causaban opacidad en hover */
+
+/* 🆕 NUEVO: Animación sutil para destacar análisis de tendencias */
+.memory-card.trend-analysis-card {
+  animation: trendGlow 4s ease-in-out infinite;
+}
+
+@keyframes trendGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 4px 20px rgba(255, 107, 107, 0.15),
+      0 0 0 1px rgba(255, 165, 0, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 6px 25px rgba(255, 107, 107, 0.2),
+      0 0 0 2px rgba(255, 165, 0, 0.15),
+      0 0 20px rgba(255, 107, 107, 0.1);
+  }
+}
+
+/* 🆕 NUEVO: Texto especial para insights de tendencias */
+.memory-card.trend-analysis-card .memory-card-insight::first-line {
+  font-weight: 700;
+  font-size: 15px;
+  color: #ff6b6b;
+}
+
+/* 🆕 NUEVO: Responsive design para análisis de tendencias */
+@media (max-width: 768px) {
+  .memory-card.trend-analysis-card {
+    transform: scale(1);
+    margin: 4px 0;
+  }
+  
+  .memory-card.trend-analysis-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .trend-enriched-info {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .trend-enriched-info > div {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-card-insight.trend-insight {
+    font-size: 13px;
+    padding: 10px;
+  }
+  
+  .trend-enriched-info > div {
+    font-size: 10px;
+  }
+}
+
+/* 🆕 NUEVO: Dark theme support para análisis de tendencias */
+body[data-theme="dark"] .memory-card.trend-analysis-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.12) 0%, 
+    rgba(255, 165, 0, 0.08) 50%,
+    rgba(99, 102, 241, 0.08) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+body[data-theme="dark"] .memory-card.trend-analysis-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 165, 0, 0.12) 50%,
+    rgba(99, 102, 241, 0.12) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+body[data-theme="dark"] .trend-enriched-info {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+body[data-theme="dark"] .memory-summary-card.trend-analysis-summary {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 165, 0, 0.1) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+body[data-theme="dark"] .memory-table .memory-row.trend-analysis-row {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 107, 0.1) 0%, 
+    rgba(255, 165, 0, 0.05) 100%
+  );
+}
+
+body[data-theme="dark"] .memory-table .memory-row.trend-analysis-row:hover {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 165, 0, 0.08) 100%
+  );
+}
+
+/* 🆕 NUEVO: Mejoras adicionales para mejor UX */
+.memory-card.trend-analysis-card .memory-card-footer {
+  border-top: 1px solid rgba(255, 107, 107, 0.1);
+  background: rgba(255, 107, 107, 0.03);
+}
+
+.memory-card.trend-analysis-card .memory-card-date i {
+  color: #ff6b6b;
+}
+
+.memory-card.trend-analysis-card .memory-card-id {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+/* 🆕 NUEVO: Indicador visual adicional en la lista de controles */
+.memory-sort-select option[value="trends-first"] {
+  background: linear-gradient(90deg, rgba(255, 107, 107, 0.1), transparent);
+  font-weight: 600;
+}
+
+/* 🆕 NUEVO: Efecto especial para cuando hay análisis de tendencias */
+.memory-list-section:has(.trend-analysis-card) .memory-list-header h2::after {
+  content: '🔥';
+  margin-left: 8px;
+  animation: fireFlicker 2s ease-in-out infinite;
+}
+
+/* 🆕 NUEVO: Mejorar la importancia visual de los análisis de tendencias */
+.trend-enriched-info .trend-theme span {
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* 🆕 NUEVO: Efecto de brillo sutil en los iconos de tendencias */
+.trend-enriched-info i,
+.memory-summary-card.trend-analysis-summary .memory-card-icon {
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+}
+
+/* 🆕 NUEVO: Mejorar la barra de importancia para análisis de tendencias */
+.memory-card.trend-analysis-card .memory-importance-fill {
+  background: linear-gradient(90deg, #ff6b6b, #ffa500, #6366f1);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.memory-card.trend-analysis-card .memory-importance-value {
+  color: #ff6b6b;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 107, 107, 0.2);
+}
+
+/* 🆕 NUEVO: Estilos adicionales para modal de detalles de tendencias */
+.memory-detail-section.trend-analysis-details {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.05) 0%, 
+    rgba(255, 165, 0, 0.03) 100%
+  );
+  border: 2px solid rgba(255, 107, 107, 0.1);
+  border-radius: var(--border-radius-lg);
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.memory-detail-section.trend-analysis-details h3 {
+  color: #ff6b6b;
+  border-bottom-color: rgba(255, 107, 107, 0.3);
+}
+
+.memory-info-card.trend-info-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.08) 0%, 
+    rgba(255, 165, 0, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.memory-info-card.trend-info-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.12) 0%, 
+    rgba(255, 165, 0, 0.08) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.15);
+}
+
+.memory-info-card.trend-info-card .memory-info-card-header {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border-bottom-color: rgba(255, 107, 107, 0.2);
+}
+
+.memory-info-card.trend-info-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.trend-opportunities-list,
+.trend-channels-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trend-opportunities-list li,
+.trend-channels-list li {
+  background: rgba(255, 107, 107, 0.05);
+  border: 1px solid rgba(255, 107, 107, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  position: relative;
+  padding-left: 28px;
+}
+
+.trend-opportunities-list li::before {
+  content: '💡';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+}
+
+.trend-channels-list li::before {
+  content: '📱';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+}
+
+.trend-opportunities-list li:last-child,
+.trend-channels-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* 🆕 NUEVO: Preview especial para análisis de tendencias en modal de eliminar */
+.memory-insight-text.trend-insight-preview {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.08) 0%, 
+    rgba(255, 165, 0, 0.05) 100%
+  );
+  border-left: 4px solid #ff6b6b;
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* 🆕 NUEVO: Mejoras para sorting y filtros con análisis de tendencias */
+.memory-sort-select:focus option[value="trends-first"] {
+  background: linear-gradient(90deg, rgba(255, 107, 107, 0.2), rgba(255, 165, 0, 0.1));
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
+/* 🆕 NUEVO: Animación especial para el conteo de análisis de tendencias en resumen */
+.memory-summary-card.trend-analysis-summary .memory-card-value {
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+/* 🆕 NUEVO: Indicador especial en el header cuando hay análisis de tendencias */
+.memory-dashboard-header:has(~ .memory-summary-cards .trend-analysis-summary.has-trends) h1::after {
+  content: '🔥';
+  margin-left: 8px;
+  animation: fireFlicker 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.5));
+}
+
+/* 🆕 NUEVO: Mejora la tipografía para análisis de tendencias */
+.memory-card.trend-analysis-card .memory-card-insight {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.3px;
+  text-rendering: optimizeLegibility;
+}
+
+.memory-card.trend-analysis-card .memory-card-insight::selection {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+}
+
+/* 🆕 NUEVO: Efectos especiales para modo oscuro en análisis de tendencias */
+body[data-theme="dark"] .trend-opportunities-list li,
+body[data-theme="dark"] .trend-channels-list li {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: rgba(255, 107, 107, 0.25);
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .memory-insight-text.trend-insight-preview {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.15) 0%, 
+    rgba(255, 165, 0, 0.1) 100%
+  );
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .memory-detail-section.trend-analysis-details {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.1) 0%, 
+    rgba(255, 165, 0, 0.06) 100%
+  );
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+/* 🆕 ELIMINADO: Micro-animaciones para interacciones problemáticas */ 
+/* Se eliminaron hover effects en indicadores redundantes */
+
+.memory-card.trend-analysis-card .trend-enriched-info:hover {
+  background: rgba(255, 107, 107, 0.08);
+  border-color: rgba(255, 107, 107, 0.2);
+  transform: translateY(-1px);
+}
+
+/* 🆕 NUEVO: Loading state especial para análisis de tendencias */
+.memory-loading.trend-loading {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 107, 0.05) 0%, 
+    rgba(255, 165, 0, 0.03) 100%
+  );
+  border: 1px solid rgba(255, 107, 107, 0.1);
+  border-radius: var(--border-radius-lg);
+  padding: 30px;
+}
+
+.memory-loading.trend-loading .spinner {
+  border-left-color: #ff6b6b;
+  border-top-color: #ffa500;
+}
+
+/* 🆕 NUEVO: Tooltips mejorados para análisis de tendencias */
+.memory-card.trend-analysis-card [title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  color: white;
+  padding: 6px 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 🆕 NUEVO: Mejora la accesibilidad con focus states */
+.memory-card.trend-analysis-card:focus-within {
+  outline: 3px solid rgba(255, 107, 107, 0.4);
+  outline-offset: 2px;
+}
+
+/* 🆕 NUEVO: Print styles para análisis de tendencias */
+@media print {
+  .memory-card.trend-analysis-card {
+    break-inside: avoid;
+    border: 2px solid #ff6b6b !important;
+    background: white !important;
+  }
+  
+  .memory-card.trend-analysis-card .memory-card-insight {
+    background: rgba(255, 107, 107, 0.1) !important;
+  }
+}
+
+/* ======================================
+   ESTILOS PARA SIMULACIONES DE CAMPAÑA - MEMORY MODAL
+   ====================================== */
+
+/* 🆕 NUEVO: Tarjeta especializada para simulaciones de campaña */
+.memory-card.simulation-card {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.08) 0%, 
+    rgba(59, 130, 246, 0.05) 50%,
+    rgba(168, 85, 247, 0.05) 100%
+  );
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  box-shadow: 
+    0 4px 20px rgba(34, 197, 94, 0.15),
+    0 0 0 1px rgba(59, 130, 246, 0.1);
+  transform: scale(1.02);
+  margin: 8px 4px;
+}
+
+.memory-card.simulation-card::before {
+  background: linear-gradient(90deg, 
+    rgba(34, 197, 94, 0.8) 0%, 
+    rgba(59, 130, 246, 0.8) var(--importance-width, 70%), 
+    rgba(34, 197, 94, 0.2) var(--importance-width, 70%)
+  );
+  height: 5px;
+}
+
+.memory-card.simulation-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.12) 0%, 
+    rgba(59, 130, 246, 0.08) 50%,
+    rgba(168, 85, 247, 0.08) 100%
+  );
+  border-color: rgba(34, 197, 94, 0.4);
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: 
+    0 8px 25px rgba(34, 197, 94, 0.25),
+    0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* 🆕 NUEVO: Badge especial para simulaciones */
+.memory-card-type-badge.simulation-type-badge {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+  position: relative;
+}
+
+.memory-card-type-badge.simulation-type-badge::after {
+  content: '🎯';
+  position: absolute;
+  right: -8px;
+  top: -4px;
+  font-size: 14px;
+  animation: targetPulse 2s ease-in-out infinite;
+}
+
+@keyframes targetPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  25% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+  75% { transform: scale(0.95) rotate(-5deg); opacity: 0.9; }
+}
+
+/* 🆕 NUEVO: Insight enriquecido para simulaciones */
+.memory-card-insight.simulation-insight {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid #22c55e;
+  margin-bottom: 16px;
+  white-space: pre-line;
+  max-height: none;
+  line-clamp: none;
+  -webkit-box-orient: none;
+  overflow: visible;
+  display: block;
+}
+
+body[data-theme="dark"] .memory-card-insight.simulation-insight {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--color-text);
+}
+
+/* 🆕 NUEVO: Información enriquecida de simulaciones */
+.simulation-enriched-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(34, 197, 94, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.simulation-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(34, 197, 94, 0.15);
+}
+
+.simulation-header-info > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.simulation-header-info i {
+  color: #22c55e;
+  font-size: 14px;
+  min-width: 16px;
+}
+
+.simulation-concept {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #22c55e !important;
+}
+
+.simulation-confidence span {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.simulation-audience span {
+  color: #8b5cf6;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* 🆕 NUEVO: Métricas proyectadas */
+.simulation-metrics-preview {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  border-left: 3px solid #3b82f6;
+}
+
+body[data-theme="dark"] .simulation-metrics-preview {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.simulation-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #22c55e;
+  margin-bottom: 8px;
+}
+
+.simulation-section-title i {
+  font-size: 14px;
+}
+
+.simulation-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.simulation-metric-item {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: 8px 10px;
+  text-align: center;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.simulation-metric-item .metric-label {
+  font-size: 10px;
+  color: var(--color-text);
+  opacity: 0.8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.simulation-metric-item .metric-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3b82f6;
+  display: block;
+  margin-top: 2px;
+}
+
+/* 🆕 NUEVO: Factores de éxito */
+.simulation-success-factors-preview {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  border-left: 3px solid #10b981;
+}
+
+body[data-theme="dark"] .simulation-success-factors-preview {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.simulation-success-factors-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.simulation-success-factors-list li {
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 22px;
+}
+
+.simulation-success-factors-list li::before {
+  content: '✅';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  font-size: 10px;
+}
+
+.simulation-success-factors-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* 🆕 NUEVO: Recomendaciones */
+.simulation-recommendations-preview {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+  border-left: 3px solid #f59e0b;
+}
+
+body[data-theme="dark"] .simulation-recommendations-preview {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.simulation-recommendations-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.simulation-recommendations-list li {
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: var(--border-radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 22px;
+}
+
+.simulation-recommendations-list li::before {
+  content: '💡';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  font-size: 10px;
+}
+
+.simulation-recommendations-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* 🆕 NUEVO: Indicador "más información" */
+.simulation-more-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #6366f1;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.simulation-more-info:hover {
+  color: #22c55e;
+  transform: translateX(2px);
+}
+
+.simulation-more-info i {
+  font-size: 12px;
+}
+
+/* 🆕 NUEVO: Tarjeta de resumen para simulaciones */
+.memory-summary-card.simulation-summary {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.1) 0%, 
+    rgba(59, 130, 246, 0.05) 100%
+  );
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  position: relative;
+}
+
+.memory-summary-card.simulation-summary::before {
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  height: 4px;
+}
+
+.memory-summary-card.simulation-summary.has-simulations {
+  animation: simulationCardPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes simulationCardPulse {
+  0%, 100% { 
+    box-shadow: var(--shadow-sm);
+    border-color: rgba(34, 197, 94, 0.2);
+  }
+  50% { 
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+  }
+}
+
+.memory-summary-card.simulation-summary .memory-card-icon {
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+.memory-summary-card.simulation-summary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+}
+
+/* 🆕 NUEVO: Filas de tabla para simulaciones */
+.memory-table .memory-row.simulation-row {
+  background: linear-gradient(90deg, 
+    rgba(34, 197, 94, 0.05) 0%, 
+    rgba(59, 130, 246, 0.02) 100%
+  );
+  border-left: 4px solid #22c55e;
+}
+
+.memory-table .memory-row.simulation-row:hover {
+  background: linear-gradient(90deg, 
+    rgba(34, 197, 94, 0.08) 0%, 
+    rgba(59, 130, 246, 0.04) 100%
+  );
+}
+
+.simulation-row-indicator {
+  color: #22c55e !important;
+  margin-right: 6px;
+  animation: simulationPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes simulationPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.8; 
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 1; 
+  }
+}
+
+/* 🆕 NUEVO: Badge de tipo en tabla para simulaciones */
+.memory-table .memory-type-badge.simulation-type-badge {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+  position: relative;
+}
+
+/* 🆕 NUEVO: Efectos especiales para grids con simulaciones */
+.memory-grid:has(.simulation-card) {
+  background: radial-gradient(circle at 20% 80%, 
+    rgba(34, 197, 94, 0.03) 0%, 
+    transparent 50%
+  ),
+  radial-gradient(circle at 80% 20%, 
+    rgba(59, 130, 246, 0.02) 0%, 
+    transparent 50%
+  );
+}
+
+/* 🆕 NUEVO: Hover mejorado para tarjetas de simulación */
+.memory-card.simulation-card .memory-card-actions button {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.memory-card.simulation-card .memory-card-actions button:hover {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: white;
+  transform: scale(1.15);
+}
+
+/* 🆕 NUEVO: Animación sutil para destacar simulaciones */
+.memory-card.simulation-card {
+  animation: simulationGlow 4.5s ease-in-out infinite;
+}
+
+@keyframes simulationGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 4px 20px rgba(34, 197, 94, 0.15),
+      0 0 0 1px rgba(59, 130, 246, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 6px 25px rgba(34, 197, 94, 0.2),
+      0 0 0 2px rgba(59, 130, 246, 0.15),
+      0 0 20px rgba(34, 197, 94, 0.1);
+  }
+}
+
+/* 🆕 NUEVO: Texto especial para insights de simulación */
+.memory-card.simulation-card .memory-card-insight::first-line {
+  font-weight: 700;
+  font-size: 15px;
+  color: #22c55e;
+}
+
+/* 🆕 NUEVO: Responsive design para simulaciones */
+@media (max-width: 768px) {
+  .memory-card.simulation-card {
+    transform: scale(1);
+    margin: 4px 0;
+  }
+  
+  .memory-card.simulation-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .simulation-enriched-info {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .simulation-enriched-info > div {
+    font-size: 11px;
+  }
+  
+  .simulation-metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-card-insight.simulation-insight {
+    font-size: 13px;
+    padding: 10px;
+  }
+  
+  .simulation-enriched-info > div {
+    font-size: 10px;
+  }
+}
+
+/* 🆕 NUEVO: Dark theme support para simulaciones */
+body[data-theme="dark"] .memory-card.simulation-card {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.12) 0%, 
+    rgba(59, 130, 246, 0.08) 50%,
+    rgba(168, 85, 247, 0.08) 100%
+  );
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+body[data-theme="dark"] .memory-card.simulation-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.15) 0%, 
+    rgba(59, 130, 246, 0.12) 50%,
+    rgba(168, 85, 247, 0.12) 100%
+  );
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+body[data-theme="dark"] .simulation-enriched-info {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+body[data-theme="dark"] .memory-summary-card.simulation-summary {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.15) 0%, 
+    rgba(59, 130, 246, 0.1) 100%
+  );
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+body[data-theme="dark"] .memory-table .memory-row.simulation-row {
+  background: linear-gradient(90deg, 
+    rgba(34, 197, 94, 0.1) 0%, 
+    rgba(59, 130, 246, 0.05) 100%
+  );
+}
+
+body[data-theme="dark"] .memory-table .memory-row.simulation-row:hover {
+  background: linear-gradient(90deg, 
+    rgba(34, 197, 94, 0.15) 0%, 
+    rgba(59, 130, 246, 0.08) 100%
+  );
+}
+
+/* 🆕 NUEVO: Mejoras adicionales para mejor UX */
+.memory-card.simulation-card .memory-card-footer {
+  border-top: 1px solid rgba(34, 197, 94, 0.1);
+  background: rgba(34, 197, 94, 0.03);
+}
+
+.memory-card.simulation-card .memory-card-date i {
+  color: #22c55e;
+}
+
+.memory-card.simulation-card .memory-card-id {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* 🆕 NUEVO: Indicador visual adicional en la lista de controles */
+.memory-sort-select option[value="simulations-first"] {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), transparent);
+  font-weight: 600;
+}
+
+/* 🆕 NUEVO: Efecto especial para cuando hay simulaciones */
+.memory-list-section:has(.simulation-card) .memory-list-header h2::after {
+  content: '🎯';
+  margin-left: 8px;
+  animation: targetPulse 2.5s ease-in-out infinite;
+}
+
+/* 🆕 NUEVO: Mejorar la importancia visual de las simulaciones */
+.simulation-enriched-info .simulation-concept span {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* 🆕 NUEVO: Efecto de brillo sutil en los iconos de simulaciones */
+.simulation-enriched-info i,
+.memory-summary-card.simulation-summary .memory-card-icon {
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+/* 🆕 NUEVO: Mejorar la barra de importancia para simulaciones */
+.memory-card.simulation-card .memory-importance-fill {
+  background: linear-gradient(90deg, #22c55e, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+.memory-card.simulation-card .memory-importance-value {
+  color: #22c55e;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(34, 197, 94, 0.2);
+}
+
+/* 🆕 NUEVO: Estilos adicionales para modal de detalles de simulaciones */
+.memory-detail-section.simulation-details {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.05) 0%, 
+    rgba(59, 130, 246, 0.03) 100%
+  );
+  border: 2px solid rgba(34, 197, 94, 0.1);
+  border-radius: var(--border-radius-lg);
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.memory-detail-section.simulation-details h3 {
+  color: #22c55e;
+  border-bottom-color: rgba(34, 197, 94, 0.3);
+}
+
+.memory-info-card.simulation-info-card {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.08) 0%, 
+    rgba(59, 130, 246, 0.05) 100%
+  );
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.memory-info-card.simulation-info-card:hover {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.12) 0%, 
+    rgba(59, 130, 246, 0.08) 100%
+  );
+  border-color: rgba(34, 197, 94, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.15);
+}
+
+.memory-info-card.simulation-info-card .memory-info-card-header {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border-bottom-color: rgba(34, 197, 94, 0.2);
+}
+
+.memory-info-card.simulation-info-card.full-width {
+  grid-column: 1 / -1;
+}
+
+/* 🆕 NUEVO: Preview especial para simulaciones en modal de eliminar */
+.memory-insight-text.simulation-insight-preview {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.08) 0%, 
+    rgba(59, 130, 246, 0.05) 100%
+  );
+  border-left: 4px solid #22c55e;
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* 🆕 NUEVO: Mejoras para sorting y filtros con simulaciones */
+.memory-sort-select:focus option[value="simulations-first"] {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.1));
+  color: #22c55e;
+  font-weight: 700;
+}
+
+/* 🆕 NUEVO: Animación especial para el conteo de simulaciones en resumen */
+.memory-summary-card.simulation-summary .memory-card-value {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+/* 🆕 NUEVO: Indicador especial en el header cuando hay simulaciones */
+.memory-dashboard-header:has(~ .memory-summary-cards .simulation-summary.has-simulations) h1::after {
+  content: '🎯';
+  margin-left: 8px;
+  animation: targetPulse 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.5));
+}
+
+/* 🆕 NUEVO: Mejora la tipografía para simulaciones */
+.memory-card.simulation-card .memory-card-insight {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.3px;
+  text-rendering: optimizeLegibility;
+}
+
+.memory-card.simulation-card .memory-card-insight::selection {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* 🆕 NUEVO: Loading state especial para simulaciones */
+.memory-loading.simulation-loading {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.05) 0%, 
+    rgba(59, 130, 246, 0.03) 100%
+  );
+  border: 1px solid rgba(34, 197, 94, 0.1);
+  border-radius: var(--border-radius-lg);
+  padding: 30px;
+}
+
+.memory-loading.simulation-loading .spinner {
+  border-left-color: #22c55e;
+  border-top-color: #3b82f6;
+}
+
+/* 🆕 NUEVO: Tooltips mejorados para simulaciones */
+.memory-card.simulation-card [title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  padding: 6px 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 🆕 NUEVO: Espaciado balanceado para subtítulos h4 en simulaciones */
+.memory-detail-section.simulation-details h4,
+.memory-detail-section.trend-analysis-details h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #22c55e;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.memory-detail-section.trend-analysis-details h4 {
+  color: #ff6b6b;
+  border-bottom-color: rgba(255, 107, 107, 0.2);
+}
+
+/* 🆕 NUEVO: Asegurar que el primer h4 no tenga margen superior excesivo */
+.memory-detail-section.simulation-details h4:first-of-type,
+.memory-detail-section.trend-analysis-details h4:first-of-type {
+  margin-top: 20px;
+}
+
+/* 🆕 NUEVO: Espaciado consistente para los iconos en h4 */
+.memory-detail-section.simulation-details h4 i,
+.memory-detail-section.trend-analysis-details h4 i {
+  font-size: 18px;
+  color: inherit;
+}
+
+/* 🆕 NUEVO: Mejora la accesibilidad con focus states */
+.memory-card.simulation-card:focus-within {
+  outline: 3px solid rgba(34, 197, 94, 0.4);
+  outline-offset: 2px;
+}
+
+/* 🆕 NUEVO: Print styles para simulaciones */
+@media print {
+  .memory-card.simulation-card {
+    break-inside: avoid;
+    border: 2px solid #22c55e !important;
+    background: white !important;
+  }
+  
+  .memory-card.simulation-card .memory-card-insight {
+    background: rgba(34, 197, 94, 0.1) !important;
+  }
+}
+
+/* 🆕 ARREGLADO: Dark theme support mejorado */
+body[data-theme="dark"] .memory-detail-title[data-full-title]:hover::after {
+  background: rgba(30, 30, 30, 0.98);
+  color: #f3f4f6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+body[data-theme="dark"] .memory-detail-title[data-full-title]:hover::before {
+  border-bottom-color: rgba(30, 30, 30, 0.98);
+}
+
+/* 🆕 NUEVO: Estados de interacción mejorados */
+.memory-detail-title:hover {
+  /* Indicar que es interactivo */
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+/* 🆕 NUEVO: Asegurar que el tooltip no interfiera con otros elementos */
+.memory-detail-title[data-full-title]:hover::after,
+.memory-detail-title[data-full-title]:hover::before {
+  pointer-events: none; /* Evitar interferencia con clics */
+}
+
+/* 🆕 NUEVO: Fallback para títulos sin data-full-title */
+.memory-detail-title:not([data-full-title]) {
+  cursor: default;
+}
+
+/* 🆕 NUEVO: Mejorar la legibilidad del título truncado */
+.memory-detail-title {
+  text-align: center;
+  /* Sombra de texto más sutil para mejor legibilidad */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 🆕 NUEVO: Indicador visual de que hay más texto */
+.memory-detail-title[data-full-title]::after {
+  content: '...';
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: normal;
+  margin-left: 2px;
+}

@@ -1,0 +1,124 @@
+/* ======================================
+   VARIABLES CSS
+   ====================================== */
+:root {
+  /* Colores principales */
+  --color-primary: #f0efe7;
+  --color-primary-light: #a4ac86;
+  --color-secondary: #7f4f24;
+  --color-secondary-light: #936639;
+  --color-background: #ffffff;
+  --color-text: #160e0e;
+  --color-sidebar: #582f0e;
+  
+  /* Colores de estado */
+  --color-error: #b71c1c;
+  --color-error-light: #ffebee;
+  --color-success: #4CAF50;
+  --color-warning: #FFC107;
+  --color-info: #0288d1;
+  
+  /* Colores para burbujas de chat */
+  --color-user-bubble: #ffffff;
+  --color-user-bubble-border: rgba(164, 172, 134, 0.3);
+  --color-assistant-bubble: rgba(164, 172, 134, 0.1);
+  --color-assistant-bubble-border: rgba(164, 172, 134, 0.2);
+  
+  /* Tamaños de espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  
+  /* Dimensiones de componentes */
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 60px;
+  --avatar-size: 40px;
+  
+  /* Bordes y radios */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 20px;
+  --border-radius-pill: 25px;
+  --border-radius-circle: 50%;
+  --border-radius-bubble: 18px;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --shadow-bubble: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sidebar-active: rgba(164, 172, 134, 0.2);
+  --preview-shadow: rgb(201 188 188 / 79%);
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-smooth: 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  
+  /* Z-index */
+  --z-index-dropdown: 100;
+  --z-index-sticky: 200;
+  --z-index-fixed: 300;
+  --z-index-modal-backdrop: 400;
+  --z-index-modal: 500;
+  --z-index-popover: 600;
+  --z-index-tooltip: 700;
+  
+  /* Tipografía */
+  --font-family-base: "Poppins", sans-serif;
+  --font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-family-math: "Cambria Math", "Latin Modern Math", serif;
+  
+  /* Fuentes y tamaños */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.85rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.1rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 1.5rem;
+  
+  /* Rutas de imágenes */
+  --avatar-path: url('/images/Perfil_claro.gif');
+  --avatar-loading-path-light: url('/images/Pensando_claro.gif');
+  --avatar-loading-path-dark: url('/images/Pensando_oscuro.gif');
+  --avatar-welcome: url('/images/Acadelia-welcome.gif');
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] {
+  --color-primary: #1A1A1A;
+  --color-primary-light: #5C5858;
+  --color-secondary: #292929;
+  --color-secondary-light: #313131;
+  --color-sidebar: #040200;
+  --avatar-path: url('/images/Perfil_oscuro.gif');
+  --color-text: #f3f3f3;
+  --color-background: #252525;
+  --color-sidebar: #fff;
+  --sidebar-active: rgba(187, 187, 187, 0.2);
+  --preview-shadow: rgba(26, 26, 26, 0.79);
+  
+  /* Burbujas para tema oscuro */
+  --color-user-bubble: #2d3748;
+  --color-user-bubble-border: rgba(92, 88, 88, 0.4);
+  --color-assistant-bubble: rgba(92, 88, 88, 0.1);
+  --color-assistant-bubble-border: rgba(92, 88, 88, 0.2);
+  
+  /* Colores específicos del tema */
+  --table-header-bg: #2d3748;
+  --table-border-color: #4a5568;
+  --code-background: #1a202c;
+  --code-border-color: rgba(255, 255, 255, 0.1);
+  
+  /* Colores de estado - versiones oscuras */
+  --color-error-light: rgba(197, 48, 48, 0.1);
+}
+
+/* Ocultar contenido hasta cargar el tema */
+body:not([data-theme]) {
+  visibility: hidden;
+}

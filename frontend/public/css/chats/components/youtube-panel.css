@@ -1,0 +1,2151 @@
+/* youtube-panel.css - Estilos mejorados para el panel de transcripciones de YouTube */
+
+/* Botón para mostrar el panel de YouTube - Más sutil y elegante */
+.youtube-panel-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #e73737;
+  border: none;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: var(--z-index-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.youtube-panel-trigger:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.youtube-panel-trigger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.youtube-panel-trigger i {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.youtube-panel-trigger:hover i {
+  transform: scale(1.1);
+}
+
+/* Contenedor principal del panel - Más elegante con bordes redondeados y blur */
+.youtube-panel-container {
+  position: fixed;
+  right: -420px;
+  top: 0;
+  width: 400px;
+  height: 100% !important;
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-index-fixed);
+  transition: right 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  backdrop-filter: blur(10px);
+  border-radius: 15px 0 0 15px;
+}
+
+.youtube-panel-container.active {
+  right: 0;
+}
+
+/* Cabecera del panel - Más estilizada */
+.youtube-panel-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.youtube-panel-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+  font-family: "Parkinsans", sans-serif;
+}
+
+.youtube-panel-close {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.youtube-panel-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-error);
+}
+
+/* Contenedor del video - Más elegante */
+.youtube-video-container {
+  width: 100%;
+  position: relative;
+  padding-top: 56.25%;
+  background-color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1px;
+}
+
+.youtube-video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Información del video - Más espaciado y elegante */
+.youtube-video-info {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.youtube-video-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.youtube-video-meta {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.8;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Contenedor de búsqueda - Más elegante */
+.youtube-search-container {
+  display: flex;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.youtube-search-box {
+  position: relative;
+  flex: 1;
+  margin-right: 14px;
+}
+
+.youtube-search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text);
+  opacity: 0.6;
+}
+
+#youtube-search-input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#youtube-search-input:focus {
+  outline: none;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.youtube-search-controls {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.youtube-search-count {
+  margin-right: 12px;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+/* Botones de navegación y descarga más estilizados */
+.youtube-search-button, 
+.youtube-download-button {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.youtube-search-button:hover:not(:disabled),
+.youtube-download-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.youtube-search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Contenedor de transcripciones - Más elegante y optimizado */
+/* Reconfigurar el contenedor de transcripciones */
+.youtube-transcription-container {
+  flex: 1;
+  height: 50vh !important; /* Importante: esto fuerza que solo ocupe el espacio restante */
+  overflow-y: scroll !important; /* Forzar scroll vertical */
+  overflow-x: hidden; /* Evitar scroll horizontal */
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  position: relative;
+  display: block;
+}
+
+.youtube-transcription-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.youtube-transcription-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.youtube-transcription-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+/* Secciones de transcripción mejoradas y más compactas */
+.youtube-transcription-section {
+  margin: 0;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  transition: background-color 0.2s ease;
+}
+
+.youtube-transcription-section:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.youtube-transcription-section:last-child {
+  border-bottom: none;
+}
+
+.youtube-timestamp-marker {
+  display: inline-block;
+  padding: 3px 8px;
+  margin: 2px 0 4px 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.youtube-timestamp-marker:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.youtube-timestamp-marker.active {
+  background-color: rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+}
+
+.youtube-transcription-text {
+  margin: 4px 0 6px 0;
+  line-height: 1.3;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+/* Spinner de carga estilizado */
+.youtube-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: var(--color-text);
+  height: 200px;
+}
+
+.youtube-spinner i {
+  animation: youtube-spin 1.2s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: #e73737;
+}
+
+.youtube-spinner p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+@keyframes youtube-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Estilos para mensajes de error */
+.youtube-error-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-error);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.youtube-error-message i {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.youtube-error-message p {
+  font-size: 1rem;
+  max-width: 80%;
+}
+
+/* Selector de texto */
+.youtube-text-selected {
+  background-color: rgba(127, 79, 36, 0.2);
+  border-radius: var(--border-radius-sm);
+}
+
+.youtube-selection-actions {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-index-tooltip);
+  display: none;
+  color: var(--color-text);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.youtube-selection-actions.visible {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para los botones de acción mejorados */
+.youtube-selection-action {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: var(--color-text);
+  cursor: pointer;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  margin: 0 4px;
+}
+
+.youtube-selection-action:hover {
+  background-color: rgba(255, 255, 255, 0.98);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.youtube-selection-action:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.youtube-selection-action.use-prompt {
+  background-color: rgba(231, 55, 55, 0.1);
+  color: #e73737;
+}
+
+.youtube-selection-action.use-prompt:hover {
+  background-color: rgba(231, 55, 55, 0.15);
+}
+
+.youtube-selection-action.copy-text {
+  background-color: rgba(0, 120, 215, 0.1);
+  color: #0078d7;
+}
+
+.youtube-selection-action.copy-text:hover {
+  background-color: rgba(0, 120, 215, 0.15);
+}
+
+.youtube-selection-action.close-menu {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #666;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-left: 2px;
+}
+
+.youtube-selection-action.close-menu:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Resaltado de resultados de búsqueda */
+.youtube-search-match {
+  background-color: rgba(255, 255, 0, 0.3);
+  padding: 0 2px;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.youtube-search-match.active {
+  background-color: rgba(255, 165, 0, 0.6);
+  font-weight: bold;
+  box-shadow: 0 0 0 1px rgba(255, 165, 0, 0.8);
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .youtube-panel-container {
+  background-color: rgba(30, 30, 30, 0.92);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .youtube-panel-header,
+body[data-theme="dark"] .youtube-video-info,
+body[data-theme="dark"] .youtube-search-container,
+body[data-theme="dark"] .youtube-transcription-container {
+  background-color: rgba(40, 40, 40, 0.7);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .youtube-panel-title,
+body[data-theme="dark"] .youtube-panel-close,
+body[data-theme="dark"] .youtube-video-info h3,
+body[data-theme="dark"] .youtube-video-meta,
+body[data-theme="dark"] .youtube-transcription-text {
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .youtube-timestamp-marker {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .youtube-timestamp-marker:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+body[data-theme="dark"] .youtube-timestamp-marker.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+body[data-theme="dark"] #youtube-search-input {
+  background-color: rgba(50, 50, 50, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] #youtube-search-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body[data-theme="dark"] .youtube-panel-trigger {
+  background-color: rgba(40, 40, 40, 0.9);
+  color: #ff4545;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="dark"] .youtube-panel-trigger:hover {
+  background-color: rgba(50, 50, 50, 0.95);
+}
+
+body[data-theme="dark"] .youtube-search-button, 
+body[data-theme="dark"] .youtube-download-button {
+  background-color: rgba(60, 60, 60, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .youtube-search-button:hover:not(:disabled),
+body[data-theme="dark"] .youtube-download-button:hover {
+  background-color: rgba(80, 80, 80, 0.9);
+}
+
+body[data-theme="dark"] .youtube-selection-actions {
+  background-color: rgba(40, 40, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .youtube-selection-action:hover {
+  background-color: rgba(60, 60, 60, 0.95);
+}
+
+body[data-theme="dark"] .youtube-selection-action {
+  background: rgba(50, 50, 50, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .youtube-selection-action.use-prompt {
+  background-color: rgba(231, 55, 55, 0.15);
+  color: #ff5e5e;
+}
+
+body[data-theme="dark"] .youtube-selection-action.use-prompt:hover {
+  background-color: rgba(231, 55, 55, 0.25);
+}
+
+body[data-theme="dark"] .youtube-selection-action.copy-text {
+  background-color: rgba(0, 120, 215, 0.15);
+  color: #3a9bff;
+}
+
+body[data-theme="dark"] .youtube-selection-action.copy-text:hover {
+  background-color: rgba(0, 120, 215, 0.25);
+}
+
+body[data-theme="dark"] .youtube-selection-action.close-menu {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #aaa;
+}
+
+body[data-theme="dark"] .youtube-selection-action.close-menu:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+body[data-theme="dark"] .youtube-search-match {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+body[data-theme="dark"] .youtube-search-match.active {
+  background-color: rgba(255, 165, 0, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 165, 0, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .youtube-panel-container {
+    width: 100%;
+    right: -100%;
+    border-radius: 0;
+  }
+  
+  .youtube-panel-title {
+    max-width: 70%;
+  }
+  
+  .youtube-panel-trigger {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Tooltips para botones de acción */
+.youtube-tooltip {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  font-size: 11px;
+  color: white;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Triángulo debajo del tooltip */
+.youtube-tooltip:after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 0, 0, 0.8);
+}
+
+/* Mostrar tooltip al hacer hover */
+.youtube-selection-action:hover .youtube-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Iconos en botones */
+.youtube-selection-action i {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+/* Tema oscuro para tooltips */
+body[data-theme="dark"] .youtube-tooltip {
+  background-color: rgba(40, 40, 40, 0.9);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="dark"] .youtube-tooltip:after {
+  border-top-color: rgba(40, 40, 40, 0.9);
+}
+
+/* Estilos adicionales para la sincronización de transcripciones */
+
+/* Segmento activo actual - Resaltado suave para indicar la posición actual en la transcripción */
+.youtube-transcription-section.active {
+  background-color: rgba(231, 55, 55, 0.08);
+  border-left: 3px solid #e73737;
+  padding-left: 13px; /* Compensar el borde izquierdo */
+  transition: background-color 0.3s ease, border-left 0.3s ease;
+}
+
+/* Transición más suave para cambio de secciones activas */
+.youtube-transcription-section {
+  transition: background-color 0.3s ease, border-left 0.3s ease, transform 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+/* Interacción mejorada para segmentos de transcripción */
+.youtube-transcription-section.hover,
+.youtube-transcription-section:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Cursor de puntero para textos de transcripción para indicar interactividad */
+.youtube-transcription-text {
+  cursor: pointer;
+}
+
+/* Efecto visual para el texto activo */
+.youtube-transcription-section.active .youtube-transcription-text {
+  font-weight: 500;
+  color: #e73737;
+}
+
+/* Indicador visual sutil para texto activo */
+.youtube-transcription-section.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: #e73737;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+/* Barra de progreso para segmento actual (opcional) */
+.youtube-current-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: #e73737;
+  transition: width 0.1s linear;
+}
+
+/* Tema oscuro - Ajustes para secciones activas */
+body[data-theme="dark"] .youtube-transcription-section.active {
+  background-color: rgba(231, 55, 55, 0.15);
+  border-left-color: #ff4545;
+}
+
+body[data-theme="dark"] .youtube-transcription-section.active .youtube-transcription-text {
+  color: #ff5e5e;
+}
+
+body[data-theme="dark"] .youtube-transcription-section.hover,
+body[data-theme="dark"] .youtube-transcription-section:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Mejora de la transición de desplazamiento para una experiencia más fluida */
+.youtube-transcription-container {
+  scroll-behavior: smooth;
+}
+
+/* Mayor contraste para los marcadores de tiempo activos en tema oscuro */
+body[data-theme="dark"] .youtube-timestamp-marker.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: #ff4545;
+}
+
+/* Estilos para la sincronización en tiempo real */
+
+/* Segmento de transcripción actualmente reproduciendo */
+.youtube-current-segment {
+  background-color: rgba(231, 55, 55, 0.1);
+  border-left: 3px solid #e73737;
+  padding-left: 8px !important;
+  font-weight: 500;
+  transition: background-color 0.3s ease, border-left 0.3s ease;
+  animation: pulse-highlight 2s infinite;
+}
+
+/* Animación de pulso sutil para el segmento actual */
+@keyframes pulse-highlight {
+  0% { background-color: rgba(231, 55, 55, 0.1); }
+  50% { background-color: rgba(231, 55, 55, 0.2); }
+  100% { background-color: rgba(231, 55, 55, 0.1); }
+}
+
+/* Animación para tema oscuro - definida a nivel raíz */
+@keyframes pulse-highlight-dark {
+  0% { background-color: rgba(255, 69, 69, 0.15); }
+  50% { background-color: rgba(255, 69, 69, 0.25); }
+  100% { background-color: rgba(255, 69, 69, 0.15); }
+}
+
+/* Estilo para tema oscuro */
+body[data-theme="dark"] .youtube-current-segment {
+  background-color: rgba(255, 69, 69, 0.15);
+  border-left: 3px solid #ff4545;
+  animation: pulse-highlight-dark 2s infinite;
+}
+
+/* Ajustes para el contenedor del player de YouTube */
+.youtube-video-container {
+  width: 100%;
+  position: relative;
+  padding-top: 56.25%;
+  background-color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1px;
+}
+
+.youtube-video-container #youtube-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Indicador de seguimiento de tiempo */
+.youtube-playback-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.youtube-playback-indicator.active {
+  opacity: 1;
+}
+
+/* audio-panel.css - Estilos para el botón y menú de audio */
+
+/* Botón para mostrar el panel de audio - Mismo estilo que YouTube pero en azul */
+.audio-panel-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #3b82f6; /* Color azul para diferenciar */
+  border: none;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: var(--z-index-fixed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.audio-panel-trigger:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.audio-panel-trigger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.audio-panel-trigger i {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.audio-panel-trigger:hover i {
+  transform: scale(1.1);
+}
+
+/* Efecto de grabación (pulsante) */
+.audio-panel-trigger.recording {
+  animation: pulse-recording 2s infinite;
+  box-shadow: 0 0 0 rgba(231, 55, 55, 0.4);
+}
+
+@keyframes pulse-recording {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 55, 55, 0.4);
+    background-color: rgba(231, 55, 55, 0.9);
+    color: white;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(231, 55, 55, 0);
+    background-color: rgba(231, 55, 55, 0.8);
+    color: white;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 55, 55, 0);
+    background-color: rgba(231, 55, 55, 0.9);
+    color: white;
+  }
+}
+
+/* Menú desplegable de audio */
+.audio-menu {
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  width: 400px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: var(--z-index-fixed);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Cabecera del menú de audio */
+.audio-menu-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.audio-menu-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.audio-menu-close {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.audio-menu-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-error);
+}
+
+/* Contenido del menú de audio */
+.audio-menu-content {
+  padding: 12px 0;
+}
+
+.audio-option {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.audio-option:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.audio-option i {
+  font-size: 20px;
+  margin-right: 12px;
+  color: #3b82f6;
+}
+
+.audio-option span {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+/* UI de grabación */
+.audio-recording-ui {
+  padding: 16px;
+  text-align: center;
+  display: none;
+}
+
+.recording-time {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  font-family: monospace;
+}
+
+/* Controles de grabación expandidos con múltiples botones */
+.recording-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stop-recording {
+  padding: 8px 16px;
+  background-color: #e73737;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.stop-recording i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.stop-recording:hover {
+  background-color: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recording-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.recording-indicator {
+  width: 12px;
+  height: 12px;
+  background-color: #e73737;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Indicador de procesamiento */
+.processing-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Botón de pausa */
+.pause-recording {
+  padding: 8px 16px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pause-recording i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.pause-recording:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de cancelar */
+.cancel-recording {
+  padding: 8px 16px;
+  background-color: #7f8c8d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.cancel-recording i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.cancel-recording:hover {
+  background-color: #95a5a6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Diálogo de confirmación */
+.audio-confirmation-dialog {
+  padding: 16px;
+  text-align: center;
+  display: none;
+}
+
+.confirmation-message {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: 20px;
+}
+
+.confirmation-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Botón de confirmar envío */
+.confirm-send {
+  padding: 8px 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.confirm-send i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.confirm-send:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de cancelar envío */
+.cancel-send {
+  padding: 8px 16px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.cancel-send i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.cancel-send:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Indicador de estado pausado */
+.recording-indicator.paused {
+  background-color: #f39c12;
+  animation: none;
+}
+
+.recording-status .paused-text {
+  color: #f39c12;
+}
+
+/* Estilo para botón pausado */
+.audio-panel-trigger.paused {
+  animation: pulse-paused 2s infinite;
+}
+
+@keyframes pulse-paused {
+  0% {
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.4);
+    background-color: rgba(243, 156, 18, 0.9);
+    color: white;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(243, 156, 18, 0);
+    background-color: rgba(243, 156, 18, 0.8);
+    color: white;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
+    background-color: rgba(243, 156, 18, 0.9);
+    color: white;
+  }
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .pause-recording {
+  background-color: #f39c12;
+}
+
+body[data-theme="dark"] .pause-recording:hover {
+  background-color: #e67e22;
+}
+
+body[data-theme="dark"] .cancel-recording {
+  background-color: #95a5a6;
+}
+
+body[data-theme="dark"] .cancel-recording:hover {
+  background-color: #7f8c8d;
+}
+
+body[data-theme="dark"] .confirm-send {
+  background-color: #2ecc71;
+}
+
+body[data-theme="dark"] .confirm-send:hover {
+  background-color: #27ae60;
+}
+
+body[data-theme="dark"] .cancel-send {
+  background-color: #e74c3c;
+}
+
+body[data-theme="dark"] .cancel-send:hover {
+  background-color: #c0392b;
+}
+
+body[data-theme="dark"] .recording-indicator.paused {
+  background-color: #f39c12;
+}
+
+body[data-theme="dark"] .audio-panel-trigger.paused {
+  animation: pulse-paused-dark 2s infinite;
+}
+
+@keyframes pulse-paused-dark {
+  0% {
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.4);
+    background-color: rgba(243, 156, 18, 0.9);
+    color: white;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(243, 156, 18, 0);
+    background-color: rgba(243, 156, 18, 0.8);
+    color: white;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
+    background-color: rgba(243, 156, 18, 0.9);
+    color: white;
+  }
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .audio-panel-trigger {
+  background-color: rgba(40, 40, 40, 0.9);
+  color: #60a5fa;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="dark"] .audio-panel-trigger:hover {
+  background-color: rgba(50, 50, 50, 0.95);
+}
+
+body[data-theme="dark"] .audio-menu {
+  background-color: rgba(40, 40, 40, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .audio-menu-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .audio-option:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .audio-option i {
+  color: #60a5fa;
+}
+
+body[data-theme="dark"] .audio-menu-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .processing-spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: #60a5fa;
+}
+
+/* Animaciones de grabación para tema oscuro */
+body[data-theme="dark"] .audio-panel-trigger.recording {
+  animation: pulse-recording-dark 2s infinite;
+}
+
+@keyframes pulse-recording-dark {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 55, 55, 0.4);
+    background-color: rgba(231, 55, 55, 0.9);
+    color: white;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(231, 55, 55, 0);
+    background-color: rgba(231, 55, 55, 0.8);
+    color: white;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 55, 55, 0);
+    background-color: rgba(231, 55, 55, 0.9);
+    color: white;
+  }
+}
+
+/* Responsive */
+@media (max-width: 820px) {
+  .audio-panel-trigger {
+    bottom: 20%;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+  
+  .audio-menu {
+    bottom: 70px;
+    right: 16px;
+    width: 220px;
+  }
+}
+
+/* Estilos adicionales para el reproductor de audio */
+
+/* Contenedor del reproductor de audio */
+.audio-player-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2b5876, #4e4376);
+  padding-top: 0 !important;
+  height: 120px !important;
+}
+
+/* Reproductor de audio */
+#audio-player {
+  height: 50px;
+  outline: none;
+  border-radius: 10px;
+}
+
+/* Controles personalizados para el reproductor */
+#audio-player::-webkit-media-controls-panel {
+  background-color: rgb(20 14 14 / 30%);
+}
+
+#audio-player::-webkit-media-controls-play-button {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: scale(1.2);
+}
+
+#audio-player::-webkit-media-controls-current-time-display,
+#audio-player::-webkit-media-controls-time-remaining-display {
+  color: white;
+  font-weight: bold;
+}
+
+/* Tema oscuro para el reproductor de audio */
+body[data-theme="dark"] .audio-player-container {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+/* Estilo para el botón del panel de audio (para diferenciarlo del de YouTube) */
+.youtube-panel-trigger.audio-mode i {
+  color: #3b82f6;
+}
+
+body[data-theme="dark"] .youtube-panel-trigger.audio-mode i {
+  color: #60a5fa;
+}
+
+/* Indicador de modo en la cabecera del panel */
+.youtube-panel-header .mode-indicator {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-left: 10px;
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+.youtube-panel-header .mode-indicator i {
+  margin-right: 4px;
+  font-size: 0.85rem;
+}
+
+/* Modo YouTube */
+.youtube-panel-header .mode-indicator.youtube-mode {
+  background-color: rgba(231, 55, 55, 0.1);
+  color: #e73737;
+}
+
+/* Modo Audio */
+.youtube-panel-header .mode-indicator.audio-mode {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .youtube-panel-header .mode-indicator.youtube-mode {
+  background-color: rgba(231, 55, 55, 0.2);
+  color: #ff5e5e;
+}
+
+body[data-theme="dark"] .youtube-panel-header .mode-indicator.audio-mode {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+/* Estilos unificados para loaders de YouTube y audio */
+/* Variables específicas del loader (sin usar :root) */
+.media-loading-overlay {
+  --media-loader-youtube-color: #e73737;
+  --media-loader-audio-color: #3b82f6;
+  --media-loader-overlay-bg: rgba(0, 0, 0, 0.8);
+}
+
+/* Overlay principal con efecto de desenfoque */
+.media-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--media-loader-overlay-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 12000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-slow) cubic-bezier(0.19, 1, 0.22, 1), 
+              visibility var(--transition-slow) cubic-bezier(0.19, 1, 0.22, 1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.media-loading-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  animation: overlay-pulse 3s infinite alternate;
+}
+
+/* Contenedor principal con efecto de entrada */
+.media-loading-content {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  max-width: 90%;
+  width: 360px;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(30px);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.visible .media-loading-content {
+  transform: translateY(0);
+  opacity: 1;
+  animation: content-float 3s infinite alternate ease-in-out;
+}
+
+/* Barra de progreso animada */
+.media-loading-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--media-loader-youtube-color), var(--media-loader-audio-color));
+  width: 0%;
+}
+
+/* Animación para estado de cancelación */
+.media-loading-gif.cancelling {
+  filter: grayscale(0.7) brightness(0.8);
+  opacity: 0.8;
+  transition: all 0.5s ease;
+}
+
+.youtube-type .media-loading-progress {
+  background: linear-gradient(90deg, var(--media-loader-youtube-color), #f55353);
+}
+
+.audio-type .media-loading-progress {
+  background: linear-gradient(90deg, var(--media-loader-audio-color), #60a5fa);
+}
+
+/* GIF de carga mejorado con efecto de pulso */
+.media-loading-gif-container {
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  display: inline-block;
+}
+
+.media-loading-gif {
+  max-width: 150px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  animation: pulse 2s infinite;
+  z-index: 1;
+  position: relative;
+}
+
+/* Círculo de efecto detrás del GIF */
+.media-loading-gif-container:before {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  border-radius: var(--border-radius-circle);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  animation: pulse-glow 2s infinite alternate;
+}
+
+/* Títulos y mensajes con animación */
+.media-loading-message {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+  animation: fade-in 0.5s ease-out 0.3s both;
+}
+
+.media-loading-submessage {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: #5e5e5e;
+  line-height: 1.5;
+  animation: fade-in 0.5s ease-out 0.5s both;
+}
+
+/* Indicador de carga con puntos animados */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots:after {
+  content: '';
+  animation: loading-dots 1.5s infinite;
+}
+
+/* Iconos específicos por tipo */
+.media-type-icon {
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-sm);
+  vertical-align: middle;
+}
+
+/* Tipos de medio con colores específicos */
+.youtube-type .media-loading-message {
+  color: var(--media-loader-youtube-color);
+}
+
+.audio-type .media-loading-message {
+  color: var(--media-loader-audio-color);
+}
+
+/* Partículas animadas flotantes */
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--border-radius-circle);
+  opacity: 0.3;
+  animation-duration: var(--duration, 10s);
+  animation-name: float-particle;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  z-index: -1;
+}
+
+.youtube-type .particle {
+  background-color: rgba(231, 55, 55, 0.5);
+}
+
+.audio-type .particle {
+  background-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Tema oscuro - usando el sistema existente */
+body[data-theme="dark"] .media-loading-content {
+  background-color: var(--color-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="dark"] .media-loading-message {
+  color: var(--color-text);
+}
+
+body[data-theme="dark"] .media-loading-submessage {
+  color: #5e5e5e;
+}
+
+body[data-theme="dark"] .media-loading-gif-container:before {
+  background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%);
+}
+
+/* Soporte móvil mejorado */
+@media (max-width: 480px) {
+  .media-loading-content {
+    padding: var(--spacing-lg);
+    width: 85%;
+  }
+  
+  .media-loading-gif {
+    max-width: 120px;
+  }
+  
+  .media-loading-message {
+    font-size: var(--font-size-md);
+  }
+  
+  .media-loading-submessage {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Animaciones */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes progress-animation {
+  0% { width: 0%; }
+  20% { width: 40%; }
+  50% { width: 60%; }
+  80% { width: 80%; }
+  100% { width: 100%; }
+}
+
+@keyframes overlay-pulse {
+  0% { background-color: rgba(0, 0, 0, 0.8); }
+  100% { background-color: rgba(0, 0, 0, 0.85); }
+}
+
+@keyframes content-float {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-5px); }
+}
+
+@keyframes loading-dots {
+  0% { content: '.'; }
+  25% { content: '..'; }
+  50% { content: '...'; }
+  75% { content: '..'; }
+  100% { content: '.'; }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(calc(-100% - 10px)) translateX(var(--translateX, 20px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive Breakpoints */
+:root {
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
+
+/* General Responsive Adjustments */
+@media (max-width: 768px) {
+  /* YouTube Panel */
+  .youtube-panel-container {
+    width: 100%;
+    right: -100%;
+    border-radius: 0;
+  }
+
+  .youtube-panel-trigger {
+top:73% !important;
+left:88%; 
+}
+
+
+  .youtube-panel-title {
+    max-width: 70%;
+    font-size: 0.95rem;
+    margin:auto
+  }
+
+  .youtube-search-container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 15px;
+  }
+
+  .youtube-search-box {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .youtube-search-controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .youtube-transcription-container {
+    max-height: calc(100vh - 350px);
+  }
+
+  /* Audio Panel */
+  .audio-menu {
+    width: 90%;
+    max-width: 320px;
+    right: 5%;
+    bottom: 70px;
+  }
+
+  .audio-recording-ui {
+    padding: 10px;
+  }
+
+  .recording-time {
+    font-size: 1.5rem;
+  }
+
+  .recording-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Smaller Mobile Devices */
+@media (max-width: 480px) {
+  .youtube-panel-container {
+    border-radius: 0;
+  }
+
+
+   .youtube-panel-trigger {
+top:76% !important;
+left:85%; 
+}
+  .youtube-panel-header {
+    padding: 12px 15px;
+
+  }
+
+.youtube-video-container {
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+  }
+
+  .youtube-video-info h3 {
+    font-size: 0.9rem;
+  }
+
+  .youtube-video-meta {
+    font-size: 0.75rem;
+  }
+
+
+  .youtube-timestamp-marker {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+
+  .youtube-transcription-text {
+    font-size: 0.8rem;
+  }
+
+  /* Audio Panel Adjustments */
+  .audio-option {
+    padding: 10px 12px;
+  }
+
+  .audio-option i {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+
+  .audio-option span {
+    font-size: 0.8rem;
+  }
+
+  .stop-recording, 
+  .pause-recording, 
+  .cancel-recording {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Slightly smaller base font size */
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px; /* Even smaller base font size for very small screens */
+  }
+}
+
+
+
+
+
+/* Touch-Friendly Sizing */
+@media (max-width: 768px) {
+  .youtube-panel-trigger,
+  .youtube-search-button,
+  .youtube-download-button { 
+    touch-action: manipulation;
+  }
+
+
+ .youtube-download-button { 
+   position:absolute;
+   top: 60px;
+   left: 110px;
+  }
+  
+  
+.youtube-panel-close { 
+  font-size: 18px
+  }
+}
+
+/* Scrollbar Improvements for Small Screens */
+@media (max-width: 768px) {
+  .youtube-transcription-container {
+    scrollbar-width: thin;
+  }
+
+  .youtube-transcription-container::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+
+/* Orientation-specific Adjustments */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .youtube-transcription-container {
+    max-height: calc(100vh - 250px);
+  }
+
+  .youtube-panel-container {
+    width: 90%;
+    max-width: 500px;
+  }
+}
+
+/* Estilo para el botón de cancelación */
+.media-cancel-button {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.media-cancel-button:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.media-cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.media-cancel-button i {
+  font-size: 1.2em;
+}
+
+/* Soporte para tema oscuro */
+body[data-theme="dark"] .media-cancel-button {
+  border-color: var(--color-border-dark, #444);
+  color: var(--color-text-muted-dark, #aaa);
+}
+
+body[data-theme="dark"] .media-cancel-button:hover {
+  background-color: rgba(231, 76, 60, 0.2);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+@media screen and (max-width: 920px)  {
+
+.youtube-panel-trigger{
+  top: 78%;
+  }
+}
+
+/* Estilos para el estado de error en el loader de medios */
+.media-loading-overlay.error-state {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.media-loading-overlay.error-state .media-loading-content {
+  border-left: 4px solid #e74c3c;
+}
+
+.media-loading-overlay.error-state .media-loading-gif.cancelling {
+  filter: grayscale(1) brightness(0.7) sepia(0.3) hue-rotate(320deg);
+  opacity: 0.7;
+}
+
+.media-loading-overlay.error-state .media-loading-progress {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+  width: 100%;
+  animation: none;
+}
+
+.media-loading-overlay.error-state .media-cancel-button {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #e74c3c;
+  pointer-events: none;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.media-loading-overlay.error-state .media-cancel-button:disabled {
+  cursor: not-allowed;
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Estilo para el ícono giratorio */
+.media-loading-overlay.error-state .bx-loader-alt {
+  animation: spin 1.2s linear infinite;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animación de sacudida para indicar error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.media-loading-overlay.error-state .media-loading-message {
+  animation: shake 0.8s ease-in-out;
+  color: #e74c3c;
+}
+
+/* Icono de error */
+.media-loading-overlay.error-state .bx-error-circle {
+  font-size: 1.3em;
+  animation: pulse-error 2s infinite;
+}
+
+@keyframes pulse-error {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Clase para detalles del error */
+.error-details {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: rgba(231, 76, 60, 0.05);
+  border-left: 2px solid rgba(231, 76, 60, 0.3);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  text-align: left;
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .media-loading-overlay.error-state {
+  background-color: rgba(20, 20, 20, 0.9);
+}
+
+body[data-theme="dark"] .media-loading-overlay.error-state .media-loading-content {
+  background-color: rgba(40, 40, 40, 0.95);
+}
+
+body[data-theme="dark"] .media-loading-overlay.error-state .media-cancel-button {
+  background-color: rgba(231, 76, 60, 0.15);
+  border-color: rgba(231, 76, 60, 0.5);
+}
+
+body[data-theme="dark"] .media-loading-overlay.error-state .media-cancel-button:hover {
+  background-color: rgba(231, 76, 60, 0.25);
+}
+
+body[data-theme="dark"] .error-details {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: rgba(231, 76, 60, 0.4);
+  color: #bdc3c7;
+}
+
+/* Estilos para la animación de cancelación */
+
+/* Estado de transición durante la cancelación - cambio más suave */
+.media-loading-overlay.error-state {
+  background-color: rgba(0, 0, 0, 0.85);
+  transition: background-color 0.5s ease;
+}
+
+/* Contenedor principal con borde rojo - tanto para errores como cancelación */
+.media-loading-overlay.error-state .media-loading-content {
+  border-left: 4px solid #e74c3c;
+  box-shadow: 0 10px 30px rgba(231, 76, 60, 0.15);
+  transition: all 0.5s ease;
+}
+
+/* Animación específica para estado de cancelación */
+@keyframes cancel-pulse {
+  0% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 0.8; transform: scale(1); }
+}
+
+/* Mensaje de "Cancelación completada" con color verde */
+.media-loading-submessage span[style*="color:#4CAF50"] {
+  display: block;
+  padding: 8px 12px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+  margin-top: 10px;
+  animation: fade-in 0.5s ease;
+}
+
+/* Mensaje de GIF modificado durante cancelación */
+.media-loading-gif.cancelling {
+  filter: grayscale(1) brightness(0.7) sepia(0.3) hue-rotate(320deg);
+  opacity: 0.7;
+  transform: scale(0.95);
+  transition: all 0.5s ease;
+}
+
+/* Tema oscuro */
+body[data-theme="dark"] .media-loading-overlay.error-state {
+  background-color: rgba(20, 20, 20, 0.9);
+}
+
+body[data-theme="dark"] .media-loading-overlay.error-state .media-loading-content {
+  background-color: rgba(40, 40, 40, 0.95);
+  box-shadow: 0 10px 30px rgba(231, 76, 60, 0.2);
+}
+
+body[data-theme="dark"] .media-loading-submessage span[style*="color:#4CAF50"] {
+  background-color: rgba(76, 175, 80, 0.15);
+  color: #81c784;
+}
+
+@media (min-width: 1271px) and (max-width: 1379px) {
+    /* Cuando el panel de YouTube esté abierto */
+    body.youtube-panel-open .main-content,
+    body.youtube-panel-open main,
+    body.youtube-panel-open .content,
+    body.youtube-panel-open .chat-container,
+    body.youtube-panel-open > div:first-child:not(.youtube-panel-container) {
+        transform: translateX(-15%) !important;
+        transition: transform 0.3s ease;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1240px) {
+    /* Cuando el panel de YouTube esté abierto */
+    body.youtube-panel-open .main-content,
+    body.youtube-panel-open main,
+    body.youtube-panel-open .content,
+    body.youtube-panel-open .chat-container,
+    body.youtube-panel-open > div:first-child:not(.youtube-panel-container) {
+        transform: translateX(-25%) !important;
+        transition: transform 0.3s ease;
+    }
+}

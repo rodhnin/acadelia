@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>429 - Demasiadas Peticiones | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="stylesheet" href="/css/429.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="rate-limit-container">
+    <div class="rate-limit-tape"></div>
+    <div class="rate-limit-text">
+      <div class="rate-limit-badge">
+        <i class='bx bx-time-five'></i>
+        Límite de solicitudes alcanzado
+      </div>
+      <h1 class="rate-limit-title">¡Vaya, qué prisa!</h1>
+      <h2 class="rate-limit-subtitle">El Profesor Acadel necesita un momento para procesar todo</h2>
+      
+      <p class="rate-limit-description">
+        Parece que has enviado muchas solicitudes en poco tiempo. Nuestro sistema tiene límites para garantizar que todos los estudiantes reciban un servicio de calidad. El Profesor Acadel está trabajando lo más rápido posible para atender todas las solicitudes.
+      </p>
+      
+      <div class="rate-limit-quote">
+        <p>"En mis años como asistente académico, he aprendido que incluso los mejores estudiantes necesitan tiempo para procesar la información. El conocimiento es como un buen café: no puedes tomarlo todo de un sorbo. Dame un momento para organizar estos papeles y estaré contigo para ayudarte con tus consultas."</p>
+        <div class="author">— Profesor Acadel, Procesador de Conocimiento</div>
+      </div>
+      
+      <div class="timer-container">
+        <h3 class="timer-title">
+          <i class='bx bx-loader-alt'></i>
+          Tiempo estimado para intentarlo nuevamente
+        </h3>
+        <div class="timer-progress">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+        <div class="timer-info">
+          <span id="timeRemaining">120 segundos</span>
+          <span>Reintentar después</span>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button onclick="history.back()" class="back-btn">
+          <i class='bx bx-arrow-back'></i>
+          Volver atrás
+        </button>
+      </div>
+      
+      <div class="rate-limit-info">
+        <h3><i class='bx bx-bulb'></i> Consejos para evitar límites de velocidad:</h3>
+        <ul>
+          <li>Espacia tus solicitudes en lugar de enviar muchas a la vez</li>
+          <li>Guarda tus resultados importantes para no tener que generarlos repetidamente</li>
+          <li>Utiliza la función de descarga cuando esté disponible para trabajar sin conexión</li>
+          <li>Para operaciones complejas, usa las herramientas de procesamiento por lotes</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="rate-limit-image">
+      <img src="/images/429.webp" alt="Profesor Acadel Sobrecargado" />
+    </div>
+  </div>
+  
+    <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+
+  <script src="/scripts/429.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

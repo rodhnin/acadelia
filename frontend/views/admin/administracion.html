@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Panel de Administración Financiera</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <!-- Date Range Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+    
+    <!-- Loading Screen Styles -->
+    <link rel="stylesheet" href="/css/administracion.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-container" id="loading-screen">
+    <div class="loading-circle-container">
+        <div class="loading-decoration"></div>
+        <div class="loading-glow"></div>
+        <div class="loading-circle">
+        <div id="loading-gif" aria-label="Cargando"></div>
+        </div>
+    </div>
+    
+    <div class="loading-text">Cargando panel financiero...</div>
+    <div class="loading-subtext" id="loading-stage-text">Iniciando componentes</div>
+    
+    <div class="loading-progress-container">
+        <div class="loading-stage-markers">
+        <!-- Añadir data-id para facilitar manipulación -->
+        <div class="stage-marker" id="stage-init" data-id="init"></div>
+        <div class="stage-marker" id="stage-core" data-id="core"></div>
+        <div class="stage-marker" id="stage-modules" data-id="modules"></div>
+        <div class="stage-marker" id="stage-data" data-id="data"></div>
+        <div class="stage-marker" id="stage-finish" data-id="finish"></div>
+        </div>
+        
+        <div class="loading-progress">
+        <div class="loading-progress-bar" id="loading-progress-bar"></div>
+        </div>
+        
+        <div class="loading-stage-labels">
+        <!-- Alinear labels con sus respectivos markers -->
+        <div class="stage-label" id="label-init">Inicio</div>
+        <div class="stage-label" id="label-core">Servicios</div>
+        <div class="stage-label" id="label-modules">Módulos</div>
+        <div class="stage-label" id="label-data">Datos</div>
+        <div class="stage-label" id="label-finish">Listo</div>
+        </div>
+    </div>
+    
+    <div class="loading-percentage" id="loading-percentage">0%</div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-container">
+                <div class="logo"></div>
+                <button class="sidebar-toggle-btn" id="sidebar-toggle">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            
+            <div class="nav-items">
+                <div class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#subscriptions" class="nav-link" data-section="subscriptions">
+                        <i class="bi bi-calendar2-check-fill"></i>
+                        <span>Suscripciones</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#transactions" class="nav-link" data-section="transactions">
+                        <i class="bi bi-credit-card-fill"></i>
+                        <span>Transacciones</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#users" class="nav-link" data-section="users">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </div>
+                
+                <div class="section-divider">Finanzas</div>
+                
+                <div class="nav-item">
+                    <a href="#reports" class="nav-link" data-section="reports">
+                        <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                        <span>Informes</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#taxes" class="nav-link" data-section="taxes">
+                        <i class="bi bi-percent"></i>
+                        <span>Impuestos</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#analytics" class="nav-link" data-section="analytics">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Análisis</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#expenses" class="nav-link" data-section="expenses">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Egresos</span>
+                    </a>
+                </div>
+                
+                <div class="section-divider">Ajustes</div>
+                
+                <div class="nav-item">
+                    <a href="#settings" class="nav-link" data-section="settings">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>Configuración</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content" id="main-content">
+            <!-- Header -->
+            <div class="content-header">
+                <div class="d-flex align-items-center">
+                    <button class="mobile-sidebar-toggle me-3" id="mobile-sidebar-toggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h1 class="page-title">Panel de Administración Financiera</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter-container" id="date-range-selector">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            <input type="text" class="form-control" id="date-range" placeholder="Seleccionar período">
+                        </div>
+                    </div>
+                    <div class="theme-toggle-wrapper">
+                    <label class="theme-switch" title="Cambiar tema">
+                        <input type="checkbox" id="theme-toggle">
+                        <div class="theme-slider">
+                        <i class="bi bi-sun-fill theme-icon-light"></i>
+                        <i class="bi bi-moon-fill theme-icon-dark"></i>
+                        <span class="slider-circle"></span>
+                        </div>
+                    </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Sections -->
+            <div id="content-sections">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="row">
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card stats-card-primary">
+                                <div class="stats-card-title">Ingresos Totales</div>
+                                <div class="stats-card-value" id="total-revenue">€0.00</div>
+                                <div class="stats-card-subtitle">
+                                    <i class="bi bi-arrow-up"></i> <span id="revenue-increase">0%</span> vs mes anterior
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card stats-card-secondary">
+                                <div class="stats-card-title">Suscripciones Activas</div>
+                                <div class="stats-card-value" id="active-subscriptions">0</div>
+                                <div class="stats-card-subtitle">
+                                    <span id="new-subscriptions">0</span> nuevas este mes
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card stats-card-marron">
+                                <div class="stats-card-title">IVA Recaudado</div>
+                                <div class="stats-card-value" id="total-tax">€0.00</div>
+                                <div class="stats-card-subtitle">
+                                    <span id="spain-tax-percentage">0%</span> en España
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card stats-card-critical">
+                                <div class="stats-card-title">Cancelaciones</div>
+                                <div class="stats-card-value" id="cancellation-rate">0%</div>
+                                <div class="stats-card-subtitle">
+                                    <span id="cancellations-count">0</span> este mes
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- NUEVAS TARJETAS KPI -->
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card" style="background-color: #6c757d; color: white;">
+                                <div class="stats-card-title">Suscripciones Expiradas</div>
+                                <div class="stats-card-value" id="expired-subscriptions">0</div>
+                                <div class="stats-card-subtitle">
+                                    Requieren renovación manual
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card" style="background-color: #59a14f; color: white;">
+                                <div class="stats-card-title">País con Más Demanda</div>
+                                <div class="stats-card-value" id="top-country">-</div>
+                                <div class="stats-card-subtitle">
+                                    <span id="top-country-count">0</span> transacciones
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card" style="background-color: #76b7b2; color: white;">
+                                <div class="stats-card-title">Producto Más Vendido</div>
+                                <div class="stats-card-value" id="top-product">-</div>
+                                <div class="stats-card-subtitle">
+                                    <span id="top-product-count">0</span> transacciones
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="stats-card" style="background-color: #4e79a7; color: white;">
+                                <div class="stats-card-title">Margen Promedio</div>
+                                <div class="stats-card-value" id="average-margin">0%</div>
+                                <div class="stats-card-subtitle">
+                                    Después de impuestos y comisiones
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Ingresos por Período</span>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary active" data-period="monthly">Mensual</button>
+                                        <button class="btn btn-sm btn-outline-primary" data-period="quarterly">Trimestral</button>
+                                        <button class="btn btn-sm btn-outline-primary" data-period="yearly">Anual</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="revenue-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Distribución por Productos</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="products-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Transacciones Recientes</span>
+                                    <a href="#transactions" class="btn btn-sm btn-outline-primary" data-section="transactions">Ver todas</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-container">
+                                        <table class="finance-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Producto</th>
+                                                    <th>Importe</th>
+                                                    <th>Fecha</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recent-transactions">
+                                                <tr>
+                                                    <td colspan="4" class="text-center">Cargando transacciones...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Distribución Geográfica</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="geo-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Subscriptions Section -->
+                <section id="subscriptions-section" class="content-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Gestión de Suscripciones</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" id="export-subscriptions">
+                                    <i class="bi bi-file-earmark-excel me-1"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="filters-container">
+                                <div class="search-box flex-grow-1">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" class="form-control" id="subscription-search" placeholder="Buscar por ID, usuario o producto...">
+                                </div>
+                                <div class="d-flex gap-2 flex-nowrap me-2">
+                                    <select class="form-select" id="subscription-product-filter">
+                                        <option value="">Todas las carreras/productos</option>
+                                        <!-- Las opciones serán cargadas dinámicamente -->
+                                    </select>
+                                    <!-- AÑADIR AQUÍ EL SELECTOR DE ESTADO -->
+                                    <select class="form-select" id="user-status-filter">
+                                        <option value="">Todos los estados</option>
+                                        <option value="active">Activas</option>
+                                        <option value="paused">Pausadas</option>
+                                        <option value="canceled">Canceladas</option>
+                                        <option value="expired">Expiradas</option>
+                                    </select>
+                                </div>
+                                <!-- Botón de filtrar -->
+                                <button class="btn btn-primary" id="apply-user-filters">
+                                    <i class="bi bi-funnel me-1"></i> Filtrar
+                                </button>
+                            </div>
+                            
+                            <div class="table-container mt-4">
+                                <table class="finance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Usuario</th>
+                                            <th>Producto</th>
+                                            <th>Estado</th>
+                                            <th>Creada</th>
+                                            <th>Próximo Cobro</th>
+                                            <th>Importe</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subscriptions-table">
+                                        <tr>
+                                            <td colspan="8" class="text-center">Cargando suscripciones...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="pagination-info">
+                                    Mostrando <span id="subscription-pagination-start">0</span>-<span id="subscription-pagination-end">0</span> de <span id="subscription-pagination-total">0</span> suscripciones
+                                </div>
+                                <div class="pagination-controls">
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="subscription-prev-page" disabled>
+                                        <i class="bi bi-chevron-left"></i> Anterior
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" id="subscription-next-page" disabled>
+                                        Siguiente <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Estado de Suscripciones</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="subscription-status-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Evolución de Suscripciones</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="subscription-growth-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Transactions Section -->
+                <section id="transactions-section" class="content-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Historial de Transacciones</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" id="export-transactions">
+                                    <i class="bi bi-file-earmark-excel me-1"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="filters-container">
+                                <div class="search-box flex-grow-1">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" class="form-control" id="transaction-search" placeholder="Buscar por ID, usuario o producto...">
+                                </div>
+                                <div class="d-flex gap-2 flex-nowrap me-2">
+                                    <select class="form-select" id="transaction-product-filter">
+                                        <option value="">Todos los productos</option>
+                                    </select>
+                                    <select class="form-select" id="transaction-country-filter">
+                                        <option value="">Todos los países</option>
+                                        <option value="non-ES">Fuera de España</option>
+                                    </select>
+                                </div>
+                                <!-- Botón de filtrar -->
+                                <button class="btn btn-primary" id="apply-transaction-filters">
+                                    <i class="bi bi-funnel me-1"></i> Filtrar
+                                </button>
+                            </div>
+                            
+                            <div class="table-container mt-4">
+                                <table class="finance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Transacción</th>
+                                            <th>Usuario</th>
+                                            <th>Producto</th>
+                                            <th>Importe</th>
+                                            <th>IVA</th>
+                                            <th>Método</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-table">
+                                        <tr>
+                                            <td colspan="8" class="text-center">Cargando transacciones...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="pagination-info">
+                                    Mostrando <span id="transaction-pagination-start">0</span>-<span id="transaction-pagination-end">0</span> de <span id="transaction-pagination-total">0</span> transacciones
+                                </div>
+                                <div class="pagination-controls">
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="transaction-prev-page" disabled>
+                                        <i class="bi bi-chevron-left"></i> Anterior
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" id="transaction-next-page" disabled>
+                                        Siguiente <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Transacciones por Método de Pago</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="payment-methods-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Distribución por Divisas</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="currency-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Users Section -->
+                <section id="users-section" class="content-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Gestión de Usuarios</span>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" id="export-users">
+                                    <i class="bi bi-file-earmark-excel me-1"></i> Exportar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="filters-container">
+                                <div class="search-box flex-grow-1">
+                                    <i class="bi bi-search search-icon"></i>
+                                    <input type="text" class="form-control" id="user-search" placeholder="Buscar por ID, correo o nombre...">
+                                </div>
+                                <div class="d-flex gap-2 flex-wrap me-2">
+                                    <select class="form-select" id="user-subscription-filter">
+                                        <option value="">Todas las suscripciones</option>
+                                        <option value="with">Con suscripción</option>
+                                        <option value="without">Sin suscripción</option>
+                                    </select>
+                                    <select class="form-select" id="user-country-filter">
+                                        <option value="">Todos los países</option>
+                                        <!-- Opciones de países cargadas dinámicamente -->
+                                    </select>
+                                    <select class="form-select" id="user-university-filter">
+                                        <option value="">Todas las universidades</option>
+                                        <!-- Opciones de universidades cargadas dinámicamente -->
+                                    </select>
+                                    <button class="btn btn-primary" id="apply-user-filters">
+                                        <i class="bi bi-funnel me-1"></i> Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-container mt-4">
+                                <table class="finance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Correo</th>
+                                            <th>Nombre</th>
+                                            <th>Registro</th>
+                                            <th>Suscripciones</th>
+                                            <th>Gasto Total</th>
+                                            <th>Último Acceso</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table">
+                                        <tr>
+                                            <td colspan="8" class="text-center">Cargando usuarios...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="pagination-info">
+                                    Mostrando <span id="user-pagination-start">0</span>-<span id="user-pagination-end">0</span> de <span id="user-pagination-total">0</span> usuarios
+                                </div>
+                                <div class="pagination-controls">
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="user-prev-page" disabled>
+                                        <i class="bi bi-chevron-left"></i> Anterior
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" id="user-next-page" disabled>
+                                        Siguiente <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Usuarios por País</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="users-country-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Usuarios por Producto</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="users-product-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+<!-- Reports Section -->
+<section id="reports-section" class="content-section">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <!-- Generar Informes Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Generar Informes</span>
+                </div>
+                <div class="card-body">
+                    <form id="report-generator-form">
+                        <div class="mb-3">
+                            <label for="report-type" class="form-label">Tipo de Informe</label>
+                            <select class="form-select" id="report-type">
+                                <option value="revenue">Ingresos</option>
+                                <option value="taxes">Impuestos</option>
+                                <option value="subscriptions">Suscripciones</option>
+                                <option value="users">Usuarios</option>
+                                <option value="products">Productos</option>
+                                <option value="expenses">Egresos</option>
+                                <option value="comprehensive">Informe Integral</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="report-period" class="form-label">Período</label>
+                            <select class="form-select" id="report-period">
+                                <option value="month">Este Mes</option>
+                                <option value="quarter">Este Trimestre</option>
+                                <option value="year">Este Año</option>
+                                <option value="last-month">Mes Anterior</option>
+                                <option value="last-quarter">Trimestre Anterior</option>
+                                <option value="last-year">Año Anterior</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3 custom-date-range" style="display: none;">
+                            <label class="form-label">Rango de Fechas</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="report-date-range">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="report-format" class="form-label">Formato</label>
+                            <select class="form-select" id="report-format">
+                                <option value="excel">Excel</option>
+                                <option value="pdf">PDF</option>
+                                <option value="csv">CSV</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100" id="generate-report-btn">
+                            <i class="bi bi-file-earmark-text me-2"></i> Generar Informe
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Card de Configuración de Informes Automáticos -->
+            <div class="card mt-4" id="automatic-reports-config">
+                <div class="card-header">
+                    <span>Configuración de Informes Automáticos</span>
+                </div>
+                <div class="card-body">
+                    <form id="automatic-reports-form">
+                        <!-- Switch para habilitar/deshabilitar -->
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="auto-report-enabled">
+                            <label class="form-check-label" for="auto-report-enabled">Habilitar generación automática</label>
+                        </div>
+                        
+                        <!-- Título base para los informes -->
+                        <div class="mb-3">
+                            <label for="auto-report-title" class="form-label">Título Base</label>
+                            <input type="text" class="form-control" id="auto-report-title" placeholder="Informe Integral Mensual">
+                        </div>
+                        
+                        <!-- Frecuencia (para generar la expresión cron) -->
+                        <div class="mb-3">
+                            <label for="auto-report-frequency" class="form-label">Frecuencia</label>
+                            <select class="form-select" id="auto-report-frequency">
+                                <option value="monthly" selected>Mensual (Primer día del mes)</option>
+                                <option value="quarterly">Trimestral (Primer día del trimestre)</option>
+                                <option value="weekly">Semanal (Cada lunes)</option>
+                                <option value="daily">Diario (Todos los días)</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Campo para expresión cron personalizada (oculto por defecto) -->
+                        <div class="mb-3 custom-cron-container" style="display: none;">
+                            <label for="custom-cron-expression" class="form-label">Expresión Cron</label>
+                            <input type="text" class="form-control" id="custom-cron-expression" placeholder="0 3 1 * *">
+                            <small class="form-text text-muted">Formato: minuto hora día-del-mes mes día-de-la-semana</small>
+                        </div>
+                        
+                        <!-- Campo oculto para guardar la expresión cron -->
+                        <input type="hidden" id="cron-expression-input" value="0 3 1 * *">
+                        
+                        <!-- Descripción en lenguaje natural de la programación -->
+                        <div class="alert alert-info mb-3" id="cron-description">
+                            El informe se generará automáticamente el primer día de cada mes a las 3:00 AM.
+                        </div>
+                        
+                        <!-- Destinatarios de correo electrónico -->
+                        <div class="mb-3">
+                            <label class="form-label">Destinatarios de Correo</label>
+                            <div id="recipients-container">
+                                <!-- Los campos de destinatarios se añadirán dinámicamente aquí -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-recipient-btn">
+                                <i class="bi bi-plus-circle me-1"></i> Añadir destinatario
+                            </button>
+                        </div>
+                        
+                        <!-- Botón de guardar -->
+                        <button type="submit" class="btn btn-primary w-100 mt-3" id="save-config-btn">
+                            <i class="bi bi-save me-1"></i> Guardar Configuración
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <!-- Card para Generar Informe Manual (MOVIDO AQUÍ) -->
+            <div class="card">
+                <div class="card-header">
+                    <span>Generar Informe Integral Manual</span>
+                </div>
+                <div class="card-body">
+                    <form id="manual-report-form">
+                        <!-- Rango de fechas -->
+                        <div class="mb-3">
+                            <label for="manual-report-date-range" class="form-label">Rango de Fechas</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                <input type="text" class="form-control" id="manual-report-date-range" placeholder="Seleccionar período">
+                            </div>
+                        </div>
+                        
+                        <!-- Título personalizado -->
+                        <div class="mb-3">
+                            <label for="manual-report-title" class="form-label">Título del Informe</label>
+                            <input type="text" class="form-control" id="manual-report-title" placeholder="Informe Integral - Período Personalizado">
+                        </div>
+                        
+                        <!-- Destinatarios (opcional) -->
+                        <div class="mb-3">
+                            <label class="form-label">Destinatarios de Correo (opcional)</label>
+                            <div id="manual-recipients-container">
+                                <!-- Los campos de destinatarios se añadirán dinámicamente aquí -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-manual-recipient-btn">
+                                <i class="bi bi-plus-circle me-1"></i> Añadir destinatario
+                            </button>
+                            <small class="form-text text-muted d-block mt-1">Dejar vacío para generar sin envío por correo</small>
+                        </div>
+                        
+                        <!-- Botón para generar -->
+                        <button type="button" class="btn btn-success w-100" id="generate-manual-report-btn">
+                            <i class="bi bi-file-earmark-text me-1"></i> Generar Informe Ahora
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Card para Informes Guardados -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Informes Integrales Guardados</span>
+                    <button class="btn btn-sm btn-outline-primary" id="refresh-reports-btn">
+                        <i class="bi bi-arrow-clockwise"></i> Actualizar
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="finance-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Generado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="saved-reports">
+                                <tr>
+                                    <td colspan="4" class="text-center">Cargando informes...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle me-2"></i> Los informes se almacenan en Google Drive y se pueden descargar mediante el botón <i class="bi bi-download"></i>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+                <!-- Taxes Section -->
+                <section id="taxes-section" class="content-section">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Resumen de Impuestos</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">IVA Total Recaudado</div>
+                                                    <div class="stats-card-value text-primary" id="total-vat">€0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">IVA España (21%)</div>
+                                                    <div class="stats-card-value text-success" id="spain-vat">€0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Otros Países UE</div>
+                                                    <div class="stats-card-value text-info" id="eu-vat">€0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Fuera de UE</div>
+                                                    <div class="stats-card-value text-danger" id="non-eu-vat">€0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h5 class="card-title">Porcentaje de Impuestos sobre Ventas</h5>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-success" id="tax-ratio-bar" style="width: 0%"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <small>IVA Total: <span id="tax-ratio-percentage">0%</span> de las ventas</small>
+                                            <small>Base Imponible: <span id="taxable-amount">€0.00</span></small>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary w-100 mt-4" id="export-tax-report">
+                                        <i class="bi bi-file-earmark-excel me-2"></i> Exportar Informe de Impuestos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Distribución por Países</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="tax-country-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Desglose de Impuestos por País</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="tax-breakdown" id="tax-country-breakdown">
+                                <!-- Tax breakdown items will be populated here -->
+                                <div class="tax-item">
+                                    <div class="tax-country">España (ES)</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasa: 21%</div>
+                                </div>
+                                <div class="tax-item">
+                                    <div class="tax-country">Francia (FR)</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasa: 20%</div>
+                                </div>
+                                <div class="tax-item">
+                                    <div class="tax-country">Alemania (DE)</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasa: 19%</div>
+                                </div>
+                                <div class="tax-item">
+                                    <div class="tax-country">Italia (IT)</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasa: 22%</div>
+                                </div>
+                                <div class="tax-item">
+                                    <div class="tax-country">Otros países UE</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasas variables</div>
+                                </div>
+                                <div class="tax-item">
+                                    <div class="tax-country">Fuera de UE</div>
+                                    <div class="tax-value">€0.00</div>
+                                    <div class="tax-note">Tasas variables</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Historial de Impuestos</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="tax-history-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Expenses Section (Egresos) -->
+<section id="expenses-section" class="content-section">
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <span>Gestión de Egresos</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                            <i class="bi bi-plus-circle me-1"></i> Nuevo Egreso
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" id="export-expenses">
+                            <i class="bi bi-file-earmark-excel me-1"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="filters-container">
+                        <div class="search-box flex-grow-1">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" class="form-control" id="expense-search" placeholder="Buscar por descripción, referencia o categoría...">
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <select class="form-select" id="expense-category-filter">
+                                <option value="">Todas las categorías</option>
+                            </select>
+                            <select class="form-select" id="expense-tax-filter">
+                                <option value="">Todos los egresos</option>
+                                <option value="true">Deducibles</option>
+                                <option value="false">No deducibles</option>
+                            </select>
+                            <button class="btn btn-primary" id="apply-expense-filters">
+                                <i class="bi bi-funnel me-1"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container mt-4">
+                        <table class="finance-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th>Importe</th>
+                                    <th>IVA</th>
+                                    <th>Deducible</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-table">
+                                <tr>
+                                    <td colspan="8" class="text-center">Cargando egresos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="pagination-info">
+                            Mostrando <span id="expense-pagination-start">0</span>-<span id="expense-pagination-end">0</span> de <span id="expense-pagination-total">0</span> egresos
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="btn btn-sm btn-outline-primary me-2" id="expense-prev-page" disabled>
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" id="expense-next-page" disabled>
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>Resumen de Egresos</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                          <div class="card">
+                            <div class="stats-card">
+                              <div class="stats-card-title">Total Egresos</div>
+                              <div class="stats-card-value text-primary" id="expenses-total">€0.00</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                          <div class="card">
+                            <div class="stats-card">
+                              <div class="stats-card-title">Total IVA</div>
+                              <div class="stats-card-value text-warning" id="expenses-total-vat">€0.00</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                          <div class="card">
+                            <div class="stats-card">
+                              <div class="stats-card-title">IVA Deducible</div>
+                              <div class="stats-card-value text-info" id="expenses-deductible-vat">€0.00</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                          <div class="card">
+                            <div class="stats-card">
+                              <div class="stats-card-title">Gastos Deducibles</div>
+                              <div class="stats-card-value text-success" id="expenses-deductible">€0.00</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="card-title">Balance Ingresos vs Egresos</h5>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" id="income-bar" style="width: 0%"></div>
+                            <div class="progress-bar bg-danger" id="expense-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small>Ingresos: <span id="income-amount">€0.00</span></small>
+                            <small>Egresos: <span id="expense-amount">€0.00</span></small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="card-title">Total por Categoría <small>(Top 5)</small></h5>
+                        <div class="category-summary" id="category-summary">
+                            <div class="placeholder-text text-center text-muted">
+                                Cargando datos de categorías...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span>Categorías de Egresos</span>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="category-list" id="category-list">
+                        <div class="placeholder-text text-center text-muted">
+                            Cargando categorías...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <span>Egresos por Categoría</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="expenses-category-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <span>Evolución Mensual de Egresos</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="expenses-monthly-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para Agregar Egreso -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addExpenseModalLabel">Registrar Nuevo Egreso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-expense-form" novalidate enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-date" class="form-label required">Fecha</label>
+                            <input type="date" class="form-control" id="expense-date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-category" class="form-label required">Categoría</label>
+                            <select class="form-select" id="expense-category" required>
+                                <option value="">Seleccionar categoría</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expense-description" class="form-label required">Descripción</label>
+                        <input type="text" class="form-control" id="expense-description" placeholder="Descripción del gasto" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-amount" class="form-label required">Importe (sin IVA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">€</span>
+                                <input type="number" class="form-control" id="expense-amount" step="0.01" min="0.01" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-tax" class="form-label">IVA</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="expense-tax" step="0.01" min="0" placeholder="0.00">
+                                <span class="input-group-text">€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-payment-method" class="form-label required">Método de Pago</label>
+                            <select class="form-select" id="expense-payment-method" required>
+                                <option value="">Seleccionar método</option>
+                                <option value="Transferencia">Transferencia Bancaria</option>
+                                <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="PayPal">PayPal</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="expense-reference" class="form-label required">Referencia</label>
+                            <input type="text" class="form-control" id="expense-reference" placeholder="Nº Factura, referencia..." required>
+                        </div>
+                    </div>
+                    <!-- Nuevo campo para subir factura -->
+                    <div class="mb-3">
+                        <label for="expense-invoice" class="form-label">Factura (PDF)</label>
+                        <input type="file" class="form-control" id="expense-invoice" accept="application/pdf">
+                        <div class="form-text">Sube la factura en formato PDF (máximo 5MB)</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="expense-tax-deductible">
+                        <label class="form-check-label" for="expense-tax-deductible">Gasto deducible de impuestos</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-expense">Guardar Egreso</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Egreso -->
+<div class="modal fade" id="editExpenseModal" tabindex="-1" aria-labelledby="editExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editExpenseModalLabel">Editar Egreso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-expense-form">
+                    <input type="hidden" id="edit-expense-id">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-date" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="edit-expense-date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-category" class="form-label">Categoría</label>
+                            <select class="form-select" id="edit-expense-category" required>
+                                <option value="">Seleccionar categoría</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-expense-description" class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="edit-expense-description" placeholder="Descripción del gasto" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-amount" class="form-label">Importe (sin IVA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">€</span>
+                                <input type="number" class="form-control" id="edit-expense-amount" step="0.01" min="0" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-tax" class="form-label">IVA</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="edit-expense-tax" step="0.01" min="0" placeholder="0.00">
+                                <span class="input-group-text">€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-payment-method" class="form-label">Método de Pago</label>
+                            <select class="form-select" id="edit-expense-payment-method">
+                                <option value="">Seleccionar método</option>
+                                <option value="Transferencia">Transferencia Bancaria</option>
+                                <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="PayPal">PayPal</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit-expense-reference" class="form-label">Referencia</label>
+                            <input type="text" class="form-control" id="edit-expense-reference" placeholder="Nº Factura, referencia...">
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="edit-expense-tax-deductible">
+                        <label class="form-check-label" for="edit-expense-tax-deductible">Gasto deducible de impuestos</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger me-auto" id="delete-expense">Eliminar</button>
+                <button type="button" class="btn btn-primary" id="update-expense">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Agregar Categoría -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Nueva Categoría de Egresos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-category-form">
+                    <div class="mb-3">
+                        <label for="category-name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="category-name" placeholder="Nombre de la categoría" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-description" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="category-description" rows="3" placeholder="Descripción de la categoría"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-category">Guardar Categoría</button>
+            </div>
+        </div>
+    </div>
+</div>
+                
+                <!-- Analytics Section -->
+                <section id="analytics-section" class="content-section">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Métricas Clave</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Valor Promedio del Cliente (LTV)</div>
+                                                    <div class="stats-card-value text-primary" id="customer-ltv">€0.00</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Tasa de Conversión</div>
+                                                    <div class="stats-card-value text-success" id="conversion-rate">0%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Tasa de Retención</div>
+                                                    <div class="stats-card-value text-info" id="retention-rate">0%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card">
+                                                <div class="stats-card">
+                                                    <div class="stats-card-title">Tasa de Cancelación</div>
+                                                    <div class="stats-card-value text-danger" id="churn-rate">0%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Ingresos Recurrentes Mensuales (MRR)</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="mrr-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Análisis de Cohortes</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-container">
+                                        <table class="finance-table" id="cohort-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cohorte</th>
+                                                    <th>Mes 1</th>
+                                                    <th>Mes 2</th>
+                                                    <th>Mes 3</th>
+                                                    <th>Mes 4</th>
+                                                    <th>Mes 5</th>
+                                                    <th>Mes 6</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Ene 2025</td>
+                                                    <td>100%</td>
+                                                    <td>90%</td>
+                                                    <td>85%</td>
+                                                    <td>80%</td>
+                                                    <td>75%</td>
+                                                    <td>70%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Feb 2025</td>
+                                                    <td>100%</td>
+                                                    <td>92%</td>
+                                                    <td>88%</td>
+                                                    <td>82%</td>
+                                                    <td>76%</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mar 2025</td>
+                                                    <td>100%</td>
+                                                    <td>95%</td>
+                                                    <td>90%</td>
+                                                    <td>85%</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Abr 2025</td>
+                                                    <td>100%</td>
+                                                    <td>93%</td>
+                                                    <td>89%</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>May 2025</td>
+                                                    <td>100%</td>
+                                                    <td>94%</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Proyección de Ingresos</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="revenue-forecast-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Análisis de Productos</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="finance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Suscripciones</th>
+                                            <th>Ingresos</th>
+                                            <th>Tasa de Crecimiento</th>
+                                            <th>Tasa de Cancelación</th>
+                                            <th>IVA Recaudado</th>
+                                            <th>Rentabilidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-analysis-table">
+                                        <tr>
+                                            <td colspan="7" class="text-center">Cargando análisis de productos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Settings Section -->
+                <section id="settings-section" class="content-section">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Configuración General</span>
+                                </div>
+                                <div class="card-body">
+                                    <form id="general-settings-form">
+                                        <div class="mb-3">
+                                            <label for="default-currency" class="form-label">Moneda Predeterminada</label>
+                                            <select class="form-select" id="default-currency">
+                                                <option value="EUR">Euro (EUR)</option>
+                                                <option value="USD">Dólar Estadounidense (USD)</option>
+                                                <option value="GBP">Libra Esterlina (GBP)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="date-format" class="form-label">Formato de Fecha</label>
+                                            <select class="form-select" id="date-format">
+                                                <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                                                <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                                                <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="timezone" class="form-label">Zona Horaria</label>
+                                            <select class="form-select" id="timezone">
+                                                <option value="Europe/Madrid">Europa/Madrid</option>
+                                                <option value="Europe/London">Europa/Londres</option>
+                                                <option value="America/New_York">América/Nueva York</option>
+                                                <option value="UTC">UTC</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="alert alert-info">
+                                                <i class="bi bi-info-circle me-2"></i> El tema claro/oscuro se controla desde el botón en la barra superior.
+                                            </div>
+                                            </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <span>Configuración de Notificaciones</span>
+                                </div>
+                                <div class="card-body">
+                                    <form id="notification-settings-form">
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="new-subscription-notify" checked>
+                                                <label class="form-check-label" for="new-subscription-notify">Nuevas Suscripciones</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="canceled-subscription-notify" checked>
+                                                <label class="form-check-label" for="canceled-subscription-notify">Cancelaciones de Suscripción</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="failed-payment-notify" checked>
+                                                <label class="form-check-label" for="failed-payment-notify">Pagos Fallidos</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="report-ready-notify" checked>
+                                                <label class="form-check-label" for="report-ready-notify">Informes Generados</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Guardar Notificaciones</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span>Configuración de Exportación</span>
+                                </div>
+                                <div class="card-body">
+                                    <form id="export-settings-form">
+                                        <div class="mb-3">
+                                            <label for="default-export-format" class="form-label">Formato Predeterminado</label>
+                                            <select class="form-select" id="default-export-format">
+                                                <option value="excel">Excel (.xlsx)</option>
+                                                <option value="csv">CSV (.csv)</option>
+                                                <option value="pdf">PDF (.pdf)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="csv-delimiter" class="form-label">Delimitador CSV</label>
+                                            <select class="form-select" id="csv-delimiter">
+                                                <option value="comma">Coma (,)</option>
+                                                <option value="semicolon">Punto y coma (;)</option>
+                                                <option value="tab">Tabulación</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="include-headers" checked>
+                                                <label class="form-check-label" for="include-headers">
+                                                    Incluir Encabezados
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="auto-filename" checked>
+                                                <label class="form-check-label" for="auto-filename">
+                                                    Nombres de Archivo Automáticos
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <span>Configuración de Paddle</span>
+                                </div>
+                                <div class="card-body">
+                                    <form id="paddle-settings-form">
+                                        <div class="mb-3">
+                                            <label for="paddle-mode" class="form-label">Modo</label>
+                                            <select class="form-select" id="paddle-mode">
+                                                <option value="live">Producción</option>
+                                                <option value="sandbox">Sandbox (Pruebas)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="paddle-webhook-url" class="form-label">URL de Webhook</label>
+                                            <input type="text" class="form-control" id="paddle-webhook-url" value="https://api.acadelia.com/api/webhook/paddle" readonly>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="paddle-api-key" class="form-label">Clave API (oculta)</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="paddle-api-key" value="••••••••••••••••" readonly>
+                                                <button class="btn btn-outline-secondary" type="button">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="button" class="btn btn-outline-primary" disabled>
+                                            Actualizar Configuración de Paddle
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Content Backdrop (for mobile) -->
+        <div class="content-backdrop" id="content-backdrop"></div>
+    </div>
+
+
+    <!-- Modal para ver detalles de usuario -->
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="userDetailsContent">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles de suscripción -->
+<div class="modal fade" id="subscriptionDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles de Suscripción</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="subscriptionDetailsContent">
+          <!-- El contenido se cargará dinámicamente -->
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex justify-content-between w-100">
+            <div>
+              <button type="button" class="btn btn-danger" id="subscription-cancel-btn">Cancelar Suscripción</button>
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" id="subscription-action-btn">Acción</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal para confirmar eliminación de informes -->
+<div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteReportModalLabel">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar este informe?</p>
+          <p class="mb-0 text-danger">Esta acción no se puede deshacer. El informe ya no estará disponible para su descarga.</p>
+          
+          <!-- Detalles del informe a eliminar -->
+          <div class="mt-3 p-3 bg-light rounded">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-file-earmark-text fs-4 me-3 text-danger"></i>
+              <div>
+                <div><strong>Informe:</strong> <span id="delete-report-name">-</span></div>
+                <div><small class="text-muted" id="delete-report-id">ID: -</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-report">
+            <i class="bi bi-trash me-1"></i> Eliminar Informe
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-helpers.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/chiguireinteligente/index-inteligente.js" nonce="<%= nonce %>"></script>
+    
+</body>
+</html>

@@ -1,0 +1,402 @@
+
+    :root {
+      --primary-color: linear-gradient(300deg, #656d4a, #a4ac86);
+      --secondary-color: #a4ac86;
+      --third-color: #656d4a;
+      --text-color: #333;
+      --bg-color: #f0efe7;
+      --hover-color: #e2ddd6;
+      --marron: #582f0e;
+      --marron-oscuro: #442409;
+      --ban-red: #540b0e;
+      --ban-blue: #2F4858;
+      --max-width: 100%;
+      --padding-horizontal: 0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 5%;
+      background-color: var(--bg-color);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-img {
+      width: 200px;
+      height: 50px;
+      background-image: url("/images/Imagotipo.webp");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    
+    .ban-container {
+      display: flex;
+      flex: 1;
+      padding: 2rem 5%;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      position: relative;
+    }
+    
+    .ban-tape {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: repeating-linear-gradient(
+        45deg,
+        var(--ban-red),
+        var(--ban-red) 10px,
+        var(--ban-blue) 10px,
+        var(--ban-blue) 20px
+      );
+      opacity: 0.15;
+      transform: rotate(-1deg);
+      z-index: -1;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .ban-text {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    
+    .ban-title {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-family: "Parkinsans", sans-serif;
+      font-weight: 800;
+      color: var(--ban-red);
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    
+    .ban-title::after {
+      content: "SUSPENDIDO";
+      position: absolute;
+      top: -0.5rem;
+      left: -0.5rem;
+      font-size: clamp(4rem, 8vw, 8rem);
+      color: rgba(84, 11, 14, 0.08);
+      z-index: -1;
+    }
+    
+    .ban-subtitle {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      color: var(--ban-blue);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .ban-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    
+    .ban-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--ban-red);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 3px 10px rgba(84, 11, 14, 0.3);
+    }
+    
+    .ban-quote {
+      background-color: white;
+      border-left: 4px solid var(--ban-blue);
+      padding: 1.5rem;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    
+    .ban-quote::before {
+      content: '\201C';
+      font-size: 4rem;
+      color: rgba(47, 72, 88, 0.1);
+      position: absolute;
+      top: -1rem;
+      left: 0.5rem;
+    }
+    
+    .ban-quote p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    
+    .ban-quote .author {
+      text-align: right;
+      font-weight: 600;
+      color: var(--ban-blue);
+    }
+    
+    .ban-image {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 700px;
+      transform: translate(30px);
+    }
+    
+    .ban-image img {
+      max-width: 100%;
+      height: auto;
+      max-height: 700px;
+      object-fit: contain;
+    }
+    
+    .appeal-btn {
+      position: relative;
+      background-color: var(--ban-blue);
+      border: 2px solid var(--ban-blue);
+      color: white;
+      padding: 0.6rem 1.5rem;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 25px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0, 0, 0.58, 1);
+      transform-style: preserve-3d;
+      vertical-align: middle;
+      font-weight: 600;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+    
+    .appeal-btn::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: #1d3545;
+      border-radius: inherit;
+      box-shadow: 0 0 0 2px var(--ban-blue), 0 0.4em 0 0 rgba(0, 0, 0, 0.1);
+      transform: translate3d(0, 0.4em, -1em);
+      transition: all 0.3s cubic-bezier(0, 0, 0.58, 1);
+      z-index: -1;
+    }
+    
+    .appeal-btn:hover {
+      background-color: #1d3545;
+      border-color: #1d3545;
+      transform: translateY(-2px) translate(0, 0.25em);
+    }
+    
+    .appeal-btn:hover::before {
+      box-shadow: 0 0 0 2px var(--ban-blue), 0 0.3em 0 0 rgba(0, 0, 0, 0.08);
+      transform: translate3d(0, 0.3em, -1em);
+    }
+    
+    .appeal-btn:active {
+      transform: translateY(0) translate(0, 0.5em);
+    }
+    
+    .appeal-btn:active::before {
+      box-shadow: 0 0 0 2px var(--ban-blue), 0 0 #ffe3e2;
+      transform: translate3d(0, 0, -1em);
+    }
+    
+    .home-btn {
+      position: relative;
+      background-color: transparent;
+      border: 2px solid var(--marron);
+      color: var(--marron);
+      padding: 0.6rem 1.5rem;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 25px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .home-btn:hover {
+      background-color: var(--marron);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .ban-info {
+      margin-top: 2rem;
+      background-color: rgba(47, 72, 88, 0.08);
+      padding: 1.5rem;
+      border-radius: 10px;
+    }
+    
+    .ban-info h3 {
+      font-size: 1.2rem;
+      color: var(--ban-blue);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .ban-info ul {
+      padding-left: 1.5rem;
+    }
+    
+    .ban-info li {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+    
+    .ban-details {
+      margin-top: 2rem;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .detail-row {
+      display: flex;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(47, 72, 88, 0.1);
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .detail-label {
+      flex: 1;
+      font-weight: 600;
+      color: var(--ban-blue);
+    }
+    
+    .detail-value {
+      flex: 2;
+    }
+    
+    .detail-highlight {
+      font-weight: 600;
+      color: var(--ban-red);
+    }
+    
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 992px) {
+      .ban-container {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 3rem;
+      }
+      
+      .ban-text {
+        max-width: 100%;
+        padding-right: 0;
+        margin-bottom: 3rem;
+      }
+      
+      .ban-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .ban-quote {
+        text-align: left;
+      }
+      
+      .ban-image {
+        max-width: 100%;
+      }
+      
+      .ban-image img {
+        max-height: 400px;
+      }
+      
+      .button-group {
+        justify-content: center;
+      }
+      
+      .detail-row {
+        flex-direction: column;
+      }
+      
+      .detail-label {
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .ban-title {
+        font-size: 2.5rem;
+      }
+      
+      .ban-subtitle {
+        font-size: 1.2rem;
+      }
+      
+      .ban-description {
+        font-size: 1rem;
+      }
+      
+      .ban-image img {
+        max-height: 300px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .appeal-btn, .home-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }

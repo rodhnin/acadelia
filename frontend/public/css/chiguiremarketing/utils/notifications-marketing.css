@@ -1,0 +1,603 @@
+/* notifications.css - Sistema de notificaciones OPTIMIZADO según especificaciones */
+
+/* ======================================
+   INDICADOR DEL HEADER - VERSIÓN COMPACTA
+   ====================================== */
+
+.acadelia-notif-header-badge {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  display: none; /* Inicialmente oculto */
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  border-radius: 16px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  animation: acadelia-notif-slide-in-left 0.4s ease-out;
+}
+
+.acadelia-notif-header-badge:hover {
+  transform: translateY(-50%) scale(1.03);
+  box-shadow: 0 3px 12px rgba(255, 107, 107, 0.4);
+  background: linear-gradient(135deg, #ff5252, #e53935);
+}
+
+.acadelia-notif-header-badge:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.acadelia-notif-header-badge i {
+  font-size: 14px;
+  animation: acadelia-notif-bell-ring 2s ease-in-out infinite;
+}
+
+.acadelia-notif-header-badge .acadelia-notif-header-count {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Estado visible para header badge */
+.acadelia-notif-header-badge.acadelia-notif-show {
+  display: flex;
+}
+
+/* ======================================
+   BADGES PARA SECCIONES DEL SIDEBAR - MEJORADOS
+   ====================================== */
+
+.acadelia-notif-section-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none; /* Inicialmente oculto */
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  border-radius: 14px;
+  z-index: 15;
+  box-shadow: 0 3px 8px rgba(255, 107, 107, 0.5);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.acadelia-notif-section-badge:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6);
+}
+
+.acadelia-notif-section-badge .acadelia-notif-badge-count {
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación de aparición para badges */
+.acadelia-notif-section-badge.acadelia-notif-show {
+  display: flex;
+  animation: acadelia-notif-badge-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ======================================
+   BOTÓN DE LIMPIAR NOTIFICACIONES - REPOSICIONADO
+   ====================================== */
+
+.acadelia-notif-clear-item {
+  position: relative !important;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(76, 175, 80, 0.04)) !important;
+  border: 1px solid rgba(76, 175, 80, 0.2) !important;
+  border-radius: 10px !important;
+  margin: 6px 8px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+}
+
+.acadelia-notif-clear-item:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08)) !important;
+  border-color: rgba(76, 175, 80, 0.4) !important;
+  transform: translateX(6px) !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2) !important;
+}
+
+.acadelia-notif-clear-item .acadelia-notif-clear-count-badge {
+  position: absolute;
+  top: 50%;
+  right: 8px; /* Más a la derecha para no entorpecer */
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  border-radius: 12px;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 8px;
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.acadelia-notif-clear-item i {
+  color: #4CAF50 !important;
+  font-size: 18px !important;
+}
+
+/* Ajuste de texto para dar más espacio al badge */
+.acadelia-notif-clear-item .item-text {
+  margin-right: 40px !important; /* Espacio para el badge */
+}
+
+/* Estado oculto para el botón de limpiar */
+.acadelia-notif-clear-item.acadelia-notif-hidden {
+  display: none !important;
+}
+
+/* ======================================
+   MENSAJES DE NOTIFICACIÓN EN EL CHAT - MEJORADOS
+   ====================================== */
+
+.acadelia-notif-chat-message {
+  margin: 24px 0;
+  padding: 0;
+  animation: acadelia-notif-slide-up-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.acadelia-notif-chat-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(164, 172, 134, 0.4), transparent);
+  border-radius: 1px;
+}
+
+.acadelia-notif-chat-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, 
+    rgba(164, 172, 134, 0.08), 
+    rgba(164, 172, 134, 0.04)
+  );
+  border: 1px solid rgba(164, 172, 134, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(164, 172, 134, 0.1);
+}
+
+.acadelia-notif-chat-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b6b, #4CAF50, #2196F3);
+  border-radius: 16px 16px 0 0;
+}
+
+.acadelia-notif-chat-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(164, 172, 134, 0.2), rgba(164, 172, 134, 0.1));
+  border-radius: 50%;
+  color: var(--color-primary-light);
+  box-shadow: 0 2px 8px rgba(164, 172, 134, 0.2);
+}
+
+.acadelia-notif-chat-icon i {
+  font-size: 18px;
+}
+
+.acadelia-notif-chat-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.acadelia-notif-chat-text strong {
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 1.05rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.acadelia-notif-chat-text p {
+  color: var(--color-text);
+  opacity: 0.85;
+  margin: 0 0 16px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.acadelia-notif-chat-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.acadelia-notif-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(164, 172, 134, 0.25);
+  background: rgba(164, 172, 134, 0.08);
+  color: var(--color-text);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.acadelia-notif-chat-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  transition: left 0.6s ease;
+}
+
+.acadelia-notif-chat-btn:hover::before {
+  left: 100%;
+}
+
+.acadelia-notif-chat-btn:hover {
+  background: rgba(164, 172, 134, 0.15);
+  border-color: rgba(164, 172, 134, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.2);
+}
+
+.acadelia-notif-chat-btn:active {
+  transform: translateY(0);
+}
+
+.acadelia-notif-chat-btn.acadelia-notif-primary {
+  background: rgba(164, 172, 134, 0.12);
+  border-color: rgba(164, 172, 134, 0.3);
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
+.acadelia-notif-chat-btn.acadelia-notif-primary:hover {
+  background: rgba(164, 172, 134, 0.2);
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 4px 12px rgba(164, 172, 134, 0.25);
+}
+
+.acadelia-notif-chat-btn.acadelia-notif-secondary {
+  background: rgba(108, 117, 125, 0.08);
+  border-color: rgba(108, 117, 125, 0.2);
+  color: rgba(108, 117, 125, 0.8);
+}
+
+.acadelia-notif-chat-btn.acadelia-notif-secondary:hover {
+  background: rgba(108, 117, 125, 0.15);
+  border-color: rgba(108, 117, 125, 0.3);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
+}
+
+.acadelia-notif-chat-btn i {
+  font-size: 1rem;
+}
+
+/* ======================================
+   ANIMACIONES MEJORADAS
+   ====================================== */
+
+@keyframes acadelia-notif-badge-appear {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3) rotate(-15deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes acadelia-notif-slide-up-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes acadelia-notif-slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+}
+
+@keyframes acadelia-notif-bell-ring {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-12deg);
+  }
+  20%, 40% {
+    transform: rotate(12deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes acadelia-notif-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ======================================
+   TEMA OSCURO - MEJORADO
+   ====================================== */
+
+[data-theme="dark"] .acadelia-notif-chat-content {
+  background: linear-gradient(135deg, 
+    rgba(92, 88, 88, 0.12), 
+    rgba(92, 88, 88, 0.06)
+  );
+  border-color: rgba(92, 88, 88, 0.2);
+}
+
+[data-theme="dark"] .acadelia-notif-chat-icon {
+  background: linear-gradient(135deg, rgba(92, 88, 88, 0.25), rgba(92, 88, 88, 0.15));
+  color: #a0a0a0;
+  box-shadow: 0 2px 8px rgba(92, 88, 88, 0.3);
+}
+
+[data-theme="dark"] .acadelia-notif-chat-btn {
+  background: rgba(92, 88, 88, 0.12);
+  border-color: rgba(92, 88, 88, 0.25);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .acadelia-notif-chat-btn:hover {
+  background: rgba(92, 88, 88, 0.2);
+  border-color: rgba(92, 88, 88, 0.4);
+  box-shadow: 0 4px 12px rgba(92, 88, 88, 0.2);
+}
+
+[data-theme="dark"] .acadelia-notif-clear-item {
+  background: linear-gradient(135deg, rgba(92, 88, 88, 0.08), rgba(92, 88, 88, 0.04)) !important;
+  border-color: rgba(92, 88, 88, 0.15) !important;
+}
+
+[data-theme="dark"] .acadelia-notif-clear-item:hover {
+  background: linear-gradient(135deg, rgba(92, 88, 88, 0.15), rgba(92, 88, 88, 0.08)) !important;
+  border-color: rgba(92, 88, 88, 0.25) !important;
+}
+
+/* ======================================
+   RESPONSIVE MEJORADO
+   ====================================== */
+
+@media (max-width: 768px) {
+  .acadelia-notif-section-badge {
+    min-width: 20px;
+    height: 20px;
+    top: 6px;
+    right: 6px;
+  }
+  
+  .acadelia-notif-section-badge .acadelia-notif-badge-count {
+    font-size: 10px;
+  }
+  
+  .acadelia-notif-header-badge {
+    left: 10px;
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 5px;
+  }
+  
+  .acadelia-notif-header-badge i {
+    font-size: 12px;
+  }
+  
+  .acadelia-notif-header-badge .acadelia-notif-header-count {
+    font-size: 9px;
+    padding: 1px 4px;
+    min-width: 14px;
+  }
+  
+  .acadelia-notif-chat-content {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+  
+  .acadelia-notif-chat-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .acadelia-notif-chat-icon i {
+    font-size: 16px;
+  }
+  
+  .acadelia-notif-chat-text strong {
+    font-size: 1rem;
+  }
+  
+  .acadelia-notif-chat-text p {
+    font-size: 0.85rem;
+  }
+  
+  .acadelia-notif-chat-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+  
+  .acadelia-notif-chat-actions {
+    gap: 8px;
+  }
+  
+  .acadelia-notif-clear-item .acadelia-notif-clear-count-badge {
+    min-width: 20px;
+    height: 18px;
+    font-size: 10px;
+    right: 6px;
+  }
+  
+  .acadelia-notif-clear-item .item-text {
+    margin-right: 32px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .acadelia-notif-header-badge {
+    left: 8px;
+    padding: 4px 8px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  
+  .acadelia-notif-header-badge i {
+    font-size: 11px;
+  }
+  
+  .acadelia-notif-header-badge .acadelia-notif-header-count {
+    font-size: 8px;
+    padding: 1px 3px;
+    min-width: 12px;
+  }
+  
+  .acadelia-notif-chat-content {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  
+  .acadelia-notif-chat-text strong {
+    font-size: 0.95rem;
+  }
+  
+  .acadelia-notif-chat-text p {
+    font-size: 0.8rem;
+  }
+  
+  .acadelia-notif-chat-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .acadelia-notif-chat-actions {
+    gap: 6px;
+  }
+}
+
+/* ======================================
+   ESTADOS ESPECIALES MEJORADOS
+   ====================================== */
+
+/* Estado oculto */
+.acadelia-notif-hidden {
+  display: none !important;
+}
+
+/* Estado de carga */
+.acadelia-notif-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.acadelia-notif-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: acadelia-notif-shimmer 1.5s infinite;
+}
+
+/* Efecto de éxito */
+.acadelia-notif-success {
+  border-color: rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(76, 175, 80, 0.12), 
+    rgba(76, 175, 80, 0.06)
+  );
+}
+
+.acadelia-notif-success .acadelia-notif-chat-icon {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(76, 175, 80, 0.15));
+  color: #4CAF50;
+}
+
+/* ======================================
+   OPTIMIZACIONES DE PERFORMANCE
+   ====================================== */
+
+/* Forzar aceleración por hardware */
+.acadelia-notif-header-badge,
+.acadelia-notif-section-badge,
+.acadelia-notif-chat-message {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}

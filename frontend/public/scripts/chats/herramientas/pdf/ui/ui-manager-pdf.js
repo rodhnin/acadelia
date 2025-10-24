@@ -1,0 +1,1697 @@
+/**
+ * ui-manager.js PDF - Gestión general de la interfaz de usuario
+ */
+
+import { DOM_SELECTORS, UI_CONFIG } from '../core/config-pdf.js';
+import { setProcessingState, getState } from '../core/state-pdf.js';
+import scrollManager from '../../../shared/scroll-manager.js';
+import { showConfirmationModal } from './modals-pdf.js';
+import {
+  createElement,
+  sanitizeText,
+  clearElement,
+  addClass,
+  removeClass,
+  setManagedTimeout,
+  clearManagedTimeouts,
+  addEvent,
+  removeEvent
+} from '../../../shared/dom-helpers.js';
+
+// Referencias a elementos del DOM
+let elements = {
+  textarea: null,
+  container: null,
+  chatList: null,
+  newChatBtn: null,
+  sendButton: null,
+  chatMessages: null,
+  themeToggle: null,
+  body: null,
+  sidebar: null
+};
+
+// Variable global para el controlador de fetch
+let currentFetchController = null;
+
+// Flag para bloquear restauración durante cancelación
+let isCancellationInProgress = false;
+
+// Variable para el manejador de eventos de envío
+export let handleSendMessage;
+
+/**
+ * Permite establecer el manejador de eventos desde fuera
+ */
+export function setHandleSendMessage(handler) {
+  handleSendMessage = handler;
+}
+
+/**
+ * Inicializa todos los elementos del DOM
+ */
+export function initializeElements() {
+  elements = {
+    textarea: document.querySelector(DOM_SELECTORS.textarea),
+    container: document.querySelector(DOM_SELECTORS.container),
+    chatList: document.getElementById('chatList'),
+    newChatBtn: document.querySelector(DOM_SELECTORS.newChatBtn),
+    sendButton: document.querySelector(DOM_SELECTORS.sendButton),
+    chatMessages: document.querySelector(DOM_SELECTORS.chatMessages),
+    themeToggle: document.getElementById('themeToggle'),
+    body: document.body,
+    sidebar: document.querySelector(DOM_SELECTORS.sidebar)
+  };
+}
+
+/**
+ * Obtiene un elemento del DOM
+ */
+export function getElement(elementName) {
+  return elements[elementName];
+}
+
+/**
+ * Muestra una notificación temporal en pantalla.
+ * @param {string} message - Mensaje a mostrar.
+ * @param {string} type - Tipo de notificación ('error', 'success', 'info', 'warning').
+ * @param {number} duration - Duración en milisegundos (opcional)
+ * @param {number} fadeTime - Tiempo de desvanecimiento en milisegundos (opcional)
+ */
+export function showNotification(message, type = 'info', duration = 3000) {
+  const tipoMap = {
+    'error': 'error',
+    'success': 'exito',
+    'info': 'info',
+    'warning': 'warning'
+  };
+
+  return window.acadelMostrar(tipoMap[type] || 'info', null, message, duration);
+}
+
+export function showError(message) {
+  return window.acadelError(null, message);
+}
+
+export function showSuccess(message) {
+  return window.acadelExito(null, message);
+}
+
+// Nuevas funciones exclusivas de Acadel
+export function showAcadelWarning(titulo, mensaje, duracion = 6000) {
+  return window.acadelWarning(titulo, mensaje, duracion);
+}
+
+export function showAcadelLoading(titulo, mensaje) {
+  return window.acadelLoading(titulo, mensaje, 0); // Infinito
+}
+
+export function showAcadelConfetti(titulo, mensaje) {
+  return window.acadelConfetti(titulo, mensaje);
+}
+
+export function closeAcadelNotification(id) {
+  return window.acadelCerrar(id);
+}
+
+/**
+ * Deshabilita todos los botones de interacción de mensajes de manera no intrusiva
+ */
+function disableInteractionButtons() {
+  // Deshabilitar botones de respuesta de AI
+  const responseActions = document.querySelectorAll('.response-actions');
+  responseActions.forEach(container => {
+    container.classList.add('disabled-during-processing');
+
+    // Deshabilitar todos los botones dentro del contenedor
+    const buttons = container.querySelectorAll('.response-action-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.4';
+      btn.setAttribute('aria-disabled', 'true');
+
+      // Cambiar tooltip para indicar que está deshabilitado
+      const originalTooltip = btn.getAttribute('data-tooltip');
+      if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
+        btn.setAttribute('data-original-tooltip', originalTooltip);
+        btn.setAttribute('data-tooltip', 'Esperando respuesta...');
+      }
+    });
+  });
+
+  // Deshabilitar botones de edición de usuario
+  const userActions = document.querySelectorAll('.user-response-actions');
+  userActions.forEach(container => {
+    container.classList.add('disabled-during-processing');
+
+    const buttons = container.querySelectorAll('.response-action-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.4';
+      btn.setAttribute('aria-disabled', 'true');
+
+      // Cambiar tooltip para indicar que está deshabilitado
+      const originalTooltip = btn.getAttribute('data-tooltip');
+      if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
+        btn.setAttribute('data-original-tooltip', originalTooltip);
+        btn.setAttribute('data-tooltip', 'Esperando respuesta...');
+      }
+    });
+  });
+
+  // Deshabilitar otros elementos interactivos relacionados con mensajes
+  const messageInteractives = document.querySelectorAll(
+    '.chat-image-item.clickable, .document-preview.clickable, .file-preview'
+  );
+  messageInteractives.forEach(element => {
+    element.classList.add('disabled-during-processing');
+    element.style.pointerEvents = 'none';
+    element.style.opacity = '0.6';
+    element.setAttribute('aria-disabled', 'true');
+  });
+
+  console.log('🚫 Botones de interacción deshabilitados durante procesamiento');
+}
+
+/**
+ * Rehabilita todos los botones de interacción de mensajes
+ */
+function enableInteractionButtons() {
+  // ⭐ NUEVO: Verificar si hay un mensaje siendo procesado actualmente
+  const isProcessingMessage = () => {
+    return document.querySelector('.ai-message.processing') !== null;
+  };
+
+  // ⭐ NUEVO: Encontrar el último mensaje de usuario
+  const getLastUserMessage = () => {
+    const userMessages = document.querySelectorAll('.user-message');
+    return userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
+  };
+
+  const lastUserMessage = getLastUserMessage();
+  const isCurrentlyProcessing = isProcessingMessage();
+
+  // Rehabilitar botones de respuesta de AI
+  const responseActions = document.querySelectorAll('.response-actions');
+  responseActions.forEach(container => {
+    container.classList.remove('disabled-during-processing');
+
+    const buttons = container.querySelectorAll('.response-action-btn');
+    buttons.forEach(btn => {
+      btn.disabled = false;
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '';
+      btn.removeAttribute('aria-disabled');
+
+      // Restaurar tooltip original
+      const originalTooltip = btn.getAttribute('data-original-tooltip');
+      if (originalTooltip) {
+        btn.setAttribute('data-tooltip', originalTooltip);
+        btn.removeAttribute('data-original-tooltip');
+      }
+    });
+  });
+
+  // ⭐ CORREGIDO: Rehabilitar botones de edición de usuario CON EXCEPCIÓN
+  const userActions = document.querySelectorAll('.user-response-actions');
+  userActions.forEach(container => {
+    const userMessage = container.closest('.user-message');
+
+    // ⭐ CRÍTICO: NO rehabilitar el último mensaje si se está procesando
+    if (isCurrentlyProcessing && lastUserMessage && userMessage === lastUserMessage) {
+      console.log('🚫 Manteniendo botón de edición deshabilitado para mensaje siendo procesado');
+      return; // Saltar este mensaje, mantenerlo deshabilitado
+    }
+
+    container.classList.remove('disabled-during-processing');
+
+    const buttons = container.querySelectorAll('.response-action-btn');
+    buttons.forEach(btn => {
+      btn.disabled = false;
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '';
+      btn.removeAttribute('aria-disabled');
+
+      // Restaurar tooltip original
+      const originalTooltip = btn.getAttribute('data-original-tooltip');
+      if (originalTooltip) {
+        btn.setAttribute('data-tooltip', originalTooltip);
+        btn.removeAttribute('data-original-tooltip');
+      }
+    });
+  });
+
+  // Rehabilitar otros elementos interactivos
+  const messageInteractives = document.querySelectorAll(
+    '.chat-image-item.disabled-during-processing, .document-preview.disabled-during-processing, .file-preview.disabled-during-processing'
+  );
+  messageInteractives.forEach(element => {
+    element.classList.remove('disabled-during-processing');
+    element.style.pointerEvents = 'auto';
+    element.style.opacity = '';
+    element.removeAttribute('aria-disabled');
+  });
+
+  console.log('✅ Botones de interacción rehabilitados (excepto último mensaje si está procesando)');
+}
+
+/**
+ * Cambia el estado de la interfaz (habilitar/deshabilitar textarea y botón).
+ * Versión actualizada que cambia el botón de enviar por uno de cancelar.
+ * ⭐ CORREGIDO: Ahora refresca el estado de botones al habilitar
+ * 
+ * @param {boolean} disabled - true para deshabilitar.
+ */
+export function toggleUIState(disabled) {
+  // CRÍTICO: Ignorar intentos de desbloquear durante cancelación
+  if (!disabled && isCancellationInProgress) {
+    return; // SALIR SIN HACER NADA
+  }
+
+  if (!elements.sendButton || !elements.textarea) {
+    return;
+  }
+
+  // ⭐ NUEVA FUNCIONALIDAD: Deshabilitar/habilitar botones de interacción ⭐
+  if (disabled) {
+    disableInteractionButtons();
+  } else {
+    enableInteractionButtons();
+
+    // ⭐ NUEVO: Refrescar estado de botones después de habilitar
+    setTimeout(async () => {
+      try {
+        const { refreshButtonsState } = await import('../utils/response-interaction-pdf.js');
+        if (typeof refreshButtonsState === 'function') {
+          refreshButtonsState();
+        }
+      } catch (error) {
+        console.warn('Error al refrescar estado de botones:', error);
+      }
+    }, 200); // Pequeño delay para asegurar que el DOM se actualizó
+  }
+
+  // BLOQUEO COMPLETO DEL TEXTAREA - Múltiples métodos para asegurar bloqueo
+  if (disabled) {
+    // Aplicar varios métodos de bloqueo para máxima seguridad
+    elements.textarea.disabled = true;
+    elements.textarea.readOnly = true;
+    elements.textarea.setAttribute('aria-disabled', 'true');
+    elements.textarea.style.pointerEvents = 'none';
+    elements.textarea.classList.add('textarea-disabled');
+
+    // Guardar estado original para restaurar después
+    if (!elements.textarea.dataset.originalTabIndex) {
+      elements.textarea.dataset.originalTabIndex = elements.textarea.tabIndex || '0';
+    }
+    elements.textarea.tabIndex = -1; // Evitar foco con tabulación
+  } else {
+    // Restaurar estado interactivo completamente
+    elements.textarea.disabled = false;
+    elements.textarea.readOnly = false;
+    elements.textarea.removeAttribute('aria-disabled');
+    elements.textarea.style.pointerEvents = 'auto';
+    elements.textarea.classList.remove('textarea-disabled');
+
+    // Restaurar tabIndex original
+    if (elements.textarea.dataset.originalTabIndex) {
+      elements.textarea.tabIndex = elements.textarea.dataset.originalTabIndex;
+    } else {
+      elements.textarea.removeAttribute('tabIndex');
+    }
+  }
+
+  // Lógica del botón de enviar/cancelar
+  if (disabled) {
+    // Guardar el contenido original del botón si aún no se ha hecho
+    if (!elements.sendButton.dataset.originalContent) {
+      elements.sendButton.dataset.originalContent = elements.sendButton.innerHTML;
+    }
+
+    // Cambiar a ícono de cancelar
+    clearElement(elements.sendButton);
+    const cancelIcon = createElement('i', { className: 'bx bx-x' });
+    elements.sendButton.appendChild(cancelIcon);
+    elements.sendButton.title = "Cancelar consulta";
+    addClass(elements.sendButton, 'cancel-mode');
+
+    // Cambiar el manejador de eventos
+    removeEvent(elements.sendButton, 'click', handleSendMessage);
+    addEvent(elements.sendButton, 'click', function cancelHandler(e) {
+      e.preventDefault();
+      if (typeof cancelCurrentRequest === 'function') {
+        cancelCurrentRequest();
+      }
+    });
+  } else {
+    // Restaurar el contenido original si no está en modo cargando
+    if (!elements.sendButton.classList.contains('loading-mode')) {
+      if (elements.sendButton.dataset.originalContent) {
+        elements.sendButton.innerHTML = elements.sendButton.dataset.originalContent;
+      } else {
+        clearElement(elements.sendButton);
+        const sendIcon = createElement('i', { className: 'bx bx-up-arrow-alt' });
+        elements.sendButton.appendChild(sendIcon);
+      }
+      elements.sendButton.title = "Enviar mensaje";
+      removeClass(elements.sendButton, 'cancel-mode');
+
+      // Restaurar el manejador de eventos original
+      removeEvent(elements.sendButton, 'click');
+      addEvent(elements.sendButton, 'click', handleSendMessage);
+    } else {
+      // Si está en modo cargando, restaurar completamente
+      restoreButtonToSend();
+    }
+  }
+
+  elements.sendButton.disabled = false;
+  setProcessingState(disabled);
+}
+
+/**
+ * Cancela la solicitud actual al servidor.
+ */
+export function cancelCurrentRequest() {
+  if (currentFetchController) {
+    // CRÍTICO: Marcar que estamos en proceso de cancelación
+    isCancellationInProgress = true;
+
+    // Abortar la solicitud HTTP
+    currentFetchController.abort();
+    currentFetchController = null;
+
+    // Mostrar notificación
+    acadelInfo("¡Operación cancelada! 🛑", "Acadel detuvo la consulta como pediste. ¡No hay problema!");
+    // NUEVO: Cambiar botón a modo cargando INMEDIATAMENTE
+    changeButtonToLoading();
+
+    // Buscar el mensaje de carga para cancelar
+    let loadingMessage = document.getElementById('current-loading-message');
+
+    if (!loadingMessage) {
+      const messages = document.querySelectorAll('.message.ai-message.processing');
+      loadingMessage = messages[messages.length - 1];
+    }
+
+    if (!loadingMessage) {
+      const allMessages = document.querySelectorAll('.message.ai-message');
+      loadingMessage = allMessages[allMessages.length - 1];
+    }
+
+    if (loadingMessage) {
+      // Restaurar la imagen del avatar inmediatamente
+      const aiProfile = loadingMessage.querySelector('.ai-profile');
+      if (aiProfile) {
+        aiProfile.classList.remove('thinking');
+      }
+
+      // 🎯 VERIFICACIÓN MEJORADA: Si ya tiene botones O contenido previo válido
+      const hasResponseButtons = loadingMessage.querySelector('.response-actions');
+      const hasValidContent = loadingMessage.querySelector('.message-content') &&
+        !loadingMessage.querySelector('.thought-bubble') &&
+        !loadingMessage.querySelector('.cancelled-message');
+
+      // ✅ NUEVA VERIFICACIÓN: Si está en modo edición/retry (preservar siempre)
+      const isEditingOrRetry = loadingMessage.closest('.message').hasAttribute('data-response-interaction-processing');
+
+      if (hasResponseButtons || (hasValidContent && isEditingOrRetry)) {
+        console.log('✅ [CANCEL] Mensaje con contenido válido detectado - preservando respuesta');
+
+        // Solo limpiar estado de loading y restaurar botón
+        loadingMessage.classList.remove('processing');
+        loadingMessage.removeAttribute('data-is-loading');
+
+        // Restaurar botón inmediatamente
+        restoreButtonFromLoading();
+
+        // Limpiar estado de cancelación
+        setTimeout(() => {
+          isCancellationInProgress = false;
+          toggleUIState(false);
+        }, 100);
+
+        return; // ✅ SALIR SIN APLICAR CLASES DE CANCELACIÓN
+      }
+
+      // 🔄 COMPORTAMIENTO ORIGINAL: Solo si NO tiene botones (resto del código igual)
+      // Preparar el mensaje y añadir clases
+      loadingMessage.classList.remove('processing');
+      loadingMessage.classList.add('cancelled', 'just-cancelled');
+
+      // NUEVA ADICIÓN: Buscar el mensaje del usuario asociado y eliminar botones de edición
+      const userMessage = loadingMessage.previousElementSibling;
+      if (userMessage && userMessage.classList.contains('user-message')) {
+        // Eliminar botones de interacción del usuario si existen
+        const userActions = userMessage.querySelector('.user-response-actions');
+        if (userActions) {
+          console.log('Eliminando botones de edición de mensaje de usuario asociado a cancelación');
+          userActions.remove();
+        }
+      }
+
+      // También buscar hacia atrás en caso de que haya múltiples elementos entre ellos
+      let currentElement = loadingMessage.previousElementSibling;
+      while (currentElement && !currentElement.classList.contains('user-message')) {
+        currentElement = currentElement.previousElementSibling;
+      }
+
+      if (currentElement && currentElement.classList.contains('user-message')) {
+        const userActions = currentElement.querySelector('.user-response-actions');
+        if (userActions) {
+          console.log('Eliminando botones de edición de mensaje de usuario (búsqueda extendida)');
+          userActions.remove();
+        }
+      }
+
+      // Buscar o crear elemento de contenido
+      let messageContent = loadingMessage.querySelector('.message-content');
+      if (!messageContent) {
+        messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        loadingMessage.appendChild(messageContent);
+      }
+
+      // Mostrar mensaje temporal del profesor Acadel (3 segundos)
+      messageContent.innerHTML = `
+        <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(255,193,7,0.1);border-radius:8px;margin:5px 0;border-left:3px solid rgba(255,193,7,0.6);">
+          <i class="bx bx-cog bx-spin" style="font-size:1.3rem;color:#ffc107;"></i>
+          <span>¡Ups! El profesor Acadel está moviendo el sistema para cancelar tu consulta...</span>
+        </div>
+        <div class="cancelled-details" style="font-size:0.85rem;color:#888;margin:8px 0 0 20px;">
+          El chigüire académico está trabajando en ello 🦫⚙️
+        </div>
+      `;
+
+      // Aplicar estilos para el mensaje temporal
+      loadingMessage.style.opacity = '1';
+      loadingMessage.style.transition = 'all 0.3s ease';
+      loadingMessage.style.display = 'flex';
+      messageContent.style.display = 'block';
+
+      // Después de 3 segundos, mostrar mensaje final y QUITAR loading del botón
+      setTimeout(() => {
+        if (loadingMessage && loadingMessage.parentNode && messageContent) {
+          // Array de mensajes graciosos aleatorios
+          const mensajesGraciosos = [
+            {
+              titulo: "¡Listo! El profesor Acadel detuvo tu consulta",
+              detalle: "La consulta fue cancelada exitosamente por nuestro chigüire académico 🦫✨"
+            },
+            {
+              titulo: "¡Misión cumplida! Consulta cancelada por el profesor Acadel",
+              detalle: "El chigüire más inteligente de la academia ya terminó su trabajo 🦫🎓"
+            },
+            {
+              titulo: "¡Operación exitosa! El profesor Acadel canceló la consulta",
+              detalle: "Nuestro querido chigüire académico dice: '¡Tarea completada!' 🦫👨‍🏫"
+            },
+            {
+              titulo: "¡Todo listo! El profesor Acadel manejó la cancelación",
+              detalle: "El chigüire más sabio del sistema académico ha terminado 🦫📚"
+            }
+          ];
+
+          // Seleccionar mensaje aleatorio
+          const mensajeElegido = mensajesGraciosos[Math.floor(Math.random() * mensajesGraciosos.length)];
+
+          messageContent.innerHTML = `
+            <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(231,76,60,0.05);border-radius:8px;margin:5px 0;border-left:3px solid rgba(231,76,60,0.3);">
+              <i class="bx bx-check-circle" style="font-size:1.3rem;color:#e74c3c;"></i>
+              <span>${mensajeElegido.titulo}</span>
+            </div>
+            <div class="cancelled-details" style="font-size:0.85rem;color:#888;margin:8px 0 0 20px;">
+              ${mensajeElegido.detalle}
+            </div>
+          `;
+
+          // Cambiar a opacidad final
+          loadingMessage.style.opacity = '0.7';
+
+          // NUEVO: Quitar loading del botón cuando aparece la confirmación
+          restoreButtonFromLoading();
+        }
+      }, 7000);
+
+      // Hacer scroll para asegurar visibilidad
+      setTimeout(() => {
+        try {
+          loadingMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (e) {
+          console.error("Error al hacer scroll:", e);
+        }
+      }, 100);
+    }
+
+    // Enviar señal al servidor
+    const chatId = getState('currentChatId');
+    if (chatId) {
+      sendCancellationRequest(chatId);
+    }
+
+    // TIMEOUT PRINCIPAL: Restaurar UI después de 5 segundos
+    setTimeout(() => {
+      // Desactivar flag antes de restaurar UI
+      isCancellationInProgress = false;
+      toggleUIState(false);
+    }, 7000);
+  }
+}
+
+// ====== NUEVAS FUNCIONES AUXILIARES ======
+/**
+ * Cambia el botón a modo cargando inmediatamente al cancelar
+ */
+function changeButtonToLoading() {
+  if (!elements.sendButton) return;
+
+  // Cambiar ícono a spinner de carga
+  clearElement(elements.sendButton);
+  const loadingIcon = createElement('i', {
+    className: 'bx bx-loader-alt bx-spin'
+  });
+  elements.sendButton.appendChild(loadingIcon);
+  elements.sendButton.title = "Procesando cancelación...";
+
+  // Añadir clase de cargando
+  removeClass(elements.sendButton, 'cancel-mode');
+  addClass(elements.sendButton, 'loading-mode');
+
+  // Deshabilitar temporalmente el botón
+  elements.sendButton.disabled = true;
+
+  // Remover event listeners temporalmente
+  removeEvent(elements.sendButton, 'click');
+}
+
+/**
+ * Restaura el botón del modo cargando a cancelar
+ */
+function restoreButtonFromLoading() {
+  if (!elements.sendButton) return;
+
+  // Cambiar de vuelta a ícono de cancelar
+  clearElement(elements.sendButton);
+  const cancelIcon = createElement('i', { className: 'bx bx-x' });
+  elements.sendButton.appendChild(cancelIcon);
+  elements.sendButton.title = "Esperando restauración...";
+
+  // Cambiar clases
+  removeClass(elements.sendButton, 'loading-mode');
+  addClass(elements.sendButton, 'cancel-mode');
+
+  // Mantener deshabilitado hasta la restauración final
+  elements.sendButton.disabled = true;
+}
+
+/**
+ * Restaura el botón a su estado normal de envío
+ */
+function restoreButtonToSend() {
+  if (!elements.sendButton) return;
+
+  // Restaurar el contenido original
+  if (elements.sendButton.dataset.originalContent) {
+    elements.sendButton.innerHTML = elements.sendButton.dataset.originalContent;
+  } else {
+    clearElement(elements.sendButton);
+    const sendIcon = createElement('i', { className: 'bx bx-up-arrow-alt' });
+    elements.sendButton.appendChild(sendIcon);
+  }
+
+  elements.sendButton.title = "Enviar mensaje";
+  elements.sendButton.disabled = false;
+
+  // Remover clases de estado
+  removeClass(elements.sendButton, 'cancel-mode');
+  removeClass(elements.sendButton, 'loading-mode');
+
+  // Restaurar el manejador de eventos original
+  addEvent(elements.sendButton, 'click', handleSendMessage);
+}
+
+
+async function sendCancellationRequest(chatId) {
+  try {
+    const userId = getState('userId');
+
+    // Usar un nuevo AbortController para esta solicitud
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
+
+    const response = await fetch(`/api/chats/chats/${chatId}/cancel-request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'id_user': userId
+      },
+      credentials: 'include',
+      body: JSON.stringify({ userId }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    const result = await response.json();
+    console.log('Cancelación registrada en el servidor:', result);
+
+  } catch (error) {
+    // Si es error de timeout o abort, no es crítico
+    if (error.name !== 'AbortError') {
+      console.error('Error enviando solicitud de cancelación:', error);
+    }
+  }
+}
+
+/**
+ * Establece el controlador de fetch actual para poder cancelarlo si es necesario.
+ */
+export function setCurrentFetchController(controller) {
+  // Cancelar el controlador anterior si existe y estamos estableciendo uno nuevo
+  if (currentFetchController && controller) {
+    try {
+      currentFetchController.abort();
+    } catch (e) { }
+  }
+
+  currentFetchController = controller;
+}
+
+/**
+ * Limpia los mensajes del área de chat.
+ */
+export function clearChatMessages() {
+  if (elements.chatMessages) {
+    clearElement(elements.chatMessages);
+  }
+}
+
+/**
+ * Función para mostrar un indicador de carga
+ */
+export function showLoading(message = 'Cargando...') {
+  const safeMessage = sanitizeText(message);
+
+  const spinner = createElement('div', { className: 'loading-spinner' });
+  const messageP = createElement('p', {}, safeMessage);
+
+  const loadingOverlay = createElement('div', { className: 'loading-overlay' }, [spinner, messageP]);
+
+  document.body.appendChild(loadingOverlay);
+
+  // Asegurar que esté visible con animación fluida
+  requestAnimationFrame(() => {
+    addClass(loadingOverlay, 'visible');
+  });
+}
+
+/**
+ * Oculta el indicador de carga
+ */
+export function hideLoading() {
+  const loadingOverlay = document.querySelector('.loading-overlay');
+  if (loadingOverlay) {
+    removeClass(loadingOverlay, 'visible');
+    setManagedTimeout(() => {
+      if (loadingOverlay.parentNode) {
+        loadingOverlay.parentNode.removeChild(loadingOverlay);
+      }
+    }, 300, 'hide-loading');
+  }
+}
+/**
+ * Ajusta dinámicamente la altura del textarea y contenedor.
+ * @param {Event} event - Evento de input
+ */
+export function handleTextareaResize(event) {
+  const textarea = event.target;
+  const container = elements.container;
+
+  if (!textarea || !container) return;
+
+  // Temporarily disable transitions to prevent jarring animation
+  container.style.transition = 'none';
+  textarea.style.transition = 'none';
+
+  // Reset height to calculate actual content height
+  textarea.style.height = 'auto';
+
+  // Calculate actual content height
+  const contentHeight = textarea.scrollHeight;
+
+  // Determine textarea height with constraints
+  const textareaHeight = Math.min(
+    contentHeight,
+    UI_CONFIG.maxTextareaHeight
+  );
+
+  // Set textarea height
+  textarea.style.height = `${textareaHeight}px`;
+
+  // Manage textarea overflow
+  textarea.style.overflowY = contentHeight > UI_CONFIG.maxTextareaHeight
+    ? 'auto'
+    : 'hidden';
+
+  // Calculate container height with smooth expansion logic
+  const containerPadding = 20;
+  const newContainerHeight = Math.min(
+    Math.max(
+      UI_CONFIG.initialContainerHeight,
+      textareaHeight + containerPadding
+    ),
+    UI_CONFIG.maxContainerHeight
+  );
+
+  // Smoothly update container height
+  requestAnimationFrame(() => {
+    container.style.height = `${newContainerHeight}px`;
+
+    // Restore transitions after a brief moment
+    setTimeout(() => {
+      container.style.transition = '';
+      textarea.style.transition = '';
+    }, 50);
+  });
+}
+/**
+ * Configura los event listeners para los elementos de la interfaz.
+ */
+export function setupUIEventListeners() {
+  if (elements.textarea) {
+    addEvent(elements.textarea, "input", handleTextareaResize);
+  }
+}
+
+/**
+ * Configura los event listeners para scroll inteligente
+ */
+export function setupScrollBehavior() {
+  const chatMessages = elements.chatMessages;
+  if (!chatMessages) return;
+
+  // Detectar scroll manual del usuario
+  let userScrollTimeoutId;
+
+  addEvent(chatMessages, 'scroll', () => {
+    // Verificar si hay una interacción de respuesta activa
+    const isResponseInteractionActive = () => {
+      return (
+        document.querySelector('.message.editing-message') !== null ||
+        document.querySelector('.feedback-modal') !== null ||
+        document.querySelector('.edit-overlay') !== null
+      );
+    };
+
+    // No modificar el estado de scroll durante interacciones de respuesta
+    if (isResponseInteractionActive()) {
+      return;
+    }
+
+    // Si el usuario hace scroll manualmente lejos del fondo
+    if (!scrollManager.isNearBottom(150)) {
+      scrollManager.lockScroll();
+
+      // Limpiar timeout existente
+      if (userScrollTimeoutId) {
+        clearManagedTimeouts('user-scroll');
+      }
+
+      // Programar desbloqueo automático después de inactividad
+      userScrollTimeoutId = setManagedTimeout(() => {
+        // No desbloquear si hay una interacción de respuesta activa
+        if (isResponseInteractionActive()) {
+          return;
+        }
+
+        // Si el usuario está cerca del fondo después del timeout, desbloquear
+        if (scrollManager.isNearBottom(50)) {
+          scrollManager.unlockScroll();
+        }
+      }, 5000, 'user-scroll');
+    } else {
+      // Si está cerca del fondo, desbloquear
+      scrollManager.unlockScroll();
+    }
+  });
+
+  // Detectar teclas de navegación (flechas arriba/abajo, espacio, página arriba/abajo)
+  addEvent(document, 'keydown', (e) => {
+    // Verificar si hay una interacción de respuesta activa
+    const isResponseInteractionActive = () => {
+      return (
+        document.querySelector('.message.editing-message') !== null ||
+        document.querySelector('.feedback-modal') !== null ||
+        document.querySelector('.edit-overlay') !== null
+      );
+    };
+
+    // No modificar el estado de scroll durante interacciones de respuesta
+    if (isResponseInteractionActive()) {
+      return;
+    }
+
+    const isScrollKey = [
+      'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Space', 'Home', 'End'
+    ].includes(e.code);
+
+    if (isScrollKey && document.activeElement !== elements.textarea) {
+      // Si se presiona una tecla de scroll mientras se está cerca del fondo
+      if (scrollManager.isNearBottom(150)) {
+        scrollManager.unlockScroll();
+      } else {
+        scrollManager.lockScroll(3000); // Bloquear por 3 segundos
+      }
+    }
+  });
+}
+
+/**
+ * Muestra un diálogo de confirmación personalizado usando el sistema centralizado de modals.js
+ * @param {string} message - Mensaje a mostrar
+ * @param {Function} onConfirm - Función a ejecutar si el usuario confirma
+ * @param {Function} onCancel - Función a ejecutar si el usuario cancela
+ */
+export function showConfirmation(title, message, onConfirm, onCancel = null) {
+  // Usar el modal centralizado en lugar de crear uno nuevo
+  showConfirmationModal(message)
+    .then(confirmed => {
+      if (confirmed && onConfirm) {
+        onConfirm();
+      } else if (!confirmed && onCancel) {
+        onCancel();
+      }
+    });
+}
+
+
+/**
+ * Aplica un skeleton loading en el encabezado
+ */
+export function applyHeaderSkeleton() {
+  const headerSubtitle = document.querySelector('.header-subtitle');
+  if (!headerSubtitle) return;
+
+  // Guardar el texto original para restaurarlo si es necesario
+  if (!headerSubtitle.getAttribute('data-original-text')) {
+    headerSubtitle.setAttribute('data-original-text', headerSubtitle.textContent);
+  }
+
+  // Aplicar clase skeleton y limpiar texto
+  addClass(headerSubtitle, 'skeleton-text');
+  clearElement(headerSubtitle);
+
+  const skeletonLine = createElement('span', { className: 'skeleton-line' });
+  headerSubtitle.appendChild(skeletonLine);
+}
+
+/**
+ * Elimina el skeleton loading del encabezado
+ */
+export function removeHeaderSkeleton() {
+  const headerSubtitle = document.querySelector('.header-subtitle');
+  if (!headerSubtitle) return;
+
+  // Remover clase skeleton
+  removeClass(headerSubtitle, 'skeleton-text');
+
+  // Si no hay contenido actual pero había contenido original, restaurarlo
+  if (headerSubtitle.textContent.trim() === '' && headerSubtitle.getAttribute('data-original-text')) {
+    headerSubtitle.textContent = headerSubtitle.getAttribute('data-original-text');
+  }
+}
+
+/**
+ * Aplica un skeleton loading en los mensajes
+ */
+export function applyMessagesSkeleton() {
+  const chatMessages = document.querySelector('.chat-messages');
+  if (!chatMessages) return;
+
+  // Limpiar cualquier skeleton previo
+  chatMessages.querySelectorAll('.skeleton-message').forEach(el => el.remove());
+
+  // Contenedor para mensajes skeleton
+  const skeletonContainer = createElement('div', { className: 'skeleton-container' });
+
+  // Crear mensajes simulados - alternando entre AI y usuario
+  for (let i = 0; i < 3; i++) {
+    let skeletonMessage;
+
+    if (i % 2 === 0) {
+      // Mensaje del AI
+      const avatar = createElement('div', { className: 'skeleton-avatar' });
+
+      const lines = [];
+      for (let j = 0; j < 4; j++) {
+        lines.push(createElement('div', { className: 'skeleton-message-line' }));
+      }
+
+      const content = createElement('div', { className: 'skeleton-message-content' }, lines);
+
+      skeletonMessage = createElement('div',
+        { className: 'skeleton-message ai-skeleton' },
+        [avatar, content]
+      );
+    } else {
+      // Mensaje del usuario
+      const lines = [];
+      for (let j = 0; j < 2; j++) {
+        lines.push(createElement('div', { className: 'skeleton-message-line' }));
+      }
+
+      const content = createElement('div', { className: 'skeleton-message-content' }, lines);
+
+      skeletonMessage = createElement('div',
+        { className: 'skeleton-message user-skeleton' },
+        [content]
+      );
+    }
+
+    skeletonContainer.appendChild(skeletonMessage);
+  }
+
+  chatMessages.appendChild(skeletonContainer);
+}
+
+/**
+ * Elimina el skeleton loading de los mensajes
+ */
+export function removeMessagesSkeleton() {
+  const skeletonContainer = document.querySelector('.skeleton-container');
+  if (!skeletonContainer) return;
+
+  // Animación de desvanecimiento antes de eliminar
+  skeletonContainer.style.opacity = '0';
+  setManagedTimeout(() => {
+    if (skeletonContainer.parentNode) {
+      skeletonContainer.parentNode.removeChild(skeletonContainer);
+    }
+  }, 300, 'remove-skeleton');
+}
+
+/**
+ * Aplica el cargador inicial de la aplicación
+ */
+export function applyInitialLoader() {
+  // Si ya existe, no crear otro
+  if (document.querySelector('.acadel-biblioteca-loader')) return;
+
+  // Detectar tema para logo
+  const isDarkTheme = document.body.getAttribute('data-theme') === 'dark' ||
+    localStorage.getItem('theme') === 'dark';
+  const logoPath = isDarkTheme
+    ? '/images/Papeles_oscuro.gif'
+    : '/images/Papeles_claro.gif';
+
+  // Mensajes de la biblioteca digital del Profesor Acadel
+  const mensajesBiblioteca = [
+    "🦫 Organizando mi biblioteca digital personal...",
+    "📚 Catalogando documentos en mi archivo cuántico...",
+    "🗂️ Preparando estantes para tus PDFs favoritos...",
+    "📖 Limpiando el polvo de mis documentos más preciados...",
+    "🔍 Configurando mi sistema de búsqueda de documentos...",
+    "📑 Ordenando mis apuntes por orden de importancia...",
+    "🗃️ Sincronizando mi base de datos bibliográfica...",
+    "📄 Preparando lectores de texto más avanzados...",
+    "📋 Actualizando mi índice personal de conocimiento...",
+    "🏛️ Abriendo las puertas de mi archivo académico...",
+    "📓 Clasificando documentos por nivel de complejidad...",
+    "🦫 Calibrando mi analizador de texto de capibara..."
+  ];
+
+  // Pasos de organización de la biblioteca
+  const pasosOrganizacion = [
+    "Ordenando estantes de la biblioteca",
+    "Catalogando documentos académicos",
+    "Preparando sistema de análisis textual"
+  ];
+
+  // Mensaje inicial aleatorio
+  const mensajeInicial = mensajesBiblioteca[Math.floor(Math.random() * mensajesBiblioteca.length)];
+
+  // Crear elementos de la biblioteca
+  const logo = createElement('img', {
+    src: logoPath,
+    alt: 'Profesor Acadel - Bibliotecario',
+    className: 'acadel-bibliotecario-avatar'
+  });
+
+  const mensajeContainer = createElement('div', {
+    className: 'acadel-mensaje-container'
+  });
+
+  const loaderText = createElement('div',
+    { className: 'acadel-biblioteca-text' },
+    mensajeInicial
+  );
+
+  // Contenedor de progreso bibliográfico
+  const progressContainer = createElement('div', {
+    className: 'acadel-catalogo-container'
+  });
+
+  const progressBar = createElement('div', {
+    className: 'acadel-catalogo-bar',
+    id: 'acadelCatalogoProgress'
+  });
+
+  const progressLabel = createElement('div', {
+    className: 'acadel-catalogo-label'
+  }, '📖 Catalogando documentos: ');
+
+  const progressPercent = createElement('span', {
+    className: 'acadel-catalogo-percent',
+    id: 'acadelCatalogoPercent'
+  }, '0%');
+
+  progressContainer.appendChild(progressLabel);
+  progressContainer.appendChild(progressBar);
+  progressContainer.appendChild(progressPercent);
+
+  // Crear pasos de la biblioteca
+  const stepsContainer = createElement('div', {
+    className: 'acadel-biblioteca-steps'
+  });
+
+  pasosOrganizacion.forEach((texto, index) => {
+    const step = createElement('div', {
+      className: 'acadel-step',
+      dataset: { step: index + 1 }
+    });
+
+    const stepIcon = createElement('span', {
+      className: 'acadel-step-icon'
+    }, '📚');
+
+    const stepText = createElement('span', {
+      className: 'acadel-step-text'
+    }, texto);
+
+    step.appendChild(stepIcon);
+    step.appendChild(stepText);
+    stepsContainer.appendChild(step);
+  });
+
+  // Frase del bibliotecario
+  const fraseBibliotecario = createElement('div', {
+    className: 'acadel-frase-bibliotecario'
+  }, '"Los documentos son como vinos añejos: mientras más tiempo los tengo organizados, mejor comprendo su verdadero valor académico." 🦫📖');
+
+  // Ensamblar la biblioteca
+  mensajeContainer.appendChild(loaderText);
+
+  const content = createElement('div',
+    { className: 'acadel-biblioteca-content' },
+    [logo, mensajeContainer, progressContainer, stepsContainer, fraseBibliotecario]
+  );
+
+  const bibliotecaLoader = createElement('div',
+    { className: 'acadel-biblioteca-loader' },
+    content
+  );
+
+  document.body.appendChild(bibliotecaLoader);
+
+  // Estado global de la biblioteca
+  window.acadelBibliotecaState = {
+    progress: 0,
+    phase: 1,
+    startTime: Date.now(),
+    ready: false,
+    mensajes: mensajesBiblioteca,
+    mensajeActual: 0,
+    intervalosActivos: [],
+    dustEffectActive: false
+  };
+
+  // Rotación de mensajes bibliotecarios
+  const intervaloMensajes = setInterval(() => {
+    window.acadelBibliotecaState.mensajeActual =
+      (window.acadelBibliotecaState.mensajeActual + 1) % mensajesBiblioteca.length;
+
+    const nuevoMensaje = mensajesBiblioteca[window.acadelBibliotecaState.mensajeActual];
+    loaderText.textContent = nuevoMensaje;
+
+    // Efecto de organización
+    loaderText.classList.add('organizando');
+    setTimeout(() => {
+      loaderText.classList.remove('organizando');
+    }, 600);
+
+    // Efecto de polvo de libros aleatorio
+    if (Math.random() > 0.6) {
+      createBookDustEffect();
+    }
+
+  }, 3500);
+
+  window.acadelBibliotecaState.intervalosActivos.push(intervaloMensajes);
+
+  // Progreso inicial
+  updateAcadelBibliotecaProgress(5);
+
+  // Precargar recursos
+  preloadCriticalResources();
+
+  // Activar primer paso
+  setTimeout(() => {
+    const firstStep = document.querySelector('.acadel-step[data-step="1"]');
+    if (firstStep) {
+      addClass(firstStep, 'active');
+      firstStep.querySelector('.acadel-step-icon').textContent = '📖';
+      createBookDustEffect();
+    }
+  }, 500);
+
+  // Documentos flotantes
+  setTimeout(() => {
+    createFloatingDocuments();
+  }, 1200);
+
+  console.log('🦫 Profesor Acadel: Biblioteca digital inicializada');
+}
+
+/**
+ * Actualiza el progreso de catalogación
+ */
+export function updateAcadelBibliotecaProgress(progress) {
+  if (!window.acadelBibliotecaState) return;
+
+  window.acadelBibliotecaState.progress = Math.max(window.acadelBibliotecaState.progress, progress);
+
+  // Determinar fase y descripción
+  let phase;
+  let descripcion = '';
+
+  if (progress < 30) {
+    phase = 1;
+    descripcion = 'organizando estantes bibliográficos';
+  } else if (progress < 70) {
+    phase = 2;
+    descripcion = 'catalogando documentos académicos';
+  } else {
+    phase = 3;
+    descripcion = 'preparando análisis textual avanzado';
+  }
+
+  window.acadelBibliotecaState.phase = phase;
+
+  // Actualizar pasos visualmente
+  document.querySelectorAll('.acadel-step').forEach(step => {
+    const stepNum = parseInt(step.dataset.step);
+    const icon = step.querySelector('.acadel-step-icon');
+
+    if (stepNum <= phase) {
+      addClass(step, 'active');
+
+      // Al 100%, todos los pasos completados
+      if (window.acadelBibliotecaState.progress >= 100) {
+        icon.textContent = '✅';
+        removeClass(step, 'current');
+        addClass(step, 'completed');
+      } else if (stepNum === phase) {
+        // Paso actual en progreso
+        icon.textContent = '📋';
+        addClass(step, 'current');
+        removeClass(step, 'completed');
+      } else {
+        // Pasos anteriores completados
+        icon.textContent = '✅';
+        removeClass(step, 'current');
+        addClass(step, 'completed');
+      }
+    } else {
+      // Pasos futuros inactivos
+      removeClass(step, 'active');
+      removeClass(step, 'current');
+      removeClass(step, 'completed');
+      icon.textContent = '📚';
+    }
+  });
+
+  // Actualizar barra de progreso
+  const progressBar = document.getElementById('acadelCatalogoProgress');
+  const progressPercent = document.getElementById('acadelCatalogoPercent');
+  const progressLabel = document.querySelector('.acadel-catalogo-label');
+
+  if (progressBar && progressPercent) {
+    progressBar.style.width = `${window.acadelBibliotecaState.progress}%`;
+    progressPercent.textContent = `${Math.round(window.acadelBibliotecaState.progress)}%`;
+
+    if (progressLabel) {
+      if (progress >= 100) {
+        progressLabel.textContent = '🎯 Biblioteca completa: ';
+      } else {
+        progressLabel.textContent = `📖 ${descripcion}: `;
+      }
+    }
+
+    // Efectos de polvo en hitos importantes
+    if (progress === 50 || progress === 75 || progress === 90 || progress === 100) {
+      createBookDustEffect();
+    }
+  }
+}
+
+/**
+ * Crea efecto de polvo de libros
+ */
+function createBookDustEffect() {
+  if (!window.acadelBibliotecaState || window.acadelBibliotecaState.dustEffectActive) return;
+
+  window.acadelBibliotecaState.dustEffectActive = true;
+
+  const loader = document.querySelector('.acadel-biblioteca-loader');
+  if (!loader) {
+    window.acadelBibliotecaState.dustEffectActive = false;
+    return;
+  }
+
+  // Crear múltiples partículas de polvo de libros
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const bookDust = createElement('div', {
+        className: 'book-dust-effect'
+      });
+
+      // Posición aleatoria
+      bookDust.style.left = (Math.random() * 80 + 10) + '%';
+      bookDust.style.top = (Math.random() * 60 + 20) + '%';
+
+      loader.appendChild(bookDust);
+
+      // Eliminar después de la animación
+      setTimeout(() => {
+        if (bookDust.parentNode) {
+          bookDust.parentNode.removeChild(bookDust);
+        }
+      }, 1200);
+    }, i * 200);
+  }
+
+  // Permitir nuevo efecto después de 2 segundos
+  setTimeout(() => {
+    if (window.acadelBibliotecaState) {
+      window.acadelBibliotecaState.dustEffectActive = false;
+    }
+  }, 2000);
+}
+
+/**
+ * Crea documentos flotantes
+ */
+function createFloatingDocuments() {
+  const documents = [
+    '📄', '📑', '📋', '📝', '📖', '📚', '🗂️', '📁', '🗃️', '📊'
+  ];
+
+  const loader = document.querySelector('.acadel-biblioteca-loader');
+  if (!loader) return;
+
+  documents.forEach((doc, index) => {
+    setTimeout(() => {
+      const documento = createElement('div', {
+        className: 'floating-document'
+      }, doc);
+
+      documento.style.left = Math.random() * 90 + '%';
+      documento.style.animationDelay = Math.random() * 2 + 's';
+      documento.style.animationDuration = (4 + Math.random() * 3) + 's';
+
+      loader.appendChild(documento);
+
+      setTimeout(() => {
+        if (documento.parentNode) {
+          documento.parentNode.removeChild(documento);
+        }
+      }, 7000);
+    }, index * 1000);
+  });
+
+  // Repetir documentos cada 15 segundos
+  setTimeout(() => {
+    if (window.acadelBibliotecaState && !window.acadelBibliotecaState.ready) {
+      createFloatingDocuments();
+    }
+  }, 15000);
+}
+
+/**
+ * Forzar completar todos los pasos
+ */
+export function completeAllAcadelSteps() {
+  document.querySelectorAll('.acadel-step').forEach((step, index) => {
+    const icon = step.querySelector('.acadel-step-icon');
+
+    // Activar todos los pasos
+    addClass(step, 'active');
+    addClass(step, 'completed');
+    removeClass(step, 'current');
+
+    // Marcar todos como completados
+    setTimeout(() => {
+      icon.textContent = '✅';
+
+      // Efecto de polvo al completar último paso
+      if (index === 2) {
+        createBookDustEffect();
+      }
+    }, index * 200);
+  });
+}
+
+/**
+ * Remueve el loading de la biblioteca
+ */
+export function removeAcadelBibliotecaLoader(forceRemove = false) {
+  const bibliotecaLoader = document.querySelector('.acadel-biblioteca-loader');
+  if (!bibliotecaLoader) return;
+
+  // Limpiar intervalos
+  if (window.acadelBibliotecaState?.intervalosActivos) {
+    window.acadelBibliotecaState.intervalosActivos.forEach(clearInterval);
+  }
+
+  // Mensaje final
+  const loaderText = bibliotecaLoader.querySelector('.acadel-biblioteca-text');
+  if (loaderText) {
+    loaderText.textContent = '🏛️ ¡Biblioteca lista! Tu archivo digital está organizado 🦫📚';
+  }
+
+  // Asegurar que todos los pasos estén completados
+  if (window.acadelBibliotecaState) {
+    window.acadelBibliotecaState.ready = true;
+
+    // Forzar 100% y completar todos los pasos
+    updateAcadelBibliotecaProgress(100);
+
+    // Doble verificación: forzar completar pasos
+    setTimeout(() => {
+      completeAllAcadelSteps();
+    }, 100);
+
+    const progressLabel = document.querySelector('.acadel-catalogo-label');
+    if (progressLabel) {
+      progressLabel.textContent = '🎯 Archivo Completo = ';
+    }
+  }
+
+  // Efecto final de polvo
+  setTimeout(() => {
+    createBookDustEffect();
+  }, 400);
+
+  // Transición de salida
+  addClass(bibliotecaLoader, 'fade-out-biblioteca');
+
+  setManagedTimeout(() => {
+    if (bibliotecaLoader.parentNode) {
+      bibliotecaLoader.parentNode.removeChild(bibliotecaLoader);
+    }
+    console.log('🦫 Profesor Acadel: ¡Biblioteca digital cerrada y organizada!');
+  }, 1500, 'remove-biblioteca-loader');
+}
+
+/**
+ * Actualiza el progreso del cargador inicial
+ */
+export function updateLoaderProgress(progress) {
+  return updateAcadelBibliotecaProgress(progress);
+}
+
+/**
+ * Precarga recursos críticos para la UI
+ */
+function preloadCriticalResources() {
+  const criticalImages = [
+    '/images/Pensando_claro.gif',
+    '/images/Pensando_oscuro.gif'
+  ];
+
+  let loaded = 0;
+  criticalImages.forEach(src => {
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      loaded++;
+      updateAcadelBibliotecaProgress(10 + (loaded / criticalImages.length * 15));
+    };
+    img.src = src;
+  });
+}
+
+/**
+ * Elimina el cargador inicial
+ */
+export function removeInitialLoader(forceRemove = false) {
+  return removeAcadelBibliotecaLoader(forceRemove);
+}
+
+/**
+ * Aplica el skeleton de cambio de chat
+ */
+export function applyChatSwitchSkeleton() {
+  // ⭐ PREVENCIÓN DE DUPLICADOS ⭐
+  if (window.isApplyingChatSkeleton) {
+    console.log('⚠️ Prevención: Ya se está aplicando skeleton de chat');
+    return;
+  }
+
+  // ⭐ VERIFICAR SI YA HAY UN SKELETON ACTIVO ⭐
+  const existingOverlays = document.querySelectorAll('.chat-switch-overlay');
+  if (existingOverlays.length > 0) {
+    console.log('⚠️ Prevención: Ya existe skeleton de chat activo');
+    return;
+  }
+
+  console.log('Aplicando skeleton de cambio de chat');
+
+  // Marcar que estamos aplicando skeleton
+  window.isApplyingChatSkeleton = true;
+
+  // Crear elementos de forma segura
+  const spinner = createElement('div', { className: 'chat-switch-spinner' });
+  const text = createElement('div', { className: 'chat-switch-text' }, 'Cambiando de chat...');
+
+  const spinnerContainer = createElement('div',
+    { className: 'chat-switch-spinner-container' },
+    [spinner, text]
+  );
+
+  // Crear overlay principal
+  const overlay = createElement('div', {
+    className: 'chat-switch-overlay',
+    id: 'chat-switch-overlay-' + Date.now(),
+    style: 'z-index:9999;'
+  }, spinnerContainer);
+
+  // Agregar al DOM y activar
+  document.body.appendChild(overlay);
+
+  // Forzar reflow y activar con delay mínimo para evitar problemas de timing
+  requestAnimationFrame(() => {
+    addClass(overlay, 'active');
+  });
+
+  // Guardar estado de los mensajes si existen
+  const chatMessages = document.querySelector('.chat-messages');
+  if (chatMessages) {
+    addClass(chatMessages, 'switching');
+  }
+
+  // Aplicar skeleton al header si es necesario
+  applyHeaderSkeleton();
+
+  // ⭐ ESTABLECER TIMESTAMP UNA SOLA VEZ ⭐
+  if (!window.chatSwitchStartTime) {
+    window.chatSwitchStartTime = Date.now();
+    console.log('🕒 Timestamp de inicio de skeleton establecido:', window.chatSwitchStartTime);
+  }
+
+  // Establecer un timeout de seguridad para eliminar el overlay si algo falla
+  overlay.timeoutId = setManagedTimeout(() => {
+    console.warn('⏰ Timeout de seguridad activado para skeleton de cambio de chat');
+    removeChatSwitchSkeleton(true); // Forzar eliminación
+  }, 15000, 'chat-switch-safety');
+
+  // Limpiar flag después de aplicar
+  setTimeout(() => {
+    window.isApplyingChatSkeleton = false;
+  }, 100);
+}
+
+/**
+ * ⭐ NUEVA: Función de limpieza de emergencia ⭐
+ */
+export function emergencyCleanupChatSkeleton() {
+  console.log('🚨 Limpieza de emergencia de skeleton de chat');
+
+  // Eliminar todos los overlays sin condiciones
+  const allOverlays = document.querySelectorAll('.chat-switch-overlay, .loading-skeleton');
+  allOverlays.forEach(overlay => {
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
+  });
+
+  // Restaurar estado de mensajes
+  const chatMessages = document.querySelector('.chat-messages');
+  if (chatMessages) {
+    removeClass(chatMessages, 'switching');
+  }
+
+  // Quitar skeleton del header
+  removeHeaderSkeleton();
+
+  // Limpiar todas las variables globales
+  window.chatSwitchStartTime = null;
+  window.isRemovingChatSkeleton = false;
+  window.isApplyingChatSkeleton = false;
+
+  console.log('✅ Limpieza de emergencia completada');
+}
+
+/**
+ * Elimina el skeleton de cambio de chat - VERSIÓN CORREGIDA SIN BUCLES
+ */
+export function removeChatSwitchSkeleton(forceRemove = false) {
+  // ⭐ PREVENCIÓN DE BUCLES INFINITOS ⭐
+  if (window.isRemovingChatSkeleton && !forceRemove) {
+    console.log('⚠️ Prevención de bucle: Ya se está removiendo skeleton');
+    return;
+  }
+
+  // Marcar que estamos removiendo
+  if (!forceRemove) {
+    window.isRemovingChatSkeleton = true;
+  }
+
+  // ⭐ VERIFICAR SI HAY OVERLAYS PARA REMOVER ⭐
+  const overlays = document.querySelectorAll('.chat-switch-overlay');
+
+  if (overlays.length === 0) {
+    console.log('ℹ️ No hay skeleton para remover');
+
+    // Aún así, restaurar estado de mensajes por seguridad
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) {
+      removeClass(chatMessages, 'switching');
+    }
+
+    // Quitar skeleton del header
+    removeHeaderSkeleton();
+
+    // Limpiar flags y timestamps
+    window.isRemovingChatSkeleton = false;
+    window.chatSwitchStartTime = null;
+
+    return;
+  }
+
+  // ⭐ LÓGICA DE TIEMPO MEJORADA ⭐
+  let elapsedTime = 0;
+  const minDisplayTime = 800;
+
+  if (window.chatSwitchStartTime) {
+    elapsedTime = Date.now() - window.chatSwitchStartTime;
+    console.log(`⏱️ Tiempo transcurrido desde skeleton: ${elapsedTime}ms`);
+  } else {
+    console.warn('⚠️ No hay timestamp de inicio, procediendo con eliminación inmediata');
+    elapsedTime = minDisplayTime; // Forzar eliminación inmediata
+  }
+
+  // ⭐ ELIMINACIÓN CONDICIONAL SIN RECURSIÓN ⭐
+  if (elapsedTime < minDisplayTime && !forceRemove) {
+    const remainingTime = minDisplayTime - elapsedTime;
+    console.log(`⏳ Esperando ${remainingTime}ms adicionales para quitar skeleton`);
+
+    // ⭐ USAR setTimeout EN LUGAR DE RECURSIÓN DIRECTA ⭐
+    setTimeout(() => {
+      // Verificar nuevamente si aún hay overlays antes de proceder
+      const stillExistingOverlays = document.querySelectorAll('.chat-switch-overlay');
+      if (stillExistingOverlays.length > 0) {
+        removeChatSwitchSkeleton(true); // Forzar eliminación después del tiempo de espera
+      }
+    }, remainingTime);
+
+    // ⭐ TIMEOUT DE SEGURIDAD ADICIONAL ⭐
+    setTimeout(() => {
+      const emergencyOverlays = document.querySelectorAll('.chat-switch-overlay');
+      if (emergencyOverlays.length > 0) {
+        console.warn('🚨 Timeout de emergencia: Eliminando skeleton forzadamente');
+        removeChatSwitchSkeleton(true);
+      }
+    }, minDisplayTime + 2000); // 2 segundos adicionales como emergencia
+
+    return;
+  }
+
+  console.log('✅ Quitando skeleton de cambio de chat');
+
+  // Eliminar cada overlay con una pequeña diferencia de tiempo para evitar parpadeos
+  overlays.forEach((overlay, index) => {
+    // Limpiar timeout si existe
+    if (overlay.timeoutId) {
+      clearTimeout(overlay.timeoutId);
+    }
+
+    // Programar eliminación inmediata o con pequeño retraso
+    setTimeout(() => {
+      // Verificar que el overlay aún existe antes de intentar eliminarlo
+      if (overlay && overlay.parentNode) {
+        // Eliminar clase active para iniciar transición
+        removeClass(overlay, 'active');
+
+        // Eliminar completamente después de la transición
+        setTimeout(() => {
+          if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+          }
+        }, 400);
+      }
+    }, index * 50);
+  });
+
+  // Restaurar estado de mensajes inmediatamente
+  const chatMessages = document.querySelector('.chat-messages');
+  if (chatMessages) {
+    removeClass(chatMessages, 'switching');
+  }
+
+  // Quitar skeleton del header
+  removeHeaderSkeleton();
+
+  // ⭐ LIMPIAR TODAS LAS VARIABLES GLOBALES ⭐
+  window.chatSwitchStartTime = null;
+  window.isRemovingChatSkeleton = false;
+  window.isApplyingChatSkeleton = false;
+
+  console.log('🎯 Skeleton de cambio de chat eliminado completamente');
+}
+
+
+// Se mantiene la exportación por defecto
+export default {
+  initializeElements,
+  getElement,
+  showError,
+  showSuccess,
+  toggleUIState,
+  clearChatMessages,
+  handleTextareaResize,
+  setupUIEventListeners,
+  setupScrollBehavior,
+  showConfirmation,
+  showNotification,
+  setHandleSendMessage,
+  showLoading,
+  hideLoading,
+  applyHeaderSkeleton,
+  removeHeaderSkeleton,
+  applyInitialLoader,
+  removeInitialLoader,
+  applyChatSwitchSkeleton,
+  removeChatSwitchSkeleton
+};

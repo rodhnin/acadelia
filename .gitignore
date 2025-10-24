@@ -1,0 +1,75 @@
+# =======================
+#  Acadelia – .gitignore
+# =======================
+
+# Entorno / secretos
+.env
+.env.*
+config/google-drive-key.json
+
+# Dependencias Node
+node_modules/
+
+# Logs y depuración
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+*.pid.lock
+backend/logs/
+logs/
+
+# Temporales / cache
+tmp/
+tmp/**/*
+/backend/tmp/
+/frontend/tmp/
+.cache/
+.eslintcache
+*.swp
+*.swo
+*.orig
+*.bak
+*.backup
+
+# Sistemas / OS
+.DS_Store
+Thumbs.db
+
+# Builds / compilados
+dist/
+build/
+out/
+backend/dist/
+backend/build/
+frontend/dist/
+frontend/build/
+
+# Mapas de origen (si no quieres trackearlos)
+frontend/css/*.map
+frontend/scripts/*.map
+*.map
+
+# Herramientas / IDE
+.idea/
+.vscode/
+
+# Cobertura / testing
+coverage/
+.nyc_output/
+
+# Archivos subidos y generados en runtime (ajusta a tu estructura)
+public/uploads/
+backend/uploads/
+
+# Documentación pesada (si no usas LFS)
+# Sugerencia: usa Git LFS para videos en docs/media
+# docs/media/*.mp4
+# docs/media/*.gif
+
+# Lockfiles (opcional – si tu equipo prefiere no versionarlos)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

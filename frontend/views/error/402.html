@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>402 - Carrera Requerida | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/402.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="auth-container">
+    <div class="auth-tape"></div>
+    <div class="auth-text">
+      <div class="auth-badge">
+        <i class='bx bx-crown'></i>
+        Contenido académico premium
+      </div>
+      <h1 class="auth-title">¡Contenido exclusivo detectado!</h1>
+      <h2 class="auth-subtitle">El Profesor Acadel custodia este conocimiento especializado</h2>
+      
+      <p class="auth-description">
+        Has intentado acceder a contenido académico especializado que requiere una suscripción a carrera específica. El Profesor Acadel ha diseñado estos materiales exclusivos para estudiantes que han invertido en su educación especializada. ¡Cada carrera incluye AVAs únicos y contenido premium!
+      </p>
+      
+      <div class="auth-quote">
+        <p>"¡Ah, veo que has encontrado uno de mis tesoros académicos más valiosos! Este contenido especializado está reservado para estudiantes comprometidos con su carrera académica. No es solo una suscripción, ¡es una inversión en tu futuro! Cada carrera incluye materiales exclusivos, AVAs personalizados y mi guía experta."</p>
+        <div class="author">— Profesor Acadel, Curador de Excelencia Académica</div>
+      </div>
+      
+      <div class="button-group">
+        <a href="/tienda" class="purchase-btn">
+          <i class='bx bx-shopping-bag'></i>
+          Explorar carreras
+        </a>
+        <a href="/principal" class="home-btn">
+          <i class='bx bx-home'></i>
+          Volver al inicio
+        </a>
+      </div>
+      
+      <div class="auth-info">
+        <h3><i class='bx bx-info-circle'></i> ¿Qué incluye una carrera?</h3>
+        <ul>
+          <li><strong>AVAs especializados:</strong> Asistentes virtuales expertos en cada materia</li>
+          <li><strong>Contenido exclusivo:</strong> Materiales curados por el Profesor Acadel</li>
+          <li><strong>Acceso ilimitado:</strong> Sin restricciones de tiempo o uso</li>
+          <li><strong>Actualizaciones constantes:</strong> Contenido siempre actualizado</li>
+          <li><strong>Soporte especializado:</strong> Ayuda directa del Profesor Acadel</li>
+        </ul>
+      </div>
+      
+      <div class="premium-features">
+        <h3><i class='bx bx-star'></i> Beneficios Premium</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <i class='bx bx-brain'></i>
+            <span>IA Especializada</span>
+          </div>
+          <div class="feature-item">
+            <i class='bx bx-infinite'></i>
+            <span>Uso Ilimitado</span>
+          </div>
+          <div class="feature-item">
+            <i class='bx bx-shield'></i>
+            <span>Contenido Verificado</span>
+          </div>
+          <div class="feature-item">
+            <i class='bx bx-support'></i>
+            <span>Soporte 24/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="auth-image">
+      <img src="/images/character-search.webp" alt="Profesor Acadel con Tesoro Académico" />
+    </div>
+  </div>
+
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/402.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Ingreso y Registro</title>
+    
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Estilo personalizado -->
+     <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="/css/styleslogin.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+
+    <!-- SDK de Google -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- Logo principal -->
+        <div class="logo-container">
+            <a href="/" class="logo-link">
+                <img src="/images/Imagotipo.webp" alt="Acadelia" class="logo">
+            </a>
+        </div>
+
+        <!-- Wrapper principal (login y registro) -->
+        <div class="wrapper" id="login-wrapper">
+            <div class="panels-container">
+                <!-- Panel izquierdo (visible en login) -->
+                <div class="panel left-panel">
+                    <img src="/images/chiguire-image.webp" alt="Educación" class="panel-image">
+                    <br>
+                    <div class="panel-content">
+                        <h3>¿Nuevo en Acadelia?</h3>
+                        <p>Únete a nuestra comunidad educativa y potencia tu aprendizaje con asistentes virtuales académicos personalizados.</p>
+                        <button class="ghost-btn link-registro">Crear cuenta</button>
+                    </div>
+                </div>
+                
+                <!-- Panel derecho (visible en registro) -->
+                <div class="panel right-panel">
+                    <div class="panel-content">
+                        <h3>¿Ya tienes cuenta?</h3>
+                        <p>Bienvenido de nuevo a Acadelia. Ingresa para continuar tu camino hacia la excelencia académica.</p>
+                        <button class="ghost-btn link-ingresar">Ingresar</button>
+                    </div>
+                    <img src="/images/salon-image2.webp" alt="Educación" class="panel-image">
+                </div>
+            </div>
+
+            <!-- Formularios -->
+            <div class="forms-container">
+                <!-- Formulario de Ingreso -->
+                <div class="form-container login-container">
+                    <form id="formLogin">
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <h2>Bienvenido a Acadelia</h2>
+                        <p class="form-description">Ingresa tus datos para comenzar tu experiencia de aprendizaje</p>
+                        
+                        <div class="social-container">
+                            <button type="button" id="customGoogleBtn" class="social-button">
+                                <img src="/images/7123025_logo_google_g_icon.png" alt="Google">
+                                <span>Ingresar con Google</span>
+                            </button>
+                        </div>
+                        
+                        <div class="divider">
+                            <span>o ingresa con tu correo</span>
+                        </div>
+                        
+                        <div class="input-box">
+                            <input type="email" 
+                                   id="correoLogin" 
+                                   name="correoLogin"
+                                   autocomplete="email" 
+                                   required>
+                            <label for="correoLogin">Correo electrónico</label>
+                            <i class='bx bx-envelope'></i>
+                        </div>
+                        
+                        <div class="input-box">
+                            <input type="password" 
+                                   id="contraseñaLogin" 
+                                   name="contraseñaLogin"
+                                   autocomplete="current-password" 
+                                   required>
+                            <label for="contraseñaLogin">Contraseña</label>
+                            <i class='bx bx-lock-alt'></i>
+                            <button 
+                                type="button" 
+                                class="toggle-password" 
+                                aria-label="Mostrar contraseña"
+                                title="Mostrar contraseña">
+                                <i class='bx bx-show' aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        
+                        
+                        <div class="form-footer">
+                            <div class="remember-container">
+                                <input type="checkbox" id="recordarme" name="recordarme" class="custom-checkbox">
+                                <label for="recordarme">Recordarme</label>
+                            </div>
+                            <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        
+                        <button type="submit" class="btn">Ingresar</button>
+                        
+                        <p class="mobile-link">¿No tienes una cuenta? <a href="#registro" class="link-registro">Regístrate</a></p>
+                    </form>
+                </div>
+                
+                <!-- Formulario de Registro -->
+                <div class="form-container register-container">
+                    <form id="formRegistro">
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <h2>Crear Cuenta</h2>
+                        <p class="form-description">Comienza tu viaje académico con Acadelia</p>
+                        
+                        <div class="social-container">
+                            <button type="button" class="social-button google-register">
+                                <img src="/images/7123025_logo_google_g_icon.png" alt="Google">
+                                <span>Registrarse con Google</span>
+                            </button>
+                        </div>
+                        
+                        <div class="divider">
+                            <span>o regístrate con tu correo</span>
+                        </div>
+
+                        <div class="input-box">
+                            <input type="email" 
+                                   id="correoRegistro" 
+                                   name="correoRegistro"
+                                   autocomplete="email" 
+                                   required>
+                            <label for="correoRegistro">Correo electrónico</label>
+                            <i class='bx bx-envelope'></i>
+                        </div>
+                        
+                        <div class="input-box">
+                            <input type="password" 
+                                   id="contraseñaRegistro" 
+                                   name="contraseñaRegistro"
+                                   autocomplete="new-password" 
+                                   required>
+                            <label for="contraseñaRegistro">Contraseña</label>
+                            <i class='bx bx-lock-alt'></i>
+                            <button 
+                                type="button" 
+                                class="toggle-password" 
+                                aria-label="Mostrar contraseña"
+                                title="Mostrar contraseña">
+                                <i class='bx bx-show' aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="input-box">
+                            <input type="password" 
+                                   id="confirmarContraseña" 
+                                   name="confirmarContraseña"
+                                   autocomplete="new-password" 
+                                   required>
+                            <label for="confirmarContraseña">Confirmar contraseña</label>
+                            <i class='bx bx-lock-alt'></i>
+                            <button 
+                                type="button" 
+                                class="toggle-password" 
+                                aria-label="Mostrar contraseña"
+                                title="Mostrar contraseña">
+                                <i class='bx bx-show' aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="terms-container">
+                            <input type="checkbox" id="aceptarTerminos" name="aceptarTerminos" class="custom-checkbox" required>
+                            <label for="aceptarTerminos">Acepto los <a href="/terminos_condiciones">Términos y Condiciones</a></label>
+                        </div>
+                        
+                        <button type="submit" class="btn">Registrarse</button>
+                        
+                        <p class="mobile-link">¿Ya tienes una cuenta? <a href="#login" class="link-ingresar">Ingresar</a></p>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wrapper para confirmación de correo -->
+        <div class="wrapper email-confirmation-wrapper" id="email-confirmation-wrapper" style="display: none;">
+            <div class="confirmation-container">
+                <div class="confirmation-box">
+                    <div class="icon-box success">
+                        <i class='bx bx-envelope-open'></i>
+                    </div>
+                    <h2>Verifica tu correo electrónico</h2>
+                    <p>Hemos enviado un enlace de verificación a tu dirección de correo electrónico. Por favor, revisa tu bandeja de entrada y haz clic en el enlace para verificar tu cuenta.</p>
+                    
+                    <div class="email-preview">
+                        <div class="email-info">
+                            <i class='bx bx-envelope'></i>
+                            <span id="userEmail">usuario@example.com</span>
+                        </div>
+                    </div>
+                    
+                 <p class="secondary-text">¿No recibiste el correo?</p>
+                <p class="secondary-text">Chequea el spam o correo no deseado.</p>
+
+                    
+                    <button class="btn resend-btn">
+                        <i class='bx bx-revision'></i>
+                        Reenviar correo
+                    </button>
+                    
+                    <div class="back-option">
+                        <a href="#" class="back-to-login">Regresar a inicio de sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wrapper para verificación de código -->
+<div class="wrapper verification-wrapper" id="verification-wrapper" style="display: none;">
+    <div class="verification-container">
+        <div class="verification-box">
+            <div class="icon-box verification">
+                <i class='bx bx-envelope-open'></i>
+            </div>
+            <h2>Verificación requerida</h2>
+            <p>Hemos enviado un código de verificación a tu correo <strong id="verification-email">usuario@example.com</strong> para confirmar tu identidad.</p>
+            
+            <div class="input-box">
+                <input type="text" 
+                       id="verification-code" 
+                       name="verification-code"
+                       maxlength="6" 
+                       placeholder="______" 
+                       autocomplete="one-time-code"
+                       required>
+                <label for="verification-code">Código de verificación</label>
+                <i class='bx bx-lock-alt'></i>
+            </div>
+            
+            <p class="secondary-text">
+                Puedes solicitar un nuevo código en <span id="countdown">10:00</span>
+            </p>
+            
+            <button type="button" id="verify-button" class="btn">
+                <i class='bx bx-check'></i>
+                Verificar y acceder
+            </button>
+            
+            <button type="button" id="resend-button" class="btn resend-btn" style="opacity: 0.5; pointer-events: none;">
+                <i class='bx bx-revision'></i>
+                Reenviar código
+            </button>
+            
+            <div class="back-option">
+                <a href="#" class="back-to-login">Regresar a inicio de sesión</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Wrapper para recuperación de contraseña -->
+        <div class="wrapper password-recovery-wrapper" id="password-recovery-wrapper" style="display: none;">
+            <div class="recovery-container">
+                <div class="recovery-box">
+                    <div class="icon-box password">
+                        <i class='bx bx-lock-open'></i>
+                    </div>
+                    <h2>Recupera tu contraseña</h2>
+                    <p>Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+                    
+                    <form id="recoveryForm">
+                        <input type="hidden" name="_token" value="<%= csrfToken %>">
+                        <div class="input-box">
+                            <input type="email" 
+                                   id="recoveryEmail" 
+                                   name="recoveryEmail"
+                                   autocomplete="email" 
+                                   required>
+                            <label for="recoveryEmail">Correo electrónico</label>
+                            <i class='bx bx-envelope'></i>
+                        </div>
+                        
+                        <button type="submit" class="btn">
+                            <i class='bx bx-envelope-open'></i>
+                            Enviar enlace
+                        </button>
+                    </form>
+                    
+                    <div class="back-option">
+                        <a href="#" class="back-to-login">Regresar a inicio de sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+
+    <!-- Scripts -->
+    <script src="/scripts/notification-service.js"  nonce="<%= nonce %>"></script>
+    <script src="/scripts/login.js" nonce="<%= nonce %>"> </script>
+    <script src="/scripts/responsivelogin.js"  nonce="<%= nonce %>"></script>
+
+
+</body>
+</html>

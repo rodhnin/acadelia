@@ -1,0 +1,1296 @@
+/* 
+ * Estilos para el Sistema de Autenticación - Versión Mejorada
+ * Tema: Detective Académico (Profesor Acadel)
+ */
+
+/* Estilos base para overlays modales */
+.auth-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999999 !important;
+    opacity: 1 !important;
+    transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    padding: 20px !important;
+}
+
+/* Contenedor base para modales */
+.auth-modal {
+    background: #f0efe7 !important;
+    padding: 0 !important;
+    border-radius: 18px !important;
+    max-width: 600px !important;
+    width: 95% !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 9999999 !important;
+    animation: modalSlideUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    overflow: hidden !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Cinta superior de detective */
+.auth-modal::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 12px !important;
+    background: repeating-linear-gradient(
+        45deg,
+        #540b0e,
+        #540b0e 12px,
+        #2F4858 12px,
+        #2F4858 24px
+    ) !important;
+    z-index: 1 !important;
+}
+
+/* Cabecera del modal */
+.auth-header {
+    position: relative !important;
+    padding: 35px !important;
+    background: #2F4858 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-radius: 18px 18px 0 0 !important;
+}
+
+/* Contenedor de imagen */
+.auth-image-container {
+    width: 130px !important;
+    height: 130px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    border: 5px solid #f0efe7 !important;
+    background: #f0efe7 !important;
+    flex-shrink: 0 !important;
+    margin-right: 20px !important;
+}
+
+.auth-image-container::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2) !important;
+    pointer-events: none !important;
+}
+
+.auth-image-container:hover {
+    transform: scale(1.05) !important;
+}
+
+/* Fondos para diferentes tipos de imágenes */
+.auth-image-info {
+    background: linear-gradient(135deg, #e0f7fa, #80deea) !important;
+}
+
+.auth-image-warning {
+    background: linear-gradient(135deg, #fff8e1, #ffe57f) !important;
+}
+
+.auth-image-danger {
+    background: linear-gradient(135deg, #ffebee, #ef9a9a) !important;
+}
+
+.auth-image-success {
+    background: linear-gradient(135deg, #e8f5e9, #a5d6a7) !important;
+}
+
+/* Imagen dentro del contenedor */
+.auth-image {
+    max-width: 140% !important;
+    max-height: 140% !important;
+    object-fit: contain !important;
+    transform: translateY(10px) !important;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1)) !important;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Estilo para imagen alarmada */
+.auth-image-alarmed {
+    transform: translateY(10px) scale(1.05) !important;
+    animation: shake 1.5s cubic-bezier(.36,.07,.19,.97) 0.3s !important;
+}
+
+/* Sección de encabezado con títulos */
+.auth-title-section {
+    flex: 1 !important;
+}
+
+/* Títulos */
+.auth-title {
+    margin: 0 0 5px !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    letter-spacing: -0.5px !important;
+    font-family: "Parkinsans", sans-serif !important;
+    position: relative !important;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1) !important;
+    line-height: 1.2 !important;
+}
+
+.auth-subtitle {
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    margin: 0 !important;
+    font-weight: 500 !important;
+    max-width: 320px !important;
+}
+
+/* Insignia de alerta */
+.auth-badge {
+    position: absolute !important;
+    top: 170px !important;
+    right: 15px !important;
+    padding: 8px 15px !important;
+    background: #540b0e !important;
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-shadow: 0 4px 15px rgba(84, 11, 14, 0.3) !important;
+    animation: badgeBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s !important;
+    animation-fill-mode: both !important;
+    transform-origin: center bottom !important;
+}
+
+.auth-badge i {
+    font-size: 18px !important;
+}
+
+/* Contenido principal */
+.auth-content {
+    padding: 30px !important;
+    color: #333 !important;
+}
+
+/* Párrafos */
+.auth-text {
+    margin: 0 0 25px !important;
+    color: #4a4a4a !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* Contenedor de datos */
+.auth-data-container {
+    background-color: white !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin: 20px 0 25px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    position: relative !important;
+}
+
+.auth-data-container::before {
+    content: "DETALLES DEL INTENTO" !important;
+    position: absolute !important;
+    top: -10px !important;
+    left: 20px !important;
+    background: #2F4858 !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 3px 12px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Estilos para campos de datos en modales de seguridad */
+.auth-data-field {
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    position: relative !important;
+    padding-left: 30px !important;
+}
+
+.auth-data-field:last-child {
+    margin-bottom: 0 !important;
+}
+
+.auth-data-field::before {
+    content: "\eb7b" !important; /* Boxicon para puntos */
+    font-family: 'boxicons' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 2px !important;
+    color: #2F4858 !important;
+    font-size: 18px !important;
+}
+
+.auth-data-label {
+    font-weight: 600 !important;
+    color: #555 !important;
+    margin-right: 8px !important;
+    min-width: 100px !important;
+}
+
+.auth-data-value {
+    color: #333 !important;
+    word-break: break-word !important;
+    font-weight: 500 !important;
+}
+
+/* Nota de investigación estilo detective */
+.auth-question {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #2F4858 !important;
+    margin: 20px 0 10px !important;
+    position: relative !important;
+    padding-left: 25px !important;
+}
+
+.auth-question::before {
+    content: "\eaed" !important; /* Boxicon para magnifying glass */
+    font-family: 'boxicons' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 2px !important;
+    color: #540b0e !important;
+    font-size: 20px !important;
+}
+
+/* Contenedor de botones */
+.auth-buttons {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    margin-top: 25px !important;
+}
+
+/* Botones base */
+.auth-button {
+    position: relative !important;
+    padding: 12px 25px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    color: white !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    transform-style: preserve-3d !important;
+    min-width: 150px !important;
+}
+
+.auth-button i {
+    font-size: 20px !important;
+}
+
+.auth-button:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 7px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.auth-button:active {
+    transform: translateY(2px) !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Variantes de botones */
+.auth-button-success {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60) !important;
+}
+
+.auth-button-danger {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b) !important;
+}
+
+.auth-button-info {
+    background: linear-gradient(to bottom, #3498db, #2980b9) !important;
+}
+
+.auth-button-warning {
+    background: linear-gradient(to bottom, #f39c12, #e67e22) !important;
+}
+
+/* Punto pulsante */
+.auth-pulsing-dot {
+    width: 12px !important;
+    height: 12px !important;
+    background-color: #3498db !important;
+    border-radius: 50% !important;
+    margin: 20px auto !important;
+    animation: pulse 1.5s infinite !important;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.6) !important;
+}
+
+/* Modal específico de advertencia de seguridad */
+.auth-security-warning {
+    padding: 20px !important;
+    background: rgba(231, 76, 60, 0.1) !important;
+    border-radius: 12px !important;
+    margin: 20px 0 !important;
+    position: relative !important;
+    border-left: 4px solid #e74c3c !important;
+}
+
+.auth-security-steps {
+    margin-top: 15px !important;
+}
+
+.auth-step {
+    display: flex !important;
+    margin-bottom: 10px !important;
+    align-items: flex-start !important;
+}
+
+.auth-step-number {
+    background: #e74c3c !important;
+    color: white !important;
+    width: 25px !important;
+    height: 25px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 10px !important;
+    font-weight: 600 !important;
+    flex-shrink: 0 !important;
+}
+
+.auth-step-text {
+    flex: 1 !important;
+    line-height: 1.4 !important;
+}
+
+/* Animaciones */
+@keyframes modalSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+    }
+}
+
+@keyframes badgeBounce {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(10px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05) translateY(0);
+    }
+    70% {
+        transform: scale(0.95) translateY(-2px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translateY(10px) translateX(-1px);
+    }
+    20%, 80% {
+        transform: translateY(10px) translateX(2px);
+    }
+    30%, 50%, 70% {
+        transform: translateY(10px) translateX(-3px);
+    }
+    40%, 60% {
+        transform: translateY(10px) translateX(3px);
+    }
+}
+
+/* Manejo responsive para modales */
+@media screen and (max-width: 768px) {
+    .auth-modal {
+        width: 90% !important;
+        max-height: 80%;
+    }
+    
+    .auth-header {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .auth-image-container {
+        margin-right: 0 !important;
+        margin-bottom: 15px !important;
+        width: 110px !important;
+        height: 110px !important;
+    }
+    
+    .auth-title-section {
+        text-align: center !important;
+    }
+    
+    .auth-subtitle {
+        max-width: 100% !important;
+    }
+    
+    .auth-badge {
+        position: relative !important;
+        top: 30px !important;
+        right: 0 !important;
+        margin: -30px auto 15px !important;
+        width: fit-content !important;
+    }
+    
+    .auth-content {
+        padding: 20px !important;
+        overflow:auto;
+    }
+    
+    .auth-buttons {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    .auth-button {
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .auth-title {
+        font-size: 24px !important;
+    }
+    
+    .auth-subtitle {
+        font-size: 14px !important;
+    }
+    
+    .auth-content {
+        padding: 15px !important;
+    }
+    
+    .auth-data-container {
+        padding: 15px !important;
+        margin: 20px 0 20px !important;
+    }
+    
+    .auth-data-field {
+        flex-direction: column !important;
+    }
+    
+    .auth-data-label {
+        margin-bottom: 4px !important;
+    }
+}
+
+/* Modo Oscuro */
+[data-theme="dark"] .auth-overlay {
+    background: rgba(0, 0, 0, 0.85) !important;
+}
+
+[data-theme="dark"] .auth-modal {
+    background: #1e1e2d !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .auth-header {
+    background: #1d2b3a !important;
+}
+
+[data-theme="dark"] .auth-image-container {
+    border-color: #2d2d3a !important;
+    background: #2d2d3a !important;
+}
+
+[data-theme="dark"] .auth-title {
+    color: #ede5e5 !important;
+}
+
+[data-theme="dark"] .auth-subtitle {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="dark"] .auth-text {
+    color: #c8c8d0 !important;
+}
+
+[data-theme="dark"] .auth-data-container {
+    background-color: #2d2d3a !important;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .auth-data-label {
+    color: #a8a8b3 !important;
+}
+
+[data-theme="dark"] .auth-data-value {
+    color: #ede5e5 !important;
+}
+
+[data-theme="dark"] .auth-question {
+    color: #78a2cc !important;
+}
+
+[data-theme="dark"] .auth-security-warning {
+    background: rgba(231, 76, 60, 0.15) !important;
+}
+
+/* Colores específicos para modales en modo oscuro */
+[data-theme="dark"] .auth-image-info {
+    background: linear-gradient(135deg, #1a3a4a, #0d2b3e) !important;
+}
+
+[data-theme="dark"] .auth-image-warning {
+    background: linear-gradient(135deg, #4d3800, #664c00) !important;
+}
+
+[data-theme="dark"] .auth-image-danger {
+    background: linear-gradient(135deg, #4a1a1c, #3d1618) !important;
+}
+
+[data-theme="dark"] .auth-image-success {
+    background: linear-gradient(135deg, #0e3d1e, #0a2e17) !important;
+}
+
+/* Botones en modo oscuro */
+[data-theme="dark"] .auth-button {
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .auth-button-success {
+    background: linear-gradient(to bottom, #27ae60, #1e8449) !important;
+}
+
+[data-theme="dark"] .auth-button-danger {
+    background: linear-gradient(to bottom, #c0392b, #a33025) !important;
+}
+
+[data-theme="dark"] .auth-button-info {
+    background: linear-gradient(to bottom, #2980b9, #2471a3) !important;
+}
+
+[data-theme="dark"] .auth-button-warning {
+    background: linear-gradient(to bottom, #e67e22, #d35400) !important;
+}
+
+
+/* 
+ * Estilos para el Sistema de notificaciones
+ */
+
+
+/* Alertas personalizadas */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 400px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateX(120%);
+  transition: all 0.4s ease;
+}
+
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.alert-success {
+  background: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+  color: #2e7d32;
+}
+
+.alert-error {
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.alert-warning {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  color: #ef6c00;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  color: #1565c0;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+
+/* Sistema de notificaciones centralizado */
+#notification-container {
+  position: fixed;
+  top: 20px;
+  right: 0;
+  width: auto;
+  max-width: 400px;
+  padding: 5px 20px 20px 5px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.notification {
+  position: relative;
+  padding: 15px 25px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  transform: translateX(120%);
+  transition: all 0.3s ease;
+  margin-bottom: 3px;
+  pointer-events: all;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  border-left: 4px solid #ccc;
+}
+
+.notification-show {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: calc(var(--index, 0) * 0.05s);
+}
+
+.notification-hide {
+  opacity: 0;
+  transform: translateX(120%);
+}
+
+.notification-content {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding-right: 20px;
+}
+
+.notification-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  padding: 4px;
+  border-radius: 50%;
+  color: inherit;
+}
+
+.notification-close:hover {
+  opacity: 1;
+  background-color: rgba(0,0,0,0.05);
+}
+
+.notification-icon {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* Tipos de notificaciones */
+.notification-success {
+  background: rgba(232, 245, 233, 0.95);
+  border-left-color: #4CAF50;
+  color: #2e7d32;
+}
+
+.notification-error {
+  background: rgba(255, 235, 238, 0.95);
+  border-left-color: #f44336;
+  color: #c62828;
+}
+
+.notification-warning {
+  background: rgba(255, 243, 224, 0.95);
+  border-left-color: #ff9800;
+  color: #ef6c00;
+}
+
+.notification-info {
+  background: rgba(227, 242, 253, 0.95);
+  border-left-color: #2196F3;
+  color: #1565c0;
+}
+
+.notification-loading {
+  background: rgba(238, 238, 238, 0.95);
+  border-left-color: #9e9e9e;
+  color: #424242;
+}
+
+/* Spinner para carga */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animación para errores */
+.notification-error.notification-show {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translateX(1px);
+  }
+  20%, 80% {
+    transform: translateX(-2px);
+  }
+  30%, 50%, 70% {
+    transform: translateX(2px);
+  }
+  40%, 60% {
+    transform: translateX(-1px);
+  }
+}
+
+/* Media queries */
+@media (max-width: 480px) {
+  .notification {
+    width: calc(100vw - 40px);
+    max-width: none;
+    margin-right: 10px;
+  }
+  
+  #notification-container {
+    padding: 5px 10px 10px 5px;
+    max-width: 100%;
+  }
+  
+  .notification-content {
+    font-size: 0.85rem;
+  }
+}
+
+/* Ajustes para los iconos de Boxicons */
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.notification-icon i {
+  font-size: 1.5rem; /* Tamaño de los iconos */
+}
+
+/* Para los tipos específicos, puedes ajustar colores si es necesario */
+.notification-success .notification-icon i {
+  color: #2e7d32;
+}
+
+.notification-error .notification-icon i {
+  color: #c62828;
+}
+
+.notification-warning .notification-icon i {
+  color: #ef6c00;
+}
+
+.notification-info .notification-icon i {
+  color: #1565c0;
+}
+
+/* Modo oscuro para notificaciones y alertas */
+
+/* Estilos para el modo oscuro - Notificaciones clásicas */
+[data-theme="dark"] .custom-alert {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .alert-success {
+  background: rgba(27, 38, 30, 0.9);
+  border-left-color: #66BB6A;
+  color: #ABEDB3;
+}
+
+[data-theme="dark"] .alert-error {
+  background: rgba(38, 20, 20, 0.9);
+  border-left-color: #EF5350;
+  color: #FFBCBC;
+}
+
+[data-theme="dark"] .alert-warning {
+  background: rgba(38, 29, 20, 0.9);
+  border-left-color: #FFA726;
+  color: #FFD5A3;
+}
+
+[data-theme="dark"] .alert-info {
+  background: rgba(20, 30, 38, 0.9);
+  border-left-color: #42A5F5;
+  color: #B6DCFF;
+}
+
+/* Estilos para el modo oscuro - Sistema de notificaciones centralizado */
+[data-theme="dark"] #notification-container .notification {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .notification-success {
+  background: rgba(27, 38, 30, 0.85);
+  border-left-color: #66BB6A;
+  color: #ABEDB3;
+}
+
+[data-theme="dark"] .notification-error {
+  background: rgba(38, 20, 20, 0.85);
+  border-left-color: #EF5350;
+  color: #FFBCBC;
+}
+
+[data-theme="dark"] .notification-warning {
+  background: rgba(38, 29, 20, 0.85);
+  border-left-color: #FFA726;
+  color: #FFD5A3;
+}
+
+[data-theme="dark"] .notification-info {
+  background: rgba(20, 30, 38, 0.85);
+  border-left-color: #42A5F5;
+  color: #B6DCFF;
+}
+
+[data-theme="dark"] .notification-loading {
+  background: rgba(30, 30, 35, 0.85);
+  border-left-color: #BBBBBB;
+  color: #E0E0E0;
+}
+
+/* Ajustes para botón cerrar en modo oscuro */
+[data-theme="dark"] .notification-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] .notification-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Spinner para modo oscuro */
+[data-theme="dark"] .spinner {
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: currentColor;
+}
+
+/* Efecto de brillo sutil para notificaciones en modo oscuro */
+[data-theme="dark"] .notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Ajustes para iconos en modo oscuro */
+[data-theme="dark"] .notification-success .notification-icon i {
+  color: #81C784;
+}
+
+[data-theme="dark"] .notification-error .notification-icon i {
+  color: #FF8A80;
+}
+
+[data-theme="dark"] .notification-warning .notification-icon i {
+  color: #FFB74D;
+}
+
+[data-theme="dark"] .notification-info .notification-icon i {
+  color: #64B5F6;
+}
+
+/* Animación sutil de aparición para modo oscuro */
+@keyframes glow {
+  0% { box-shadow: 0 0 0px rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+  100% { box-shadow: 0 0 0px rgba(255, 255, 255, 0); }
+}
+
+[data-theme="dark"] .notification-show {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Ajustes de contraste para mejor legibilidad */
+[data-theme="dark"] .notification-content,
+body.dark-mode .notification-content {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Mejora para pantallas muy oscuras - aumenta ligeramente el contraste en notificaciones claras */
+@media (prefers-color-scheme: dark) {
+  [data-theme="dark"] .notification-success,
+  [data-theme="dark"] .notification-info {
+    background-color: rgba(30, 40, 35, 0.9);
+  }
+}
+
+[data-theme="dark"] .auth-step {
+    color: rgb(232 239 236);
+  }
+
+  /* 
+ * Estilos adicionales para mostrar información amigable del User-Agent
+ * Agregar al final del archivo alertas.css
+ */
+
+/* Estilos para información de dispositivo */
+.device-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.device-icon {
+    font-size: 18px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    min-width: 20px !important;
+    text-align: center !important;
+}
+
+.device-text {
+    font-weight: 500 !important;
+    color: inherit !important;
+}
+
+/* Mejoras para campos de datos con iconos */
+.auth-data-field .device-info {
+    margin-left: 0 !important;
+}
+
+.auth-data-field:has(.device-info) {
+    align-items: center !important;
+}
+
+/* Estilos para diferentes niveles de riesgo */
+.auth-modal.risk-high .auth-header {
+    background: linear-gradient(135deg, #8B2635, #540b0e) !important;
+}
+
+.auth-modal.risk-medium .auth-header {
+    background: linear-gradient(135deg, #B7791F, #996307) !important;
+}
+
+.auth-modal.risk-low .auth-header {
+    background: linear-gradient(135deg, #2F4858, #1e3a46) !important;
+}
+
+/* Indicadores de riesgo en badges */
+.auth-badge.risk-high {
+    background: #8B2635 !important;
+    animation: pulseRisk 2s infinite !important;
+}
+
+.auth-badge.risk-medium {
+    background: #B7791F !important;
+}
+
+.auth-badge.risk-low {
+    background: #2F4858 !important;
+}
+
+/* Animación para riesgo alto */
+@keyframes pulseRisk {
+    0% {
+        box-shadow: 0 4px 15px rgba(139, 38, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(139, 38, 53, 0.6);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(139, 38, 53, 0.3);
+    }
+}
+
+/* Estilos para información de navegador específica */
+.device-info.browser-chrome .device-icon {
+    color: #4285F4 !important;
+}
+
+.device-info.browser-firefox .device-icon {
+    color: #FF7139 !important;
+}
+
+.device-info.browser-safari .device-icon {
+    color: #007AFF !important;
+}
+
+.device-info.browser-edge .device-icon {
+    color: #0078D4 !important;
+}
+
+.device-info.browser-opera .device-icon {
+    color: #FF1B2D !important;
+}
+
+/* Estilos para información de sistema operativo */
+.device-info.os-windows .device-icon {
+    color: #0078D4 !important;
+}
+
+.device-info.os-macos .device-icon {
+    color: #007AFF !important;
+}
+
+.device-info.os-linux .device-icon {
+    color: #FCC624 !important;
+}
+
+.device-info.os-android .device-icon {
+    color: #3DDC84 !important;
+}
+
+.device-info.os-ios .device-icon {
+    color: #007AFF !important;
+}
+
+/* Tooltip para información adicional */
+.device-info[title] {
+    cursor: help !important;
+    position: relative !important;
+}
+
+.device-info[title]:hover::after {
+    content: attr(title) !important;
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    z-index: 1000 !important;
+    margin-bottom: 5px !important;
+}
+
+/* Estilos para alertas de seguridad mejoradas */
+.auth-security-warning.risk-high {
+    background: rgba(139, 38, 53, 0.1) !important;
+    border-left-color: #8B2635 !important;
+}
+
+.auth-security-warning.risk-medium {
+    background: rgba(183, 121, 31, 0.1) !important;
+    border-left-color: #B7791F !important;
+}
+
+/* Información de debug desplegable */
+details.auth-debug {
+    margin-top: 15px !important;
+    padding: 10px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+
+details.auth-debug summary {
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    color: #666 !important;
+    margin-bottom: 8px !important;
+}
+
+details.auth-debug pre {
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    overflow-x: auto !important;
+    color: #495057 !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .device-info {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    
+    .device-icon {
+        align-self: flex-start !important;
+    }
+    
+    .auth-data-field {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+    
+    .auth-data-label {
+        margin-bottom: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .device-info {
+        gap: 2px !important;
+    }
+    
+    .device-icon {
+        font-size: 16px !important;
+    }
+    
+    .device-text {
+        font-size: 14px !important;
+    }
+}
+
+/* Modo oscuro para nuevos elementos */
+[data-theme="dark"] .device-info {
+    color: #ede5e5 !important;
+}
+
+[data-theme="dark"] .device-text {
+    color: #ede5e5 !important;
+}
+
+[data-theme="dark"] details.auth-debug {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] details.auth-debug summary {
+    color: #a8a8b3 !important;
+}
+
+[data-theme="dark"] details.auth-debug pre {
+    background: #2d2d3a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #c8c8d0 !important;
+}
+
+/* Estados hover para elementos interactivos */
+.device-info:hover .device-icon {
+    transform: scale(1.1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+/* Estilos adicionales para badges con iconos */
+.auth-badge i {
+    margin-right: 6px !important;
+    font-size: 16px !important;
+}
+
+/* Mejoras visuales para mejor legibilidad */
+.auth-data-value.device-info {
+    font-weight: 500 !important;
+    padding: 2px 0 !important;
+}
+
+/* Separadores visuales opcionales */
+.auth-data-container .auth-data-field:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 8px !important;
+}
+
+[data-theme="dark"] .auth-data-container .auth-data-field:not(:last-child) {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+@media (min-width: 1024px) and (max-width: 1380px) and (max-height: 768px) {
+    .auth-modal {
+        width: 100% !important;
+        max-height: 100%;
+        
+    }
+.auth-content {
+    padding: 25px !important;
+    max-height:400px;
+    overflow:auto
+         }   }

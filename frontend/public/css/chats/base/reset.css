@@ -1,0 +1,81 @@
+/* ======================================
+   CSS RESET Y ESTILOS BASE
+   ====================================== */
+
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family-base);
+  }
+  
+  html, body {
+    height: 100%;
+  }
+
+  /* Estilos de prevención de parpadeo */
+  html.theme-initializing,
+  html.theme-initializing body {
+    visibility: hidden;
+    background-color: #f0efe7; /* Color por defecto para tema claro */
+  }
+  
+  html[data-theme="dark"].theme-initializing,
+  html[data-theme="dark"].theme-initializing body {
+    background-color: #1a1a1a; /* Color por defecto para tema oscuro */
+  }
+  
+  body {
+    display: flex;
+    height: auto; /* Cambiar de 100vh a auto para permitir scroll natural */
+    min-height: 100vh; /* Asegurar que ocupe al menos toda la pantalla */
+    background: var(--color-primary);
+    color: var(--color-text);
+    overflow-x: hidden;
+    overflow-y: auto; /* Asegurar que el body tenga scroll vertical */
+ 
+  }
+  
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  
+  ul, ol {
+    list-style-position: inside;
+  }
+  
+  
+  
+  ::-webkit-scrollbar-track {
+    background:  #a2757500;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #564c4c42;
+  }
+  
+  /* Clase para ocultar elementos visualmente pero mantenerlos para lectores de pantalla */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  

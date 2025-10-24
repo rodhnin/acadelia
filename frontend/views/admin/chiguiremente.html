@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Mente Chiguire</title>
+    
+    <!-- Estilos -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    
+    <!-- CSS Modular -->
+    <link rel="stylesheet" href="/css/chiguiremente.css">
+</head>
+<body class="light-theme">
+    <!-- Loader -->
+    <div id="app-loader" class="loader-overlay">
+        <div class="loader-container">
+            <div class="loader-image">
+                <img id="loader-gif" src="/images/Pensando_claro.gif" alt="Cargando" class="loader-icon">
+            </div>
+            <p class="loader-text">Cargando...</p>
+        </div>
+    </div>
+    
+    <!-- Barra superior -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <div class="logo-container">
+                <img src="/images/Imagotipo.webp" alt="Logo Acadelia" class="logo" id="main-logo">
+                <span class="logo-text">La mente del Chiguire</span>
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+                <i class='bx bx-moon'></i>
+            </button>
+            <div class="user-info">
+                <span>Administrador</span>
+                <img src="/images/Perfil_claro.gif" alt="Avatar" class="user-avatar" id="user-avatar">
+            </div>
+        </div>
+    </header>
+    
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Sidebar de navegación -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-view="dashboard">
+                    <a href="#dashboard">
+                        <i class='bx bx-home-alt'></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-view="creation">
+                    <a href="#creation">
+                        <i class='bx bx-plus-circle'></i>
+                        <span>Crear Asistentes</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-view="edition">
+                    <a href="#edition">
+                        <i class='bx bx-edit'></i>
+                        <span>Editar Asistentes</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-view="train-mind">
+                <a href="#train-mind" class="nav-link" data-section="train-mind">
+                        <i class='bx bx-brain'></i>
+                        <span>Entrenar Mente</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="help-button" class="sidebar-button">
+                    <i class='bx bx-help-circle'></i>
+                    <span>Ayuda</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Contenido principal que cambia según la vista -->
+        <main id="main-content" class="content">
+            <!-- Vista de Dashboard -->
+            <section id="dashboard-view" class="main-view">
+                <div class="view-header">
+                    <h1>Dashboard de Mente Chiguire</h1>
+                    <p class="view-description">Bienvenido al centro de control de Asistentes Virtuales Académicos</p>
+                </div>
+                
+                <div class="dashboard-welcome">
+                    <!-- Tarjeta del profesor estilo "Centro de Comando" -->
+                    <div class="command-center-card">
+                        <div class="command-center-visual">
+                            <div class="command-center-overlay"></div>
+                            <div class="data-screens">
+                                <div class="data-screen screen-1">
+                                    <div class="screen-header"></div>
+                                    <div class="screen-content">
+                                        <div class="screen-line"></div>
+                                        <div class="screen-line"></div>
+                                        <div class="screen-graph"></div>
+                                    </div>
+                                </div>
+                                <div class="data-screen screen-2">
+                                    <div class="screen-header"></div>
+                                    <div class="screen-content">
+                                        <div class="screen-dots"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="command-center-lights"></div>
+                            <img src="/images/mentechiguire.webp" alt="Profesor Acadel Estratega" class="command-center-professor">
+                        </div>
+                        <div class="professor-message command-message">
+                            <div class="message-bubble command-bubble">
+                                <p class="quote">"¡Bienvenido al Centro de Comando Acadélico! Desde aquí monitoreamos y gestionamos todos nuestros asistentes virtuales. Como puedes ver, nuestro ecosistema educativo está creciendo. ¿Sabías que algunos de nuestros AVAs ya pueden resolver problemas de matemáticas que a mí todavía me cuestan?"</p>
+                                <div class="quote-author">— Dr. Acadel, Director de Análisis Estratégico Educativo</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estadísticas rediseñadas sin tendencias -->
+                    <div class="dashboard-stats">
+                        <div class="stat-card stat-pulse">
+                            <div class="stat-icon">
+                                <i class='bx bxs-graduation'></i>
+                                <div class="pulse-ring-dashboard"></div>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-value" id="dashboard-carreras-count">0</span>
+                                <span class="stat-label">Carreras</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-pulse">
+                            <div class="stat-icon">
+                                <i class='bx bx-book-content'></i>
+                                <div class="pulse-ring-dashboard"></div>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-value" id="dashboard-avas-count">0</span>
+                                <span class="stat-label">AVAs</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-pulse">
+                            <div class="stat-icon">
+                                <i class='bx bx-wrench'></i>
+                                <div class="pulse-ring-dashboard"></div>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-value" id="dashboard-herramientas-count">0</span>
+                                <span class="stat-label">Herramientas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-sections">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class='bx bxs-graduation'></i>
+                            Carreras Disponibles
+                        </h2>
+                    </div>
+                    
+                    <div class="dashboard-cards" id="dashboard-carreras">
+                        <!-- Las carreras se cargarán dinámicamente aquí -->
+                        
+                        <!-- Ejemplo de tarjeta renovada -->
+                        <div class="dashboard-card">
+                            <div class="card-status-bar">
+                                <div class="status-indicator online"></div>
+                                <div class="status-text">Activo</div>
+                            </div>
+                            <div class="card-image">
+                                <img src="/images/felicidades.webp" alt="Nombre de Carrera">
+                                <div class="card-badges">
+                                    <span class="card-badge">Destacado</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Nombre de Carrera</h3>
+                                <p class="card-description">Descripción de la carrera que puede ocupar hasta tres líneas de texto para dar una idea general del contenido...</p>
+                                
+                                <div class="card-meta">
+                                    <div class="paddle-codes">
+                                        <div class="paddle-code-wrapper">
+                                            <i class='bx bx-code'></i>
+                                            <span class="paddle-code">M123</span>
+                                        </div>
+                                        <div class="paddle-code-wrapper">
+                                            <i class='bx bx-code-alt'></i>
+                                            <span class="paddle-code">Y456</span>
+                                        </div>
+                                    </div>
+                                    <div class="avas-counter">
+                                        <i class='bx bx-book-content'></i>
+                                        <span class="avas-count-badge">12 AVAs</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-button">
+                                    <i class='bx bx-show'></i>
+                                    <span>Detalles</span>
+                                </button>
+                                <button class="card-button">
+                                    <i class='bx bx-edit'></i>
+                                    <span>Editar</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Fin de ejemplo -->
+                    </div>
+                    
+                    <div class="view-more-container">
+                        <a href="#edition" class="view-more-button" id="view-more-carreras">
+                            <span>Ver todas las carreras</span>
+                            <i class='bx bx-right-arrow-alt'></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Panel de actividad reciente -->
+                <div class="dashboard-activity">
+                    <div class="activity-header">
+                        <h3>
+                            <i class='bx bx-history'></i>
+                            Actividad Reciente
+                        </h3>
+                        <div class="activity-controls">
+                            <button class="activity-control-button" id="refresh-activity">
+                                <i class='bx bx-refresh'></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="activity-timeline">
+                        <!-- La actividad se cargará dinámicamente desde la base de datos -->
+                        <div class="empty-state small">
+                            <i class='bx bx-loader-alt bx-spin'></i>
+                            <p>Cargando actividades recientes...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vista de Creación (adaptado de subidadechiguire.html) -->
+            <section id="creation-view" class="main-view" style="display: none;">
+                <div class="view-header">
+                    <h1>Crear Nuevo Asistente Virtual</h1>
+                    <p class="view-description">Crea carreras, AVAs o herramientas para el sistema Acadelia.</p>
+                </div>
+                
+                <div class="tab-navigation">
+                    <button class="tab-button" data-tab="carrera-tab">
+                        <i class='bx bxs-graduation'></i> Carreras
+                    </button>
+                    <button class="tab-button" data-tab="ava-tab">
+                        <i class='bx bx-book-content'></i> AVAs
+                    </button>
+                    <button class="tab-button" data-tab="herramienta-tab">
+                        <i class='bx bx-wrench'></i> Herramientas
+                    </button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Tab de Bienvenida (mostrado inicialmente) -->
+                    <div id="welcome-tab" class="tab-pane active">
+                        <div class="professor-card creation-professor-card">
+                            <div class="professor-lab-container">
+                                <div class="lab-hologram-effect"></div>
+                                <img src="/images/laboratorio.webp" alt="Profesor Acadel en Laboratorio" class="professor-lab-image">
+                                <div class="lab-elements">
+                                    <div class="lab-beaker"></div>
+                                    <div class="lab-screen">
+                                        <div class="screen-content">Asistente v2.5</div>
+                                    </div>
+                                    <div class="lab-lights"></div>
+                                </div>
+                            </div>
+                            <div class="professor-message lab-message">
+                                <div class="message-bubble lab-bubble">
+                                    <p class="quote">"¡Bienvenido a mi laboratorio de creación! Aquí es donde damos vida a los asistentes virtuales. Combina los elementos correctos, añade una pizca de conocimiento y... ¡eureka! Un nuevo AVA listo para revolucionar el aprendizaje."</p>
+                                    <div class="quote-author">— Dr. Acadel, Director del Laboratorio de Innovación Educativa</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="creation-tips-new">
+                            <div class="tips-header">
+                                <i class='bx bx-bulb'></i>
+                                <h3>Consejos para comenzar</h3>
+                            </div>
+                            <div class="tips-grid">
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-tab'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Selecciona una categoría</h4>
+                                        <p>Selecciona una de las pestañas arriba para elegir el tipo de elemento que deseas crear.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-ghost'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Campos obligatorios</h4>
+                                        <p>Los campos marcados con * son obligatorios y deben completarse para crear el elemento.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-image'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Formatos de imagen</h4>
+                                        <p>Las imágenes deben tener un formato adecuado (JPG, PNG, WebP) para mejor rendimiento.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-show'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Vista previa</h4>
+                                        <p>Puedes ver una vista previa de tus imágenes antes de guardar para asegurar calidad.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Carrera -->
+                    <div id="carrera-tab" class="tab-pane">
+                        <form id="carrera-creation-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="carrera-nombre">Nombre *</label>
+                                <input type="text" id="carrera-nombre" name="nombre" placeholder="Nombre de la carrera" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="carrera-descripcion">Descripción</label>
+                                <textarea id="carrera-descripcion" name="descripcion" placeholder="Descripción de la carrera"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="carrera-month">
+                                        <span class="paddle-code-label">
+                                            <i class='bx bx-code'></i>
+                                            Código Paddle (Mes)
+                                            <span class="paddle-code-badge">Código</span>
+                                        </span>
+                                    </label>
+                                    <input type="text" id="carrera-month" name="month" placeholder="Código Paddle (Mes)">
+                                    <span class="helper-text">Introduce el código Paddle de mes.</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="carrera-year">
+                                        <span class="paddle-code-label">
+                                            <i class='bx bx-code-alt'></i>
+                                            Código Paddle (Año)
+                                            <span class="paddle-code-badge">Código</span>
+                                        </span>
+                                    </label>
+                                    <input type="text" id="carrera-year" name="year" placeholder="Código Paddle (Año)">
+                                    <span class="helper-text">Introduce el código Paddle de año.</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="carrera-imagen">Imagen</label>
+                                <div class="file-input-wrapper">
+                                    <label class="file-input-label">
+                                        <i class='bx bx-upload'></i> Seleccionar archivo
+                                        <input type="file" id="carrera-imagen" name="imagen" accept="image/*" class="file-input">
+                                    </label>
+                                    <span class="file-name" id="carrera-image-name">No se ha seleccionado ningún archivo</span>
+                                </div>
+                                <div id="carrera-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                    <!-- El contenido se generará dinámicamente -->
+                                </div>
+                            </div>
+
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="primary-button">
+                                    <i class='bx bx-plus'></i> Crear Carrera
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Tab AVA -->
+                    <div id="ava-tab" class="tab-pane">
+                        <form id="ava-creation-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="ava-nombre">Nombre *</label>
+                                <input type="text" id="ava-nombre" name="nombre" placeholder="Nombre del AVA" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ava-descripcion">Descripción</label>
+                                <textarea id="ava-descripcion" name="descripcion" placeholder="Descripción del AVA"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ava-carrera">Carrera *</label>
+                                <select id="ava-carrera" name="carrera" required>
+                                    <option value="">Selecciona una carrera</option>
+                                    <!-- Se cargará dinámicamente -->
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ava-slug">Slug</label>
+                                <input type="text" id="ava-slug" name="slug" placeholder="Slug del AVA">
+                                <span class="helper-text">Identificador único para URLs (se generará automáticamente si lo dejas vacío)</span>
+                            </div>
+
+                            <div class="form-group">
+                            <label for="ava-embedding-table">
+                                <span class="paddle-code-label">
+                                    <i class='bx bx-table'></i>
+                                    Tabla de Embeddings
+                                    <span class="paddle-code-badge">RAG</span>
+                                </span>
+                            </label>
+                            <input type="text" id="ava-embedding-table" name="embedding_table_name" placeholder="Nombre de la tabla de embeddings">
+                            <span class="helper-text">Nombre de la tabla para almacenar vectores de embeddings (se generará automáticamente si lo dejas vacío)</span>
+                        </div>
+                            
+                            <div class="form-group">
+                                <label for="ava-imagen">Imagen</label>
+                                <div class="file-input-wrapper">
+                                    <label class="file-input-label">
+                                        <i class='bx bx-upload'></i> Seleccionar archivo
+                                        <input type="file" id="ava-imagen" name="imagen" accept="image/*" class="file-input">
+                                    </label>
+                                    <span class="file-name" id="ava-image-name">No se ha seleccionado ningún archivo</span>
+                                </div>
+                                <div id="ava-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                    <!-- El contenido se generará dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="primary-button">
+                                    <i class='bx bx-plus'></i> Crear AVA
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Tab Herramienta -->
+                    <div id="herramienta-tab" class="tab-pane">
+                        <form id="herramienta-creation-form" class="admin-form">
+                            <div class="form-group">
+                                <label for="herramienta-nombre">Nombre *</label>
+                                <input type="text" id="herramienta-nombre" name="nombre" placeholder="Nombre de la herramienta" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="herramienta-descripcion">Descripción</label>
+                                <textarea id="herramienta-descripcion" name="descripcion" placeholder="Descripción de la herramienta"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="herramienta-slug">Slug</label>
+                                <input type="text" id="herramienta-slug" name="slug" placeholder="Slug de la herramienta">
+                                <span class="helper-text">Identificador único para URLs (se generará automáticamente si lo dejas vacío)</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="herramienta-imagen">Imagen</label>
+                                <div class="file-input-wrapper">
+                                    <label class="file-input-label">
+                                        <i class='bx bx-upload'></i> Seleccionar archivo
+                                        <input type="file" id="herramienta-imagen" name="imagen" accept="image/*" class="file-input">
+                                    </label>
+                                    <span class="file-name" id="herramienta-image-name">No se ha seleccionado ningún archivo</span>
+                                </div>
+                                <div id="herramienta-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                    <!-- El contenido se generará dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="primary-button">
+                                    <i class='bx bx-plus'></i> Crear Herramienta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vista de Edición (adaptado de editchiguire.html) -->
+            <section id="edition-view" class="main-view" style="display: none;">
+                <div class="view-header">
+                    <h1>Editar Asistentes Virtuales</h1>
+                    <p class="view-description">Modifica o elimina carreras, AVAs o herramientas existentes.</p>
+                </div>
+                
+                <div class="tab-navigation">
+                    <button class="tab-button" data-tab="edit-carrera-tab">
+                        <i class='bx bxs-graduation'></i> Carreras
+                    </button>
+                    <button class="tab-button" data-tab="edit-ava-tab">
+                        <i class='bx bx-book-content'></i> AVAs
+                    </button>
+                    <button class="tab-button" data-tab="edit-herramienta-tab">
+                        <i class='bx bx-wrench'></i> Herramientas
+                    </button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Tab de Bienvenida (mostrado inicialmente) -->
+                    <div id="edit-welcome-tab" class="tab-pane active">
+                        <!-- Diseño del profesor para la sección de Edición -->
+                        <div class="edition-professor-card">
+                            <div class="blueprint-container">
+                                <div class="blueprint-grid"></div>
+                                <div class="blueprint-overlay"></div>
+                                <img src="/images/edicion.webp" alt="Profesor Acadel Ingeniero" class="blueprint-professor">
+                                <div class="blueprint-elements">
+                                    <div class="blueprint-paper">
+                                        <div class="blueprint-lines"></div>
+                                        <div class="blueprint-compass"></div>
+                                    </div>
+                                    <div class="blueprint-tools">
+                                        <div class="tool tool-pencil"></div>
+                                        <div class="tool tool-ruler"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="professor-message blueprint-message">
+                                <div class="message-bubble blueprint-bubble">
+                                    <p class="quote">"¡Bienvenido al taller de perfeccionamiento! Aquí mejoraremos nuestros asistentes existentes. Selecciona una categoría arriba para comenzar a ajustar y afinar nuestras creaciones. Como decimos en ingeniería educativa: 'La excelencia está en los detalles'."</p>
+                                    <div class="quote-author">— Ing. Acadel, Jefe de Optimización de Sistemas Educativos</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="edition-tips">
+                            <div class="tips-header">
+                                <i class='bx bx-bulb'></i>
+                                <h3>Consejos para la edición</h3>
+                            </div>
+                            <div class="tips-grid">
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-search'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Busca rápidamente</h4>
+                                        <p>Utiliza la barra de búsqueda para encontrar elementos específicos por nombre o descripción.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-image'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Actualiza imágenes</h4>
+                                        <p>Puedes mantener la imagen actual o seleccionar una nueva en el formulario de edición.</p>
+                                    </div>
+                                </div>
+                                <div class="tip-card">
+                                    <div class="tip-icon"><i class='bx bx-trash'></i></div>
+                                    <div class="tip-content">
+                                        <h4>Elimina con precaución</h4>
+                                        <p>La eliminación de elementos es permanente y puede afectar a otros relacionados.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Editar Carrera -->
+                    <div id="edit-carrera-tab" class="tab-pane">
+                        <div class="search-container">
+                            <i class='bx bx-search search-icon'></i>
+                            <input type="text" class="search-input" id="carrera-search" placeholder="Buscar carrera...">
+                        </div>
+                        <div class="spinner" id="carrera-spinner"></div>
+                        <div id="carrera-grid" class="items-grid">
+                            <!-- Lista de carreras se cargará dinámicamente -->
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Editar AVA -->
+                    <div id="edit-ava-tab" class="tab-pane">
+                        <div class="search-container">
+                            <i class='bx bx-search search-icon'></i>
+                            <input type="text" class="search-input" id="ava-search" placeholder="Buscar AVA...">
+                        </div>
+                        <div class="spinner" id="ava-spinner"></div>
+                        <div id="ava-list" class="list-container">
+                            <!-- Lista de AVAs agrupados por carrera se cargará dinámicamente -->
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Editar Herramienta -->
+                    <div id="edit-herramienta-tab" class="tab-pane">
+                        <div class="search-container">
+                            <i class='bx bx-search search-icon'></i>
+                            <input type="text" class="search-input" id="herramienta-search" placeholder="Buscar Herramienta...">
+                        </div>
+                        <div class="spinner" id="herramienta-spinner"></div>
+                        <div id="herramienta-grid" class="items-grid">
+                            <!-- Lista de herramientas se cargará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formularios modales para edición (permanecen ocultos hasta que se abran) -->
+                <!-- Formulario de edición de carrera -->
+                <div id="carrera-edit-form" class="edit-form">
+                    <div class="modal-container">
+                        <div class="modal-sidebar">
+                            <!-- Sidebar se llenará dinámicamente -->
+                        </div>
+                        <div class="modal-main-content">
+                            <div class="edit-form-header">
+                                <h2><i class='bx bxs-graduation'></i> Editar Carrera</h2>
+                                <div class="edit-form-controls">
+                                    <button type="button" class="close-form" aria-label="Cerrar">&times;</button>
+                                </div>
+                            </div>
+                            <div class="form-scroll-container">
+                                <form id="carrera-form" enctype="multipart/form-data">
+                                    <input type="hidden" id="carrera-edit-id" name="id_carrera">
+                                    
+                                    <div class="form-group">
+                                        <label for="carrera-edit-nombre">Nombre *</label>
+                                        <input type="text" id="carrera-edit-nombre" name="nombre" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="carrera-edit-descripcion">Descripción</label>
+                                        <textarea id="carrera-edit-descripcion" name="descripcion"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="carrera-edit-month">
+                                                <span class="paddle-code-label">
+                                                    <i class='bx bx-code'></i> Código Paddle (Mes)
+                                                </span>
+                                            </label>
+                                            <input type="text" id="carrera-edit-month" name="month">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="carrera-edit-year">
+                                                <span class="paddle-code-label">
+                                                    <i class='bx bx-code-alt'></i> Código Paddle (Año)
+                                                </span>
+                                            </label>
+                                            <input type="text" id="carrera-edit-year" name="year">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="carrera-edit-imagen">Imagen</label>
+                                        <div class="file-input-wrapper">
+                                            <label class="file-input-label">
+                                                <i class='bx bx-upload'></i> Seleccionar archivo
+                                                <input type="file" id="carrera-edit-imagen" name="imagen" accept="image/*" class="file-input">
+                                            </label>
+                                            <span class="file-name" id="carrera-file-name">No se ha seleccionado ningún archivo</span>
+                                        </div>
+                                        <div id="carrera-edit-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                            <!-- El contenido se generará dinámicamente -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="primary-button">
+                                            <i class='bx bx-save'></i> Guardar Cambios
+                                        </button>
+                                        <div class="secondary-actions">
+                                            <button type="button" class="secondary-button" id="carrera-cancel-edit">
+                                                <i class='bx bx-x'></i> Cancelar
+                                            </button>
+                                            <button type="button" class="danger-button" id="carrera-delete">
+                                                <i class='bx bx-trash'></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de edición de AVA -->
+                <div id="ava-edit-form" class="edit-form">
+                    <div class="modal-container">
+                        <div class="modal-sidebar">
+                            <!-- Sidebar se llenará dinámicamente -->
+                        </div>
+                        <div class="modal-main-content">
+                            <div class="edit-form-header">
+                                <h2><i class='bx bx-book-content'></i> Editar AVA</h2>
+                                <div class="edit-form-controls">
+                                    <button type="button" class="close-form" aria-label="Cerrar">&times;</button>
+                                </div>
+                            </div>
+                            <div class="form-scroll-container">
+                                <form id="ava-form" enctype="multipart/form-data">
+                                    <input type="hidden" id="ava-edit-id" name="id_ava">
+                                    
+                                    <div class="form-group">
+                                        <label for="ava-edit-nombre">Nombre *</label>
+                                        <input type="text" id="ava-edit-nombre" name="nom_ava" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="ava-edit-descripcion">Descripción</label>
+                                        <textarea id="ava-edit-descripcion" name="descripcion"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="ava-edit-carrera">Carrera *</label>
+                                        <select id="ava-edit-carrera" name="id_carrera" required>
+                                            <option value="">Selecciona una carrera</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="ava-edit-slug">
+                                            <span class="paddle-code-label">
+                                                <i class='bx bx-link'></i> Slug
+                                            </span>
+                                        </label>
+                                        <input type="text" id="ava-edit-slug" name="slug">
+                                        <span class="helper-text">Identificador único para URLs</span>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="ava-edit-embedding-table">
+                                            <span class="paddle-code-label">
+                                                <i class='bx bx-table'></i> Tabla de Embeddings
+                                                <span class="paddle-code-badge">RAG</span>
+                                            </span>
+                                        </label>
+                                        <input type="text" id="ava-edit-embedding-table" name="embedding_table_name" readonly disabled class="disabled-input">
+                                        <span class="helper-text">Tabla donde se almacenan los vectores de embeddings para RAG</span>
+                                        <div class="warning-message">
+                                            <i class='bx bx-error-circle'></i>
+                                            <span>Este campo no puede modificarse ya que está vinculado con información guardada. Su cambio podría ocasionar pérdida de datos.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ava-edit-imagen">Imagen</label>
+                                        <div class="file-input-wrapper">
+                                            <label class="file-input-label">
+                                                <i class='bx bx-upload'></i> Seleccionar archivo
+                                                <input type="file" id="ava-edit-imagen" name="imagen" accept="image/*" class="file-input">
+                                            </label>
+                                            <span class="file-name" id="ava-file-name">No se ha seleccionado ningún archivo</span>
+                                        </div>
+                                        <div id="ava-edit-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                            <!-- El contenido se generará dinámicamente -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="primary-button">
+                                            <i class='bx bx-save'></i> Guardar Cambios
+                                        </button>
+                                        <div class="secondary-actions">
+                                            <button type="button" class="secondary-button" id="ava-cancel-edit">
+                                                <i class='bx bx-x'></i> Cancelar
+                                            </button>
+                                            <button type="button" class="danger-button" id="ava-delete">
+                                                <i class='bx bx-trash'></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de edición de Herramienta -->
+                <div id="herramienta-edit-form" class="edit-form">
+                    <div class="modal-container">
+                        <div class="modal-sidebar">
+                            <!-- Sidebar se llenará dinámicamente -->
+                        </div>
+                        <div class="modal-main-content">
+                            <div class="edit-form-header">
+                                <h2><i class='bx bx-wrench'></i> Editar Herramienta</h2>
+                                <div class="edit-form-controls">
+                                    <button type="button" class="close-form" aria-label="Cerrar">&times;</button>
+                                </div>
+                            </div>
+                            <div class="form-scroll-container">
+                                <form id="herramienta-form" enctype="multipart/form-data">
+                                    <input type="hidden" id="herramienta-edit-id" name="id">
+                                    
+                                    <div class="form-group">
+                                        <label for="herramienta-edit-nombre">Nombre *</label>
+                                        <input type="text" id="herramienta-edit-nombre" name="nombre" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="herramienta-edit-descripcion">Descripción</label>
+                                        <textarea id="herramienta-edit-descripcion" name="descripcion"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="herramienta-edit-slug">
+                                            <span class="paddle-code-label">
+                                                <i class='bx bx-link'></i> Slug
+                                            </span>
+                                        </label>
+                                        <input type="text" id="herramienta-edit-slug" name="slug">
+                                        <span class="helper-text">Identificador único para URLs</span>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="herramienta-edit-imagen">Imagen</label>
+                                        <div class="file-input-wrapper">
+                                            <label class="file-input-label">
+                                                <i class='bx bx-upload'></i> Seleccionar archivo
+                                                <input type="file" id="herramienta-edit-imagen" name="imagen" accept="image/*" class="file-input">
+                                            </label>
+                                            <span class="file-name" id="herramienta-file-name">No se ha seleccionado ningún archivo</span>
+                                        </div>
+                                        <div id="herramienta-edit-imagen-preview-container" class="image-preview-container" style="display: none;">
+                                            <!-- El contenido se generará dinámicamente -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="primary-button">
+                                            <i class='bx bx-save'></i> Guardar Cambios
+                                        </button>
+                                        <div class="secondary-actions">
+                                            <button type="button" class="secondary-button" id="herramienta-cancel-edit">
+                                                <i class='bx bx-x'></i> Cancelar
+                                            </button>
+                                            <button type="button" class="danger-button" id="herramienta-delete">
+                                                <i class='bx bx-trash'></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nuevo diseño para la sección de Entrenar Mente -->
+            <section id="train-mind-section" class="content-section">
+                <!-- Pantalla de Bienvenida Rediseñada con tema Neural -->
+                <div id="welcome-screen" class="neural-welcome-screen">
+                    <div class="neural-center-card">
+                        <div class="neural-visual">
+                            <div class="neural-network-background">
+                                <div class="neural-node n1"></div>
+                                <div class="neural-node n2"></div>
+                                <div class="neural-node n3"></div>
+                                <div class="neural-node n4"></div>
+                                <div class="neural-node n5"></div>
+                                <div class="neural-connection c1"></div>
+                                <div class="neural-connection c2"></div>
+                                <div class="neural-connection c3"></div>
+                                <div class="neural-connection c4"></div>
+                            </div>
+                            <div class="neural-glow"></div>
+                            <img src="/images/Profesor_Acadel_Estudiando.webp" alt="Profesor Acadel" class="neural-professor" id="professor-image">
+                            <div class="neural-data-stream"></div>
+                        </div>
+                        
+                        <div class="neural-message">
+                            <div class="neural-bubble">
+                                <div class="bubble-header">
+                                    <div class="brain-icon">
+                                        <i class='bx bx-brain'></i>
+                                    </div>
+                                    <h3>Entrenamiento Neural</h3>
+                                </div>
+                                
+                                <p class="quote">Estoy listo para expandir mi red neural. Los archivos PDF que subas serán procesados con la tecnología Mistral OCR para amplificar mis sinapsis cognitivas.</p>
+                                <p class="quote">Este proceso de entrenamiento incrementa mi capacidad para asistir de manera más precisa a los estudiantes.</p>
+                                <p class="quote-author">- Profesor Acadel, Unidad de Aprendizaje Avanzado</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón entre welcome y tips -->
+                    <div class="neural-action-container">
+                        <button id="welcome-continue-btn" class="neural-button">
+                            <span class="neural-button-icon"><i class='bx bx-brain'></i></span>
+                            <span class="neural-button-text">Iniciar Proceso Neural</span>
+                            <span class="neural-button-particles"></span>
+                        </button>
+                    </div>
+                    
+                    <!-- Nueva sección de tips con tema neural -->
+                    <div class="neural-tips">
+                        <div class="neural-tips-header">
+                            <div class="synapse-icon">
+                                <i class='bx bx-bulb'></i>
+                                <div class="synapse-pulse"></div>
+                            </div>
+                            <h3>Optimización de Entrenamiento</h3>
+                        </div>
+                        
+                        <div class="neural-tips-grid">
+                            <div class="neuron-tip">
+                                <div class="neuron-tip-icon">
+                                    <i class='bx bx-file-find'></i>
+                                    <div class="synapse-pulse"></div>
+                                </div>
+                                <div class="neuron-connector"></div>
+                                <div class="neuron-tip-content">
+                                    <h4>Calidad de Datos</h4>
+                                    <p>Los PDF claros y bien estructurados generan mejores resultados de aprendizaje para el sistema.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="neuron-tip">
+                                <div class="neuron-tip-icon">
+                                    <i class='bx bx-file-blank'></i>
+                                    <div class="synapse-pulse"></div>
+                                </div>
+                                <div class="neuron-connector"></div>
+                                <div class="neuron-tip-content">
+                                    <h4>Tipo de Contenido</h4>
+                                    <p>Proporciona documentos académicos relevantes para el AVA específico que deseas entrenar.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="neuron-tip">
+                                <div class="neuron-tip-icon">
+                                    <i class='bx bx-line-chart'></i>
+                                    <div class="synapse-pulse"></div>
+                                </div>
+                                <div class="neuron-connector"></div>
+                                <div class="neuron-tip-content">
+                                    <h4>Procesamiento Avanzado</h4>
+                                    <p>Mistral OCR extrae automáticamente texto, imágenes y tablas para un aprendizaje completo.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="neuron-tip">
+                                <div class="neuron-tip-icon">
+                                    <i class='bx bx-time'></i>
+                                    <div class="synapse-pulse"></div>
+                                </div>
+                                <div class="neuron-connector"></div>
+                                <div class="neuron-tip-content">
+                                    <h4>Tiempo de Procesamiento</h4>
+                                    <p>El entrenamiento puede tomar varios minutos dependiendo de la complejidad de los documentos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- El resto del contenido permanece igual pero oculto inicialmente -->
+                <div class="train-content-container">
+                    <!-- Nueva sección de selección de AVA con carrusel -->
+                    <div class="neural-ava-selection-section">
+                        <div class="neural-section-header">
+                            <div class="neural-header-icon">
+                                <i class='bx bx-brain'></i>
+                                <div class="neural-pulse-ring"></div>
+                            </div>
+                            <h2>Selecciona un Asistente Virtual para Entrenamiento</h2>
+                        </div>
+
+                        <!-- Filtros para AVAs -->
+                        <div class="neural-filters">
+                            <div class="neural-filter-group">
+                                <div class="neural-filter-label">
+                                    <i class='bx bx-filter-alt'></i>
+                                    <span>Filtrar por Carrera:</span>
+                                </div>
+                                <select id="carrera-filter" class="neural-select">
+                                    <option value="">Todas las Carreras</option>
+                                    <!-- Las opciones de carrera se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="neural-filter-group">
+                                <div class="neural-filter-label">
+                                    <i class='bx  bx-search-alt'></i>
+                                    <span>Buscar AVA:</span>
+                                </div>
+                                <div class="neural-search-container">
+                                    <i class='bx bx-search'></i>
+                                    <input type="text" id="avaneural-search" class="neural-search" placeholder="Buscar AVA...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carrusel de AVAs -->
+                        <div class="neural-carousel-container">
+                            <button class="neural-carousel-nav prev" id="carousel-prev">
+                                <i class='bx bx-chevron-left'></i>
+                            </button>
+                            
+                            <div class="neural-carousel" id="ava-carousel">
+                                <!-- Las tarjetas de AVA se cargarán dinámicamente -->
+                                <div class="neural-carousel-loader">
+                                    <div class="neural-loader-ripple">
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    <p>Cargando Asistentes Virtuales...</p>
+                                </div>
+                            </div>
+                            
+                            <button class="neural-carousel-nav next" id="carousel-next">
+                                <i class='bx bx-chevron-right'></i>
+                            </button>
+                        </div>
+
+                        <!-- Plantilla para tarjeta de AVA (se clonará mediante JavaScript) -->
+                        <template id="ava-card-template">
+                            <div class="neural-ava-card" data-ava-id="" data-has-embedding="">
+                                <div class="neural-card-status"></div>
+                                <div class="neural-card-content">
+                                    <div class="neural-card-image">
+                                        <img src="" alt="">
+                                        <div class="neural-card-overlay"></div>
+                                    </div>
+                                    <div class="neural-card-info">
+                                        <h3 class="neural-card-title"></h3>
+                                        <p class="neural-card-description"></p>
+                                        <div class="neural-card-meta">
+                                            <div class="neural-meta-item carrera">
+                                                <i class='bx bxs-graduation'></i>
+                                                <span class="carrera-name"></span>
+                                            </div>
+                                            <div class="neural-meta-item embedding-status">
+                                                <i class='bx bx-table'></i>
+                                                <span class="embedding-name"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="neural-card-actions">
+                                    <button class="neural-card-select">Seleccionar</button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Mensaje cuando no hay AVA seleccionado -->
+                        <div id="no-ava-selected" class="neural-empty-selection">
+                            <div class="neural-empty-icon">
+                                <i class='bx bx-ghost'></i>
+                            </div>
+                            <h3>Ningún Asistente Seleccionado</h3>
+                            <p>Selecciona un asistente virtual del carrusel para comenzar el entrenamiento.</p>
+                        </div>
+                    </div>
+
+                    <!-- Sección de AVA seleccionado -->
+                    <div id="selected-ava-section" class="neural-selected-ava" style="display: none;">
+                        <div class="neural-selected-header">
+                            <div class="neural-selected-info">
+                                <button id="back-to-selection" class="neural-back-button">
+                                    <i class='bx bx-arrow-back'></i>
+                                </button>
+                                <div class="neural-selected-avatar">
+                                    <img id="selected-ava-image" src="" alt="">
+                                    <div class="neural-avatar-pulse"></div>
+                                </div>
+                                <div class="neural-selected-details">
+                                    <h3 id="selected-ava-name"></h3>
+                                    <div class="neural-selected-meta">
+                                        <div class="neural-meta-chip">
+                                            <i class='bx bxs-graduation'></i>
+                                            <span id="selected-ava-carrera"></span>
+                                        </div>
+                                        <div class="neural-meta-chip neural-table-chip">
+                                            <i class='bx bx-table'></i>
+                                            <span id="selected-ava-table"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs para navegar entre entrenamiento y archivos -->
+                        <div class="neural-tabs">
+                            <button class="neural-tab active" data-tab="training-tab">
+                                <i class='bx bx-upload'></i>
+                                <span>Entrenamiento</span>
+                            </button>
+                            <button class="neural-tab" data-tab="files-tab">
+                                <i class='bx bx-file'></i>
+                                <span>Archivos Procesados</span>
+                                <div class="neural-tab-badge" id="files-count">0</div>
+                            </button>
+                        </div>
+
+                        <!-- Tab de Entrenamiento -->
+                        <div id="training-tab" class="neural-tab-content active">
+                            <!-- Zona de subida de archivos -->
+                            <div id="pdf-dropzone" class="neural-dropzone">
+                                <div class="neural-dropzone-content">
+                                    <div class="neural-dropzone-icon">
+                                        <i class='bx bx-cloud-upload'></i>
+                                        <div class="neural-dropzone-pulse"></div>
+                                    </div>
+                                    <h3 class="neural-dropzone-title">Arrastra archivos PDF aquí</h3>
+                                    <p class="neural-dropzone-description">o <span class="neural-browse-link">busca en tu dispositivo</span></p>
+                                    <input type="file" id="pdf-upload" multiple accept="application/pdf" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- Lista de archivos seleccionados -->
+                            <div id="upload-files-list" class="neural-files-section" style="display: none;">
+                                <div class="neural-files-header">
+                                    <h3 class="neural-files-title">
+                                        <i class='bx bx-list-ul'></i> 
+                                        <span>Archivos Seleccionados</span>
+                                    </h3>
+                                    <button type="button" id="clear-files" class="neural-button secondary">
+                                        <i class='bx bx-trash'></i> Limpiar
+                                    </button>
+                                </div>
+                                <div class="neural-files-list">
+                                    <!-- Los archivos seleccionados se agregarán aquí dinámicamente -->
+                                </div>
+                                
+                                <!-- Botones de acción -->
+                                <div class="neural-action-container">
+                                    <button type="button" id="start-upload" class="neural-button primary">
+                                        <span class="button-text">Iniciar Entrenamiento</span>
+                                        <i class='bx bx-brain'></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab de Archivos Procesados -->
+                        <div id="files-tab" class="neural-tab-content">
+                            <div class="neural-files-stats">
+                                <div class="neural-stat-card">
+                                    <div class="neural-stat-icon">
+                                        <i class='bx bx-file'></i>
+                                    </div>
+                                    <div class="neural-stat-content">
+                                        <span class="neural-stat-value" id="total-processed-files">0</span>
+                                        <span class="neural-stat-label">Archivos</span>
+                                    </div>
+                                </div>
+                                <div class="neural-stat-card">
+                                    <div class="neural-stat-icon">
+                                        <i class='bx bx-book-open'></i>
+                                    </div>
+                                    <div class="neural-stat-content">
+                                        <span class="neural-stat-value" id="total-processed-pages">0</span>
+                                        <span class="neural-stat-label">Páginas</span>
+                                    </div>
+                                </div>
+                                <div class="neural-stat-card">
+                                    <div class="neural-stat-icon">
+                                        <i class='bx bx-time'></i>
+                                    </div>
+                                    <div class="neural-stat-content">
+                                        <span class="neural-stat-value" id="last-processed-date">-</span>
+                                        <span class="neural-stat-label">Última Actualización</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="neural-processed-files">
+                                <div class="neural-section-header">
+                                    <div class="neural-header-icon">
+                                        <i class='bx bx-data'></i>
+                                        <div class="neural-pulse-ring"></div>
+                                    </div>
+                                    <h3>Archivos en Base de Conocimiento</h3>
+                                </div>
+                                
+                                <div id="processed-files-container" class="neural-processed-files-grid">
+                                    <!-- Los archivos procesados se cargarán aquí -->
+                                    <div class="neural-files-loader">
+                                        <div class="neural-loader-brain">
+                                            <div class="neural-loader-circle"></div>
+                                            <div class="neural-loader-node n1"></div>
+                                            <div class="neural-loader-node n2"></div>
+                                            <div class="neural-loader-node n3"></div>
+                                            <div class="neural-loader-node n4"></div>
+                                            <div class="neural-loader-node n5"></div>
+                                            <div class="neural-loader-connection c1"></div>
+                                            <div class="neural-loader-connection c2"></div>
+                                            <div class="neural-loader-connection c3"></div>
+                                            <div class="neural-loader-connection c4"></div>
+                                        </div>
+                                        <p>Cargando archivos procesados...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de progreso (inicialmente oculto) -->
+                    <div id="upload-progress" class="neural-progress-section" style="display: none;">
+                        <div class="neural-progress-header">
+                            <div class="neural-header-icon processing">
+                                <i class='bx bx-loader-alt bx-spin'></i>
+                                <div class="neural-pulse-ring"></div>
+                            </div>
+                            <h3>Procesamiento Neural en Curso</h3>
+                        </div>
+                        
+                        <div class="neural-progress-status">
+                            <span id="current-operation-text" class="neural-operation-text pulsing">Preparando procesamiento...</span>
+                        </div>
+                        
+                        <!-- Animación del Chiguire mejorada -->
+                        <div id="chiguire-animation" class="neural-chiguire-container">
+                            <div class="neural-brain-bg">
+                                <div class="neural-connection-path path1"></div>
+                                <div class="neural-connection-path path2"></div>
+                                <div class="neural-connection-path path3"></div>
+                                <div class="neural-node node1"></div>
+                                <div class="neural-node node2"></div>
+                                <div class="neural-node node3"></div>
+                                <div class="neural-node node4"></div>
+                            </div>
+                            <div class="neural-chiguire-circle">
+                                <img id="chiguire-img" src="/images/chiguire-walking.gif" alt="Chiguire procesando" class="neural-chiguire-gif">
+                            </div>
+                        </div>
+                        
+                        <!-- Barra de progreso mejorada -->
+                        <div class="neural-progress-container">
+                            <div class="neural-progress-info">
+                                <span id="progress-percentage">0%</span>
+                                <span id="progress-time">00:00</span>
+                            </div>
+                            <div class="neural-progress-bar">
+                                <div class="neural-progress-track">
+                                    <div class="neural-progress-fill"></div>
+                                </div>
+                                <div class="neural-progress-glow"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Log de operaciones renovado -->
+                        <div class="neural-operation-log">
+                            <div class="neural-log-header">
+                                <h4>
+                                    <i class='bx bx-terminal'></i>
+                                    <span>Log de Operaciones</span>
+                                </h4>
+                                <button id="toggle-log" class="neural-icon-button">
+                                    <i class='bx bx-chevron-down'></i>
+                                </button>
+                            </div>
+                            <div id="operation-log-content" class="neural-log-content">
+                                <!-- Las entradas de log se agregarán aquí -->
+                            </div>
+                        </div>
+                        
+                        <!-- Botón de cancelar (opcional) -->
+                        <div class="neural-action-container">
+                            <button id="cancel-processing" class="neural-button secondary">
+                                <i class='bx bx-x'></i>
+                                <span>Cancelar Procesamiento</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resultados (inicialmente ocultos) -->
+                    <div id="upload-results" class="neural-results-section" style="display: none;">
+                        <div class="neural-results-header">
+                            <div class="neural-header-icon success">
+                                <i class='bx bx-check-circle'></i>
+                                <div class="neural-pulse-ring"></div>
+                            </div>
+                            <h2>Entrenamiento Completado</h2>
+                        </div>
+                        
+                        <div class="neural-results-summary">
+                            <div class="neural-result-stat">
+                                <div class="neural-result-icon">
+                                    <i class='bx bx-file'></i>
+                                </div>
+                                <div class="neural-result-content">
+                                    <div class="neural-result-value" id="total-files">0</div>
+                                    <div class="neural-result-label">Archivos Procesados</div>
+                                </div>
+                            </div>
+                            <div class="neural-result-stat">
+                                <div class="neural-result-icon">
+                                    <i class='bx bx-book-open'></i>
+                                </div>
+                                <div class="neural-result-content">
+                                    <div class="neural-result-value" id="total-pages">0</div>
+                                    <div class="neural-result-label">Páginas en Base de Conocimiento</div>
+                                </div>
+                            </div>
+                            <div class="neural-result-stat">
+                                <div class="neural-result-icon">
+                                    <i class='bx bx-brain'></i>
+                                </div>
+                                <div class="neural-result-content">
+                                    <div class="neural-result-value" id="ava-name">-</div>
+                                    <div class="neural-result-label">AVA Entrenado</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="neural-section-title">
+                            <i class='bx bx-file'></i>
+                            <span>Archivos Procesados</span>
+                        </h3>
+                        <div id="file-results-list" class="neural-file-results-grid">
+                            <!-- Los resultados de archivos se agregarán aquí -->
+                        </div>
+                        
+                        <div class="neural-action-container">
+                            <button type="button" id="back-to-upload" class="neural-button primary">
+                                <i class='bx bx-arrow-back'></i>
+                                <span>Volver a Entrenar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para ver contenido de embeddings con navegación mejorada -->
+                <div id="embedding-content-modal" class="neural-modal">
+                <div class="neural-modal-overlay"></div>
+                <div class="neural-modal-container">
+                    <div class="neural-modal-header">
+                    <h3>
+                        <i class='bx bx-code-block'></i>
+                        <span id="modal-embedding-title">Contenido del Embedding</span>
+                    </h3>
+                    <button class="neural-modal-close">
+                        <i class='bx bx-x'></i>
+                    </button>
+                    </div>
+                    <div class="neural-modal-body">
+                    <div class="neural-modal-info">
+                        <div class="neural-info-item">
+                        <span class="neural-info-label">Archivo:</span>
+                        <span id="modal-filename" class="neural-info-value">filename.pdf</span>
+                        </div>
+                        <div class="neural-info-item page-navigation">
+                        <div class="neural-info-header">
+                            <span class="neural-info-label">Página:</span>
+                            <div class="page-controls">
+                            <button id="prev-page-btn" class="page-nav-btn" disabled>
+                                <i class='bx bx-chevron-left'></i>
+                            </button>
+                            <div class="page-selector">
+                                <select id="page-select" class="page-select">
+                                <option value="1">1</option>
+                                </select>
+                            </div>
+                            <button id="next-page-btn" class="page-nav-btn" disabled>
+                                <i class='bx bx-chevron-right'></i>
+                            </button>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="neural-info-item">
+                        <span class="neural-info-label">Fecha:</span>
+                        <span id="modal-timestamp" class="neural-info-value">2025-05-18</span>
+                        </div>
+                    </div>
+                    
+                    <div class="neural-action-bar">
+                    <button id="delete-page-btn" class="page-delete-btn" title="Eliminar página actual">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                    </div>
+                    
+                    <!-- Tabs de navegación -->
+                    <div class="neural-tabs embedding-tabs">
+                        <button class="neural-tab active" data-tab="content-tab">
+                        <i class='bx bx-file'></i>
+                        <span>Contenido</span>
+                        </button>
+                        <button class="neural-tab" data-tab="metadata-tab">
+                        <i class='bx bx-code-block'></i>
+                        <span>Metadatos</span>
+                        </button>
+                    </div>
+                    
+                    <div class="neural-modal-content-container">
+                        <!-- Tab de contenido -->
+                        <div id="content-tab" class="embedding-tab-content active">
+                        <h4 class="neural-modal-section-title">
+                            <i class='bx bx-file-blank'></i>
+                            <span>Contenido:</span>
+                        </h4>
+                        <div id="content-loader" class="neural-loading">
+                            <div class="neural-loader-ripple">
+                            <div></div>
+                            <div></div>
+                            </div>
+                            <p>Cargando contenido...</p>
+                        </div>
+                        <pre id="modal-content" class="neural-code-block"></pre>
+                        </div>
+                        
+                        <!-- Tab de metadatos -->
+                        <div id="metadata-tab" class="embedding-tab-content">
+                        <h4 class="neural-modal-section-title">
+                            <i class='bx bx-code'></i>
+                            <span>Metadatos:</span>
+                        </h4>
+                        <div id="metadata-loader" class="neural-loading">
+                            <div class="neural-loader-ripple">
+                            <div></div>
+                            <div></div>
+                            </div>
+                            <p>Cargando metadatos...</p>
+                        </div>
+                        <pre id="modal-metadata" class="neural-code-block meta"></pre>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Modal de confirmación para eliminar página -->
+                <div id="confirm-delete-page-modal" class="neural-modal">
+                <div class="neural-modal-overlay"></div>
+                <div class="neural-modal-container confirm-container">
+                    <div class="neural-modal-header">
+                    <h3>
+                        <i class='bx bx-trash'></i>
+                        <span>Confirmar eliminación</span>
+                    </h3>
+                    <button class="neural-modal-close">
+                        <i class='bx bx-x'></i>
+                    </button>
+                    </div>
+                    <div class="neural-modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta página?</p>
+                    <p>Esta acción no se puede deshacer.</p>
+                    
+                    <div class="confirm-details">
+                        <p><strong>Archivo:</strong> <span id="confirm-filename"></span></p>
+                        <p><strong>Página:</strong> <span id="confirm-page"></span> de <span id="confirm-total-pages"></span></p>
+                    </div>
+                    
+                    <div class="neural-action-container">
+                        <button id="cancel-delete-page" class="neural-button secondary">
+                        <i class='bx bx-x'></i>
+                        <span>Cancelar</span>
+                        </button>
+                        <button id="confirm-delete-page" class="neural-button danger">
+                        <i class='bx bx-trash'></i>
+                        <span>Eliminar</span>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </section>
+    
+    <!-- Overlay de formulario -->
+    <div class="form-overlay" id="form-overlay"></div>
+    
+    <!-- Modal de confirmación -->
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <i class='bx bx-error-circle'></i>
+                <h3 id="confirm-title">Confirmar acción</h3>
+            </div>
+            <div class="confirm-body">
+                <p id="confirm-message">¿Estás seguro de que deseas realizar esta acción?</p>
+            </div>
+            <div class="confirm-actions">
+                <button id="confirm-cancel" class="secondary-button">Cancelar</button>
+                <button id="confirm-ok" class="danger-button">Eliminar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sistema de Notificaciones -->
+    <div id="notification-container" class="notification-container"></div>
+    
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-helpers.js"></script>
+    <!-- Scripts -->
+    <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/chiguiremente/index-chiguiremente.js" type="module"></script>
+</body>
+</html>

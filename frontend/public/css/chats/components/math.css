@@ -1,0 +1,2038 @@
+/* ======================================
+   EXPRESIONES MATEMÁTICAS
+   ====================================== */
+
+/* Estilos básicos para bloques matemáticos */
+.math-block {
+  display: block;
+  margin: 1.25rem 0;
+  border-left: 3px solid var(--color-primary-light);
+  overflow-x: auto;
+  padding: 1.25rem 1.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-math) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.inline-math {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0.3em;
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Asegurar que las expresiones matemáticas sean scrolleables en móviles */
+.math-block .MathJax {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Mejor espaciado en fórmulas */
+.MathJax * {
+  letter-spacing: normal !important;
+  font-family: var(--font-family-math);
+}
+
+/* Texto normal dentro de ecuaciones */
+.mjx-chtml[display="true"] {
+  margin: 1.5em 0 !important;
+}
+
+/* Tema oscuro para bloques matemáticos */
+[data-theme="dark"] .math-block {
+  background-color: rgba(30, 30, 34, 0.85);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border-left-color: var(--color-primary-dark, #6a7a5f);
+}
+
+/* Math Input Panel */
+.math-panel {
+  position: absolute;
+  bottom: 5%;
+  right: -50%;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: var(--spacing-lg);
+  z-index: var(--z-index-modal);
+  display: none;
+  width: 420px;
+  max-height: 55vh;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(230, 230, 230, 0.7);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.math-panel.show {
+  display: block;
+  animation: slideIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.math-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.toggle-btn.collapsed {
+  transform: rotate(-90deg);
+}
+
+.section-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: var(--spacing-sm);
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  max-height: 1000px;
+  padding: 0.25rem 0;
+}
+
+.section-content.collapsed {
+  max-height: 0;
+}
+
+.math-btn {
+  background: #ffffff;
+  color: var(--color-text);
+  border: none;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 60px;
+}
+
+.math-btn:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.math-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.math-section {
+  color: var(--color-text);
+  padding: var(--spacing-sm) 0;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(146, 134, 134, 0.15);
+  font-size: 0.95em;
+  letter-spacing: 0.02em;
+  margin-top: 0.75rem;
+}
+
+.math-preview {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: var(--font-size-xs);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* ======================================
+   EDITOR DE FÓRMULAS MATEMÁTICAS INTERACTIVO
+   ====================================== */
+
+/* Contenedor principal del editor */
+.math-editor-container {
+  position: absolute;
+  right: -430px;
+  bottom: 1%;
+  width: 400px;
+  max-width: 90vw;
+  background-color: rgba(234, 228, 211, 0.95);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  z-index: var(--z-index-modal);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 75vh;
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  border: 1px solid rgba(210, 205, 190, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.math-editor-container.show {
+  display: flex;
+}
+
+
+/* Barra de herramientas superior */
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(234, 228, 211, 0.95);
+  padding: 12px 16px;
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 12000
+}
+
+.toolbar-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text, #333);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.toolbar-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.toolbar-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+.toolbar-btn.send-button {
+  margin-left: auto;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+/* Área principal de edición */
+.editor-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Área de texto para LaTeX */
+.latex-input-container {
+  padding: 14px;
+  background-color: rgba(248, 249, 250, 0.7);
+  border-bottom: 1px solid rgba(231, 232, 235, 0.5);
+}
+
+#latex-input {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: var(--border-radius-sm);
+  font-family: monospace;
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#latex-input:focus {
+  outline: none;
+  border-color: rgba(164, 172, 134, 0.7);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Vista previa interactiva */
+.interactive-preview-container {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(231, 232, 235, 0.5);
+  position: relative;
+}
+
+.interactive-preview {
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: text;
+  padding: 10px;
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.interactive-preview:hover {
+  background-color: rgba(248, 249, 250, 0.7);
+}
+
+/* Estilos para elementos interactivos en la vista previa */
+.math-element {
+  position: relative;
+  padding: 3px;
+  border-radius: 3px;
+  transition: background-color 0.2s ease, outline 0.2s ease;
+}
+
+.math-element:hover {
+  background-color: rgba(164, 172, 134, 0.12) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.5);
+}
+
+.math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.8) !important;
+}
+
+/* Panel de símbolos matemáticos */
+.math-symbols-panel {
+  max-height: 45vh;
+  overflow-y: auto;
+  border-top: 1px solid rgba(231, 232, 235, 0.5);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  background-color: rgba(248, 249, 250, 0.5);
+}
+
+.math-symbols-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.math-symbols-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.math-symbols-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.symbols-container {
+  padding: 14px;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .math-editor-container {
+  background-color: rgba(42, 42, 42, 0.95);
+  border: 1px solid rgba(60, 60, 60, 0.6);
+}
+
+[data-theme="dark"] .editor-toolbar {
+  background-color: rgba(42, 42, 42, 0.95);
+  border-bottom: 1px solid rgba(60, 60, 60, 0.6);
+}
+
+[data-theme="dark"] .latex-input-container {
+  background-color: rgba(51, 51, 51, 0.7);
+}
+
+[data-theme="dark"] #latex-input {
+  background-color: rgba(34, 34, 34, 0.9);
+  color: rgba(224, 224, 224, 0.9);
+  border-color: rgba(85, 85, 85, 0.7);
+}
+
+[data-theme="dark"] #latex-input:focus {
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .interactive-preview-container {
+  background-color: rgba(42, 42, 42, 0.9);
+  border-color: rgba(68, 68, 68, 0.6);
+}
+
+[data-theme="dark"] .interactive-preview:hover {
+  background-color: rgba(50, 50, 50, 0.7);
+}
+
+[data-theme="dark"] .math-element:hover {
+  background-color: rgba(164, 172, 134, 0.15) !important;
+}
+
+[data-theme="dark"] .math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+}
+
+[data-theme="dark"] .math-symbols-panel {
+  background-color: rgba(45, 45, 45, 0.7);
+  border-color: rgba(68, 68, 68, 0.6);
+}
+
+/* Tooltip para elementos interactivos */
+.math-tooltip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 13px;
+  display: none;
+  backdrop-filter: blur(5px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.math-tooltip.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Indicador de elemento editable */
+.editable-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(164, 172, 134, 0.9);
+  border-radius: 50%;
+  top: -3px;
+  right: -3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.math-element:hover .editable-indicator {
+  opacity: 1;
+}
+
+/* ======================================
+   MEJORAS PARA EL EDITOR MATEMÁTICO INTERACTIVO
+   ====================================== */
+
+/* Mejorar la detección de elementos interactivos */
+.math-element {
+  position: relative;
+  padding: 3px;
+  border-radius: 3px;
+  cursor: pointer !important;
+  transition: background-color 0.25s ease, outline 0.25s ease, transform 0.25s ease;
+}
+
+.math-element:hover {
+  background-color: rgba(164, 172, 134, 0.15) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.5);
+  transform: scale(1.01);
+}
+
+.math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.8) !important;
+  transform: scale(1.02);
+}
+
+/* Indicador visual para elementos editables */
+.editable-indicator {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background-color: rgba(164, 172, 134, 0.9);
+  border-radius: 50%;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.math-element:hover .editable-indicator {
+  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+/* Tooltip para edición de elementos */
+.math-tooltip {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+  min-width: 200px;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1100 !important;
+  backdrop-filter: blur(8px);
+}
+
+.math-tooltip.show {
+  opacity: 1;
+  animation: fadeInScale 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.math-tooltip p {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  color: #582f0e;
+  letter-spacing: 0.01em;
+}
+
+.math-tooltip input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(204, 204, 204, 0.7);
+  border-radius: 5px;
+  margin-bottom: 12px;
+  font-family: monospace;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.math-tooltip input:focus {
+  outline: none;
+  border-color: rgba(164, 172, 134, 0.7);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.math-tooltip .tooltip-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tooltip-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.save-btn {
+  background-color: rgba(164, 172, 134, 0.9);
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: rgba(138, 145, 114, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn:active {
+  transform: translateY(0);
+}
+
+.cancel-btn {
+  background-color: rgba(233, 233, 233, 0.9);
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(221, 221, 221, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.cancel-btn:active {
+  transform: translateY(0);
+}
+
+/* Mejorar estilos del botón de cierre/envío */
+.toolbar-btn.send-button {
+  background-color: rgba(var(--color-background), 0.1);
+  color: var(--color-text);
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+
+.toolbar-btn.send-button:hover {
+  opacity: 0.9;
+  background: rgba(0, 0, 0, 0.07);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar-btn.send-button:active {
+  transform: translateY(0);
+}
+
+/* Ajustes para mejorar la visibilidad de las secciones */
+.section-content {
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.section-content.collapsed {
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Animaciones suaves para mejorar la experiencia de usuario */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.math-element.selected {
+  animation: fadeIn 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .math-tooltip {
+  background-color: rgba(51, 51, 51, 0.95);
+  border-color: rgba(85, 85, 85, 0.7);
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .math-tooltip p {
+  color: rgba(204, 204, 204, 0.9);
+}
+
+[data-theme="dark"] .math-tooltip input {
+  background-color: rgba(34, 34, 34, 0.9);
+  border-color: rgba(85, 85, 85, 0.7);
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .math-tooltip input:focus {
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .cancel-btn {
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .cancel-btn:hover {
+  color: rgba(238, 238, 238, 0.9);
+}
+
+/* Contenedor para el campo MathLive */
+.mathfield-container {
+  width: 100%;
+  min-height: 110px;
+  padding: 18px;
+  background: rgba(234, 228, 211, 0.95);
+  border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+}
+
+/* Estilos para el componente MathLive */
+math-field {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px;
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: var(--border-radius-sm, 6px);
+  font-size: 16px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+math-field:focus, math-field:focus-within {
+  outline: none;
+  border-color: rgba(var(--color-text), 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajustes para tema oscuro */
+[data-theme="dark"] math-field {
+  background-color: rgba(34, 34, 34, 0.9);
+  color: rgba(238, 238, 238, 0.9);
+  border-color: rgba(68, 68, 68, 0.7);
+}
+
+[data-theme="dark"] .mathfield-container {
+  background-color: rgba(34, 35, 35, 0.95);
+}
+
+/* Clases para mejorar la integración con MathLive */
+.math-editor-container.show .editor-area {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ajustes para el panel de símbolos con MathLive */
+.math-symbols-panel .math-btn {
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+}
+
+.math-symbols-panel .math-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.math-symbols-panel .math-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Cambiar colores de selección dentro de MathLive para mejor contraste */
+.ML__selection {
+  background-color: rgba(164, 172, 134, 0.35) !important;
+}
+
+.ML__container {
+  --caret-color: rgba(164, 172, 134, 0.9) !important;
+}
+
+/* Adaptar colores del teclado virtual de MathLive si se usa */
+.ML__keyboard {
+  --keyboard-background: rgba(240, 239, 231, 0.98);
+  --keyboard-toolbar-background: rgba(243, 243, 243, 0.98);
+  --keyboard-toolbar-text: rgba(15, 10, 10, 0.9);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(210, 205, 190, 0.6);
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .ML__keyboard {
+  --keyboard-background: rgba(51, 51, 51, 0.98);
+  --keyboard-toolbar-background: rgba(26, 26, 26, 0.98);
+  --keyboard-toolbar-text: rgba(238, 238, 238, 0.9);
+  border-color: rgba(60, 60, 60, 0.6);
+}
+
+/* Animación suave para la apertura del editor */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+math-field {
+  animation: fadeIn 0.35s ease;
+}
+
+/* Hacer que los botones de herramientas sean más visibles */
+.editor-toolbar {
+  padding: 12px 16px;
+}
+
+.toolbar-btn.send-button {
+  padding: 7px 16px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  letter-spacing: 0.01em;
+}
+
+.toolbar-btn.send-button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar-btn.send-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.editor-title {
+  color: var(--color-text);
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-transform: capitalize;
+}
+
+
+/* Transiciones más suaves para todos los elementos interactivos */
+.math-btn, .toolbar-btn, .tooltip-btn, math-field, #latex-input {
+  will-change: transform, opacity, box-shadow;
+}
+
+/* Mejoras para la accesibilidad */
+.math-btn:focus, .toolbar-btn:focus, .tooltip-btn:focus {
+  outline: 2px solid rgba(164, 172, 134, 0.5);
+  outline-offset: 2px;
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) {
+  .math-btn:active, .toolbar-btn:active {
+    background-color: rgba(164, 172, 134, 0.15);
+  }
+  
+  .math-element:active {
+    background-color: rgba(164, 172, 134, 0.2) !important;
+  }
+}
+
+/* Mejoras para la visualización en pantallas de alta resolución */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .math-block, .math-panel, .math-editor-container {
+    border-width: 0.5px;
+  }
+  
+  .math-element.selected {
+    outline-width: 0.5px !important;
+  }
+}
+
+/* Animaciones más refinadas */
+@keyframes gentle-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.math-element.selected {
+  animation: gentle-pulse 2s infinite ease-in-out;
+}
+
+/* Mejoras para la consistencia visual */
+.math-panel, .math-editor-container, .math-tooltip {
+  font-family: var(--font-family-ui, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+/* Refinamiento final para la coherencia visual */
+.math-symbols-panel .math-section:first-child {
+  margin-top: 0;
+}
+
+.math-symbols-panel .math-section:last-child {
+  border-bottom: none;
+}
+
+/* Mejoras para la experiencia de usuario en dispositivos móviles */
+@media (max-width: 768px) {
+  .math-editor-container {
+    width: 95vw;
+    max-width: 95vw;
+    right: -95vw;
+  }
+  
+  .math-panel {
+    width: 95vw;
+    max-width: 95vw;
+  }
+  
+  .section-content {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+}
+
+[data-theme="dark"] .math-symbols-panel .math-btn {
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+  background: rgb(31 24 24 / 90%);
+  border-radius: 8px;
+}
+
+/* ======================================
+   EXPRESIONES MATEMÁTICAS - WELCOME
+   ====================================== */
+
+/* Estilos básicos para bloques matemáticos */
+.welcome-math-block {
+  display: block;
+  margin: 1.25rem 0;
+  border-left: 3px solid var(--color-primary-light);
+  overflow-x: auto;
+  padding: 1.25rem 1.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-math) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.welcome-inline-math {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0.3em;
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Asegurar que las expresiones matemáticas sean scrolleables en móviles */
+.welcome-math-block .MathJax {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Mejor espaciado en fórmulas */
+.welcome-MathJax * {
+  letter-spacing: normal !important;
+  font-family: var(--font-family-math);
+}
+
+/* Texto normal dentro de ecuaciones */
+.welcome-mjx-chtml[display="true"] {
+  margin: 1.5em 0 !important;
+}
+
+/* Tema oscuro para bloques matemáticos */
+[data-theme="dark"] .welcome-math-block {
+  background-color: rgba(30, 30, 34, 0.85);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border-left-color: var(--color-primary-dark, #6a7a5f);
+}
+
+/* Math Input Panel */
+.welcome-math-panel {
+  position: absolute;
+  bottom: 5%;
+  right: -50%;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: var(--spacing-lg);
+  z-index: var(--z-index-modal);
+  display: none;
+  width: 420px;
+  max-height: 55vh;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(230, 230, 230, 0.7);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.welcome-math-panel.show {
+  display: block;
+  animation: slideIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.welcome-math-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+.welcome-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.welcome-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.welcome-toggle-btn.collapsed {
+  transform: rotate(-90deg);
+}
+
+.welcome-section-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: var(--spacing-sm);
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  max-height: 1000px;
+  padding: 0.25rem 0;
+}
+
+.welcome-section-content.collapsed {
+  max-height: 0;
+}
+
+.welcome-math-btn {
+  background: #ffffff;
+  color: var(--color-text);
+  border: none;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 60px;
+}
+
+.welcome-math-btn:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-math-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.welcome-math-section {
+  color: var(--color-text);
+  padding: var(--spacing-sm) 0;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(146, 134, 134, 0.15);
+  font-size: 0.95em;
+  letter-spacing: 0.02em;
+  margin-top: 0.75rem;
+}
+
+.welcome-math-preview {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: var(--font-size-xs);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* ======================================
+   EDITOR DE FÓRMULAS MATEMÁTICAS INTERACTIVO
+   ====================================== */
+
+/* Contenedor principal del editor */
+.welcome-math-editor-container {
+  position: absolute;
+  right:50px;
+  bottom: 1%;
+  width: 420px;
+  max-width: 90vw;
+  background-color: rgba(234, 228, 211, 0.95);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  z-index: var(--z-index-modal);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 75vh;
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+  border: 1px solid rgba(210, 205, 190, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.welcome-math-editor-container.show {
+  display: flex;
+  animation: slideInRight 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Barra de herramientas superior */
+.welcome-editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(234, 228, 211, 0.95);
+  padding: 12px 16px;
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.welcome-toolbar-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text, #333);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.welcome-toolbar-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.welcome-toolbar-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+.welcome-toolbar-btn.welcome-send-button {
+  margin-left: auto;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+/* Área principal de edición */
+.welcome-editor-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Área de texto para LaTeX */
+.welcome-latex-input-container {
+  padding: 14px;
+  background-color: rgba(248, 249, 250, 0.7);
+  border-bottom: 1px solid rgba(231, 232, 235, 0.5);
+}
+
+#welcome-latex-input {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: var(--border-radius-sm);
+  font-family: monospace;
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#welcome-latex-input:focus {
+  outline: none;
+  border-color: rgba(164, 172, 134, 0.7);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Vista previa interactiva */
+.welcome-interactive-preview-container {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(231, 232, 235, 0.5);
+  position: relative;
+}
+
+.welcome-interactive-preview {
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: text;
+  padding: 10px;
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.welcome-interactive-preview:hover {
+  background-color: rgba(248, 249, 250, 0.7);
+}
+
+/* Estilos para elementos interactivos en la vista previa */
+.welcome-math-element {
+  position: relative;
+  padding: 3px;
+  border-radius: 3px;
+  transition: background-color 0.2s ease, outline 0.2s ease;
+}
+
+.welcome-math-element:hover {
+  background-color: rgba(164, 172, 134, 0.12) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.5);
+}
+
+.welcome-math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.8) !important;
+}
+
+/* Panel de símbolos matemáticos */
+.welcome-math-symbols-panel {
+  max-height: 45vh;
+  overflow-y: auto;
+  border-top: 1px solid rgba(231, 232, 235, 0.5);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  background-color: rgba(248, 249, 250, 0.5);
+}
+
+.welcome-math-symbols-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.welcome-math-symbols-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.welcome-math-symbols-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.welcome-symbols-container {
+  padding: 14px;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .welcome-math-editor-container {
+  background-color: rgba(42, 42, 42, 0.95);
+  border: 1px solid rgba(60, 60, 60, 0.6);
+}
+
+[data-theme="dark"] .welcome-editor-toolbar {
+  background-color: rgba(42, 42, 42, 0.95);
+  border-bottom: 1px solid rgba(60, 60, 60, 0.6);
+}
+
+[data-theme="dark"] .welcome-latex-input-container {
+  background-color: rgba(51, 51, 51, 0.7);
+}
+
+[data-theme="dark"] #welcome-latex-input {
+  background-color: rgba(34, 34, 34, 0.9);
+  color: rgba(224, 224, 224, 0.9);
+  border-color: rgba(85, 85, 85, 0.7);
+}
+
+[data-theme="dark"] #welcome-latex-input:focus {
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .welcome-interactive-preview-container {
+  background-color: rgba(42, 42, 42, 0.9);
+  border-color: rgba(68, 68, 68, 0.6);
+}
+
+[data-theme="dark"] .welcome-interactive-preview:hover {
+  background-color: rgba(50, 50, 50, 0.7);
+}
+
+[data-theme="dark"] .welcome-math-element:hover {
+  background-color: rgba(164, 172, 134, 0.15) !important;
+}
+
+[data-theme="dark"] .welcome-math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+}
+
+[data-theme="dark"] .welcome-math-symbols-panel {
+  background-color: rgba(45, 45, 45, 0.7);
+  border-color: rgba(68, 68, 68, 0.6);
+}
+
+/* Tooltip para elementos interactivos */
+.welcome-math-tooltip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 13px;
+  display: none;
+  backdrop-filter: blur(5px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.welcome-math-tooltip.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Indicador de elemento editable */
+.welcome-editable-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(164, 172, 134, 0.9);
+  border-radius: 50%;
+  top: -3px;
+  right: -3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-math-element:hover .welcome-editable-indicator {
+  opacity: 1;
+}
+
+/* ======================================
+   MEJORAS PARA EL EDITOR MATEMÁTICO INTERACTIVO
+   ====================================== */
+
+/* Mejorar la detección de elementos interactivos */
+.welcome-math-element {
+  position: relative;
+  padding: 3px;
+  border-radius: 3px;
+  cursor: pointer !important;
+  transition: background-color 0.25s ease, outline 0.25s ease, transform 0.25s ease;
+}
+
+.welcome-math-element:hover {
+  background-color: rgba(164, 172, 134, 0.15) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.5);
+  transform: scale(1.01);
+}
+
+.welcome-math-element.selected {
+  background-color: rgba(164, 172, 134, 0.25) !important;
+  outline: 1px dashed rgba(164, 172, 134, 0.8) !important;
+  transform: scale(1.02);
+}
+
+/* Indicador visual para elementos editables */
+.welcome-editable-indicator {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background-color: rgba(164, 172, 134, 0.9);
+  border-radius: 50%;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-math-element:hover .welcome-editable-indicator {
+  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+/* Tooltip para edición de elementos */
+.welcome-math-tooltip {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+  min-width: 200px;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1100 !important;
+  backdrop-filter: blur(8px);
+}
+
+.welcome-math-tooltip.show {
+  opacity: 1;
+  animation: fadeInScale 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-math-tooltip p {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  color: #582f0e;
+  letter-spacing: 0.01em;
+}
+
+.welcome-math-tooltip input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(204, 204, 204, 0.7);
+  border-radius: 5px;
+  margin-bottom: 12px;
+  font-family: monospace;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-math-tooltip input:focus {
+  outline: none;
+  border-color: rgba(164, 172, 134, 0.7);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-math-tooltip .welcome-tooltip-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.welcome-tooltip-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.welcome-save-btn {
+  background-color: rgba(164, 172, 134, 0.9);
+  color: white;
+}
+
+.welcome-save-btn:hover {
+  background-color: rgba(138, 145, 114, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-save-btn:active {
+  transform: translateY(0);
+}
+
+.welcome-cancel-btn {
+  background-color: rgba(233, 233, 233, 0.9);
+  color: #333;
+}
+
+.welcome-cancel-btn:hover {
+  background-color: rgba(221, 221, 221, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-cancel-btn:active {
+  transform: translateY(0);
+}
+
+/* Mejorar estilos del botón de cierre/envío */
+.welcome-toolbar-btn.welcome-send-button {
+  background-color: rgba(var(--color-background), 0.1);
+  color: var(--color-text);
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+
+.welcome-toolbar-btn.welcome-send-button:hover {
+  opacity: 0.9;
+  background: rgba(0, 0, 0, 0.07);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-toolbar-btn.welcome-send-button:active {
+  transform: translateY(0);
+}
+
+/* Ajustes para mejorar la visibilidad de las secciones */
+.welcome-section-content {
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.welcome-section-content.collapsed {
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Animaciones suaves para mejorar la experiencia de usuario */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.welcome-math-element.selected {
+  animation: fadeIn 0.25s ease;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .welcome-math-tooltip {
+  background-color: rgba(51, 51, 51, 0.95);
+  border-color: rgba(85, 85, 85, 0.7);
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .welcome-math-tooltip p {
+  color: rgba(204, 204, 204, 0.9);
+}
+
+[data-theme="dark"] .welcome-math-tooltip input {
+  background-color: rgba(34, 34, 34, 0.9);
+  border-color: rgba(85, 85, 85, 0.7);
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .welcome-math-tooltip input:focus {
+  border-color: rgba(164, 172, 134, 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .welcome-cancel-btn {
+  color: rgba(238, 238, 238, 0.9);
+}
+
+[data-theme="dark"] .welcome-cancel-btn:hover {
+  color: rgba(238, 238, 238, 0.9);
+}
+
+/* Contenedor para el campo MathLive */
+.welcome-mathfield-container {
+  width: 100%;
+  min-height: 125px;
+  padding: 18px;
+  background: rgba(234, 228, 211, 0.95);
+  border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+}
+
+/* Estilos para el componente MathLive */
+#welcome-mathfield {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px;
+  border: 1px solid rgba(221, 221, 221, 0.7);
+  border-radius: var(--border-radius-sm, 6px);
+  font-size: 16px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#welcome-mathfield:focus, #welcome-mathfield:focus-within {
+  outline: none;
+  border-color: rgba(var(--color-text), 0.5);
+  box-shadow: 0 0 0 2px rgba(164, 172, 134, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajustes para tema oscuro */
+[data-theme="dark"] #welcome-mathfield {
+  background-color: rgba(34, 34, 34, 0.9);
+  color: rgba(238, 238, 238, 0.9);
+  border-color: rgba(68, 68, 68, 0.7);
+}
+
+[data-theme="dark"] .welcome-mathfield-container {
+  background-color: rgba(34, 35, 35, 0.95);
+}
+
+/* Clases para mejorar la integración con MathLive */
+.welcome-math-editor-container.show .welcome-editor-area {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ajustes para el panel de símbolos con MathLive */
+.welcome-math-symbols-panel .welcome-math-btn {
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+}
+
+.welcome-math-symbols-panel .welcome-math-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-math-symbols-panel .welcome-math-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Cambiar colores de selección dentro de MathLive para mejor contraste */
+.welcome-ML__selection {
+  background-color: rgba(164, 172, 134, 0.35) !important;
+}
+
+.welcome-ML__container {
+  --caret-color: rgba(164, 172, 134, 0.9) !important;
+}
+
+/* Adaptar colores del teclado virtual de MathLive si se usa */
+.welcome-ML__keyboard {
+  --keyboard-background: rgba(240, 239, 231, 0.98);
+  --keyboard-toolbar-background: rgba(243, 243, 243, 0.98);
+  --keyboard-toolbar-text: rgba(15, 10, 10, 0.9);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(210, 205, 190, 0.6);
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .welcome-ML__keyboard {
+  --keyboard-background: rgba(51, 51, 51, 0.98);
+  --keyboard-toolbar-background: rgba(26, 26, 26, 0.98);
+  --keyboard-toolbar-text: rgba(238, 238, 238, 0.9);
+  border-color: rgba(60, 60, 60, 0.6);
+}
+
+/* Animación suave para la apertura del editor */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#welcome-mathfield {
+  animation: fadeIn 0.35s ease;
+}
+
+/* Hacer que los botones de herramientas sean más visibles */
+.welcome-editor-toolbar {
+  padding: 12px 16px;
+}
+
+.welcome-toolbar-btn.welcome-send-button {
+  padding: 7px 16px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  letter-spacing: 0.01em;
+}
+
+.welcome-toolbar-btn.welcome-send-button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-toolbar-btn.welcome-send-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.welcome-editor-title {
+  color: var(--color-text);
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.01em;
+  text-transform: capitalize;
+}
+
+
+/* Transiciones más suaves para todos los elementos interactivos */
+.welcome-math-btn, .welcome-toolbar-btn, .welcome-tooltip-btn, #welcome-mathfield, #welcome-latex-input {
+  will-change: transform, opacity, box-shadow;
+}
+
+/* Mejoras para la accesibilidad */
+.welcome-math-btn:focus, .welcome-toolbar-btn:focus, .welcome-tooltip-btn:focus {
+  outline: 2px solid rgba(164, 172, 134, 0.5);
+  outline-offset: 2px;
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) {
+  .welcome-math-btn:active, .welcome-toolbar-btn:active {
+    background-color: rgba(164, 172, 134, 0.15);
+  }
+  
+  .welcome-math-element:active {
+    background-color: rgba(164, 172, 134, 0.2) !important;
+  }
+}
+
+/* Mejoras para la visualización en pantallas de alta resolución */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .welcome-math-block, .welcome-math-panel, .welcome-math-editor-container {
+    border-width: 0.5px;
+  }
+  
+  .welcome-math-element.selected {
+    outline-width: 0.5px !important;
+  }
+}
+
+/* Animaciones más refinadas */
+@keyframes gentle-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.welcome-math-element.selected {
+  animation: gentle-pulse 2s infinite ease-in-out;
+}
+
+/* Mejoras para la consistencia visual */
+.welcome-math-panel, .welcome-math-editor-container, .welcome-math-tooltip {
+  font-family: var(--font-family-ui, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+/* Refinamiento final para la coherencia visual */
+.welcome-math-symbols-panel .welcome-math-section:first-child {
+  margin-top: 0;
+}
+
+.welcome-math-symbols-panel .welcome-math-section:last-child {
+  border-bottom: none;
+}
+
+/* Mejoras para la experiencia de usuario en dispositivos móviles */
+
+
+
+[data-theme="dark"] .welcome-math-symbols-panel .welcome-math-btn {
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1.4);
+  background: rgb(31 24 24 / 90%);
+  border-radius: 8px;
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .math-editor-container {
+    right: 0;
+    bottom: 25vh;
+    width: 85%;
+    max-width: 85%;
+    border-radius: var(--border-radius-lg, 0.75rem) var(--border-radius-lg, 0.75rem) 0 0;
+  }
+
+  .math-symbols-panel {
+  height: 30vh;
+    
+
+}
+
+
+.editor-title {
+  font-size: 12px !important;
+}
+.editor-toolbar {
+  font-size: 11px !important;
+}
+
+  
+
+  .welcome-math-editor-container{
+    left: 15% !important;
+    bottom: 54% !important;
+    width: 75%;
+    max-width: 85%;
+    border-radius: var(--border-radius-lg, 0.75rem) var(--border-radius-lg, 0.75rem) 0 0;
+  }
+
+
+  .welcome-math-panel {
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--border-radius-lg, 0.75rem) var(--border-radius-lg, 0.75rem) 0 0;
+  }
+  
+  .math-panel{
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--border-radius-lg, 0.75rem) var(--border-radius-lg, 0.75rem) 0 0;
+  }
+  
+  .editor-toolbar, .welcome-editor-toolbar {
+    justify-content: center;
+  }
+  
+  .toolbar-btn.send-button, .welcome-toolbar-btn.welcome-send-button {
+    margin: 0.5rem 0 0;
+    width: 100%;
+    padding: 0.6rem;
+  }
+  
+  
+  .math-btn, .welcome-math-btn {
+    min-height: 45px;
+  }
+}
+
+/* Medium mobile and small tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .math-editor-container {
+    width: 55vw;
+    right: 0;
+    bottom: 36vw
+  }
+
+.editor-title {
+  font-size: 12px !important;
+}
+.editor-toolbar {
+  font-size: 12px !important;
+}
+ .math-symbols-panel {
+  height: 30vh;
+    
+
+} 
+  
+  .math-panel {
+    width: 95vw;
+    right: 2.5vw;
+  }
+  
+  .section-content {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+}
+
+
+@media (min-width: 481px) and (max-width: 999px) {  
+ .welcome-math-editor-container {
+    width: 65%;
+    max-width: 400px;
+    bottom: 38%!important;
+    left: 25% !important;
+  }
+  
+.welcome-math-panel {
+    width: 95vw;
+    right: 2.5vw;
+  }
+}
+
+@media (min-width: 1000px) and (max-width: 1100px) {  
+ .welcome-math-editor-container {
+    width: 35%;
+    max-width: 400px;
+    bottom: 38%!important;
+    left: 65% !important;
+  }
+  
+.welcome-math-panel {
+    width: 95vw;
+    right: 2.5vw;
+  }
+}
+  
+  
+/* Tablets and small laptops */
+@media (min-width: 769px) and (max-width: 999px) {
+  .math-editor-container {
+    width: 45vw;
+    max-width: 600px;
+ right: -1.5vw;
+    bottom: 105%;
+    max-height:720px;
+  }
+
+
+  
+
+  .math-panel {
+    width: 85vw;
+    max-width: 600px;
+    right: 7.5vw;
+  }
+}
+
+
+
+/* High DPI devices */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .math-block, .welcome-math-block, 
+  .math-panel, .welcome-math-panel,
+  .math-editor-container, .welcome-math-editor-container,
+  .math-tooltip, .welcome-math-tooltip {
+    border-width: 0.5px;
+  }
+  
+  .math-element.selected, .welcome-math-element.selected {
+    outline-width: 0.5px !important;
+  }
+}
+
+/* For landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .math-editor-container, .welcome-math-editor-container {
+    max-height: 85vh;
+    bottom: 2vh;
+  }
+  
+  .math-panel, .welcome-math-panel {
+    max-height: 85vh;
+    bottom: 2vh;
+  }
+  
+  .math-symbols-panel, .welcome-math-symbols-panel {
+    max-height: 30vh;
+  }
+  
+  #latex-input, #welcome-latex-input,
+  math-field, #welcome-mathfield {
+    min-height: 60px;
+  }
+  
+  .interactive-preview, .welcome-interactive-preview {
+    min-height: 70px;
+  }
+}
+
+/* Fix for animations on mobile */
+@media (prefers-reduced-motion: reduce) {
+  .math-element.selected, .welcome-math-element.selected {
+    animation: none;
+  }
+  
+  .math-editor-container, .welcome-math-editor-container,
+  .math-tooltip, .welcome-math-tooltip,
+  .math-btn, .welcome-math-btn,
+  .toolbar-btn, .welcome-toolbar-btn,
+  .tooltip-btn, .welcome-tooltip-btn {
+    transition: none;
+  }
+}
+
+/* Improve touch targets for mobile */
+@media (pointer: coarse) {
+  .math-btn, .welcome-math-btn {
+    min-height: 60px;
+  }
+  
+  .toolbar-btn, .welcome-toolbar-btn,
+  .tooltip-btn, .welcome-tooltip-btn {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .toggle-btn, .welcome-toggle-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .editable-indicator, .welcome-editable-indicator {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+  @media (min-width: 1500px) and (max-width: 1620px) {
+  .math-editor-container{
+      max-width: 45%;
+      margin-right: 65px;
+    
+     }
+
+}
+
+  @media (min-width: 1000px) and (max-width: 1100px) {
+  .math-editor-container{
+      max-width: 60%;
+      margin-right: 220px;
+      bottom:95%;
+}
+
+.math-symbols-panel {
+  height: 30vh;
+    
+
+}
+}
+  @media (min-width: 1101px) and (max-width: 1200px) {
+  .math-editor-container{
+      max-width: 70%;
+      margin-right: 200px;
+      bottom:100%;
+}
+
+    .math-symbols-panel {
+  height: 35vh;
+    
+
+}
+    }
+
+
+  @media (min-width: 1201px) and (max-width: 1300px) {
+  .math-editor-container{
+      max-width: 70%;
+      margin-right: 170px;
+      bottom:100%;
+}
+
+.math-symbols-panel {
+  height: 40vh;
+    
+
+}
+    
+    }
+
+  @media (min-width: 1301px) and (max-width: 1400px) {
+  .math-editor-container{
+      max-width: 55%;
+      margin-right: 80px;
+      bottom:100%;
+}
+    }
+
+  @media (min-width: 1401px) and (max-width: 1499px) {
+  .math-editor-container{
+      max-width: 60%;
+      margin-right: 90px;
+      bottom:100%;
+}
+    }
+

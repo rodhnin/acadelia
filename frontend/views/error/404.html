@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>404 - Página no encontrada | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="stylesheet" href="/css/404.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="error-container">
+    <div class="lost-paper-effect"></div>
+    <div class="error-text">
+      <div class="error-badge">
+        <i class='bx bx-map-alt'></i>
+        Ruta no encontrada
+      </div>
+      <h1 class="error-title">¡Ups! Página no encontrada</h1>
+      <h2 class="error-subtitle">Parece que nos hemos perdido en el laberinto académico</h2>
+      
+      <p class="error-description">
+        El Profesor Acadel ha buscado en todas sus enciclopedias, pero no encuentra la página que estás buscando. Tal vez se la comió el algoritmo, o quizás nunca existió.
+      </p>
+      
+      <div class="error-quote">
+        <p>"En mis 15 años como asistente virtual académico, nunca había visto un caso de 'página perdida' tan severo. Hemos buscado en todos los chats, en todos los PDFs, incluso detrás de las fórmulas matemáticas, pero nada. ¡Qué misterio!"</p>
+        <div class="author">— Profesor Acadel, confundido pero perseverante</div>
+      </div>
+      
+      <a href="/" class="home-btn">
+        <i class='bx bx-home'></i>
+        Volver al campus principal
+      </a>
+      
+      <div class="search-tips">
+        <h3><i class='bx bx-bulb'></i> Mientras tanto, puedes intentar:</h3>
+        <ul>
+          <li>Verificar la URL en busca de errores tipográficos</li>
+          <li>Usar la navegación principal para explorar nuestras secciones</li>
+          <li>Volver a la página de inicio y comenzar de nuevo</li>
+          <li>Contactar con <a href="/contact" class="support-link">soporte</a> si estás seguro de que esta página debería existir</li>        </ul>
+      </div>
+    </div>
+    
+    <div class="error-image">
+      <img src="/images/404.webp" alt="Profesor Acadel confundido" />
+    </div>
+  </div>
+
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  
+  <script src="/scripts/404.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

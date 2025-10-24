@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <title>Marketing IA - Acadelia</title>
+  
+  <!-- Fuentes e iconos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    
+  
+  <!-- Estilos CSS -->
+  <link rel="stylesheet" href="/css/alertas.css">
+  <link rel="stylesheet" href="css/main-chiguiremarketing.css">
+  
+  <!-- Librerías para Markdown y visualizaciones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css" id="code-theme">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@7.0.5/marked.min.js"></script>
+  <script src="scripts/mathjax-config-principal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+  <!-- Botón hamburguesa para móviles -->
+  <button id="mobile-sidebar-toggle" class="mobile-hamburger-menu" aria-label="Toggle navigation menu">
+    <i class='bx bx-menu'></i>
+  </button>
+  
+  <!-- Overlay para cerrar sidebar en móvil -->
+  <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay"></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <h1 class="sidebar-title">Acadelia</h1>
+        <button class="pin-button">
+          <i class='bx bxs-arrow-to-right'></i>
+        </button>
+        <button class="unpin-button">
+          <i class='bx bxs-arrow-from-right'></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="sidebar-items">
+      <!-- Elementos del sidebar con soporte para badges de notificación -->
+      <div class="sidebar-item" data-section="information">
+        <i class='bx bx-info-circle'></i>
+        <span class="item-text">Información</span>
+        <!-- El badge se crea dinámicamente -->
+      </div>
+      
+      <div class="sidebar-item" data-section="profiles">
+        <i class='bx bx-user'></i>
+        <span class="item-text">Perfiles</span>
+        <!-- El badge se crea dinámicamente -->
+      </div>
+      
+      <div class="sidebar-item" data-section="content">
+        <i class='bx bx-file'></i>
+        <span class="item-text">Contenido</span>
+        <!-- El badge se crea dinámicamente -->
+      </div>
+      
+      <div class="sidebar-item" data-section="trends">
+        <i class='bx bx-trending-up'></i>
+        <span class="item-text">Tendencias</span>
+        <!-- El badge se crea dinámicamente -->
+      </div>
+      
+      <div class="sidebar-item" data-section="memory">
+        <i class='bx bx-brain'></i>
+        <span class="item-text">Memoria</span>
+        <!-- El badge se crea dinámicamente -->
+      </div>
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="sidebar-divider"></div>
+      
+      <!-- El botón de limpiar notificaciones se crea dinámicamente aquí -->
+      
+      <div class="sidebar-item" id="export-chat-btn">
+        <i class='bx bx-download'></i>
+        <span class="item-text">Exportar Chat</span>
+      </div>
+      
+      <div class="sidebar-item theme-switch-item" id="theme-toggle-btn">
+        <i class='bx bx-palette'></i>
+        <span class="item-text">Tema</span>
+        <div class="theme-toggle-switch">
+          <div class="theme-toggle-slider">
+            <i class="theme-icon bx bxs-moon"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar-item" id="home-btn">
+        <i class='bx bx-home'></i>
+        <span class="item-text">Volver al inicio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <header class="main-header">
+      <!-- Sección izquierda (balance) -->
+      <div class="header-left">
+        <!-- El indicador de notificaciones del header se crea dinámicamente aquí -->
+      </div>
+      
+      <!-- Sección central con título y subtítulo -->
+      <div class="header-center">
+        <span class="header-title">Marketing IA</span>
+        <div class="header-subtitle">Asistente virtual de marketing</div>
+      </div>
+      
+      <!-- Sección derecha con botones -->
+      <div class="header-right">
+        <button id="themeToggle" class="theme-toggle">
+          <i class='bx bxs-moon'></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Área de mensajes del chat -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Los mensajes se cargarán dinámicamente aquí -->
+      <!-- Las notificaciones del chat usan clases acadelia-notif-chat-* -->
+    </div>
+
+    <!-- Área de entrada fija -->
+    <div class="fixed-space">
+      <div class="input-container">
+        <div id="chat-status" class="chat-status"></div>
+        
+        <div class="input-box auto-expand">
+          <textarea 
+            id="messageInput" 
+            name="chatMessage" 
+            data-replicated-value=" " 
+            placeholder="Envía un mensaje a Acadelia Marketing"></textarea>
+          <button id="sendButton">
+            <i class='bx bx-up-arrow-alt'></i>
+            <span class="chat-button-label">Enviar</span>
+          </button>
+        </div>
+        
+        <!-- Los badges de notificación del input se crean dinámicamente -->
+      </div>
+      <span class="warning-message">Acadelia puede cometer errores. Comprueba la información importante.</span>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div id="informationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Dashboard de Marketing</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- El contenido se cargará dinámicamente -->
+        <div style="display: flex; align-items: center; justify-content: center; height: 300px;">
+          <p>Cargando dashboard...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="memoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Memoria de la IA</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- El contenido se cargará dinámicamente -->
+        <div style="display: flex; align-items: center; justify-content: center; height: 300px;">
+          <p>Cargando memoria de la IA...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="profilesModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Perfiles</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="profilesContainer">
+        <p class="empty-message">Cargando perfiles...</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="contentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Contenido</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="contentContainer">
+        <p class="empty-message">No hay contenido guardado. Las ideas de contenido generadas durante la conversación aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="trendsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Tendencias</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="trendsContainer">
+        <p class="empty-message">No hay tendencias guardadas. Las tendencias detectadas durante la conversación aparecerán aquí.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/cookie-helpers.js"></script>
+  <!-- Scripts -->
+  <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+  <script type="module" src="scripts/chiguiremarketing/app.js"></script>
+</body>
+</html>

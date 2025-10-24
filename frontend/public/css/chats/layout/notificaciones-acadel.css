@@ -1,0 +1,721 @@
+/* ============================================================================ */
+/* SISTEMA DE NOTIFICACIONES DEL PROFESOR ACADEL 🦫 - CONFETTI REALISTA      */
+/* Un sistema de notificaciones divertido y con personalidad                   */
+/* ============================================================================ */
+
+/* === CONTENEDOR PRINCIPAL DE NOTIFICACIONES === */
+.acadel-notifications-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: var(--z-index-modal);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 450px;
+  width: auto;
+  min-width: 320px;
+  max-height: calc(100vh - 40px);
+  overflow: visible; /* Permitir que el confetti se vea */
+}
+
+/* === CANVAS DE CONFETTI === */
+.acadel-confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 16px;
+}
+
+/* === BASE DE NOTIFICACIÓN ACADEL === */
+.notificacion-acadel {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-primary) 0%, rgba(164, 172, 134, 0.95) 100%);
+  border: 2px solid rgba(164, 172, 134, 0.3);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(164, 172, 134, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              margin-bottom 0.3s ease,
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; /* CRÍTICO: Para contener el efecto de brillo */
+  min-height: 80px;
+  width: 100%;
+  max-width: 420px;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+}
+
+/* Estados de animación */
+.notificacion-acadel.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notificacion-acadel.hide {
+  transform: translateX(100%) scale(0.8);
+  opacity: 0;
+  margin-bottom: -80px;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === AVATAR DEL PROFESOR ACADEL === */
+.acadel-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  animation: acadel-pulse 3s ease-in-out infinite;
+  z-index: 3;
+}
+
+.acadel-avatar::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: acadel-spin 2s linear infinite;
+  z-index: -1;
+}
+
+.acadel-avatar i {
+  font-size: 24px;
+  color: white;
+  z-index: 2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* === CONTENIDO DE LA NOTIFICACIÓN === */
+.acadel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow: visible;
+  padding-right: 30px;
+  z-index: 2;
+  position: relative;
+}
+
+.acadel-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+.acadel-mensaje {
+  font-size: 13px;
+  color: rgba(22, 14, 14, 0.8);
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* === BOTÓN DE CERRAR === */
+.acadel-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  z-index: 100;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
+}
+
+.acadel-close:hover {
+  background: rgba(239, 68, 68, 0.9) !important;
+  color: white !important;
+  opacity: 1;
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.acadel-close:active {
+  transform: scale(1.05);
+}
+
+/* === TIPOS DE NOTIFICACIÓN === */
+
+/* ÉXITO */
+.notificacion-acadel.exito {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(16, 185, 129, 0.25),
+    0 2px 8px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notificacion-acadel.exito .acadel-avatar {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  animation: acadel-bounce 2s ease-in-out infinite;
+}
+
+.notificacion-acadel.exito .acadel-titulo,
+.notificacion-acadel.exito .acadel-mensaje {
+  color: white;
+}
+
+.notificacion-acadel.exito .acadel-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ERROR */
+.notificacion-acadel.error {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(239, 68, 68, 0.25),
+    0 2px 8px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notificacion-acadel.error .acadel-avatar {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  animation: acadel-wobble 3s ease-in-out infinite;
+}
+
+.notificacion-acadel.error .acadel-titulo,
+.notificacion-acadel.error .acadel-mensaje {
+  color: white;
+}
+
+.notificacion-acadel.error .acadel-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* INFORMACIÓN */
+.notificacion-acadel.info {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(59, 130, 246, 0.25),
+    0 2px 8px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notificacion-acadel.info .acadel-avatar {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  animation: acadel-think 4s ease-in-out infinite;
+}
+
+.notificacion-acadel.info .acadel-titulo,
+.notificacion-acadel.info .acadel-mensaje {
+  color: white;
+}
+
+.notificacion-acadel.info .acadel-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ADVERTENCIA */
+.notificacion-acadel.warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(245, 158, 11, 0.25),
+    0 2px 8px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: #78350f;
+}
+
+.notificacion-acadel.warning .acadel-avatar {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  animation: acadel-alert 2.5s ease-in-out infinite;
+}
+
+.notificacion-acadel.warning .acadel-titulo,
+.notificacion-acadel.warning .acadel-mensaje {
+  color: #78350f;
+}
+
+.notificacion-acadel.warning .acadel-close {
+  color: rgba(120, 53, 15, 0.8);
+}
+
+/* CARGA */
+.notificacion-acadel.loading {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(139, 92, 246, 0.25),
+    0 2px 8px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notificacion-acadel.loading .acadel-avatar {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  animation: acadel-working 1.5s ease-in-out infinite;
+}
+
+.notificacion-acadel.loading .acadel-titulo,
+.notificacion-acadel.loading .acadel-mensaje {
+  color: white;
+}
+
+.notificacion-acadel.loading .acadel-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* === CONFETTI MEJORADO - SIN EMOJIS, SOLO BRILLO CONTROLADO === */
+.notificacion-acadel.confetti {
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  border-color: rgba(236, 72, 153, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(236, 72, 153, 0.25),
+    0 2px 8px rgba(236, 72, 153, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden; /* ⭐ IMPORTANTE: Mantener overflow hidden para el brillo */
+}
+
+.notificacion-acadel.confetti .acadel-avatar {
+  background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+  animation: acadel-party 2s ease-in-out infinite;
+}
+
+.notificacion-acadel.confetti .acadel-titulo,
+.notificacion-acadel.confetti .acadel-mensaje {
+  color: white;
+}
+
+.notificacion-acadel.confetti .acadel-close {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* === ANIMACIONES === */
+@keyframes acadel-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes acadel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes acadel-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+@keyframes acadel-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes acadel-think {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.02) rotate(-1deg); }
+  75% { transform: scale(1.02) rotate(1deg); }
+}
+
+@keyframes acadel-alert {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes acadel-working {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-5deg) scale(1.05); }
+  50% { transform: rotate(0deg) scale(1); }
+  75% { transform: rotate(5deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes acadel-party {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+
+/* === BARRA DE PROGRESO === */
+.acadel-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 16px 16px;
+  transform-origin: left;
+  animation: progress-countdown var(--duration, 5s) linear forwards;
+  z-index: 4;
+}
+
+@keyframes progress-countdown {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+/* === EFECTO DE BRILLO - MEJORADO Y CONTENIDO === */
+.notificacion-acadel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: acadel-shine 4s ease-in-out infinite;
+  z-index: 50;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+}
+
+@keyframes acadel-shine {
+  0%, 80% { 
+    left: -100%;
+    opacity: 0;
+  }
+  83% { 
+    left: -50%;
+    opacity: 1;
+  }
+  88% { 
+    left: 50%;
+    opacity: 1;
+  }
+  91%, 100% { 
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* === BRILLOS ESPECÍFICOS POR TIPO === */
+.notificacion-acadel.exito::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+}
+
+.notificacion-acadel.warning::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.4),
+    transparent
+  );
+}
+
+.notificacion-acadel.info::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(147, 197, 253, 0.5),
+    transparent
+  );
+}
+
+.notificacion-acadel.error::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 182, 193, 0.4),
+    transparent
+  );
+}
+
+/* ⭐ BRILLO ESPECIAL PARA CONFETTI - CONTENIDO Y CONTROLADO */
+.notificacion-acadel.confetti::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 215, 0, 0.4),
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: acadel-shine-party 2s ease-in-out infinite;
+  /* overflow: hidden se hereda del padre - el brillo queda contenido */
+}
+
+@keyframes acadel-shine-party {
+  0%, 70% { 
+    left: -100%;
+    opacity: 0;
+  }
+  75% { 
+    left: -25%;
+    opacity: 1;
+  }
+  85% { 
+    left: 75%;
+    opacity: 1;
+  }
+  90%, 100% { 
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* === TEMA OSCURO === */
+body[data-theme="dark"] .notificacion-acadel {
+  background: linear-gradient(135deg, rgba(31, 31, 28, 0.95) 0%, rgba(92, 88, 88, 0.95) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="dark"] .notificacion-acadel .acadel-titulo {
+  color: #f3f3f3;
+}
+
+body[data-theme="dark"] .notificacion-acadel .acadel-mensaje {
+  color: rgba(243, 243, 243, 0.8);
+}
+
+body[data-theme="dark"] .notificacion-acadel .acadel-close {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(243, 243, 243, 0.8);
+}
+
+body[data-theme="dark"] .notificacion-acadel .acadel-close:hover {
+  background: rgba(239, 68, 68, 0.9) !important;
+  color: white !important;
+  opacity: 1;
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* === RESPONSIVIDAD === */
+@media (max-width: 768px) {
+  .acadel-notifications-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    min-width: auto;
+    width: calc(100vw - 20px);
+  }
+  
+  .notificacion-acadel {
+    padding: 14px 16px;
+    min-height: 70px;
+    border-radius: 12px;
+    max-width: none;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .acadel-avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  
+  .acadel-avatar i {
+    font-size: 20px;
+  }
+  
+  .acadel-titulo {
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  
+  .acadel-mensaje {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  
+  .acadel-close {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+  
+  /* Canvas confetti responsive */
+  .acadel-confetti-canvas {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .acadel-notifications-container {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    width: calc(100vw - 16px);
+  }
+  
+  .notificacion-acadel {
+    padding: 12px 14px;
+    min-height: 60px;
+    gap: 12px;
+    border-radius: 10px;
+  }
+  
+  .acadel-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .acadel-avatar i {
+    font-size: 18px;
+  }
+  
+  .acadel-titulo {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  .acadel-mensaje {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  
+  .acadel-close {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: 6px;
+    right: 6px;
+  }
+}
+
+/* === EFECTOS DE HOVER === */
+.notificacion-acadel:hover {
+  transform: translateX(-6px) scale(1.02);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(164, 172, 134, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  z-index: 2;
+}
+
+.notificacion-acadel:hover .acadel-avatar {
+  transform: scale(1.08);
+}
+
+.notificacion-acadel:hover .acadel-close {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* === ACCESIBILIDAD === */
+@media (prefers-reduced-motion: reduce) {
+  .notificacion-acadel,
+  .acadel-avatar,
+  .acadel-avatar::before,
+  .notificacion-acadel::after,
+  .acadel-confetti-canvas {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .notificacion-acadel.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* === STACKING === */
+.notificacion-acadel.stacked {
+  transform: translateX(0) translateY(-6px) scale(0.96);
+  opacity: 0.85;
+  z-index: -1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notificacion-acadel.stacked-2 {
+  transform: translateX(0) translateY(-12px) scale(0.92);
+  opacity: 0.7;
+  z-index: -2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acadel-notifications-container.max-stack .notificacion-acadel:not(:last-child) {
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.notificacion-acadel.being-replaced {
+  transform: translateX(100%) translateY(-20px) scale(0.8);
+  opacity: 0;
+  transition: all 0.2s ease-out;
+}
+
+/* === PREVENCIÓN DE CORTES === */
+.notificacion-acadel * {
+  box-sizing: border-box;
+}
+
+/* === MEJORA DE RENDIMIENTO === */
+.acadel-confetti-canvas {
+  will-change: auto;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* === Z-INDEX HIERARCHY === */
+/* 1. Confetti canvas: 9999 */
+/* 2. Notification container: 10000 */
+/* 3. Close button: 100 */
+/* 4. Shine effect: 50 */
+/* 5. Progress bar: 4 */
+/* 6. Avatar: 3 */
+/* 7. Content: 2 */

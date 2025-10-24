@@ -1,0 +1,187 @@
+/* ======================================
+   ESTILOS ESPECIALES PARA CARDS
+   ====================================== */
+/* Tarjetas para perfiles */
+.profile-card {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 15px;
+  margin: 15px 0;
+  border-left: 4px solid #3498db;
+}
+
+.profile-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #3498db;
+}
+
+.profile-details {
+  font-size: 14px;
+}
+
+.profile-field {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-field span {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.tag {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.profile-attitudes {
+  margin-top: 8px;
+}
+
+.attitude-meter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 10px;
+}
+
+.meter {
+  height: 8px;
+  width: 100px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background-color: #3498db;
+}
+
+/* Tarjetas para contenido */
+.content-card {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 15px;
+  margin: 15px 0;
+  border-left: 4px solid #e67e22;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.content-header h3 {
+  font-size: 16px;
+  color: #e67e22;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.content-channel {
+  background-color: rgba(230, 126, 34, 0.1);
+  color: #e67e22;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.content-description {
+  margin-bottom: 10px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.content-field {
+  margin-bottom: 8px;
+}
+
+.content-field span {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+/* Tarjetas para tendencias */
+.trend-card {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 15px;
+  margin: 15px 0;
+  border-left: 4px solid #9b59b6;
+}
+
+.trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.trend-header h3 {
+  font-size: 16px;
+  color: #9b59b6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trend-popularity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trend-meter {
+  height: 8px;
+  width: 100px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.trend-meter-fill {
+  height: 100%;
+  background-color: #9b59b6;
+}
+
+.trend-analysis {
+  margin-top: 15px;
+}
+
+.trend-analysis h4 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #9b59b6;
+}
+
+.trend-section {
+  margin-bottom: 12px;
+}
+
+.trend-section h5 {
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}

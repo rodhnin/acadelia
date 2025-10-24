@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Dashboard</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="/css/pruebainiciostyle.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <script src="/scripts/dashboard-principal.js"></script>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <div class="logo-img"></div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="/misavas" class="nav-btn">
+            <i class='bx bx-book-reader'></i>
+            Mis AVAs
+        </a>
+        <a href="/tienda" class="nav-btn">
+            <i class='bx bx-cart'></i>
+            Tienda
+        </a>
+        
+        <div class="dropdown">
+            <button class="nav-btn" id="accountBtn">
+                <i class='bx bx-user'></i>
+                Mi Cuenta
+            </button>
+            <div class="dropdown-content">
+                <a href="/cuenta" class="dropdown-item">
+                    <i class='bx bx-cog'></i>
+                    Configuraciones
+                </a>
+                <a href="/contact" class="dropdown-item">
+                    <i class='bx bx-conversation'></i>
+                    Contáctanos
+                </a>
+                <a href="" class="dropdown-item">
+                    <i class='bx bx-log-out'></i>
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+
+        <div class="theme-toggle-container" id="themeToggle">
+            <div class="theme-slider"></div>
+            <i class='bx bx-sun theme-icon'></i>
+            <i class='bx bx-moon theme-icon'></i>
+        </div>
+    </div>
+    
+    <button class="menu-toggle" id="menuToggle" title="Menú principal">
+        <i class='bx bx-menu'></i>
+    </button>
+</header>
+
+    <main class="dashboard-container">
+        <!-- Contenedores interactivos en las esquinas -->
+        <div class="corner-container top-left" id="pdfReader">
+            <div class="corner-content">
+                <div class="icon-container">
+                    <i class='bx bxs-file-pdf'></i>
+                </div>
+                <div class="content-details">
+                    <h2>Lector de PDF</h2>
+                    <p>Sube tus documentos académicos y extrae información clave. Pregunta sobre contenido específico, genera resúmenes y obtén explicaciones detalladas sobre cualquier tema dentro del documento.</p>
+                    <a href="/pdf" class="action-btn">
+                        <span>Ir al chat PDF</span>
+                        <i class='bx bx-right-arrow-alt'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="corner-container top-right" id="agent">
+            <div class="corner-content">
+                <div class="icon-container">
+                    <i class='bx bx-bot'></i>
+                </div>
+                <div class="content-details">
+                    <h2>Agente de Búsqueda</h2>
+                    <p>Asistente inteligente con acceso a internet y herramientas matemáticas avanzadas. Resuelve ejercicios paso a paso, busca información académica actualizada y transcribe videos de YouTube.</p>
+                    <a href="/agente" class="action-btn">
+                        <span>Iniciar chat</span>
+                        <i class='bx bx-right-arrow-alt'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="corner-container bottom-left" id="store">
+            <div class="corner-content">
+                <div class="icon-container">
+                    <i class='bx bx-store-alt'></i>
+                </div>
+                <div class="content-details">
+                    <h2>Tienda</h2>
+                    <p>Accede a nuestros Asistentes Virtuales Académicos (AVAs) especializados por carrera. Adquiere el plan premium o AVAs individuales para materias específicas y mejora tu rendimiento académico.</p>
+                    <a href="/tienda" class="action-btn">
+                        <span>Explorar tienda</span>
+                        <i class='bx bx-right-arrow-alt'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="corner-container bottom-right" id="myAvas">
+            <div class="corner-content">
+                <div class="icon-container">
+                    <i class='bx bx-book-reader'></i>
+                </div>
+                <div class="content-details">
+                    <h2>Mis AVAs</h2>
+                    <p>Accede a todos tus Asistentes Virtuales Académicos y herramientas adquiridas. Consulta tus especialistas por carrera, visualiza tus herramientas disponibles.</p>
+                    <a href="/misavas" class="action-btn">
+                        <span>Ver mis AVAs</span>
+                        <i class='bx bx-right-arrow-alt'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicadores visuales para señalar las áreas interactivas -->
+        <div class="corner-indicator top-left">
+            <i class='bx bxs-file-pdf'></i>
+        </div>
+        <div class="corner-indicator top-right">
+            <i class='bx bx-bot'></i>
+        </div>
+        <div class="corner-indicator bottom-left">
+            <i class='bx bx-store-alt'></i>
+        </div>
+        <div class="corner-indicator bottom-right">
+            <i class='bx bx-book-reader'></i>
+        </div>
+    </main>
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-theme-integration.js"></script>
+    <script src="/scripts/cookie-consent.js"></script>
+    <script src="/scripts/cookie-consent-initializer.js"></script>
+    <script src="/scripts/notification-service.js"></script>
+    <script src="/scripts/principal.js"></script>
+</body>
+</html>

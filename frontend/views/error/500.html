@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+  <title>500 - Error Interno del Servidor | Acadelia</title>
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="stylesheet" href="/css/500.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <a href="/">
+        <div class="logo-img"></div>
+      </a>
+    </div>
+  </header>
+  
+  <div class="error-container">
+    <div class="error-tape"></div>
+    <div class="error-text">
+      <div class="error-badge">
+        <i class='bx bx-error-circle'></i>
+        Error interno del servidor
+      </div>
+      <h1 class="error-title">¡Ups! Algo salió mal</h1>
+      <h2 class="error-subtitle">El experimento académico tuvo resultados inesperados</h2>
+      
+      <p class="error-description">
+        El Profesor Acadel estaba realizando un experimento para mejorar nuestros sistemas cuando ocurrió una reacción inesperada. Nuestro equipo técnico ya ha sido notificado y está trabajando para resolver el problema lo antes posible.
+      </p>
+      
+      <div class="error-quote">
+        <p>"Según mis cálculos, esta fórmula debería haber procesado correctamente la solicitud, pero parece que mezclé la variable equivocada. ¡Es fascinante cómo un pequeño error en el código puede causar tal reacción! No te preocupes, ya estoy analizando los datos para encontrar la solución exacta."</p>
+        <div class="author">— Profesor Acadel, Investigador de Errores Técnicos</div>
+      </div>
+      
+      <div class="button-group">
+        <a href="/" class="home-btn">
+          <i class='bx bx-home'></i>
+          Volver al inicio
+        </a>
+        <a href="/contact" class="report-btn">
+          <i class='bx bx-bug'></i>
+          Reportar problema
+        </a>
+      </div>
+      
+      <div class="error-info">
+        <h3><i class='bx bx-info-circle'></i> Mientras investigamos, puedes intentar:</h3>
+        <ul>
+          <li>Actualizar la página después de unos minutos</li>
+          <li>Limpiar la caché de tu navegador e intentarlo nuevamente</li>
+          <li>Volver a la página de inicio y acceder a través de otra ruta</li>
+          <li>Si el problema persiste, puedes contactar a nuestro equipo de soporte <a href="/contact" class="support-link">aquí</a></li>
+        </ul>
+        
+        <p style="margin-top: 1rem;">Código de error: <span class="error-code">500</span> (Error interno del servidor)</p>
+        
+        <div class="error-details" id="error-details">
+          <%= errorDetails %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="error-image">
+      <img src="/images/500.webp" alt="Profesor Acadel en Laboratorio con Experimento Fallido" />
+    </div>
+  </div>
+  
+  <!-- CSRF Protection -->
+  <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+  <script src="/scripts/500.js" nonce="<%= nonce %>"></script>
+</body>
+</html>

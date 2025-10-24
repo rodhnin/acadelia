@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="/scripts/immediate-theme.js" nonce="<%= nonce %>"></script>
+    <title>
+        Acadelia
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link rel="stylesheet" href="/css/mis-avas.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="/principal" class="logo-link" aria-label="Principal">
+                <div class="logo-img"></div>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/principal" class="nav-btn">
+                <i class='bx bx-home'></i>
+                Inicio
+            </a>
+            <a href="/tienda" class="nav-btn">
+                <i class='bx bx-cart'></i>
+                Tienda
+            </a>
+
+            <div class="dropdown">
+                <button class="nav-btn" id="accountBtn">
+                    <i class='bx bx-user'></i>
+                    Mi Cuenta
+                </button>
+                <div class="dropdown-content">
+                    <a href="/cuenta" class="dropdown-item">
+                        <i class='bx bx-cog'></i>
+                        Configuraciones
+                    </a>
+                    <a href="/contact" class="dropdown-item">
+                        <i class='bx bx-conversation'></i>
+                        Contáctanos
+                    </a>
+                    <a href="" class="dropdown-item">
+                        <i class='bx bx-log-out'></i>
+                        Cerrar sesión
+                    </a>
+                </div>
+            </div>
+
+            <div class="theme-toggle-container" id="themeToggle">
+                <div class="theme-slider"></div>
+                <i class='bx bx-sun theme-icon'></i>
+                <i class='bx bx-moon theme-icon'></i>
+            </div>
+        </div>
+
+
+        <button class="menu-toggle" id="menuToggle" title="Menú principal">
+            <i class='bx bx-menu'></i>
+        </button>
+
+        <div class="mobile-theme-toggle" id="mobileThemeToggle" style="display: none;">
+            <div class="theme-toggle-container">
+                <div class="theme-slider"></div>
+                <i class='bx bx-sun theme-icon'></i>
+                <i class='bx bx-moon theme-icon'></i>
+            </div>
+            <span>Cambiar tema</span>
+        </div>
+    </header>
+
+
+    <main class="main-content">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar Ava...">
+            <i class='bx bx-search' id="searchIcon"></i>
+        </div>
+
+        <div class="controls-container">
+            <button class="regresar-btn" id="regresarBtn">
+                <i class='bx bx-left-arrow-alt'></i>
+                Volver
+            </button>
+        </div>
+
+        <!-- Grid de avas -->
+        <div class="ava-grid-container">
+
+            <button class="carousel-button prev" id="prevBtn">
+                <i class='bx bx-chevron-left'></i>
+            </button>
+
+            <div id="avaGrid" class="ava-grid">
+
+            </div>
+
+            <button class="carousel-button next" id="nextBtn">
+                <i class='bx bx-chevron-right'></i>
+            </button>
+        </div>
+        <div class="extra-space"></div>
+        <!-- Añadir esta sección justo antes del cierre de main (antes de </main>) -->
+
+        <!-- Divisor entre secciones -->
+        <div class="section-divider">
+            <div class="wave-divider"></div>
+            <div class="divider-content">
+                <h2>Aprende a utilizar Acadelia</h2>
+                <p>Descubre todas las funcionalidades de tus Asistentes Virtuales Académicos</p>
+            </div>
+        </div>
+
+        <!-- Sección de Tutoriales -->
+        <section class="tutorials-section">
+            <!-- Menú de navegación fijo -->
+            <div class="tutorials-nav-wrapper">
+                <div class="tutorials-nav">
+                    <button class="tutorial-nav-btn active" data-target="conceptMaps">
+                        <i class='bx bx-network-chart'></i>
+                        <span>Mapas Visuales</span>
+                    </button>
+                    <button class="tutorial-nav-btn" data-target="calculator">
+                        <i class='bx bx-calculator'></i>
+                        <span>Calculadora</span>
+                    </button>
+                    <button class="tutorial-nav-btn" data-target="search">
+                        <i class='bx bx-search-alt'></i>
+                        <span>Búsqueda Inteligente</span>
+                    </button>
+                    <button class="tutorial-nav-btn" data-target="pdf">
+                        <i class='bx bxs-file-pdf'></i>
+                        <span>PDFs</span>
+                    </button>
+                    <button class="tutorial-nav-btn" data-target="video">
+                        <i class='bx bx-video'></i>
+                        <span>Transcripción</span>
+                    </button>
+                    <button class="tutorial-nav-btn" data-target="exams">
+                        <i class='bx bx-test-tube'></i>
+                        <span>Exámenes</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor de los tutoriales -->
+            <div class="tutorial-container">
+                <!-- Tutorial 1: Mapas Visuales -->
+                <div id="conceptMaps" class="tutorial-item active">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bx-network-chart'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Mapas Visuales</h3>
+                        <p>Organiza tus ideas y conceptos de forma visual</p>
+                        <div class="character-corner">
+                            <img src="/images/character-map.webp" alt="Personaje creando mapas Visuales">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-dots"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/d5A85T61YpU" title="Mapas Visuales"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Cómo crear mapas Visuales con tu AVA</h4>
+                            <p>Los mapas Visuales son una herramienta poderosa para organizar y comprender información
+                                compleja. Con Acadelia, puedes crear mapas Visuales personalizados en segundos.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-book-open'></i>
+                                    <h5>Rápido y sencillo</h5>
+                                    <p>Genera mapas Visuales en segundos con una simple solicitud.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-target-lock'></i>
+                                    <h5>Personalizable</h5>
+                                    <p>Ajusta el nivel de detalle y la estructura según tus necesidades.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-link'></i>
+                                    <h5>Relaciones claras</h5>
+                                    <p>Visualiza las conexiones entre conceptos de forma intuitiva.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-customize'></i>
+                                    <h5>Adaptable</h5>
+                                    <p>Ideal para cualquier materia o nivel de complejidad.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Puedes pedir que se incluyan definiciones breves para cada concepto del mapa.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial 2: Calculadora Inteligente -->
+                <div id="calculator" class="tutorial-item">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bx-calculator'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Calculadora Inteligente</h3>
+                        <p>Resuelve problemas matemáticos complejos paso a paso</p>
+                        <div class="character-corner">
+                            <img src="/images/character-calculator.webp" alt="Personaje usando calculadora">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-circle"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/sMoAv1Nm01U"
+                                title="Calculadora Inteligente" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Domina las matemáticas con la calculadora inteligente</h4>
+                            <p>La calculadora inteligente de Acadelia te permite resolver desde ecuaciones simples hasta
+                                problemas matemáticos avanzados, con explicaciones detalladas paso a paso.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-math'></i>
+                                    <h5>Soluciones paso a paso</h5>
+                                    <p>Comprende cada etapa del proceso de resolución.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-line-chart'></i>
+                                    <h5>Gráficas y visualizaciones</h5>
+                                    <p>Visualiza funciones y resultados matemáticos.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-code-block'></i>
+                                    <h5>Álgebra a cálculo</h5>
+                                    <p>Resuelve problemas de todos los niveles de complejidad.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-book-reader'></i>
+                                    <h5>Explicaciones claras</h5>
+                                    <p>Recibe explicaciones didácticas adaptadas a tu nivel.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Si necesitas ayuda con gráficas, pide a tu AVA que visualice las funciones
+                                    matemáticas.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial 3: Búsqueda Inteligente -->
+                <div id="search" class="tutorial-item">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bx-search-alt'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Búsqueda Inteligente</h3>
+                        <p>Encuentra información académica precisa en segundos</p>
+                        <div class="character-corner">
+                            <img src="/images/character-search.webp" alt="Personaje realizando búsquedas">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-wave"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/TkG1p_ZvkDc"
+                                title="Búsqueda Inteligente" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Investiga con precisión usando la búsqueda inteligente</h4>
+                            <p>La función de búsqueda inteligente de Acadelia te permite acceder a información académica
+                                verificada y específica para tus necesidades de estudio.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-book-open'></i>
+                                    <h5>Fuentes verificadas</h5>
+                                    <p>Accede a contenido académico verificado por expertos.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-target-lock'></i>
+                                    <h5>Respuestas precisas</h5>
+                                    <p>Obtén información exacta y relevante para tus consultas.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-link'></i>
+                                    <h5>Referencias</h5>
+                                    <p>Recibe citas y referencias para respaldar tus trabajos.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-customize'></i>
+                                    <h5>Personalizado</h5>
+                                    <p>Resultados adaptados a tu nivel académico y carrera.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Para mejores resultados, sé específico en tus consultas y menciona tu área de
+                                    estudio.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial 4: Interacción con PDF -->
+                <div id="pdf" class="tutorial-item">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bxs-file-pdf'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Interacción con PDFs</h3>
+                        <p>Analiza y extrae información de tus documentos PDF</p>
+                        <div class="character-corner">
+                            <img src="/images/character-pdf.webp" alt="Personaje interactuando con PDF">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-square"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/tyEs1B7orp0"
+                                title="Interacción con PDFs" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Aprovecha al máximo tus documentos PDF</h4>
+                            <p>Acadelia te permite interactuar con tus documentos PDF para extraer información, hacer
+                                resúmenes, obtener explicaciones y más.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-file-find'></i>
+                                    <h5>Análisis de contenido</h5>
+                                    <p>Extrae la información más relevante de cualquier PDF.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-comment-detail'></i>
+                                    <h5>Resúmenes inteligentes</h5>
+                                    <p>Genera resúmenes de documentos extensos en segundos.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-question-mark'></i>
+                                    <h5>Consultas específicas</h5>
+                                    <p>Pregunta sobre secciones o temas concretos del documento.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-highlight'></i>
+                                    <h5>Explicaciones detalladas</h5>
+                                    <p>Recibe aclaraciones sobre conceptos complejos del PDF.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Para documentos extensos, especifica las páginas o secciones que deseas analizar.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial 5: Interacción con Videos y Audio -->
+                <div id="video" class="tutorial-item">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bx-video'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Interacción con Videos y Audio</h3>
+                        <p>Analiza contenido multimedia para tus estudios</p>
+                        <div class="character-corner">
+                            <img src="/images/character-video.webp" alt="Personaje viendo video">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-triangle"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/YGQcc6YDEPc"
+                                title="Interacción con Videos" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Aprovecha el contenido multimedia en tu aprendizaje</h4>
+                            <p>Acadelia puede ayudarte a interactuar con videos de YouTube o archivos de audio para
+                                maximizar tu aprendizaje.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-analyse'></i>
+                                    <h5>Análisis de contenido</h5>
+                                    <p>Comprende el contenido de videos educativos rápidamente.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-list-ul'></i>
+                                    <h5>Puntos clave</h5>
+                                    <p>Identifica y resume los conceptos principales del video.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-time'></i>
+                                    <h5>Ahorro de tiempo</h5>
+                                    <p>Obtén la información esencial sin ver el video completo.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-help-circle'></i>
+                                    <h5>Preguntas específicas</h5>
+                                    <p>Consulta sobre temas concretos mencionados en el video.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Puedes solicitar una lista de los conceptos clave mencionados en el video.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial 6: Exámenes Diagnósticos -->
+                <div id="exams" class="tutorial-item">
+                    <div class="tutorial-header">
+                        <div class="tutorial-badge">
+                            <i class='bx bx-test-tube'></i>
+                            <span>Tutorial</span>
+                        </div>
+                        <h3>Creación de Exámenes Diagnósticos</h3>
+                        <p>Evalúa tu conocimiento con exámenes personalizados</p>
+                        <div class="character-corner">
+                            <img src="/images/character-exam.webp" alt="Personaje creando examen">
+                        </div>
+                    </div>
+
+                    <div class="tutorial-content centered">
+                        <div class="tutorial-video full-width anim-element">
+                            <div class="video-decoration decoration-zigzag"></div>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/RKbJXnPTD2k"
+                                title="Exámenes Diagnósticos" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="tutorial-text full-width anim-element">
+                            <h4>Prepárate para tus exámenes con pruebas personalizadas</h4>
+                            <p>Los exámenes diagnósticos de Acadelia te permiten evaluar tu nivel de conocimiento en
+                                cualquier materia y prepararte mejor para tus evaluaciones.</p>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <i class='bx bx-edit-alt'></i>
+                                    <h5>Preguntas a medida</h5>
+                                    <p>Exámenes adaptados a tu nivel de conocimiento y objetivos.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-slider'></i>
+                                    <h5>Dificultad ajustable</h5>
+                                    <p>Elige entre diferentes niveles de complejidad.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-message-detail'></i>
+                                    <h5>Feedback detallado</h5>
+                                    <p>Recibe explicaciones completas para cada respuesta.</p>
+                                </div>
+                                <div class="feature-item">
+                                    <i class='bx bx-check-double'></i>
+                                    <h5>Verificación de progreso</h5>
+                                    <p>Evalúa tu avance y detecta áreas de mejora.</p>
+                                </div>
+                            </div>
+                            <div class="tutorial-tip">
+                                <i class='bx bx-bulb'></i>
+                                <p>Puedes solicitar preguntas de diversos tipos: opción múltiple, respuesta corta,
+                                    desarrollo, etc.</p>
+                            </div>
+                            <button class="try-now-btn">
+                                <i class='bx bx-play-circle'></i>
+                                Probar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón "Volver arriba" -->
+            <div class="back-to-top">
+                <button id="backToTopBtn">
+                    <i class='bx bx-chevron-up'></i>
+                </button>
+            </div>
+        </section>
+
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <span class="copyright">© Acadelia.</span>
+            <div class="social-icons">
+                <a href="#" class="social-link"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15"
+                        height="15" viewBox="0 0 24 24">
+                        <path
+                            d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z">
+                        </path>
+                    </svg></a>
+                <a href="#" class="social-link"><i class='bx bxl-facebook'></i></a>
+                <a href="#" class="social-link"><i class='bx bxl-instagram'></i></a>
+                <a href="#" class="social-link"><i class='bx bx-envelope'></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+
+    <!-- Scripts -->
+    <script src="/scripts/cookie-theme-integration.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/cookie-consent-initializer.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/theme-principal.js" nonce="<%= nonce %>"></script>
+
+    <script src="/scripts/notification-service.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/mis-avas.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/principal.js" nonce="<%= nonce %>"></script>
+    <!-- Añadir al final de la página, antes del cierre de los script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" nonce="<%= nonce %>"></script>
+    <script src="/scripts/tutoriales.js" nonce="<%= nonce %>"> </script>
+
+</body>
+
+</html>

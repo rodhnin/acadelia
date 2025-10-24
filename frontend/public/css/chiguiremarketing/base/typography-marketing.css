@@ -1,0 +1,68 @@
+/* ======================================
+   TIPOGRAFÍA
+   ====================================== */
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.5em;
+  color: var(--color-text);
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* Transiciones para texto */
+.sidebar-title, 
+.header-title, 
+.header-subtitle,
+.welcome-title,
+.welcome-description {
+  transition: color 0.3s ease;
+}
+
+/* Estilos para enlaces */
+a {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+/* Estilos para texto enfatizado */
+em, i {
+  font-style: italic;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+/* Estilos para código en línea */
+code {
+  font-family: var(--font-family-code);
+}
+
+/* Estilos para fórmulas matemáticas */
+.math {
+  font-family: var(--font-family-math);
+}
+
+/* Ajustes de tipografía para tema oscuro */
+[data-theme="dark"] a {
+  color: var(--color-primary-light);
+}
+
+[data-theme="dark"] a:hover {
+  color: #b8bfaa;
+}

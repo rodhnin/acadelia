@@ -1,0 +1,5 @@
+# Acadelia – LFS
+docs/media/*.mp4 filter=lfs diff=lfs merge=lfs -text
+docs/media/*.gif filter=lfs diff=lfs merge=lfs -text
+docs/media/*.webp filter=lfs diff=lfs merge=lfs -text
+uploads/**/* filter=lfs diff=lfs merge=lfs -text

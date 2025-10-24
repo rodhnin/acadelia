@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Acadelia - Planes y Precios</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/preciosStyle.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <a href="/" class="logo-link">
+            <div class="logo-img desktop-logo"></div>
+        </div>
+        <nav class="nav-buttons desktop-nav">
+            <a href="/faq">
+                <button class="faq-btn">
+                    <i class='bx bx-help-circle'></i>
+                    FAQ
+                </button>
+            </a>
+            <a href="/login">
+                <button class="ingresar-btn">
+                    <i class='bx bx-log-in'></i>
+                    Ingresar
+                </button>
+            </a>
+        </nav>
+        <div class="mobile-nav" style="display: none;">
+            <button class="menu-toggle">☰</button>
+            <div class="mobile-menu" style="display: none;">
+                <a href="/faq" class="faq-btn">FAQ</a>
+                <a href="/login" class="ingresar-btn">Ingresar</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="pricing-hero">
+            <div class="section-inner">
+                <div class="pricing-header" data-aos="fade-up">
+                    <h1>Elige el plan perfecto para tu éxito académico</h1>
+                    <p>Accede a nuestra tecnología educativa avanzada y potencia tu aprendizaje con asistentes virtuales especializados</p>
+                    
+                    <div class="pricing-toggle">
+                        <span class="toggle-label active">Mensual</span>
+                        <label class="switch">
+                            <input type="checkbox" id="billing-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="toggle-label">Anual <span class="discount">¡Hasta 20% de descuento!</span></span>
+                    </div>
+                </div>
+
+                <div class="pricing-cards">
+                    <!-- Plan Gratuito -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header">
+                            <h3>Gratuito</h3>
+                            <div class="price">
+                                <span class="currency">$</span>
+                                <span class="amount monthly">0</span>
+                                <span class="amount yearly">0</span>
+                                <span class="period">/mes</span>
+                            </div>
+                            <p class="price-caption">Acceso básico para comenzar</p>
+                        </div>
+                        <div class="card-body">
+                            <ul class="features-list">
+                                <li>
+                                    <strong>Acceso limitado a las herramientas:</strong>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Consultas limitadas al agente de búsqueda</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Herramientas matemáticas básicas</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Interacción con PDFs (limitado)</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Transcripción de YouTube básica (limitado)</span>
+                                </li>
+                                <li class="not-available">
+                                    <i class='bx bx-x'></i>
+                                    <span>Sin acceso a AVAs especializados</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/login">
+                                <button class="pricing-btn">
+                                    Iniciar ahora
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Plan Premium -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <h3>Premium</h3>
+                            <div class="price">
+                                <span class="currency">$</span>
+                                <span class="amount monthly">13.00</span>
+                                <span class="amount yearly">129.00</span>
+                                <span class="period">/mes</span>
+                            </div>
+                            <p class="price-caption">Perfecto para estudiantes individuales</p>
+                        </div>
+                        <div class="card-body">
+                            <ul class="features-list">
+                                <li>
+                                    <strong>Acceso a todas las herramientas con las siguientes funcionalidades:</strong>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Consultas ilimitadas al agente de búsqueda</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Herramientas matemáticas avanzadas</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Análisis completo de PDFs</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Transcripción y análisis de YouTube</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Generación básica de mapas conceptuales</span>
+                                </li>
+                                <li class="not-available">
+                                    <i class='bx bx-x'></i>
+                                    <span>Sin acceso a AVAs especializados</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/login">
+                                <button class="pricing-btn">
+                                    Iniciar ahora
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Plan AVA (Destacado) -->
+                    <div class="pricing-card featured" data-aos="fade-up" data-aos-delay="300">
+                        <div class="featured-label">Recomendado</div>
+                        <div class="card-header">
+                            <h3>AVA</h3>
+                            <div class="price">
+                                <span class="currency">$</span>
+                                <span class="amount monthly">15.00</span>
+                                <span class="amount yearly">144.00</span>
+                                <span class="period">/mes</span>
+                            </div>
+                            <p class="price-caption">La experiencia académica completa</p>
+                        </div>
+                        <div class="card-body">
+                            <ul class="features-list">
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span><strong>Todo lo de Premium</strong></span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span><strong>10 chats especializados por carrera</strong></span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Creación avanzada de mapas visuales</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Generación de exámenes de práctica</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Explicación detallada de ejercicios</span>
+                                </li>
+                                <li>
+                                    <i class='bx bx-check'></i>
+                                    <span>Análisis y explicación de imágenes</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/login">
+                                <button class="pricing-btn featured-btn">
+                                    Iniciar ahora
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ava-features" data-aos="fade-up">
+            <div class="section-inner">
+                <div class="ava-header">
+                    <h2>¿Por qué elegir el plan AVA?</h2>
+                    <p>Descubre todas las ventajas que ofrecen nuestros Asistentes Virtuales Académicos</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
+                        <i class='bx bx-book-reader'></i>
+                        <h3>Especialización por Carrera</h3>
+                        <p>Accede a 10 chats especializados con información detallada para las materias más importantes de tu carrera.</p>
+                    </div>
+
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
+                        <i class='bx bx-map-alt'></i>
+                        <h3>Mapas Visuales</h3>
+                        <p>Crea mapas conceptuales, diagramas y esquemas visuales para facilitar tu comprensión y estudio.</p>
+                    </div>
+
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="300">
+                        <i class='bx bx-test-tube'></i>
+                        <h3>Exámenes de Práctica</h3>
+                        <p>Genera exámenes personalizados para poner a prueba tus conocimientos y prepararte para evaluaciones reales.</p>
+                    </div>
+
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="400">
+                        <i class='bx bx-math'></i>
+                        <h3>Resolución Matemática</h3>
+                        <p>Obtén explicaciones paso a paso de ejercicios matemáticos complejos con herramientas especializadas.</p>
+                    </div>
+
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="500">
+                        <i class='bx bx-image'></i>
+                        <h3>Análisis de Imágenes</h3>
+                        <p>Sube imágenes de ejercicios, diagramas o gráficos y recibe explicaciones detalladas sobre su contenido.</p>
+                    </div>
+
+                    <div class="feature-item" data-aos="fade-up" data-aos-delay="600">
+                        <i class='bx bx-search-alt'></i>
+                        <h3>Búsqueda Inteligente</h3>
+                        <p>Accede a información académica relevante con búsquedas contextualizadas para tus necesidades específicas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section" data-aos="fade-up">
+            <div class="section-inner">
+                <div class="cta-content">
+                    <h2>Potencia tu educación con Acadelia</h2>
+                    <p>Únete hoy a miles de estudiantes que ya han mejorado su rendimiento académico</p>
+                    <a href="/login">
+                        <button class="ingresar-btn">
+                            <i class='bx bx-rocket'></i>
+                            Comenzar con AVA
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div class="footer-container">
+                <!-- Columna Izquierda -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-img"></div>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                                <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class='bx bxl-facebook'></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class='bx bxl-instagram-alt'></i>
+                        </a>
+                        <a href="/cdn-cgi/l/email-protection#cba8a4a5bfaaa8bfa48baea1aea6bba7a4e5a8a4a6" class="social-link" aria-label="Email">
+                            <i class='bx bx-envelope'></i>
+                        </a>
+                    </div>
+                    <p class="copyright">© Acadelia.</p>
+                </div>
+        
+                <!-- Columna Derecha -->
+                <div class="footer-legal">
+                    <h3 class="legal-title">Legal y Seguridad</h3>
+                    <div class="legal-links">
+                        <a href="/cookie_privacy" class="legal-link">Política y Privacidad</a>
+                        <a href="/terminos_condiciones" class="legal-link">Terminos y Condiciones</a>
+                        <a href="/contact" class="legal-link">Contáctanos</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- CSRF Protection -->
+    <script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+    
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/scripts/autenticarPrecios.js"></script>
+    <script src="/scripts/preciosScript.js"></script>
+    <script src="/scripts/cookie-consent-initializer.js"></script>
+    <script src="/scripts/cookie-consent.js"></script>
+</body>
+</html>

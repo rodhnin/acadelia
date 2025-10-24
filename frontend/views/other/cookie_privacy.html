@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/scripts/console-protection.js" nonce="<%= nonce %>"></script>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title>Política y privacidad</title>
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/cookiespri.css">
+    <link rel="stylesheet" href="/css/cookie-consent.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+</head>
+<body>
+    
+    <!-- Banner de consentimiento de cookies -->
+    <div id="cookie-consent-banner">
+        <div class="cookie-container">
+            <div class="cookie-icon">
+                <img src="/images/acadel-icon.webp" alt="Profesor Acadel" />
+            </div>
+            <div class="cookie-text">
+                <h3>¡Acadel cuida tu privacidad!</h3>
+                <p>Utilizamos cookies para mejorar tu experiencia de aprendizaje, personalizar contenido, y analizar nuestro tráfico. Puedes elegir qué cookies aceptas. Las cookies esenciales siempre están activas para el funcionamiento del sitio.</p>
+                <div class="cookie-actions">
+                    <button id="accept-all-cookies" class="ingresar-btn cookie-btn-primary">
+                        <i class='bx bx-check'></i>
+                        Aceptar todas
+                    </button>
+                    <button id="reject-all-cookies" class="cookie-btn-secondary">
+                        Solo esenciales
+                    </button>
+                    <button id="customize-cookies" class="cookie-customize-btn">
+                        Personalizar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="cookie-settings">
+                <div class="cookie-settings-title">Configuración de cookies</div>
+                
+                <div class="cookie-setting-item">
+                    <div class="cookie-setting-info">
+                        <div class="cookie-setting-label">
+                            <i class='bx bx-shield'></i>
+                            <strong>Cookies esenciales</strong>
+                        </div>
+                        <div class="cookie-setting-description">
+                            Necesarias para el funcionamiento básico del sitio. No pueden ser desactivadas.
+                        </div>
+                    </div>
+                    <label class="cookie-toggle">
+                        <input type="checkbox" checked disabled>
+                        <span class="cookie-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="cookie-setting-item">
+                    <div class="cookie-setting-info">
+                        <div class="cookie-setting-label">
+                            <i class='bx bx-cog'></i>
+                            <strong>Cookies funcionales</strong>
+                        </div>
+                        <div class="cookie-setting-description">
+                            Permiten funcionalidades mejoradas y personalización como guardar tema, preferencias de idioma y configuraciones de usuario.
+                        </div>
+                    </div>
+                    <label class="cookie-toggle">
+                        <input type="checkbox" id="functional-cookies-toggle">
+                        <span class="cookie-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="cookie-setting-item">
+                    <div class="cookie-setting-info">
+                        <div class="cookie-setting-label">
+                            <i class='bx bx-bar-chart-alt-2'></i>
+                            <strong>Cookies analíticas</strong>
+                        </div>
+                        <div class="cookie-setting-description">
+                            Nos ayudan a entender cómo interactúas con el sitio para mejorar tu experiencia educativa.
+                        </div>
+                    </div>
+                    <label class="cookie-toggle">
+                        <input type="checkbox" id="analytics-cookies-toggle">
+                        <span class="cookie-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="cookie-setting-item">
+                    <div class="cookie-setting-info">
+                        <div class="cookie-setting-label">
+                            <i class='bx bx-target-lock'></i>
+                            <strong>Cookies de marketing</strong>
+                        </div>
+                        <div class="cookie-setting-description">
+                            Utilizadas para mostrarte anuncios relevantes a tus intereses académicos.
+                        </div>
+                    </div>
+                    <label class="cookie-toggle">
+                        <input type="checkbox" id="marketing-cookies-toggle">
+                        <span class="cookie-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="cookie-actions" style="justify-content: flex-end; margin-top: 1rem;">
+                    <button id="save-cookie-preferences" class="ingresar-btn cookie-btn-primary">
+                        <i class='bx bx-save'></i>
+                        Guardar preferencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header>
+        <div class="logo-container">
+            <a href="/" class="logo-link" aria-label="Paginadeinicio">
+              <div class="logo-img desktop-logo"></div>
+            </a>
+          </div>
+  <nav class="nav-buttons desktop-nav">
+    <a href="/faq"> <button class="faq-btn">
+        <i class='bx bx-help-circle'></i>
+        FAQ
+    </button>
+</a>
+    
+    <a href="/login">
+        <button class="ingresar-btn">
+            <i class='bx bx-log-in'></i>
+            Ingresar
+        </button>
+        </a>
+  </nav>
+  <div class="mobile-nav" style="display: none;">
+    <button class="menu-toggle">☰</button>
+    <div class="mobile-menu" style="display: none;">
+      <a href="/faq" class="faq-btn">FAQ</a>
+      <a href="/login" class="ingresar-btn">Ingresar</a>
+    </div>
+  </div>   
+
+</header>
+
+<main class="privacy-container">
+    <div class="privacy-header">
+        <h1>Política de <span>Privacidad</span></h1>
+    </div>
+
+    <div class="privacy-content">
+        <div class="privacy-intro">
+            <p>JVPF NEURAL SOLUTIONS, S.L. (en adelante, "nosotros", "nos" o "Acadelia"), entendemos la importancia de proteger su información personal. Esta Política de Privacidad establece nuestro compromiso con la protección de los datos personales proporcionados cuando interactúa con nuestros servicios.</p>
+            <p class="last-update">Última actualización: 26 de abril de 2025</p>
+        </div>
+
+        <section class="privacy-section">
+            <h2>1. Compromiso con su Privacidad</h2>
+            <div class="privacy-text">
+                <p>En Acadelia, nos tomamos muy en serio la protección de sus datos personales. Cumplimos con el Reglamento General de Protección de Datos (RGPD) de la UE, la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), y otras normativas aplicables de privacidad.</p>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>2. Información que Recopilamos</h2>
+            <div class="privacy-text">
+                <h3>2.1 Datos Personales Básicos</h3>
+                <ul>
+                    <li>Información de identidad: nombre completo, país y edad</li>
+                    <li>Información de contacto: correo electrónico</li>
+                    <li>Información académica: área de estudio e institución educativa</li>
+                    <li>Información de la cuenta: contraseña</li>
+                </ul>
+
+                <h3>2.2 Datos de Uso</h3>
+                <ul>
+                    <li>Información sobre cómo utiliza nuestros servicios</li>
+                    <li>Registros de sesiones de tutoría</li>
+                    <li>Preferencias de aprendizaje</li>
+                    <li>Histórico de consultas académicas</li>
+                </ul>
+
+                <h3>2.3 Datos Técnicos</h3>
+                <ul>
+                    <li>Dirección IP</li>
+                    <li>Tipo de navegador y dispositivo</li>
+                    <li>Cookies y tecnologías similares</li>
+                    <li>Datos de inicio de sesión</li>
+                </ul>
+            </div>
+        </section>
+
+        
+        <section class="privacy-section">
+            <h2>3. Cómo Utilizamos su Información</h2>
+            <div class="privacy-text">
+                <p>Utilizamos su información personal únicamente para:</p>
+                <ul>
+                    <li>Proporcionar y personalizar nuestros servicios de tutoría virtual</li>
+                    <li>Mejorar su experiencia de aprendizaje</li>
+                    <li>Mantener la seguridad de su cuenta</li>
+                    <li>Comunicarnos con usted sobre nuestros servicios</li>
+                    <li>Cumplir con nuestras obligaciones legales</li>
+                    <li>Resolver incidencias técnicas</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>4. Base Legal para el Tratamiento</h2>
+            <div class="privacy-text">
+                <p>Procesamos sus datos personales bajo las siguientes bases legales:</p>
+                <ul>
+                    <li>Ejecución del contrato de servicios</li>
+                    <li>Consentimiento explícito para el tratamiento de datos</li>
+                    <li>Intereses legítimos en la mejora de nuestros servicios</li>
+                    <li>Cumplimiento de obligaciones legales</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>5. Protección de sus Datos</h2>
+            <div class="privacy-text">
+                <p>Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos:</p>
+                <ul>
+                    <li>Cifrado de extremo a extremo en las comunicaciones</li>
+                    <li>Almacenamiento seguro en servidores ubicados en la UE</li>
+                    <li>Acceso restringido a personal autorizado</li>
+                    <li>Copias de seguridad regulares</li>
+                    <li>Protocolos de seguridad actualizados</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>6. Política de Cookies</h2>
+            <div class="privacy-text">
+                <h3>6.1 ¿Qué son las cookies?</h3>
+                <p>Las cookies son pequeños archivos de texto que los sitios web colocan en su dispositivo (ordenador, tableta o móvil) cuando los visita. Estas cookies nos ayudan a ofrecerle una mejor experiencia, recordando sus preferencias, analizando cómo interactúa con nuestro Sitio y personalizando nuestros servicios educativos.</p>
+                <p>También utilizamos tecnologías similares como web beacons, píxeles de seguimiento y almacenamiento local que almacenan información en su navegador o dispositivo. Por simplicidad, nos referimos a todas estas tecnologías como "cookies" en esta política.</p>
+
+                <h3>6.2 Tipos de cookies que utilizamos</h3>
+                <p>Clasificamos nuestras cookies en las siguientes categorías:</p>
+
+                <h4>6.2.1 Cookies esenciales</h4>
+                <p>Estas cookies son necesarias para el funcionamiento básico del sitio. Le permiten navegar por el sitio y utilizar funcionalidades esenciales como acceder a áreas seguras, utilizar el carrito de compra y gestionar su cuenta. No puede rechazar estas cookies, ya que nuestro sitio no funcionaría correctamente sin ellas.</p>
+                <table class="cookie-table">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Propósito</th>
+                        <th>Duración</th>
+                    </tr>
+                    <tr>
+                        <td>consent_token</td>
+                        <td>Almacena sus preferencias de consentimiento de cookies</td>
+                        <td>1 año</td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>Gestiona la autenticación y seguridad de la sesión</td>
+                        <td>15 minutos</td>
+                    </tr>
+                    <tr>
+                        <td>XSRF-TOKEN</td>
+                        <td>Protege contra ataques de falsificación de solicitudes</td>
+                        <td>Sesión</td>
+                    </tr>
+                </table>
+
+                <h4>6.2.2 Cookies funcionales</h4>
+                <p>Estas cookies nos permiten ofrecerle funcionalidades mejoradas y personalización. Pueden ser establecidas por nosotros o por proveedores de servicios externos cuyos servicios hemos añadido a nuestro sitio. Si no permite estas cookies, algunos o todos estos servicios pueden no funcionar correctamente.</p>
+                <table class="cookie-table">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Propósito</th>
+                        <th>Duración</th>
+                    </tr>
+                    <tr>
+                        <td>theme_preference</td>
+                        <td>Recuerda su preferencia de tema (claro/oscuro)</td>
+                        <td>1 año</td>
+                    </tr>
+                    <tr>
+                        <td>language</td>
+                        <td>Almacena su preferencia de idioma</td>
+                        <td>1 año</td>
+                    </tr>
+                    <tr>
+                        <td>ui_customization</td>
+                        <td>Guarda sus personalizaciones de interfaz de usuario</td>
+                        <td>1 año</td>
+                    </tr>
+                </table>
+
+                <h4>6.2.3 Cookies analíticas</h4>
+                <p>Estas cookies nos ayudan a entender cómo interactúan los visitantes con nuestro sitio. Utilizamos esta información para mejorar nuestro sitio y servicios. Toda la información que estas cookies recogen es agregada y, por lo tanto, anónima.</p>
+                <table class="cookie-table">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Propósito</th>
+                        <th>Duración</th>
+                    </tr>
+                    <tr>
+                        <td>_ga</td>
+                        <td>Utilizada por Google Analytics para distinguir usuarios</td>
+                        <td>2 años</td>
+                    </tr>
+                    <tr>
+                        <td>_gid</td>
+                        <td>Utilizada por Google Analytics para distinguir usuarios</td>
+                        <td>24 horas</td>
+                    </tr>
+                    <tr>
+                        <td>_gat</td>
+                        <td>Utilizada por Google Analytics para limitar la tasa de solicitudes</td>
+                        <td>1 minuto</td>
+                    </tr>
+                </table>
+
+                <h4>6.2.4 Cookies de marketing</h4>
+                <p>Estas cookies se utilizan para seguir a los visitantes en los sitios web. La intención es mostrar anuncios relevantes y atractivos para el usuario individual, y por lo tanto más valiosos para los editores y anunciantes terceros.</p>
+                <table class="cookie-table">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Propósito</th>
+                        <th>Duración</th>
+                    </tr>
+                    <tr>
+                        <td>_fbp</td>
+                        <td>Utilizada por Facebook para ofrecer una serie de productos publicitarios</td>
+                        <td>3 meses</td>
+                    </tr>
+                    <tr>
+                        <td>ads_prefs</td>
+                        <td>Almacena preferencias de publicidad para personalizar anuncios</td>
+                        <td>1 año</td>
+                    </tr>
+                </table>
+
+                <h3>6.3 ¿Cómo utilizamos las cookies?</h3>
+                <p>Utilizamos cookies para diversos propósitos, incluyendo:</p>
+                <ul>
+                    <li>Proporcionar, personalizar y mejorar su experiencia en nuestro sitio</li>
+                    <li>Entender cómo utiliza nuestro sitio y qué contenido educativo le interesa</li>
+                    <li>Recordar sus preferencias y configuraciones (como tema oscuro/claro)</li>
+                    <li>Mejorar la velocidad y seguridad del sitio</li>
+                    <li>Permitirle acceder a características de cuenta y áreas seguras</li>
+                    <li>Medir la efectividad de nuestros servicios educativos</li>
+                    <li>Mostrar contenido relevante a sus intereses académicos</li>
+                </ul>
+
+                <h3>6.4 Sus opciones y control de cookies</h3>
+                <p>La primera vez que visita nuestro sitio, le presentamos un banner de cookies que le permite elegir qué categorías de cookies acepta. Puede cambiar sus preferencias en cualquier momento.</p>
+                
+                <p>Puede gestionar sus preferencias de cookies de las siguientes maneras:</p>
+                <ul>
+                    <li><strong>A través de nuestro banner de cookies:</strong> Haga clic en el botón "Personalizar" y ajuste sus preferencias.</li>
+                    <li><strong>A través de este botón:</strong> <button id="open-cookie-settings" class="ingresar-btn"><i class='bx bx-cookie'></i> Gestionar preferencias de cookies</button></li>
+                </ul>
+                
+                <p>Además, puede controlar las cookies a través de la configuración de su navegador. La mayoría de los navegadores le permiten:</p>
+                <ul>
+                    <li>Ver qué cookies ha almacenado y eliminarlas individualmente</li>
+                    <li>Bloquear cookies de terceros</li>
+                    <li>Bloquear cookies de sitios específicos</li>
+                    <li>Bloquear todas las cookies</li>
+                    <li>Eliminar todas las cookies cuando cierre su navegador</li>
+                </ul>
+                
+                <p>Tenga en cuenta que si rechaza o elimina cookies, es posible que algunas características de nuestro sitio no funcionen correctamente y su experiencia educativa puede verse afectada.</p>
+
+                <h3>6.5 Cookies de terceros</h3>
+                <p>Algunos de nuestros socios colocan cookies en nuestro sitio para proporcionarle servicios o para compartir información con redes sociales. Estas cookies de terceros están sujetas a las políticas de privacidad de las respectivas empresas. Algunos de nuestros socios incluyen:</p>
+                <ul>
+                    <li>Google (Analytics, reCAPTCHA)</li>
+                    <li>Paddle (procesamiento de pagos)</li>
+                    <li>Facebook (compartir contenido)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>7. Inicio de Sesión con Google</h2>
+            <div class="privacy-text">
+                <p>Ofrecemos la opción de iniciar sesión mediante Google, cumpliendo con:</p>
+                <ul>
+                    <li>Principios de minimización de datos</li>
+                    <li>Políticas de privacidad de Google</li>
+                    <li>Estándares de seguridad OAuth 2.0</li>
+                </ul>
+                <p>Solo accedemos a la información básica necesaria para la autenticación.</p>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>8. Sus Derechos</h2>
+            <div class="privacy-text">
+                <p>Como usuario, tiene derecho a:</p>
+                <ul>
+                    <li>Acceder a sus datos personales</li>
+                    <li>Rectificar datos inexactos</li>
+                    <li>Solicitar la eliminación de sus datos</li>
+                    <li>Limitar el tratamiento de sus datos</li>
+                    <li>Portabilidad de datos</li>
+                    <li>Oponerse al tratamiento</li>
+                    <li>Retirar el consentimiento en cualquier momento</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>9. Transferencias Internacionales</h2>
+            <div class="privacy-text">
+                <p>Podemos almacenar y procesar sus datos en servidores ubicados fuera del Espacio Económico Europeo, incluyendo en México y Estados Unidos, donde operamos con proveedores como OpenAI y Supabase.</p>
+                <p>En el caso de datos de usuarios residentes en la Unión Europea, aplicamos mecanismos de protección adecuados, tales como:</p>
+                <ul>
+                <li>Cláusulas contractuales tipo aprobadas por la Comisión Europea</li>
+                <li>Garantías adicionales exigidas por el RGPD</li>
+                <li>Evaluación de adecuación del nivel de protección del país receptor</li>
+                </ul>
+            </div>
+            </section>
+
+        <section class="privacy-section">
+            <h2>10. Retención de Datos</h2>
+            <div class="privacy-text">
+                <p>Conservamos sus datos personales solo durante el tiempo necesario para:</p>
+                <ul>
+                    <li>Proporcionar nuestros servicios</li>
+                    <li>Cumplir con obligaciones legales</li>
+                    <li>Resolver disputas</li>
+                    <li>Hacer cumplir nuestros acuerdos</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>11. Menores de Edad</h2>
+            <div class="privacy-text">
+                <p>Para usuarios menores de 18 años:</p>
+                <ul>
+                    <li>Requerimos consentimiento parental verificable</li>
+                    <li>Implementamos medidas de protección adicionales</li>
+                    <li>Limitamos la recopilación de datos al mínimo necesario</li>
+                    <li>Aplicamos restricciones especiales en cookies analíticas y de marketing para menores de 16 años</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>12. Cambios en esta Política</h2>
+            <div class="privacy-text">
+                <p>Podemos actualizar esta política ocasionalmente. Le notificaremos cualquier cambio significativo mediante:</p>
+                <ul>
+                    <li>Aviso en nuestra plataforma</li>
+                    <li>Correo electrónico a usuarios registrados</li>
+                    <li>Notificación en la aplicación</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+        <h2>13. Contacto</h2>
+        <div class="privacy-text">
+            <p><strong>Responsable del tratamiento:</strong> Rodney Dhavid Jiménez Chacín</p>
+            <p>Desarrollador independiente de la plataforma Acadelia</p>
+            <p>Ubicación operativa: Mérida, Yucatán, México</p>
+            <p>Email: dhavidjimenez@outlook.com</p>
+        </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>14. Autoridad de Control</h2>
+            <div class="privacy-text">
+                <p>Si tiene alguna inquietud sobre el tratamiento de sus datos personales, le invitamos a contactarnos directamente a través del correo <strong>dhavidjimenez@outlook.com</strong> para resolver cualquier duda o solicitud.</p>
+                <p>En caso de que se trate de un ciudadano de la Unión Europea y considere que se han vulnerado sus derechos conforme al Reglamento General de Protección de Datos (RGPD), puede presentar una reclamación ante la autoridad de protección de datos correspondiente en su país de residencia.</p>
+            </div>
+            </section>
+
+        <section class="privacy-section">
+            <h2>15. Validez y Aceptación</h2>
+            <div class="privacy-text">
+                <p>Esta Política de Privacidad forma parte integral de nuestros Términos y Condiciones. El uso de nuestros servicios implica la aceptación de esta política.</p>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>16. Medidas de Seguridad Adicionales para Datos Académicos</h2>
+            <div class="privacy-text">
+                <p>Dado el carácter educativo de nuestra plataforma:</p>
+                <ul>
+                    <li>Aislamos los datos de cada usuario</li>
+                    <li>Implementamos sistemas de detección de accesos no autorizados</li>
+                    <li>Realizamos auditorías regulares de seguridad</li>
+                    <li>Mantenemos registros detallados de todas las operaciones de tratamiento</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <h2>17. Compromiso con la Privacidad Académica</h2>
+            <div class="privacy-text">
+                <p>Nos comprometemos a:</p>
+                <ul>
+                    <li>No utilizar sus datos para fines comerciales</li>
+                    <li>No compartir su información académica con terceros</li>
+                    <li>Mantener la confidencialidad de sus consultas</li>
+                    <li>Proteger su privacidad en el entorno de aprendizaje</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</main>
+
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <!-- Columna Izquierda -->
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <div class="logo-img"></div>
+            </div>
+            <div class="social-icons">
+                <a href="#" class="social-link" aria-label="Twitter">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 24 24">
+                        <path d="M 4.0351562 3 C 3.7431562 3.57 3.6894375 3.6741406 3.3984375 4.2441406 L 9.5253906 12.726562 L 2.6523438 21 L 4.6015625 21 L 10.431641 13.980469 L 15.5 21 L 20.119141 21 C 20.381141 20.488 20.429406 20.393859 20.691406 19.880859 L 13.673828 10.164062 L 19.671875 3 L 17.714844 3 L 12.767578 8.9082031 L 8.5 3 L 4.0351562 3 z M 5.4335938 4.5 L 7.7324219 4.5 L 18.566406 19.5 L 16.267578 19.5 L 5.4335938 4.5 z"></path>
+                        </svg>
+                    
+                    </a>
+                <a href="#" class="social-link" aria-label="Facebook">
+                    <i class='bx bxl-facebook'></i>
+                </a>
+                <a href="#" class="social-link" aria-label="Instagram">
+                    <i class='bx bxl-instagram-alt'></i>
+                </a>
+                <a href="mailto:contacto@ejemplo.com" class="social-link" aria-label="Email">
+                    <i class='bx bx-envelope'></i>
+                </a>
+            </div>
+            <p class="copyright">© Acadelia.</p>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="footer-legal">
+            <h3 class="legal-title">Legal y Seguridad</h3>
+            <div class="legal-links">
+                <a href="/cookie_privacy" class="legal-link">Política y Privacidad</a>
+                <a href="/terminos_condiciones" class="legal-link">Terminos y Condiciones</a>
+                <a href="/contact" class="legal-link">Contáctanos</a>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- CSRF Protection -->
+<script src="/scripts/csrf-utils.js" nonce="<%= nonce %>"></script>
+
+<script src="/scripts/privacy.js" nonce="<%= nonce %>"></script>
+<script src="/scripts/cookie-consent-initializer.js" nonce="<%= nonce %>"></script>
+<script src="/scripts/botoncookies.js" nonce="<%= nonce %>"></script>
+
+
+</body>
+</html>

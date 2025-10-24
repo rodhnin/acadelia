@@ -1,0 +1,588 @@
+/* ======================================
+   ESTILOS MEJORADOS PARA MERMAID
+   Con mejor soporte para tema oscuro
+   ====================================== */
+
+/* Contenedor base de Mermaid */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, rgba(164, 172, 134, 0.2));
+  min-height: 100px;
+  position: relative;
+  overflow: visible; /* Importante para zoom/pan */
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+  /* Forzar colores de texto legibles */
+  color: var(--color-text, #160e0e);
+}
+
+/* ======================================
+   MEJORAS ESPECÍFICAS PARA TEMA OSCURO
+   ====================================== */
+
+/* Tema oscuro - Contenedor */
+[data-theme="dark"] .mermaid {
+  background: var(--bg-secondary-dark, #2d3748);
+  border-color: var(--border-color-dark, rgba(92, 88, 88, 0.3));
+}
+
+/* Tema oscuro - SVG y elementos internos */
+[data-theme="dark"] .mermaid svg {
+  color: #f3f3f3;
+}
+
+/* FORZAR COLORES DE TEXTO EN ELEMENTOS MERMAID - TEMA OSCURO */
+[data-theme="dark"] .mermaid svg text,
+[data-theme="dark"] .mermaid svg .nodeLabel,
+[data-theme="dark"] .mermaid svg .edgeLabel,
+[data-theme="dark"] .mermaid svg .cluster-label,
+[data-theme="dark"] .mermaid svg .messageText,
+[data-theme="dark"] .mermaid svg .actor,
+[data-theme="dark"] .mermaid svg .labelText {
+  fill: #f3f3f3 !important;
+  color: #f3f3f3 !important;
+  font-weight: 500 !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* Elementos de flowchart en tema oscuro */
+[data-theme="dark"] .mermaid svg .node rect,
+[data-theme="dark"] .mermaid svg .node circle,
+[data-theme="dark"] .mermaid svg .node ellipse,
+[data-theme="dark"] .mermaid svg .node polygon {
+  fill: #2d3748 !important;
+  stroke: #5C5858 !important;
+  stroke-width: 2px !important;
+}
+
+/* Nodos especiales en tema oscuro */
+[data-theme="dark"] .mermaid svg .node.primary rect,
+[data-theme="dark"] .mermaid svg .node.primary circle {
+  fill: #5C5858 !important;
+  stroke: #bbbbbb !important;
+}
+
+/* Edges/arrows en tema oscuro */
+[data-theme="dark"] .mermaid svg .edgePath path,
+[data-theme="dark"] .mermaid svg .flowchart-link {
+  stroke: #cccccc !important;
+  stroke-width: 2px !important;
+}
+
+[data-theme="dark"] .mermaid svg .arrowheadPath {
+  fill: #cccccc !important;
+  stroke: #cccccc !important;
+}
+
+/* Labels de edges en tema oscuro */
+[data-theme="dark"] .mermaid svg .edgeLabel rect {
+  fill: #1a202c !important;
+  stroke: #5C5858 !important;
+}
+
+/* Sequence diagrams en tema oscuro */
+[data-theme="dark"] .mermaid svg .actor {
+  fill: #2d3748 !important;
+  stroke: #5C5858 !important;
+}
+
+[data-theme="dark"] .mermaid svg .actor-line {
+  stroke: #5C5858 !important;
+}
+
+[data-theme="dark"] .mermaid svg .messageLine0,
+[data-theme="dark"] .mermaid svg .messageLine1 {
+  stroke: #cccccc !important;
+}
+
+[data-theme="dark"] .mermaid svg .note {
+  fill: #1a202c !important;
+  stroke: #5C5858 !important;
+}
+
+/* Clusters en tema oscuro */
+[data-theme="dark"] .mermaid svg .cluster rect {
+  fill: rgba(26, 32, 44, 0.3) !important;
+  stroke: #5C5858 !important;
+  stroke-dasharray: 5,5 !important;
+}
+
+/* ======================================
+   MEJORAS PARA TEMA CLARO
+   ====================================== */
+
+/* Asegurar legibilidad en tema claro también */
+[data-theme="light"] .mermaid svg text,
+[data-theme="light"] .mermaid svg .nodeLabel,
+[data-theme="light"] .mermaid svg .edgeLabel,
+[data-theme="light"] .mermaid svg .cluster-label,
+[data-theme="light"] .mermaid svg .messageText,
+[data-theme="light"] .mermaid svg .actor,
+[data-theme="light"] .mermaid svg .labelText {
+  fill: #160e0e !important;
+  color: #160e0e !important;
+  font-weight: 500 !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+/* ======================================
+   ESTADOS DE CARGA Y ERROR
+   ====================================== */
+
+.mermaid-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+  min-height: 120px;
+  text-align: center;
+}
+
+.mermaid-loading i {
+  font-size: 2rem;
+  animation: spin 1.5s linear infinite;
+  color: var(--color-primary-light, #a4ac86);
+}
+
+.mermaid-error {
+  background: var(--error-bg, rgba(220, 53, 69, 0.1));
+  color: var(--error-text, #dc3545);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--error-border, rgba(220, 53, 69, 0.3));
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="dark"] .mermaid-error {
+  background: rgba(220, 53, 69, 0.05);
+  color: #f5c6cb;
+  border-color: rgba(220, 53, 69, 0.2);
+}
+
+.mermaid-error i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.mermaid-error details {
+  margin: 0.5rem 0;
+  text-align: left;
+  width: 100%;
+  max-width: 600px;
+}
+
+.mermaid-error summary {
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .mermaid-error summary {
+  background: rgba(255,255,255,0.05);
+}
+
+.mermaid-error pre {
+  background: rgba(0,0,0,0.1);
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  font-family: var(--font-family-code, monospace);
+}
+
+[data-theme="dark"] .mermaid-error pre {
+  background: rgba(255,255,255,0.05);
+}
+
+.retry-btn {
+  background: var(--primary-color, #a4ac86);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.retry-btn:hover {
+  background: var(--primary-hover, #8a9470);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .retry-btn {
+  background: #5C5858;
+}
+
+[data-theme="dark"] .retry-btn:hover {
+  background: #718096;
+}
+
+/* ======================================
+   ANIMACIONES
+   ====================================== */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.mermaid svg {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ======================================
+   ESTILOS PARA ZOOM/PAN INTEGRADOS
+   ====================================== */
+
+/* Contenedor con zoom habilitado */
+.mermaid[data-zoom-enabled="true"] {
+  position: relative;
+  background: var(--mermaid-bg, var(--color-background));
+  border: 1px solid var(--mermaid-border, rgba(164, 172, 134, 0.2));
+  border-radius: var(--border-radius-md, 8px);
+  overflow: hidden;
+  min-height: 200px;
+  width: 100%;
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+[data-theme="dark"] .mermaid[data-zoom-enabled="true"] {
+  background: var(--bg-secondary-dark, #2d3748);
+  border-color: rgba(92, 88, 88, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Wrapper SVG para zoom/pan */
+.mermaid-svg-wrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  background: transparent;
+}
+
+.mermaid-svg-wrapper:active {
+  cursor: grabbing;
+}
+
+.mermaid-svg-wrapper svg {
+  width: 100%;
+  height: auto;
+  transform-origin: center center;
+  max-width: none;
+  max-height: none;
+  transition: transform 0.2s ease;
+  display: block;
+}
+
+/* ======================================
+   CONTROLES DE ZOOM
+   ====================================== */
+
+.mermaid-zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--color-background, #ffffff);
+  border-radius: var(--border-radius-lg, 12px);
+  padding: 5px;
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.1));
+  z-index: 10;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-color, rgba(164, 172, 134, 0.2));
+}
+
+[data-theme="dark"] .mermaid-zoom-controls {
+  background: var(--color-background, #252525);
+  border-color: rgba(92, 88, 88, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mermaid:hover .mermaid-zoom-controls,
+.mermaid-zoom-controls:hover {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.mermaid-control-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--border-radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--color-text, #160e0e);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .mermaid-control-btn {
+  color: #f3f3f3;
+}
+
+.mermaid-control-btn:hover {
+  background: rgba(164, 172, 134, 0.1);
+  color: var(--color-primary-light, #a4ac86);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .mermaid-control-btn:hover {
+  background: rgba(92, 88, 88, 0.2);
+  color: #bbbbbb;
+}
+
+.mermaid-control-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(164, 172, 134, 0.3);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.mermaid-control-btn:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0) translate(-50%, -50%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20) translate(-50%, -50%);
+    opacity: 0;
+  }
+}
+
+.zoom-indicator {
+  text-align: center;
+  font-size: 12px;
+  padding: 4px;
+  min-width: 50px;
+  background: var(--color-background, #ffffff);
+  border-radius: var(--border-radius-sm, 4px);
+  margin: 2px 0;
+  font-family: var(--font-family-code, monospace);
+  color: var(--color-text, #160e0e);
+  border: 1px solid var(--border-color, rgba(164, 172, 134, 0.2));
+  font-weight: 500;
+}
+
+[data-theme="dark"] .zoom-indicator {
+  background: var(--color-background, #252525);
+  color: #f3f3f3;
+  border-color: rgba(92, 88, 88, 0.3);
+}
+
+/* ======================================
+   PANTALLA COMPLETA
+   ====================================== */
+
+.mermaid.fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 10000 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+.mermaid.fullscreen-mode .mermaid-zoom-controls {
+  top: 20px;
+  right: 20px;
+  transform: scale(1.1);
+}
+
+/* ======================================
+   AJUSTES PARA COMPONENTES DE EXPLICACIÓN
+   ====================================== */
+
+.explanation-container .mermaid[data-zoom-enabled="true"],
+.visualization-container .mermaid[data-zoom-enabled="true"] {
+  margin: 0.8rem 0;
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid var(--border-color, rgba(164, 172, 134, 0.2));
+}
+
+[data-theme="dark"] .explanation-container .mermaid[data-zoom-enabled="true"],
+[data-theme="dark"] .visualization-container .mermaid[data-zoom-enabled="true"] {
+  border-color: rgba(92, 88, 88, 0.3);
+}
+
+.explanation-container .mermaid-zoom-controls,
+.visualization-container .mermaid-zoom-controls {
+  top: 5px;
+  right: 5px;
+  transform: scale(0.9);
+  opacity: 0.6;
+}
+
+.explanation-container .mermaid:hover .mermaid-zoom-controls,
+.visualization-container .mermaid:hover .mermaid-zoom-controls {
+  opacity: 1;
+}
+
+/* ======================================
+   RESPONSIVIDAD
+   ====================================== */
+
+@media (max-width: 768px) {
+  .mermaid {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+  }
+  
+  .mermaid-zoom-controls {
+    transform: scale(0.9);
+    top: 5px;
+    right: 5px;
+    padding: 3px;
+    gap: 2px;
+  }
+  
+  .mermaid-control-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .zoom-indicator {
+    font-size: 11px;
+    padding: 3px;
+    min-width: 40px;
+  }
+  
+  .explanation-container .mermaid-zoom-controls,
+  .visualization-container .mermaid-zoom-controls {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  .mermaid-zoom-controls {
+    transform: scale(0.8);
+  }
+  
+  .mermaid-control-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .explanation-container .mermaid-zoom-controls,
+  .visualization-container .mermaid-zoom-controls {
+    transform: scale(0.7);
+  }
+}
+
+/* ======================================
+   ACCESIBILIDAD
+   ====================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .mermaid-svg-wrapper svg,
+  .mermaid-control-btn,
+  .mermaid-zoom-controls,
+  .mermaid svg {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Focus states para accesibilidad */
+.mermaid-control-btn:focus {
+  outline: 2px solid var(--color-primary-light, #a4ac86);
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .mermaid-control-btn:focus {
+  outline-color: #bbbbbb;
+}
+
+/* ======================================
+   MEJORAS DE CONTRASTE PARA TEMA OSCURO
+   ====================================== */
+
+[data-theme="dark"] .mermaid svg .section0,
+[data-theme="dark"] .mermaid svg .section1,
+[data-theme="dark"] .mermaid svg .section2,
+[data-theme="dark"] .mermaid svg .section3 {
+  fill: #2d3748 !important;
+}
+
+/* Estados hover para mejor UX */
+.mermaid[data-zoom-enabled="true"]:hover {
+  box-shadow: var(--shadow-lg, 0 8px 16px rgba(0, 0, 0, 0.15));
+}
+
+[data-theme="dark"] .mermaid[data-zoom-enabled="true"]:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}

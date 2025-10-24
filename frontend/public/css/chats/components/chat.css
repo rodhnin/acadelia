@@ -1,0 +1,2790 @@
+/* Contenedor principal del chat */
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Estilos básicos para los elementos de mensaje */
+.message {
+  position: relative;
+  width: 100%;
+  margin: 25px auto;
+  animation: render-fade 0.3s ease; /* Animación de aparición */
+}
+
+/* Estilo para el contenido de los mensajes */
+.message-content {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  font-size: 15px;
+}
+
+/* Estilo común para mensajes del usuario y la IA */
+.user-message{
+  max-width: calc(100%);
+  padding: 12px 12px;
+  border-radius: var(--border-radius-lg);
+  box-sizing: border-box;
+}
+
+.ai-message {
+  max-width: calc(100%);
+  padding: 12px 16px;
+  border-radius: var(--border-radius-lg);
+  box-sizing: border-box;
+}
+
+/* Contenedor del mensaje del usuario con alineación izquierda */
+.user-message .message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea el contenido a la izquierda */
+  width: 100%;
+}
+
+/* Estilo específico para mensajes del usuario */
+.user-message {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin-right: 0;
+  width: fit-content;
+  max-width: 650px;
+}
+
+/* Estilo específico para mensajes de la IA */
+.ai-message {
+  color: var(--color-text);
+  margin-right: auto;
+  padding-left: calc(var(--avatar-size) + 16px);
+  min-height: 60px;
+}
+
+/* Estilo para el avatar de la IA */
+.ai-profile {
+  position: absolute;
+  max-width: 40px;
+  left: 4px;
+  top: 25px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  background: var(--avatar-path) center / cover no-repeat;
+  overflow: hidden;
+  font-size: 0 !important;
+  text-indent: -9999px;
+}
+
+/* Imagen del avatar de la IA */
+.ai-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Estilo especial cuando la IA está "pensando" */
+.ai-profile.thinking {
+  background-image: none; /* Eliminamos la imagen de fondo por defecto */
+  animation: softPulse 1.5s infinite ease-in-out;
+}
+
+/* Diferentes imágenes según el tema */
+body[data-theme="dark"] .ai-profile.thinking {
+  background: var(--avatar-loading-path-dark) center / cover no-repeat;
+}
+
+body[data-theme="light"] .ai-profile.thinking, 
+body:not([data-theme="dark"]) .ai-profile.thinking {
+  background: var(--avatar-loading-path-light) center / cover no-repeat;
+}
+
+/* Ocultar imagen real durante estado de "pensando" */
+.ai-profile.thinking img {
+  opacity: 0;
+}
+
+/* Ajuste para mensajes en procesamiento */
+.message.ai-message.processing .message-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Animación de puntos cuando está escribiendo */
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: typing 1s infinite ease-in-out;
+}
+
+/* Retraso en la animación para cada punto */
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Estilo para adjuntos tipo PDF */
+.pdf-attachment {
+  display: flex;
+  align-items: center;
+  background: var(--color-background);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-md);
+  margin: 8px 0;
+  animation: slideIn 0.3s ease;
+}
+
+/* Texto dentro de adjuntos PDF */
+.pdf-attachment span {
+  flex-grow: 1;
+  font-size: 0.9em;
+  color: var(--color-text);
+}
+
+/* Botón para eliminar adjuntos */
+.remove-pdf {
+  background: none;
+  border: none;
+  color: var(--color-error);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Estilo para enlaces dentro de mensajes */
+.message-content a {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* Efecto hover para enlaces */
+.message-content a:hover,
+.message-content a:visited:hover {
+  background-color: var(--color-link);
+  color: white;
+}
+
+/* Enlaces visitados */
+.message-content a:visited {
+  color: var(--color-link-visited);
+}
+
+/* Animaciones diversas */
+@keyframes render-fade {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes typing {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(20px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo básico para enlaces */
+.message-content a {
+  color: #3490dc; /* Azul */
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0 2px;
+  border-radius: 3px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover para enlaces */
+.message-content a:hover {
+  background-color: #3490dc;
+  color: white;
+}
+
+/* Visitado para enlaces */
+.message-content a:visited {
+  color: #8e44ad; /* Púrpura */
+}
+
+/* Hover para enlaces visitados */
+.message-content a:visited:hover {
+  background-color: #8e44ad;
+  color: white;
+}
+
+/* Estilos para la nube de pensamiento */
+.thought-bubble {
+  position: relative;
+  background: var(--color-background);
+  border-radius: 15px;
+  padding: 10px 15px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  max-width: 60px;
+  animation: pulseBubble 1.5s infinite ease-in-out;
+
+}
+
+/* Cola de la nube de pensamiento */
+.thought-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 15px;
+  height: 15px;
+  background: var(--color-background);
+  border-radius: 50%;
+  box-shadow: -5px 5px 0 -2px var(--color-background),
+              -10px 10px 0 -5px var(--color-background);
+  display:none
+}
+
+/* Contenedor de puntos en la nube */
+.thought-bubbles {
+  display: flex;
+  gap: 3px;
+  margin: 0 auto;
+}
+
+/* Puntos dentro de la nube de pensamiento */
+.thought-bubble-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: floatDot 1.5s infinite ease-in-out;
+}
+
+/* Retraso para animaciones de puntos */
+.thought-bubble-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thought-bubble-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Animación de pulsación para la nube */
+@keyframes pulseBubble {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+/* Animación de flotación para los puntos */
+@keyframes floatDot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Estilo para botones en modo cancelación */
+.input-box button.cancel-mode {
+  background-color: #e57373; /* Color rojo más suave */
+}
+
+/* Hover para botones de cancelación */
+.input-box button.cancel-mode:hover {
+  background-color: #ef5350; /* Rojo más intenso en hover */
+}
+
+/* Animación para perfil pensando */
+.ai-profile.thinking {
+  animation: softPulse 1.5s infinite ease-in-out;
+}
+
+/* Animación de pulsación suave */
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Configuración de avatar para tema oscuro */
+body[data-theme="dark"] {
+  --avatar-loading-path: var(--avatar-loading-path-dark);
+}
+
+/* Configuración de avatar para tema claro */
+body[data-theme="light"], body:not([data-theme="dark"]) {
+  --avatar-loading-path: var(--avatar-loading-path-light);
+}
+
+/* Ocultar botones mientras se procesa el mensaje */
+.ai-message.processing .response-actions {
+  display: none !important;
+}
+
+/* Asegurar que los botones sigan ocultos en hover */
+.ai-message.processing:hover .response-actions {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+
+
+/* Blockquotes */
+blockquote {
+  padding: 10px 15px;
+  margin: 0 0 20px;
+  border-left: 5px solid #9fc8f2;
+  background-color:var(--color-background);
+  border-radius: 0 4px 4px 0;
+  opacity:0.8;
+  font-style: italic;
+}
+
+/* Párrafos dentro de blockquotes */
+blockquote p {
+  margin-bottom: 0;
+}
+
+/* Saltos de línea en blockquotes */
+blockquote br {
+  margin-top: 8px;
+  display: block;
+  content: "";
+}
+
+/* Texto tachado */
+del {
+  text-decoration: line-through;
+  color: #777;
+}
+
+/* Líneas horizontales */
+hr {
+  height: 1px;
+  border: none;
+  background-color: #ddd;
+  margin: 1.5em 0;
+}
+
+/* Listas de tareas */
+.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+
+/* Checkboxes en listas de tareas */
+.task-list-item input[type="checkbox"] {
+  margin-right: 8px;
+  margin-top: 4px;
+}
+
+/* Texto de ítems completados */
+.task-list-item input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: #666;
+}
+
+/* Estilos generales para listas anidadas */
+ul, ol {
+  padding-left: 25px;
+  margin-bottom: 10px;
+}
+
+/* Espacio para listas anidadas */
+ul ul, ol ol, ul ol, ol ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* Elementos de lista */
+li {
+  margin-bottom: 5px;
+}
+
+/* Listas numeradas principales */
+ol.main-list {
+  list-style-type: decimal;
+  padding-left: 30px;
+  margin-bottom: 16px;
+  counter-reset: item;
+}
+
+/* Elementos principales numerados (títulos de secciones) */
+.main-list-item {
+  font-weight: 500;
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 5px;
+}
+
+/* Negrita en elementos de lista principal */
+.main-list-item strong {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Sublistas con viñetas dentro de listas numeradas */
+.sub-list {
+  list-style-type: none;
+  padding-left: 25px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+/* Elementos de sublista */
+.sub-list li {
+  position: relative;
+  padding-left: 15px;
+  margin-bottom: 6px;
+}
+
+/* Viñetas para sublistas */
+.sub-list li:before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Elementos de sublista */
+.sub-item {
+  margin: 4px 0;
+  position: relative;
+}
+
+/* Listas con viñetas independientes */
+ul.bullet-list {
+  list-style-type: disc;
+  margin-left: 0;
+  padding-left: 20px;
+}
+
+/* Elementos de lista con viñetas */
+ul.bullet-list li {
+  margin-bottom: 8px;
+  padding-left: 5px;
+}
+
+/* Listas anidadas con viñetas */
+ul.bullet-list ul {
+  list-style-type: circle;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-left: 20px;
+}
+
+/* Tercer nivel de listas con viñetas */
+ul.bullet-list ul ul {
+  list-style-type: square;
+}
+
+/* Números en sublistas */
+.sublist-number {
+  display: inline-block;
+  min-width: 28px;
+  color: var(--color-text-secondary, #4a4a4a);
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+/* Tema oscuro para números en sublistas */
+body[data-theme="dark"] .sublist-number {
+  color: var(--color-text-secondary, #aaa);
+}
+
+/* Tema oscuro para viñetas */
+body[data-theme="dark"] ul.bullet-list li::marker,
+body[data-theme="dark"] .sub-list li:before {
+  color: var(--color-text-secondary, #aaa);
+}
+
+/* Listas jerárquicas con mejor detección */
+.hierarchy-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Elementos de primer nivel en jerarquía */
+.hierarchy-list > li {
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Viñetas de primer nivel */
+.hierarchy-list > li::before {
+  content: "•";
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+  font-weight: bold;
+  color: var(--color-primary, #333);
+}
+
+/* Sublistas en jerarquía */
+.subitem-list {
+  list-style-type: none;
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+/* Elementos de sublista en jerarquía */
+.subitem-list > li {
+  margin-bottom: 6px;
+  font-weight: normal;
+  padding-left: 20px;
+  position: relative;
+}
+
+/* Viñetas de sublista */
+.subitem-list > li::before {
+  content: "•";
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  color: var(--color-text-secondary, #666);
+  font-size: 0.9em;
+}
+
+/* Estilo para categorías principales */
+.category-main {
+  font-size: 1.05em;
+}
+
+/* Tema oscuro para listas jerárquicas */
+body[data-theme="dark"] .hierarchy-list > li::before {
+  color: var(--color-primary-light, #ccc);
+}
+
+/* Tema oscuro para viñetas en sublistas */
+body[data-theme="dark"] .subitem-list > li::before {
+  color: var(--color-text-secondary, #999);
+}
+
+[data-theme="dark"] .feedback-btn:hover{
+  color: rgba(238, 238, 238, 0.9);
+}
+
+.feedback-btn:hover{
+filter: brightness(0.92);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.feedback-modal-close:hover{
+  filter: brightness(0.92);
+   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+   background-color: var(--text-color-light, #fdfdfd);
+   border-radius: 15px;
+ }
+
+
+ .ai-message .message-content{
+  margin: 1rem 0; 
+ padding: 12px 16px;
+  border: 1px solid ;
+  background-color: var(--color-assistant-bubble);
+  border: 1px solid var(--color-assistant-bubble-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-bubble);
+
+  }
+
+
+
+/* Gestión de elementos específicos que podrían causar desbordamiento */
+.user-message .message-content img,
+.user-message .message-content pre,
+.user-message .message-content table,
+.user-message .message-content blockquote,
+.user-message .message-content .table-container,
+.user-message .message-content div[class^="math-"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Permitir scroll horizontal solo para código y tablas */
+.user-message .message-content pre,
+.user-message .message-content .table-container {
+  overflow-x: auto;
+}
+
+/* Corrección para expresiones matemáticas (LaTeX) */
+.user-message .message-content .math-block,
+.user-message .message-content [data-latex="true"] {
+  overflow-x: auto;
+  display: block;
+  max-width: 90%;
+  padding: 2px 0;
+}
+
+/* Arreglo para media queries existentes */
+@media (max-width: 768px) {
+  .user-message .message-content {
+    max-width: 90%; /* Sobrescribir el max-width: 200px */
+    width: auto;
+  }
+}
+
+
+
+
+
+  
+  @media (max-width: 768px) {
+    .main-header {
+      flex-direction: column;
+       transform: translateZ(0);
+
+    
+   
+    }
+    
+    .header-title {
+      font-size: 10px;
+      margin-top:-10px
+
+    }
+    
+  
+    .new-chat-label {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header-title {
+      font-size: 10px;
+      margin-top:-10px
+
+    }
+    
+    .header-subtitle {
+      font-size: 15px;
+    }
+    
+    .input-box textarea {
+      width:78% !important;
+    }
+
+  }
+  
+
+
+  /* Responsive styles for Main Content */
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 15px;
+      width: 100%;
+    }
+    
+    .main-content.sidebar-pinned {
+      transform: translateX(40px);
+    }
+    
+    .input-box {
+      padding: 10px 15px;
+      max-height: 145px
+    }
+    
+    .input-box textarea {
+      font-size: 14px;
+            width:85%;
+      max-height: 110px
+    }
+    
+    .attachments-wrapper {
+      right: -95.2%;
+    }
+    
+    .attachment-options {
+      padding: 0 10px;
+    }
+
+    
+    
+    .attachment-option {
+      margin: 0 5px;
+    }
+    
+    .file-preview-container,
+    .file-upload-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+    
+    .warning-message {
+      text-align: center;
+      display: flex;
+      width: 100%;
+      font-size: 11px
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main-content {
+      padding: 10px;
+    }
+
+.input-box textarea {
+      font-size: 14px;
+            width:85%;
+      max-height: 80px
+    }
+    
+    .input-box {
+      padding: 15px 12px;
+      align-items: flex-end; /* Alinear elementos en la parte inferior */
+    }
+
+    .auto-expand {
+    height: 110px !important;
+    }
+    
+    .input-box button:nth-child(2) {
+      right: 10px;
+    }
+    
+    .input-box button:nth-child(3) {
+      right: 50px;
+    }
+    
+    .attachments-wrapper {
+      left: 93.4% !important;
+      bottom: -65px;
+    }
+    
+    .attachment-options {
+      right: 5px;
+    }
+    
+    .file-preview {
+      max-width: 80px;
+      height: 80px;
+    }
+    
+    .welcome-message {
+      max-width: 100%;
+      padding: 15px;
+    }
+
+
+    
+    .centered-input-container {
+      width: 90%;
+    }
+    
+    .suggestions-container {
+      width: 95%;
+      gap: 8px;
+    }
+    
+    .warning-message {
+      margin-left: -10px;
+      text-align: center;
+      display: block;
+      font-size:8px
+    }
+    
+
+    .suggestion-item {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .preview-title{
+      word-break:break-word
+      }
+  }
+  
+  /* Responsive styles for file upload and preview */
+  @media (max-width: 768px) {
+    .drag-drop-area {
+      padding: 15px;
+    }
+    
+    .upload-main-text {
+      font-size: 14px;
+    }
+    
+    .upload-secondary-text {
+      font-size: 12px;
+    }
+    
+    .preview-modal-content {
+      width: 95%;
+      max-width: 95%;
+    }
+    
+    .preview-body {
+      max-height: 50vh;
+    }
+  }
+  
+  /* Responsive styles for welcome screen */
+  @media (max-width: 850px) {
+    .welcome-attachments-wrapper {
+      right: -93%;
+    }
+    
+    .welcome-file-preview-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+    
+    .welcome-file-upload-container {
+      width: 90%;
+      margin-left: 5%;
+    }
+  }
+  
+  /* Fix for search modal on mobile */
+  @media (max-width: 768px) {
+    .search-modal-box {
+      width: 90%;
+      max-width: 90%;
+    }
+    
+    .search-input-wrapper {
+      padding: 8px;
+    }
+
+    .user-message .message-content {
+      max-width: 550px;
+    }
+    .search-chat-list {
+      max-height: 40vh;
+    }
+  }
+
+
+  @media (max-width: 480px) {
+    .welcome-attachments-wrapper {
+      right: -91%;
+      bottom: -60px
+    }
+    .message-text{
+      max-width:300px; 
+  }
+  }
+  
+
+      /* Make header-right vertical in responsive mode */
+@media (max-width: 768px) {
+  .header-right {
+    align-items: flex-end;
+    gap: 15px;
+    position: absolute;
+    top: 15px;
+    right: 0;
+  }
+  
+
+
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  
+  .action-button, 
+  .theme-toggle, 
+  #new-chat-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+   /* For very small screens */
+@media (max-width: 480px) {
+  
+  .action-button, 
+  .theme-toggle, 
+  #new-chat-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+   /* Make header-right vertical in responsive mode */
+   @media (max-width: 480px) {
+    .header-right {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+      position: absolute;
+      top: 15px;
+      right: 28px;
+    }
+    
+    .action-button, 
+    .theme-toggle, 
+    #new-chat-btn {
+      margin: 0;
+    }
+  
+    .action-button{
+    margin-right: 20px; /* Make room for vertical buttons */
+      font-size:20px
+  
+  }
+    
+    .new-chat-container {
+  display:none
+    }
+  
+    .theme-toggle{
+  margin-right: -25px;  /* Make room for vertical buttons */
+    margin-top: -30px;
+   font-size:20px
+    }
+
+   }
+    
+  
+ @media (max-width: 950px) {
+ .user-message .message-content {
+  max-width: 600px;
+}
+}
+
+/* Estilos para el botón de attachments responsive */
+
+/* Ocultar el botón responsive en pantallas grandes y mostrar el normal */
+.attachments-wrapper-mobile {
+  display: none;
+}
+
+/* Media query para mostrar/ocultar los botones según el tamaño de pantalla */
+@media (max-width: 480px) {
+  /* Ocultar el botón normal en modo responsive */
+
+  /* Mostrar el botón responsive */
+  .attachments-wrapper-mobile {
+    display: flex;
+    position: absolute;
+    left: 93% !important; /* Posición ajustada para móviles */
+    bottom: 75px; /* Posición ajustada para móviles */
+    z-index: 150;
+    width: 0px; /* Ancho real del botón */
+    height: 0px; /* Alto real del botón */
+    border-radius: 100%;
+    transition: all 0.3s ease;
+    justify-content: center;
+
+  }
+  
+  /* Contenedor del botón principal */
+  .attachment-button-mobile {
+    height: 100%;
+  }
+  
+  /* Botón específico */
+  .attach-btn-mobile {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Icono dentro del botón */
+  .attach-btn-mobile i {
+    font-size: 18px;
+    color: var(--color-text, #ffffff);
+  }
+  
+  /* Menú de opciones - posicionado absolutamente */
+  .attachment-options-mobile {
+    position: absolute;
+    right: 15px; /* Posicionado junto al botón */
+    bottom: -40px; /* Alineado con el botón */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background-color: var(--color-primary, #656d4a);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+  }
+  
+  /* Clase activa para mostrar las opciones en click */
+  .attachments-wrapper-mobile.active .attachment-options-mobile {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Rotación del botón en estado activo */
+  .attachments-wrapper-mobile.active .attach-btn-mobile {
+    transform: rotate(45deg);
+  }
+  
+  /* Cada opción individual */
+  .attachment-options-mobile .attachment-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 8px 0;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Animación secuencial de las opciones */
+  .attachments-wrapper-mobile.active .attachment-option {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  /* Retraso para cada opción (efecto cascada) */
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(3) {
+    transition-delay: 0.15s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(4) {
+    transition-delay: 0.2s;
+  }
+  
+  /* Icono de cada opción */
+  .attachment-options-mobile .attachment-option i {
+    font-size: 22px;
+    color: var(--color-text);
+    margin-right: 1px;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Texto de cada opción */
+  .attachment-options-mobile .attachment-option span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  /* Efecto hover/active en cada opción */
+  .attachment-options-mobile .attachment-option:active i,
+  .attachment-options-mobile .attachment-option:hover i {
+    transform: scale(1.1);
+  }
+}
+@media (max-width: 480px) {
+  .centered-textarea.auto-expand {
+  width: 74% !important; 
+  height: 90px !important;  
+}
+}
+
+@media (min-width: 480px) and (max-width: 1024px) {
+  .centered-textarea.auto-expand {
+    width: 78% !important;
+  }
+}
+
+
+@media  (max-width: 850px) {
+  /* Ocultar el botón normal en modo responsive */
+  .attachments-wrapper {
+    display: flex;
+  }
+  
+  /* Mostrar el botón responsive */
+  .attachments-wrapper-mobile {
+    display: none;
+    position: absolute;
+    top: 65px; /* Posición ajustada para móviles */
+    z-index: 150;
+    width: 0px; /* Ancho real del botón */
+    height: 0px; /* Alto real del botón */
+    border-radius: 100%;
+    transition: all 0.3s ease;
+    justify-content: center;
+    align-items: center;
+    left: 95.5%
+  }
+  
+  /* Contenedor del botón principal */
+  .attachment-button-mobile {
+    height: 100%;
+  }
+  
+  /* Botón específico */
+  .attach-btn-mobile {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Icono dentro del botón */
+  .attach-btn-mobile i {
+    font-size: 18px;
+    color: var(--color-text, #ffffff);
+  }
+  
+  /* Menú de opciones - posicionado absolutamente */
+  .attachment-options-mobile {
+    position: absolute;
+    right: 15px; /* Posicionado junto al botón */
+    bottom: -45px; /* Alineado con el botón */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background-color: var(--color-primary, #656d4a);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+  }
+  
+  /* Clase activa para mostrar las opciones en click */
+  .attachments-wrapper-mobile.active .attachment-options-mobile {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    z-index: 20000
+  }
+  
+  /* Rotación del botón en estado activo */
+  .attachments-wrapper-mobile.active .attach-btn-mobile {
+    transform: rotate(45deg);
+  }
+  
+  /* Cada opción individual */
+  .attachment-options-mobile .attachment-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 8px 0;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Animación secuencial de las opciones */
+  .attachments-wrapper-mobile.active .attachment-option {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  /* Retraso para cada opción (efecto cascada) */
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(3) {
+    transition-delay: 0.15s;
+  }
+  .attachments-wrapper-mobile.active .attachment-option:nth-child(4) {
+    transition-delay: 0.2s;
+  }
+  
+  /* Icono de cada opción */
+  .attachment-options-mobile .attachment-option i {
+    font-size: 22px;
+    color: var(--color-text);
+    margin-right: 1px;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Texto de cada opción */
+  .attachment-options-mobile .attachment-option span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  /* Efecto hover/active en cada opción */
+  .attachment-options-mobile .attachment-option:active i,
+  .attachment-options-mobile .attachment-option:hover i {
+    transform: scale(1.1);
+  }
+}
+
+/* Estilos fundamentales para mensajes cancelados */
+.message.ai-message.cancelled {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.message.ai-message.cancelled .cancelled-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  color: #666;
+  font-size: 0.95rem;
+  background-color: rgba(231, 76, 60, 0.05);
+  border-radius: 8px;
+  margin: 5px 0;
+  border-left: 3px solid rgba(231, 76, 60, 0.3);
+}
+
+.message.ai-message.cancelled .cancelled-message i {
+  font-size: 1.3rem;
+  color: #e74c3c;
+}
+
+.message.ai-message.cancelled .cancelled-details {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 8px 0 0 20px;
+}
+
+@keyframes cancelPulse {
+  0% { opacity: 0.5; background-color: rgba(231, 76, 60, 0.1); }
+  50% { opacity: 0.9; background-color: rgba(231, 76, 60, 0.15); }
+  100% { opacity: 0.7; background-color: rgba(231, 76, 60, 0.05); }
+}
+
+.message.ai-message.just-cancelled {
+  animation: cancelPulse 0.8s ease-in-out;
+}
+
+/* Estilos para mensajes de error - mismo estilo que mensajes cancelados */
+.message.ai-message.error-message {
+  transition: opacity 0.3s ease;
+}
+
+/* Estilos para el encabezado del mensaje de error */
+.message.ai-message .error-message-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  color: #666;
+  font-size: 0.95rem;
+  background-color: rgba(231, 76, 60, 0.05);
+  border-radius: 8px;
+  margin: 5px 0;
+  border-left: 3px solid rgba(231, 76, 60, 0.3);
+}
+
+.message.ai-message .error-message-header i {
+  font-size: 1.3rem;
+  color: #e74c3c;
+}
+
+/* Estilos para el cuerpo del mensaje de error */
+.message.ai-message .cancelled-details {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 8px 0 0 20px;
+}
+
+/* Estilos para el contenedor de botón de reintentar */
+.message.ai-message .retry-container {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+/* Estilos para el botón de reintentar */
+.message.ai-message .retry-button {
+  background: none;
+  border: none;
+  color: #5991cc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.message.ai-message .retry-button:hover {
+  background-color: rgba(89, 145, 204, 0.1);
+}
+
+.message.ai-message .retry-button i {
+  font-size: 1.1rem;
+  color: #5991cc;
+}
+
+/* Animación de pulso para mensajes de error */
+@keyframes errorPulse {
+  0% { opacity: 0.5; background-color: rgba(231, 76, 60, 0.1); }
+  50% { opacity: 0.9; background-color: rgba(231, 76, 60, 0.15); }
+  100% { opacity: 0.7; background-color: rgba(231, 76, 60, 0.05); }
+}
+
+/* Aplicar animación a mensajes de error que no son de cancelación */
+.message.ai-message.error-message:not(.cancelled) {
+  animation: errorPulse 0.8s ease-in-out;
+}
+
+.textarea-disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  resize: none !important;
+  user-select: none !important;
+}
+
+/* Asegúrate de incluir estos estilos CSS para que el overlay y el modal funcionen correctamente */
+/* Contenedor principal para imágenes */
+.markdown-image-container {
+  display: block;
+  margin: auto;
+  max-width: 500px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  cursor: pointer;
+  background-color: var(--color-background, #f9f9f9);
+}
+
+.markdown-image-wrapper.fixed-height-wrapper {
+  position: relative;
+  width: 100%;
+  height: 300px; /* ALTURA FIJA */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-background-secondary, #f5f5f5);
+  overflow: hidden;
+}
+
+/* Placeholder centrado */
+.image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background-color: var(--color-background-secondary, #f5f5f5);
+}
+
+.markdown-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.markdown-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  z-index: 2;
+  opacity: 0; /* Inicialmente invisible */
+  transition: opacity 0.3s ease;
+}
+
+/* Clase añadida cuando la imagen carga */
+.markdown-image.loaded {
+  opacity: 1;
+}
+
+/* Capa de superposición para clicks */
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex; /* Siempre flex, pero opacidad 0 */
+  opacity: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: background-color 0.3s ease;
+}
+
+.image-overlay i {
+  font-size: 24px;
+  color: white;
+  opacity: 0.8;
+}
+
+.markdown-image-container:hover .image-overlay {
+  background-color: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+}
+
+/* Caption para imágenes con soporte LaTeX */
+.markdown-image-caption {
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #555);
+  text-align: center;
+  background-color: var(--color-background-secondary, #f5f5f5);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fixed-height-wrapper.small-image {
+  height: 200px; /* Imágenes más pequeñas */
+}
+
+.fixed-height-wrapper.large-image {
+  height: 400px; /* Imágenes más grandes */
+}
+
+/* Soporte para LaTeX dentro de captions */
+.markdown-image-caption .math-inline {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.1em;
+}
+
+/* Modal de vista previa */
+.image-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.image-preview-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.image-preview-content {
+  max-width: 90%;
+  max-height: 90%;
+  background-color: var(--color-background, white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s ease forwards;
+  width: auto;
+}
+
+.image-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--color-background, #f5f5f5);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.image-preview-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text, #333);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 85%;
+}
+
+.image-preview-close {
+  background: none;
+  border: none;
+  color: var(--color-text, #333);
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.image-preview-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.image-preview-body {
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px;
+  background-color: var(--color-background-secondary, #f0f0f0);
+}
+
+.image-preview-img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (min-width: 481px) and (max-width: 580px) {
+  .attachments-wrapper {
+    left: 93% !important;
+  }
+
+  .welcome-attachments-wrapper {
+      right: -92%;
+      bottom: -60px
+    }
+}
+
+/* Estilos específicos para saltos de línea en listas */
+br[data-list-break="true"],
+br[data-list-item-break="true"],
+br[data-after-list="true"] {
+  display: block;
+  content: "";
+  margin-top: 0.8rem; /* Más espacio para saltos en listas */
+}
+
+/* Asegurar que los elementos de lista tengan espacio adecuado */
+.compact-list li {
+}
+
+/* Mejorar espaciado de listas anidadas */
+.bullet-list.nested-list,
+.numbered-list.nested-list {
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Para listas numeradas */
+ol.numbered-list li::marker {
+  font-weight: 500;
+}
+
+/* Espacio después de listas */
+ul + p, ol + p {
+  margin-top: 1rem !important;
+}
+
+/* Añadir estos estilos al final de chat.css */
+
+/* Estilos para imágenes de Markdown en procesamiento */
+img.markdown-image.image-processing {
+  opacity: 0.7;
+  filter: brightness(0.9);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+img.markdown-image.external-image {
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+img.markdown-image.stored-image {
+  border: 1px solid rgba(0, 128, 0, 0.2);
+}
+
+/**
+ * character-limit.css - Estilos para el límite de caracteres
+ */
+
+/* Alerta de límite excedido */
+.character-limit-alert {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e74c3c;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  font-size: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 90%;
+}
+
+.character-limit-alert.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.character-limit-alert i {
+  font-size: 18px;
+}
+
+/* Contador de caracteres */
+.character-counter {
+  display: none;
+  position: absolute;
+  right: 12px;
+  bottom: 20px;
+  font-size: 12px;
+  color: #666;
+  transition: color 0.2s;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 200
+}
+
+/* Estados del contador */
+.character-counter.warning {
+  color: #e67e22;
+  opacity: 1;
+}
+
+.character-counter.danger {
+  color: #e74c3c;
+  opacity: 1;
+  font-weight: 500;
+}
+
+.character-counter.limit-reached {
+  color: #e74c3c;
+  opacity: 1;
+  font-weight: bold;
+}
+
+/* Estilo del textarea cuando excede el límite */
+textarea.limit-exceeded {
+  border-color: #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.03) !important;
+}
+
+/* Ajustes para tema oscuro */
+[data-theme="dark"] .character-counter {
+  color: #aaa;
+}
+
+[data-theme="dark"] .character-counter.warning {
+  color: #f39c12;
+}
+
+[data-theme="dark"] .character-counter.danger,
+[data-theme="dark"] .character-counter.limit-reached {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .character-limit-alert {
+  background-color: #c0392b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajuste para el contador en la pantalla de bienvenida */
+.welcome-input-container .character-counter {
+  bottom: 12px;
+  right: 70px;
+  display:none
+}
+
+@media (min-width: 1300px) and (max-width: 1380px) {
+.message-content {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+  font-size: 14px;
+}
+
+/* === INPUT BOX PRINCIPAL - CORREGIDO === */
+
+}
+
+/* Contenedor principal multimodal */
+.multimodal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Texto multimodal */
+.multimodal-text {
+  margin-bottom: 8px;
+}
+
+/* ⭐ CONTENEDOR UNIFICADO CON ESPACIO PARA HOVER ⭐ */
+.unified-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px; /* ⭐ AUMENTADO: de 8px a 16px para dar más espacio */
+  margin-top: 8px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* ⭐ ESPACIO RESERVADO PARA TODOS LOS ELEMENTOS ⭐ */
+.unified-attachments .chat-image-item,
+.unified-attachments .document-preview {
+  margin: 6px; /* ⭐ NUEVO: margen en todos los lados para reservar espacio */
+  flex-shrink: 0;
+}
+
+.unified-attachments .attachment-indicator {
+  margin: 6px; /* ⭐ NUEVO: mismo margen para indicadores */
+  margin-bottom: 0;
+}
+
+/* ===== ESTILOS PARA IMÁGENES CON ESPACIO RESERVADO ===== */
+.chat-image-item {
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100px;
+  height: 90px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* ⭐ NUEVO: Reservar espacio para el crecimiento del hover ⭐ */
+  transform-origin: center; /* Asegurar que crezca desde el centro */
+}
+
+.chat-image-item img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.chat-image-item.clickable {
+  cursor: pointer;
+}
+
+.chat-image-item.clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2; /* ⭐ NUEVO: elevar por encima de otros elementos */
+}
+
+/* ===== ESTILOS PARA DOCUMENTOS CON ESPACIO RESERVADO ===== */
+.document-preview {
+  width: 100px; /* ⭐ AJUSTADO: para coincidir con las imágenes */
+  height: 90px;  /* ⭐ AJUSTADO: para coincidir con las imágenes */
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px; /* ⭐ REDUCIDO: de 12px a 8px por el tamaño menor */
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  transform-origin: center; /* ⭐ NUEVO: asegurar crecimiento centrado */
+}
+
+.document-preview.clickable {
+  cursor: pointer;
+}
+
+.document-preview.clickable:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px) scale(1.02); /* ⭐ AJUSTADO: menor escala para documentos */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2; /* ⭐ NUEVO: elevar por encima de otros elementos */
+}
+
+.document-preview.temp-preview {
+  opacity: 0.8;
+  background-color: rgba(108, 117, 125, 0.1);
+  border-style: dashed;
+}
+
+.document-icon {
+  font-size: 2rem; /* ⭐ REDUCIDO: de 2.5rem a 2rem por el tamaño menor */
+  margin-bottom: 4px; /* ⭐ REDUCIDO: de 8px a 4px */
+  color: #3498db;
+  transition: color 0.2s ease;
+}
+
+/* Colores específicos por tipo de archivo */
+.document-preview[data-attachment-type="code"] .document-icon {
+  color: #e74c3c;
+}
+
+.document-preview[data-attachment-type="pdf"] .document-icon {
+  color: #e74c3c;
+}
+
+.document-preview[data-attachment-type="excel"] .document-icon {
+  color: #27ae60;
+}
+
+.document-preview[data-attachment-type="zip"] .document-icon {
+  color: #f39c12;
+}
+
+/* Nombres de archivo */
+.document-name {
+  font-size: 0.65rem; /* ⭐ REDUCIDO: de 0.7rem a 0.65rem */
+  font-weight: 500;
+  line-height: 1.0; /* ⭐ REDUCIDO: de 1.1 a 1.0 */
+  color: #333;
+  margin-bottom: 2px; /* ⭐ REDUCIDO: de 4px a 2px */
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-clamp: 2; /* ⭐ REDUCIDO: de 3 a 2 líneas */
+  -webkit-box-orient: vertical;
+  max-height: 1.8em; /* ⭐ AJUSTADO: para 2 líneas */
+  text-align: center;
+}
+
+.document-size {
+  font-size: 0.55rem; /* ⭐ REDUCIDO: de 0.6rem a 0.55rem */
+  color: #666;
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* ===== INDICADORES DE ADJUNTOS GENÉRICOS ===== */
+.attachment-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  max-width: fit-content;
+  height: fit-content;
+  white-space: nowrap;
+}
+
+.attachment-indicator i {
+  font-size: 1.2rem;
+}
+
+.attachment-indicator.image i {
+  color: #10b981;
+}
+
+.attachment-indicator.document i {
+  color: #3498db;
+}
+
+/* ===== ANIMACIONES ===== */
+.document-preview .bx-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Animación de brillo para documentos */
+.document-preview.clickable {
+  position: relative;
+  overflow: hidden;
+}
+
+.document-preview.clickable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.document-preview.clickable:hover::before {
+  left: 100%;
+}
+
+/* Animación de brillo para imágenes */
+.chat-image-item.clickable {
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-image-item.clickable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+  z-index: 1;
+}
+
+.chat-image-item.clickable:hover::before {
+  left: 100%;
+}
+
+/* Efecto de pulso para documentos temporales */
+.document-preview.temp-preview {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+  100% { opacity: 0.8; }
+}
+
+/* ===== RESPONSIVE DESIGN AJUSTADO ===== */
+@media (max-width: 768px) {
+  .unified-attachments {
+    gap: 12px; /* ⭐ AJUSTADO: menos gap en tablet */
+    padding: 6px; /* ⭐ REDUCIDO: menos padding */
+  }
+  
+  .unified-attachments .chat-image-item,
+  .unified-attachments .document-preview {
+    width: 90px; /* ⭐ AJUSTADO: tamaño proporcional */
+    height: 80px; /* ⭐ AJUSTADO: tamaño proporcional */
+    margin: 4px; /* ⭐ REDUCIDO: menos margen */
+  }
+  
+  .document-preview {
+    padding: 6px; /* ⭐ REDUCIDO: menos padding interno */
+  }
+  
+  .document-icon {
+    font-size: 1.7rem; /* ⭐ AJUSTADO: proporcional */
+    margin-bottom: 3px;
+  }
+  
+  .document-name {
+    font-size: 0.6rem;
+  }
+  
+  .document-size {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .unified-attachments {
+    gap: 10px; /* ⭐ AJUSTADO: gap reducido */
+    padding: 4px; /* ⭐ REDUCIDO: padding mínimo */
+    justify-content: center;
+  }
+  
+  .unified-attachments .chat-image-item,
+  .unified-attachments .document-preview {
+    width: 80px; /* ⭐ AJUSTADO: tamaño móvil */
+    height: 70px; /* ⭐ AJUSTADO: tamaño móvil */
+    margin: 3px; /* ⭐ REDUCIDO: margen mínimo */
+  }
+  
+  .document-icon {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+  }
+  
+  .document-name {
+    font-size: 0.55rem;
+    line-clamp: 1; /* ⭐ REDUCIDO: solo 1 línea en móvil */
+    max-height: 1.0em;
+  }
+  
+  .document-size {
+    font-size: 0.45rem;
+  }
+
+  .unified-attachments {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 320px) {
+  .unified-attachments {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .unified-attachments .chat-image-item,
+  .unified-attachments .document-preview {
+    width: 100px; /* ⭐ VOLVER: a tamaño estándar en vertical */
+    height: 90px;
+    margin: 4px;
+  }
+}
+
+/* ===== TEMA OSCURO ===== */
+[data-theme="dark"] .document-preview {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .document-preview.clickable:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .document-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .document-size {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .attachment-indicator {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .chat-image-item {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+.document-preview:focus,
+.chat-image-item:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  z-index: 3; /* ⭐ NUEVO: asegurar que el focus sea visible */
+}
+
+.document-preview[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.document-preview[aria-disabled="true"]:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ===== TOOLTIPS AJUSTADOS ===== */
+.document-preview[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px; /* ⭐ AJUSTADO: más cerca del elemento */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 4px 8px; /* ⭐ REDUCIDO: padding más pequeño */
+  border-radius: 4px;
+  font-size: 0.7rem; /* ⭐ REDUCIDO: texto más pequeño */
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+.document-preview.processing {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.document-preview.processing .document-icon {
+  animation: spin 1s linear infinite;
+}
+
+.document-preview.error {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.document-preview.error .document-icon {
+  color: #dc3545;
+}
+
+.document-preview.success {
+  border-color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.document-preview.success .document-icon {
+  color: #28a745;
+}
+
+/* ===== COMPATIBILIDAD CON CONTENEDORES VACÍOS ===== */
+.chat-image-gallery:empty,
+.document-previews:empty {
+  display: none;
+}
+
+/* Asegurar que los elementos no se deformen */
+.unified-attachments .chat-image-item img {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Prevenir overflow de texto en nombres largos */
+.document-name {
+  max-width: 100%;
+  padding: 0 2px; /* ⭐ REDUCIDO: menos padding horizontal */
+}
+
+/* ===== ESTADOS DE LOADING MEJORADOS ===== */
+.unified-attachments .loading-placeholder {
+  width: 100px;
+  height: 90px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin: 6px; /* ⭐ NUEVO: mismo margen que otros elementos */
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Suavizar transiciones globalmente */
+.unified-attachments * {
+  transition: all 0.2s ease;
+}
+
+/* ⭐ NUEVO: PREVENIR LAYOUT SHIFT DURANTE HOVER ⭐ */
+.unified-attachments {
+  overflow-x: auto;
+  overflow-y: visible;
+  /* Reservar espacio extra para evitar que el contenedor cambie de tamaño */
+  min-height: calc(90px + 16px); /* altura del elemento + margen */
+  padding-bottom: 12px; /* ⭐ NUEVO: espacio inferior adicional */
+}
+
+/* Ocultar scrollbar en webkit browsers */
+.unified-attachments::-webkit-scrollbar {
+  height: 4px;
+}
+
+.unified-attachments::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.unified-attachments::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+}
+
+.unified-attachments::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ===== ESTILOS SOLO PARA DOCUMENTOS DE TEXTO ===== */
+
+/* Header principal para documentos */
+.document-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+    padding: 16px 20px;
+    margin-bottom: 0;
+    border-bottom: 2px solid #007bff;
+}
+
+.document-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.document-info i {
+    font-size: 1.5rem;
+    color: #007bff;
+    min-width: 24px;
+}
+
+.document-details h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    word-break: break-word;
+}
+
+.document-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.document-stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.document-stats i {
+    font-size: 0.9rem !important;
+    color: #6c757d !important;
+    min-width: auto !important;
+}
+
+/* Contenido del documento */
+.document-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.text-content {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    max-height: none; /* Permitir altura completa */
+}
+
+/* Headers de error */
+.error-header {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.error-header i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.error-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.error-content {
+    border: 1px solid #dc3545;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    background: #f8f9fa;
+}
+
+.error-message {
+    margin-bottom: 20px;
+}
+
+.error-message pre {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.error-suggestions ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.error-suggestions li {
+    margin: 4px 0;
+    color: #495057;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .document-stats {
+        gap: 12px;
+    }
+    
+    .document-stats span {
+        font-size: 0.8rem;
+    }
+    
+    .document-header {
+        padding: 12px 16px;
+    }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .document-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-color: #495057;
+    color: #f8f9fa;
+    border-bottom-color: #3498db;
+}
+
+[data-theme="dark"] .document-info i {
+    color: #3498db;
+}
+
+[data-theme="dark"] .document-details h3 {
+    color: #f8f9fa;
+}
+
+[data-theme="dark"] .document-stats span {
+    color: #adb5bd;
+}
+
+[data-theme="dark"] .document-stats i {
+    color: #adb5bd !important;
+}
+
+[data-theme="dark"] .document-content {
+    background: #212529;
+    border-color: #495057;
+}
+
+[data-theme="dark"] .text-content {
+    background: #1a1d20;
+    color: #f8f9fa;
+    border-color: #495057;
+}
+
+[data-theme="dark"] .error-content {
+    background: #2d1b1b;
+    color: #f8f9fa;
+}
+
+[data-theme="dark"] .error-message pre {
+    background: #1a1d20;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+[data-theme="dark"] .error-suggestions li {
+    color: #adb5bd;
+}
+
+
+.message-text {
+  max-width: 640px;
+}
+
+/**
+ * CSS PARA MINIATURA COMPLETA DE IMÁGENES RECORTADAS
+ * La imagen ocupa TODO el espacio del contenedor de preview
+ */
+
+/* ===== CONTENEDOR PRINCIPAL DE IMAGEN COMPLETA ===== */
+.file-preview.full-image-preview {
+  position: relative !important;
+  width: 200px !important;
+  height: 120px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  margin: 8px !important;
+  padding: 0 !important;
+  border: 2px solid transparent !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  background: #f8f9fa !important;
+}
+
+/* Hover effect para el contenedor completo */
+.file-preview.full-image-preview:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  border-color: var(--color-primary, #007cba) !important;
+}
+
+/* ===== IMAGEN DE FONDO COMPLETA ===== */
+.full-image-background {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  z-index: 1 !important;
+}
+
+/* ===== OVERLAY CON INFORMACIÓN ===== */
+.image-preview-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(
+    135deg, 
+    rgba(0, 0, 0, 0.7) 0%, 
+    rgba(0, 0, 0, 0.4) 50%, 
+    rgba(0, 0, 0, 0.2) 100%
+  ) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 12px !important;
+  z-index: 2 !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Mostrar overlay en hover */
+.file-preview.full-image-preview:hover .image-preview-overlay {
+  opacity: 1 !important;
+}
+
+/* ===== INFORMACIÓN DEL PREVIEW ===== */
+.preview-info {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  color: white !important;
+}
+
+.preview-icon {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  padding: 6px !important;
+  backdrop-filter: blur(10px) !important;
+  flex-shrink: 0 !important;
+}
+
+.preview-icon i {
+  font-size: 16px !important;
+  color: white !important;
+}
+
+.preview-details {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.preview-name {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: white !important;
+  margin-bottom: 2px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.preview-meta {
+  font-size: 0.7rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ===== BOTÓN DE ELIMINAR MEJORADO ===== */
+.file-preview.full-image-preview .file-preview-remove {
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #ff4757, #ff3742) !important;
+  color: white !important;
+  border: 2px solid white !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  z-index: 10 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease !important;
+  opacity: 0 !important;
+}
+
+/* Mostrar botón de eliminar en hover */
+.file-preview.full-image-preview:hover .file-preview-remove {
+  opacity: 1 !important;
+}
+
+.file-preview.full-image-preview .file-preview-remove:hover {
+  transform: scale(1.1) !important;
+  background: linear-gradient(135deg, #ff3742, #ff2533) !important;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4) !important;
+}
+
+/* ===== INDICADOR DE NUEVA CAPTURA ===== */
+.file-preview.full-image-preview.newly-captured {
+  animation: newImageCaptured 2s ease-in-out !important;
+}
+
+@keyframes newImageCaptured {
+  0% { 
+    border-color: var(--color-primary, #007cba) !important;
+    box-shadow: 0 0 0 4px rgba(0, 124, 186, 0.3) !important;
+    transform: scale(1.05) !important;
+  }
+  50% { 
+    border-color: var(--color-primary, #007cba) !important;
+    box-shadow: 0 0 0 8px rgba(0, 124, 186, 0.2) !important;
+  }
+  100% { 
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1) !important;
+  }
+}
+
+/* ===== ESTADO DE LOADING ===== */
+.file-preview.full-image-preview.loading .full-image-background {
+  background: linear-gradient(
+    90deg, 
+    #f0f0f0 25%, 
+    #e0e0e0 50%, 
+    #f0f0f0 75%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: shimmerBackground 1.5s infinite !important;
+}
+
+@keyframes shimmerBackground {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .file-preview.full-image-preview {
+    width: 180px !important;
+    height: 110px !important;
+    margin: 6px !important;
+  }
+  
+  .image-preview-overlay {
+    padding: 10px !important;
+  }
+  
+  .preview-name {
+    font-size: 0.8rem !important;
+  }
+  
+  .preview-meta {
+    font-size: 0.65rem !important;
+  }
+  
+  .preview-icon {
+    padding: 5px !important;
+  }
+  
+  .preview-icon i {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .file-preview.full-image-preview {
+    width: 160px !important;
+    height: 100px !important;
+    margin: 4px !important;
+  }
+  
+  .image-preview-overlay {
+    padding: 8px !important;
+  }
+  
+  .preview-info {
+    gap: 6px !important;
+  }
+  
+  .preview-name {
+    font-size: 0.75rem !important;
+  }
+  
+  .preview-meta {
+    font-size: 0.6rem !important;
+  }
+}
+
+/* ===== TEMA OSCURO ===== */
+[data-theme="dark"] .file-preview.full-image-preview {
+  background: #1a1a1a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .file-preview.full-image-preview:hover {
+  border-color: var(--color-primary, #3498db) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .image-preview-overlay {
+  background: linear-gradient(
+    135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(0, 0, 0, 0.5) 50%, 
+    rgba(0, 0, 0, 0.3) 100%
+  ) !important;
+}
+
+[data-theme="dark"] .preview-icon {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ===== COMPATIBILIDAD CON OTROS TIPOS DE PREVIEW ===== */
+/* Asegurar que los otros tipos de preview no se vean afectados */
+.file-preview:not(.full-image-preview) {
+  /* Mantener estilos originales para documentos, etc. */
+}
+
+.file-preview:not(.full-image-preview) .file-preview-content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+.file-preview.full-image-preview.processing {
+  opacity: 0.7 !important;
+  pointer-events: none !important;
+}
+
+.file-preview.full-image-preview.processing .full-image-background::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  border: 3px solid rgba(255, 255, 255, 0.3) !important;
+  border-top: 3px solid white !important;
+  border-radius: 50% !important;
+  animation: spin 1s linear infinite !important;
+  z-index: 5 !important;
+}
+
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ===== AJUSTES FINALES PARA CONTENEDOR ===== */
+.file-preview-container {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+}
+
+/* Efecto de brillado en hover */
+.file-preview.full-image-preview::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent
+  ) !important;
+  transition: left 0.6s !important;
+  z-index: 3 !important;
+}
+
+.file-preview.full-image-preview:hover::before {
+  left: 100% !important;
+}
+
+/* Efecto de enfoque para accesibilidad */
+.file-preview.full-image-preview:focus {
+  outline: 3px solid var(--color-primary, #007cba) !important;
+  outline-offset: 2px !important;
+}
+
+/* ===== CONTENEDOR DE MÚLTIPLES IMÁGENES ===== */
+.file-preview-container:has(.full-image-preview) {
+  min-height: 140px !important;
+  padding: 8px !important;
+}
+
+  @media (max-width: 380px) {
+    .auto-expand {
+    height: 108px !important;
+    }
+    
+  }
+
+ @media (max-width: 640px) {
+
+.welcome-avatar {
+  background-position: center;
+  transform: scale(1.6); /* Escalar la imagen un 10% más grande */
+  transform-origin: center;
+  width:100%;
+}
+    }
