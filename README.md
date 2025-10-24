@@ -553,7 +553,7 @@ HOOKDECK_SIGNING_SECRET=
         <a href="docs/media/acadelia2.mp4">
           <img src="docs/media/acadelia2.gif" alt="Demo: Mermaid, código, búsqueda de imágenes (MP4)" width="420">
         </a><br/>
-        <sub><em>Mermaid, código, búsqueda de imágenes</em> ·
+        <sub><em>Mermaid, examenes, búsqueda de imágenes</em> ·
           <a href="docs/media/acadelia2.mp4">abrir MP4</a>
         </sub>
       </td>
