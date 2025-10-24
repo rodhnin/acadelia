@@ -5,6 +5,7 @@
 # Entorno / secretos
 .env
 .env.*
+!docs/.env.example
 config/google-drive-key.json
 
 # Dependencias Node
