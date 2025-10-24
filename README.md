@@ -35,13 +35,13 @@
     <tr>
       <td align="center" width="50%">
         <a href="docs/media/demo-01-landing-login.gif">
-          <img src="docs/media/demo-01-landing-login.gif" alt="Paso 1 — Landing → Login" width="420">
+          <img src="docs/media/demo-01-landing-login.gif" alt="Paso 1 — Landing → Login" width="380">
         </a><br/>
         <sub><strong>Paso 1</strong> — <em>Landing → Login</em></sub>
       </td>
       <td align="center" width="50%">
         <a href="docs/media/demo-02-login-dashboard-avas.gif">
-          <img src="docs/media/demo-02-login-dashboard-avas.gif" alt="Paso 2 — Login → Dashboard → Mis Avas" width="420">
+          <img src="docs/media/demo-02-login-dashboard-avas.gif" alt="Paso 2 — Login → Dashboard → Mis Avas" width="380">
         </a><br/>
         <sub><strong>Paso 2</strong> — <em>Login → Dashboard → Mis Avas</em></sub>
       </td>
@@ -49,13 +49,13 @@
     <tr>
       <td align="center" width="50%">
         <a href="docs/media/demo-03-select-ava-loading.gif">
-          <img src="docs/media/demo-03-select-ava-loading.gif" alt="Paso 3 — Selección de Ava + pantalla de carga" width="420">
+          <img src="docs/media/demo-03-select-ava-loading.gif" alt="Paso 3 — Selección de Ava + pantalla de carga" width="380">
         </a><br/>
         <sub><strong>Paso 3</strong> — <em>Seleccionar Ava + pantalla de carga</em></sub>
       </td>
       <td align="center" width="50%">
         <a href="docs/media/demo-04-new-chat-response.gif">
-          <img src="docs/media/demo-04-new-chat-response.gif" alt="Paso 4 — Nueva query → respuesta de la IA" width="420">
+          <img src="docs/media/demo-04-new-chat-response.gif" alt="Paso 4 — Nueva query → respuesta de la IA" width="380">
         </a><br/>
         <sub><strong>Paso 4</strong> — <em>Nueva query → respuesta de la IA</em></sub>
       </td>
