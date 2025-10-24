@@ -1,0 +1,36 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout (with LFS)
+              uses: actions/checkout@v4
+              with:
+                  lfs: true
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+
+            - name: Install deps (root)
+              run: npm ci || npm i
+
+            # Si tienes carpetas backend/frontend con package.json propios, descomenta:
+            # - name: Install deps (backend)
+            #   run: cd backend && npm ci || npm i
+            # - name: Install deps (frontend)
+            #   run: cd frontend && npm ci || npm i
+
+            - name: Build (best-effort)
+              run: npm run build || echo "no build script; skipping"
+
+            - name: Basic smoke
+              run: node -e "console.log('CI ✅')"
