@@ -263,7 +263,6 @@ function processStreamMetadata(chunk, responseMetadata) {
     return '';
   }
   
-  // Solo eliminar si realmente está vacío
   const trimmedChunk = cleanChunk.trim();
   const isActuallyEmpty = !trimmedChunk || 
                          trimmedChunk.length === 0 ||
@@ -993,7 +992,6 @@ export async function clearNotifications() {
   }
 }
 
-// 🆕 NUEVA FUNCIÓN: Limpiar notificaciones por sección específica
 export async function clearSectionNotifications(section) {
   try {
     console.log(`🧹 Limpiando notificaciones de la sección: ${section}`);
@@ -1024,7 +1022,6 @@ export async function clearSectionNotifications(section) {
   }
 }
 
-// 🆕 NUEVA FUNCIÓN: Marcar sección como vista
 export async function markSectionAsViewed(section, userId = null) {
   try {
     console.log(`👁️ Marcando sección ${section} como vista`);

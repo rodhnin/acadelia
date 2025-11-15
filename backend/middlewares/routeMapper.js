@@ -21,7 +21,6 @@ try {
       parameterMap = JSON.parse(fs.readFileSync(paramMapPath, 'utf8'));
       console.log(`✅ Mapa de parámetros cargado: ${Object.keys(parameterMap).length} parámetros configurados`);
     } else {
-      // 🆕 CREAR MAPA BÁSICO CON PARÁMETROS DE ARGENTINA
       parameterMap = {
         "verifyPassword": generateHashCode("verifyPassword"),
         "carrera": generateHashCode("carrera"),
@@ -30,7 +29,6 @@ try {
         "token": generateHashCode("token"),
         "login": generateHashCode("login"),
         "register": generateHashCode("register"),
-        // 🆕 AGREGAR: Parámetros específicos de admin/argentina
         "argentina": generateHashCode("argentina"),
         "finance": generateHashCode("finance"),
         "queues": generateHashCode("queues"),
@@ -53,7 +51,6 @@ function generateHashCode(str) {
   return crypto.createHash('md5').update(str).digest('hex').substring(0, 8);
 }
 
-// 🆕 FUNCIÓN MEJORADA: Crear mapa inverso para decodificación rápida
 function createReverseParameterMap() {
   const reverseMap = {};
   Object.entries(parameterMap).forEach(([original, hashed]) => {
@@ -87,7 +84,6 @@ function ofuscatePathSegment(segment) {
   return hash;
 }
 
-// 🆕 FUNCIÓN MEJORADA: Decodificar segmentos ofuscados con soporte multi-nivel
 function deofuscatePathSegment(ofuscatedSegment) {
   const reverseMap = createReverseParameterMap();
   
@@ -111,7 +107,6 @@ export function routeMapper(req, res, next) {
   }
   
   try {
-    // 🆕 MEJORADO: Extraer código de ruta y manejar query params correctamente
     const [basePath, queryString] = req.originalUrl.split('?');
     const urlParts = basePath.split('/api/x/')[1].split('/');
     const code = urlParts[0];
@@ -128,7 +123,6 @@ export function routeMapper(req, res, next) {
       console.log(`🔄 Ruta ofuscada detectada: ${req.originalUrl} → /api${targetRoute}`);
     }
     
-    // 🆕 MEJORADO: Procesar segmentos adicionales (parámetros multi-nivel)
     const additionalSegments = urlParts.slice(1); // Todo después del código de ruta
     const decodedSegments = [];
     
@@ -174,7 +168,6 @@ export function normalizeErrors(req, res, next) {
       // Mantener códigos importantes
       const preserveCodes = [401, 403, 404, 429];
       if (!preserveCodes.includes(code)) {
-        // Solo en desarrollo mostrar código original en logs
         if (process.env.NODE_ENV === 'development') {
           console.log(`🔧 Error normalizado: ${code} → 404 para ${req.url}`);
         }
@@ -196,7 +189,7 @@ let requestStats = {
   apiRequests: 0,
   obfuscatedRequests: 0,
   errorRequests: 0,
-  decodedSegments: 0 // 🆕 NUEVO: Contador de segmentos decodificados
+  decodedSegments: 0
 };
 
 // Middleware para contar requests (OPCIONAL)
@@ -210,7 +203,6 @@ export function trackRequests(req, res, next) {
   if (req.originalUrl.startsWith('/api/x/')) {
     requestStats.obfuscatedRequests++;
     
-    // 🆕 NUEVO: Contar segmentos decodificados
     const urlParts = req.originalUrl.split('/api/x/')[1].split('/');
     if (urlParts.length > 1) {
       requestStats.decodedSegments += urlParts.length - 1;
@@ -271,7 +263,6 @@ export function createSecurityEndpoints(app, authenticateUser, isAdmin) {
     }
   });
   
-  // 🆕 NUEVO: Endpoint para test de decodificación
   app.post('/api/security/test-decode', authenticateUser, isAdmin, (req, res) => {
     try {
       const { obfuscatedUrl } = req.body;

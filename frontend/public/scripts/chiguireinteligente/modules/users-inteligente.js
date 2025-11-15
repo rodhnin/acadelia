@@ -158,14 +158,12 @@ async refreshUsers(forceApi = false) {
       icon: 'bi-speedometer'
     });
     
-    // Solo actualizar la UI sin recargar datos
     this.calculateUserStats();
     this.applyFilters();
     
     return;
   }
   
-  // Solo si se fuerza explícitamente, recargar desde API
   console.log('Users: Solicitando datos frescos desde API');
   
   this.api.clearCache('users');
@@ -259,7 +257,6 @@ onSectionActivated() {
     return;
   }
   
-  // Solo si no hay datos, cargarlos
   console.log('Users: Cargando datos iniciales');
   this.loadUserData();
 }
@@ -1613,11 +1610,9 @@ exportUsers() {
       // Opciones para resaltar usuarios inactivos
       highlightInactiveUsers: true,
       inactiveUserColor: 'ffebee',
-      // Incluir análisis completo
       ...userAnalysis,
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
-      // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {})
     });
     

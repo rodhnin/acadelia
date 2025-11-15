@@ -20,7 +20,6 @@ const pool = new Pool({
   min: 10,                     // 10 conexiones siempre disponibles
   idleTimeoutMillis: 30000,    // 30 segundos antes de cerrar conexión inactiva
  
-  // ⏰ TIMEOUTS PARA SISTEMA DE CHATS CON MUCHOS USUARIOS
   connectionTimeoutMillis: 15000,  // 15 segundos para conectar (más rápido)
   statement_timeout: 20000,        // 20 segundos para queries
   query_timeout: 20000,           // 20 segundos timeout total
@@ -50,7 +49,6 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   errorCount++;
-  // Solo log errores críticos del pool
   if (err.code === 'ECONNRESET' || err.code === 'ENOTFOUND') {
     console.error('❌ Pool connection error:', err.code);
   }

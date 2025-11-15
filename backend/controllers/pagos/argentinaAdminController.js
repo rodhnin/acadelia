@@ -397,7 +397,7 @@ export const approveTransfer = async (req, res) => {
       data: {
         payment_id: paymentId,
         subscription_id: existingSubscriptionId,
-        subscription_updated: true, // ✅ CAMBIO: indica que se actualizó, no se creó
+        subscription_updated: true,
         role_changed: roleChanged,
         approved_by: adminId,
         approved_at: new Date().toISOString(),
@@ -523,7 +523,7 @@ export const rejectTransfer = async (req, res) => {
         rejected_by: adminId,
         rejected_at: new Date().toISOString(),
         reason: reason.trim(),
-        subscription_removed: existingSubCheck.rows.length > 0, // ✅ NUEVO: indica si se eliminó suscripción
+        subscription_removed: existingSubCheck.rows.length > 0,
         email_sent: true
       }
     });

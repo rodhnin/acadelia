@@ -127,13 +127,6 @@ function updateProgress(exam, examState) {
   }
 }
 
-/**
- * ✅ FUNCIONAL: Muestra la pregunta actual con renderizado MathJax simple
- * @param {HTMLElement} container - Contenedor principal
- * @param {HTMLElement} exam - Elemento del examen
- * @param {Object} examState - Estado del examen
- * @param {Promise} mathJaxPromise - Promesa de inicialización de MathJax
- */
 async function showQuestion(container, exam, examState, mathJaxPromise) {
   const questionContainer = exam.querySelector('.question-container');
   if (!questionContainer) return;
@@ -552,10 +545,6 @@ function showResults(container, exam, examState) {
   clearExamTimeouts();
 }
 
-/**
- * ✅ SIMPLE: Inicializa MathJax de forma confiable (versión que funcionaba)
- * @returns {Promise} Promesa que se resuelve cuando MathJax está listo
- */
 function initializeMathJax() {
   window._mathJaxInitPromise = null;
   
@@ -599,11 +588,6 @@ function initializeMathJax() {
   });
 }
 
-/**
- * ✅ SIMPLE: Renderiza el contenido matemático en un elemento
- * @param {HTMLElement} element - Elemento a renderizar
- * @returns {Promise} Promesa que se resuelve cuando se completa el renderizado
- */
 async function renderMathContent(element) {
   if (!element) return Promise.reject(new Error('Elemento no válido'));
   
@@ -643,11 +627,6 @@ async function renderMathContent(element) {
   }
 }
 
-/**
- * ✅ FUNCIONAL: Prepara el contenido LaTeX para renderizarlo correctamente
- * @param {string} text - Texto a preparar
- * @returns {string} Texto preparado para renderizado LaTeX
- */
 function prepareLatexContent(text) {
   if (!text) return '';
   

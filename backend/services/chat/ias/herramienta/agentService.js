@@ -1,8 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL UNIVERSAL - SISTEMA ACADÉMICO REVOLUCIONARIO COMPLETO V3.0
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MULTIDISCIPLINARIO SUPREMO
-// ============================================================================
 
 import { WolframAlphaTool } from "@langchain/community/tools/wolframalpha";
 import { AgentExecutor, createOpenAIToolsAgent } from "langchain/agents";
@@ -27,12 +23,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { cleanDocumentContextForPrompt } from '../../../../utils/chat/contentCleaner.js';
 import { loadHybridChatMemory, formatHybridMemoryForPrompt } from "../../../../utils/chat/hybridChatMemory.js";
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestratorUniversal {
   constructor() {
@@ -311,9 +303,6 @@ class BraveSearchOrchestratorUniversal {
 
 const braveSearchOrchestratorUniversal = new BraveSearchOrchestratorUniversal();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL UNIVERSAL DNA - PERSONALIDAD DEL CAPIBARA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_UNIVERSAL_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL UNIVERSAL - ESPECIALISTA TÉCNICO INTERDISCIPLINARIO:
@@ -369,8 +358,6 @@ Hacer que CUALQUIER estudiante en CUALQUIER disciplina:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR TÉCNICO UNIVERSAL que integra excelencia académica interdisciplinaria con metodología científica rigurosa!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const UNIVERSAL_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel Universal.
 
@@ -538,9 +525,6 @@ Transforma el análisis técnico pre-procesado en una experiencia de aprendizaje
 
 ¡Haz que esta información pre-analizada cobre vida educativa con tu genialidad docente universal!`;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE UNIVERSAL MEJORADO
-// ============================================================================
 
 const classifyUniversalQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -726,10 +710,7 @@ const classifyUniversalQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS UNIVERSALES
 const ACADEL_UNIVERSAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en TODAS las disciplinas.
 
@@ -1349,8 +1330,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia universal según este anál
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 class CustomSupabaseHybridSearch extends SupabaseHybridSearch {
   constructor(embeddings, { client, similarityK, tableName, similarityQueryName, userId, chatId }) {
@@ -1403,8 +1382,6 @@ class CustomSupabaseHybridSearch extends SupabaseHybridSearch {
   }
 }
 
-// ============================================================================
-// ============================================================================
 
 const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, chatId) => {
   // Herramientas básicas universales personalizadas
@@ -1467,8 +1444,6 @@ const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, 
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 const createUniversalSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_UNIVERSAL_DNA;
@@ -1608,8 +1583,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - VALIDA comprensión antes de avanzar a conceptos más complejos
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const typeSpecificInstructions = {
     concept_explanation: `
@@ -1668,8 +1641,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 6. **EXPLICACIONES:** Cada respuesta enseña con tu estilo único`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1690,8 +1661,6 @@ ${queryInfo.hasEmotionalContent ? '- **Estado emocional:** Estudiante frustrado 
 ⚡ **OBJETIVO FINAL:** Enseña como el capibara universal más brillante, usando tu base personal como ventaja especial y conectando disciplinas cuando enriquezca el aprendizaje.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1980,8 +1949,6 @@ function formatDuration(seconds) {
   return result.trim();
 }
 
-// ============================================================================
-// ============================================================================
 
 const processYouTubeQuery = async ({ userId, query, avaId, herramientaId, chatId, client }) => {
   try {
@@ -2556,8 +2523,6 @@ Mi cerebro universal sigue funcionando al 100%. ¡Puedo enseñarte desde acústi
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleStudyQuery = async (params) => {
   const { userId, avaId, herramientaId, chatId, query } = params;
@@ -2903,7 +2868,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -3075,7 +3039,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -3120,8 +3083,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleStudyMultimodalQuery = async (params) => {
   const { userId, avaId, herramientaId, chatId, content } = params;
@@ -3448,7 +3409,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -3499,13 +3459,11 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -3519,7 +3477,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -3652,8 +3609,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleStudyQueryWithoutSaving = async (params) => {
   const { userId, avaId, herramientaId, chatId, query } = params;

@@ -9,10 +9,6 @@ const timeoutRegistry = {};
 // Registro de eventos para facilitar limpieza
 const eventRegistry = new WeakMap();
 
-/**
- * 🛠️ SOLUCIÓN: Modificar la función sanitizeText existente en dom-helpers.js
- * NO crear nuevas funciones, solo hacer la existente más inteligente
- */
 
 /**
  * Sanitiza texto para evitar ataques XSS - VERSIÓN CORREGIDA
@@ -70,20 +66,10 @@ export function sanitizeText(text, options = {}) {
   return result;
 }
 
-/**
- * 🆕 FUNCIÓN AUXILIAR: Para casos donde SÍ necesitas escapar comillas
- * @param {string} text - Texto para atributos HTML
- * @returns {string} Texto con comillas escapadas
- */
 export function sanitizeForHTMLAttribute(text) {
   return sanitizeText(text, { forceQuoteEscape: true });
 }
 
-/**
- * 🆕 FUNCIÓN AUXILIAR: Para detección rápida de JSON
- * @param {string} text - Texto a verificar
- * @returns {boolean} true si es JSON válido
- */
 export function isValidJSON(text) {
   if (!text || typeof text !== 'string') return false;
   

@@ -293,7 +293,7 @@ export const YouTubeAudioService = {
         'X-RapidAPI-Key': this.config.rapidApiKey,
         'X-RapidAPI-Host': this.config.rapidApiHost
       },
-      timeout: 15000 // ✅ REDUCIDO de 30000
+      timeout: 15000
     });
 
     this.processingMetrics.apiCallDuration = Date.now() - apiStartTime;
@@ -582,10 +582,6 @@ export const YouTubeAudioService = {
   },
 
 
-  /**
-   * 🚀 NUEVO: Obtener estado de procesamiento en tiempo real
-   * Esta función optimiza el polling del frontend
-   */
   getProcessingStatus(chatId, videoId = null) {
     const metrics = this.processingMetrics || this.initMetrics();
     const now = Date.now();
@@ -662,9 +658,6 @@ export const YouTubeAudioService = {
     };
   },
 
-  /**
-   * 🚀 HELPER: Sugerir intervalo de polling basado en estado
-   */
   getSuggestedPollingInterval(status, elapsed) {
     switch (status) {
       case 'downloading':
@@ -782,10 +775,6 @@ export const YouTubeAudioService = {
     throw new Error(`Todas las APIs fallaron. Último error: ${lastError?.message || 'Desconocido'}`);
   },
 
-  /**
-   * Transcribe un único archivo de audio usando OpenAI Whisper
-   * ✅ CORRECCIÓN: Verificaciones de cancelación mínimas para evitar interrupciones
-   */
   // 4. CORREGIR transcribeSingleFile() - Verificaciones cada 3 segundos (no 2)
   async transcribeSingleFile(audioFilePath, chatId) {
     if (chatId) {
@@ -819,7 +808,7 @@ export const YouTubeAudioService = {
               console.warn(`⚠️ [${chatId}] Error en verificación Whisper:`, error);
             }
           }
-        }, 3000); // ✅ Cada 3 segundos (menos agresivo)
+        }, 3000);
       };
 
       startCancelChecker();
@@ -1056,9 +1045,6 @@ export const YouTubeAudioService = {
   },
 
 
-  /**
-   * ⭐ PROCESO PRINCIPAL - COMPLETAMENTE CORREGIDO
-   */
   async processYouTubeURL(url, userId, chatId, metadata = {}) {
     this.processingMetrics = this.initMetrics();
     this.extractedMetadata = null;
@@ -1249,7 +1235,7 @@ export const YouTubeAudioService = {
       ...(chunks > 0 && { chunks })
     };
 
-    if (metadata.herramientaId === 2) { // Solo para Agente
+    if (metadata.herramientaId === 2) {
       console.log(`🤖 [AGENTE] YouTube procesado - programando limpieza de flags...`);
 
       setTimeout(async () => {

@@ -71,7 +71,7 @@ async function saveMessage({
             hasHerramienta ? Number(herramientaId) : null,
             chatId,
             role,
-            finalMessage, // ✅ MENSAJE SIN TRUNCAR
+            finalMessage,
             embeddingVector
         ];
 
@@ -130,7 +130,6 @@ async function saveMultimodalMessage({
             throw new Error("No se puede usar avaId Y herramientaId simultáneamente");
         }
 
-        // ⭐ FORMATEO PARA COLUMNA TEXT CON DOBLE STRINGIFY ⭐
         let finalMessage = message;
         
         const isDoubleStringified = typeof message === 'string' && 
@@ -209,7 +208,7 @@ async function saveMultimodalMessage({
             hasHerramienta ? Number(herramientaId) : null,
             chatId,
             role,
-            finalMessage, // ✅ MENSAJE SIN TRUNCAR
+            finalMessage,
             embeddingVector
         ];
 
@@ -352,7 +351,6 @@ async function loadChatHistoryForOpenAI(userId, avaId, chatId, query, herramient
     }
 }
 
-// ===== FUNCIONES PARA MANEJO DE DOCUMENTOS (SIN CAMBIOS) =====
 
 /**
  * Obtiene información de documentos adjuntos de un chat

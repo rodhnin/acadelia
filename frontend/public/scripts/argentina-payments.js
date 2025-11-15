@@ -4,7 +4,6 @@
     
     console.log('🇦🇷 Sistema de Pagos Argentina (CORREGIDO) inicializando...');
     
-    // 🦫 ACADEL DNA para mensajes
     const ACADEL_MESSAGES = {
         loading: "🦫 Procesando tu pago como un capibara experto... ¡paciencia!",
         success: "🦫 ¡Exitazo total! Tu compra está lista, como mi pelaje después del spa",
@@ -16,7 +15,6 @@
         fileUploaded: "🦫 ¡Archivo subido! Más rápido que yo saltando al agua"
     };
 
-    // ===== CONFIGURACIÓN =====
     const CONFIG = {
         endpoints: {
             createUala: '/api/payments-arg/uala/create-order',
@@ -31,7 +29,6 @@
         userId: null
     };
 
-    // ===== ESTADO GLOBAL =====
     let isPaymentProcessing = false;
     let currentPaymentModal = null;
     let loadingModal = null;
@@ -39,7 +36,6 @@
     let notificationModal = null;
     let uploadedFile = null;
 
-    // ===== DATOS BANCARIOS =====
     const BANK_DATA = {
         bank: "Banco de la Nación Argentina",
         cbu: "0110593930009310123456",
@@ -47,7 +43,6 @@
         holder: "Acadelia Argentina S.A."
     };
 
-    // ===== INICIALIZACIÓN =====
     async function initialize() {
         try {
             console.log('🦫 Inicializando sistema de pagos Argentina corregido...');
@@ -70,7 +65,6 @@
         }
     }
 
-    // ===== MOSTRAR NOTIFICACIÓN BONITA =====
     function showBeautifulNotification(type, message, title = null) {
         if (notificationModal) {
             closeBeautifulNotification();
@@ -132,7 +126,6 @@
         }
     }
 
-    // ===== OBTENER USUARIO ACTUAL =====
     async function getCurrentUser() {
         try {
             const response = await fetch('/api/usuarios/authenticate', {
@@ -151,7 +144,6 @@
         }
     }
 
-    // ===== CARGAR PRECIOS DESDE BASE DE DATOS =====
     async function loadPricesFromDatabase() {
         try {
             const response = await fetch(CONFIG.endpoints.getCarrerasPrices, {
@@ -183,7 +175,6 @@
         }
     }
 
-    // ===== CONFIGURAR ARGENTINA COMO PAÍS FIJO =====
     function setupArgentinaSelector() {
         const countrySelect = document.getElementById('countrySelect');
         const customSelect = document.querySelector('.custom-select');
@@ -215,7 +206,6 @@
         }
     }
 
-    // ===== CONFIGURAR EVENT LISTENERS =====
     function setupEventListeners() {
         const monthlyBtn = document.getElementById('monthlyBtn');
         const yearlyBtn = document.getElementById('yearlyBtn');
@@ -253,7 +243,6 @@
         });
     }
 
-    // ===== MANEJAR CLICK EN BOTÓN COMPRAR =====
     function handleComprarClick(e) {
         const comprarBtn = e.target.closest('.comprar-btn');
         if (!comprarBtn || isPaymentProcessing) return;
@@ -311,7 +300,6 @@ async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
     }
 }
 
-// ===== NUEVA FUNCIÓN: Modal cuando la carrera ya está en procesamiento =====
 function showCarreraAlreadyProcessingModal(carreraNombre) {
     const modal = document.createElement('div');
     modal.className = 'payment-modal-overlay';
@@ -394,7 +382,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
     setTimeout(() => modal.classList.add('show'), 10);
 }
 
-    // ===== CAMBIAR CICLO DE FACTURACIÓN =====
     function setCycle(cycle) {
         if (CONFIG.currentCycle === cycle) return;
         
@@ -412,7 +399,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         console.log('🔄 Ciclo cambiado a:', cycle);
     }
 
-    // ===== ACTUALIZAR PRECIOS EN LA UI =====
     function updatePricesDisplay() {
         Object.values(CONFIG.prices).forEach(carrera => {
             const priceElement = document.querySelector(`[data-product="${carrera.nombre}"] .price`);
@@ -427,7 +413,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         });
     }
 
-    // ===== ABRIR MODAL DE SELECCIÓN DE PAGO - CORREGIDO =====
     function openPaymentModal() {
         if (!CONFIG.selectedCarrera) return;
         
@@ -446,7 +431,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         }, 10);
     }
 
-    // ===== CREAR MODAL DE SELECCIÓN DE PAGO - ESTRUCTURA CORREGIDA =====
     function createPaymentModal() {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -507,7 +491,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         return modal;
     }
 
-    // ===== CONFIGURAR EVENT LISTENERS PARA MODALES - COMPLETAMENTE CORREGIDO =====
     function setupModalEventListeners(modal) {
         console.log('🇦🇷 Configurando event listeners del modal...');
         
@@ -597,7 +580,6 @@ async function checkProcessingSubscriptions() {
     }
 }
 
-    // ===== NUEVA FUNCIÓN: Modal para mostrar suscripciones en procesamiento =====
     function showProcessingSubscriptionsModal(processingSubscriptions) {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay processing-info-modal';
@@ -716,7 +698,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    // ===== PROCESAR PAGO CON UALÁ =====
     async function processUalaPayment() {
         if (isPaymentProcessing || !CONFIG.selectedCarrera) return;
         
@@ -761,7 +742,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== MANEJAR ERRORES DE UALÁ =====
     function handleUalaError(errorData) {
         closeLoadingModal();
         isPaymentProcessing = false;
@@ -774,7 +754,6 @@ async function checkProcessingSubscriptions() {
         }, 2000);
     }
 
-    // ===== MOSTRAR MODAL DE OPCIONES ALTERNATIVAS =====
     function showAlternativeOptionsModal(errorData) {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -860,12 +839,10 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    // ===== REINTENTAR PAGO UALÁ =====
     function retryUalaPayment() {
         setTimeout(() => processUalaPayment(), 500);
     }
 
-    // ===== ABRIR MODAL DE TRANSFERENCIA - COMPLETAMENTE DEBUGEADO =====
     function openTransferModal() {
         console.log('🇦🇷 Abriendo modal de transferencia (DEBUGGING COMPLETO)...');
         
@@ -933,7 +910,6 @@ async function checkProcessingSubscriptions() {
         }, 100);
     }
 
-    // ===== CREAR MODAL DE TRANSFERENCIA - CON OVERLAY INTERNO =====
     function createTransferModal() {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -1030,7 +1006,6 @@ async function checkProcessingSubscriptions() {
         return modal;
     }
 
-    // ===== CONFIGURAR EVENTOS DEL MODAL DE TRANSFERENCIA =====
     function setupTransferModalEvents(modal) {
         // Prevenir cierre al hacer click dentro del modal
         const paymentModalContent = modal.querySelector('.payment-modal');
@@ -1064,7 +1039,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CONFIGURAR INPUT DE ARCHIVO - COMPLETAMENTE CORREGIDO =====
     function setupFileInput(fileInput) {
         console.log('🇦🇷 Iniciando setupFileInput CORREGIDO...', fileInput);
         
@@ -1159,7 +1133,6 @@ async function checkProcessingSubscriptions() {
         console.log('🇦🇷 setupFileInput completado exitosamente');
     }
 
-    // ===== MANEJAR SELECCIÓN DE ARCHIVO - VERSIÓN CORREGIDA =====
     function handleFileSelect(file, fileInput, label, loading, preview, loadingOverlay) {
         const maxSize = 5 * 1024 * 1024; // 5MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
@@ -1209,7 +1182,6 @@ async function checkProcessingSubscriptions() {
         }, 1500);
     }
 
-    // ===== MOSTRAR PREVIEW DEL ARCHIVO =====
     function showFilePreview(file) {
         if (!file) return;
         
@@ -1252,7 +1224,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => previewModal.classList.add('show'), 10);
     }
 
-    // ===== CERRAR MODAL DE PREVIEW =====
     function closePreviewModal() {
         if (previewModal) {
             previewModal.classList.remove('show');
@@ -1265,7 +1236,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== REMOVER ARCHIVO - VERSIÓN CORREGIDA =====
     function removeFile(fileInput, label, preview, loadingOverlay) {
         console.log('🇦🇷 Removiendo archivo...');
         uploadedFile = null;
@@ -1285,7 +1255,6 @@ async function checkProcessingSubscriptions() {
         console.log('🇦🇷 Archivo removido exitosamente');
     }
 
-    // ===== FORMATEAR TAMAÑO DE ARCHIVO =====
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -1294,7 +1263,6 @@ async function checkProcessingSubscriptions() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // ===== MANEJAR ENVÍO DE TRANSFERENCIA =====
     async function handleTransferSubmit(e) {
         e.preventDefault();
         
@@ -1354,7 +1322,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== MOSTRAR MODAL DE CARGA =====
     function showLoadingModal(type = 'uala') {
         if (loadingModal) return;
         
@@ -1398,7 +1365,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => loadingModal.classList.add('show'), 10);
     }
 
-    // ===== ACTUALIZAR MODAL DE CARGA =====
     function updateLoadingModal(status) {
         if (!loadingModal) return;
         
@@ -1411,7 +1377,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CANCELAR PAGO =====
     async function cancelPayment() {
         if (!loadingModal) return;
         
@@ -1426,7 +1391,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CERRAR MODAL DE CARGA =====
     function closeLoadingModal() {
         if (loadingModal) {
             loadingModal.classList.remove('show');
@@ -1439,7 +1403,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CERRAR MODAL DE PAGO =====
     function closePaymentModal() {
         console.log('🇦🇷 Cerrando modal de pago...');
         if (currentPaymentModal) {
@@ -1455,7 +1418,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== API PÚBLICA =====
     window.ArgentinaPagos = {
         initialize,
         processUalaPayment,

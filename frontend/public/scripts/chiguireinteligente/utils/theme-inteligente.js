@@ -205,7 +205,6 @@ export class ThemeManager {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       
       const handleSystemThemeChange = (e) => {
-        // Solo cambiar si no hay preferencia guardada
         let preferenceExists = false;
         
         if (window.cookieHelpers) {

@@ -326,7 +326,6 @@ export class MermaidManager {
    * Configurar zoom para un diagrama
    */
   setupZoomForDiagram(diagram) {
-    // Solo si tiene SVG y no tiene zoom ya
     if (!diagram.querySelector('svg') || diagram.getAttribute('data-zoom-enabled') === 'true') {
       return;
     }

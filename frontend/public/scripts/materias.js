@@ -75,12 +75,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   const nextBtn = document.getElementById('nextBtn');
   const regresarBtn = document.getElementById('regresarBtn');
 
-  // Variables para la vista
   let initialContent = '';
   let isDetailView = false;
   let currentUserId = null;
 
-  // ======================================================
   if (typeof window.handleCompra !== 'function') {
     window.handleCompra = function(producto, dataId) {
       console.log('Función handleCompra invocada con:', producto, dataId);
@@ -110,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
   }
 
-  // ======================================================
   // Funciones mejoradas para obtener datos con caché
   
   async function getUserId() {
@@ -135,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     return await response.json();
   }
 
-  // ======================================================
   // Funciones para generar tarjetas dinámicas
   function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", producto, btnTexto = "Ver más", esVerMas = true, mostrarComprar = true }) {
     const descripcionCorta = descripcion.length > 120 ? descripcion.substring(0, 120) + "..." : descripcion;
@@ -220,7 +216,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       regresarBtn.style.display = 'none';
     } catch (error) {
       console.error('Error en fetchCarreras:', error);
-      // Solo mostrar este mensaje si el error no es 404
       if (error.message !== '404') {
         track.innerHTML = `
           <div class="content-box">

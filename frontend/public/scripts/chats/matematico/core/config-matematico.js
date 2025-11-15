@@ -3,7 +3,6 @@
  * VERSIÓN ULTRA-ROBUSTA: Se basa en URL en lugar de estado global
  */
 
-// Variables para tracking interno (solo para depuración)
 let _lastDetectedVariantKey = null;
 let _lastDetectedUrlSegment = null;
 
@@ -131,7 +130,6 @@ export const VARIANTS = {
     }
   },
 
-  // ===== NUEVAS VARIANTES AGREGADAS =====
 
   RESISTENCIA_MATERIALES: {
     urlSegment: 'ResistenciaMateriales',

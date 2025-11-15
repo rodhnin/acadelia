@@ -52,9 +52,6 @@ export const PDFService = {
     };
   },
 
-  /**
-   * 🚀 FUNCIÓN PRINCIPAL SIMPLIFICADA - Procesa PDF completo
-   */
   async processPDF({ fileBuffer, userId, chatId, metadata = {} }) {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
@@ -156,9 +153,6 @@ export const PDFService = {
     }
   },
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA - Procesamiento con Mistral OCR
-   */
   async processCompletePDFWithMistral(fileBuffer, userId, chatId, metadata, fileInfo) {
     try {
       console.log("Procesando PDF completo con Mistral OCR...");
@@ -224,9 +218,6 @@ export const PDFService = {
     }
   },
 
-  /**
-   * ✅ MENSAJE ÚNICO SIMPLIFICADO
-   */
   async sendCompletionMessage(userId, chatId, metadata, totalPages) {
     try {
       console.log(`📤 Enviando mensaje de completado para PDF de ${totalPages} páginas`);
@@ -464,9 +455,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
     }
   },
 
-  /**
-   * ✅ EXTRACCIÓN DE TEXTO SIMPLIFICADA CON CACHÉ
-   */
   async extractPDFTextForChat(chatId, userId, options = {}) {
     try {
       const {
@@ -515,9 +503,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
     }
   },
 
-  /**
-   * ✅ FUNCIÓN CORE DE EXTRACCIÓN DE TEXTO
-   */
   async _performTextExtraction(chatId, userId, options = {}) {
     const {
       maxPages = 3,

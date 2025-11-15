@@ -568,7 +568,6 @@ function setupTrendsEvents() {
     refreshBtn.addEventListener('click', handleTrendsRefresh);
   }
   
-  // 🆕 BOTÓN DE ELIMINAR TODAS LAS TENDENCIAS
   const deleteAllBtn = modalBody.querySelector('.trends-delete-all-button');
   if (deleteAllBtn) {
     deleteAllBtn.addEventListener('click', showDeleteAllTrendsModal);
@@ -592,7 +591,6 @@ function setupTrendsEvents() {
       showTrendDetails(trendId);
     }
     
-    // 🆕 ELIMINAR TENDENCIA INDIVIDUAL
     if (e.target.closest('.trend-card-delete') || e.target.closest('.trend-delete-btn')) {
       e.preventDefault();
       e.stopPropagation();
@@ -752,7 +750,6 @@ async function handleTrendsRefresh() {
   }
 }
 
-// 🆕 MANEJAR ELIMINACIÓN DE TENDENCIA INDIVIDUAL
 async function handleDeleteTrend(trendId) {
   console.log('🗑️ Intentando eliminar tendencia con ID:', trendId);
   
@@ -769,7 +766,6 @@ async function handleDeleteTrend(trendId) {
   showDeleteTrendModal(trend);
 }
 
-// 🆕 MOSTRAR MODAL DE CONFIRMACIÓN PARA ELIMINAR TENDENCIA INDIVIDUAL
 function showDeleteTrendModal(trend) {
   console.log('🚀 Mostrando modal de eliminar para:', trend.theme.substring(0, 50));
   
@@ -873,7 +869,6 @@ function showDeleteTrendModal(trend) {
 }
 
 
-// 🆕 CERRAR MODAL DE ELIMINAR TENDENCIA INDIVIDUAL
 function closeDeleteTrendModal(deleteModal) {
   console.log('🚪 Cerrando modal de eliminar tendencia...');
   
@@ -906,7 +901,6 @@ function closeDeleteTrendModal(deleteModal) {
   console.log('✅ Modal de eliminar tendencia cerrada y limpiada');
 }
 
-// 🆕 CONFIRMAR ELIMINACIÓN DE TENDENCIA INDIVIDUAL
 async function confirmDeleteTrend(trendId, deleteModal) {
   console.log('🔥 Iniciando eliminación de tendencia:', trendId);
   
@@ -972,7 +966,6 @@ async function confirmDeleteTrend(trendId, deleteModal) {
   }
 }
 
-// 🆕 MOSTRAR MODAL DE CONFIRMACIÓN PARA ELIMINAR TODAS LAS TENDENCIAS
 function showDeleteAllTrendsModal() {
   console.log('🚀 Mostrando modal de eliminar todas las tendencias...');
   
@@ -1044,7 +1037,6 @@ function showDeleteAllTrendsModal() {
   deleteAllModal.classList.add('active');
 }
 
-// 🆕 CERRAR MODAL DE ELIMINAR TODAS LAS TENDENCIAS
 function closeDeleteAllTrendsModal(deleteAllModal) {
   console.log('🚪 Cerrando modal de eliminar todas las tendencias...');
   
@@ -1141,7 +1133,6 @@ function resetAllTrendsDeleteModals() {
   console.log('✅ Todas las modales de eliminación de tendencias reseteadas');
 }
 
-// 🆕 MANEJAR ELIMINACIÓN DE TODAS LAS TENDENCIAS
 async function handleDeleteAllTrends(deleteAllModal) {
   console.log('🔥 Iniciando eliminación masiva de tendencias...');
   
@@ -1557,12 +1548,11 @@ function setupModalHierarchy() {
   const handleMainModalEsc = (e) => {
     if (e.key === 'Escape') {
       const trendDetailModal = document.querySelector('#trendDetailModal');
-      const trendDeleteModal = document.querySelector('#trendDeleteModal'); // 🆕
-      const trendsDeleteAllModal = document.querySelector('#trendsDeleteAllModal'); // 🆕
+      const trendDeleteModal = document.querySelector('#trendDeleteModal');
+      const trendsDeleteAllModal = document.querySelector('#trendsDeleteAllModal');
       const trendsModal = document.querySelector('#trendsModal');
       
       if (trendsModal && trendsModal.classList.contains('active')) {
-        // 🆕 Verificar TODAS las modales secundarias
         if ((trendDetailModal && trendDetailModal.classList.contains('active')) ||
             (trendDeleteModal && trendDeleteModal.classList.contains('active')) ||
             (trendsDeleteAllModal && trendsDeleteAllModal.classList.contains('active'))) {
@@ -1826,7 +1816,6 @@ function showTrendsError(message) {
   `;
 }
 
-// 🆕 FUNCIÓN DE RESET PARA TRENDS MODAL
 function resetTrendsModalState() {
   console.log('🔄 Reiniciando estado de trends modal...');
   

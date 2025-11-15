@@ -674,10 +674,6 @@ export async function updateChatMessage(chatId, messageId, content) {
   }
 }
 
-/**
- * ✅ HANDLE RESPONSE SIMPLIFICADA PARA AVA PREMIUM
- * Solo maneja tokens generales de conversación
- */
 export async function handleResponse(response, responseText = null) {
   if (!responseText) {
     responseText = await response.text();
@@ -774,9 +770,6 @@ export async function handleResponse(response, responseText = null) {
   return data;
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: saveMarkdownImage con errores silenciosos
- */
 export async function saveMarkdownImage(imageUrl, chatId) {
   try {
     const payload = {

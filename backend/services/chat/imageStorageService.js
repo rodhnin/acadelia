@@ -3,7 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import crypto from 'crypto';
 import sharp from 'sharp';
-import ImageSecurityService from './imageSecurityService.js'; // Importar el servicio específico para imágenes
+import ImageSecurityService from './imageSecurityService.js';
 
 /**
  * Servicio para almacenar y optimizar imágenes enviadas en chats multimodales
@@ -166,9 +166,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: optimizeImage ahora usa la función central
-   */
   async optimizeImage(input, outputPath) {
     try {
       return await this.processWithSharp(input, outputPath);
@@ -178,9 +175,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN CENTRAL: Manejo seguro de instancias Sharp
-   */
   async processWithSharp(input, outputPath) {
     let sharpInstance = null;
 
@@ -223,9 +217,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN UNIFICADA: Eliminación segura de archivos temporales
-   */
   async safeDeleteTempFile(filePath, maxRetries = 5) {
     if (!filePath || !fs.existsSync(filePath)) {
       return true;
@@ -261,9 +252,6 @@ class ImageStorageService {
     return false;
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: Limpieza retrasada (reemplaza las múltiples funciones)
-   */
   scheduleDelayedCleanup(filePath) {
     const fileName = path.basename(filePath);
 
@@ -281,9 +269,6 @@ class ImageStorageService {
     }, 30000);
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: Marcar para limpieza al inicio
-   */
   markForStartupCleanup(filePath) {
     try {
       const cleanupFile = path.join(this.tempDir, 'cleanup_queue.txt');
@@ -293,9 +278,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN DE INICIO: Limpieza de archivos huérfanos
-   */
   async performStartupCleanup() {
     try {
       const cleanupFile = path.join(this.tempDir, 'cleanup_queue.txt');
@@ -327,9 +309,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN PRINCIPAL OPTIMIZADA: Sin redundancias
-   */
   async saveImageFromUrl(imageUrl, chatId, isRetryOrEdit = false) {
     let tempFilePath = null;
 

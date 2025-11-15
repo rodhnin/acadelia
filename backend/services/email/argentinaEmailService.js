@@ -1391,8 +1391,6 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // ====================================================================
 
   /**
    * Obtiene datos completos de usuario desde la BD
@@ -1485,14 +1483,7 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // ====================================================================
 
-  /**
-   * 🎉 Envía email de nueva suscripción activa (cuando se aprueba transferencia)
-   * @param {number} subscriptionId - ID de la suscripción creada
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendNewSubscriptionFromId(subscriptionId) {
     try {
       console.log(`📧 Enviando email de nueva suscripción activa para suscripción ${subscriptionId}`);
@@ -1515,11 +1506,6 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ⏳ Envía email de pago en revisión (cuando se envía transferencia)
-   * @param {number} paymentId - ID del pago en revisión
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendPaymentUnderReviewFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de pago en revisión para pago ${paymentId}`);
@@ -1542,11 +1528,6 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ⌛ Envía email de suscripción expirada (desde job automático)
-   * @param {number} subscriptionId - ID de la suscripción expirada
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendSubscriptionExpiredFromId(subscriptionId) {
     try {
       console.log(`📧 Enviando email de suscripción expirada para suscripción ${subscriptionId}`);
@@ -1569,11 +1550,6 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ❌ Envía email de transferencia rechazada (cuando admin rechaza)
-   * @param {number} paymentId - ID del pago rechazado
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendTransferRejectedFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de transferencia rechazada para pago ${paymentId}`);
@@ -1600,11 +1576,6 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * 💳 Envía email de pago Ualá fallido (cuando falla pago con tarjeta)
-   * @param {number} paymentId - ID del pago fallido
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendUalaPaymentFailedFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de pago Ualá fallido para pago ${paymentId}`);
@@ -1635,15 +1606,7 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // ====================================================================
 
-  /**
-   * 📬 Envía emails masivos a usuarios con suscripciones expiradas
-   * Esta función se llama desde el job automático de actualización
-   * @param {Array} expiredSubscriptionIds - Array de IDs de suscripciones expiradas
-   * @returns {Promise<Object>} - Resumen de envíos
-   */
   async sendExpiredSubscriptionEmails(expiredSubscriptionIds) {
     if (!Array.isArray(expiredSubscriptionIds) || expiredSubscriptionIds.length === 0) {
       console.log('ℹ️ No hay suscripciones expiradas para notificar');
@@ -1686,8 +1649,6 @@ class ArgentinaEmailService {
     return results;
   }
 
-  // ====================================================================
-  // ====================================================================
 
   /**
    * Obtiene suscripciones que vencen pronto para notificación preventiva

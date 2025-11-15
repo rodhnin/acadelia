@@ -1,8 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOANÁLISIS - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOANALÍTICO - PROFESOR DE PSICOANÁLISIS SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -308,9 +300,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOANÁLISIS DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE PSICOANÁLISIS SUPREMO:
@@ -352,8 +341,6 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor de psicoanálisis, eres EL PROFESOR que integra teoría psicoanalítica, técnica analítica y clínica como el psicoanálisis real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Psicoanálisis.
 
@@ -499,9 +486,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE PSICOANÁLISIS
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -595,7 +579,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -613,7 +597,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -654,7 +638,7 @@ const classifyQuery = (query, content = null) => {
     psychoanalyticTexts.some(term => lowercaseQuery.includes(term));
   
   if (isSimpleQuery && !hasPsychoanalysisContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -738,7 +722,7 @@ const classifyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -757,10 +741,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS PSICOANALÍTICAS
 const ACADEL_PSYCHOANALYSIS_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en psicoanálisis.
 
@@ -786,8 +767,8 @@ const createPsychoanalysisKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_psicoanalisis",
         similarityQueryName: "match_emb_psicoanalisis",
         keywordQueryName: "kw_match_emb_psicoanalisis",
@@ -1076,8 +1057,8 @@ const createPsychoanalysisConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_psicoanalisis",
         similarityQueryName: "match_emb_psicoanalisis",
         keywordQueryName: "kw_match_emb_psicoanalisis",
@@ -1113,7 +1094,6 @@ const createPsychoanalysisConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1302,8 +1282,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia psicoanalítica según este
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectPsychoanalysisImageRequest = (query) => {
   const psychoanalysisImageKeywords = [
@@ -1384,15 +1362,10 @@ const enhancePsychoanalysisImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible de conceptos psicoanalíticos`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPsychoanalysisPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS DE PSICOANÁLISIS CONSOLIDADAS
-  // ============================================================================
   
   const corePsychoanalysisInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE PSICOANÁLISIS INTEGRADO
@@ -1492,8 +1465,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas psicoanalíticas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
   
   const psychoanalysisTypeInstructions = {
     casual_conversation: `
@@ -1575,8 +1546,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las disciplinas fundamentales`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1599,8 +1568,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara analista más brillante del universo, integrando teoría, técnica y clínica psicoanalítica, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta psicoanalítica importante, y complementando con todas tus capacidades paralelas para una explicación analítica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelPsychoanalysisAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1611,7 +1578,6 @@ const createAcadelPsychoanalysisAgent = async (llm, queryInfo, studentQuery) => 
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema psicoanalítico`);
     tools.unshift(createPsychoanalysisKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1676,8 +1642,6 @@ const createAcadelPsychoanalysisAgent = async (llm, queryInfo, studentQuery) => 
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1736,8 +1700,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_psicoanalisis",
             similarityQueryName: "match_emb_psicoanalisis",
             keywordQueryName: "kw_match_emb_psicoanalisis",
@@ -1877,8 +1841,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoanalysisQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1995,7 +1957,6 @@ export const handlePsychoanalysisQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2086,7 +2047,6 @@ export const handlePsychoanalysisQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2232,7 +2192,6 @@ Si necesitas más detalles, pregúntame de nuevo y activaré todas mis herramien
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2258,8 +2217,6 @@ Si necesitas más detalles, pregúntame de nuevo y activaré todas mis herramien
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoanalysisMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2573,7 +2530,6 @@ Si necesitas una explicación más detallada, pregúntame de nuevo y activaré t
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2587,7 +2543,6 @@ Si necesitas una explicación más detallada, pregúntame de nuevo y activaré t
         }
       },
       
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2621,7 +2576,6 @@ Si necesitas una explicación más detallada, pregúntame de nuevo y activaré t
           imagesWithVirusCount: imagesWithVirusCount
         });
 
-        // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
         const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
         await saveMultimodalMessage({
@@ -2630,7 +2584,7 @@ Si necesitas una explicación más detallada, pregúntame de nuevo y activaré t
             avaId,
             chatId,
             role: "user",
-            message: userMessageJson, // ⭐ YA ESTÁ DOBLEMENTE ESCAPADO ⭐
+            message: userMessageJson,
             embedding: queryEmbedding,
         });
 
@@ -2686,8 +2640,6 @@ Si necesitas una explicación más detallada, pregúntame de nuevo y activaré t
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoanalysisQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

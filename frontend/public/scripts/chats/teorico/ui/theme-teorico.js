@@ -255,7 +255,6 @@ export function toggleTheme() {
   // NUEVO: Actualizar tema de highlight.js inmediatamente
   updateHighlightTheme(newTheme);
 
-    // ⭐ UBICACIÓN PERFECTA: Notificaciones Acadel SOLO cuando usuario hace clic
   if (newTheme === THEMES.DARK) {
     acadelInfo("🌙 ¡Modo nocturno activado!", "Acadel configuró el tema oscuro para estudiar sin cansar la vista");
   } else {
@@ -412,7 +411,6 @@ function handleThemeChangeEvent(e) {
     
     const hasMermaidDiagrams = document.querySelectorAll('.mermaid-diagram').length > 0;
     
-    // Solo bloquear scroll si hay diagramas presentes
     if (hasMermaidDiagrams) {
       // Asegurarse de que scrollManager está disponible globalmente
       if (typeof scrollManager !== 'undefined') {

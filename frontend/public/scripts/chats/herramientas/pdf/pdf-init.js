@@ -43,7 +43,6 @@ export async function initializePDF(options = {}) {
     if (window.MathJax && window.MathJax.typesetPromise) {
       console.log('✅ MathJax ya está disponible globalmente, omitiendo inicialización');
     } else {
-      // Solo intentar inicializar si no existe
       try {
         const mathJaxPaths = [
           './math/mathjax-config.js'
@@ -55,7 +54,6 @@ export async function initializePDF(options = {}) {
           try {
             const mathJaxModule = await import(path).catch(() => null);
             if (mathJaxModule && typeof mathJaxModule.initMathJax === 'function') {
-              // ⭐ VERIFICAR antes de inicializar
               if (!window.MathJax || !window.MathJax.typesetPromise) {
                 await mathJaxModule.initMathJax();
                 console.log('MathJax inicializado correctamente para contenido PDF');

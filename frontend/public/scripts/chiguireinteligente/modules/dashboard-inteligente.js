@@ -712,7 +712,6 @@ updateDashboardUI() {
                 const currency = currencyData[tooltipItem.dataIndex];
                 const lines = [];
                 
-                // Solo mostrar conversión para monedas distintas de EUR
                 if (currency.code !== 'EUR') {
                   lines.push(`Original: ${formatCurrency(currency.earningsOriginal, currency.code)}`);
                   lines.push(`Tasa: 1 ${currency.code} ≈ ${currency.avgRate.toFixed(5)} EUR`);
@@ -1103,7 +1102,6 @@ resizeCharts() {
       }
     });
     
-    // Si todos los gráficos se perdieron pero tenemos datos, recrearlos
     const allChartsNull = Object.values(this.charts).every(chart => chart === null);
     if (allChartsNull && this.summaryData) {
       console.log('Dashboard: Todos los gráficos fueron perdidos, recreando...');
@@ -1233,7 +1231,6 @@ filterSubscriptionsByDateRange(subscriptions, startDate, endDate) {
       const updatedDate = new Date(subscription.updated_at);
       const createdDate = new Date(subscription.created_at);
       
-      // Solo considerar actualizaciones que ocurrieron después de la creación
       // y dentro del período seleccionado
       if (updatedDate > createdDate && updatedDate >= startDate && updatedDate <= endDate) {
         return true;
@@ -1370,7 +1367,6 @@ filterDataByDateRange(transactions, subscriptions, dateRange) {
       const updatedDate = new Date(subscription.updated_at);
       const createdDate = new Date(subscription.created_at);
       
-      // Solo considerar actualizaciones que ocurrieron después de la creación
       // y dentro del período seleccionado
       if (updatedDate > createdDate && updatedDate >= startDate && updatedDate <= endDate) {
         return true;

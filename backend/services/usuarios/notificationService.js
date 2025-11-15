@@ -222,7 +222,6 @@ class NotificationService {
                 attempt.securityInfo = getSecurityAlertInfo('');
             }
             
-            // Información geográfica (mantener lógica existente)
             attempt.location = "Ubicación desconocida"; // O usa geoip-lite si lo tienes
             
             return attempt;

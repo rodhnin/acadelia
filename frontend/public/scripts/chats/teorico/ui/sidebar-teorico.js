@@ -151,7 +151,6 @@ export function renderChatHistory(chats, performCleanup = true) {
           processAndRenderChats(processingChats, isChatProblematicFn);
         }).catch(e => {
           console.warn('Error al importar isChatProblematic en segundo intento:', e);
-          // Último recurso: función que permite todos los chats
           processAndRenderChats(processingChats, () => false);
         });
       }, 50);

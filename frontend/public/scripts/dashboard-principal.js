@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Dashboard: Inicialización completada");
 });
 
-// === FUNCIONALIDAD DEL TEMA ===
 function initTheme() {
     const hasConsent = localStorage.getItem('cookiePreferences') && 
                        JSON.parse(localStorage.getItem('cookiePreferences')).functional === true;
@@ -141,7 +140,6 @@ function updateThemeSlider(theme) {
     }
 }
 
-// === FUNCIONALIDAD DEL MENÚ Y DROPDOWN ===
 function initNavMenu() {
     const menuToggle = document.getElementById('menuToggle');
     const navButtons = document.querySelector('.nav-buttons');
@@ -179,7 +177,6 @@ function initNavMenu() {
     }
 }
 
-// === FUNCIONALIDAD DE CONTENEDORES DE ESQUINA ===
 function initCornerContainers() {
     const cornerIndicators = document.querySelectorAll('.corner-indicator');
     const cornerContainers = document.querySelectorAll('.corner-container');
@@ -246,7 +243,6 @@ function initCornerContainers() {
     const dashboardContainer = document.querySelector('.dashboard-container');
     if (dashboardContainer) {
         dashboardContainer.addEventListener('click', function(e) {
-            // Solo si el clic fue directamente en el fondo
             if (e.target === dashboardContainer) {
                 cornerContainers.forEach(container => {
                     container.classList.remove('active');
@@ -312,7 +308,6 @@ function enableHoverEffects(indicators, containers) {
             const container = document.querySelector(`.corner-container.${position}`);
             
             if (container && !container.classList.contains('active')) {
-                // Solo ocultar si el ratón no entró al contenedor
                 if (!container.contains(e.relatedTarget)) {
                     container.style.opacity = '0';
                     container.style.pointerEvents = 'none';
@@ -336,7 +331,6 @@ function enableHoverEffects(indicators, containers) {
                 const position = getPositionClass(container);
                 const indicator = document.querySelector(`.corner-indicator.${position}`);
                 
-                // Solo ocultar si el ratón no entró al indicador
                 if (!indicator || !indicator.contains(e.relatedTarget)) {
                     container.style.opacity = '0';
                     container.style.pointerEvents = 'none';
@@ -362,7 +356,6 @@ function disableHoverEffects(indicators) {
 
 function addCloseButtons(containers) {
     containers.forEach(container => {
-        // Solo añadir si no existe ya
         if (!container.querySelector('.close-btn')) {
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-btn';
@@ -442,7 +435,6 @@ window.addEventListener('resize', () => {
     });
     
     if (window.innerWidth > 768) {
-        // Solo habilitar hover si no hay ningún contenedor activo
         if (!document.querySelector('.corner-container.active')) {
             enableHoverEffects(cornerIndicators, cornerContainers);
         }

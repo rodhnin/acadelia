@@ -35,11 +35,7 @@ let state = {
   isExceeded: false     // Si actualmente se excede el límite
 };
 
-/**
- * 🦫 NUEVA: Muestra alerta del Profesor Acadel en lugar de alerta genérica
- */
 function showAcadelLimitAlert() {
-  // 🦫 REEMPLAZAR alerta genérica con notificación del Profesor Acadel
   if (typeof window.acadelWarning === 'function') {
     window.acadelWarning(
       "📝 ¡Mensaje muy extenso!",
@@ -139,10 +135,6 @@ function createCounter(textarea) {
   return counter;
 }
 
-/**
- * 🦫 MEJORADA: Actualiza el contador con mensajes del Profesor Acadel
- * @param {HTMLTextAreaElement} textarea - El textarea a actualizar
- */
 function updateCounter(textarea) {
   if (!textarea) return;
   
@@ -153,7 +145,6 @@ function updateCounter(textarea) {
   const remaining = state.currentLimit - currentLength;
   const ratio = currentLength / state.currentLimit;
   
-  // 🦫 MENSAJES MEJORADOS CON PERSONALIDAD DE ACADEL
   if (remaining >= 0) {
     if (ratio >= CONFIG.DANGER_THRESHOLD) {
       counter.textContent = `⚠️ Solo ${remaining} caracteres restantes (Acadel está preocupado)`;
@@ -177,7 +168,6 @@ function updateCounter(textarea) {
     counter.classList.add('limit-reached');
     textarea.classList.add('limit-exceeded');
     
-    // 🦫 USAR NUEVA FUNCIÓN DE ACADEL en lugar de alerta genérica
     showAcadelLimitAlert();
   } else if (ratio >= CONFIG.DANGER_THRESHOLD) {
     counter.classList.add('danger');
@@ -273,12 +263,7 @@ export function exceedsLimit(text) {
   return text.length > state.currentLimit;
 }
 
-/**
- * 🦫 REEMPLAZADA: Muestra la alerta del Profesor Acadel en lugar de genérica
- * Útil para cuando se intenta enviar un mensaje que excede el límite
- */
 export function showLimitExceededAlert() {
-  // 🦫 NUEVA IMPLEMENTACIÓN CON ACADEL
   showAcadelLimitAlert();
 }
 

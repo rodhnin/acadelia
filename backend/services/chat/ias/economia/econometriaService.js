@@ -1,8 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR ECONOMETRÍA SUPREMO TÉCNICO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -25,12 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -320,9 +312,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA ECONOMÉTRICA ESPECIALIZADA
-// ============================================================================
 
 const PROFESOR_ACADEL_ECONOMETRIA_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN ECONOMETRÍA:
@@ -367,8 +356,6 @@ Formar econometristas competentes que:
 ¡RECUERDA: Eres el profesor técnico que forma la próxima generación de econometristas e investigadores cuantitativos!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel especializada en ECONOMETRÍA.
 
@@ -514,9 +501,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO ECONOMÉTRICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -586,7 +570,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes econométricos
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -606,7 +590,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto - cerebro principal técnico
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -654,7 +638,7 @@ const classifyQuery = (query, content = null) => {
     econometricTests.some(term => lowercaseQuery.includes(term));
 
   if (isSimpleQuery && !hasEconometricContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal técnico
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -744,7 +728,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Cerebro Principal Técnico activo
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -763,10 +747,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS ECONOMÉTRICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en econometría y análisis cuantitativo.
 
@@ -792,8 +773,8 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto técnico para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura econométrica textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_econometria",
         similarityQueryName: "match_emb_econometria",
         keywordQueryName: "kw_match_emb_econometria",
@@ -1224,8 +1205,8 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos econométricos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa econométrica
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_econometria",
         similarityQueryName: "match_emb_econometria",
         keywordQueryName: "kw_match_emb_econometria",
@@ -1259,7 +1240,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS ECONOMÉTRICAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1459,14 +1439,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia técnica economét
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedTechnicalPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_ECONOMETRIA_DNA;
 
-  // ============================================================================
-  // ============================================================================
 
   const coreTechnicalInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA PROFESOR ACADEL DE ECONOMETRÍA Y ANÁLISIS CUANTITATIVO
@@ -1641,8 +1617,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL TÉCNICO ECONOMÉTRICO (Knowledge Base) ES OBLIGATORIO para consultas econométricas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const technicalTypeInstructions = {
     casual_conversation: `
@@ -1729,8 +1703,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica econométrica`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1753,8 +1725,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO ECONOMÉTRICO 
       'Enseña como el capibara técnico econometrista más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO ECONOMÉTRICO (Knowledge Base) para fundamentar toda respuesta econométrica importante, y complementando con todas tus capacidades paralelas para una explicación técnica econométrica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema técnico econométrico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico Econométrico: ${queryInfo.needsKnowledgeBase}`);
@@ -1765,7 +1735,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO ECONOMÉTRICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO ECONOMÉTRICO (Knowledge Base) - núcleo del sistema econométrico`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1773,7 +1742,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico Econométrico INACTIVO - consulta muy casual sin contenido econométrico`);
   }
 
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS ECONOMÉTRICAS (MANTENER LÓGICA MATEMÁTICA)
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas econométricas`);
     tools.push(createAcadelWolframTool());
@@ -1838,8 +1806,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1898,8 +1864,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_economia_internacional",
             similarityQueryName: "match_emb_economia_internacional",
             keywordQueryName: "kw_match_emb_economia_internacional",
@@ -2072,8 +2038,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEconometricsQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2176,7 +2140,6 @@ export const handleEconometricsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2344,7 +2307,6 @@ export const handleEconometricsQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2388,8 +2350,6 @@ export const handleEconometricsQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEconometricsMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2718,7 +2678,6 @@ Si necesitas una explicación más detallada en métodos cuantitativos, series t
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2766,13 +2725,11 @@ Si necesitas una explicación más detallada en métodos cuantitativos, series t
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2786,7 +2743,6 @@ Si necesitas una explicación más detallada en métodos cuantitativos, series t
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2834,8 +2790,6 @@ Si necesitas una explicación más detallada en métodos cuantitativos, series t
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEconometricsQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

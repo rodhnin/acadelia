@@ -228,7 +228,6 @@ export class ApiService {
       }
     }
     
-    // ==================== MÉTODOS PARA USUARIOS ====================
     
     /**
      * Obtiene todos los usuarios
@@ -284,7 +283,6 @@ export class ApiService {
       return this.put(`${this.endpoints.user}/${userId}`, userData);
     }
     
-    // ==================== MÉTODOS PARA PERFILES ====================
     
     /**
      * Obtiene el perfil de un usuario
@@ -343,7 +341,6 @@ export class ApiService {
       }
     }
     
-    // ==================== MÉTODOS PARA PAÍSES Y UNIVERSIDADES ====================
     
     /**
      * Obtiene todos los países
@@ -462,7 +459,6 @@ export class ApiService {
       }
     }
 
-        // ==================== MÉTODOS PARA SUSCRIPCIONES ====================
     
     /**
      * Obtiene todas las suscripciones de un usuario
@@ -542,7 +538,6 @@ export class ApiService {
       }
     }
 
-        // ==================== MÉTODOS PARA TRANSACCIONES ====================
     
     /**
      * Obtiene todas las transacciones de un usuario
@@ -651,7 +646,6 @@ async getInvoiceUrl(transactionId) {
     }
 
 
-        // ==================== MÉTODOS PARA CURSOS ====================
     
     /**
      * Obtiene todos los cursos/productos
@@ -694,7 +688,6 @@ async getInvoiceUrl(transactionId) {
     }
     
     
-    // ==================== MÉTODOS ESPECÍFICOS ====================
     
     /**
      * Obtiene todas las suscripciones activas
@@ -993,7 +986,6 @@ async getInvoiceUrl(transactionId) {
     console.log(`Caché ${type || 'completa'} limpiada`);
   }
     
- // ==================== MÉTODOS DE SUSCRIPCIONES ====================
 
 /**
  * Obtiene todas las suscripciones con filtros opcionales
@@ -1538,7 +1530,6 @@ async createExpenseWithInvoice(formData) {
   }
 }
 
-// ==================== MÉTODOS PARA INFORMES INTEGRALES AUTOMÁTICOS ====================
 
 /**
  * Obtiene la configuración actual de informes automáticos

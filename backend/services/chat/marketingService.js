@@ -5,7 +5,7 @@ import { memoryService } from "./marketing/memoryService.js";
 import { matchingService } from "./marketing/matchingService.js";
 import { simulationService } from "./marketing/simulationService.js";
 import { notificationTracker } from '../../utils/marketing/notificationTracker.js';
-import { agentService } from "./marketing/agentsService.js"; // ✅ UPDATED
+import { agentService } from "./marketing/agentsService.js";
 import { embeddings, openai } from "../../lib/openai.js";
 import pool from "../../lib/dbPool.js";
 import { TREND_ANALYSIS_PROMPT } from '../../utils/marketing/AcadeliaDNA.js';
@@ -169,7 +169,6 @@ export const marketingService = {
     } catch (error) {
       console.error("❌ Error en processMarketingQuery con sistema especializado:", error);
       
-      // Incluir notificaciones parciales incluso en caso de error
       const notifications = notificationTracker.getNotificationSummary();
       
       return {

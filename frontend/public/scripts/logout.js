@@ -20,7 +20,6 @@
         const metaTag = document.querySelector('meta[name="csrf-token"]');
         if (metaTag) {
             const metaValue = metaTag.getAttribute('content');
-            // Solo devolver si no es una plantilla sin procesar
             if (metaValue && !metaValue.includes('<%=')) {
                 return metaValue;
             }

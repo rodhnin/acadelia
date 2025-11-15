@@ -14,9 +14,6 @@ import pool from "../../../lib/dbPool.js";
 import { TOOL_PROMPTS } from '../../../utils/marketing/AcadeliaDNA.js';
 import UniquenessMiddleware from "./uniquenessMiddleware.js";
 
-/**
- * ✅ FUNCIÓN DE EXTRACCIÓN SIN CAMBIOS
- */
 export async function extractProfileDataFromQuery(query) {
   try {
     const completion = await openai.chat.completions.create({
@@ -99,7 +96,6 @@ export function resetSessionTracker() {
   console.log("Rastreador de sesión y contador de insights reiniciados");
 }
 
-// ============== HERRAMIENTAS COMPARTIDAS SIN CAMBIOS ==============
 
 const profileSearchTool = tool(
   async ({ query, limit = 5 }) => {
@@ -321,7 +317,6 @@ const contentToProfilesMatchTool = tool(
   }
 );
 
-// ============== HERRAMIENTAS ESPECÍFICAS CON SISTEMA INTELIGENTE ==============
 
 const strategistMemorySaveTool = tool(
   async ({ type, content, source, importance }) => {
@@ -1393,7 +1388,6 @@ const simulateCampaignTool = tool(
   }
 );
 
-// ============== FUNCIÓN PRINCIPAL ACTUALIZADA ==============
 
 export const getMarketingTools = (agentType = 'strategist') => {
   resetSessionTracker();
@@ -1414,7 +1408,7 @@ export const getMarketingTools = (agentType = 'strategist') => {
       console.log("🎯 STRATEGIST: Herramientas estratégicas CON Sistema Inteligente");
       return [
         ...sharedTools,
-        strategistMemorySaveTool,  // ✅ CON Sistema Inteligente
+        strategistMemorySaveTool,
         simulateCampaignTool       // Sin verificación (simulación)
       ];
       
@@ -1422,23 +1416,23 @@ export const getMarketingTools = (agentType = 'strategist') => {
       console.log("👥 PROFILE AGENT: Herramientas de perfiles CON Sistema Inteligente");
       return [
         ...sharedTools,
-        saveProfileTool            // ✅ CON Sistema Inteligente
+        saveProfileTool
       ];
       
     case 'creative':
       console.log("🎨 CREATIVE AGENT: Herramientas creativas CON Sistema Inteligente");
       return [
         ...sharedTools,
-        saveContentTool,           // ✅ CON Sistema Inteligente
-        generateContentTool        // ✅ CON Sistema Inteligente
+        saveContentTool,
+        generateContentTool
       ];
       
     case 'analyst':
       console.log("📊 ANALYST AGENT: Herramientas analíticas CON Sistema Inteligente");
       return [
         ...sharedTools,
-        saveTrendTool,             // ✅ CON Sistema Inteligente
-        recordInteractionTool,     // ✅ CON Sistema Inteligente
+        saveTrendTool,
+        recordInteractionTool,
         simulateCampaignTool       // Sin verificación (simulación)
       ];
       

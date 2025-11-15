@@ -4,7 +4,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Referencia al botón de gestionar cookies
 
-        // Variables para controlar botones de cookies en cuenta
     let isAcceptingAllCookiesAccount = false;
     let isSavingCookiePreferencesAccount = false;
     const openCookieSettingsBtn = document.getElementById('open-cookie-settings');

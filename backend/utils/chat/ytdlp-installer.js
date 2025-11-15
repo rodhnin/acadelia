@@ -17,9 +17,6 @@ if (!fs.existsSync(BIN_PATH)) {
   fs.mkdirSync(BIN_PATH, { recursive: true });
 }
 
-/**
- * 🎯 ARREGLO: Detecta y configura yt-dlp según el entorno
- */
 export async function installYtDlp() {
   if (process.env.NODE_ENV === 'production') {
     console.log('🎬 Entorno de producción detectado - usando yt-dlp del sistema');
@@ -115,9 +112,6 @@ export async function installYtDlp() {
   }
 }
 
-/**
- * 🎯 NUEVO: Detecta automáticamente la mejor ruta de yt-dlp
- */
 export async function detectYtdlpPath() {
   // 1. Intentar comando del sistema
   try {
@@ -157,9 +151,6 @@ export async function detectYtdlpPath() {
   return null;
 }
 
-/**
- * 🎯 NUEVO: Verifica el estado de yt-dlp
- */
 export async function checkYtdlpStatus() {
   const detectedPath = await detectYtdlpPath();
   
@@ -207,9 +198,6 @@ export function getYtdlpPath() {
   return path.join(BIN_PATH, process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp');
 }
 
-/**
- * 🎯 NUEVO: Configurar enlace simbólico en producción (para Docker)
- */
 export async function setupProductionSymlink() {
   if (process.env.NODE_ENV !== 'production') {
     console.log('⚠️ setupProductionSymlink solo debe usarse en producción');

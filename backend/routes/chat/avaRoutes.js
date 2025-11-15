@@ -22,7 +22,6 @@ function handleImageUpload(req, res, next) {
   next();
 }
 
-// ===== RUTAS PRINCIPALES DE AVAs =====
 // Las operaciones de creación, actualización y eliminación requieren autenticación y rol de administrador
 avaRouter.post("/", authenticateUser, isAdmin, upload.single('imagen'), handleImageUpload, createAva);
 avaRouter.get("/", getAllAvas); // Esta ruta permanece pública
@@ -30,7 +29,6 @@ avaRouter.get("/carrera/:id_carrera", getAvasByCarrera); // Esta ruta permanece 
 avaRouter.put("/:id", authenticateUser, isAdmin, upload.single('imagen'), handleImageUpload, updateAva);
 avaRouter.delete("/:id", authenticateUser, isAdmin, deleteAva);
 
-// ===== RUTAS DE ADMINISTRACIÓN DE CACHE =====
 // Rutas para gestionar el cache de AVAs (solo administradores)
 avaRouter.post("/cache/clear", authenticateUser, isAdmin, clearAvaCache);
 avaRouter.get("/cache/stats", authenticateUser, isAdmin, getCacheStats);

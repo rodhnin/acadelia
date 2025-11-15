@@ -1,5 +1,3 @@
-// ---------------------------
-// ---------------------------
 const LoadingOverlay = {
   overlay: null,
   count: 0,
@@ -111,8 +109,6 @@ const LoadingOverlay = {
   }
 };
 
-// ---------------------------
-// ---------------------------
 function showAlert(message, type = 'info', duration = 3000) {
   if (window.showAlert) {
     return window.showAlert(message, type, duration);
@@ -145,8 +141,6 @@ function showAlert(message, type = 'info', duration = 3000) {
   }
 }
 
-// ---------------------------
-// ---------------------------
 const Cache = {
   data: new Map(),
   defaultExpiration: 5 * 60 * 1000, // 5 minutos por defecto
@@ -179,9 +173,7 @@ const Cache = {
   }
 };
 
-// ---------------------------
 // Funciones Globales (Top-Level)
-// ---------------------------
 const rolesMapping = { 1: "Gratuito", 2: "Premium", 3: "Administrador" };
 
 const checkAuthentication = async () => {
@@ -245,9 +237,7 @@ function clearPasswordIndicators() {
   if (verificationIndicator) verificationIndicator.remove();
 }
 
-// ---------------------------
 // Configuración Principal
-// ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
   LoadingOverlay.init();
 
@@ -281,9 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.newPasswordInput = newPasswordInput;
   window.confirmPasswordInput = confirmPasswordInput;
 
-  // ---------------------------
   // Funciones de Interfaz
-  // ---------------------------
   function toggleEditMode(editMode) {
     profileView.classList.toggle('hidden', editMode);
     profileEdit.classList.toggle('hidden', !editMode);
@@ -357,8 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------------------------
-  // ---------------------------
 
   const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
@@ -381,7 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (currentPasswordInput) {
     currentPasswordInput.addEventListener('blur', async function () {
-      // Solo validar si hay contenido
       if (this.value.trim().length === 0) return;
 
       let verificationIndicator = document.getElementById('passwordVerificationIndicator');
@@ -582,9 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ---------------------------
   // Funciones de Datos con Caché (mantener existentes)
-  // ---------------------------
   const fetchPaises = async () => {
     return await LoadingOverlay.withLoading(async () => {
       const cachedPaises = Cache.get('paises');
@@ -1070,7 +1053,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error al verificar tipo de autenticación:', error);
         showAlert('Error al verificar tipo de cuenta', 'error');
 
-        // 🆕 NUEVO: Valor por defecto más seguro
         const defaultAuth = {
           isGoogleUser: false,
           hasPassword: true,
@@ -1175,7 +1157,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // 🆕 NUEVO: Determinar si es establecimiento o cambio de contraseña
         const isPasswordSetup = authInfo.isGoogleUser && !authInfo.hasPassword;
 
         // Preparamos los datos según el caso
@@ -1195,7 +1176,6 @@ document.addEventListener('DOMContentLoaded', () => {
           userData.currentPassword = currentPasswordValue;
         }
 
-        // 🆕 NUEVO: Agregar flag para identificar el tipo de operación
         userData.isPasswordSetup = isPasswordSetup;
 
         console.log('🔍 Enviando datos de contraseña:', {
@@ -1227,7 +1207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) {
           const errorData = await response.json();
 
-          // 🆕 NUEVO: Manejo específico de errores
           if (response.status === 401 && errorData.code === 'INVALID_CURRENT_PASSWORD') {
             showAlert('La contraseña actual es incorrecta', 'error');
             if (currentPasswordInput) currentPasswordInput.focus();
@@ -1258,7 +1237,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         togglePasswordMode(false);
 
-        // 🆕 NUEVO: Mostrar mensaje específico según el caso
         if (isSetupComplete) {
           showAlert('¡Contraseña establecida exitosamente! Ahora puedes acceder con tu correo y contraseña además de Google.', 'success', 6000);
         } else if (passwordChangeEmailSent) {
@@ -1273,9 +1251,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 'Procesando contraseña...');
   };
-  // ---------------------------
   // Configuración Inicial
-  // ---------------------------
   if (profileView) profileView.classList.remove('hidden');
   if (profileEdit) profileEdit.classList.add('hidden');
   if (editToggleBtn) editToggleBtn.classList.remove('hidden');

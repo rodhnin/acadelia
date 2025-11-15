@@ -5,7 +5,6 @@
     
     console.log('🔧 [ADMIN] Inicializando panel de administración... v2.1 - Event Listeners Mejorados');
     
-    // ===== CONFIGURACIÓN ===== 
     const CONFIG = {
         API_BASE: '/api/admin/argentina',
         REFRESH_INTERVAL: 30000, // 30 segundos
@@ -13,7 +12,6 @@
         POLLING_ENABLED: true
     };
     
-    // ===== ESTADO GLOBAL =====
     const AppState = {
         currentSection: 'dashboard',
         transfers: [],
@@ -41,7 +39,6 @@
         activeEventListeners: new Map()
     };
     
-    // ===== ELEMENTOS DOM =====
     const Elements = {
         // Navigation
         navItems: document.querySelectorAll('.nav-item'),
@@ -94,7 +91,6 @@
         actionBtns: document.querySelectorAll('.action-btn')
     };
     
-    // ===== UTILIDADES MEJORADAS =====
     const Utils = {
         formatCurrency: (amount) => {
             return new Intl.NumberFormat('es-AR', {
@@ -257,7 +253,6 @@
         }
     };
     
-    // ===== API SERVICE =====
     const ApiService = {
         // Método base para requests
         async request(endpoint, options = {}) {
@@ -361,7 +356,6 @@
         }
     };
 
-    // ===== NAVEGACIÓN MEJORADA =====
     const Navigation = {
         init() {
             this.bindEvents();
@@ -435,7 +429,7 @@
                 case 'payments':
                     AppState.filters.payments = { status: '', method: '', search: '' };
                     AppState.pagination.payments.current = 1;
-                    AppState.payments = []; // ✅ Limpiar datos existentes
+                    AppState.payments = [];
                     
                     Payments.needsReinit = true;
                     
@@ -450,7 +444,7 @@
                     
                 case 'transfers':
                     AppState.filters.transfers = { search: '' };
-                    AppState.transfers = []; // ✅ Limpiar datos existentes
+                    AppState.transfers = [];
                     
                     Transfers.needsReinit = true;
                     
@@ -478,7 +472,7 @@
                     AppState.filters.users = { role: '', search: '' };
                     AppState.pagination.users.current = 1;
                     AppState.lastUserSearch = null;
-                    AppState.users = []; // ✅ Limpiar datos existentes
+                    AppState.users = [];
                     
                     Users.needsReinit = true;
                     
@@ -591,7 +585,6 @@
         }
     };
     
-    // ===== DASHBOARD =====
     const Dashboard = {
         async load() {
             console.log('🔧 [DASHBOARD] Cargando estadísticas...');
@@ -634,9 +627,8 @@
         }
     };
     
-    // ===== TRANSFERENCIAS MEJORADAS =====
     const Transfers = {
-        needsReinit: false, // ✅ NUEVO: Flag de reinicialización
+        needsReinit: false,
         
         init() {
             this.bindEvents();
@@ -677,7 +669,7 @@
             if (Elements.transferSearch) {
                 const searchHandler = Utils.debounce((e) => {
                     AppState.filters.transfers.search = e.target.value;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 }, 500);
                 
                 Utils.registerEventListener('transfers', Elements.transferSearch, 'input', searchHandler);
@@ -685,7 +677,7 @@
             
             // Refresh button
             if (Elements.refreshTransfers) {
-                const refreshHandler = () => this.loadData(); // ✅ Cambiar a loadData
+                const refreshHandler = () => this.loadData();
                 Utils.registerEventListener('transfers', Elements.refreshTransfers, 'click', refreshHandler);
             }
             
@@ -906,7 +898,7 @@
                 Utils.updateNotification(loadingId, 'Transferencia aprobada exitosamente', 'success');
                 Modals.hide('transferModal');
                 
-                await this.loadData(); // ✅ Cambiar a loadData
+                await this.loadData();
                 await Dashboard.load();
                 
             } catch (error) {
@@ -948,7 +940,7 @@
                 Modals.hide('rejectModal');
                 Modals.hide('transferModal');
                 
-                await this.loadData(); // ✅ Cambiar a loadData
+                await this.loadData();
                 await Dashboard.load();
                 
             } catch (error) {
@@ -994,9 +986,8 @@
         }
     };
     
-    // ===== PAGOS MEJORADOS =====
     const Payments = {
-        needsReinit: false, // ✅ NUEVO: Flag de reinicialización
+        needsReinit: false,
         
         init() {
             this.bindEvents();
@@ -1052,7 +1043,7 @@
                 const searchHandler = Utils.debounce((e) => {
                     AppState.filters.payments.search = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 }, 500);
                 
                 Utils.registerEventListener('payments', Elements.paymentsSearch, 'input', searchHandler);
@@ -1062,7 +1053,7 @@
                 const statusHandler = (e) => {
                     AppState.filters.payments.status = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 };
                 
                 Utils.registerEventListener('payments', Elements.paymentStatusFilter, 'change', statusHandler);
@@ -1072,7 +1063,7 @@
                 const methodHandler = (e) => {
                     AppState.filters.payments.method = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 };
                 
                 Utils.registerEventListener('payments', Elements.paymentMethodFilter, 'change', methodHandler);
@@ -1083,7 +1074,7 @@
                 const prevHandler = () => {
                     if (AppState.pagination.payments.current > 1) {
                         AppState.pagination.payments.current--;
-                        this.loadData(); // ✅ Cambiar a loadData
+                        this.loadData();
                     }
                 };
                 
@@ -1094,7 +1085,7 @@
                 const nextHandler = () => {
                     if (AppState.pagination.payments.current < AppState.pagination.payments.total) {
                         AppState.pagination.payments.current++;
-                        this.loadData(); // ✅ Cambiar a loadData
+                        this.loadData();
                     }
                 };
                 
@@ -1247,11 +1238,10 @@
         
         goToPage(page) {
             AppState.pagination.payments.current = page;
-            this.loadData(); // ✅ Cambiar a loadData
+            this.loadData();
         }
     };
     
-    // ===== SUSCRIPCIONES MEJORADAS =====
     const Subscriptions = {
         isInitialized: false,
         
@@ -1321,7 +1311,7 @@
             
             const subscriptionSearch = document.getElementById('subscriptionSearch');
             const subscriptionStatusFilter = document.getElementById('subscriptionStatusFilter');
-            const updateExpiredBtn = document.getElementById('updateExpiredBtn'); // ✅ NUEVO: Botón para actualización manual
+            const updateExpiredBtn = document.getElementById('updateExpiredBtn');
             
             console.log('🔍 [SUBSCRIPTIONS] Elementos encontrados:', {
                 search: !!subscriptionSearch,
@@ -1836,7 +1826,6 @@
         }
     };
     
-    // ===== USUARIOS MEJORADOS =====
     const Users = {
         init() {
             this.bindEvents();
@@ -2379,7 +2368,6 @@
         }
     };
     
-    // ===== MODALES =====
     const Modals = {
         init() {
             this.bindEvents();
@@ -2491,7 +2479,6 @@
         }
     };
     
-    // ===== AUTO REFRESH =====
     const AutoRefresh = {
         start() {
             if (!CONFIG.POLLING_ENABLED) return;
@@ -2516,7 +2503,6 @@
         }
     };
     
-    // ===== LOGOUT =====
     const Logout = {
         init() {
             document.querySelectorAll('.logout-btn').forEach(btn => {
@@ -2555,7 +2541,6 @@
         }
     };
     
-    // ===== INICIALIZACIÓN =====
     const AdminPanel = {
         async init() {
             console.log('🔧 [ADMIN] Inicializando...');
@@ -2652,7 +2637,6 @@
         Utils
     };
     
-    // ===== MANEJO DE ERRORES GLOBALES =====
     window.addEventListener('error', (e) => {
         console.error('[GLOBAL] Error:', e.error);
         Utils.showNotification('Error inesperado en la aplicación', 'error');
@@ -2663,17 +2647,14 @@
         Utils.showNotification('Error de conexión o servidor', 'error');
     });
     
-    // ===== CLEANUP =====
     window.addEventListener('beforeunload', () => {
         AutoRefresh.stop();
         
         AppState.activeEventListeners.clear();
     });
     
-    // ===== EXPOSER AL SCOPE GLOBAL =====
     window.AdminPanel = AdminPanel;
     
-    // ===== INICIALIZAR CUANDO EL DOM ESTÉ LISTO =====
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => AdminPanel.init());
     } else {

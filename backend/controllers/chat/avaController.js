@@ -2,7 +2,6 @@ import * as AvaService from "../../services/chat/avaService.js";
 import activityMenteLogService from "../../services/security/activityMenteLogService.js";
 import { avaCacheService } from "../../services/shared/avaCacheService.js";
 
-// Controlador para crear un AVA
 export const createAva = async (req, res) => {
   try {
     const { nom_ava, descripcion, id_carrera, slug, embedding_table_name } = req.body;
@@ -45,7 +44,6 @@ export const createAva = async (req, res) => {
   }
 };
 
-// Controlador para obtener todos los AVAs
 export const getAllAvas = async (req, res) => {
   try {
     const avas = await AvaService.getAllAvas();
@@ -55,7 +53,6 @@ export const getAllAvas = async (req, res) => {
   }
 };
 
-// Controlador para obtener los AVAs por carrera
 export const getAvasByCarrera = async (req, res) => {
   try {
     const { id_carrera } = req.params;
@@ -66,7 +63,6 @@ export const getAvasByCarrera = async (req, res) => {
   }
 };
 
-// Controlador para actualizar un AVA
 export const updateAva = async (req, res) => {
   try {
     const { id } = req.params;
@@ -127,7 +123,6 @@ export const updateAva = async (req, res) => {
   }
 };
 
-// Controlador para eliminar un AVA
 export const deleteAva = async (req, res) => {
   try {
     const { id } = req.params;
@@ -167,9 +162,7 @@ export const deleteAva = async (req, res) => {
   }
 };
 
-// ===== NUEVOS CONTROLADORES PARA ADMINISTRACIÓN DE CACHE =====
 
-// Controlador para limpiar cache de AVAs manualmente
 export const clearAvaCache = async (req, res) => {
   try {
     avaCacheService.clearCache();
@@ -205,7 +198,6 @@ export const clearAvaCache = async (req, res) => {
   }
 };
 
-// Controlador para obtener estadísticas del cache
 export const getCacheStats = async (req, res) => {
   try {
     const stats = avaCacheService.getCacheStats();

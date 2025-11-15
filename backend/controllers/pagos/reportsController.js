@@ -436,7 +436,6 @@ async deleteReport(req, res) {
       }
     }
     
-    // Responder con éxito
     res.json({
       success: true,
       message: 'Informe eliminado correctamente'

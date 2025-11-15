@@ -230,7 +230,7 @@ function attachEventListeners() {
       const file = e.dataTransfer.files[0];
 
       if (file.type !== 'application/pdf') {
-        hideUploadModal(); // ✅ CERRAR MODAL PRIMERO
+        hideUploadModal();
         acadelWarning("Formato incorrecto", "Acadel necesita que sea un archivo PDF para poder analizarlo");
         return;
       }
@@ -238,7 +238,7 @@ function attachEventListeners() {
       if (file.size > MAX_FILE_SIZE) {
         const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
 
-        hideUploadModal(); // ✅ CERRAR MODAL PRIMERO
+        hideUploadModal();
 
         acadelWarning(
           "Archivo demasiado grande",
@@ -391,7 +391,6 @@ function updateProgressCircle(progress, statusText = null) {
 
   if (chiguireAnimation) {
     // MODIFICADO: Asegurar que siempre se use un mensaje descriptivo estándar
-    // Solo usar el statusText proporcionado si coincide con el patrón esperado
     const standardMessage = getProcessingMessage(progress);
 
     const isStandardMessage = [
@@ -772,7 +771,6 @@ async function handleFileUpload() {
 
             const existingMessages = document.querySelectorAll('.chat-messages .message');
             if (existingMessages.length > 0 && existingMessages.length < messages.length) {
-              // Solo renderizar mensajes nuevos
               const newMessages = messages.slice(existingMessages.length);
               console.log(`Renderizando ${newMessages.length} mensajes nuevos`);
 

@@ -1,9 +1,5 @@
-// ============================================================================
-// 🧬🦫 PROFESOR ACADEL CIENCIAS BÁSICAS APLICADAS - SISTEMA ACADÉMICO REVOLUCIONARIO V3.1 TÉCNICO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR MULTIDISCIPLINARIO EN CIENCIAS BÁSICAS APLICADAS TÉCNICO
 // Especializado en Bioquímica, Genética y Microbiología con enfoque técnico riguroso
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,12 +22,8 @@ import { wasRequestCancelled, clearCancellationFlag } from "../../chatServices.j
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -311,9 +303,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧬🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO EN CIENCIAS APLICADAS
-// ============================================================================
 
 const PROFESOR_ACADEL_CIENCIAS_APLICADAS_DNA = `
 🧬🦫 TU IDENTIDAD COMO DR. ACADEL - ESPECIALISTA TÉCNICO EN CIENCIAS BÁSICAS APLICADAS:
@@ -359,8 +348,6 @@ Hacer que CUALQUIER estudiante de medicina:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra bioquímica, genética y microbiología en el contexto médico!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Ciencias Básicas Aplicadas.
 
@@ -506,9 +493,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO DE CIENCIAS APLICADAS
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -617,7 +601,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -637,7 +621,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal médico
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -645,7 +629,7 @@ const classifyQuery = (query, content = null) => {
   let needsWebSearch = false;
   
   if (isSimpleQuery && !hasAppliedScienceContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal médico
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -735,7 +719,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal médico
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -754,10 +738,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE CIENCIAS APLICADAS TÉCNICAS
 const ACADEL_APPLIED_SCIENCES_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en bioquímica, genética y microbiología médicas.
 
@@ -783,8 +764,8 @@ const createAppliedSciencesKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto médico para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual médica
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_cienciasaplicadas",
         similarityQueryName: "match_emb_cienciasaplicadas",
         keywordQueryName: "kw_match_emb_cienciasaplicadas",
@@ -1140,8 +1121,8 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos médicos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual médica completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_cienciasaplicadas",
         similarityQueryName: "match_emb_cienciasaplicadas",
         keywordQueryName: "kw_match_emb_cienciasaplicadas",
@@ -1176,7 +1157,6 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS DE CIENCIAS APLICADAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1381,15 +1361,10 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia técnica médica según
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedAppliedSciencesPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_CIENCIAS_APLICADAS_DNA;
 
-  // ============================================================================
-  // 🧪 INSTRUCCIONES DE CIENCIAS APLICADAS TÉCNICAS CONSOLIDADAS
-  // ============================================================================
   
 const coreAppliedSciencesTechnicalInstructions = `
 # INSTRUCCIONES DE CIENCIAS APLICADAS TÉCNICAS PARA DR. ACADEL DE BIOQUÍMICA, GENÉTICA Y MICROBIOLOGÍA
@@ -1552,8 +1527,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - INTEGRA SIEMPRE: cuando hables de bioquímica, conecta con genética y microbiología cuando sea relevante
 `;
 
-// ============================================================================
-// ============================================================================
 
 const appliedSciencesTechnicalTypeInstructions = {
   casual_conversation: `
@@ -1642,8 +1615,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - INTEGRA SIEMPRE las tres disciplinas cuando sea relevante`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1666,8 +1637,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO MÉDICO (Knowl
   'Enseña como el capibara técnico médico más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO MÉDICO (Knowledge Base) para fundamentar toda respuesta científica médica importante, y complementando con todas tus capacidades paralelas para una explicación técnica médica magistral integrando bioquímica, genética y microbiología'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Dr. Acadel configurando sistema de ciencias aplicadas técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico Médico: ${queryInfo.needsKnowledgeBase}`);
@@ -1678,7 +1647,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO MÉDICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO MÉDICO (Knowledge Base) - núcleo del sistema científico médico`);
     tools.unshift(createAppliedSciencesKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1686,7 +1654,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
     console.log(`💤 Cerebro Principal Técnico Médico INACTIVO - consulta muy casual sin contenido científico médico`);
   }
   
-  // 🧮 HERRAMIENTAS TÉCNICAS MATEMÁTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas técnico-matemáticas especializadas`);
     tools.push(createWolframAppliedSciencesTool());
@@ -1750,8 +1717,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1810,8 +1775,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes médicos necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index médico
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_cienciasaplicadas",
             similarityQueryName: "match_emb_cienciasaplicadas",
             keywordQueryName: "kw_match_emb_cienciasaplicadas",
@@ -1984,8 +1949,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleAppliedSciencesQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2088,7 +2051,6 @@ export const handleAppliedSciencesQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2245,7 +2207,6 @@ Si necesitas más detalles académicos o cálculos químicos específicos, preg�
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2289,8 +2250,6 @@ Si necesitas más detalles académicos o cálculos químicos específicos, preg�
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleAppliedSciencesMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2450,7 +2409,7 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
               const imageAnalysisMessages = [
                 {
                   role: "system",
-                  content: image_ANALYSIS_SYSTEM  // ✅ AHORA SÍ USA LOS PROMPTS
+                  content: image_ANALYSIS_SYSTEM
                 },
                 {
                   role: "user",
@@ -2619,7 +2578,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2667,13 +2625,11 @@ Si necesitas cálculos químicos específicos o una explicación académica más
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2687,7 +2643,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2735,8 +2690,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleAppliedSciencesQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -3160,7 +3113,7 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
               const imageAnalysisMessages = [
                 {
                   role: "system",
-                  content: image_ANALYSIS_SYSTEM  // ✅ AHORA SÍ USA LOS PROMPTS
+                  content: image_ANALYSIS_SYSTEM
                 },
                 {
                   role: "user",

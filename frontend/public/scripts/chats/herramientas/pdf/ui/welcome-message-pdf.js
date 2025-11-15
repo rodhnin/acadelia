@@ -371,7 +371,6 @@ const suggestions = [
           }
 
           // Los archivos válidos se procesarán por el sistema unificado
-          // Solo llamamos al sistema unificado si hay archivos válidos
           if (processedCount > 0) {
             const validFiles = [];
             let validIndex = 0;
@@ -416,7 +415,6 @@ const suggestions = [
 
       document.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        // Solo si hay archivos y estamos en bienvenida
         if (e.dataTransfer.types.includes('Files') && document.querySelector('.welcome-message')) {
           welcomeFileUploadContainer.classList.add('active');
         }
@@ -455,7 +453,6 @@ const suggestions = [
       document.addEventListener('dragleave', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
-        // Solo ejecutar si el drag abandona completamente el documento
         if (e.clientX <= 0 || e.clientY <= 0 ||
           e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
@@ -585,7 +582,6 @@ const suggestions = [
 
             cleanupWelcomeAttachments();
 
-            // ⭐ NOTIFICACIÓN PDF:
               acadelExito("🚀 ¡Mensaje enviado!", "Acadel transfirió tu consulta al chat principal");
 
             // 5. ENVIAR MENSAJE CON MÚLTIPLES FALLBACKS

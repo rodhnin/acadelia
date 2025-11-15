@@ -8,15 +8,8 @@ import {
 } from './enhancedDuplicateDetection.js';
 import pool from "../../../lib/dbPool.js";
 
-/**
- * ✅ MIDDLEWARE INTELIGENTE BASADO EN EMBEDDINGS
- * Usa búsqueda semántica + análisis de IA para detección real de duplicados
- */
 export class UniquenessMiddleware {
   
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE PERFILES CON EMBEDDINGS
-   */
   static async checkProfileUniqueness(profileData, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando perfil con embeddings + IA...");
@@ -62,9 +55,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE CONTENIDO CON EMBEDDINGS
-   */
   static async checkContentUniqueness(type, channel, payload, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando contenido con embeddings + IA...");
@@ -110,9 +100,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE TENDENCIAS CON EMBEDDINGS
-   */
   static async checkTrendUniqueness(theme, metadata = {}, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando tendencia con embeddings + IA...");
@@ -158,9 +145,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE INSIGHTS CON EMBEDDINGS + FUSIÓN
-   */
   static async checkMemoryUniqueness(type, content, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando insight con embeddings + IA...");
@@ -223,9 +207,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN DE INTERACCIONES (sin cambios - no necesita embeddings)
-   */
   static async checkInteractionUniqueness(profileId, contentId, channel, action, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE: Verificando unicidad de interacción...");
@@ -277,9 +258,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ MÉTODO PRINCIPAL ACTUALIZADO CON SISTEMA INTELIGENTE
-   */
   static async checkUniqueness(type, data, options = {}) {
     const startTime = Date.now();
     
@@ -356,9 +334,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ WRAPPER PRINCIPAL CON LOGGING INTELIGENTE DETALLADO
-   */
   static async beforeSave(type, data, options = {}) {
     console.log(`🔒 MIDDLEWARE INTELIGENTE: Iniciando verificación antes de guardar ${type}`);
     
@@ -429,9 +404,6 @@ export class UniquenessMiddleware {
     };
   }
 
-  /**
-   * ✅ ESTADÍSTICAS INTELIGENTES MEJORADAS
-   */
   static async getDuplicationStats() {
     try {
       const intelligentStats = await getIntelligentDuplicationStats();
@@ -474,9 +446,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ MÉTODO DE DIAGNÓSTICO DEL SISTEMA INTELIGENTE
-   */
   static async diagnosticReport() {
     try {
       console.log("🔍 DIAGNÓSTICO: Ejecutando reporte del sistema inteligente...");

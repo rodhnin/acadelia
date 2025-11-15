@@ -147,7 +147,6 @@
     }
   };
   
-  // ===== ⚡ VERIFICACIÓN SÚPER RÁPIDA =====
   const QuickAuth = {
     check: function() {
       if (AuthCache.isValid('auth_status')) {

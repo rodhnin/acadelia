@@ -3,8 +3,6 @@ import pool from '../../lib/dbPool.js';
 import { embeddings } from '../../lib/openai.js';
 
 
-// ============================================================================
-// ============================================================================
 
 /**
  * Crea un nuevo chat
@@ -71,11 +69,6 @@ export const getToolIdByType = (toolType) => {
     return toolMap[toolType] || null;
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: Obtiene información completa del chat (AVA o herramienta)
- * @param {string} chatId - ID del chat
- * @returns {Promise<Object>} - Información del chat con tipo claramente identificado
- */
 export const getChatInfo = async (chatId) => {
     try {
         const result = await pool.query(
@@ -100,7 +93,7 @@ export const getChatInfo = async (chatId) => {
             console.warn(`🔧 CORRIGIENDO: Priorizando herramienta y limpiando AVA`);
             return {
                 type: 'herramienta',
-                avaId: null,                    // ✅ Limpiar avaId
+                avaId: null,
                 herramientaId: row.id_herramienta,
                 id: row.id_herramienta // Para compatibilidad con código existente
             };
@@ -163,9 +156,6 @@ export const getAvatarIdForChat = async (chatId) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: markMessageAsCancelled
- */
 export const markMessageAsCancelled = async (chatId, userId, avaId = null, herramientaId = null) => {
     const client = await pool.connect();
 
@@ -315,9 +305,6 @@ export const getChatsByTool = async (userId, herramientaId) => {
     return result.rows;
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: registerCancelledRequest
- */
 export const registerCancelledRequest = async (chatId, userId, avaId = null, herramientaId = null) => {
     const client = await pool.connect();
 
@@ -381,11 +368,6 @@ export const registerCancelledRequest = async (chatId, userId, avaId = null, her
     }
 };
 
-/**
- * ✅ FUNCIÓN MEJORADA: Verifica si una solicitud ha sido cancelada con logging detallado
- * @param {string} chatId - ID del chat
- * @returns {Promise<boolean>} true si fue cancelada
- */
 export const wasRequestCancelled = async (chatId) => {
     if (!chatId) {
         console.warn('wasRequestCancelled: No se proporcionó chatId');
@@ -424,10 +406,6 @@ export const wasRequestCancelled = async (chatId) => {
 };
 
 
-/**
- * ✅ FUNCIÓN MEJORADA: Limpia la bandera de cancelación con logging detallado
- * @param {string} chatId - ID del chat
- */
 export const clearCancellationFlag = async (chatId) => {
     if (!chatId) {
         console.warn('clearCancellationFlag: No se proporcionó chatId');
@@ -483,12 +461,6 @@ export const clearCancellationFlag = async (chatId) => {
 };
 
 
-/**
- * ✅ FUNCIÓN MEJORADA: Limpiar banderas de cancelación al iniciar nuevo procesamiento
- * @param {string} chatId - ID del chat
- * @param {string} operationType - Tipo de operación (audio, youtube, etc.)
- * @returns {Promise<boolean>} true si se limpiaron correctamente
- */
 export const resetCancellationFlagsForNewProcess = async (chatId, operationType = 'unknown') => {
     if (!chatId) {
         console.warn('resetCancellationFlagsForNewProcess: No se proporcionó chatId');
@@ -549,11 +521,6 @@ export const resetCancellationFlagsForNewProcess = async (chatId, operationType 
     }
 };
 
-/**
- * ✅ FUNCIÓN MEJORADA: Forzar limpieza de banderas de cancelación
- * @param {string} chatId - ID del chat
- * @returns {Promise<boolean>} true si se limpiaron correctamente
- */
 export const forceCleanCancellationFlags = async (chatId) => {
     if (!chatId) {
         console.warn('forceCleanCancellationFlags: No se proporcionó chatId');
@@ -861,7 +828,7 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                         updated_at = NOW()
                     WHERE id = $3 AND id_chat = $4
                     RETURNING id, role, message AS content, timestamp AS created_at, now() AS updated_at`,
-                    [processedUserContent, userEmbeddingVector, userMessageId, chatId]  // 🔥 Usar processedUserContent
+                    [processedUserContent, userEmbeddingVector, userMessageId, chatId]
                 );
             } else {
                 console.log(`Actualizando último mensaje de usuario en chat: ${chatId}`);
@@ -878,7 +845,7 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                         updated_at = NOW()
                     WHERE id IN (SELECT id FROM latest_user_message)
                     RETURNING id, role, message AS content, timestamp AS created_at, now() AS updated_at`,
-                    [processedUserContent, userEmbeddingVector, chatId]  // 🔥 Usar processedUserContent
+                    [processedUserContent, userEmbeddingVector, chatId]
                 );
             }
 

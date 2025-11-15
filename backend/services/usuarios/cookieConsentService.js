@@ -136,7 +136,6 @@ class CookieConsentService {
         userIsMinor = await isMinor(userId);
         
         if (userIsMinor) {
-          // Solo permitir cookies esenciales y funcionales para menores
           preferences = {
             essential: true,
             functional: preferences.functional, // Mantener preferencia funcional

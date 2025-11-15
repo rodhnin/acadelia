@@ -113,7 +113,6 @@ const contentProcessing = {
 
         result = restoreTokens(parsed);
       } catch (error) {
-        // Si todo falla, devolver el texto original
         result = jsonText;
       }
     }
@@ -127,12 +126,6 @@ const contentProcessing = {
     return result;
   },
 
-  /**
-   * ⭐ NUEVO: Detecta y procesa contenido multimodal con soporte para documentos ⭐
-   * @param {string} content - Contenido a analizar
-   * @param {boolean} isAIResponse - Si es respuesta de IA o mensaje de usuario
-   * @returns {string} - Contenido procesado en formato HTML o contenido original
-   */
 detectMultimodalContent(content, isAIResponse = false) {
   if (typeof content !== 'string') return content;
   
@@ -168,7 +161,6 @@ detectMultimodalContent(content, isAIResponse = false) {
   const hasMultimodalHTML = content.includes('<div class="multimodal-container">');
   const isJson = content.startsWith('{') && content.endsWith('}');
   
-  // ⭐ NUEVO: Detección mejorada de imágenes Y documentos ⭐
   let hasImageIndicator = false;
   let hasDocumentIndicator = false;
 
@@ -188,16 +180,13 @@ detectMultimodalContent(content, isAIResponse = false) {
        /\bimágenes adjuntas\b/i.test(content));
   }
 
-  // ⭐ NUEVO: Detectar documentos ⭐
   if (content.includes('documento adjunto') || content.includes('documentos adjuntos') ||
       content.includes('archivo adjunto') || content.includes('archivos adjuntos')) {
     hasDocumentIndicator = true;
   }
 
-  // ⭐ AGREGAR DESPUÉS DE hasDocumentIndicator: DETECCIÓN DE AUDIO ⭐
   const hasAudioIndicator = this._hasAudioContent(content);
 
-  // ⭐ DETECCIÓN DE AUDIO EN JSON ⭐
   let hasAudioInJson = false;
   if (originalJsonData) {
     hasAudioInJson = originalJsonData.hasAudio === true ||
@@ -227,7 +216,6 @@ detectMultimodalContent(content, isAIResponse = false) {
     return content;
   }
 
-  // ⭐ CASO PARA JSON MULTIMODAL COMPLETO CON IMÁGENES Y/O DOCUMENTOS ⭐
   if (originalJsonData) {
     if (originalJsonData.hasImage === true &&
         originalJsonData.images &&
@@ -237,7 +225,6 @@ detectMultimodalContent(content, isAIResponse = false) {
       return this._formatMultimodalContent(originalJsonData);
     }
 
-    // ⭐ NUEVO: Verificar si es multimodal con documentos ⭐
     if (originalJsonData.hasDocuments === true &&
         originalJsonData.documents &&
         Array.isArray(originalJsonData.documents) &&
@@ -267,10 +254,6 @@ detectMultimodalContent(content, isAIResponse = false) {
   return content;
 },
 
-  /**
-   * ⭐ NUEVO: Extrae información de imágenes Y documentos de JSON ⭐
-   * @private
-   */
   _extractMultimodalJson(content) {
     // CASO 1: JSON doblemente serializado
     if (content.startsWith('"') && content.endsWith('"') && content.includes('\\"')) {
@@ -376,25 +359,19 @@ detectMultimodalContent(content, isAIResponse = false) {
     return null;
   },
 
-  /**
-   * ⭐ NUEVO: Formatea contenido multimodal con imágenes Y documentos ⭐
-   * @private
-   * @param {Object} jsonData - Datos JSON con estructura multimodal
-   * @returns {string} HTML formateado
-   */
 _formatMultimodalContent(jsonData) {
   if (!jsonData) return '';
 
   const text = jsonData.text || '';
   const images = jsonData.images || [];
   const documents = jsonData.documents || [];
-  const audioFiles = jsonData.audioFiles || []; // ⭐ NUEVO: soporte para audio
+  const audioFiles = jsonData.audioFiles || [];
   const hasImages = images.length > 0 || jsonData.hasImage === true;
   const hasDocuments = documents.length > 0 || jsonData.hasDocuments === true;
-  const hasAudio = audioFiles.length > 0 || jsonData.hasAudio === true; // ⭐ NUEVO
+  const hasAudio = audioFiles.length > 0 || jsonData.hasAudio === true;
   const imageCount = jsonData.imageCount || jsonData.totalImageCount || images.length || 0;
   const documentCount = jsonData.documentCount || jsonData.totalDocumentCount || documents.length || 0;
-  const audioCount = jsonData.audioCount || jsonData.totalAudioCount || audioFiles.length || 0; // ⭐ NUEVO
+  const audioCount = jsonData.audioCount || jsonData.totalAudioCount || audioFiles.length || 0;
 
   let html = '<div class="multimodal-container">';
 
@@ -408,7 +385,6 @@ _formatMultimodalContent(jsonData) {
   // Contenedor para adjuntos
   html += `<div class="multimodal-attachments">`;
 
-  // ⭐ PROCESAR IMÁGENES ⭐
   if (images.length > 0) {
     const validImages = images.filter(img => img && img.path);
 
@@ -447,7 +423,6 @@ _formatMultimodalContent(jsonData) {
   `;
   }
 
-  // ⭐ PROCESAR DOCUMENTOS ⭐
   if (documents.length > 0) {
     const validDocuments = documents.filter(doc => doc && doc.fileId);
 
@@ -498,7 +473,6 @@ _formatMultimodalContent(jsonData) {
   `;
   }
 
-  // ⭐ PROCESAR ARCHIVOS DE AUDIO - NUEVO ⭐
   if (audioFiles.length > 0) {
     const validAudioFiles = audioFiles.filter(audio => audio && (audio.fileName || audio.originalName));
 
@@ -689,12 +663,6 @@ _formatAudioContent(content) {
   return html;
 },
 
-  /**
-   * ⭐ NUEVO: Limpia y procesa elementos multimodales existentes en el DOM ⭐
-   * @param {HTMLElement} container - Contenedor con elementos multimodales
-   * @param {boolean} isAIMessage - Si es mensaje de IA
-   * @returns {boolean} - true si se realizaron cambios
-   */
   cleanMultimodalExistingContent(container, isAIMessage = false) {
     if (isAIMessage === undefined) {
       isAIMessage = container.closest('.ai-message') !== null;
@@ -715,10 +683,6 @@ _formatAudioContent(content) {
     return true;
   },
 
-  /**
-   * ⭐ NUEVO: Procesa mensajes existentes para hacer documentos clickeables ⭐
-   * @param {HTMLElement} container - Contenedor de mensajes (opcional, por defecto todo el chat)
-   */
   processExistingDocuments(container = null) {
     const searchContainer = container || document.querySelector('.chat-messages');
     if (!searchContainer) return;
@@ -780,10 +744,6 @@ _formatAudioContent(content) {
     });
   },
 
-  /**
-   * ⭐ NUEVO: Activa eventos de click para documentos en un contenedor ⭐
-   * @param {HTMLElement} container - Contenedor que contiene documentos
-   */
   activateDocumentEvents(container) {
     const documentPreviews = container.querySelectorAll('.document-preview.clickable');
     
@@ -797,10 +757,6 @@ _formatAudioContent(content) {
     });
   },
 
-/**
- * ⭐ FUNCIÓN MEJORADA: Maneja el click en un documento con mejor soporte para HTML ⭐
- * Reemplaza el método handleDocumentClick existente
- */
 async handleDocumentClick(docElement) {
   const fileId = docElement.dataset.fileId;
   const fileName = docElement.dataset.fileName || 'Documento';
@@ -859,7 +815,6 @@ async handleDocumentClick(docElement) {
 
     console.log(`✅ Contenido final limpio: ${content.length} caracteres`);
     
-    // ⭐ VALIDACIÓN FINAL DE LIMPIEZA ⭐
     const fileExtension = fileName.split('.').pop().toLowerCase();
     if (['html', 'htm'].includes(fileExtension)) {
       console.log('🔍 Validación final de HTML...');
@@ -963,7 +918,6 @@ async handleDocumentClick(docElement) {
     if (loadingNotificationId) {
       acadelCerrar(loadingNotificationId);
     }
-    // Solo restaurar contenido original si hubo error
     // Si fue exitoso, el contenido ya se cambió en el try
     if (docElement.innerHTML.includes('Cargando...')) {
       docElement.innerHTML = originalContent;
@@ -973,10 +927,6 @@ async handleDocumentClick(docElement) {
   }
 },
 
-  /**
-   * ⭐ NUEVO: Formatea contenido de documento para preview ⭐
-   * @private
-   */
   _formatDocumentContent(content, fileName, attachmentType) {
     const fileExtension = fileName.split('.').pop().toLowerCase();
     
@@ -1000,10 +950,6 @@ async handleDocumentClick(docElement) {
     `;
   },
 
-  /**
-   * ⭐ NUEVO: Detecta lenguaje de programación por nombre de archivo ⭐
-   * @private
-   */
   _detectLanguageFromFileName(fileName) {
     const extension = fileName.split('.').pop().toLowerCase();
     
@@ -1034,20 +980,12 @@ async handleDocumentClick(docElement) {
     return languageMap[extension] || 'text';
   },
 
-  /**
-   * ⭐ NUEVO: Escapa HTML para mostrar contenido como texto ⭐
-   * @private
-   */
   _escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   },
 
-  /**
-   * ⭐ NUEVO: Trunca nombre de archivo ⭐
-   * @private
-   */
   _truncateFileName(fileName, maxLength) {
     if (fileName.length <= maxLength) return fileName;
     
@@ -1060,10 +998,6 @@ async handleDocumentClick(docElement) {
     return nameWithoutExt.substring(0, maxNameLength) + '...' + extension;
   },
 
-  /**
-   * ⭐ NUEVO: Formatea tamaño de archivo ⭐
-   * @private
-   */
   _formatFileSize(bytes) {
     if (bytes === 0) return '0 B';
     
@@ -1098,7 +1032,6 @@ async handleDocumentClick(docElement) {
         textElement.setAttribute('data-cleaned', 'true');
       }
 
-      // ⭐ NUEVO: Activar eventos para documentos ⭐
       this.activateDocumentEvents(multimodal);
 
       if (multimodal.querySelector('.file-name-clickable')) {
@@ -1390,7 +1323,6 @@ _escapeHtml(text) {
   }
 },
 
-// ⭐ MODAL SIMPLE MEJORADO ⭐
 _showSimpleModal(fileName, content, language) {
   console.log('📱 Mostrando modal simple mejorado');
   
@@ -1535,10 +1467,6 @@ _showSimpleModal(fileName, content, language) {
 }
 };
 
-/**
- * ⭐ FUNCIÓN SUPER ROBUSTA: Extractor de contenido que NO trunca HTML ⭐
- * Reemplaza completamente la lógica de extracción en handleDocumentClick
- */
 async function extractDocumentContent(response, fileName) {
   console.log('🔍 Iniciando extracción robusta de contenido...');
   
@@ -1571,7 +1499,6 @@ async function extractDocumentContent(response, fileName) {
         
         const contentDataStart = contentStartIndex + contentMarker.length;
         
-        // ⭐ LISTA COMPLETA DE MARCADORES DE METADATOS ⭐
         let endMarkers = [
           '","language":"html"',
           '","language":"',
@@ -1610,13 +1537,11 @@ async function extractDocumentContent(response, fileName) {
         
         console.log(`🎯 Contenido extraído: ${extractedContent.length} caracteres (RAW)`);
         
-        // ⭐ VALIDACIÓN DE TAMAÑO ANTES DE DECODIFICAR ⭐
         if (extractedContent.length < 500) {
           console.warn('⚠️ Contenido parece muy corto, intentando método alternativo...');
           throw new Error('Contenido truncado detectado');
         }
         
-        // ⭐ LIMPIEZA AVANZADA DE RESIDUOS ⭐
         const metadataPatterns = [
           /","createdAt":"[^"]*".*$/,
           /","updatedAt":"[^"]*".*$/,
@@ -1650,7 +1575,6 @@ async function extractDocumentContent(response, fileName) {
         
         console.log(`✅ Contenido decodificado final: ${extractedContent.length} caracteres`);
         
-        // ⭐ VALIDACIÓN FINAL PARA HTML ⭐
         if (fileName.toLowerCase().endsWith('.html') || fileName.toLowerCase().endsWith('.htm')) {
           if (extractedContent.includes('<!DOCTYPE html') || extractedContent.includes('<html')) {
             console.log('✅ HTML válido detectado');
@@ -1696,10 +1620,9 @@ async function extractDocumentContent(response, fileName) {
           throw new Error('No se encontró inicio de HTML');
         }
         
-        // ⭐ BÚSQUEDA MEJORADA DEL FINAL ⭐
         let htmlEnd = rawText.lastIndexOf('</html>');
         if (htmlEnd !== -1) {
-          htmlEnd += 7; // incluir "</html>"
+          htmlEnd += 7;
           console.log('🎯 Encontrado </html> en posición:', htmlEnd);
         } else {
           // Si no hay </html>, buscar otros marcadores del final
@@ -1730,7 +1653,6 @@ async function extractDocumentContent(response, fileName) {
         
         let extractedHtml = rawText.substring(htmlStart, htmlEnd);
         
-        // ⭐ LIMPIEZA ESPECÍFICA PARA HTML ⭐
         extractedHtml = extractedHtml
           .replace(/","createdAt":"[^"]*".*$/, '')
           .replace(/","updatedAt":"[^"]*".*$/, '')
@@ -1765,15 +1687,11 @@ async function extractDocumentContent(response, fileName) {
       }
     }
     
-    // Si todo falla
     throw new Error(`No se pudo extraer el contenido. Error: ${jsonError.message}`);
   }
 }
 
 
-/**
- * ⭐ NUEVA: Procesa mensajes inmediatamente sin delays ⭐
- */
 function processMessagesImmediately(container = null) {
   const searchContainer = container || document.querySelector('.chat-messages');
   if (!searchContainer) return;
@@ -1841,9 +1759,6 @@ function processMessagesImmediately(container = null) {
   });
 }
 
-/**
- * ⭐ NUEVA: Procesa un elemento de mensaje inmediatamente ⭐
- */
 function processMessageElementImmediately(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
@@ -1851,7 +1766,6 @@ function processMessageElementImmediately(messageElement) {
     textElements.forEach(textElement => {
       const content = textElement.textContent || textElement.innerHTML;
       
-      // Solo procesar si parece JSON y no ha sido procesado
       if (content && 
           typeof content === 'string' && 
           !textElement.hasAttribute('data-processed') &&
@@ -1912,7 +1826,6 @@ export const cleanMultimodalExistingContent = (container, isAIMessage) =>
 export const parseJsonPreservingMath = (jsonText) =>
   contentProcessing.parseJsonPreservingMath(jsonText);
 
-// ⭐ NUEVAS EXPORTACIONES ⭐
 export const processExistingDocuments = (container) =>
   contentProcessing.processExistingDocuments(container);
 

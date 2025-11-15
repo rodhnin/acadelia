@@ -417,7 +417,6 @@ class UniversalMathProcessor {
   prepareStreamingContent(element) {
     if (!element) return false;
     
-    // Solo detectar y marcar el elemento para procesamiento posterior
     const detection = this.detectMathContent(element.innerHTML || element.textContent);
     
     if (detection.hasMath) {

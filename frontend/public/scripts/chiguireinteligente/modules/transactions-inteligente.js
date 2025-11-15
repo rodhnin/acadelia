@@ -391,7 +391,6 @@ updateTransactionsTable() {
     const amount = this.normalizeAmount(transaction.amount);
     const amountEur = this.normalizeAmount(transaction.amount_eur);
     
-    // Información de impuestos - directa desde Paddle si está disponible
     const taxAmount = transaction.tax_amount || 0;
     const taxAmountEur = transaction.tax_amount_eur || 0;
     
@@ -1603,7 +1602,6 @@ exportTransactions() {
       columnWidths: columnWidths,
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
-      // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {}),
       transactionAnalysis: {
         totalAmount,

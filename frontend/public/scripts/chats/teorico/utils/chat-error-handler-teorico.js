@@ -265,7 +265,7 @@ export async function removeProblematicChat(chatId) {
  * Versión corregida que evita el problema de sanitización en selectores CSS
  */
 function removeChatFromDOM(chatId) {
-  if (!validateUUID(chatId)) return; // Validación adicional
+  if (!validateUUID(chatId)) return;
   
   // Método 1: Usando selectores DOM directos (CORREGIDO)
   try {

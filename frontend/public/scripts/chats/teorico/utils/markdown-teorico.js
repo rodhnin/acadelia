@@ -6,9 +6,7 @@
 
 import { sanitizeText } from '../../shared/dom-helpers.js';
 
-// ======================================
 // CONSTANTES Y CONFIGURACIÓN
-// ======================================
 
 // Patrones de expresiones regulares precompilados para mejor rendimiento
 const REGEX = {
@@ -50,8 +48,6 @@ const REGEX = {
   NUMBERED_LIST: /^([ \t]*)(\d+)\.[ \t]+(.+)$/gm
 };
 
-// ======================================
-// ======================================
 
 /**
  * Función principal para convertir Markdown a HTML
@@ -209,8 +205,6 @@ export function parseMarkdownToHTML(markdownText) {
   return htmlText;
 }
 
-// ======================================
-// ======================================
 
 /**
  * Sistema genérico para proteger bloques de contenido durante procesamiento
@@ -262,9 +256,7 @@ function restoreContentBlocks(html, blocks, formatter) {
   return resultHtml;
 }
 
-// ======================================
 // NUEVA FUNCIÓN PARA PROCESAR PÁRRAFOS Y SALTOS DE LÍNEA
-// ======================================
 
 /**
  * Procesa párrafos y saltos de línea con mayor precisión
@@ -278,7 +270,6 @@ function processParagraphsAndLineBreaks(html) {
 
   const lines = html.split('\n');
   
-  // Información sobre el estado actual de procesamiento
   let result = [];
   let currentParagraph = [];
   let inBlockElement = false;
@@ -343,7 +334,7 @@ function processParagraphsAndLineBreaks(html) {
       }
       else {
         // Limitar número de líneas vacías consecutivas
-        if (consecutiveEmptyLines < 1) { // Solo permitir 1 línea vacía como máximo
+        if (consecutiveEmptyLines < 1) {
           result.push('');
           consecutiveEmptyLines++;
         }
@@ -368,9 +359,7 @@ function processParagraphsAndLineBreaks(html) {
   return finalResult;
 }
 
-// ======================================
 // PROCESADORES DE ELEMENTOS ESPECÍFICOS
-// ======================================
 
 /**
  * Procesa texto plano preservando fielmente todos los saltos de línea
@@ -493,7 +482,6 @@ function processEmphasis(html) {
       if (segment.type === 'text' && segment.content.trim()) {
         let textProcessed = segment.content;
         
-        // Solo procesar si no contiene caracteres HTML residuales
         if (!textProcessed.includes('<') && !textProcessed.includes('>')) {
           textProcessed = textProcessed.replace(REGEX.BOLD, '<strong>$1</strong>');
           textProcessed = textProcessed.replace(REGEX.ITALIC, '<em>$1</em>');
@@ -581,7 +569,6 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
   try {
     const chatId = getChatIdSafe();
     
-    // Solo verificar cache si imageUrlCache está disponible
     if (typeof window !== 'undefined' && window.imageUrlCache?.getLocalPath) {
       const cachedPath = window.imageUrlCache.getLocalPath(chatId, src);
       if (cachedPath) {
@@ -1211,9 +1198,7 @@ export function createMermaidBlockHTML(code) {
 `;
 }
 
-// ======================================
 // FUNCIONES DE ANÁLISIS DE CARACTERÍSTICAS
-// ======================================
 
 /**
 * Detecta qué características de Markdown están presentes
@@ -1283,9 +1268,7 @@ function detectMarkdownFeatures(text) {
   };
 }
 
-// ======================================
 // FUNCIONES AUXILIARES DE SEGURIDAD Y UTILIDAD
-// ======================================
 
 /**
 * Escapa caracteres HTML especiales
@@ -1307,9 +1290,7 @@ export function escapeHTML(text, forAttr = false) {
   return text.replace(forAttr ? /[&<>"']/g : /[&<>]/g, m => map[m]);
 }
 
-// ======================================
 // FUNCIONES DE DETECCIÓN Y PROCESAMIENTO ESPECÍFICAS
-// ======================================
 
 /**
 * Detecta y procesa tablas en texto
@@ -1378,7 +1359,6 @@ export function detectTableInText(text) {
     return { success: false, html: '' };
   }
 
-  // Si todo el texto es una sola tabla
   if (tableRanges.length === 1 && tableRanges[0].start <= 1 && tableRanges[0].end >= lines.length - 2) {
     try {
       const tableLines = lines.slice(tableRanges[0].start, tableRanges[0].end + 1);
@@ -1508,9 +1488,7 @@ export function detectAndProcessCode(text) {
   }
 }
 
-// ======================================
 // EXPORTACIONES UNIFICADAS
-// ======================================
 
 export default {
   // Funciones principales

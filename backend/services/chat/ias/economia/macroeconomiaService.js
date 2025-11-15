@@ -1,7 +1,4 @@
-// ============================================================================
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO ECONÓMICO - PROFESOR DE MACROECONOMÍA SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -23,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -312,8 +305,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 📈🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE MACROECONOMÍA:
@@ -358,8 +349,6 @@ Hacer que CUALQUIER estudiante de economía:
 ¡RECUERDA: No eres solo un tutor de crecimiento, eres EL PROFESOR que integra crecimiento, política y ciclos como la macroeconomía real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Macroeconomía.
 
@@ -505,9 +494,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO MACROECONÓMICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -601,7 +587,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsEconomicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -619,7 +605,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsEconomicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -664,7 +650,7 @@ const classifyQuery = (query, content = null) => {
     economicModels.some(term => lowercaseQuery.includes(term));
 
   if (isSimpleQuery && !hasEconomicContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -748,7 +734,7 @@ const classifyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsEconomicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -767,10 +753,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS MACROECONÓMICAS
 const ACADEL_MACROECONOMY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara economista más brillante del universo en crecimiento, política y ciclos económicos.
 
@@ -796,8 +779,8 @@ const createMacroeconomicsKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_macroeconomia",
         similarityQueryName: "match_emb_macroeconomia",
         keywordQueryName: "kw_match_emb_macroeconomia",
@@ -1086,8 +1069,8 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_macroeconomia",
         similarityQueryName: "match_emb_macroeconomia",
         keywordQueryName: "kw_match_emb_macroeconomia",
@@ -1121,7 +1104,6 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1311,8 +1293,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia económica según este aná
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectMacroeconomicsImageRequest = (query) => {
   const macroeconomicsImageKeywords = [
@@ -1394,8 +1374,6 @@ const enhanceMacroeconomicsImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos económicos cuando sea apropiado`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedMacroeconomicsPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
@@ -1598,8 +1576,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
       'Enseña como el capibara economista más brillante del universo, integrando crecimiento, política y ciclos, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta económica importante, y complementando con todas tus capacidades paralelas para una explicación económica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`📈🦫 Acadel configurando sistema económico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1610,7 +1586,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
     createBraveEconomicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL ECONÓMICO (Knowledge Base) - núcleo del sistema económico`);
     tools.unshift(createMacroeconomicsKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1675,8 +1650,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1735,8 +1708,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_macroeconomia",
             similarityQueryName: "match_emb_macroeconomia",
             keywordQueryName: "kw_match_emb_macroeconomia",
@@ -1874,8 +1847,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMacroeconomicsQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1993,7 +1964,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2084,7 +2054,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2230,7 +2199,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2256,8 +2224,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMacroeconomicsMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2585,7 +2551,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const userMessageResult = await saveMultimodalMessage({
@@ -2641,7 +2606,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
       chatId,
       timestamp: new Date().toISOString(),
 
-      // Información de archivos de desarrollo procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2655,12 +2619,10 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
         }
       },
 
-      // Información de seguridad de desarrollo
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
 
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2691,8 +2653,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

@@ -484,7 +484,6 @@ function toggleSelectionMode() {
     selectButton.classList.remove('active');
     selectionOverlay.classList.remove('active');
 
-    // Solo cambiar el cursor del contenedor de PDF, no de todo el documento
     const pdfContainer = document.querySelector('.pdf-viewer-container');
     if (pdfContainer) {
       pdfContainer.classList.remove('region-selecting');
@@ -494,7 +493,6 @@ function toggleSelectionMode() {
     selectButton.classList.add('active');
     selectionOverlay.classList.add('active');
 
-    // Solo cambiar el cursor del contenedor de PDF
     const pdfContainer = document.querySelector('.pdf-viewer-container');
     if (pdfContainer) {
       pdfContainer.classList.add('region-selecting');
@@ -672,7 +670,6 @@ function updateSelectionVisual() {
       box.appendChild(dimensions);
     }
 
-    // Incluir coordenadas para ayudar a depurar problemas
     dimensions.textContent = `${realWidth} × ${realHeight} px (zoom: ${Math.round(zoom * 100)}%)`;
     dimensions.title = `x1:${Math.round(normalizedRegion.x1)}, y1:${Math.round(normalizedRegion.y1)}`;
   } else {
@@ -889,9 +886,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
   let canvas = null;
   
   try {
-    // ============================================
     // PASO 1: VALIDACIONES INICIALES
-    // ============================================
     const targetRegion = region || selectorState.currentRegion;
     if (!targetRegion) {
       acadelWarning("Falta seleccionar región", "Acadel necesita que selecciones una parte del PDF primero");
@@ -906,9 +901,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       return;
     }
 
-    // ============================================
     // PASO 2: NORMALIZACIÓN DE COORDENADAS
-    // ============================================
     const captureRegion = normalizeRegion({
       x1: targetRegion.x1 || targetRegion.startX || 0,
       y1: targetRegion.y1 || targetRegion.startY || 0,
@@ -924,9 +917,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       return;
     }
 
-    // ============================================
     // PASO 3: CÁLCULO DE COORDENADAS Y ESCALA
-    // ============================================
     
     // Coordenadas normalizadas (esquina superior-izquierda)
     const x = Math.min(captureRegion.x1, captureRegion.x2);
@@ -958,9 +949,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       scale: `${scaleX.toFixed(2)}×${scaleY.toFixed(2)}`
     });
 
-    // ============================================
     // PASO 4: CREACIÓN Y CONFIGURACIÓN DEL CANVAS
-    // ============================================
     
     canvas = document.createElement('canvas');
     // OPTIMIZADO: Usar dimensiones razonables (máximo 1000px, mínimo 100px)
@@ -983,9 +972,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // ============================================
     // PASO 5: CAPTURA DE LA REGIÓN
-    // ============================================
     
     try {
       ctx.fillStyle = '#ffffff';
@@ -1004,9 +991,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       return;
     }
 
-    // ============================================
     // PASO 6: VALIDACIÓN DE CONTENIDO
-    // ============================================
     
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
@@ -1029,9 +1014,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       acadelWarning("Región posiblemente vacía", "La región seleccionada parece contener solo fondo blanco. Aún así se procesará.");
     }
 
-    // ============================================
     // PASO 7: CONVERSIÓN A BASE64
-    // ============================================
     
     const base64Image = canvas.toDataURL('image/png', 0.9);
     if (!base64Image || base64Image === 'data:,' || base64Image.length < 1000) {
@@ -1041,9 +1024,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
 
     console.log('✅ Imagen generada:', `${Math.round(base64Image.length/1024)}KB`);
 
-    // ============================================
     // PASO 8: PREPARACIÓN DEL PROMPT
-    // ============================================
     
     const currentPage = getPDFState('currentPage');
     let prompt = `Región seleccionada de la página ${currentPage} del PDF`;
@@ -1054,9 +1035,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       prompt = `Genera un informe completo basado en la información visible en esta imagen de la página ${currentPage} del PDF. Incluye resumen ejecutivo, análisis detallado, interpretación y conclusiones.`;
     }
 
-    // ============================================
     // PASO 9: PREVIEW COMPLETO - MINIATURA OCUPA TODO EL ESPACIO
-    // ============================================
 
     const byteString = atob(base64Image.split(',')[1]);
     const ab = new ArrayBuffer(byteString.length);
@@ -1071,26 +1050,22 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
 
     console.log('📤 Configurando imagen para envío automático...');
 
-    // ⭐ SISTEMA DE ARCHIVOS TEMPORALES ⭐
     window.temporaryWelcomeFiles = [{
       type: 'image',
       file: file,
       data: { base64: base64Image }
     }];
 
-    // ⭐ CREAR PREVIEW CON IMAGEN COMPLETA DE FONDO ⭐
     const previewContainer = document.querySelector('.file-preview-container');
     if (previewContainer) {
       const fileId = `file-${Date.now()}`;
       
-      // ⭐ ESTRUCTURA COMPLETAMENTE NUEVA - IMAGEN COMO FONDO COMPLETO ⭐
       const previewDiv = document.createElement('div');
       previewDiv.className = 'file-preview full-image-preview captured-region-preview';
       previewDiv.setAttribute('data-file-id', fileId);
       previewDiv.setAttribute('data-file-type', 'image');
       previewDiv.setAttribute('data-image-src', base64Image);
 
-      // ⭐ HTML CON IMAGEN DE FONDO COMPLETA ⭐
       previewDiv.innerHTML = `
         <div class="full-image-background" style="background-image: url('${base64Image}')"></div>
         <div class="image-preview-overlay">
@@ -1109,10 +1084,8 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
         </div>
       `;
 
-      // ⭐ INSERTAR EN DOM ⭐
       previewContainer.appendChild(previewDiv);
 
-      // ⭐ CONFIGURAR CLICK PARA MODAL ⭐
       previewDiv.addEventListener('click', (e) => {
         if (!e.target.closest('.file-preview-remove')) {
           let modal = document.getElementById('preview-modal');
@@ -1149,7 +1122,6 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
         }
       });
       
-      // ⭐ EFECTO VISUAL DE APARICIÓN ⭐
       setTimeout(() => {
         previewDiv.classList.add('newly-captured');
         
@@ -1159,14 +1131,12 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
       }, 100);
     }
 
-    // ⭐ CONFIGURAR TEXTAREA ⭐
     const textarea = document.getElementById('messageInput');
     if (textarea) {
       textarea.value = prompt;
       textarea.focus();
     }
 
-    // ⭐ ENVÍO AUTOMÁTICO SIMPLE ⭐
     setTimeout(() => {
       console.log('🚀 Iniciando envío automático...');
       
@@ -1190,9 +1160,7 @@ async function captureRegionAsImage(region = null, promptType = 'none') {
     throw error;
     
   } finally {
-    // ============================================
     // LIMPIEZA FINAL
-    // ============================================
     if (canvas) {
       try {
         const ctx = canvas.getContext('2d');

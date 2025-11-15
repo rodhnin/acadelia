@@ -2170,15 +2170,10 @@ var MathLive = (() => {
     "gothicCapitalI": "\\mathfrak{I}",
     "gothicCapitalR": "\\mathfrak{R}",
     "imaginaryI": "\\mathrm{i}",
-    // NOTE: set in main (upright) as per ISO 80000-2:2009.
     "imaginaryJ": "\\mathrm{j}",
-    // NOTE: set in main (upright) as per ISO 80000-2:2009.
     "exponentialE": "\\mathrm{e}",
-    // NOTE: set in main (upright) as per ISO 80000-2:2009.
     "differentialD": "\\mathrm{d}",
-    // NOTE: set in main (upright) as per ISO 80000-2:2009.
     "capitalDifferentialD": "\\mathrm{D}",
-    // NOTE: set in main (upright) as per ISO 80000-2:2009.
     "mathstrut": { def: "\\vphantom{(}", primitive: true },
     // https://ctan.math.washington.edu/tex-archive/macros/latex/contrib/actuarialangle/actuarialangle.pdf
     "angl": "\\enclose{actuarial}{#1}",
@@ -3324,9 +3319,7 @@ var MathLive = (() => {
       8941: M33,
       // U+22ed ⋭
       8994: M47,
-      // U+2322 ⌢
       8995: M47,
-      // U+2323 ⌣
       9416: [0.15559, 0.69224, 0, 0, 0.90222],
       // U+24c8 Ⓢ
       9484: M16,
@@ -3350,21 +3343,16 @@ var MathLive = (() => {
       9651: M49,
       // U+25b3 △
       9654: M38,
-      // U+25b6 ▶
       9660: M49,
       // U+25bc ▼
       9661: M49,
       // U+25bd ▽
       9664: M38,
-      // U+25c0 ◀
       9674: M51,
       // U+25ca ◊
       9733: [0.19444, 0.69224, 0, 0, 0.94445],
-      // U+2605 ★
       10003: M50,
-      // U+2713 ✓
       10016: M50,
-      // U+2720 ✠
       10731: M51,
       // U+29eb ⧫
       10846: [0.19444, 0.75583, 0, 0, 0.61111],
@@ -4148,17 +4136,11 @@ var MathLive = (() => {
       8902: M104,
       // U+22c6 ⋆
       8968: M105,
-      // U+2308 ⌈
       8969: M105,
-      // U+2309 ⌉
       8970: M105,
-      // U+230a ⌊
       8971: M105,
-      // U+230b ⌋
       8994: M106,
-      // U+2322 ⌢
       8995: M106,
-      // U+2323 ⌣
       9651: M107,
       // U+25b3 △
       9657: M104,
@@ -4170,19 +4152,12 @@ var MathLive = (() => {
       9711: M91,
       // U+25ef ◯
       9824: M108,
-      // U+2660 ♠
       9825: M108,
-      // U+2661 ♡
       9826: M108,
-      // U+2662 ♢
       9827: M108,
-      // U+2663 ♣
       9837: [0, 0.75, 0, 0, 0.44722],
-      // U+266d ♭
       9838: M109,
-      // U+266e ♮
       9839: M109,
-      // U+266f ♯
       10216: M67,
       // U+27e8 ⟨
       10217: M67,
@@ -5190,21 +5165,13 @@ var MathLive = (() => {
       8945: [-0.1, 0.82, 0, 0, 1.282],
       // U+22f1 ⋱
       8968: M172,
-      // U+2308 ⌈
       8969: M172,
-      // U+2309 ⌉
       8970: M172,
-      // U+230a ⌊
       8971: M172,
-      // U+230b ⌋
       8994: M173,
-      // U+2322 ⌢
       8995: M173,
-      // U+2323 ⌣
       9136: M174,
-      // U+23b0 ⎰
       9137: M174,
-      // U+23b1 ⎱
       9651: M175,
       // U+25b3 △
       9657: M171,
@@ -5216,19 +5183,12 @@ var MathLive = (() => {
       9711: M158,
       // U+25ef ◯
       9824: M176,
-      // U+2660 ♠
       9825: M176,
-      // U+2661 ♡
       9826: M176,
-      // U+2662 ♢
       9827: M176,
-      // U+2663 ♣
       9837: [0, 0.75, 0, 0, 0.38889],
-      // U+266d ♭
       9838: M177,
-      // U+266e ♮
       9839: M177,
-      // U+266f ♯
       10216: M134,
       // U+27e8 ⟨
       10217: M134,
@@ -6548,15 +6508,10 @@ var MathLive = (() => {
       8899: M248,
       // U+22c3 ⋃
       8968: M249,
-      // U+2308 ⌈
       8969: M249,
-      // U+2309 ⌉
       8970: M249,
-      // U+230a ⌊
       8971: M249,
-      // U+230b ⌋
       9168: M277,
-      // U+23d0 ⏐
       10216: M249,
       // U+27e8 ⟨
       10217: M249,
@@ -6626,13 +6581,9 @@ var MathLive = (() => {
       8899: M259,
       // U+22c3 ⋃
       8968: M260,
-      // U+2308 ⌈
       8969: M260,
-      // U+2309 ⌉
       8970: M260,
-      // U+230a ⌊
       8971: M260,
-      // U+230b ⌋
       10216: M261,
       // U+27e8 ⟨
       10217: M261,
@@ -6680,13 +6631,9 @@ var MathLive = (() => {
       8730: [0.95003, 1.45, 0, 0, 1],
       // U+221a √
       8968: M268,
-      // U+2308 ⌈
       8969: M268,
-      // U+2309 ⌉
       8970: M268,
-      // U+230a ⌊
       8971: M268,
-      // U+230b ⌋
       10216: M266,
       // U+27e8 ⟨
       10217: M266
@@ -6724,53 +6671,29 @@ var MathLive = (() => {
       8730: [1.25003, 1.75, 0, 0, 1],
       // U+221a √
       8968: M274,
-      // U+2308 ⌈
       8969: M274,
-      // U+2309 ⌉
       8970: M274,
-      // U+230a ⌊
       8971: M274,
-      // U+230b ⌋
       9115: M275,
-      // U+239b ⎛
       9116: M276,
-      // U+239c ⎜
       9117: M275,
-      // U+239d ⎝
       9118: M275,
-      // U+239e ⎞
       9119: M276,
-      // U+239f ⎟
       9120: M275,
-      // U+23a0 ⎠
       9121: M278,
-      // U+23a1 ⎡
       9122: M277,
-      // U+23a2 ⎢
       9123: M278,
-      // U+23a3 ⎣
       9124: M278,
-      // U+23a4 ⎤
       9125: M277,
-      // U+23a5 ⎥
       9126: M278,
-      // U+23a6 ⎦
       9127: M279,
-      // U+23a7 ⎧
       9128: M280,
-      // U+23a8 ⎨
       9129: M281,
-      // U+23a9 ⎩
       9130: [0, 0.3, 0, 0, 0.88889],
-      // U+23aa ⎪
       9131: M279,
-      // U+23ab ⎫
       9132: M280,
-      // U+23ac ⎬
       9133: M281,
-      // U+23ad ⎭
       9143: [0.88502, 0.915, 0, 0, 1.05556],
-      // U+23b7 ⎷
       10216: M272,
       // U+27e8 ⟨
       10217: M272,
@@ -32999,7 +32922,6 @@ data-command='["setEnvironment","pmatrix"]'>
     ["\\hbar", 8463],
     ["\\pounds", 163],
     ["\\euro", 8364]
-    // NOTE: not TeX built-in, but textcomp package
     // TODO Koppa, Stigma, Sampi
   ]);
   defineSymbols(
@@ -33353,7 +33275,6 @@ data-command='["setEnvironment","pmatrix"]'>
       ["\\barwedge", 8892],
       ["\\veebar", 8891],
       ["\\nor", 8891],
-      // NOTE: Not TeX, Mathematica
       ["\\curlywedge", 8911],
       ["\\curlyvee", 8910],
       ["\\boxminus", 8863],
@@ -33377,13 +33298,11 @@ data-command='["setEnvironment","pmatrix"]'>
     ["\\infty", 8734],
     ["\\prime", 8242],
     ["\\doubleprime", 8243],
-    // NOTE: Not in TeX, but Mathematica
     ["\\angle", 8736],
     ["`", 8216],
     ["\\$", 36],
     ["\\%", 37],
     ["\\_", 95],
-    // Note: In TeX, greek symbols are only available in Math mode
     ["\\alpha", 945],
     ["\\beta", 946],
     ["\\gamma", 947],
@@ -33521,9 +33440,7 @@ data-command='["setEnvironment","pmatrix"]'>
       ["\\subsetneqq", 10955],
       ["\\varsubsetneqq", 57367],
       ["\\nsubset", 8836],
-      // NOTE: Not TeX?
       ["\\nsupset", 8837],
-      // NOTE: Not TeX?
       ["\\nsubseteq", 8840],
       ["\\nsupseteq", 8841]
     ],
@@ -34484,9 +34401,6 @@ data-command='["setEnvironment","pmatrix"]'>
     "\\lbrack": '<break time="150ms"/> open square bracket <break time="150ms"/>',
     "\\rbrack": '<break time="150ms"/> close square bracket <break time="150ms"/>',
     // Need to add code to detect singluar/plural. Until then spoken as plural since that is vastly more common
-    // note: need to worry about intervening &InvisibleTimes;.
-    // note: need to also do this when in numerator of fraction and number preceeds fraction
-    // note: need to do this for <msup>
     "mm": "millimeters",
     "cm": "centimeters",
     "km": "kilometers",

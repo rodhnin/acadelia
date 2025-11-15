@@ -314,7 +314,6 @@ getSubscriptionGrowthChartConfig(growthData) {
           const quarter = Math.floor(d.getMonth() / 3) + 1;
           return `${d.getFullYear()}-Q${quarter}`;
         case 'yearly':
-          // Solo año
           return `${d.getFullYear()}`;
         default:
           return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;

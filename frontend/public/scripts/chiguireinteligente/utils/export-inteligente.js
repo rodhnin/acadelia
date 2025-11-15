@@ -1779,7 +1779,6 @@ loadPDFMakeLibrary() {
  * Registra fuentes personalizadas para PDF
  */
 registerPDFFonts() {
-  // Solo si pdfMake está disponible
   if (typeof pdfMake === 'undefined') return;
   
   const fontDefinitions = {
@@ -2076,7 +2075,6 @@ async createPDFDocDefinition(data, options) {
     console.log(`Aplicando orientación especificada en opciones: ${options.pdf.orientation}`);
     pageOrientation = options.pdf.orientation;
   } else if (isWideTable) {
-    // Solo usar landscape automáticamente si la tabla es ancha y no se especificó orientación
     console.log('Tabla ancha detectada, usando orientación landscape por defecto');
     pageOrientation = 'landscape';
   }

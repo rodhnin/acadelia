@@ -98,7 +98,6 @@ hoverStyles.textContent = `
 `;
 document.head.appendChild(hoverStyles);
 
-// ==============================================
 document.addEventListener('DOMContentLoaded', async function() {
     // Elementos DOM
     const avaGrid = document.getElementById('avaGrid');
@@ -125,7 +124,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     let isDetailView = false;
     let isLoading = true;
 
-    // ================= FUNCIONES CORE =================
 
     function updateCarousel(smooth = true) {
         if (!avaGrid?.children.length) return;
@@ -134,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             card.style.display !== 'none' && card.classList.contains('ava-card')
         );
         
-        // Solo se activa el carousel si hay más que el número visible de tarjetas
         if (visibleCards.length <= itemsToShow) {
             avaGrid.style.transition = 'none';
             avaGrid.style.transform = 'none';
@@ -188,7 +185,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (nextBtn) nextBtn.style.display = 'none';
     }
 
-    // ================= DATA FETCHING =================
     async function obtenerUsuarioId() {
         try {
             const response = await fetch('/api/usuarios/authenticate');
@@ -241,7 +237,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // ================= RENDERIZADO =================
     function generarCarreraCard(carrera) {
         return `
             <div class="ava-card" data-type="carrera" data-id="${carrera.id_carrera}">
@@ -357,7 +352,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         return 5;
     }
 
-    // ================= Función para mostrar skeletons =================
     function showSkeleton() {
         const itemsToShow = getItemsToShow();
         const skeletonHTML = Array(itemsToShow).fill().map(() => `
@@ -508,7 +502,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     };
 
-    // ================= FUNCIONES DE BÚSQUEDA =================
     async function showSuggestions(searchTerm) {
         suggestionsBox.innerHTML = "";
         if (!searchTerm) {
@@ -613,7 +606,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         setupCardHoverEffects(); // Aplicar hover effects después de filtrar
     }
 
-    // ================= VISTAS PRINCIPALES =================
     async function mostrarCarreras() {
         try {
             isDetailView = false;
@@ -781,7 +773,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         mostrarCarreras();
     }
 
-    // ================= EVENT HANDLERS =================
     function configurarEventos() {
         // Botones Ver Más para carreras
         document.querySelectorAll('.ver-mas-btn').forEach(btn => {
@@ -814,7 +805,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.addEventListener('touchend', stopDrag);
     }
 
-    // ================= DRAG HANDLERS =================
     function startDrag(e) {
         if (isDetailView) return; // No permitir arrastrar en vista detalle
         
@@ -871,7 +861,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // ================= INICIALIZACIÓN =================
     async function inicializar() {
         try {
             // Verificamos que los elementos existan

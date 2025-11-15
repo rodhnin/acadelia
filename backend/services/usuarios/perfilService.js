@@ -1,16 +1,12 @@
 import pool from "../../lib/dbPool.js";
 
-// ========================================
 // CACHÉ Y CONSTANTES (MANTENIDAS IGUAL)
-// ========================================
 
 let rolesCache = null;
 let rolesCacheTime = null;
 const CACHE_TTL = 3600000; // 1 hora
 
-// ========================================
 // FUNCIONES EXPORTADAS (MISMOS NOMBRES, REFACTORIZADAS INTERNAMENTE)
-// ========================================
 
 /**
  * Función para obtener todos los roles (REFACTORIZADA - sin cambio de interfaz)
@@ -205,9 +201,6 @@ export const getPerfilById = async (id_usuario) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Verificar si perfil está completo
- */
 export const isProfileComplete = async (id_usuario) => {
     const client = await pool.connect();
     try {
@@ -342,10 +335,6 @@ export const deletePerfil = async (id) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Obtener perfil con información de universidad
- * (MOVIDA DESDE CONTROLLER - LÓGICA COMPLEJA)
- */
 export const getPerfilWithUniversityInfo = async (id_usuario) => {
     const client = await pool.connect();
     
@@ -399,10 +388,6 @@ export const getPerfilWithUniversityInfo = async (id_usuario) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Obtener detalles completos del usuario
- * (MOVIDA DESDE CONTROLLER - LÓGICA COMPLEJA)
- */
 export const getCompleteUserDetails = async (id_usuario) => {
     const client = await pool.connect();
     
@@ -516,14 +501,8 @@ export const executeQuery = async (queryText, params = []) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS (REFACTORIZADAS)
-// ========================================
 
-/**
- * 🔧 REFACTORIZACIÓN: Validación optimizada de foreign keys
- * (MEJORADA - una sola consulta para múltiples validaciones)
- */
 const validateForeignKeysOptimized = async (keys, client) => {
     try {
         if (!keys || keys.length === 0) return true;

@@ -52,7 +52,6 @@ router.post(
       
       const { rows } = await pool.query(query);
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         data: rows
@@ -113,7 +112,6 @@ router.post(
       
       const { rows } = await pool.query(query, [filename]);
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         avaId,
@@ -177,7 +175,6 @@ router.post(
         });
       }
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         data: rows[0]

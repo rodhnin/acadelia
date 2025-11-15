@@ -352,7 +352,6 @@
         }
     }
 
-    // ================= INICIALIZACIÓN AUTOMÁTICA =================
     
     const tiendaEmojiSystem = new TiendaAcadelEmojiSystem();
     

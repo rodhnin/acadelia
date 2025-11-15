@@ -24,7 +24,6 @@ export class MarkdownStreamHandler {
     this.RENDER_DELAY = 100;
     this.MIN_CHUNK_SIZE = 2;
     
-    // ✨ NUEVO: Estado de matemáticas con sistema universal
     this.mathDetection = {
       hasMath: false,
       confidence: 0,
@@ -53,7 +52,6 @@ export class MarkdownStreamHandler {
     this.chunks.push(chunk);
     this.fullContent += chunk;
     
-    // ✨ NUEVO: Detectar contenido matemático durante el streaming
     if (!this.mathDetection.hasMath) {
       const detection = detectUniversalMath(this.fullContent);
       if (detection.hasMath) {
@@ -122,7 +120,6 @@ export class MarkdownStreamHandler {
       
       this.contentEl.innerHTML = html;
       
-      // ✨ NUEVO: Procesar elementos especiales de manera limitada durante streaming
       setTimeout(() => {
         this.processElementsSafeStreaming();
       }, 50);
@@ -136,13 +133,8 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ NUEVO: Procesamiento seguro de elementos durante streaming
-   * INCLUYE preparación de matemáticas con sistema universal
-   */
   processElementsSafeStreaming() {
     try {
-      // Solo highlight.js durante streaming
       const codeBlocks = this.contentEl.querySelectorAll('pre code:not(.hljs)');
       if (codeBlocks.length > 0 && typeof hljs !== 'undefined') {
         codeBlocks.forEach(block => {
@@ -159,7 +151,6 @@ export class MarkdownStreamHandler {
         });
       }
       
-      // ✨ NUEVO: Preparar matemáticas con sistema universal (sin renderizar aún)
       if (this.mathDetection.hasMath && !this.mathDetection.processed) {
         processUniversalMath(this.contentEl, true)
           .then((prepared) => {
@@ -198,9 +189,6 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ COMPLETAR STREAMING - RENOVADO CON SISTEMA UNIVERSAL
-   */
   async complete() {
     if (this.isComplete) return;
     
@@ -241,9 +229,6 @@ export class MarkdownStreamHandler {
     setTimeout(() => this.ensureScroll(), 100);
   }
   
-  /**
-   * ✨ PROCESAMIENTO FINAL DE ELEMENTOS - RENOVADO CON SISTEMA UNIVERSAL
-   */
   async processAllElementsFinal() {
     try {
       console.log('🔧 Iniciando procesamiento final de elementos...');
@@ -251,7 +236,6 @@ export class MarkdownStreamHandler {
       // PASO 1: Procesar elementos básicos primero
       processSpecialElements(this.contentEl, false); // isStreamingComplete = false para elementos básicos
       
-      // PASO 2: ✨ PROCESAR MATEMÁTICAS CON SISTEMA UNIVERSAL
       if (this.mathDetection.hasMath) {
         console.log('🧮 Procesando matemáticas con Sistema Universal...');
         
@@ -326,7 +310,6 @@ export class MarkdownStreamHandler {
         });
       }
       
-      // ✨ NUEVO: Verificar que las matemáticas se procesaron correctamente
       if (this.mathDetection.hasMath && !this.mathDetection.processed) {
         console.warn('⚠️ Matemáticas no se procesaron completamente');
         
@@ -387,9 +370,6 @@ export class MarkdownStreamHandler {
       .replace(/\n/g, '<br>')}</p>`;
   }
   
-  /**
-   * ✨ NUEVAS API para verificar estado de matemáticas y Mermaid
-   */
   hasMathContent() {
     return this.mathDetection.hasMath;
   }
@@ -410,9 +390,6 @@ export class MarkdownStreamHandler {
     return this.mermaidProcessed;
   }
   
-  /**
-   * ✨ NUEVO: Forzar reprocesamiento de matemáticas
-   */
   async reprocessMath() {
     if (this.mathDetection.hasMath && this.isComplete) {
       console.log('🔄 Reprocesando matemáticas con Sistema Universal...');
@@ -437,9 +414,6 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ NUEVO: Diagnóstico completo del contenido
-   */
   diagnose() {
     return {
       isComplete: this.isComplete,
@@ -506,9 +480,6 @@ export function checkMessageForMermaid(messageElement) {
   return mermaidPatterns.some(pattern => pattern.test(content));
 }
 
-/**
- * ✨ NUEVA: Función para verificar matemáticas en mensaje
- */
 export function checkMessageForMath(messageElement) {
   const content = messageElement.querySelector('.message-content')?.innerHTML || '';
   return detectUniversalMath(content);

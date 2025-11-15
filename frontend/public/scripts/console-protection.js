@@ -16,7 +16,6 @@
   // Si está desactivado, no hacer nada
   if (config.enabled === false) return;
   
-  // === 1. MENSAJE DE ADVERTENCIA PERSONALIZADO ===
   const titleStyles = [
     'color: #5D4037',
     'font-size: 22px', 
@@ -102,7 +101,6 @@
   // excepto nuestra advertencia personalizada
   
   console.log = function() {
-    // Solo permitir mensajes de nuestra advertencia
     if (isWarningMessage(arguments)) {
       originalConsole.log.apply(console, arguments);
     }

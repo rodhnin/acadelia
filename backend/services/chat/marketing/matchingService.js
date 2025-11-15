@@ -197,7 +197,7 @@ export const matchingService = {
             id: profile.id,
             metadata: profile.metadata
           },
-          resolvedFrom: resolvedProfile.originalIdentifier // Incluir información de resolución si se hizo
+          resolvedFrom: resolvedProfile.originalIdentifier
         };
       } else {
         return {

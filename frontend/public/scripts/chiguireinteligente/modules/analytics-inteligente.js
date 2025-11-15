@@ -206,7 +206,6 @@ async loadAnalyticsData() {
       // Saltamos EUR ya que la tasa es siempre 1
       if (currency === 'EUR') return;
       
-      // Solo considerar transacciones con tasa de cambio válida
       if (transaction.exchange_rate && parseFloat(transaction.exchange_rate) > 0) {
         if (!ratesByCode[currency]) {
           ratesByCode[currency] = [];
@@ -570,7 +569,6 @@ async loadAnalyticsData() {
     });
     
     this.subscriptionsData.forEach(sub => {
-      // Solo procesar suscripciones canceladas o expiradas
       if (!this.isSubscriptionCancelled(sub) || !sub.updated_at) return;
       
       // Fecha de cancelación
@@ -704,7 +702,6 @@ async loadAnalyticsData() {
     
     // Ahora procesamos los usuarios
     this.usersData.forEach(user => {
-      // Solo procesar usuarios con suscripciones conocidas
       if (!subscriptionDates.has(user.id_user)) return;
       
       const registerDate = subscriptionDates.get(user.id_user);

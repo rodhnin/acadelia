@@ -8,9 +8,7 @@
 import { LATEX_PATTERNS } from '../core/config-agente.js';
 import { sanitizeText } from '../../../shared/dom-helpers.js';
 
-// ========================================
 // PATRONES PRECOMPILADOS MEJORADOS
-// ========================================
 
 const REGEX = {
   // Formatos básicos de texto 
@@ -52,8 +50,6 @@ const REGEX = {
   NUMBERED_LIST: /^([ \t]*)(\d+)\.[ \t]+(.+)$/gm
 };
 
-// ========================================
-// ========================================
 
 /**
  * Función principal para convertir texto Markdown a HTML - VERSIÓN HÍBRIDA MEJORADA
@@ -267,12 +263,7 @@ export function parseMarkdownToHTML(markdownText) {
   return html;
 }
 
-// ========================================
-// ========================================
 
-/**
- * 🌟 NUEVA: Protege bloques de contenido especial durante el procesamiento (del framework)
- */
 function protectContentBlocks(text, blockTypes) {
   let processedText = text;
   const blocks = [];
@@ -289,9 +280,6 @@ function protectContentBlocks(text, blockTypes) {
   return { text: processedText, blocks };
 }
 
-/**
- * 🌟 NUEVA: Restaura bloques de contenido protegido (del framework)
- */
 function restoreContentBlocks(text, blocks, formatter) {
   let result = text;
 
@@ -303,9 +291,6 @@ function restoreContentBlocks(text, blocks, formatter) {
   return result;
 }
 
-/**
- * 🌟 MEJORADA: Procesamiento de énfasis que corrige el problema \n**texto** (del framework)
- */
 function processEmphasisImproved(html) {
   let processed = html.replace(/\*\*((?:[^*\n]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>');
   
@@ -315,9 +300,6 @@ function processEmphasisImproved(html) {
   return processed;
 }
 
-/**
- * 🌟 MEJORADA: Procesamiento de listas con mejor manejo de anidamiento (del framework)
- */
 function processListsImproved(htmlText) {
   if (!htmlText) return '';
   if (!/^[ \t]*[-*+]\s+|^[ \t]*\d+\.\s+/m.test(htmlText)) return htmlText;
@@ -473,9 +455,6 @@ function processListsImproved(htmlText) {
   return result.join('\n');
 }
 
-/**
- * 🌟 MEJORADA: Procesamiento de párrafos que maneja mejor \n**texto** (del framework)
- */
 function processParagraphsAndLineBreaksImproved(html) {
   if (!html.trim()) return '';
 
@@ -551,9 +530,7 @@ function processParagraphsAndLineBreaksImproved(html) {
   return result.join('\n');
 }
 
-// ========================================
 // FUNCIONES AUXILIARES MEJORADAS
-// ========================================
 
 /**
  * Pre-procesa líneas horizontales dentro de texto
@@ -581,9 +558,6 @@ function processHorizontalRules(html) {
   return html.replace(/^(\*{3,}|-{3,}|_{3,})$/gm, '<hr>');
 }
 
-/**
- * 🌟 MEJORADA: Procesa tablas en formato Markdown (del framework)
- */
 function processTablesImproved(htmlText) {
   if (!htmlText.includes('|')) return htmlText;
 
@@ -661,9 +635,6 @@ function processTablesImproved(htmlText) {
   return result.join('\n');
 }
 
-/**
- * 🌟 MEJORADA: Procesa una tabla individual (del framework)
- */
 function processMarkdownTable(tableLines) {
   const headerLine = tableLines[0];
   const separatorLine = tableLines[1];
@@ -830,9 +801,7 @@ function splitHtmlIntoSegments(html) {
   return segments;
 }
 
-// ========================================
 // FUNCIONES EXISTENTES MANTENIDAS
-// ========================================
 
 /**
  * Escapa caracteres HTML especiales - MANTENIDA TU LÓGICA
@@ -1084,9 +1053,7 @@ export function processLatexText(text) {
     .replace(/\s*!=\s*/g, ' \\neq ');
 }
 
-// ========================================
 // FUNCIONES DE UTILIDAD MANTENIDAS
-// ========================================
 
 export function linkify(text) {
   return convertPlainUrls(text);
@@ -1275,9 +1242,7 @@ export function getFormattedTableHTML(data) {
   return tableHTML;
 }
 
-// ========================================
 // EXPORTACIÓN COMPLETA
-// ========================================
 
 export default {
   parseMarkdownToHTML,

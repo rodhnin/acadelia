@@ -19,11 +19,9 @@ const REFRESH_TOKEN_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
-// 🆕 Cache mejorado para controlar operaciones concurrentes con cleanup automático
 const operationLocks = new Map();
 const OPERATION_LOCK_TTL = 15000; // 15 segundos
 
-// 🆕 Cleanup automático cada 5 minutos para prevenir memory leaks
 const cleanupOperationLocks = () => {
     const now = Date.now();
     let cleanedCount = 0;
@@ -43,9 +41,6 @@ const cleanupOperationLocks = () => {
 setInterval(cleanupOperationLocks, 5 * 60 * 1000);
 
 export class AuthService {
-    /**
-     * 🆕 Función auxiliar mejorada para crear locks de operación
-     */
     static async withLock(key, operation, timeout = 10000) {
         const lockEntry = operationLocks.get(key);
 
@@ -61,7 +56,6 @@ export class AuthService {
                     Logger.warn(`Operación anterior falló para ${key}, continuando`);
                 }
             } else {
-                // 🆕 Cleanup de entrada expirada
                 operationLocks.delete(key);
             }
         }
@@ -76,13 +70,11 @@ export class AuthService {
             }
         })();
 
-        // 🆕 Almacenar con TTL
         operationLocks.set(key, {
             promise: operationPromise,
             expiry: Date.now() + timeout
         });
 
-        // 🆕 Timeout de seguridad mejorado
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
                 operationLocks.delete(key);
@@ -98,16 +90,12 @@ export class AuthService {
         }
     }
 
-    /**
-     * 🆕 Operación simple para Redis (sin transacciones complejas)
-     */
     static async executeSimpleRedisOperations(operations) {
         if (!redisService.isReady()) {
             throw new Error('Redis no disponible');
         }
 
         try {
-            // 🆕 Ejecutar operaciones secuencialmente (más simple y confiable)
             const results = [];
             for (const op of operations) {
                 switch (op.type) {
@@ -128,10 +116,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * 🔧 FUNCIÓN 2: generateTokens - PASAR IP AL GUARDAR SESIÓN
-     * Reemplazar en authService.js línea ~100
-     */
     static async generateTokens(user, ipAddress) {
         const lockKey = `generate_tokens:${user.id_user}`;
 
@@ -170,7 +154,6 @@ export class AuthService {
 
                 Logger.info(`Tokens generados`, { userId: user.id_user, sessionId: sessionId.substring(0, 8) });
 
-                // 🆕 Operación atómica mejorada para guardar en Redis CON IP
                 await this.saveSession(user.id_user, sessionId, refreshToken, ipAddress);
 
                 Logger.info(`Sesión guardada atómicamente en Redis con IP`, { userId: user.id_user });
@@ -191,12 +174,8 @@ export class AuthService {
     }
 
 
-    /**
-     * 🆕 Guardar sesión de forma simple y confiable
-     */
     static async saveSession(userId, sessionId, refreshToken, ipAddress) {
         try {
-            // 🆕 Obtener sesión anterior de forma segura
             const oldSession = await Promise.race([
                 redisService.get(`session:${userId}`),
                 new Promise((_, reject) =>
@@ -207,11 +186,10 @@ export class AuthService {
             const newSession = {
                 sessionId,
                 refreshToken,
-                ipAddress, // 🆕 AGREGAR IP A LA SESIÓN
+                ipAddress,
                 createdAt: Date.now()
             };
 
-            // 🆕 Guardar operaciones (simplificado)
             const operations = [
                 {
                     type: 'set',
@@ -227,10 +205,8 @@ export class AuthService {
                 }
             ];
 
-            // 🆕 Ejecutar operaciones simplificadas
             const results = await this.executeSimpleRedisOperations(operations);
 
-            // 🆕 Verificación simple - si alguna operación falló
             const hasFailures = results.some(result => result === false);
 
             if (hasFailures) {
@@ -238,10 +214,8 @@ export class AuthService {
                 // No lanzar error, continuar con fallback
             }
 
-            // 🆕 Limpiar sesión anterior DESPUÉS de confirmar la nueva
             if (oldSession && oldSession.refreshToken && oldSession.refreshToken !== refreshToken) {
                 Logger.info(`Limpiando sesión anterior`, { sessionId: oldSession.sessionId?.substring(0, 8) });
-                // 🆕 Limpiar de forma asíncrona sin bloquear
                 setTimeout(async () => {
                     try {
                         await redisService.delete(`refresh_token:${oldSession.refreshToken}`);
@@ -256,7 +230,6 @@ export class AuthService {
         } catch (error) {
             Logger.error('Error guardando sesión', error);
 
-            // 🆕 Rollback simple en caso de error
             try {
                 await Promise.all([
                     redisService.delete(`session:${userId}`),
@@ -270,9 +243,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * 🆕 Renovación de tokens mejorada con verificación de consistencia
-     */
     static async refreshTokens(refreshToken) {
         const lockKey = `refresh_tokens:${refreshToken}`;
 
@@ -280,7 +250,6 @@ export class AuthService {
             try {
                 Logger.info(`Iniciando renovación de token`, { tokenPrefix: refreshToken.substring(0, 8) });
 
-                // 🆕 Buscar userId por refresh token con timeout
                 const userId = await Promise.race([
                     redisService.get(`refresh_token:${refreshToken}`),
                     new Promise((_, reject) =>
@@ -294,7 +263,6 @@ export class AuthService {
 
                 Logger.info(`Token pertenece al usuario`, { userId });
 
-                // 🆕 Verificar que es la sesión activa con timeout
                 const session = await Promise.race([
                     redisService.get(`session:${userId}`),
                     new Promise((_, reject) =>
@@ -309,7 +277,6 @@ export class AuthService {
 
                 Logger.info(`Sesión válida confirmada`, { userId });
 
-                // 🆕 Obtener datos del usuario con timeout
                 const query = "SELECT id_user, correo FROM usuario WHERE id_user = $1";
                 const { rows } = await Promise.race([
                     pool.query(query, [userId]),
@@ -325,7 +292,6 @@ export class AuthService {
                 const user = rows[0];
 
                 // IMPORTANTE: Mantener el mismo sessionId y refreshToken
-                // Solo generar nuevo access token
                 let userRole = 1;
                 try {
                     const roleQuery = `SELECT p.id_rol FROM perfil p WHERE p.id_usuario = $1`;
@@ -350,20 +316,17 @@ export class AuthService {
                     { expiresIn: ACCESS_TOKEN_EXPIRY }
                 );
 
-                // 🆕 Verificar que la sesión sigue siendo válida después de generar el token
                 const currentSession = await redisService.get(`session:${userId}`);
                 if (!currentSession || currentSession.sessionId !== session.sessionId) {
                     Logger.error(`Sesión cambió durante la renovación`, { userId });
                     throw new Error('Sesión cambió durante la renovación');
                 }
 
-                // 🆕 Actualizar timestamp de última renovación en la sesión
                 const updatedSession = {
                     ...session,
                     lastRenewal: Date.now()
                 };
 
-                // 🆕 Actualizar con timeout
                 await Promise.race([
                     redisService.set(`session:${userId}`, updatedSession, 60 * 60 * 24 * 7), // 7 días
                     new Promise((_, reject) =>
@@ -390,9 +353,6 @@ export class AuthService {
         });
     }
 
-    /**
-     * 🆕 Revocación de otras sesiones mejorada
-     */
     static async revokeOtherSessions(userId, currentToken) {
         const lockKey = `revoke_other:${userId}`;
 
@@ -408,7 +368,6 @@ export class AuthService {
                     Logger.warn('No se pudo decodificar token actual', { error: error.message });
                 }
 
-                // 🆕 Obtener sesión actual con timeout
                 const currentSession = await Promise.race([
                     redisService.get(`session:${userId}`),
                     new Promise((_, reject) =>
@@ -430,7 +389,6 @@ export class AuthService {
                 // Si no coincide, la sesión actual se considera "otra sesión" y debe ser revocada
                 Logger.info(`Revocando sesión anterior`, { userId });
 
-                // 🆕 Limpiar refresh token anterior con timeout
                 if (currentSession.refreshToken) {
                     await Promise.race([
                         redisService.delete(`refresh_token:${currentSession.refreshToken}`),
@@ -454,9 +412,6 @@ export class AuthService {
         });
     }
 
-    /**
-     * 🆕 Revocación de todos los tokens simplificada
-     */
     static async revokeAllTokens(userId) {
         const lockKey = `revoke_all:${userId}`;
 
@@ -464,7 +419,6 @@ export class AuthService {
             try {
                 Logger.info(`Revocando TODAS las sesiones`, { userId });
 
-                // 🆕 Limpiar sesión con timeout
                 const session = await Promise.race([
                     redisService.get(`session:${userId}`),
                     new Promise((_, reject) =>
@@ -472,7 +426,6 @@ export class AuthService {
                     )
                 ]).catch(() => null);
 
-                // 🆕 Usar operaciones simples para limpiar
                 const operations = [];
 
                 if (session && session.refreshToken) {
@@ -504,9 +457,6 @@ export class AuthService {
         });
     }
 
-    /**
-     * 🆕 Logout simplificado
-     */
     static async logout(userId, refreshToken) {
         const lockKey = `logout:${userId}`;
 
@@ -514,7 +464,6 @@ export class AuthService {
             try {
                 Logger.info(`Procesando logout`, { userId });
 
-                // 🆕 Usar operaciones simples para limpiar
                 const operations = [];
 
                 if (refreshToken) {
@@ -541,10 +490,6 @@ export class AuthService {
         });
     }
 
-    /**
-     * 🔧 FUNCIÓN 4: login - PASAR IP AL GENERAR TOKENS
-     * Reemplazar en authService.js línea ~600
-     */
     static async login(correo, contraseña, ipAddress) {
         try {
             const delay = 100 + Math.floor(Math.random() * 200);
@@ -678,9 +623,6 @@ export class AuthService {
         return rows[0];
     }
 
-    /**
-     * 🆕 Función de diagnóstico mejorada para verificar estado de sesiones
-     */
     static async debugSessionState(userId) {
         try {
             const session = await Promise.race([
@@ -716,9 +658,6 @@ export class AuthService {
         }
     }
 
-    // ========================================
-    // 🆕 FUNCIONES MOVIDAS DEL CONTROLLER (MEJORADAS)
-    // ========================================
 
     /**
      * Verificar si el usuario tiene una sesión activa
@@ -727,7 +666,6 @@ export class AuthService {
         try {
             Logger.info(`Verificando sesión activa`, { userId });
 
-            // 🆕 Usar timeout para evitar bloqueos
             const activeSession = await Promise.race([
                 redisService.get(`session:${userId}`),
                 new Promise((_, reject) =>
@@ -741,7 +679,6 @@ export class AuthService {
                     sessionId: activeSession.sessionId.substring(0, 8)
                 });
 
-                // 🆕 Verificar que el refresh token también existe con timeout
                 const refreshTokenExists = await Promise.race([
                     redisService.get(`refresh_token:${activeSession.refreshToken}`),
                     new Promise((_, reject) =>
@@ -754,7 +691,6 @@ export class AuthService {
                     return true;
                 } else {
                     Logger.warn(`Refresh token no encontrado, limpiando sesión huérfana`);
-                    // 🆕 Limpiar de forma asíncrona
                     setTimeout(async () => {
                         try {
                             await redisService.delete(`session:${userId}`);
@@ -807,7 +743,6 @@ export class AuthService {
                 Logger.warn('Error obteniendo geolocalización', { error: geoError.message });
             }
 
-            // 🆕 Guardar en base de datos con timeout
             const query = `
                 INSERT INTO login_attempts (
                     id, 
@@ -837,7 +772,6 @@ export class AuthService {
                 )
             ]);
 
-            // 🆕 También guardar en Redis para acceso rápido con timeout
             await Promise.race([
                 redisService.set(
                     `login_attempt:${attemptId}`,
@@ -876,7 +810,6 @@ export class AuthService {
 
             Logger.info(`Notificando intento a dispositivos activos`, { userId });
 
-            // ⭐ CRÍTICO: Notificar en tiempo real a las conexiones activas
             notificationService.notifyNewLoginAttempt(userId, attemptData);
 
             return attemptId;
@@ -891,7 +824,6 @@ export class AuthService {
      */
     static async sendVerificationEmail(email, attemptId) {
         try {
-            // 🆕 Obtener el código de Redis o base de datos con timeout
             let verificationCode;
 
             const attemptData = await Promise.race([
@@ -976,14 +908,8 @@ export class AuthService {
         }
     }
 
-    // ========================================
     // RESTO DE FUNCIONES (mantenidas sin cambios significativos)
-    // ========================================
 
-    /**
-     * 🔧 FUNCIÓN 3: performLogin - VERIFICAR IP ANTES DE PEDIR CÓDIGO
-     * Reemplazar en authService.js línea ~630
-     */
     static async performLogin(correo, contraseña, options = {}) {
         const { mantenerSesionesActivas = false, requestData } = options;
 
@@ -1036,11 +962,9 @@ export class AuthService {
 
             Logger.info(`Credenciales válidas`, { userId: user.id_user });
 
-            // ⭐ AQUÍ ESTÁ EL CAMBIO PRINCIPAL:
             const currentSession = await redisService.get(`session:${user.id_user}`);
 
             if (currentSession && !mantenerSesionesActivas) {
-                // 🆕 VERIFICAR SI EL IP ES DIFERENTE
                 const currentIP = requestData?.ipAddress;
                 const sessionIP = currentSession.ipAddress;
 
@@ -1590,7 +1514,6 @@ export class AuthService {
     }
 }
 
-// 🆕 Cleanup al cerrar la aplicación
 process.on('SIGINT', () => {
     console.log('[AUTH] Limpiando locks de operaciones...');
     operationLocks.clear();

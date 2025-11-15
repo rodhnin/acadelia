@@ -12,7 +12,6 @@ class HookdeckValidator {
       const eventId = req.headers['x-hookdeck-eventid'];
       const requestId = req.headers['x-hookdeck-requestid'];
       
-      // 🆕 NUEVO: Logging detallado para debugging
       console.log('🔍 Headers de validación (REALES):', {
         signature: signature ? 'PRESENTE' : 'AUSENTE',
         eventId: eventId ? 'PRESENTE' : 'AUSENTE', 
@@ -57,7 +56,6 @@ class HookdeckValidator {
         .update(payload)
         .digest('base64');
 
-      // 🆕 NUEVO: Logging de firmas para debugging
       console.log('🔍 Comparación de firmas:', {
         received: signature.substring(0, 20) + '...',
         expected: expectedSignature.substring(0, 20) + '...',

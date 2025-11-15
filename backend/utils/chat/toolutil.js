@@ -23,10 +23,6 @@ export const TOOL_TYPE_MAP = {
  */
 export const VALID_HERRAMIENTA_IDS = [1, 2]; // PDF=1, Agent=2
 
-/**
- * ✅ USAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
- * Obtiene tipos de documento soportados desde backend-file-constants.js
- */
 export const getSupportedDocumentTypes = () => {
   const supportedMimeTypesConfig = createSupportedMimeTypesConfig();
   
@@ -46,19 +42,11 @@ export const getSupportedDocumentTypes = () => {
   };
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- * Verifica si un tipo MIME corresponde a un documento soportado
- */
 export const isSupportedDocumentType = (mimeType) => {
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.mimeTypes.includes(mimeType);
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- * Verifica si una extensión corresponde a un documento soportado
- */
 export const isSupportedDocumentExtension = (extension) => {
   const normalizedExt = extension.startsWith('.') ? extension : `.${extension}`;
   const supportedTypes = getSupportedDocumentTypes();
@@ -176,11 +164,6 @@ export const generateAttachmentsSummary = (content) => {
   return parts.join(' y ');
 };
 
-/**
- * ✅ VALIDACIÓN ESPECÍFICA PARA CONSULTAS DE HERRAMIENTAS
- * @param {Object} params - Parámetros de la consulta
- * @returns {Array} - Array de errores (vacío si no hay errores)
- */
 export const validateToolQueryParams = (params) => {
   const { userId, query, herramientaId, chatId } = params;
   const errors = [];
@@ -236,11 +219,6 @@ export const validateToolQueryParams = (params) => {
   return errors;
 };
 
-/**
- * ✅ VALIDACIÓN ESPECÍFICA PARA CONSULTAS MULTIMODALES DE HERRAMIENTAS (ACTUALIZADA)
- * @param {Object} params - Parámetros de la consulta multimodal
- * @returns {Array} - Array de errores (vacío si no hay errores)
- */
 export const validateToolMultimodalParams = (params) => {
   const { userId, herramientaId, chatId, content } = params;
   const errors = [];
@@ -395,11 +373,6 @@ export const validateToolMultimodalParams = (params) => {
   return errors;
 };
 
-/**
- * ✅ FUNCIÓN PARA EXTRAER TEXTO DE CONTENIDO MULTIMODAL
- * @param {Array} content - Contenido multimodal
- * @returns {string} - Texto extraído y sanitizado
- */
 export const extractTextFromToolMultimodal = (content) => {
   if (!Array.isArray(content)) {
     console.warn('⚠️ extractTextFromToolMultimodal: content no es un array');
@@ -429,11 +402,6 @@ export const extractTextFromToolMultimodal = (content) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN PARA VALIDAR TIPO DE HERRAMIENTA
- * @param {string} toolType - Tipo de herramienta ('agent', 'pdf')
- * @returns {number|null} - ID de herramienta o null si es inválido
- */
 export const getToolIdByType = (toolType) => {
   if (!toolType || typeof toolType !== 'string') {
     return null;
@@ -443,21 +411,11 @@ export const getToolIdByType = (toolType) => {
   return TOOL_TYPE_MAP[normalizedType] || null;
 };
 
-/**
- * ✅ FUNCIÓN PARA OBTENER NOMBRE DE HERRAMIENTA POR ID
- * @param {number} toolId - ID de herramienta
- * @returns {string|null} - Nombre de herramienta o null si es inválido
- */
 export const getToolNameById = (toolId) => {
   const typeMap = Object.entries(TOOL_TYPE_MAP).find(([_, id]) => id === Number(toolId));
   return typeMap ? typeMap[0] : null;
 };
 
-/**
- * ✅ FUNCIÓN PARA SANITIZAR CONSULTA DE HERRAMIENTA
- * @param {string} query - Consulta a sanitizar
- * @returns {string} - Consulta sanitizada
- */
 export const sanitizeToolQuery = (query) => {
   if (!query || typeof query !== 'string') {
     return '';
@@ -476,11 +434,6 @@ export const sanitizeToolQuery = (query) => {
     .substring(0, 10000);
 };
 
-/**
- * ✅ FUNCIÓN PARA VALIDAR PARÁMETROS MÍNIMOS DE HERRAMIENTAS
- * @param {Object} params - Parámetros básicos
- * @returns {Object} - Resultado de validación con errores y parámetros normalizados
- */
 export const validateBasicToolParams = (params) => {
   const errors = [];
   const normalized = {};
@@ -524,12 +477,6 @@ export const validateBasicToolParams = (params) => {
   };
 };
 
-/**
- * ✅ FUNCIÓN DE DEBUG PARA LOGGING DE HERRAMIENTAS
- * @param {string} operation - Operación siendo ejecutada
- * @param {Object} params - Parámetros de la operación
- * @param {Object} extra - Información adicional
- */
 export const logToolOperation = (operation, params, extra = {}) => {
   console.log(`🔧 [TOOL-${operation.toUpperCase()}]`, {
     timestamp: new Date().toISOString(),

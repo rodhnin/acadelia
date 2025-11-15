@@ -152,7 +152,6 @@ async init() {
   // MEJORADO: Escuchar eventos de cambio de sección con un enfoque más específico
   document.addEventListener('sectionChanged', (e) => {
     if (e.detail.section === 'taxes') {
-      // Solo activar la sección si es la que se está mostrando
       this.onSectionActivated();
     } else if (e.detail.prevSection === 'taxes') {
       this.onSectionDeactivated();
@@ -536,7 +535,6 @@ updateEmptyTaxBreakdown() {
   calculateTaxesFromTransactions(transactions) {
     console.log('Calculando impuestos desde transacciones...');
     
-    // Variables para el resumen
     let totalAmountEur = 0;
     let totalTaxEur = 0;
     let spainTaxEur = 0;
@@ -989,11 +987,9 @@ destroyCharts() {
                 return null;
               },
               afterLabel: function(context) {
-                // Solo para el dataset principal (barras)
                 if (context.dataset.yAxisID === undefined) {
                   const countryData = chartData[context.dataIndex];
                   
-                  // Información básica: número de transacciones
                   let lines = [`Transacciones: ${countryData.count}`];
                   
                   // Si hay información de moneda original, mostrarla
@@ -1494,7 +1490,7 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
         }
         return b.total - a.total;
       })
-      .slice(0, 10); // Solo mostrar los 10 primeros países
+      .slice(0, 10);
 
     const desgloseData = topCountries.map(country => {
       return {
@@ -1564,7 +1560,7 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
         this.regions.LATAM.codes.includes(country.code)
       )
       .sort((a, b) => b.total - a.total)
-      .slice(0, 6); // Solo los 6 más importantes
+      .slice(0, 6);
     
     const totalHispanic = hispanicCountries.reduce((sum, country) => sum + country.total, 0);
     
@@ -1720,9 +1716,7 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       headerBg: 'e2ddd6'    // Fondo de encabezados
     };
     
-    //----------------------
     // HOJA 1: RESUMEN
-    //----------------------
     const resumenSheet = workbook.addWorksheet('Resumen', {
       views: [{showGridLines: true}],
       properties: {tabColor: {argb: brandColors.secondary}}
@@ -1738,7 +1732,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     };
     titleRow.height = 36;
     
-    // Información general
     const infoHeaderRow = resumenSheet.addRow(['INFORMACIÓN DEL REPORTE']);
     infoHeaderRow.font = {
       name: 'Arial',
@@ -1906,9 +1899,7 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     resumenSheet.getColumn(2).width = 15;
     resumenSheet.getColumn(3).width = 15;
     
-    //----------------------
     // HOJA 2: DESGLOSE POR PAÍS
-    //----------------------
     const desgloseSheet = workbook.addWorksheet('Desglose por País', {
       views: [{showGridLines: true}],
       properties: {tabColor: {argb: brandColors.secondary}}
@@ -1924,7 +1915,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     };
     desgloseTitleRow.height = 30;
     
-    // Información general
     desgloseSheet.addRow(['Período:', dateRangeText]);
     desgloseSheet.addRow(['']);
     
@@ -2113,9 +2103,7 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       { state: 'frozen', xSplit: 0, ySplit: 4, activeCell: 'A1' }
     ];
     
-    //----------------------
     // HOJA 3: ANÁLISIS POR REGIÓN
-    //----------------------
     const regionSheet = workbook.addWorksheet('Análisis por Región', {
       views: [{showGridLines: true}],
       properties: {tabColor: {argb: brandColors.secondary}}
@@ -2131,7 +2119,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     };
     regionTitleRow.height = 30;
     
-    // Información general
     regionSheet.addRow(['Período:', dateRangeText]);
     regionSheet.addRow(['']);
     
@@ -2250,9 +2237,7 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     regionSheet.getColumn(4).width = 15;
     regionSheet.getColumn(5).width = 15;
     
-    //----------------------
     // HOJA 4: PAÍSES HISPANOHABLANTES
-    //----------------------
     const hispanicSheet = workbook.addWorksheet('Países Hispanohablantes', {
       views: [{showGridLines: true}],
       properties: {tabColor: {argb: brandColors.secondary}}
@@ -2268,7 +2253,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     };
     hispanicTitleRow.height = 30;
     
-    // Información general
     hispanicSheet.addRow(['Período:', dateRangeText]);
     hispanicSheet.addRow(['']);
     

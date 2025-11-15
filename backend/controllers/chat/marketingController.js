@@ -9,7 +9,6 @@ import {
   validateTrendData 
 } from "../../utils/marketing/validators.js";
 
-// Controlador para chat de marketing con IA
 export const queryMarketing = async (req, res) => {
   try {
     if (req.body && typeof req.body === 'object') {
@@ -75,7 +74,6 @@ export const queryMarketing = async (req, res) => {
   } catch (error) {
     console.error("Error en queryMarketing:", error);
     
-    // Incluir notificaciones parciales incluso en caso de error
     let notifications = { total: 0, byType: {}, notifications: {}, sessionId: null };
     try {
       notifications = await marketingService.getCurrentNotifications();
@@ -121,7 +119,6 @@ export const queryMarketingStream = async (req, res) => {
       }
     };
     
-    // Incluir opción de explicabilidad en la solicitud
     const options = {
       streamEnabled: true,
       onPartialResponse: (chunk) => {
@@ -236,7 +233,6 @@ export const clearNotifications = async (req, res) => {
   }
 };
 
-// 🆕 NUEVO: Controlador para limpiar notificaciones por sección específica
 export const clearSectionNotifications = async (req, res) => {
   try {
     const { section } = req.params;
@@ -254,7 +250,7 @@ export const clearSectionNotifications = async (req, res) => {
     const sectionMapping = {
       'information': 'all', // Information muestra todas, así que limpia todas
       'profiles': 'profiles',
-      'contents': 'contents', // Note: plural en el backend
+      'contents': 'contents',
       'content': 'contents',  // Alias para compatibilidad
       'trends': 'trends',
       'memory': 'memory'
@@ -292,7 +288,6 @@ export const clearSectionNotifications = async (req, res) => {
   }
 };
 
-// 🆕 NUEVO: Controlador para marcar sección como vista (alternativo más específico)
 export const markSectionAsViewed = async (req, res) => {
   try {
     const { section } = req.params;
@@ -332,7 +327,6 @@ export const markSectionAsViewed = async (req, res) => {
   }
 };
 
-// Controlador para explicaciones de consultas
 export const explainQueryController = async (req, res) => {
   try {
     const { query, level = 'intermediate' } = req.body;
@@ -376,7 +370,6 @@ export const explainQueryController = async (req, res) => {
   }
 };
 
-// Controlador para visualización de decisiones
 export const visualizeDecisionController = async (req, res) => {
   try {
     const { query } = req.body;
@@ -419,7 +412,6 @@ export const visualizeDecisionController = async (req, res) => {
   }
 };
 
-// Controlador para perfiles de marketing
 export const profileController = {
   async createProfile(req, res) {
     try {
@@ -548,7 +540,6 @@ export const profileController = {
   }
 };
 
-// Controlador para contenidos de marketing
 export const contentController = {
   async createContent(req, res) {
     try {
@@ -667,7 +658,6 @@ async generateContent(req, res) {
   }
 };
 
-// Controlador para matching
 export const matchingController = {
   async matchProfileToContent(req, res) {
     try {
@@ -747,7 +737,6 @@ export const matchingController = {
   }
 };
 
-// Controlador para simulación
 export const simulationController = {
   async simulateCampaign(req, res) {
     try {
@@ -774,7 +763,6 @@ export const simulationController = {
   }
 };
 
-// Controlador para tendencias CON NUEVAS FUNCIONES DE ELIMINACIÓN
 export const trendController = {
   async saveTrend(req, res) {
     try {
@@ -874,7 +862,6 @@ export const trendController = {
   }
 };
 
-// Controlador para resumen
 export const summaryController = {
   async getMarketingSummary(req, res) {
     try {
@@ -896,7 +883,6 @@ export const summaryController = {
   }
 };
 
-// Controlador para gestión de memoria
 export const memoryController = {
   async getMemoryInsights(req, res) {
     try {

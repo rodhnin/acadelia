@@ -3,16 +3,11 @@ import path from 'path';
 import schedule from 'node-schedule';
 import pool from '../../lib/dbPool.js';
 
-/**
- * 🧹 Servicio centralizado de limpieza automática de archivos (imágenes y documentos)
- * Extiende la lógica existente del imageCleanupService para incluir documentos
- * Funciona completamente automático, sin endpoints manuales
- */
 class FileCleanupService {
   constructor() {
     this.uploadsDir = path.join(process.cwd(), 'uploads');
     this.chatImagesDir = path.join(this.uploadsDir, 'chat_images');
-    this.chatDocumentsDir = path.join(this.uploadsDir, 'chat_documents'); // 🆕 NUEVO
+    this.chatDocumentsDir = path.join(this.uploadsDir, 'chat_documents');
     this.maxAgeInDays = 60; // Días máximos para mantener archivos de chats inactivos
     this.initialized = false;
   }
@@ -31,7 +26,6 @@ class FileCleanupService {
         const orphanedImagesResult = await this.cleanupOrphanedImages();
         const oldImagesResult = await this.cleanupOldImages();
         
-        // 🆕 NUEVO: Ejecutar limpieza de documentos
         const orphanedDocsResult = await this.cleanupOrphanedDocuments();
         const oldDocsResult = await this.cleanupOldDocuments();
         const dbOrphanedDocsResult = await this.cleanupOrphanedDocumentsFromDB();
@@ -63,7 +57,6 @@ class FileCleanupService {
     console.log('✅ Servicio de limpieza automática de archivos programado (domingos 3:00 AM) - Imágenes y Documentos');
   }
 
-  // ========== LIMPIEZA DE IMÁGENES (lógica existente) ==========
 
   async cleanupOrphanedImages() {
     let result = {
@@ -176,7 +169,6 @@ class FileCleanupService {
     }
   }
 
-  // ========== 🆕 NUEVA LIMPIEZA DE DOCUMENTOS ==========
 
   async cleanupOrphanedDocuments() {
     let result = {
@@ -289,7 +281,6 @@ class FileCleanupService {
     }
   }
 
-  // 🆕 NUEVO: Limpiar registros huérfanos de documentos en la base de datos
   async cleanupOrphanedDocumentsFromDB() {
     let result = {
       success: false,
@@ -354,7 +345,6 @@ class FileCleanupService {
     }
   }
 
-  // ========== UTILIDADES COMPARTIDAS ==========
 
   deleteFolderRecursive(dir) {
     if (fs.existsSync(dir)) {

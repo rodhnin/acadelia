@@ -10,10 +10,6 @@ import pdfSecurityService from '../../services/chat/pdf/pdfsecurityService.js';
 import crypto from 'crypto';
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 
-/**
- * Controlador optimizado para la gestión de archivos PDF con Mistral OCR
- * VERSIÓN SIMPLIFICADA - Alineado con fileService.js optimizado
- */
 
 export const uploadPDF = async (req, res) => {
   const processingStart = Date.now();
@@ -188,9 +184,6 @@ export const uploadPDF = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Sirve archivo PDF
- */
 export const servePDFFile = async (req, res) => {
   const requestStart = Date.now();
 
@@ -306,9 +299,6 @@ export const servePDFFile = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Extrae texto del PDF
- */
 export const extractPDFText = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -375,9 +365,6 @@ export const extractPDFText = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Extrae contenido del PDF
- */
 export const extractPDFContent = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -428,9 +415,6 @@ export const extractPDFContent = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Extrae texto de región específica
- */
 export const extractTextSelection = async (req, res) => {
   const startTime = Date.now();
   try {
@@ -541,9 +525,6 @@ export const extractTextSelection = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Vista previa de PDF
- */
 export const previewPDFImage = async (req, res) => {
   try {
     await PDFService.previewImage(req, res);
@@ -558,9 +539,6 @@ export const previewPDFImage = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Lista PDFs del chat
- */
 export const listChatPDFs = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -602,9 +580,6 @@ export const listChatPDFs = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Limpia caché
- */
 export const clearCache = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -665,9 +640,6 @@ export const clearCache = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Elimina PDF
- */
 export const deletePDF = async (req, res) => {
   const deleteStart = Date.now();
 
@@ -755,9 +727,6 @@ export const deletePDF = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Cancela procesamiento
- */
 export const cancelPDFProcessing = async (req, res) => {
   const cancelStart = Date.now();
 
@@ -807,9 +776,6 @@ export const cancelPDFProcessing = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Estado del procesamiento
- */
 export const getPDFProcessingStatus = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -847,9 +813,6 @@ export const getPDFProcessingStatus = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA - Limpia caché de extracciones
- */
 export const clearExtractionCache = async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -892,9 +855,6 @@ export const clearExtractionCache = async (req, res) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN AUXILIAR SIMPLIFICADA - Mensajes de progreso
- */
 function getProcessingMessages(progress) {
   if (progress < 25) {
     return {

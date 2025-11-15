@@ -28,9 +28,7 @@ import {
 import contentProcessing from './content-processing-agente.js';
 import { saveMarkdownImage } from '../api/messages-agente.js';
 
-// ==========================================
 // IMPORTACIONES DEL PROCESADOR DE IMÁGENES COMPARTIDO
-// ==========================================
 
 import {
   processImagesOptimized,
@@ -44,14 +42,10 @@ import {
   IMAGE_CONFIG
 } from '../utils/markdown-image-processor.js';
 
-// ==========================================
-// ==========================================
 // NOTA: El sistema de caché ahora se importa del módulo compartido
 // y se adapta automáticamente para el contexto del agente
 
-// ==========================================
 // INICIALIZACIÓN Y REGISTRO DE RENDERIZADORES
-// ==========================================
 
 const acadelConfetti = window.acadelConfetti || ((title, msg) => console.log(`CONFETTI: ${title} - ${msg}`));
 const acadelExito = window.acadelExito || ((title, msg) => console.log(`ÉXITO: ${title} - ${msg}`));
@@ -261,16 +255,13 @@ function performInitialCleanup() {
   setTimeout(processExistingAudioMessages, 600);
 }
 
-/**
- * ✅ NUEVO: Observer unificado optimizado (adaptado del matemático)
- */
 function setupUnifiedObserver() {
   if (window._unifiedObserverConfigured) return;
   window._unifiedObserverConfigured = true;
 
   let pendingElements = [];
   let processingScheduled = false;
-  let imageProcessingThrottle = new Map(); // ✅ Throttling para imágenes
+  let imageProcessingThrottle = new Map();
 
   const processPendingElements = () => {
     const elementsToProcess = [...pendingElements];
@@ -290,7 +281,7 @@ function setupUnifiedObserver() {
     let newMessagesAdded = false;
     let hasNewImages = false;
     let hasNewContent = false;
-    let messagesToProcess = new Set(); // ✅ Evitar duplicados
+    let messagesToProcess = new Set();
 
     mutations.forEach(mutation => {
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
@@ -817,7 +808,7 @@ function extractCodeContent(originalMessage, fileName) {
     // MEJORA: Sanitización diferenciada por tipo de archivo
     if (fileName.toLowerCase().endsWith('.html')) {
       cleanedMessage = originalMessage
-        .replace(/%3Ca%20href%3D[^%]*%3E/gi, '') // Solo <a href=...>
+        .replace(/%3Ca%20href%3D[^%]*%3E/gi, '')
         .replace(/%3C%2Fa%3E/gi, '')           // </a>
         // No tocar otros tags que pueden ser parte del HTML válido
         .replace(/%0A/g, '')                  // Eliminar saltos de línea encodificados que causan problemas
@@ -830,7 +821,7 @@ function extractCodeContent(originalMessage, fileName) {
       // No reemplazar otros tags que pueden ser parte de comentarios CSS
     } else {
       cleanedMessage = originalMessage
-        .replace(/%3Ca%20href%3D[^%]*%3E/gi, '') // Solo <a href=...>
+        .replace(/%3Ca%20href%3D[^%]*%3E/gi, '')
         .replace(/%3C%2Fa%3E/gi, '')           // </a>
         .replace(/%3Cem%3E/gi, '')             // <em>
         .replace(/%3C%2Fem%3E/gi, '');         // </em>
@@ -943,9 +934,7 @@ contentProcessing.initialize({
   initializeFileAttachmentHandlers: initializeFileAttachmentHandlers
 });
 
-// ==========================================
 // RENDERIZADO DE TIPOS DE MENSAJES
-// ==========================================
 
 /**
  * Verifica si el texto contiene diagramas Mermaid
@@ -1152,12 +1141,6 @@ function extractTextBetweenDiagrams(text, diagram1, diagram2) {
   return text.substring(diagram1.end, diagram2.start).trim();
 }
 
-/**
- * ✅ RENDERIZADOR PRINCIPAL DE MENSAJES DE TEXTO - REFACTORIZADO
- * @param {HTMLElement} container - Contenedor donde renderizar
- * @param {string} content - Contenido del mensaje
- * @param {string} role - Rol del mensaje ('user' o 'ai')
- */
 export function renderTextMessage(container, content, role = '') {
   const safeContent = typeof content === 'string' ? content : String(content);
   const isAIMessage = role === 'ai';
@@ -1315,7 +1298,6 @@ export function renderTextMessage(container, content, role = '') {
         }
       }, 100);
 
-      // Solo retornamos si NO hay código
       if (!hasCode) {
         return;
       }
@@ -1911,7 +1893,6 @@ function renderAudioMessage(container, content) {
 function renderErrorMessage(container, content) {
     const { errorMessage, originalMessage } = content;
     
-    // 🦫 Mensajes graciosos para agente de estudio integral
     const studyAgentErrorMessages = [
         {
             main: "🦫 ¡Ups! Mi cerebro multimodal peludo tuvo un cortocircuito. ¡Como cuando intentas procesar un video de 3 horas en 5 minutos!",
@@ -1951,7 +1932,6 @@ function renderErrorMessage(container, content) {
     
     clearElement(container);
     
-    // 🦫 ESTRUCTURA CON INLINE STYLES (como las funciones que funcionan)
     const errorContainer = createElement('div', { className: 'cancelled-message' });
     errorContainer.style.display = 'flex';
     errorContainer.style.alignItems = 'center';
@@ -1963,33 +1943,27 @@ function renderErrorMessage(container, content) {
     errorContainer.style.margin = '5px 0';
     errorContainer.style.borderLeft = '3px solid rgba(231,76,60,0.3)';
     
-    // 🦫 Icono de agente de estudio
     const icon = createElement('i', { className: 'bx bx-brain' });
     icon.style.fontSize = '1.3rem';
     icon.style.color = '#e74c3c';
     errorContainer.appendChild(icon);
     
-    // 🦫 Span con el mensaje principal
     const errorSpan = createElement('span', {}, '🦫 Pausa en el agente de estudio');
     errorContainer.appendChild(errorSpan);
     
-    // 🦫 Detalles adicionales con inline styles
     const errorDetails = createElement('div', { className: 'cancelled-details' });
     errorDetails.style.fontSize = '0.85rem';
     errorDetails.style.color = '#888';
     errorDetails.style.margin = '8px 0 0 20px';
     
-    // 🦫 Mensaje principal con personalidad de agente de estudio
     const messageParagraph = createElement('p', {});
     messageParagraph.innerHTML = randomResponse.main;
     errorDetails.appendChild(messageParagraph);
     
-    // 🦫 Consejo motivacional de agente de estudio
     const suggestionParagraph = createElement('p', {});
     suggestionParagraph.innerHTML = `💡 <strong>Consejo del Agente Acadel:</strong> ${randomResponse.tip}`;
     errorDetails.appendChild(suggestionParagraph);
     
-    // 🦫 Mensaje de ánimo final variado según las capacidades
     const studyAgentMotivations = [
         '🎥 ¡El aprendizaje multimedia continúa! ¿Qué tal si exploramos otro video o documento?',
         '🎧 ¡Las transcripciones siguen! ¿Tienes algún audio interesante para analizar?',
@@ -2007,7 +1981,6 @@ function renderErrorMessage(container, content) {
     container.appendChild(errorContainer);
     container.appendChild(errorDetails);
     
-    // 🦫 Notificación amigable para agente de estudio
     if (window.acadelInfo) {
         const studyAgentNotifications = [
             {
@@ -2132,9 +2105,7 @@ function renderLoadingMessage(container) {
   `;
 }
 
-// ==========================================
 // FUNCIONES AUXILIARES DE RENDERIZADO
-// ==========================================
 
 /**
  * Aplica highlight.js a todos los bloques de código en un contenedor
@@ -2260,9 +2231,7 @@ function addExpandButton(container, data, type = 'table') {
   container.appendChild(expandButton);
 }
 
-// ==========================================
 // GESTIÓN DE MENSAJES DEL CHAT
-// ==========================================
 
 /**
  * Renderiza los mensajes del chat
@@ -2685,7 +2654,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
  */
 export function replaceWithError(loadingMessage, errorMessage, originalQuery = '') {
 
-    // ⭐ SOLUCIÓN: Limpiar ID temporal si hay error
     if (window.tempChatIdForFiles) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error en respuesta`);
@@ -2693,7 +2661,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     
     if (!loadingMessage) return;
     
-    // 🦫 Mensajes contextuales para agente de estudio según tipo de error
     const getStudyAgentErrorMessage = (error) => {
         const errorLower = error.toLowerCase();
         
@@ -2721,7 +2688,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         return genericStudyMessages[Math.floor(Math.random() * genericStudyMessages.length)];
     };
     
-    // 🦫 Consejos relacionados con agente de estudio
     const studyAgentAdvice = [
         "🎥 Mientras tanto, ¿qué tal si organizas esos videos de YouTube que tienes en 'Ver más tarde'?",
         "🎧 Momento perfecto para revisar si tienes audios pendientes de transcribir",
@@ -2753,7 +2719,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     const contextualMessage = getStudyAgentErrorMessage(errorMessage);
     const randomAdvice = studyAgentAdvice[Math.floor(Math.random() * studyAgentAdvice.length)];
     
-    // 🦫 ESTRUCTURA CON INLINE STYLES (como la función que funciona) SIN BOTÓN REINTENTAR
     const errorContent = `
         <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(231,76,60,0.05);border-radius:8px;margin:5px 0;border-left:3px solid rgba(231,76,60,0.3);">
             <i class="bx bx-confused" style="font-size:1.3rem;color:#e74c3c;"></i>
@@ -2799,7 +2764,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         }
     }, 100);
     
-    // 🦫 Notificación amigable para agente de estudio
     if (window.acadelInfo) {
         const studyAgentNotifications = [
             "Acadel está reorganizando su arsenal de herramientas educativas",
@@ -3100,13 +3064,8 @@ export function processServerResponse(data) {
   return messageProcessing.processResponse(data);
 }
 
-// ==========================================
 // PROCESAMIENTO DE IMÁGENES - FUNCIONES SIMPLIFICADAS QUE DELEGAN AL MÓDULO COMPARTIDO
-// ==========================================
 
-/**
- * ✅ SIMPLIFICADO: Procesa todas las imágenes existentes (delegado al módulo compartido)
- */
 function processAllExistingImages() {
   const messages = document.querySelectorAll('.message');
   if (messages.length === 0) return;
@@ -3140,9 +3099,6 @@ function processAllExistingImages() {
   });
 }
 
-/**
- * ✅ SIMPLIFICADO: Sistema para capturar clics en imágenes (delegado al módulo compartido)
- */
 function setupImagePreviewSystem() {
   if (window._imagePreviewSystemConfigured) return;
   window._imagePreviewSystemConfigured = true;
@@ -3191,9 +3147,6 @@ function setupImagePreviewSystem() {
   console.log('Sistema de vista previa de imágenes configurado correctamente');
 }
 
-/**
- * ✅ SIMPLIFICADO: Muestra una imagen a tamaño completo (delegado al módulo compartido)
- */
 window.showFullImage = function (imagePath) {
   console.log("Mostrando imagen a tamaño completo:", imagePath);
 
@@ -3291,9 +3244,6 @@ window.showFullImage = function (imagePath) {
   img.src = imagePath;
 };
 
-/**
- * ✅ SIMPLIFICADO: Función para crear y mostrar modales (delegado al módulo compartido)
- */
 function createModal(options = {}) {
   const {
     className = 'fullscreen-modal',
@@ -3401,9 +3351,6 @@ function createModal(options = {}) {
   return modal;
 }
 
-/**
- * ✅ SIMPLIFICADO: Función simplificada para mostrar modal de error de imagen (delegado al módulo compartido)
- */
 function showErrorModal(options = {}) {
   const title = options.title || 'Imagen invisible! 👻 Acadel no puede identificar esta imagen. Las imagenes fantasma existen';
   const description = options.description || '';
@@ -3490,9 +3437,7 @@ function containsMath(text) {
   return mathPatterns.some(pattern => pattern.test(text));
 }
 
-// ==========================================
 // INICIALIZACIÓN DE EVENTOS PARA SCROLL E IMÁGENES - SIMPLIFICADO
-// ==========================================
 
 let processingScrollThrottled = false;
 window.addEventListener('scroll', () => {
@@ -3548,9 +3493,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 500);
 });
 
-// ==========================================
 // EXPOSICIÓN GLOBAL CONTROLADA
-// ==========================================
 
 // Exposición global controlada para admitir acceso directo
 if (typeof window !== 'undefined') {
@@ -3559,9 +3502,7 @@ if (typeof window !== 'undefined') {
   window.imageUrlCache = imageUrlCache;
 }
 
-// ==========================================
 // EXPORTACIONES PRINCIPALES
-// ==========================================
 
 // Exportaciones individuales
 export {

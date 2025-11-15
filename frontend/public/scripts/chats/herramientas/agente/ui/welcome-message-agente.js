@@ -388,7 +388,6 @@ export async function showWelcomeMessage() {
           }
 
           // Los archivos válidos se procesarán por el sistema unificado
-          // Solo llamamos al sistema unificado si hay archivos válidos
           if (processedCount > 0) {
             const validFiles = [];
             let validIndex = 0;
@@ -433,7 +432,6 @@ export async function showWelcomeMessage() {
 
       document.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        // Solo si hay archivos y estamos en bienvenida
         if (e.dataTransfer.types.includes('Files') && document.querySelector('.welcome-message')) {
           welcomeFileUploadContainer.classList.add('active');
         }
@@ -472,7 +470,6 @@ export async function showWelcomeMessage() {
       document.addEventListener('dragleave', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
-        // Solo ejecutar si el drag abandona completamente el documento
         if (e.clientX <= 0 || e.clientY <= 0 ||
           e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
@@ -846,7 +843,6 @@ export async function showWelcomeMessage() {
       document.body.appendChild(welcomeMathEditorContainer);
 
       const globalKeyboardProtector = function (e) {
-        // Solo intervenir si el editor está abierto
         if (welcomeMathEditorContainer.style.display === 'flex' ||
           welcomeMathEditorContainer.style.display === 'block') {
 
@@ -857,7 +853,6 @@ export async function showWelcomeMessage() {
             return;
           }
 
-          // Solo bloquear eventos si vienen del teclado virtual
           if (e.target.closest('ml-keyboard') ||
             e.target.closest('.ML__keyboard')) {
 
@@ -1161,7 +1156,6 @@ export async function showWelcomeMessage() {
           welcomeMathButton.classList.remove('active');
         });
       }
-      // Variables para mantener el estado y los controladores de eventos
       let keydownHandler = null;
       let clickOutsideHandler = null;
 
@@ -1240,7 +1234,7 @@ export async function showWelcomeMessage() {
           overlay.style.top = '0';
           overlay.style.left = '0';
           overlay.style.width = '100vw';
-          overlay.style.height = '50vh'; // Solo cubre mitad superior
+          overlay.style.height = '50vh';
           overlay.style.zIndex = '10';
           overlay.style.pointerEvents = 'all';
           document.body.appendChild(overlay);

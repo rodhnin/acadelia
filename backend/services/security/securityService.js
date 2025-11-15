@@ -447,7 +447,6 @@ class SecurityService {
    */
   async getUserSecurityInfo(userId) {
     try {
-      // Información de eventos de seguridad asociados al usuario
       const eventsQuery = `
         SELECT 
           event_type as "eventType",

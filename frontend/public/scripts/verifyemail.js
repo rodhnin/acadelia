@@ -27,7 +27,6 @@ function showAlert(message, type = 'info', duration = 3000) {
   }, duration);
 }
 
-// Variables para elementos del DOM
 let loadingElement;
 let successElement;
 let errorElement;

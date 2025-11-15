@@ -13,10 +13,6 @@ import {
 
 import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS DE TEXTO AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgent = async (req, res) => {
   console.log('🔍 queryAgent iniciado con TokenManager centralizado');
 
@@ -26,10 +22,8 @@ export const queryAgent = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES DE HERRAMIENTAS =====
   const validationErrors = validateToolQueryParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -75,10 +69,6 @@ export const queryAgent = async (req, res) => {
   });
 };
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS MULTIMODALES AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgentMultimodal = async (req, res) => {
   console.log('🔍 queryAgentMultimodal iniciado con TokenManager centralizado');
 
@@ -90,10 +80,8 @@ export const queryAgentMultimodal = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
   const validationErrors = validateToolMultimodalParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -129,7 +117,6 @@ export const queryAgentMultimodal = async (req, res) => {
       skipSave: false
     });
 
-    // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
     if (result.success && result.chatId) {
       await addRecentDocumentsToResult(result, params.userId || req.user?.id_user);
     }
@@ -152,10 +139,6 @@ export const queryAgentMultimodal = async (req, res) => {
   });
 };
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO MULTIMODAL SIN GUARDAR AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgentMultimodalWithoutSaving = async (req, res) => {
   console.log('🔄 queryAgentMultimodalWithoutSaving iniciado con TokenManager centralizado');
 
@@ -167,10 +150,8 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
   const validationErrors = validateToolMultimodalParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -226,9 +207,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
   });
 };
 
-/**
- * 🔧 HELPER: Agregar documentos recientes al resultado
- */
 async function addRecentDocumentsToResult(result, userId) {
   try {
     console.log(`🔍 Buscando documentos recientes para chat Agente: ${result.chatId}`);

@@ -9,7 +9,6 @@ import {
 import { documentStorageService } from '../../services/chat/documentStorageService.js';
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 
-// ====== IMPORTAR CONFIGURACIÓN CENTRALIZADA ACADEL ======
 import {
   FILE_LIMITS,
   SUPPORTED_FILES,
@@ -20,10 +19,6 @@ import {
   getSupportedTypesBackend
 } from '../../utils/chat/backend-file-constants.js';
 
-/**
- * 🦫 FUNCIONES DE RESPUESTA ACADEL CENTRALIZADAS
- * Para mantener coherencia en las respuestas del backend
- */
 function createAcadelErrorResponse(res, statusCode, errorCode, customMessage = null) {
   const errorMessages = {
     'UNSUPPORTED_TYPE': {
@@ -106,9 +101,6 @@ function createAcadelSuccessResponse(res, data, successCode = 'FILES_READY', cus
   });
 }
 
-/**
- * 🦫 Obtiene documentos de un chat específico
- */
 export const getChatDocumentsController = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -136,9 +128,6 @@ export const getChatDocumentsController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Obtiene el contenido de un documento específico
- */
 export const getDocumentContentController = async (req, res) => {
     try {
         const { fileId } = req.params;
@@ -178,9 +167,6 @@ export const getDocumentContentController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Busca documentos en un chat
- */
 export const searchDocumentsController = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -215,9 +201,6 @@ export const searchDocumentsController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Obtiene estadísticas de documentos del usuario
- */
 export const getDocumentStatsController = async (req, res) => {
     try {
         const userId = req.user.id_user;
@@ -233,7 +216,6 @@ export const getDocumentStatsController = async (req, res) => {
             totalSize: parseInt(stats.total_size) || 0,
             chatsWithDocuments: parseInt(stats.chats_with_documents) || 0,
             differentLanguages: parseInt(stats.different_languages) || 0,
-            // ⭐ AGREGAR LÍMITES ACADEL ⭐
             limits: {
                 maxFileSize: FILE_LIMITS.MAX_FILE_SIZE,
                 maxTextContent: FILE_LIMITS.MAX_TEXT_CONTENT,
@@ -259,9 +241,6 @@ export const getDocumentStatsController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Verifica si un chat tiene documentos
- */
 export const checkChatHasDocumentsController = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -281,15 +260,11 @@ export const checkChatHasDocumentsController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Obtiene documentos recientes del usuario
- */
 export const getRecentDocumentsController = async (req, res) => {
     try {
         const userId = req.user.id_user;
         let limit = parseInt(req.query.limit) || 10;
         
-        // ⭐ VALIDAR LÍMITE CON CONFIGURACIÓN ACADEL ⭐
         if (limit > 50) {
             return createAcadelErrorResponse(res, 400, 'TOO_MANY_FILES', 'Acadel puede mostrar máximo 50 documentos recientes');
         }
@@ -320,16 +295,12 @@ export const getRecentDocumentsController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Obtiene información sobre tipos de archivo soportados
- */
 export const getSupportedTypesController = async (req, res) => {
     try {
         console.log('🦫 Acadel proporcionando información de tipos soportados');
         
         const supportedTypes = documentStorageService.getSupportedTypes();
         
-        // ⭐ AGREGAR INFORMACIÓN ADICIONAL DE ACADEL ⭐
         const acadelInfo = {
             ...supportedTypes,
             acadel: {
@@ -353,9 +324,6 @@ export const getSupportedTypesController = async (req, res) => {
     }
 };
 
-/**
- * 🦫 Procesa archivos individuales con validaciones Acadel centralizadas
- */
 export const processDocumentController = async (req, res) => {
     try {
         const { fileUrl, chatId, originalName } = req.body;
@@ -367,7 +335,6 @@ export const processDocumentController = async (req, res) => {
             return createAcadelErrorResponse(res, 400, 'FILE_CORRUPTED', 'Acadel necesita la URL del archivo y el ID del chat');
         }
         
-        // ⭐ VALIDACIÓN PREVIA CON SISTEMA CENTRALIZADO ⭐
         if (originalName) {
             const extension = originalName.split('.').pop().toLowerCase();
             
@@ -394,7 +361,6 @@ export const processDocumentController = async (req, res) => {
         );
         
         if (result.success) {
-            // ⭐ RESPUESTA EXITOSA CON INFORMACIÓN ACADEL ⭐
             createAcadelSuccessResponse(res, {
                 file: {
                     fileId: result.fileId,
@@ -408,7 +374,6 @@ export const processDocumentController = async (req, res) => {
                 }
             }, 'FILE_PROCESSED', `Acadel procesó exitosamente "${result.originalName || originalName}"`);
         } else {
-            // ⭐ DETERMINAR TIPO DE ERROR PARA RESPUESTA ACADEL ⭐
             let errorCode = 'FILE_CORRUPTED';
             
             if (result.error.includes('demasiado grande')) {

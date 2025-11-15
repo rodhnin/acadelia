@@ -1,10 +1,4 @@
-/**
- * 📚🦫 CONFIGURACIÓN CENTRALIZADA DE ARCHIVOS - BACKEND ACADEL
- * Constantes y validaciones compartidas para el backend
- * DEBE MANTENER COHERENCIA TOTAL CON EL FRONTEND
- */
 
-// ====== LÍMITES GENERALES ======
 export const FILE_LIMITS = {
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB para todos los archivos
   MAX_TEXT_CONTENT: 100000,        // 100K caracteres máximo de contenido extraído
@@ -16,7 +10,6 @@ export const FILE_LIMITS = {
   CODE_MAX_SIZE: 5 * 1024 * 1024       // 5MB para código
 };
 
-// ====== TIPOS DE ARCHIVO SOPORTADOS ======
 export const SUPPORTED_FILES = {
   IMAGES: {
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -42,58 +35,58 @@ export const SUPPORTED_FILES = {
   CODE: {
     mimeTypes: {
       'text/javascript': { extension: 'js', type: 'code' },
-      'application/javascript': { extension: 'js', type: 'code' },      // ✅ NUEVO
-      'application/x-javascript': { extension: 'js', type: 'code' },   // ✅ NUEVO - Este es el que falta
-      'text/ecmascript': { extension: 'js', type: 'code' },            // ✅ NUEVO
-      'application/ecmascript': { extension: 'js', type: 'code' },     // ✅ NUEVO
+      'application/javascript': { extension: 'js', type: 'code' },
+      'application/x-javascript': { extension: 'js', type: 'code' },
+      'text/ecmascript': { extension: 'js', type: 'code' },
+      'application/ecmascript': { extension: 'js', type: 'code' },
       
       'text/typescript': { extension: 'ts', type: 'code' },
-      'application/typescript': { extension: 'ts', type: 'code' },     // ✅ NUEVO
-      'text/x-typescript': { extension: 'ts', type: 'code' },          // ✅ NUEVO
+      'application/typescript': { extension: 'ts', type: 'code' },
+      'text/x-typescript': { extension: 'ts', type: 'code' },
       
       'text/x-python': { extension: 'py', type: 'code' },
-      'application/x-python': { extension: 'py', type: 'code' },       // ✅ NUEVO
-      'text/x-python-script': { extension: 'py', type: 'code' },       // ✅ NUEVO
+      'application/x-python': { extension: 'py', type: 'code' },
+      'text/x-python-script': { extension: 'py', type: 'code' },
       
       'text/x-java-source': { extension: 'java', type: 'code' },
-      'application/x-java': { extension: 'java', type: 'code' },       // ✅ NUEVO
-      'text/x-java': { extension: 'java', type: 'code' },              // ✅ NUEVO
+      'application/x-java': { extension: 'java', type: 'code' },
+      'text/x-java': { extension: 'java', type: 'code' },
       
       'text/x-c': { extension: 'c', type: 'code' },
-      'application/x-c': { extension: 'c', type: 'code' },             // ✅ NUEVO
+      'application/x-c': { extension: 'c', type: 'code' },
       'text/x-c++': { extension: 'cpp', type: 'code' },
-      'application/x-c++': { extension: 'cpp', type: 'code' },         // ✅ NUEVO
+      'application/x-c++': { extension: 'cpp', type: 'code' },
       
       'text/x-csharp': { extension: 'cs', type: 'code' },
-      'application/x-csharp': { extension: 'cs', type: 'code' },       // ✅ NUEVO
+      'application/x-csharp': { extension: 'cs', type: 'code' },
       
       'text/html': { extension: 'html', type: 'code' },
-      'application/xhtml+xml': { extension: 'xhtml', type: 'code' },   // ✅ NUEVO
+      'application/xhtml+xml': { extension: 'xhtml', type: 'code' },
       'text/css': { extension: 'css', type: 'code' },
       
       'text/xml': { extension: 'xml', type: 'document' },
-      'application/xml': { extension: 'xml', type: 'document' },       // ✅ NUEVO
+      'application/xml': { extension: 'xml', type: 'document' },
       'application/json': { extension: 'json', type: 'code' },
-      'text/json': { extension: 'json', type: 'code' },               // ✅ NUEVO
+      'text/json': { extension: 'json', type: 'code' },
       'application/yaml': { extension: 'yaml', type: 'code' },
       'text/x-yaml': { extension: 'yml', type: 'code' },
-      'text/yaml': { extension: 'yaml', type: 'code' },               // ✅ NUEVO
+      'text/yaml': { extension: 'yaml', type: 'code' },
       
       'application/x-sql': { extension: 'sql', type: 'code' },
       'text/x-sql': { extension: 'sql', type: 'code' },
-      'text/sql': { extension: 'sql', type: 'code' }                  // ✅ NUEVO
+      'text/sql': { extension: 'sql', type: 'code' }
     },
     
     // También actualiza las extensiones para incluir las nuevas variantes
     extensions: [
       // JavaScript y TypeScript
-      'js', 'mjs', 'jsx', 'ts', 'tsx',                               // ✅ AGREGADO: mjs, jsx, tsx
+      'js', 'mjs', 'jsx', 'ts', 'tsx',
       // Python
-      'py', 'pyw', 'ipynb',                                          // ✅ AGREGADO: pyw
+      'py', 'pyw', 'ipynb',
       // Web
-      'html', 'htm', 'xhtml', 'css', 'scss', 'sass',               // ✅ AGREGADO: htm, xhtml, scss, sass
+      'html', 'htm', 'xhtml', 'css', 'scss', 'sass',
       // Java y C family
-      'java', 'c', 'cpp', 'h', 'hpp', 'cs',                        // ✅ AGREGADO: hpp
+      'java', 'c', 'cpp', 'h', 'hpp', 'cs',
       // Otros lenguajes
       'php', 'rb', 'go', 'swift', 'rs',
       // Configuración y datos
@@ -106,7 +99,6 @@ export const SUPPORTED_FILES = {
   }
 };
 
-// ====== ARCHIVOS PROHIBIDOS ======
 export const FORBIDDEN_FILES = {
   BLOCKED_EXTENSIONS: ['pdf', 'exe', 'msi', 'app', 'deb', 'rpm', 'zip', 'rar', '7z'],
   BLOCKED_MIME_TYPES: [
@@ -130,15 +122,7 @@ export const FORBIDDEN_FILES = {
   }
 };
 
-// ====== FUNCIONES DE VALIDACIÓN BACKEND ======
 
-/**
- * 🦫 Valida si un archivo es soportado por extensión y MIME type
- * @param {string} fileName - Nombre del archivo
- * @param {string} mimeType - Tipo MIME del archivo
- * @param {number} fileSize - Tamaño del archivo en bytes
- * @returns {Object} - {valid: boolean, detectedType: string, reason: string, errorCode: string}
- */
 export function validateFileTypeBackend(fileName, mimeType, fileSize) {
   const extension = fileName.split('.').pop().toLowerCase();
   
@@ -206,12 +190,6 @@ export function validateFileTypeBackend(fileName, mimeType, fileSize) {
   };
 }
 
-/**
- * 🦫 Valida el contenido de texto extraído
- * @param {string} content - Contenido de texto
- * @param {string} fileName - Nombre del archivo
- * @returns {Object} - {valid: boolean, content: string, truncated: boolean, reason: string}
- */
 export function validateTextContentBackend(content, fileName) {
   console.log(`🦫 Acadel Backend validando contenido: ${fileName} (${content?.length || 0} caracteres)`);
   
@@ -246,11 +224,6 @@ export function validateTextContentBackend(content, fileName) {
   };
 }
 
-/**
- * 🦫 Valida la cantidad total de archivos en un mensaje
- * @param {number} fileCount - Cantidad de archivos
- * @returns {Object} - {valid: boolean, reason: string, errorCode: string}
- */
 export function validateFileCountBackend(fileCount) {
   console.log(`🦫 Acadel Backend validando cantidad: ${fileCount} archivos`);
   
@@ -270,10 +243,6 @@ export function validateFileCountBackend(fileCount) {
   };
 }
 
-/**
- * 🦫 Obtiene la configuración de tipos soportados para endpoints
- * @returns {Object} - Configuración completa para el frontend
- */
 export function getSupportedTypesBackend() {
   return {
     mimeTypes: [
@@ -317,12 +286,6 @@ export function getSupportedTypesBackend() {
   };
 }
 
-/**
- * 🦫 Detecta el lenguaje de programación basado en la extensión
- * @param {string} fileName - Nombre del archivo
- * @param {string} content - Contenido del archivo (opcional)
- * @returns {string|null} - Lenguaje detectado o null
- */
 export function detectLanguageBackend(fileName, content = '') {
   const extension = fileName.split('.').pop().toLowerCase();
   
@@ -416,11 +379,6 @@ export function detectLanguageBackend(fileName, content = '') {
   return null;
 }
 
-/**
- * 🦫 Infiere MIME type basado en la extensión del archivo
- * @param {string} fileName - Nombre del archivo
- * @returns {string} - MIME type inferido
- */
 export function inferMimeTypeFromExtensionBackend(fileName) {
   const extension = fileName.split('.').pop().toLowerCase();
   
@@ -474,10 +432,6 @@ export function inferMimeTypeFromExtensionBackend(fileName) {
   return 'text/plain';
 }
 
-/**
- * 🦫 Crea configuración de supportedMimeTypes para documentStorageService
- * @returns {Object} - Configuración compatible con el servicio existente
- */
 export function createSupportedMimeTypesConfig() {
   const config = {};
   
@@ -493,7 +447,6 @@ export function createSupportedMimeTypesConfig() {
   return config;
 }
 
-// ====== EXPORTAR PARA USO EN SERVICIOS ======
 export default {
   FILE_LIMITS,
   SUPPORTED_FILES,

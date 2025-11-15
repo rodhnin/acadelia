@@ -80,7 +80,6 @@
      */
     const originalFetch = window.fetch;
     window.fetch = async function(url, options = {}) {
-        // Solo para peticiones que modifican datos, excluyendo dominios de confianza
         if (options.method && 
             ['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method.toUpperCase()) &&
             !url.includes('/api/csrf-') &&

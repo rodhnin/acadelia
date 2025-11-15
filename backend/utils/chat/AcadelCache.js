@@ -1,12 +1,7 @@
-// ============================================================================
-// ============================================================================
-// ============================================================================
 
 import crypto from 'crypto';
 import { LRUCache } from 'lru-cache';
 
-// ============================================================================
-// ============================================================================
 
 const CACHE_CONFIG = {
   L1_RESPONSES: {
@@ -31,9 +26,6 @@ const CACHE_CONFIG = {
   }
 };
 
-// ============================================================================
-// 🧠 INSTANCIAS DE CACHE MULTINIVEL
-// ============================================================================
 
 class IntelligentCacheSystem {
   constructor() {
@@ -56,8 +48,6 @@ class IntelligentCacheSystem {
     console.log('🚀 Sistema de Cache Inteligente Multinivel iniciado');
   }
   
-  // =========================================================================
-  // =========================================================================
   
   generateKey(type, data) {
     const baseData = typeof data === 'string' ? data : JSON.stringify(data);
@@ -78,8 +68,6 @@ class IntelligentCacheSystem {
     return this.generateKey(componentType, params);
   }
   
-  // =========================================================================
-  // =========================================================================
   
   getResponse(userId, query, chatType = 'general') {
     const key = this.generateUserQueryKey(userId, query, chatType);
@@ -120,9 +108,6 @@ class IntelligentCacheSystem {
     return true;
   }
   
-  // =========================================================================
-  // 🧩 CACHE L2 - COMPONENTES REUTILIZABLES  
-  // =========================================================================
   
   getComponent(componentType, params) {
     const key = this.generateComponentKey(componentType, params);
@@ -156,8 +141,6 @@ class IntelligentCacheSystem {
     return true;
   }
   
-  // =========================================================================
-  // =========================================================================
   
   getSearch(searchType, query, options = {}) {
     const searchKey = { searchType, query, options };
@@ -194,9 +177,6 @@ class IntelligentCacheSystem {
     return true;
   }
   
-  // =========================================================================
-  // 🧠 CACHE L4 - MEMORIA DE CHATS  
-  // =========================================================================
   
   getChatMemory(userId, avaId, chatId, query) {
     const memoryKey = `${userId}:${avaId}:${chatId}:${crypto.createHash('md5').update(query).digest('hex').substring(0, 8)}`;
@@ -234,8 +214,6 @@ class IntelligentCacheSystem {
     return true;
   }
   
-  // =========================================================================
-  // =========================================================================
   
   getImageAnalysis(imageHash, context = '') {
     return this.getComponent('image_analysis', { imageHash, context });
@@ -269,8 +247,6 @@ class IntelligentCacheSystem {
     return this.setComponent('knowledge_base', { query, threshold }, result, metadata);
   }
   
-  // =========================================================================
-  // =========================================================================
   
   clearCache(level = 'all') {
     const levels = level === 'all' ? ['L1', 'L2', 'L3', 'L4'] : [level];
@@ -321,7 +297,6 @@ class IntelligentCacheSystem {
       stats[level].total = total;
     });
     
-    // Información de tamaños
     stats.sizes = {
       L1: this.L1_responses.size,
       L2: this.L2_components.size,
@@ -356,8 +331,6 @@ class IntelligentCacheSystem {
     `);
   }
   
-  // =========================================================================
-  // =========================================================================
   
   async getOrSet(cacheMethod, setMethod, keyOrParams, asyncOperation, metadata = {}) {
     const cached = typeof cacheMethod === 'function' 
@@ -399,13 +372,9 @@ class IntelligentCacheSystem {
   }
 }
 
-// ============================================================================
-// ============================================================================
 
 export const intelligentCache = new IntelligentCacheSystem();
 
-// ============================================================================
-// ============================================================================
 
 // Helper para generar hash de contenido
 export const generateContentHash = (content) => {
@@ -459,13 +428,9 @@ export const startCacheMonitoring = (intervalMinutes = 30) => {
   console.log(`🔄 Monitoreo de cache iniciado (cada ${intervalMinutes} minutos)`);
 };
 
-// ============================================================================
-// ============================================================================
 
 export default intelligentCache;
 
-// ============================================================================
-// ============================================================================
 
 /*
 🚀 SISTEMA DE CACHE INTELIGENTE MULTINIVEL

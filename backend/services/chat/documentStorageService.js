@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import pool from '../../lib/dbPool.js';
 import mammoth from 'mammoth';
 
-// ====== IMPORTAR CONFIGURACIÓN CENTRALIZADA ACADEL ======
 import {
   FILE_LIMITS,
   SUPPORTED_FILES,
@@ -18,10 +17,6 @@ import {
   createSupportedMimeTypesConfig
 } from '../../utils/chat/backend-file-constants.js';
 
-/**
- * 🦫 Servicio para almacenar y procesar documentos con Sistema Acadel Centralizado
- * Mantiene coherencia total con el frontend
- */
 class DocumentStorageService {
   constructor() {
     console.log('🦫 Acadel Document Storage Service iniciándose...');
@@ -31,7 +26,6 @@ class DocumentStorageService {
     this.chatDocumentsDir = path.join(this.uploadsDir, 'chat_documents');
     this.tempDir = path.join(process.cwd(), 'tmp', 'document_processing');
 
-    // ⭐ USAR CONFIGURACIÓN CENTRALIZADA ACADEL ⭐
     this.supportedMimeTypes = createSupportedMimeTypesConfig();
     this.maxFileSize = FILE_LIMITS.MAX_FILE_SIZE;
     this.maxContentLength = FILE_LIMITS.MAX_TEXT_CONTENT;
@@ -55,11 +49,6 @@ class DocumentStorageService {
     });
   }
 
-  /**
-   * 🦫 NUEVA FUNCIÓN: Recupera contenido de documentos para retry/edit
-   * @param {string} fileId - ID del archivo
-   * @returns {Promise<Object|null>} - Datos del archivo o null
-   */
   async getDocumentContentForRetryEdit(fileId) {
     const client = await pool.connect();
 
@@ -141,13 +130,6 @@ class DocumentStorageService {
     return `${baseName}_${timestamp}_${randomHash}${extension}`;
   }
 
-  /**
-   * 🦫 EXTRACCIÓN DE CONTENIDO CENTRALIZADA CON VALIDACIONES ACADEL
-   * @param {Buffer} fileBuffer - Buffer del archivo
-   * @param {string} mimeType - Tipo MIME del archivo
-   * @param {string} filename - Nombre del archivo
-   * @returns {Promise<string>} - Contenido extraído y validado
-   */
   async extractContent(fileBuffer, mimeType, filename) {
     console.log(`🦫 Acadel extrayendo contenido: ${filename} (${mimeType})`);
 
@@ -162,7 +144,6 @@ class DocumentStorageService {
         case 'application/msword':
           throw new Error('Archivos .doc no soportados por Acadel, usa .docx en su lugar');
 
-        // ⭐ TODOS LOS TIPOS DE TEXTO Y CÓDIGO ⭐
         case 'text/plain':
         case 'text/markdown':
         case 'text/csv':
@@ -216,7 +197,6 @@ class DocumentStorageService {
           throw new Error(`Tipo de archivo no soportado por Acadel: ${mimeType}`);
       }
 
-      // ⭐ VALIDAR CONTENIDO CON SISTEMA CENTRALIZADO ⭐
       const validation = validateTextContentBackend(rawContent, filename);
 
       if (validation.truncated) {
@@ -315,14 +295,6 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA ARCHIVO DESDE URL CON VALIDACIONES ACADEL CENTRALIZADAS
-   * @param {string} fileUrl - URL del archivo
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {string} originalName - Nombre original (opcional)
-   * @returns {Promise<Object>} - Resultado del procesamiento
-   */
   async processFileFromUrl(fileUrl, chatId, userId, originalName = null) {
     let tempFilePath = null;
 
@@ -361,7 +333,6 @@ class DocumentStorageService {
       const contentType = response.headers['content-type'] || 'application/octet-stream';
       const fileSize = fileBuffer.length;
 
-      // ⭐ VALIDAR CON SISTEMA CENTRALIZADO ACADEL ⭐
       const validation = validateFileTypeBackend(fileName, contentType, fileSize);
       if (!validation.valid) {
         throw new Error(`Acadel rechazó el archivo: ${validation.reason}`);
@@ -444,21 +415,12 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA ARCHIVO EN BASE64 CON VALIDACIONES ACADEL CENTRALIZADAS
-   * @param {string} dataUrl - Data URL del archivo
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {string} originalName - Nombre original del archivo
-   * @returns {Promise<Object>} - Resultado del procesamiento
-   */
   async processBase64File(dataUrl, chatId, userId, originalName) {
     let tempFilePath = null;
 
     try {
       console.log(`🦫 Acadel procesando archivo base64: ${originalName}`);
 
-      // ⭐ VALIDACIONES INICIALES MEJORADAS ⭐
       if (!dataUrl || typeof dataUrl !== 'string') {
         throw new Error(`Data URL inválido para ${originalName} - tipo: ${typeof dataUrl}`);
       }
@@ -475,7 +437,6 @@ class DocumentStorageService {
         throw new Error(`Data URL debe contener "base64," para ${originalName}`);
       }
 
-      // ⭐ EXTRACCIÓN ROBUSTA CON MÚLTIPLES MÉTODOS DE FALLBACK ⭐
       let mimeType, base64Data;
 
       try {
@@ -513,7 +474,6 @@ class DocumentStorageService {
         }
       }
 
-      // ⭐ VALIDACIONES POST-EXTRACCIÓN ⭐
       if (!mimeType || mimeType === '') {
         throw new Error(`MIME type vacío extraído para ${originalName}`);
       }
@@ -524,7 +484,6 @@ class DocumentStorageService {
 
       mimeType = mimeType.toLowerCase().trim();
 
-      // ⭐ CONVERTIR BASE64 A BUFFER CON VALIDACIÓN ⭐
       let fileBuffer;
       try {
         fileBuffer = Buffer.from(base64Data, 'base64');
@@ -538,7 +497,6 @@ class DocumentStorageService {
         throw new Error(`Acadel no pudo crear buffer para ${originalName}: ${bufferError.message}`);
       }
 
-      // ⭐ VALIDAR CON SISTEMA CENTRALIZADO ACADEL ⭐
       const validation = validateFileTypeBackend(originalName, mimeType, fileBuffer.length);
       if (!validation.valid) {
         throw new Error(`Acadel rechazó el archivo: ${validation.reason}`);
@@ -650,13 +608,6 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA MÚLTIPLES DOCUMENTOS CON VALIDACIONES ACADEL
-   * @param {Array} content - Contenido del mensaje
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @returns {Promise<Array>} - Resultados del procesamiento
-   */
   async processMultimodalDocuments(content, chatId, userId) {
     if (!content || !Array.isArray(content)) {
       return [];
@@ -673,7 +624,6 @@ class DocumentStorageService {
 
     console.log(`🦫 Acadel procesando ${documentItems.length} documentos para chat ${chatId}`);
 
-    // ⭐ VALIDAR CANTIDAD TOTAL CON SISTEMA CENTRALIZADO ⭐
     const countValidation = validateFileCountBackend(documentItems.length);
     if (!countValidation.valid) {
       console.error(`❌ Acadel rechazó cantidad de archivos: ${countValidation.reason}`);
@@ -736,14 +686,6 @@ class DocumentStorageService {
     return results;
   }
 
-  /**
-   * 🦫 PROCESA DOCUMENTOS PARA RETRY/EDIT SIN GUARDAR NUEVOS ARCHIVOS
-   * @param {Array} content - Contenido del mensaje
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {boolean} isRetryOrEdit - Flag indicando que es retry/edit
-   * @returns {Promise<Array>} - Resultados del procesamiento
-   */
   async processMultimodalDocumentsForRetryEdit(content, chatId, userId, isRetryOrEdit = true) {
     if (!content || !Array.isArray(content)) {
       return [];
@@ -798,7 +740,6 @@ class DocumentStorageService {
           };
         }
 
-        // ⭐ NUEVA LÓGICA: Recuperar contenido de BD si tiene fileId ⭐
         if (item.fileId) {
           console.log(`🔍 Acadel [RETRY/EDIT] recuperando contenido desde BD para: ${item.fileId}`);
 
@@ -819,7 +760,6 @@ class DocumentStorageService {
           }
         }
 
-        // ⭐ NUEVA LÓGICA: Buscar por nombre si no tiene fileId ⭐
         if ((item.name || item.filename) && !item.fileId) {
           console.log(`🔍 Acadel [RETRY/EDIT] buscando documento por nombre: ${item.name || item.filename}`);
 
@@ -1002,10 +942,6 @@ class DocumentStorageService {
     return !!this.supportedMimeTypes[mimeType];
   }
 
-  /**
-   * 🦫 OBTIENE INFORMACIÓN SOBRE TIPOS SOPORTADOS CON CONFIGURACIÓN ACADEL
-   * @returns {Object} - Información de tipos soportados
-   */
   getSupportedTypes() {
     console.log(`🦫 Acadel proporcionando información de tipos soportados`);
 

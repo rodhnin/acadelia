@@ -356,7 +356,7 @@ export const submitBankTransfer = async (req, res) => {
     try {
       await argentinaEmailService.sendPaymentUnderReviewFromId(result.paymentId);
       console.log(`📧 Email de pago en revisión enviado para pago ${result.paymentId}`);
-      result.email_sent = true; // Agregar al resultado
+      result.email_sent = true;
     } catch (emailError) {
       console.error('❌ Error enviando email de pago en revisión:', emailError);
       result.email_sent = false; // Indicar que falló

@@ -1,5 +1,3 @@
-// ========================================
-// ========================================
 
 import { UserService } from "../../services/usuarios/userService.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
@@ -311,11 +309,9 @@ export const updateUser = async (req, res) => {
             ip: req.ip
         }, 'medium');
 
-        // 🆕 NUEVO: Verificar tipo de autenticación si se está cambiando contraseña
         if (contraseña) {
             const authInfo = await UserService.checkGoogleAuth(parseInt(id));
             
-            // 🆕 LÓGICA ESPECÍFICA: Solo verificar contraseña actual si el usuario tiene una contraseña establecida
             if (!authInfo.isGoogleUser || authInfo.hasPassword) {
                 // Usuario normal O usuario de Google CON contraseña - requiere verificación
                 if (!currentPassword) {
@@ -615,9 +611,7 @@ export const checkUserRegistrationStatus = async (req, res) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS
-// ========================================
 
 /**
  * Valida entrada HTTP para creación de usuario
@@ -729,7 +723,6 @@ async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, i
             };
 
             if (isPasswordSetup) {
-                // 🆕 NUEVO: Email específico para establecimiento de contraseña
                 await emailService.sendPasswordSetupConfirmation(
                     userEmail,
                     userData,

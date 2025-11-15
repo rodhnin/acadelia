@@ -76,7 +76,7 @@ export async function validatePDFStructure(fileBuffer) {
       throwOnInvalidObject: true 
     });
     
-    const fileContent = fileBuffer.toString('utf-8', 0, Math.min(fileBuffer.length, 5000)); // Solo revisar primeros 5000 bytes
+    const fileContent = fileBuffer.toString('utf-8', 0, Math.min(fileBuffer.length, 5000));
     
     if (/\/JS |\/JavaScript |\/Launch |\/RichMedia |\/SubmitForm |\/GoTo/i.test(fileContent)) {
       return { valid: false, reason: "PDF contiene objetos potencialmente maliciosos" };

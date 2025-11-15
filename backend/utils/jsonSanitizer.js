@@ -11,9 +11,9 @@ export const jsonSanitizer = {
       preserveTemplates = true, // Mantener plantillas {{}} 
       maxStringLength = 15000,  // Longitud máxima de strings (aumentado)
       removeInvalidChars = true, // Remover caracteres inválidos
-      validateStructure = true,   // Validar estructura del JSON
+      validateStructure = true,
       preservePropertyNames = true, // Preservar nombres de propiedades originales
-      maxDepth = 10 // ✅ NUEVO: Máxima profundidad de anidación
+      maxDepth = 10
     } = options;
 
     try {
@@ -57,7 +57,7 @@ export const jsonSanitizer = {
         preserveTemplates,
         preservePropertyNames,
         maxDepth,
-        currentDepth: 0 // ✅ NUEVO: Control de profundidad
+        currentDepth: 0
       });
 
       // PASO 7: Validación final SIN agregar metadatos no deseados
@@ -132,10 +132,6 @@ export const jsonSanitizer = {
     return jsonString.trim();
   },
 
-  /**
-   * Escapa caracteres especiales en strings JSON
-   * ✅ MEJORADO para manejar strings más complejos
-   */
   escapeSpecialCharacters(jsonString, preserveTemplates = true) {
     let result = jsonString;
 
@@ -171,10 +167,6 @@ export const jsonSanitizer = {
     return result;
   },
 
-  /**
-   * Valida y corrige estructura JSON básica
-   * ✅ MEJORADO para estructuras más complejas
-   */
   validateAndFixStructure(jsonString) {
     let result = jsonString;
 
@@ -192,10 +184,6 @@ export const jsonSanitizer = {
     return result;
   },
 
-  /**
-   * Intenta reparar un JSON malformado
-   * ✅ MEJORADO con más estrategias de reparación
-   */
   repairJsonString(jsonString) {
     console.log("🔧 Intentando reparar JSON malformado complejo...");
     
@@ -217,9 +205,6 @@ export const jsonSanitizer = {
     return repaired;
   },
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Corregir objetos anidados incompletos
-   */
   fixNestedObjects(jsonString) {
     let result = jsonString;
     
@@ -348,10 +333,6 @@ export const jsonSanitizer = {
     }
   },
 
-  /**
-   * Sanitiza el contenido de un objeto ya parseado
-   * ✅ MEJORADO para manejar estructuras anidadas complejas
-   */
   sanitizeObjectContent(obj, options = {}) {
     const { 
       maxStringLength, 
@@ -408,7 +389,6 @@ export const jsonSanitizer = {
         for (const [objKey, objValue] of Object.entries(value)) {
           let sanitizedKey = objKey;
           if (!preservePropertyNames && removeInvalidChars) {
-            // Solo cambiar caracteres realmente problemáticos, no letras normales
             sanitizedKey = sanitizedKey.replace(/[^\w\-_$.]/g, '_');
           } else {
             // Mantener la clave original, solo remover caracteres de control si es necesario
@@ -426,16 +406,11 @@ export const jsonSanitizer = {
     return sanitizeValue(obj);
   },
 
-  /**
-   * Realiza validación final y recopila información sobre cambios
-   * ✅ MEJORADO para estructuras complejas
-   */
   performFinalValidation(sanitizedObject, options = {}) {
     const { skipWarnings = false, skipMetadata = false, maxDepth = 10 } = options;
     const warnings = [];
     const changes = [];
     
-    // Solo validar si no se saltan las advertencias
     if (!skipWarnings && sanitizedObject && typeof sanitizedObject === 'object') {
       const marketingValidation = this.validateMarketingStructure(sanitizedObject);
       warnings.push(...marketingValidation.warnings);
@@ -452,7 +427,6 @@ export const jsonSanitizer = {
     // NO agregar metadatos al objeto si skipMetadata es true
     let finalObject = sanitizedObject;
     if (!skipMetadata) {
-      // Solo agregar metadatos si se solicita explícitamente
       finalObject = {
         ...sanitizedObject,
         _validation_info: {
@@ -469,9 +443,6 @@ export const jsonSanitizer = {
     };
   },
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Validar estructura específica de marketing
-   */
   validateMarketingStructure(obj) {
     const warnings = [];
     
@@ -500,9 +471,6 @@ export const jsonSanitizer = {
     return { warnings };
   },
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Calcular profundidad del objeto
-   */
   calculateObjectDepth(obj, currentDepth = 0) {
     if (obj === null || typeof obj !== 'object') {
       return currentDepth;
@@ -550,10 +518,6 @@ export const jsonSanitizer = {
     return warnings;
   },
 
-  /**
-   * Crea un objeto de respaldo en caso de fallo total
-   * ✅ MEJORADO para estructuras de marketing
-   */
   createFallbackObject(originalInput) {
     const fallback = {
       theme: "Contenido educativo con Capibara Profesor",
@@ -598,10 +562,6 @@ export const jsonSanitizer = {
 
 // Funciones de utilidad para integración fácil
 
-/**
- * Función de conveniencia para sanitizar contenido de marketing
- * ✅ MEJORADA para estructuras complejas
- */
 export function sanitizeMarketingContent(content, options = {}) {
   const defaultOptions = {
     preserveTemplates: true,
@@ -609,16 +569,12 @@ export function sanitizeMarketingContent(content, options = {}) {
     removeInvalidChars: true,
     validateStructure: true,
     preservePropertyNames: true,
-    maxDepth: 15 // ✅ NUEVO: Profundidad máxima para estructuras anidadas
+    maxDepth: 15
   };
   
   return jsonSanitizer.sanitizeJson(content, { ...defaultOptions, ...options });
 }
 
-/**
- * Función específica para contenido generado por IA
- * ✅ MEJORADA para estructuras complejas
- */
 export function sanitizeAIGeneratedContent(aiResponse, options = {}) {
   const aiSpecificOptions = {
     preserveTemplates: true,
@@ -626,7 +582,7 @@ export function sanitizeAIGeneratedContent(aiResponse, options = {}) {
     removeInvalidChars: true,
     validateStructure: true,
     preservePropertyNames: true,
-    maxDepth: 20, // ✅ NUEVO: Profundidad máxima para contenido de IA
+    maxDepth: 20,
     ...options
   };
   
@@ -644,10 +600,6 @@ export function sanitizeAIGeneratedContent(aiResponse, options = {}) {
   return result;
 }
 
-/**
- * Middleware para Express que sanitiza automáticamente el body
- * ✅ MEJORADO para estructuras complejas
- */
 export function sanitizationMiddleware(options = {}) {
   return (req, res, next) => {
     if (req.body && typeof req.body === 'object') {
@@ -658,7 +610,6 @@ export function sanitizationMiddleware(options = {}) {
         });
         if (sanitized.success) {
           req.body = sanitized.data;
-          // Solo agregar warnings a la request, no al body
           req.sanitizationWarnings = sanitized.warnings;
         } else {
           req.body = sanitized.fallbackData;

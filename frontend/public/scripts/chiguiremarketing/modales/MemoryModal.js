@@ -13,7 +13,6 @@ let currentView = 'grid';
 let currentTypeFilter = 'all';
 let currentSourceFilter = 'all';
 
-// 🆕 NUEVA FUNCIÓN: Detectar si es una simulación de campaña
 function isScreenSimulation(content) {
   return (
     content.results || 
@@ -25,7 +24,6 @@ function isScreenSimulation(content) {
   );
 }
 
-// 🆕 NUEVA FUNCIÓN: Extraer insight enriquecido para simulaciones de campaña
 function extractSimulationInsight(content) {
   let simulationData = null;
   let resultsData = null;
@@ -107,7 +105,6 @@ function extractSimulationInsight(content) {
   };
 }
 
-// 🆕 NUEVA FUNCIÓN: Detectar si es un análisis de tendencias
 function isTrendAnalysis(content) {
   return (
     content.trend || 
@@ -118,7 +115,6 @@ function isTrendAnalysis(content) {
   );
 }
 
-// 🆕 NUEVA FUNCIÓN: Extraer insight enriquecido para análisis de tendencias
 function extractTrendInsight(content) {
   let trendData = null;
   let analysisData = null;
@@ -219,7 +215,6 @@ function extractTrendInsight(content) {
   };
 }
 
-// 🆕 FUNCIÓN AUXILIAR: Obtener valor anidado de objeto
 function getNestedValue(obj, path) {
   return path.split('.').reduce((current, key) => {
     return current && current[key] !== undefined ? current[key] : null;
@@ -240,7 +235,6 @@ function processMemoryData(memory) {
     content = memory.content;
   }
   
-  // 🆕 MEJORADO: Detectar y procesar simulaciones Y análisis de tendencias
   let processedInsight = null;
   let enrichedData = null;
   let isSimulation = false;
@@ -285,7 +279,6 @@ function processMemoryData(memory) {
     originalContent: content,
     additionalInfo: extractAdditionalMemoryInfo(content),
     
-    // 🆕 NUEVO: Datos enriquecidos para simulaciones y análisis de tendencias
     enrichedData: enrichedData,
     isScreenSimulation: isSimulation,
     isTrendAnalysis: isTrend
@@ -297,7 +290,6 @@ function processMemoryData(memory) {
 function renderMemoryCard(memory) {
   const importancePercentage = memory.importance * 100;
   
-  // 🆕 NUEVO: Clase especial para simulaciones y análisis de tendencias
   let cardClass = 'memory-card';
   if (memory.isScreenSimulation) {
     cardClass += ' simulation-card';
@@ -305,13 +297,11 @@ function renderMemoryCard(memory) {
     cardClass += ' trend-analysis-card';
   }
   
-  // 🆕 NUEVO: Información adicional para simulaciones
   let enrichedInfo = '';
   if (memory.enrichedData && memory.enrichedData.isEnriched) {
     if (memory.isScreenSimulation) {
       const { concepto, objetivos, audienciaSegmentos, metricas, confianza, factoresExito, recomendaciones, riesgos } = memory.enrichedData;
       
-      // Información específica de simulación
       let metricsPreview = '';
       if (metricas.ctr !== 'N/A' || metricas.engagement !== 'N/A' || metricas.conversion !== 'N/A') {
         metricsPreview = `
@@ -485,7 +475,6 @@ function renderMemoryCard(memory) {
     }
   }
   
-  // 🆕 NUEVO: Badge específico según el tipo
   let typeBadgeClass = '';
   if (memory.isScreenSimulation) {
     typeBadgeClass = 'simulation-type-badge';
@@ -600,7 +589,6 @@ async function loadMemoryData() {
       filteredMemoryData = [...memoryData];
       console.log(`✅ ${memoryData.length} insights de memoria cargados exitosamente`);
       
-      // 🆕 NUEVO: Log de análisis de tendencias detectados
       const trendAnalyses = memoryData.filter(m => m.isTrendAnalysis);
       if (trendAnalyses.length > 0) {
         console.log(`📊 ${trendAnalyses.length} análisis de tendencias detectados y enriquecidos`);
@@ -642,7 +630,6 @@ function renderMemoryDashboard() {
   const modalBody = document.querySelector('#memoryModal .modal-body');
   if (!modalBody) return;
   
-  // 🆕 MEJORADO: Estadísticas que incluyan simulaciones y análisis de tendencias
   const simulationsCount = memoryData.filter(m => m.isScreenSimulation).length;
   const trendAnalysesCount = memoryData.filter(m => m.isTrendAnalysis).length;
   
@@ -916,7 +903,6 @@ function renderMemoryRow(memory) {
   let rowClass = 'memory-row';
   let badgeClass = '';
   
-  // 🆕 NUEVO: Indicadores específicos para simulaciones y tendencias
   if (memory.isScreenSimulation) {
     rowIndicator = '<i class="bx bx-target-lock simulation-row-indicator" title="Simulación de Campaña"></i> ';
     rowClass += ' simulation-row';
@@ -958,7 +944,6 @@ function renderMemoryRow(memory) {
   `;
 }
 
-// 🆕 MEJORADO: Función de ordenamiento que incluye análisis de tendencias
 function handleMemorySort(e) {
   const sortValue = e.target.value;
   
@@ -1026,7 +1011,6 @@ function formatTypeName(type) {
     'profile_creation': 'Creación de Perfil',
     'agent_insight': 'Insight de Agente',
     
-    // 🆕 NUEVOS: Tipos específicos para simulaciones
     'screen_simulation': 'Simulación de Pantalla',
     'simulation_results': 'Resultados de Simulación',
     'campaign_metrics': 'Métricas de Campaña',
@@ -1249,7 +1233,6 @@ function updateSummaryCards() {
     summaryCards[1].querySelector('.memory-card-value').textContent = 
       formatNumber(filteredMemoryData.filter(m => m.importance > 0.7).length);
     
-    // 🆕 MEJORADO: Actualizar conteo de análisis de tendencias
     const trendAnalysesFiltered = filteredMemoryData.filter(m => m.isTrendAnalysis).length;
     summaryCards[2].querySelector('.memory-card-value').textContent = formatNumber(trendAnalysesFiltered);
     
@@ -1629,7 +1612,6 @@ function showDeleteMemoryModal(memory) {
     return;
   }
   
-  // 🆕 MEJORADO: Preview especial para análisis de tendencias
   const trendBadge = memory.isTrendAnalysis ? 
     `<div class="memory-card-type-badge trend-type-badge">${formatTypeName(memory.type)}</div>` :
     `<div class="memory-card-type-badge">${formatTypeName(memory.type)}</div>`;
@@ -1830,7 +1812,6 @@ function setupMemoryDetailTitle(titleElement, fullText) {
   console.log(`📝 Título configurado: "${fullText}"`);
   console.log(`📏 Longitud del título: ${fullText.length} caracteres`);
   
-  // 🆕 NUEVO: Verificar si el texto se está truncando visualmente
   setTimeout(() => {
     const isOverflowing = titleElement.scrollWidth > titleElement.clientWidth;
     if (isOverflowing) {
@@ -1842,7 +1823,6 @@ function setupMemoryDetailTitle(titleElement, fullText) {
   }, 100);
 }
 
-// 🆕 FUNCIÓN MEJORADA: showMemoryDetails actualizada
 function showMemoryDetails(memoryId) {
   const memory = memoryData.find(m => m.id === memoryId);
   if (!memory) {
@@ -1858,7 +1838,6 @@ function showMemoryDetails(memoryId) {
   
   console.log('🔍 Mostrando detalles de memoria:', memoryId);
   
-  // 🆕 ARREGLADO: Configurar título con manejo mejorado
   const titleElement = detailModal.querySelector('.memory-detail-title');
   if (titleElement) {
     setupMemoryDetailTitle(titleElement, memory.insight);
@@ -1889,7 +1868,6 @@ function showMemoryDetails(memoryId) {
   
   const detailBody = detailModal.querySelector('.memory-detail-body');
   if (detailBody) {
-    // 🆕 MEJORADO: Información enriquecida para simulaciones y análisis de tendencias
     let enrichedSection = '';
     
     if (memory.isScreenSimulation && memory.enrichedData && memory.enrichedData.isEnriched) {
@@ -2225,7 +2203,6 @@ function showMemoryDetails(memoryId) {
     `;
   }
   
-  // 🆕 MEJORADO: Configurar eventos con el sistema de stack
   setupMemoryDetailEvents(detailModal);
   detailModal.classList.add('active');
   
@@ -2340,7 +2317,6 @@ function showMemoryError(message) {
   `;
 }
 
-// 🆕 FUNCIÓN DE RESET PARA MEMORY MODAL
 function resetMemoryModalState() {
   console.log('🔄 Reiniciando estado de memory modal...');
   

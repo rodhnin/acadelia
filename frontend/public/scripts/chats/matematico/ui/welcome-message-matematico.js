@@ -5,7 +5,6 @@ import { validateUUID } from '../../shared/validators.js';
 import { createElement, sanitizeText } from '../../shared/dom-helpers.js';
 import { getCurrentVariant, getAppConfig, getWelcomeConfig } from '../core/config-matematico.js';
 
-// 🦫 IMPORTAR FUNCIONES DEL SISTEMA UNIFICADO DE ARCHIVOS
 import {
   initWelcomeFileAttachments,
   getWelcomeAttachedFiles,
@@ -15,7 +14,6 @@ import {
   cleanupWelcomeAttachments
 } from '../utils/file-attachments-matematico.js';
 
-// 🦫 IMPORTAR FUNCIONES DE VALIDACIÓN DESDE SHARED
 import {
   validateFile,
   validateContentLimits,
@@ -282,7 +280,6 @@ export async function showWelcomeMessage() {
   chatMessages.appendChild(welcomeInputContainer);
   chatMessages.appendChild(suggestionsDiv);
 
-  // 🦫 INICIALIZAR SISTEMA UNIFICADO DE ARCHIVOS PARA WELCOME
   console.log('🦫 Inicializando sistema de archivos unificado para Welcome...');
 
   if (window.welcomeFiles) {
@@ -327,7 +324,6 @@ export async function showWelcomeMessage() {
       });
     }
 
-    // 🦫 CONFIGURAR DRAG & DROP ESPECÍFICO PARA WELCOME (PARA COMPATIBILIDAD)
     const welcomeFileUploadContainer = document.getElementById('welcome-file-upload-container');
     const welcomeDragDropArea = document.getElementById('welcome-drag-drop-area');
 
@@ -419,7 +415,6 @@ export async function showWelcomeMessage() {
           }
 
           // Los archivos válidos se procesarán por el sistema unificado
-          // Solo llamamos al sistema unificado si hay archivos válidos
           if (processedCount > 0) {
             const validFiles = [];
             let validIndex = 0;
@@ -464,7 +459,6 @@ export async function showWelcomeMessage() {
 
       document.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        // Solo si hay archivos y estamos en bienvenida
         if (e.dataTransfer.types.includes('Files') && document.querySelector('.welcome-message')) {
           welcomeFileUploadContainer.classList.add('active');
         }
@@ -503,7 +497,6 @@ export async function showWelcomeMessage() {
       document.addEventListener('dragleave', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
-        // Solo ejecutar si el drag abandona completamente el documento
         if (e.clientX <= 0 || e.clientY <= 0 ||
           e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
@@ -542,7 +535,6 @@ export async function showWelcomeMessage() {
         }, 2000); // 2 segundos sin eventos de arrastre = abandonado
       });
 
-      // 🦫 PROCESAR ARCHIVOS SOLTADOS CON LÓGICA ESPECÍFICA DE WELCOME
       welcomeFileUploadContainer.addEventListener('drop', async (e) => {
         e.preventDefault();
         console.log('🏠 Welcome drop detectado con', e.dataTransfer.files.length, 'archivos');
@@ -878,7 +870,6 @@ export async function showWelcomeMessage() {
       document.body.appendChild(welcomeMathEditorContainer);
 
       const globalKeyboardProtector = function (e) {
-        // Solo intervenir si el editor está abierto
         if (welcomeMathEditorContainer.style.display === 'flex' ||
           welcomeMathEditorContainer.style.display === 'block') {
 
@@ -889,7 +880,6 @@ export async function showWelcomeMessage() {
             return;
           }
 
-          // Solo bloquear eventos si vienen del teclado virtual
           if (e.target.closest('ml-keyboard') ||
             e.target.closest('.ML__keyboard')) {
 
@@ -1193,7 +1183,6 @@ export async function showWelcomeMessage() {
           welcomeMathButton.classList.remove('active');
         });
       }
-      // Variables para mantener el estado y los controladores de eventos
       let keydownHandler = null;
       let clickOutsideHandler = null;
 
@@ -1272,7 +1261,7 @@ export async function showWelcomeMessage() {
           overlay.style.top = '0';
           overlay.style.left = '0';
           overlay.style.width = '100vw';
-          overlay.style.height = '50vh'; // Solo cubre mitad superior
+          overlay.style.height = '50vh';
           overlay.style.zIndex = '10';
           overlay.style.pointerEvents = 'all';
           document.body.appendChild(overlay);
@@ -1412,7 +1401,6 @@ export async function showWelcomeMessage() {
       });
     }
 
-    // 4. 🦫 CONFIGURAR BOTÓN DE ENVÍO CON SISTEMA UNIFICADO
     const welcomeSendBtn = document.getElementById('welcome-send-btn');
     if (welcomeSendBtn && welcomeTextarea) {
       let isTransferring = false;
@@ -1456,7 +1444,6 @@ export async function showWelcomeMessage() {
           // Si excede el límite, detener ejecución
           if (exceedsCharLimit) return;
 
-          // 🦫 USAR SISTEMA UNIFICADO PARA VALIDAR ARCHIVOS
           const hasFiles = hasWelcomeAttachedFiles();
 
           if (!messageText && !hasFiles) return;
@@ -1466,7 +1453,6 @@ export async function showWelcomeMessage() {
           if (mainTextarea) {
             mainTextarea.value = messageText;
 
-            // 2. 🦫 TRANSFERIR ARCHIVOS USANDO SISTEMA UNIFICADO
             if (hasFiles) {
               try {
                 console.log('🚀 Transfiriendo archivos usando sistema unificado...');
@@ -1501,10 +1487,8 @@ export async function showWelcomeMessage() {
               if (welcomeInputContainer && welcomeInputContainer.parentNode) welcomeInputContainer.remove();
               if (suggestionsDiv && suggestionsDiv.parentNode) suggestionsDiv.remove();
 
-              // 🦫 LIMPIAR SISTEMA UNIFICADO DE WELCOME
               cleanupWelcomeAttachments();
 
-              // ⭐ NOTIFICACIÓN ACADEL:
               acadelExito("🚀 ¡Mensaje enviado!", "Acadel transfirió tu consulta al chat principal");
 
               if (sendMessageHandler) {
@@ -1531,14 +1515,14 @@ export async function showWelcomeMessage() {
 
       welcomeSendBtn.addEventListener('click', function (e) {
         e.preventDefault();
-        e.stopPropagation(); // ✅ EVITAR PROPAGACIÓN
+        e.stopPropagation();
         transferAndSendMessage();
       });
 
       welcomeTextarea.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          e.stopPropagation(); // ✅ EVITAR PROPAGACIÓN
+          e.stopPropagation();
           transferAndSendMessage();
         }
       });

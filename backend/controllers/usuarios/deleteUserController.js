@@ -1,7 +1,6 @@
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 import { deleteAccountService } from '../../services/usuarios/deleteAccountService.js';
 
-// Controlador para la eliminación de cuenta de usuario
 export const deleteUserController = {
   requestDeletion: async (req, res) => {
     try {

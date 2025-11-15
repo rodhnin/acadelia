@@ -40,7 +40,6 @@ const CONFIG = {
 
 let editorInstance = null;
 
-// 🆕 REGISTRO GLOBAL de instancias para limpieza completa
 const GLOBAL_REGISTRY = {
   instances: new Set(),
   eventListeners: new Map(),
@@ -95,7 +94,6 @@ const GLOBAL_REGISTRY = {
 // Clase principal para el editor interactivo
 class MathLiveEditor {
   constructor() {
-    // 🆕 Registrar esta instancia globalmente
     GLOBAL_REGISTRY.register(this);
     
     // Referencias a elementos DOM
@@ -108,18 +106,13 @@ class MathLiveEditor {
     this.isVisible = false;
     this.isInitialized = false;
     
-    // 🆕 Registro de event listeners para limpieza mejorada
     this.eventListeners = new Map();
     
-    // 🆕 Estado de inicialización para prevenir doble inicialización
     this.initializationPromise = null;
     
     this.init();
   }
   
-  /**
-   * 🆕 Inicializa el editor con protección contra doble inicialización
-   */
   async init() {
     if (this.initializationPromise) {
       return this.initializationPromise;
@@ -129,9 +122,6 @@ class MathLiveEditor {
     return this.initializationPromise;
   }
   
-  /**
-   * 🆕 Inicialización interna protegida
-   */
   async _performInit() {
     try {
       console.log('🔧 MathEditor: Iniciando inicialización...');
@@ -159,9 +149,6 @@ class MathLiveEditor {
     }
   }
   
-  /**
-   * 🆕 Función para reinicializar completamente el editor (para cambios de chat)
-   */
   async reinitialize() {
     console.log('🔄 MathEditor: Iniciando reinicialización...');
     
@@ -211,9 +198,8 @@ class MathLiveEditor {
     }, 'Enviar al Chat');
     toolbar.appendChild(sendButton);
     
-    // 🆕 Configurar evento CSP-compatible con registro
     const sendHandler = () => {
-      this.sendLatexToTextarea(); // Solo envía al chat sin cerrar
+      this.sendLatexToTextarea();
     };
     
     const listenerId = this.addEventListenerWithCleanup(sendButton, 'click', sendHandler);
@@ -311,7 +297,6 @@ class MathLiveEditor {
       try {
         this.mathfield.macros = {}; 
         
-        // 🆕 Manejar eventos de teclado de forma moderna con registro
         const keystrokeHandler = (ev) => {
           if (ev.detail.keystroke === 'Spacebar') {
             this.mathfield.insert(' ');
@@ -329,9 +314,6 @@ class MathLiveEditor {
     }
   }
   
-  /**
-   * 🆕 Método helper para agregar event listeners con limpieza automática
-   */
   addEventListenerWithCleanup(element, type, handler, options = false) {
     const success = addEvent(element, type, handler, options);
     
@@ -479,21 +461,16 @@ class MathLiveEditor {
     });
   }
   
-  /**
-   * 🆕 COMPLETAMENTE REESCRITA: Configura los botones existentes del panel matemático - CSP COMPATIBLE
-   */
   setupExistingSymbolButtons() {
     console.log('🔧 MathEditor: Configurando botones matemáticos CSP-compatible...');
     
     const buttons = this.symbolsContainer.querySelectorAll('.math-btn');
     
-    // 🆕 Limpiar TODOS los event listeners existentes primero
     buttons.forEach(button => {
       removeAllEvents(button);
     });
     
     buttons.forEach((button, index) => {
-      // 🆕 SOLO usar data-latex (CSP-compatible)
       const latexCode = button.getAttribute('data-latex') || '';
       
       if (!latexCode) {
@@ -501,12 +478,10 @@ class MathLiveEditor {
         return;
       }
       
-      // 🆕 ASEGURAR que no hay onclick
       button.removeAttribute('onclick');
       button.removeAttribute('onmousedown');
       button.removeAttribute('onmouseup');
       
-      // 🆕 Crear handler CSP-compatible
       const clickHandler = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -529,7 +504,6 @@ class MathLiveEditor {
         eventBus.emit('mathButtonClicked', { symbol: code });
       };
       
-      // 🆕 Registrar event listener con limpieza
       this.addEventListenerWithCleanup(button, 'click', clickHandler);
     });
     
@@ -543,9 +517,6 @@ class MathLiveEditor {
     console.log(`✅ MathEditor: ${buttons.length} botones matemáticos configurados`);
   }
   
-  /**
-   * 🆕 COMPLETAMENTE REESCRITA: Configura los botones de toggle para secciones - CSP COMPATIBLE
-   */
   setupSectionToggles() {
     const toggleButtons = this.symbolsContainer.querySelectorAll('.toggle-btn');
     
@@ -559,10 +530,8 @@ class MathLiveEditor {
       button.textContent = '▶';
       addClass(button, 'collapsed');
       
-      // 🆕 Limpiar eventos previos
       removeAllEvents(button);
       
-      // 🆕 ASEGURAR que no hay onclick
       button.removeAttribute('onclick');
       button.removeAttribute('onmousedown');
       button.removeAttribute('onmouseup');
@@ -598,7 +567,6 @@ class MathLiveEditor {
         }
       };
       
-      // 🆕 Registrar event listener con limpieza
       this.addEventListenerWithCleanup(button, 'click', clickHandler);
     });
   }
@@ -780,9 +748,6 @@ class MathLiveEditor {
     return this.mathfield.value;
   }
   
-  /**
-   * 🆕 MEJORADA: Limpia los recursos del editor con registro completo
-   */
   cleanup() {
     console.log('🧹 MathEditor: Iniciando limpieza de instancia...');
     
@@ -829,10 +794,6 @@ class MathLiveEditor {
   }
 }
 
-/**
- * 🆕 MEJORADA: Inicializa el editor matemático interactivo (singleton mejorado)
- * @returns {MathLiveEditor} Instancia del editor
- */
 export function initMathEditor() {
   console.log('🚀 MathEditor: Solicitada inicialización...');
   
@@ -854,9 +815,6 @@ export function initMathEditor() {
   return editorInstance;
 }
 
-/**
- * 🆕 NUEVA: Función para reinicializar el editor (para cambios de chat)
- */
 export async function reinitMathEditor() {
   console.log('🔄 MathEditor: Solicitada reinicialización completa...');
   
@@ -869,9 +827,6 @@ export async function reinitMathEditor() {
   }
 }
 
-/**
- * 🆕 MEJORADA: Limpia los recursos del editor con limpieza global
- */
 export function cleanupMathEditor() {
   console.log('🧹 MathEditor: Solicitada limpieza completa...');
   
@@ -885,16 +840,10 @@ export function cleanupMathEditor() {
   console.log('✅ MathEditor: Limpieza completa finalizada');
 }
 
-/**
- * 🆕 NUEVA: Función para obtener la instancia actual (para debugging)
- */
 export function getMathEditorInstance() {
   return editorInstance;
 }
 
-/**
- * 🆕 NUEVA: Función para verificar si el editor está listo
- */
 export function isMathEditorReady() {
   return editorInstance && editorInstance.isInitialized;
 }
@@ -902,7 +851,6 @@ export function isMathEditorReady() {
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', cleanupMathEditor);
   
-  // 🆕 Exponer funciones globalmente para debugging
   window.debugMathEditor = {
     getInstance: getMathEditorInstance,
     isReady: isMathEditorReady,

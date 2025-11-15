@@ -1,13 +1,6 @@
 import crypto from 'crypto';
 import onHeaders from 'on-headers';
 
-/** 
- * Middleware para generar nonce y establecer la política CSP
- * ✅ SOLUCIÓN DEFINITIVA: Permite TODAS las imágenes HTTPS
- * - Resuelve el problema de dominios desconocidos para siempre
- * - Mantiene seguridad (solo HTTPS)
- * - Cero mantenimiento
- */
 export const setupCSP = (req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
   res.locals.nonce = nonce;

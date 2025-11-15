@@ -5,15 +5,8 @@ import { userAccessStatus } from "../../utils/shared/responseTemplates.js";
 import { ERROR_CODES } from "../../utils/shared/errorCodes.js";
 import logger from '../../utils/logger.js'; // ← WINSTON LOGGER
 
-/**
- * ⚡ CONTROLADOR OPTIMIZADO: Estado de acceso ultrarrápido con cache agresivo
- * OBJETIVO: Reducir tiempo de respuesta de queries BD redundantes
- */
 export const AccessStatusController = {
 
-  /**
-   * ⚡ ULTRA-OPTIMIZADO: Estado completo del usuario con bypass admin
-   */
   async getUserAccessStatus(req, res) {
     try {
       const { userId } = req.params;
@@ -50,7 +43,6 @@ export const AccessStatusController = {
         AccessValidationService.getUserUsageStats(Number(userId))
       ]);
 
-      // ⚡ BYPASS DIRECTO PARA ADMINS - SIN QUERIES ADICIONALES
       if (userStatus.isAdmin) {
         logger.debug('Usuario es ADMIN - Respuesta directa sin validaciones adicionales', { userId });
         
@@ -73,7 +65,6 @@ export const AccessStatusController = {
 
         const response = userAccessStatus(Number(userId), adminAccessData);
 
-        // ⚡ Log simplificado para admin
         logSecurityEvent('ACCESS_STATUS_CONSULTED', 'Estado de acceso admin consultado', {
           userId: userId,
           consultedBy: req.user?.id_user,
@@ -108,7 +99,6 @@ export const AccessStatusController = {
 
       const response = userAccessStatus(Number(userId), accessData);
 
-      // ⚡ Log optimizado
       logSecurityEvent('ACCESS_STATUS_CONSULTED', 'Estado de acceso consultado', {
         userId: userId,
         consultedBy: req.user?.id_user,
@@ -138,9 +128,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Verificación de AVA con bypass admin
-   */
   async checkAvaAccess(req, res) {
     try {
       const { userId, avaId } = req.params;
@@ -174,7 +161,6 @@ export const AccessStatusController = {
 
       const userStatus = await AccessValidationService.getUserStatus(Number(userId));
 
-      // ⚡ BYPASS DIRECTO PARA ADMINS
       if (userStatus.isAdmin) {
         logger.debug('Usuario es ADMIN - Acceso completo a AVA (BYPASS)', { userId, avaId });
 
@@ -259,9 +245,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ ULTRA-OPTIMIZADO: Verificación de herramientas con bypass admin
-   */
   async checkToolAccess(req, res) {
     try {
       const { userId } = req.params;
@@ -291,7 +274,6 @@ export const AccessStatusController = {
         AccessValidationService.getUserUsageStats(Number(userId))
       ]);
 
-      // ⚡ BYPASS DIRECTO PARA ADMINS
       if (userStatus.isAdmin) {
         logger.debug('Usuario es ADMIN - Acceso ilimitado a herramientas (BYPASS)', { userId });
 
@@ -352,9 +334,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Verificación específica de herramienta con bypass admin
-   */
   async checkSpecificToolAccess(req, res) {
     try {
       const { userId, toolSlug } = req.params;
@@ -381,7 +360,6 @@ export const AccessStatusController = {
 
       const userStatus = await AccessValidationService.getUserStatus(Number(userId));
 
-      // ⚡ BYPASS DIRECTO PARA ADMINS
       if (userStatus.isAdmin) {
         logger.debug('Usuario es ADMIN - Acceso directo a herramienta (BYPASS)', { 
           userId, 
@@ -475,9 +453,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Estadísticas de uso con bypass admin
-   */
   async getUserUsageStats(req, res) {
     try {
       const { userId } = req.params;
@@ -555,9 +530,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Configuración de límites (solo admins)
-   */
   async getToolLimitsConfiguration(req, res) {
     try {
       if (req.user?.id_rol !== 3) {
@@ -596,9 +568,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Recursos accesibles con bypass admin
-   */
   async getAccessibleResources(req, res) {
     try {
       const { userId } = req.params;
@@ -694,9 +663,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Carreras accesibles con bypass admin
-   */
   async getAccessibleCareers(req, res) {
     try {
       const { userId } = req.params;
@@ -775,9 +741,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Verificación de carrera con bypass admin
-   */
   async checkCareerAccess(req, res) {
     try {
       const { userId, careerId } = req.params;
@@ -853,9 +816,6 @@ export const AccessStatusController = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Recomendaciones de upgrade con bypass admin
-   */
   async getUpgradeRecommendations(req, res) {
     try {
       const { userId } = req.params;

@@ -1,7 +1,4 @@
-// ============================================================================
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO EN SECTOR PÚBLICO - PROFESOR SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -23,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -313,8 +306,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🏛️🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE ECONOMÍA DEL SECTOR PÚBLICO:
@@ -354,8 +345,6 @@ Hacer que CUALQUIER estudiante de economía del sector público:
 ¡RECUERDA: No eres solo un tutor de hacienda, eres EL PROFESOR que integra hacienda pública, política fiscal y evaluación como el sector público real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Economía del Sector Público.
 
@@ -501,9 +490,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DEL SECTOR PÚBLICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -597,7 +583,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsPublicSectorSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -615,7 +601,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsPublicSectorSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -664,7 +650,7 @@ const classifyQuery = (query, content = null) => {
     publicSectorConcepts.some(term => lowercaseQuery.includes(term));
 
   if (isSimpleQuery && !hasPublicSectorContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -748,7 +734,7 @@ const classifyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsPublicSectorSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -767,10 +753,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DEL SECTOR PÚBLICO
 const ACADEL_PUBLIC_SECTOR_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara experto más brillante del universo en hacienda pública, política fiscal y evaluación de políticas públicas.
 
@@ -796,8 +779,8 @@ const createPublicSectorKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_sectorpublico",
         similarityQueryName: "match_emb_sectorpublico",
         keywordQueryName: "kw_match_emb_sectorpublico",
@@ -1086,8 +1069,8 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_sectorpublico",
         similarityQueryName: "match_emb_sectorpublico",
         keywordQueryName: "kw_match_emb_sectorpublico",
@@ -1121,7 +1104,6 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1311,8 +1293,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia del sector público según 
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectPublicSectorImageRequest = (query) => {
   const publicSectorImageKeywords = [
@@ -1394,14 +1374,10 @@ const enhancePublicSectorImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos del sector público cuando sea apropiado`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPublicSectorPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // ============================================================================
 
   const corePublicSectorInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE ECONOMÍA DEL SECTOR PÚBLICO INTEGRADO
@@ -1500,8 +1476,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas del sector público importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const publicSectorTypeInstructions = {
     casual_conversation: `
@@ -1582,8 +1556,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las tres disciplinas`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1606,8 +1578,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
       'Enseña como el capibara experto más brillante del universo en sector público, integrando hacienda pública, política fiscal y evaluación, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta del sector público importante, y complementando con todas tus capacidades paralelas para una explicación integrada magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🏛️🦫 Acadel configurando sistema del sector público optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1618,7 +1588,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
     createBravePublicSectorSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL del sector público (Knowledge Base) - núcleo del sistema`);
     tools.unshift(createPublicSectorKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1683,8 +1652,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1743,8 +1710,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_sectorpublico",
             similarityQueryName: "match_emb_sectorpublico",
             keywordQueryName: "kw_match_emb_sectorpublico",
@@ -1883,8 +1850,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicSectorQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2002,7 +1967,6 @@ export const handlePublicSectorQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2093,7 +2057,6 @@ export const handlePublicSectorQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2239,7 +2202,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2265,8 +2227,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicSectorMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2594,7 +2554,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const userMessageResult = await saveMultimodalMessage({
@@ -2650,7 +2609,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
       chatId,
       timestamp: new Date().toISOString(),
 
-      // Información de archivos de desarrollo procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2664,12 +2622,10 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
         }
       },
 
-      // Información de seguridad de desarrollo
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
 
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2700,8 +2656,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicSectorQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

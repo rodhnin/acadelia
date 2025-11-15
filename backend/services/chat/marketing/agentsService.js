@@ -167,7 +167,7 @@ export const agentService = {
         savedInsights: [],
         decisions: {},
         memoryCount: 0,
-        intelligentSystemUsed: true // ✅ MARCAR USO DEL SISTEMA INTELIGENTE
+        intelligentSystemUsed: true
       };
       
       console.log("🎯 Ejecutando STRATEGIST con Sistema Inteligente...");
@@ -249,7 +249,7 @@ export const agentService = {
         agentsUsed: agentsUsed,
         agentSelection: agentDecision,
         specialization_used: true,
-        intelligent_system_used: true, // ✅ NUEVO CAMPO
+        intelligent_system_used: true,
         stats: {
           savedProfiles: sharedContext.savedProfiles.length,
           savedContents: sharedContext.savedContents.length,
@@ -289,7 +289,7 @@ export const agentService = {
       const agent = await this.createAgent(agentType, {
         strategistThoughts: strategistThoughts,
         elementsAlreadySaved: cleanSavedItemsInfo,
-        intelligentSystemActive: true // ✅ NUEVO CONTEXTO
+        intelligentSystemActive: true
       });
       
       const specificTools = getMarketingTools(agentType);
@@ -346,7 +346,7 @@ export const agentService = {
             result: observationData,
             timestamp: new Date().toISOString(),
             agent: agentType,
-            intelligentSystemUsed: true // ✅ MARCAR USO DEL SISTEMA INTELIGENTE
+            intelligentSystemUsed: true
           });
           
           if (step.action.tool === 'saveProfile' && observationData && observationData.profileId) {
@@ -475,7 +475,7 @@ export const agentService = {
             query_type: query.substring(0, 100),
             agentsUsed: agentsUsed,
             specialization_used: true,
-            intelligent_system_used: true, // ✅ NUEVO CAMPO
+            intelligent_system_used: true,
             responseSummary: fullResponse.substring(0, 200)
           });
           
@@ -528,7 +528,7 @@ export const agentService = {
         },
         recommendations: fullResponse.substring(0, 200),
         specialization_note: "Cada agente usó herramientas específicas con Sistema Inteligente (embeddings + IA) para eliminar duplicación",
-        intelligent_system_used: true // ✅ NUEVO CAMPO
+        intelligent_system_used: true
       };
       
       const explanation = await explainServiceModule.explainService.generateExplanation(decisionContext, explainLevel);
@@ -571,7 +571,7 @@ export const agentService = {
         decisions: {},
         memoryCount: 0,
         specialization_used: true,
-        intelligentSystemUsed: true // ✅ NUEVO CAMPO
+        intelligentSystemUsed: true
       };
       
       // 3. Usar el agente director para determinar qué agentes especializados se necesitan
@@ -659,7 +659,7 @@ export const agentService = {
           },
           recommendations: finalResponse.content.substring(0, 200),
           specialization_note: "Sistema especializado con Sistema Inteligente sin duplicación",
-          intelligent_system_used: true // ✅ NUEVO CAMPO
+          intelligent_system_used: true
         };
         
         explanation = await explainServiceModule.explainService.generateExplanation(decisionContext, 'intermediate');
@@ -671,7 +671,7 @@ export const agentService = {
         response: finalResponse.content,
         agentsUsed: Object.keys(agentResults).filter(key => agentResults[key] !== null),
         specialization_used: true,
-        intelligent_system_used: true, // ✅ NUEVO CAMPO
+        intelligent_system_used: true,
         no_duplication: true,
         stats: {
           savedProfiles: sharedContext.savedProfiles.length,
@@ -681,7 +681,7 @@ export const agentService = {
         },
         agentSelection: agentDecision,
         explanation: explanation,
-        intelligent_features: { // ✅ NUEVA SECCIÓN
+        intelligent_features: {
           embedding_based_search: true,
           ai_similarity_analysis: true,
           psychographic_analysis: true,

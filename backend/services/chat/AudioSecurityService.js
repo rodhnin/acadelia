@@ -444,7 +444,7 @@ export const AudioSecurityService = {
       const clamdscan = spawn('clamdscan', [
         '--fdpass',             // Hereda permisos del usuario que ejecuta
         '--stdout',             // Vuelca el reporte por stdout
-        '--infected',           // Solo imprime archivos infectados
+        '--infected',
         filePath
       ]);
       

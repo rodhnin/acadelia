@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         hasError: false
     };
 
-    // ==================== SUPRESIÓN DE ERRORES ====================
 
     // Supresión de errores específicos en la consola
     (function () {
@@ -90,7 +89,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })();
 
-    // ==================== UTILIDADES Y DETECCIÓN DE MENSAJES ====================
 
     const detectLogoutMessage = () => {
         // 1. Verificar si hay mensaje en sessionStorage (método original)
@@ -155,7 +153,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Oculta todo el contenido de la página inicialmente
     document.body.style.display = 'none';
 
-    // ==================== VERIFICACIÓN DE AUTENTICACIÓN ====================
 
     const checkAuthentication = async () => {
         try {
@@ -260,7 +257,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await checkAuthentication();
 
-    // ==================== ELEMENTOS DOM Y VARIABLES ====================
 
     // Referencias a elementos del DOM
     const formLogin = document.getElementById('formLogin');
@@ -282,7 +278,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-    // ==================== FUNCIONES DE CONTROL DE BOTONES ====================
 
 
 
@@ -295,7 +290,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Variable para controlar el estado del botón de verificación
     let isVerifyProcessing = false;
 
-    // ==================== FUNCIONES AUXILIARES ====================
 
     const showWrapper = (wrapperToShow) => {
         [loginWrapper, emailConfirmationWrapper, passwordRecoveryWrapper, verificationWrapper].forEach(wrapper => {
@@ -464,7 +458,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     };
-    // ==================== FUNCIONES PRINCIPALES ====================
 
     const handleLogin = async (email, password, isNewUser = false) => {
         // Prevenir múltiples ejecuciones
@@ -674,7 +667,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.notifyService.update(notificationId, statusData.message || 'Credenciales inválidas', 'error', 3000);
                 throw new Error(statusData.message || 'Credenciales inválidas');
             }
-            // Si todo está bien y podemos proceder con el login
             else {
                 window.notifyService.update(notificationId, 'Credenciales correctas, iniciando sesión...', 'info');
 
@@ -1028,7 +1020,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    // ==================== GOOGLE SIGN-IN ====================
 
     const updateGoogleButtonState = (state) => {
         const customGoogleBtn = document.getElementById('customGoogleBtn');
@@ -1077,7 +1068,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
-    // ==================== FUNCIÓN CORREGIDA - SIN ERRORES ====================
 
     const initializeGoogleAuth = async () => {
         try {
@@ -1091,7 +1081,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // ⭐ MARCAR COMO LISTO (no necesitamos SDK para redirect)
             googleAuthState.isInitialized = true;
             googleAuthState.isInitializing = false;
             googleAuthState.hasError = false;
@@ -1112,7 +1101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     };
-    // ==================== CAMBIAR SOLO ESTA LÍNEA ====================
 
 const setupGoogleRedirectButtons = () => {
     const handleGoogleRedirect = async (e) => {
@@ -1185,7 +1173,6 @@ const setupGoogleRedirectButtons = () => {
     setupButton('.social-button.google-register');
 };
 
-    // ⭐ FUNCIÓN PARA OCULTAR BOTONES
     const hideGoogleButtons = () => {
         const customGoogleBtn = document.getElementById('customGoogleBtn');
         const googleRegisterBtn = document.querySelector('.social-button.google-register');
@@ -1201,7 +1188,6 @@ const setupGoogleRedirectButtons = () => {
         }
     };
 
-    // ==================== MANEJO DEL DOM Y EVENTOS ====================
 
     loadSavedCredentials();
 
@@ -1448,7 +1434,6 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // ==================== VALIDACIÓN DE CONTRASEÑAS ====================
 
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
@@ -1580,7 +1565,6 @@ const setupGoogleRedirectButtons = () => {
         parentDiv.insertAdjacentElement('afterend', matchMessage);
     }
 
-    // ==================== INICIALIZACIÓN FINAL ====================
 
     setTimeout(initializeGoogleAuth, 200);
 });

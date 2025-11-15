@@ -51,7 +51,7 @@ export const ImageSecurityService = {
       const clamdscan = spawn('clamdscan', [
         '--fdpass',           // hereda permisos del usuario que ejecuta
         '--stdout',           // vuelca el reporte por stdout
-        '--infected',         // solo imprime archivos infectados
+        '--infected',
         filePath
       ]);      
       

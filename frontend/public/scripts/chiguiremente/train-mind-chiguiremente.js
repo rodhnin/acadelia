@@ -373,7 +373,6 @@ function renderAvaCards() {
         
         setupImageFallback(imgElement, '/images/placeholder.jpg');
         
-        // Información básica
         card.querySelector('.neural-card-title').textContent = ava.nom_ava;
         
         const description = ava.descripcion || 'Sin descripción disponible';
@@ -1865,7 +1864,6 @@ function confirmRemoveFile(index, filename) {
     };
     
     const cancelHandler = () => {
-        // Solo ocultar modal
         modal.style.display = 'none';
         overlay.style.display = 'none';
         
@@ -1911,7 +1909,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         dragCounter++;
         
-        // Solo mostrar efecto si tenemos archivos
         if (e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file')) {
             dropZone.classList.add('dragActive');
         }
@@ -1922,7 +1919,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         dragCounter--;
         
-        // Solo quitar efecto si realmente salimos de la ventana
         if (dragCounter === 0) {
             dropZone.classList.remove('dragActive');
         }
@@ -1933,7 +1929,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Solo mostrar efecto si tenemos archivos
         if (e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file')) {
             dropZone.classList.add('drag-over');
             
@@ -1956,7 +1951,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Solo quitar efecto si realmente salimos del dropzone
         // y no de un elemento hijo
         if (e.currentTarget === e.target) {
             dropZone.classList.remove('drag-over');

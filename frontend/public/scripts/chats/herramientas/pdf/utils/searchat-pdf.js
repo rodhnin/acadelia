@@ -14,7 +14,7 @@ import {
   setManagedTimeout,
   clearManagedTimeouts
 } from '../../../shared/dom-helpers.js';
-import { isChatProblematic } from './chat-error-handler-pdf.js'; // Importar la función
+import { isChatProblematic } from './chat-error-handler-pdf.js';
 
 
 // Constantes para identificar timeouts
@@ -241,7 +241,7 @@ function closeSearchModal() {
     document.body.style.position = '';
     document.body.style.width = '';
     document.body.style.top = '';
-    window.scrollTo(0, scrollPosition); // Solo hacer scroll después de restaurar la posición del body
+    window.scrollTo(0, scrollPosition);
   }
   
   document.body.classList.remove('modal-open');
@@ -319,7 +319,6 @@ if (state.allChats.length === 0) {
     
     displayChats(state.allChats);
 
-    // ⭐ NUEVO: Notificación de éxito
     if (state.allChats.length > 0) {
       acadelExito("📚 Historial cargado", `Acadel encontró ${state.allChats.length} conversaciones en tu academia`);
     }
@@ -474,7 +473,6 @@ function setupSearchEvent() {
 function navigateToChat(chatId) {
   const chatPath = URL_CONFIG.chatPath(chatId);
 
-    // ⭐ NUEVO: Notificación de éxito antes de navegar
   acadelExito("🎯 Chat encontrado", "Acadel te lleva a tu conversación");
   
   closeSearchModal();

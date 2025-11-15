@@ -66,7 +66,6 @@ export function openModal(modalIdOrElement) {
   return modal;
 }
 
-// 🆕 CERRAR MODAL CON RESET AUTOMÁTICO
 export function closeModal(modalIdOrElement) {
   let modal;
   
@@ -90,7 +89,6 @@ export function closeModal(modalIdOrElement) {
   
   modal.dispatchEvent(new CustomEvent('modal:close'));
   
-  // 🆕 RESET AUTOMÁTICO AL CERRAR (opcional pero recomendado)
   const modalId = modal.id;
   if (modalId) {
     const modalType = modalId.replace('Modal', '').toLowerCase();
@@ -266,7 +264,6 @@ export function showAlertModal(message, title = 'Aviso') {
   });
 }
 
-// 🆕 FUNCIÓN PARA RESETEAR MODAL MANUALMENTE
 export function resetModal(modalIdOrElement) {
   let modal;
   

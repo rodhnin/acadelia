@@ -125,7 +125,6 @@ export function toggleUIState(disabled) {
     return;
   }
 
-  // ⭐ NUEVA FUNCIONALIDAD: Deshabilitar/habilitar botones de interacción ⭐
   if (disabled) {
     disableInteractionButtons();
   } else {
@@ -509,7 +508,6 @@ export function cancelCurrentRequest() {
     if (hasResponseButtons) {
       console.log('✅ [CANCEL] Mensaje con botones detectado - preservando respuesta real');
 
-      // Solo limpiar estado de loading y restaurar botón
       const aiProfile = loadingMessage.querySelector('.ai-profile');
       if (aiProfile) {
         aiProfile.classList.remove('thinking');
@@ -526,7 +524,7 @@ export function cancelCurrentRequest() {
         toggleUIState(false);
       }, 100);
 
-      return; // ✅ SALIR SIN HACER NADA MÁS
+      return;
     }
 
     const aiProfile = loadingMessage.querySelector('.ai-profile');
@@ -642,7 +640,6 @@ export function cancelCurrentRequest() {
   console.log(`🛑 [CANCEL] Cancelación iniciada. Controllers abortados: ${abortedCount}. Sincronización en progreso...`);
 }
 
-// ====== NUEVAS FUNCIONES AUXILIARES ======
 /**
  * Cambia el botón a modo cargando inmediatamente al cancelar
  */
@@ -712,7 +709,7 @@ async function sendCancellationRequest(chatId) {
     console.log(`📡 [CANCEL] Enviando señal de cancelación al backend para chat: ${chatId}`);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // ✅ Aumentado a 3 segundos
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
     const response = await fetch(`/api/chats/chats/${chatId}/cancel-request`, {
       method: 'POST',
@@ -1362,7 +1359,6 @@ export function updateAcadelLoaderProgress(progress) {
 
   window.acadelLoadingState.phase = phase;
 
-  // ⭐ LÓGICA CORREGIDA PARA LOS PASOS
   document.querySelectorAll('.acadel-step').forEach(step => {
     const stepNum = parseInt(step.dataset.step);
     const icon = step.querySelector('.acadel-step-icon');

@@ -58,7 +58,6 @@ const {
   clearTokenWarnings,
 } = ChatNoticesSystem;
 
-// ===== SISTEMA DE GESTIÓN CENTRALIZADA ADAPTADO =====
 
 /**
  * Gestor centralizado de DOM para optimizar querySelector calls
@@ -223,7 +222,6 @@ class ChatUtils {
       window.temporaryWelcomeFiles = null;
     }
 
-    // ⭐ NUEVO: Limpiar ID temporal si hubo error y no se completó el flujo normal
     if (window.tempChatIdForFiles) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado en cleanup de bienvenida`);
@@ -422,7 +420,6 @@ static setupAbortController() {
 const domManager = new DOMManager();
 const eventManager = new EventManager();
 
-// Variables para controlar cambios de chat y peticiones pendientes
 let isSwitchingChat = false;
 let pendingChatSwitch = null;
 
@@ -565,7 +562,6 @@ function setupScrollObserver() {
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages && window.MutationObserver) {
       const observer = new MutationObserver((mutations) => {
-        // Solo aplicar en móviles y cuando no estemos en pantalla de bienvenida
         if (window.innerWidth < 768 && !document.querySelector('.welcome-message')) {
           setTimeout(() => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -659,10 +655,8 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
     }
   }
 
-  // ⚡ AÑADIR AL DOM INMEDIATAMENTE
   chatMessages.appendChild(messageDiv);
 
-  // ⚡ RENDERIZAR MATEMÁTICAS INMEDIATAMENTE (sin setTimeout)
   if (role === 'user' && typeof content === 'string' &&
     (content.includes('$') || content.includes('\\(') || content.includes('\\)'))) {
     const contentElem = messageDiv.querySelector('.message-content');
@@ -678,7 +672,6 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
   return messageDiv;
 }
 
-// ===== FUNCIÓN constructSimplifiedMultimodalContent NUEVA =====
 
 /**
  * Construye el contenido HTML para mensajes multimodales - VERSIÓN SIMPLIFICADA
@@ -686,9 +679,6 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
  * @param {string} text - Texto del mensaje
  * @param {Array} files - Archivos adjuntos sin procesar
  * @returns {string} HTML del contenido multimodal
- */
-/**
- * ⭐ VERSIÓN MEJORADA: Construye contenido multimodal con mejor manejo de errores ⭐
  */
 function constructSimplifiedMultimodalContent(text, files) {
   function sanitize(text) {
@@ -709,7 +699,6 @@ function constructSimplifiedMultimodalContent(text, files) {
     files.forEach((file, index) => {
       try {
         if (file.type === 'image') {
-          // ⭐ MANEJO SEGURO DE IMÁGENES ⭐
           if (file.data && file.data.base64) {
             try {
               if (file.data.base64.startsWith('data:') && file.data.base64.includes('base64,')) {
@@ -740,7 +729,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           }
         }
         else if (file.type === 'document' || file.type === 'code') {
-          // ⭐ MANEJO SEGURO DE DOCUMENTOS CON NOMBRE EXACTO ⭐
           const extension = file.file.name.split('.').pop().toLowerCase();
           let iconClass = 'bxs-file-txt';
           let attachmentType = 'document';
@@ -757,7 +745,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           const fileName = file.file.name.length > 12 ? file.file.name.substring(0, 9) + '...' : file.file.name;
           const fileSize = ((file.file.size || 0) / 1024).toFixed(1);
 
-          // ⭐ CRÍTICO: Usar nombre completo exacto para mapeo correcto ⭐
           html += `
             <div class="document-preview temp-preview" 
                  data-file-name="${sanitize(file.file.name)}"
@@ -772,7 +759,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           `;
         }
         else if (file.type === 'audio') {
-          // ⭐ MANEJO SEGURO DE AUDIO CON NOMBRE EXACTO ⭐
           const fileName = file.file.name.length > 25 ? file.file.name.substring(0, 22) + '...' : file.file.name;
           const fileSize = ((file.file.size || 0) / 1024).toFixed(1);
 
@@ -789,7 +775,6 @@ function constructSimplifiedMultimodalContent(text, files) {
             new Date(file.data.timestamp).toLocaleString() :
             new Date().toLocaleString();
 
-          // ⭐ CRÍTICO: Usar nombre completo exacto para mapeo correcto ⭐
           html += `
             <div class="audio-preview enhanced-audio temp-preview" 
                  data-file-name="${sanitize(file.file.name)}"
@@ -850,14 +835,6 @@ function constructSimplifiedMultimodalContent(text, files) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Procesa la respuesta del servidor y actualiza documentos temporales ⭐
- * @param {Object} data - Respuesta del servidor
- * @param {HTMLElement} messageElement - Elemento del mensaje del usuario
- */
-/**
- * ⭐ FUNCIÓN CORREGIDA: Procesa la respuesta del servidor y actualiza documentos temporales ⭐
- */
 function processServerResponseDocuments(data, messageElement) {
   if (data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
     console.log('📄 Actualizando documentos temporales con fileIds del servidor...');
@@ -870,7 +847,6 @@ function processServerResponseDocuments(data, messageElement) {
     const tempPreviews = messageElement.querySelectorAll('.document-preview.temp-preview, .audio-preview.temp-preview');
     console.log(`🔍 Encontrados ${tempPreviews.length} previews temporales`);
 
-    // ⭐ MAPEO POR NOMBRE EN LUGAR DE ÍNDICE ⭐
     const serverDocsByName = new Map();
     data.documents.forEach((doc, index) => {
       const names = [
@@ -896,7 +872,6 @@ function processServerResponseDocuments(data, messageElement) {
 
       let serverDoc = null;
 
-      // ⭐ BUSCAR POR NOMBRE EXACTO PRIMERO ⭐
       if (fileName && serverDocsByName.has(fileName)) {
         const docEntry = serverDocsByName.get(fileName);
         if (!docEntry.used) {
@@ -906,7 +881,6 @@ function processServerResponseDocuments(data, messageElement) {
         }
       }
 
-      // ⭐ SI NO HAY MATCH POR NOMBRE, USAR FALLBACK POR ÍNDICE ⭐
       if (!serverDoc && data.documents[matchedCount]) {
         serverDoc = data.documents[matchedCount];
         console.log(`⚠️ Match por índice secuencial (fallback): documento ${matchedCount}`);
@@ -915,7 +889,6 @@ function processServerResponseDocuments(data, messageElement) {
       if (serverDoc && serverDoc.fileId) {
         console.log(`🔗 Vinculando: "${fileName}" -> "${serverDoc.originalName}" (${serverDoc.fileId})`);
 
-        // ⭐ ACTUALIZACIÓN COMPLETA DE ATRIBUTOS ⭐
         tempPreview.dataset.fileId = serverDoc.fileId;
         tempPreview.dataset.fileName = serverDoc.originalName || fileName;
         tempPreview.dataset.attachmentType = serverDoc.attachmentType || 'document';
@@ -924,12 +897,10 @@ function processServerResponseDocuments(data, messageElement) {
           tempPreview.dataset.language = serverDoc.language;
         }
 
-        // ⭐ CAMBIAR CLASES Y HACER CLICKEABLE ⭐
         tempPreview.classList.remove('temp-preview');
         tempPreview.classList.add('clickable');
         tempPreview.style.cursor = 'pointer';
 
-        // ⭐ MARCAR COMO PROCESADO ⭐
         tempPreview.setAttribute('data-processed', 'true');
 
         matchedCount++;
@@ -937,7 +908,6 @@ function processServerResponseDocuments(data, messageElement) {
       } else {
         console.warn(`❌ No se pudo vincular: "${fileName}"`);
 
-        // ⭐ MANTENER EL PREVIEW PERO MARCARLO COMO NO DISPONIBLE ⭐
         tempPreview.classList.remove('temp-preview');
         tempPreview.classList.add('no-preview', 'disabled');
         tempPreview.style.opacity = '0.6';
@@ -953,7 +923,6 @@ function processServerResponseDocuments(data, messageElement) {
 
     console.log(`📊 Resultado del matching: ${matchedCount}/${tempPreviews.length} documentos vinculados`);
 
-    // ⭐ ACTIVAR EVENTOS DESPUÉS DE PROCESAR TODOS ⭐
     setTimeout(() => {
       try {
         if (typeof activateDocumentEvents === 'function') {
@@ -973,9 +942,6 @@ function processServerResponseDocuments(data, messageElement) {
   }
 }
 
-/**
- * ⭐ NUEVA: Detecta y procesa JSON doblemente escapado ⭐
- */
 function processEscapedJSON(content) {
   if (typeof content === 'string' &&
     content.trim().startsWith('"{') &&
@@ -1034,9 +1000,6 @@ function processEscapedJSON(content) {
   return content;
 }
 
-/**
- * ⭐ NUEVA: Intercepta el renderizado de mensajes usando override ⭐
- */
 function setupMessageRenderingInterceptor() {
   // Método 1: Interceptar appendChild para detectar nuevos mensajes
   const originalAppendChild = Element.prototype.appendChild;
@@ -1060,9 +1023,6 @@ function setupMessageRenderingInterceptor() {
   console.log('✅ Interceptor de renderizado configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un elemento de mensaje después de ser agregado al DOM ⭐
- */
 function processMessageElement(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
@@ -1070,7 +1030,6 @@ function processMessageElement(messageElement) {
     textElements.forEach(textElement => {
       const content = textElement.textContent || textElement.innerHTML;
 
-      // Solo procesar si parece JSON y no ha sido procesado
       if (content &&
         typeof content === 'string' &&
         !textElement.hasAttribute('data-processed') &&
@@ -1098,21 +1057,16 @@ function processMessageElement(messageElement) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa todos los mensajes existentes al cargar ⭐
- */
 function processAllExistingMessages() {
   console.log('🔍 Procesando todos los mensajes existentes...');
 
   const userMessages = document.querySelectorAll('.user-message');
   console.log(`Encontrados ${userMessages.length} mensajes de usuario`);
 
-  // ⭐ CAMBIO: Procesar inmediatamente sin delays ⭐
   userMessages.forEach((messageElement) => {
     processMessageElement(messageElement);
   });
 
-  // ⭐ NUEVO: Llamar también al procesamiento inmediato del content-processing ⭐
   import('../ui/content-processing-agente.js').then(contentModule => {
     if (typeof contentModule.processMessagesImmediately === 'function') {
       contentModule.processMessagesImmediately();
@@ -1120,9 +1074,6 @@ function processAllExistingMessages() {
   }).catch(e => console.warn('Error al importar procesamiento adicional:', e));
 }
 
-/**
- * ⭐ NUEVA: Versión mejorada de formatMultimodalContentSync ⭐
- */
 function formatMultimodalContentSync(jsonData) {
   const text = jsonData.text || '';
   const images = jsonData.images || [];
@@ -1144,14 +1095,12 @@ function formatMultimodalContentSync(jsonData) {
     html += `<div class="multimodal-text">${processedText}</div>`;
   }
 
-  // ⭐ NUEVO: CONTENEDOR UNIFICADO PARA TODOS LOS ELEMENTOS ⭐
   const hasImages = images.length > 0;
   const hasDocuments = documents.length > 0;
 
   if (hasImages || hasDocuments) {
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR IMÁGENES DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasImages) {
       const validImages = images.filter(img => img && img.path);
 
@@ -1164,7 +1113,6 @@ function formatMultimodalContentSync(jsonData) {
       });
     }
 
-    // ⭐ PROCESAR DOCUMENTOS DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasDocuments) {
       const validDocuments = documents.filter(doc => doc && doc.fileId);
 
@@ -1195,9 +1143,6 @@ function formatMultimodalContentSync(jsonData) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Función para escapar HTML ⭐
- */
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
@@ -1205,9 +1150,6 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/**
- * ⭐ NUEVA: Observer para procesar mensajes después de renderizarse ⭐
- */
 function setupMessageObserver() {
   const chatMessages = domManager.chatMessages;
   if (!chatMessages) return;
@@ -1236,9 +1178,6 @@ function setupMessageObserver() {
   console.log('✅ Observer de mensajes configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un mensaje individual después de renderizarse ⭐
- */
 function processExistingMessage(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content');
@@ -1298,9 +1237,6 @@ function processExistingMessage(messageElement) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa contenido de mensaje para detectar JSON multimodal ⭐
- */
 function processMessageContent(messageContent, isAIMessage = false) {
   if (typeof messageContent === 'string' &&
     messageContent.trim().startsWith('{') &&
@@ -1325,9 +1261,6 @@ function processMessageContent(messageContent, isAIMessage = false) {
   return messageContent;
 }
 
-/**
- * ⭐ NUEVAS: Funciones auxiliares ⭐
- */
 function getIconForFileType(fileType) {
   const iconMap = {
     'document': 'bxs-file-txt',
@@ -1443,12 +1376,7 @@ async function handleYouTubeProcessingInNewChat(originalMessage, newChatId) {
   }
 }
 
-/**
- * 🦫 SISTEMA DE MENSAJES DINÁMICOS PARA ACADEL CONOCIMIENTO GENERAL
- * Mensajes variados para hacer la experiencia más divertida y educativa
- */
 
-// 🧠 ARRAY DE MENSAJES VARIADOS PARA "ACADEL ESTÁ PENSANDO" - CONOCIMIENTO GENERAL
 const ACADEL_THINKING_MESSAGES = [
   // Mensajes básicos de pensamiento
   {
@@ -1621,10 +1549,6 @@ const ACADEL_PATIENCE_MESSAGES = [
   }
 ];
 
-/**
- * 🎲 FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE ACADEL PENSANDO
- * @returns {Object} Objeto con title y message aleatorios
- */
 function getRandomThinkingMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_THINKING_MESSAGES.length);
   const selectedMessage = ACADEL_THINKING_MESSAGES[randomIndex];
@@ -1634,10 +1558,6 @@ function getRandomThinkingMessage() {
   return selectedMessage;
 }
 
-/**
- * ⏳ FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE PACIENCIA/OPERACIÓN LENTA
- * @returns {Object} Objeto con title y message aleatorios para operaciones lentas
- */
 function getRandomPatienceMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_PATIENCE_MESSAGES.length);
   const selectedMessage = ACADEL_PATIENCE_MESSAGES[randomIndex];
@@ -1647,17 +1567,6 @@ function getRandomPatienceMessage() {
   return selectedMessage;
 }
 
-/**
- * ✅ FUNCIÓN COMPLETAMENTE ACTUALIZADA: handleSendMessage
- * REEMPLAZAR la función handleSendMessage existente con esta versión
- * 
- * INCLUYE:
- * 1. Sistema completo de notificaciones dinámicas de Acadel
- * 2. Mensajes específicos para conocimiento general
- * 3. Manejo completo de límites y errores
- * 4. Limpieza automática de notificaciones
- * 5. Notificaciones para procesamiento de archivos
- */
 export async function handleSendMessage() {
   if (window._isHandlingSend) {
     console.log('🚫 handleSendMessage ya en ejecución');
@@ -1666,7 +1575,6 @@ export async function handleSendMessage() {
 
   window._isHandlingSend = true;
 
-  // ⚡ VERIFICACIONES MÍNIMAS Y RÁPIDAS
   const textarea = domManager.textarea;
   const chatMessages = domManager.chatMessages;
 
@@ -1678,7 +1586,6 @@ export async function handleSendMessage() {
   const hasAttachments = temporaryFiles.length > 0 ||
     (typeof hasAttachedFiles === 'function' ? hasAttachedFiles() : false);
 
-  // ⚡ VALIDACIÓN MÍNIMA - Si no hay contenido, salir inmediatamente
   if (getState('isProcessing') || (!originalMessage && !hasAttachments)) {
     window._isHandlingSend = false;
     return;
@@ -1687,7 +1594,6 @@ export async function handleSendMessage() {
   setProcessingState(true);
   toggleUIState(true);
 
-  // 🦫 VARIABLES PARA TRACKING DE NOTIFICACIONES
   let thinkingNotificationId = null;
   let slowOperationNotificationId = null;
   let slowOperationTimeout = null;
@@ -1717,14 +1623,12 @@ export async function handleSendMessage() {
   };
 
   try {
-    // 🦫 NOTIFICACIÓN INMEDIATA DE PROCESAMIENTO PARA CONOCIMIENTO GENERAL
     const randomThinking = getRandomThinkingMessage();
     thinkingNotificationId = acadelLoading(
       randomThinking.title,
       randomThinking.message
     );
 
-    // ⚡ DIFERIR VALIDACIONES PESADAS
     await new Promise(resolve => requestAnimationFrame(resolve));
 
     const isValidLimit = await ChatUtils.validateCharacterLimit(originalMessage);
@@ -1751,12 +1655,10 @@ export async function handleSendMessage() {
       nombres: attachedFiles.map(f => f.file.name)
     });
 
-    // ⚡ CREAR UI ELEMENTOS DE FORMA DIFERIDA
     if (originalMessage || hasAttachments) {
       messageElement = addMessageWithAttachmentsSimplified('user', originalMessage, attachedFiles);
     }
 
-    // ⚡ LIMPIAR PREVIEW CONTAINER INMEDIATAMENTE (SI HAY ATTACHMENTS)
     if (hasAttachments) {
       console.log('📎 Limpiando preview container inmediatamente...');
       ChatUtils.cleanupFileAttachments();
@@ -1778,7 +1680,6 @@ export async function handleSendMessage() {
     loadingMessage = createLoadingMessage();
     chatMessages.appendChild(loadingMessage);
 
-    // ⚡ DIFERIR OPERACIONES DE SCROLL (optimizadas)
     setTimeout(() => {
       if (messageElement) {
         if (window.innerWidth < 768) {
@@ -1823,7 +1724,6 @@ export async function handleSendMessage() {
       }
     }, 0);
 
-    // ⚡ DIFERIR LIMPIEZA DE WELCOME (no crítica)
     if (isInWelcomeScreen) {
       setTimeout(() => {
         ChatUtils.cleanupWelcomeElements();
@@ -1831,7 +1731,6 @@ export async function handleSendMessage() {
       }, 100);
     }
 
-    // ⚡ DIFERIR NOTIFICACIONES DE ARCHIVOS (no críticas)
     if (hasAttachments && attachedFiles.length > 0) {
       setTimeout(() => {
         if (attachedFiles.length === 1) {
@@ -1900,7 +1799,6 @@ export async function handleSendMessage() {
       isAborted: abortController.signal.aborted
     });
 
-    // 🦫 AVISO PARA OPERACIONES LENTAS (GUARDANDO REFERENCIA)
     slowOperationTimeout = setTimeout(() => {
       if (getState('isProcessing')) {
         if (thinkingNotificationId) {
@@ -2016,9 +1914,6 @@ export async function handleSendMessage() {
   }
 }
 
-/**
- * ✅ FUNCIÓN CORREGIDA: Verificar límites de tokens antes de enviar
- */
 async function checkTokensBeforeSend(chatId) {
   if (!chatId) return { canProceed: true, warningInfo: null };
 
@@ -2208,10 +2103,6 @@ async function handleSendMessageError(error, isNewChat, newChatId, currentChatId
   }
 }
 
-/**
- * ✅ renderSuccessfulResponse COMPLETAMENTE CORREGIDA
- * REEMPLAZAR TODA la función renderSuccessfulResponse
- */
 async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChatId, tokenCheck = null) {
   await new Promise(resolve => requestAnimationFrame(resolve));
 
@@ -2445,7 +2336,6 @@ async function handleNewChatSuccess(newChatId) {
 
   history.pushState({}, '', URL_CONFIG.chatPath(newChatId));
 
-  // ⭐ NUEVO: Limpiar ID temporal después del éxito
   setTimeout(() => {
     if (window.tempChatIdForFiles === newChatId) {
       window.tempChatIdForFiles = null;
@@ -2484,10 +2374,6 @@ function updateExistingChatPosition() {
   }
 }
 
-/**
- * ✅ FUNCIÓN MEJORADA: handleSendMessageCatch + FREE USER LIMITS
- * REEMPLAZAR la función handleSendMessageCatch existente con esta versión
- */
 async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatId, currentChatId, originalMessage) {
   console.group('🚨 HANDLE SEND MESSAGE CATCH');
   console.log('Error details:', {
@@ -2503,7 +2389,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
   });
   console.groupEnd();
 
-  // 🦫 CASO 1: ERROR DE CANCELACIÓN
 if (error.name === 'AbortError') {
   console.log("🚫 Error de cancelación detectado");
 
@@ -2552,7 +2437,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO ESPECIAL: ERROR DE YOUTUBE EN CHAT NUEVO
   if (error.isYouTubeNewChatError ||
     (error.error && error.error.isYouTubeNewChatError)) {
     console.log('🎬 Error de YouTube en chat nuevo detectado:', error);
@@ -2776,7 +2660,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 4: ERRORES DE RED/CONEXIÓN
   if (error.message && (
     error.message.includes('fetch') ||
     error.message.includes('network') ||
@@ -2803,7 +2686,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 5: ERRORES DE TIMEOUT
   if (error.message && (
     error.message.includes('timeout') ||
     error.message.includes('tiempo') ||
@@ -2828,7 +2710,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 6: ERRORES DE SERVIDOR
   if (error.message && (
     error.message.includes('servidor') ||
     error.message.includes('server') ||
@@ -2856,7 +2737,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 7: ERRORES DE AUTENTICACIÓN
   if (error.message && (
     error.message.includes('401') ||
     error.message.includes('403') ||
@@ -2883,7 +2763,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 8: ERRORES DE ARCHIVO/UPLOAD
   if (error.message && (
     error.message.includes('archivo') ||
     error.message.includes('file') ||
@@ -2908,7 +2787,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // 🦫 CASO 9: ERROR GENERAL (FALLBACK)
   console.log('❌ Error general detectado:', error);
 
   if (loadingMessage) {
@@ -2923,7 +2801,6 @@ if (error.name === 'AbortError') {
     "Acadel encontró un problema que no estaba en sus libros. Inténtalo de nuevo en un momento"
   );
 
-  // 🦫 MANEJO DE CHAT PROBLEMÁTICO SOLO PARA ERRORES GENERALES
   if (isNewChat && newChatId) {
     await handleNewChatError(newChatId);
   } else if (currentChatId) {
@@ -2946,7 +2823,6 @@ async function handleNewChatError(newChatId) {
   setCurrentChat(null);
   history.pushState({}, '', URL_CONFIG.basePath);
 
-  // ⭐ NUEVO: Limpiar ID temporal en caso de error
   if (window.tempChatIdForFiles === newChatId) {
     window.tempChatIdForFiles = null;
     console.log(`🧹 Chat temporal limpiado por error: ${newChatId}`);
@@ -3031,7 +2907,7 @@ async function finalizeSendMessage(textarea) {
   }
 
   // Finalización estándar
-  if (textarea && !window.isCancellationInProgress) { // AGREGAR verificación
+  if (textarea && !window.isCancellationInProgress) {
     textarea.value = '';
   }
   setProcessingState(false);
@@ -3042,7 +2918,6 @@ async function finalizeSendMessage(textarea) {
     console.log("🚫 NO restaurando UI en finalizeSendMessage - Cancelación en progreso");
   }
 
-  // ⭐ NUEVO: Limpieza de seguridad para ID temporal
   if (window.tempChatIdForFiles) {
     setTimeout(() => {
       if (window.tempChatIdForFiles) {
@@ -3532,7 +3407,6 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
         processExistingDocuments();
         processAllExistingMessages();
 
-        // ⭐ NUEVO: Usar procesamiento inmediato del content-processing ⭐
         import('../ui/content-processing-agente.js').then(contentModule => {
           if (typeof contentModule.processMessagesImmediately === 'function') {
             contentModule.processMessagesImmediately();
@@ -4028,7 +3902,6 @@ async function checkInitialChatFromURL() {
       if (messages) {
         renderChatMessages(messages);
 
-        // ⭐ PROCESAMIENTO INMEDIATO - SIN DELAY
         requestAnimationFrame(() => {
           console.log('🔍 Procesando documentos existentes inmediatamente...');
 
@@ -4379,7 +4252,6 @@ function setupDragDropEvents(fileUploadContainer) {
   eventManager.add(fileUploadContainer, 'drop', dropHandler, false, 'drag-drop');
 }
 
-// ===== FUNCIONES AUXILIARES PARA EDITOR MATEMÁTICO =====
 
 /**
  * Reinicia completamente el editor matemático
@@ -4651,7 +4523,6 @@ export async function handleDeleteChat(chatId) {
         '¿Estás seguro de eliminar esta conversación? Una vez que Acadel la borre, no podrá recuperarla (ni siquiera con magia de capibara)',
         async () => {
           try {
-            // ⭐ MOSTRAR OVERLAY INMEDIATAMENTE DESPUÉS DE CONFIRMAR ⭐
             if (isCurrentChat) {
               showDeleteChatOverlay();
             }
@@ -4722,7 +4593,6 @@ export async function handleDeleteChat(chatId) {
                 history.pushState({}, '', '/agente');
               }
 
-              // ⭐ PREPARAR BIENVENIDA Y OCULTAR OVERLAY ⭐
               setTimeout(() => {
                 const textarea = domManager.textarea;
                 const fixedSpace = domManager.fixedSpace;
@@ -4883,9 +4753,6 @@ function showDeleteChatOverlay() {
   window.currentDeleteChatOverlay = overlay;
 }
 
-/**
- * ⭐ Oculta overlay de eliminación de chat ⭐
- */
 function hideDeleteChatOverlay() {
   const overlay = window.currentDeleteChatOverlay || document.querySelector('.delete-chat-overlay');
 

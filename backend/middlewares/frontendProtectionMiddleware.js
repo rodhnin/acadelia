@@ -56,17 +56,12 @@ const isHtmlPageRequest = (req) => {
   return isHtml;
 };
 
-/**
- * 🔒 MIDDLEWARE DINÁMICO - PROTEGE TODAS LAS AVAs AUTOMÁTICAMENTE - CORREGIDO
- * ✅ SOLUCIONADO: Garantiza que usuarios premium solo accedan a AVAs de sus carreras
- */
 export const protectFrontendRoutes = async (req, res, next) => {
   try {
     const requestPath = req.path;
 
     console.log(`🔍 [FRONTEND-PROTECTION] === INICIO PROTECCIÓN RUTA: ${requestPath} ===`);
 
-    // Solo procesar rutas HTML, ignorar todo lo demás
     if (requestPath.startsWith('/api/') ||
       requestPath.includes('.') ||
       requestPath.startsWith('/css/') ||
@@ -145,7 +140,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
       }
     }
 
-    // 🆓 VERIFICAR SI ES UNA HERRAMIENTA GRATUITA - Usando cache dinámico
     const isHerramienta = await herramientaCacheService.isHerramientaRoute(slug);
 
     console.log(`🔍 [FRONTEND-PROTECTION] ¿Es herramienta "${slug}"? ${isHerramienta}`);

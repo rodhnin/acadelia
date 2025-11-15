@@ -194,7 +194,6 @@ const queues = {
             
             this.state.consecutiveErrors++;
             
-            // Solo mostrar alerta si hay más de 3 errores consecutivos
             if (this.state.consecutiveErrors > 3 && error.message !== 'Error al obtener estadísticas') {
                 showNotification('Error', 'Error al obtener datos de colas: ' + error.message, 'error');
                 this.state.consecutiveErrors = 0; // Resetear después de mostrar la alerta
@@ -279,7 +278,7 @@ const queues = {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                precision: 0  // Solo mostrar números enteros
+                                precision: 0
                             }
                         }
                     },

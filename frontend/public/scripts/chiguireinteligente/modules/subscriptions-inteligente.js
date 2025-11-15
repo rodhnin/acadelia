@@ -222,7 +222,6 @@ export class SubscriptionsModule {
     try {
       console.log('Activando sección de suscripciones');
       
-      // Solo limpiar filtro de usuario si no se vino de un filtro específico
       if (!this.recentUserFilter) {
         this.clearUserFilter();
       }
@@ -312,7 +311,6 @@ export class SubscriptionsModule {
    * Limpia los filtros específicos (como id_user) cuando se accede directamente a la sección
    */
   clearUserFilter() {
-    // Solo limpiar el filtro de usuario, mantener los demás
     this.filters.id_user = '';
   }
   
@@ -369,9 +367,7 @@ export class SubscriptionsModule {
       let params = {};
       
       if (applyFilters) {
-        // Incluir TODOS los filtros relevantes
         params = {
-          // Incluir todos los filtros aplicables
           status: this.filters.status || undefined,
           id_carrera: this.filters.id_carrera || undefined,
           search: this.filters.search || undefined,
@@ -1544,7 +1540,6 @@ async exportSubscriptions() {
     // Nombre del archivo
     const fileName = `suscripciones_${new Date().toISOString().slice(0, 10)}`;
     
-    // Solo la columna Precio debería tener total
     const columnsWithTotals = ['Precio'];
     
     // Leer formato de exportación preferido del usuario (desde configuración guardada)

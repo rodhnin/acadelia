@@ -110,7 +110,6 @@ function showPremiumBenefits() {
   console.log('Beneficios premium disponibles:', benefits);
 }
 
-// Tracking de interacciones para analytics (opcional)
 function trackUserInteraction(action, element) {
   // Aquí podrías enviar datos a tu sistema de analytics
   console.log(`User interaction: ${action} on ${element}`);

@@ -23,9 +23,6 @@ let initializationAttempts = 0;
 // Caché
 const mathJaxCache = new Map();
 
-/**
- * ✅ CONFIGURACIÓN ROBUSTA - Basada en el reset que funciona
- */
 function setupMathJaxConfig() {
   console.log('🔧 Configurando MathJax con configuración robusta...');
   
@@ -64,7 +61,7 @@ function setupMathJaxConfig() {
       ignoreHtmlClass: 'no-math'
     },
     startup: {
-      typeset: false, // ✅ CRÍTICO: Evitar renderizado automático
+      typeset: false,
       ready: function() {
         console.log('🎯 MathJax ready callback ejecutado');
         
@@ -104,9 +101,6 @@ function setupMathJaxConfig() {
   };
 }
 
-/**
- * ✅ VERIFICACIÓN DE FUNCIONALIDAD - Como el test del reset
- */
 async function verifyMathJaxFunctionality() {
   if (!window.MathJax || !window.MathJax.typesetPromise) {
     console.log('❌ MathJax.typesetPromise no disponible');
@@ -139,9 +133,6 @@ async function verifyMathJaxFunctionality() {
   }
 }
 
-/**
- * ✅ REINICIALIZACIÓN FORZADA - Como el reset nuclear
- */
 async function forceReinitialize() {
   console.log('🔄 Forzando reinicialización MathJax...');
   
@@ -185,9 +176,6 @@ async function forceReinitialize() {
   return initMathJax();
 }
 
-/**
- * ✅ INICIALIZACIÓN MEJORADA
- */
 export function initMathJax() {
   console.log('🚀 Iniciando MathJax mejorado...');
   
@@ -346,8 +334,8 @@ export function renderMath(containerOrElements, options = {}) {
     const validElements = elements.filter(el => {
       return el && 
              el.nodeType === 1 && 
-             el.isConnected && // ⭐ CLAVE: Verificar que está en el DOM
-             document.contains(el) && // ⭐ Doble verificación
+             el.isConnected &&
+             document.contains(el) &&
              containsMath(el.textContent || el.innerHTML || '');
     });
 
@@ -366,7 +354,6 @@ export function renderMath(containerOrElements, options = {}) {
         });
       }
 
-      // ⭐ FILTRAR NUEVAMENTE justo antes del procesamiento
       const stillValidElements = validElements.filter(el => 
         el && el.isConnected && document.contains(el)
       );
@@ -380,7 +367,7 @@ export function renderMath(containerOrElements, options = {}) {
         return window.MathJax.typesetPromise(stillValidElements)
           .then(() => {
             stillValidElements.forEach(el => {
-              if (el && el.isConnected) { // ⭐ Verificar antes de marcar
+              if (el && el.isConnected) {
                 el.setAttribute('data-mathjax-processed', 'true');
               }
             });
@@ -410,9 +397,6 @@ export function renderMath(containerOrElements, options = {}) {
   });
 }
 
-/**
- * ✅ ASEGURAR INICIALIZACIÓN
- */
 export function ensureMathJaxInitialized() {
   if (mathJaxReady && window.MathJax && window.MathJax.typesetPromise) {
     return Promise.resolve();

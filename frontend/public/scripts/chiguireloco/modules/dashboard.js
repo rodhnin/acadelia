@@ -160,7 +160,7 @@ const dashboard = {
                 const eventsResult = await getSecurityEvents({
                     startDate,
                     endDate
-                }, 1, 1000); // Obtener hasta 1000 eventos
+                }, 1, 1000);
                 
                 if (eventsResult && eventsResult.events && eventsResult.events.length > 0) {
                     eventsResult.events.forEach(event => {

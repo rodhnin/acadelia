@@ -99,10 +99,9 @@ async function initApp() {
   
   const mermaidPromise = initMermaidSystem();
   
-  // ⭐ APLICAR TERMINAL TECNOLÓGICO (sin skeleton que bloquee)
   import('../ui/ui-manager-agente.js').then(uiModule => {
     if (typeof uiModule.applyInitialLoader === 'function') {
-      uiModule.applyInitialLoader(); // Solo terminal, contenido visible detrás
+      uiModule.applyInitialLoader();
     }
   });
 
@@ -327,7 +326,6 @@ async function initApp() {
         reason: 'agente-acadel-ready'
       });
 
-      // ⭐ Progreso final y cierre del terminal
       updateAcadelTechProgress(100, '🎉 ¡Protocolo de inicialización completado!');
       
       setManagedTimeout(() => {
@@ -338,7 +336,6 @@ async function initApp() {
             uiModule.removeInitialLoader();
           }
 
-                // ⭐ Bienvenida tecnológica del Agente Acadel
               window.acadelConfetti(
                 "🚀 ¡Agente Acadel totalmente operativo! 🤖", 
                 "Tu asistente de IA académica está listo para transcribir, buscar y resolver cualquier desafío de estudio. ¡Modo capibara inteligente activado!"
@@ -424,7 +421,6 @@ function updateAcadelTechProgress(progress, mensaje = '') {
   }
 }
 
-// ⭐ Funciones globales para uso en toda la aplicación
 window.updateAcadelTechProgress = updateAcadelTechProgress;
 
 // Inicialización al cargar DOM

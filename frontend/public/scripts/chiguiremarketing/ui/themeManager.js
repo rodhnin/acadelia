@@ -21,7 +21,6 @@ export function initThemeManager() {
   setupSidebarThemeToggle();
   
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    // Solo cambiar automáticamente si no hay un tema guardado
     if (!localStorage.getItem('theme')) {
       setTheme(e.matches ? 'dark' : 'light');
     }
@@ -97,7 +96,6 @@ export function setTheme(theme, isInitial = false) {
   
   updateThinkingGifs(theme);
   
-  // ✨ DELEGACIÓN AL SISTEMA UNIFICADO DE MERMAID
   if (!isInitial) {
     // El MermaidManager tiene su propio listener de cambios de tema
     // No necesitamos hacer nada aquí, se actualiza automáticamente
@@ -207,7 +205,6 @@ function updateCodeTheme(theme) {
       });
     } catch (error) {
       document.querySelectorAll('pre code').forEach(block => {
-        // Solo resaltar si no tiene elementos hijos
         if (block.children.length === 0) {
           try {
             hljs.highlightElement(block);
@@ -220,12 +217,7 @@ function updateCodeTheme(theme) {
   }
 }
 
-// ✨ FUNCIONES SIMPLIFICADAS PARA MERMAID (DELEGACIÓN)
 
-/**
- * ✨ NUEVA: Delegación al Sistema Unificado para cambios de tema
- * Ya no manejamos Mermaid directamente aquí
- */
 function handleMermaidThemeChange(theme) {
   // El MermaidManager tiene su propio observer de cambios de tema
   // Esta función existe solo para retrocompatibilidad
@@ -308,7 +300,6 @@ export function initThinkingObserver() {
   return thinkingObserver;
 }
 
-// ✨ FUNCIONES LEGACY PARA MERMAID (RETROCOMPATIBILIDAD)
 // Estas funciones ya no hacen nada, el sistema unificado se encarga de todo
 
 /**
@@ -380,7 +371,6 @@ function setupThinkingGifHandling() {
   return themeObserver;
 }
 
-// ✨ EXPORTAR FUNCIONES PÚBLICAS
 export default {
   initThemeManager,
   toggleTheme,
@@ -400,7 +390,6 @@ window.setThinkingState = setThinkingState;
 window.announceThemeChange = announceThemeChange;
 window.setupThinkingGifHandling = setupThinkingGifHandling;
 
-// ✨ FUNCIONES LEGACY PARA RETROCOMPATIBILIDAD
 window.updateMermaidTheme = updateMermaidTheme;
 window.handleMermaidThemeChange = handleMermaidThemeChange;
 

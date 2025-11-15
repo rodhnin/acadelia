@@ -259,7 +259,6 @@ const embeddingAvaController = {
         // No interrumpimos el flujo si falla el registro
       }
       
-      // Responder con éxito
       res.status(200).json({
         success: true,
         avaId,
@@ -288,7 +287,6 @@ const embeddingAvaController = {
     try {
       const queueStatus = embeddingAvaProcessingQueue.getStatus();
       
-      // Responder con el estado
       res.status(200).json({
         success: true,
         queueStatus
@@ -358,7 +356,6 @@ const embeddingAvaController = {
       
       const elapsedTime = Date.now() - status.startTime;
       
-      // Responder con el estado actual
       res.status(200).json({
         success: true,
         processId,
@@ -369,7 +366,6 @@ const embeddingAvaController = {
         filename: status.filename,
         elapsedTime,
         startTime: status.startTime,
-        // Incluir resultado si está completo
         result: status.status === 'completed' ? status.result : undefined
       });
       
@@ -408,7 +404,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Responder con la lista de archivos
       res.status(200).json({
         success: true,
         avaId,
@@ -479,7 +474,6 @@ const embeddingAvaController = {
         // No interrumpimos el flujo si falla el registro
       }
       
-      // Responder con el resultado
       res.status(200).json({
         success: true,
         avaId,
@@ -534,7 +528,6 @@ const embeddingAvaController = {
       
       const { rows } = await pool.query(query);
       
-      // Responder con las estadísticas
       res.status(200).json({
         success: true,
         avaId,

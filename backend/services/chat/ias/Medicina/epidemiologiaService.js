@@ -1,7 +1,4 @@
-// ============================================================================
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE SALUD PÚBLICA Y EPIDEMIOLOGÍA SUPREMO TÉCNICO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -308,8 +301,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// ============================================================================
 
 const PROFESOR_ACADEL_EPIDEMIOLOGIA_DNA = `
 🏥🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN SALUD PÚBLICA Y EPIDEMIOLOGÍA:
@@ -355,8 +346,6 @@ Hacer que CUALQUIER estudiante de medicina y salud pública:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra medicina preventiva, epidemiología y gestión sanitaria con aplicaciones poblacionales y técnicas!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
@@ -502,9 +491,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO EPIDEMIOLÓGICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -614,7 +600,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido epidemiológico específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -634,7 +620,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal epidemiológico
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -642,7 +628,7 @@ const classifyQuery = (query, content = null) => {
   let needsWebSearch = false;
   
   if (isSimpleQuery && !hasEpidemiologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal epidemiológico
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -732,7 +718,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal epidemiológico
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -751,10 +737,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS EPIDEMIOLÓGICAS TÉCNICAS
 const ACADEL_EPIDEMIOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en medicina preventiva, epidemiología y gestión sanitaria.
 
@@ -780,8 +763,8 @@ const createKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto epidemiológico para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual epidemiológica
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_epidemiologia",
         similarityQueryName: "match_emb_epidemiologia",
         keywordQueryName: "kw_match_emb_epidemiologia",
@@ -1174,8 +1157,8 @@ const createConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos epidemiológicos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual epidemiológica completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_epidemiologia",
         similarityQueryName: "match_emb_epidemiologia",
         keywordQueryName: "kw_match_emb_epidemiologia",
@@ -1209,7 +1192,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS EPIDEMIOLÓGICAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1409,14 +1391,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia epidemiológica t�
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_EPIDEMIOLOGIA_DNA;
 
-  // ============================================================================
-  // ============================================================================
   
 const coreEpidemiologyTechnicalInstructions = `
 # INSTRUCCIONES EPIDEMIOLÓGICAS TÉCNICAS PARA PROFESOR ACADEL DE MEDICINA PREVENTIVA, EPIDEMIOLOGÍA Y GESTIÓN SANITARIA
@@ -1579,8 +1557,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas científicas epidemiológicas importantes**
 `;
 
-// ============================================================================
-// ============================================================================
 
 const epidemiologyTechnicalTypeInstructions = {
   casual_conversation: `
@@ -1667,8 +1643,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión epidemiológica técnica real y aplicación práctica científica epidemiológica`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1691,8 +1665,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNIC
   'Enseña como el capibara epidemiológico técnico más brillante del universo, usando tu CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNICO (Knowledge Base) para fundamentar toda respuesta científica epidemiológica importante, y complementando con todas tus capacidades paralelas para una explicación epidemiológica técnica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema epidemiológico técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Epidemiológico Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1703,7 +1675,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNICO (Knowledge Base) - núcleo del sistema científico epidemiológico`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1711,7 +1682,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Epidemiológico Técnico INACTIVO - consulta muy casual sin contenido científico epidemiológico`);
   }
   
-  // 🧮 HERRAMIENTAS EPIDEMIOLÓGICAS MATEMÁTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas epidemiológico-matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
@@ -1776,8 +1746,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1836,8 +1804,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes epidemiológicos necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index epidemiológico
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_epidemiologia",
             similarityQueryName: "match_emb_epidemiologia",
             keywordQueryName: "kw_match_emb_epidemiologia",
@@ -2010,8 +1978,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicHealthQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2114,7 +2080,6 @@ export const handlePublicHealthQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2271,7 +2236,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2315,8 +2279,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicHealthMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2645,7 +2607,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2693,13 +2654,11 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2713,7 +2672,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2761,8 +2719,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePublicHealthQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

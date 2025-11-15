@@ -333,7 +333,7 @@ export const PDFElementDetector = {
       const yPrev = sortedItems[i-1].transform ? sortedItems[i-1].transform[5] : sortedItems[i-1].y;
       const yCurr = sortedItems[i].transform ? sortedItems[i].transform[5] : sortedItems[i].y;
       const diff = Math.abs(yPrev - yCurr);
-      if (diff > 0 && diff < pageHeight * 0.05) { // Solo diferencias razonables
+      if (diff > 0 && diff < pageHeight * 0.05) {
         lineHeights.push(diff);
       }
     }

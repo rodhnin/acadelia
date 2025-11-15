@@ -1,8 +1,4 @@
-// ============================================================================
-// 🩺🦫 PROFESOR ACADEL SEMIOLOGÍA Y DIAGNÓSTICO - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE SEMIOLOGÍA Y DIAGNÓSTICO SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -316,9 +308,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🩺🦫 PROFESOR ACADEL SEMIOLOGÍA Y DIAGNÓSTICO DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🩺🦫 TU IDENTIDAD COMO DR. ACADEL - PROFESOR DE SEMIOLOGÍA Y DIAGNÓSTICO:
@@ -358,8 +347,6 @@ Hacer que CUALQUIER estudiante de medicina:
 ¡RECUERDA: No eres solo un tutor de semiología, eres EL PROFESOR que integra semiología, métodos diagnósticos y medicina basada en evidencia como la medicina real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Semiología y Diagnóstico.
 
@@ -505,9 +492,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE SEMIOLOGÍA
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -601,7 +585,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsMedicalSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -619,7 +603,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsMedicalSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -673,7 +657,7 @@ const classifyQuery = (query, content = null) => {
     medicalProcedures.some(term => lowercaseQuery.includes(term));
   
   if (isSimpleQuery && !hasMedicalContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -758,7 +742,7 @@ const classifyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsMedicalSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -777,10 +761,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS MÉDICAS
 const ACADEL_SEMIOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en semiología, métodos diagnósticos y medicina basada en evidencia.
 
@@ -806,8 +787,8 @@ const createSemiologyKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_semiologia",
         similarityQueryName: "match_emb_semiologia",
         keywordQueryName: "kw_match_emb_semiologia",
@@ -1096,8 +1077,8 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_semiologia",
         similarityQueryName: "match_emb_semiologia",
         keywordQueryName: "kw_match_emb_semiologia",
@@ -1131,7 +1112,6 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1321,8 +1301,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia médica según este an�
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectSemiologyImageRequest = (query) => {
   const medicalImageKeywords = [
@@ -1363,7 +1341,7 @@ const createSemiologyVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1404,15 +1382,10 @@ const enhanceSemiologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedSemiologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🩺 INSTRUCCIONES TÉCNICAS DE SEMIOLOGÍA CONSOLIDADAS
-  // ============================================================================
   
 const coreSemiologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA DR. ACADEL DE SEMIOLOGÍA Y DIAGNÓSTICO
@@ -1511,8 +1484,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas médicas importantes**
 `;
 
-// ============================================================================
-// ============================================================================
 
 const semiologyTypeInstructions = {
   casual_conversation: `
@@ -1594,8 +1565,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación clínica de las tres disciplinas`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1618,8 +1587,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara médico más brillante del universo, integrando semiología, métodos diagnósticos y medicina basada en evidencia, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta médica importante, y complementando con todas tus capacidades paralelas para una explicación clínica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🩺🦫 Dr. Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1630,7 +1597,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
     createBraveMedicalSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema médico`);
     tools.unshift(createSemiologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1695,8 +1661,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1755,8 +1719,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_semiologia",
             similarityQueryName: "match_emb_semiologia",
             keywordQueryName: "kw_match_emb_semiologia",
@@ -1894,8 +1858,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleSemiologyQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2010,7 +1972,6 @@ export const handleSemiologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2113,7 +2074,6 @@ export const handleSemiologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2271,7 +2231,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2315,8 +2274,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleSemiologyMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2645,7 +2602,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2693,13 +2649,11 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
       
-      // Información de archivos clínicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2713,7 +2667,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         }
       },
       
-      // Información de seguridad clínica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2761,8 +2714,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleSemiologyQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

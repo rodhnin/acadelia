@@ -119,7 +119,6 @@ export function renderMarkdown(content, options = {}) {
   }
 
   try {
-    // ✨ NUEVO: PREPROCESAMIENTO MATEMÁTICO UNIVERSAL
     let processedContent = content;
     if (allowMath) {
       processedContent = preprocessUniversalMath(processedContent);
@@ -173,7 +172,6 @@ export function renderMarkdownComplete(content) {
   });
 }
 
-// ✨ FUNCIÓN CORREGIDA PARA MANEJAR \n**texto**
 function preprocessContentFixed(content, isStreaming) {
   content = content
     .replace(/\r\n/g, '\n')
@@ -244,7 +242,6 @@ function applyLineBreaksCorrection(html, originalContent) {
 }
 
 function postProcessHtml(html, isStreaming, allowMath, allowDiagrams) {
-  // ✨ LIMPIEZA MEJORADA PARA EVITAR PÁRRAFOS VACÍOS CON ELEMENTOS DE NEGRITA
   html = html
     .replace(/<p><\/p>/g, '')                    // Eliminar párrafos vacíos
     .replace(/<p>\s*<\/p>/g, '')                 // Eliminar párrafos solo con espacios
@@ -263,7 +260,6 @@ function postProcessHtml(html, isStreaming, allowMath, allowDiagrams) {
     );
   }
 
-  // ✨ NUEVO: MARCAR CONTENIDO MATEMÁTICO PARA SISTEMA UNIVERSAL
   if (allowMath) {
     const mathDetection = detectUniversalMath(html);
     if (mathDetection.hasMath) {
@@ -275,7 +271,6 @@ function postProcessHtml(html, isStreaming, allowMath, allowDiagrams) {
   return html;
 }
 
-// ✨ RENDERER FALLBACK CORREGIDO PARA MANEJAR \n**texto**
 function unifiedFallbackRendererFixed(content, isStreaming) {
   let html = escapeHtml(content);
   
@@ -303,7 +298,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
     .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
     .replace(/^# (.*?)$/gm, '<h1>$1</h1>');
   
-  // ✨ PROCESAR ÉNFASIS CON MEJOR MANEJO DE SALTOS DE LÍNEA
   html = html
     .replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em>$1</em>');
@@ -313,7 +307,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
     .replace(/(<li>.*<\/li>)\n(?!<li>)/g, '$1</ul>\n')
     .replace(/(?<!<\/ul>)\n(<li>)/g, '\n<ul>$1');
   
-  // ✨ PROCESAMIENTO MEJORADO DE PÁRRAFOS CON CORRECCIÓN PARA \n**texto**
   html = processLineBreaksImproved(html);
   
   codeBlocks.forEach((block, index) => {
@@ -323,7 +316,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
   return html;
 }
 
-// ✨ FUNCIÓN CORREGIDA PARA PROCESAR SALTOS DE LÍNEA
 function processLineBreaksImproved(html) {
   const lines = html.split('\n');
   const result = [];
@@ -362,7 +354,6 @@ function processLineBreaksImproved(html) {
       continue;
     }
     
-    // ✨ LÍNEA DE CONTENIDO NORMAL CON CORRECCIÓN PARA ELEMENTOS <strong>
     if (!inSpecialBlock) {
       // Si la línea contiene solo elementos <strong> al inicio, es una línea de párrafo normal
       if (trimmedLine.startsWith('<strong>')) {
@@ -380,7 +371,6 @@ function processLineBreaksImproved(html) {
     result.push('<p>' + currentParagraph.join('<br>') + '</p>');
   }
   
-  // ✨ LIMPIEZA FINAL PARA EVITAR PROBLEMAS CON \n**texto**
   let finalHtml = result.join('\n');
   
   finalHtml = finalHtml
@@ -406,7 +396,6 @@ function emergencyFallback(content) {
   return result;
 }
 
-// ✨ PROCESAMIENTO DE ELEMENTOS ESPECIALES COMPLETAMENTE RENOVADO
 export function processSpecialElements(element, isStreamingComplete = false) {
   if (!element) return;
 
@@ -434,7 +423,6 @@ export function processSpecialElements(element, isStreamingComplete = false) {
     }
   }
 
-  // ✨ NUEVO: USAR SISTEMA UNIVERSAL DE MATHJAX
   if (isStreamingComplete) {
     // Procesamiento completo con el sistema universal
     processCompleteMath(element)
@@ -506,7 +494,6 @@ export function isMarkdownReady() {
   return isMarkdownInitialized;
 }
 
-// ✨ NUEVA: FUNCIÓN DE UTILIDAD PARA FORZAR PROCESAMIENTO MATEMÁTICO UNIVERSAL
 export function forceProcessMath(selector = null) {
   const elements = selector ? 
     document.querySelectorAll(selector) : 

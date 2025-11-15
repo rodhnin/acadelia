@@ -9,7 +9,6 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ===== TU CONFIGURACIÓN ORIGINAL (MANTENER) =====
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
@@ -61,7 +60,6 @@ export const handleUploadErrors = (err, req, res, next) => {
   next();
 };
 
-// ===== SOLO AGREGAR ESTO PARA ARGENTINA (SIN TOCAR LO DE ARRIBA) =====
 
 // Storage específico para comprobantes de transferencia argentina
 const transferStorage = multer.diskStorage({

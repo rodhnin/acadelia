@@ -86,7 +86,6 @@ router.post('/clean/:queueType', authenticateUser, isAdmin, async (req, res) => 
     ]);
     
     for (const job of failedJobs) {
-      // Solo eliminar si no es un trabajo de estadísticas
       const data = job.data || {};
       if (!data.isMonitoringStat) {
         await job.remove();
@@ -95,7 +94,6 @@ router.post('/clean/:queueType', authenticateUser, isAdmin, async (req, res) => 
     
     const completedToRemove = completedJobs.slice(0, -10); // Dejar los últimos 10
     for (const job of completedToRemove) {
-      // Solo eliminar si no es un trabajo de estadísticas
       const data = job.data || {};
       if (!data.isMonitoringStat) {
         await job.remove();

@@ -540,7 +540,6 @@ class PaymentHistory {
                 }
                 break;
             case 'decorative':
-                // Solo para pagos completados - no hace nada funcional
                 modalManager.showInvoiceInfo();
                 break;
             default:

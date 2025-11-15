@@ -456,7 +456,7 @@ export function cancelCurrentRequest() {
 
     setTimeout(() => {
       window._cancelNotificationShown = false;
-      window._cancelNotificationAlreadyShown = false; // 🔥 TAMBIÉN LIMPIAR ESTE FLAG
+      window._cancelNotificationAlreadyShown = false;
     }, 7000);
   }
 
@@ -481,7 +481,6 @@ function handleMessageCancellation(loadingMessage) {
   if (hasResponseButtons) {
     console.log('✅ [CANCEL AGENTE] Mensaje con botones detectado - preservando respuesta real');
 
-    // Solo limpiar estado de loading y restaurar botón
     const aiProfile = loadingMessage.querySelector('.ai-profile');
     if (aiProfile) {
       aiProfile.classList.remove('thinking');
@@ -494,7 +493,7 @@ function handleMessageCancellation(loadingMessage) {
       restoreUIAfterCancellation();
     }, 100);
 
-    return; // ✅ SALIR SIN APLICAR CLASES DE CANCELACIÓN
+    return;
   }
 
   const aiProfile = loadingMessage.querySelector('.ai-profile');
@@ -543,21 +542,17 @@ function handleMessageCancellation(loadingMessage) {
   }, 7000);
 }
 
-/**
- * 🔧 REEMPLAZAR la función showFinalCancellationMessage en ui-manager-agente.js
- */
 function showFinalCancellationMessage(loadingMessage, messageContent) {
   const hasResponseButtons = loadingMessage.querySelector('.response-actions');
 
   if (hasResponseButtons) {
     console.log('✅ [CANCEL AGENTE] Respuesta real detectada en verificación final - omitiendo mensaje de cancelación');
 
-    // Solo restaurar UI sin mostrar mensaje de cancelación
     setTimeout(() => {
       restoreUIAfterCancellation();
     }, 100);
 
-    return; // ✅ SALIR SIN MOSTRAR MENSAJE DE CANCELACIÓN
+    return;
   }
 
   const mensajesGraciosos = [
@@ -927,7 +922,6 @@ export function showConfirmation(title, message, onConfirm, onCancel = null) {
   return modals.showConfirmation(title, message, onConfirm, onCancel);
 }
 
-// ====== FUNCIONES DE SKELETON LOADING ======
 
 export function applySidebarSkeleton() {
   const chatList = document.getElementById('chatList');
@@ -1691,7 +1685,6 @@ export function closeEmptyChatModal() {
   return modals.closeEmptyChatModal();
 }
 
-// ====== FUNCIONES DE PROCESAMIENTO DE MEDIOS OPTIMIZADAS ======
 
 /**
  * Configuración unificada para tipos de medios
@@ -2094,8 +2087,6 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
 /**
  * Cancela el proceso de transcripción
  */
-// ===================================================================
-// ===================================================================
 
 // 1. REEMPLAZAR cancelTranscriptionProcess() - línea ~1140 aprox
 async function cancelTranscriptionProcess(chatId, mediaType) {

@@ -1,11 +1,6 @@
 
 import pool from "../../lib/dbPool.js";
 
-/**
- * 🔧 CACHE SERVICE PARA HERRAMIENTAS
- * Servicio especializado para mantener cache de herramientas y verificar rutas
- * Similar a avaCacheService pero para herramientas gratuitas
- */
 class HerramientaCacheService {
   constructor() {
     this.cache = new Map();

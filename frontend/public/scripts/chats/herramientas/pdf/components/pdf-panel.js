@@ -479,7 +479,6 @@ function updateViewMode() {
     markdownContainer.style.width = '100%';
   }
   
-  // CAMBIO: Restablecer zoom al cambiar de pestaña
   resetPDFZoom();
 }
 

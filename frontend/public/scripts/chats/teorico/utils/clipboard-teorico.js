@@ -11,7 +11,6 @@ import {
   getAttribute
 } from '../../shared/dom-helpers.js';
 
-// ⭐ NUEVA IMPORTACIÓN: Modal de copia manual de Acadel
 import { showAcadelManualCopyModal } from '../ui/modals-teorico.js';
 
 // Constante para identificar timeouts de botones de copia
@@ -35,7 +34,6 @@ export async function copyToClipboard(text, options = {}) {
     try {
       await navigator.clipboard.writeText(text);
       
-      // ⭐ MEJORADO: Notificación más académica y amigable
       if (showNotification) {
         if (window.acadelExito) {
           window.acadelExito("🦫📋 ¡Copiado por Acadel!", "Tu chigüire académico favorito guardó todo perfectamente en el portapapeles");
@@ -65,12 +63,6 @@ export async function copyToClipboard(text, options = {}) {
   return copyToClipboardFallback(text, { button, showNotification });
 }
 
-/**
- * ⭐ COMPLETAMENTE RENOVADO: Manejador de fallback usando la modal de Acadel
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve según el resultado
- */
 async function copyToClipboardFallback(text, options = {}) {
   const { button, showNotification = true } = options;
   
@@ -80,7 +72,6 @@ async function copyToClipboardFallback(text, options = {}) {
   }
   
   try {
-    // ⭐ NUEVO: Usar la modal académica de Acadel en lugar de window.prompt
     console.log('🦫 Acadel: Usando método de copia manual con modal académica');
     
     if (button) {
@@ -95,7 +86,6 @@ async function copyToClipboardFallback(text, options = {}) {
         updateButtonState(button, 'success', originalButtonContent);
       }
       
-      // ⭐ NUEVA NOTIFICACIÓN: Mensaje académico personalizado
       if (showNotification) {
         if (window.acadelInfo) {
           window.acadelInfo(
@@ -114,7 +104,6 @@ async function copyToClipboardFallback(text, options = {}) {
   } catch (error) {
     console.error('Error en fallback de copia:', error);
     
-    // ⭐ ÚLTIMO RECURSO: Solo si la modal también falla
     if (button) {
       updateButtonState(button, 'error', originalButtonContent);
     }
@@ -133,12 +122,6 @@ async function copyToClipboardFallback(text, options = {}) {
   }
 }
 
-/**
- * ⭐ MEJORADO: Actualiza el estado visual de un botón de copia con nuevos estados
- * @param {HTMLElement} button - Elemento botón
- * @param {string} state - Estado ('success', 'error', 'processing', 'default')
- * @param {string} originalContent - Contenido original para restaurar
- */
 export function updateButtonState(button, state, originalContent) {
   if (!button) return;
   
@@ -156,7 +139,7 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.add('error');
       button.classList.remove('copied', 'processing');
       break;
-    case 'processing':  // ⭐ NUEVO ESTADO
+    case 'processing':
       newContent = '<i class="bx bx-loader-alt bx-spin"></i> Acadel...';
       button.classList.add('processing');
       button.classList.remove('copied', 'error');
@@ -199,7 +182,6 @@ export function attachCopyEvents(container) {
       if (codeBlock) {
         const codeElement = codeBlock.querySelector('code');
         if (codeElement) {
-          // ⭐ MEJORADO: Mejor manejo de errores y feedback
           try {
             await copyToClipboard(codeElement.textContent, { button });
           } catch (error) {
@@ -249,7 +231,6 @@ export function copyElementContent(container, options = {}) {
   
   textContent = textContent.replace(/\n{3,}/g, '\n\n').trim();
   
-  // ⭐ NUEVO: Añadir firma académica de Acadel si el texto es largo
   if (textContent.length > 500) {
     textContent += '\n\n---\n📚 Contenido copiado con Acadel - Tu asistente académico favorito 🦫';
   }
@@ -309,10 +290,6 @@ function extractTextContent(node) {
   return '';
 }
 
-/**
- * ⭐ MEJORADO: Verifica si es posible copiar al portapapeles y proporciona información útil
- * @returns {Object} - Objeto con información sobre las capacidades de copia
- */
 export function canCopyToClipboard() {
   const hasModernAPI = !!(navigator.clipboard && navigator.clipboard.writeText);
   const hasSecureContext = window.isSecureContext;
@@ -323,19 +300,12 @@ export function canCopyToClipboard() {
     secure: hasSecureContext,
     fallback: hasFallback,
     available: hasModernAPI || hasFallback,
-    // ⭐ NUEVO: Mensaje académico sobre el estado
     acadelMessage: hasModernAPI ? 
       "🦫✨ Acadel tiene acceso completo al portapapeles" : 
       "🦫📋 Acadel usará el método manual académico para copiar"
   };
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Copia inteligente que decide automáticamente el mejor método
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve cuando se completa la copia
- */
 export function smartCopyToClipboard(text, options = {}) {
   const capabilities = canCopyToClipboard();
   
@@ -349,7 +319,7 @@ export function smartCopyToClipboard(text, options = {}) {
 
 export default {
   copyToClipboard,
-  smartCopyToClipboard,  // ⭐ NUEVA EXPORTACIÓN
+  smartCopyToClipboard,
   updateButtonState,
   attachCopyEvents,
   copyElementContent,

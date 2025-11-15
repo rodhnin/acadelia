@@ -220,10 +220,9 @@ async function initApp() {
   
   const mermaidPromise = initMermaidSystem();
   
-  // ⭐ APLICAR BIBLIOTECA ACADÉMICA RESPONSIVA (sin skeleton que bloquee)
   import('../ui/ui-manager-teorico.js').then(uiModule => {
     if (typeof uiModule.applyInitialLoader === 'function') {
-      uiModule.applyInitialLoader(); // Solo biblioteca, contenido visible detrás
+      uiModule.applyInitialLoader();
     }
   });
 
@@ -385,7 +384,6 @@ async function initApp() {
         });
       });
 
-      // ⭐ Progreso final y cierre de la biblioteca
       updateAcadelLibraryProgress(100, '🎉 ¡Metodología científica de inicialización completada!');
       
       setManagedTimeout(() => {
@@ -396,7 +394,6 @@ async function initApp() {
             uiModule.removeInitialLoader();
           }
 
-                // ⭐ Bienvenida mejorada del Profesor Acadel teórico
               window.acadelConfetti(
                 "🎓 ¡Biblioteca académica lista! 🦫", 
                 "El Profesor Acadel ha preparado su biblioteca interdisciplinaria. ¡Desde teorías médicas hasta paradigmas psicológicos, aquí analizamos todo con rigor académico!"
@@ -452,7 +449,6 @@ function updateAcadelLibraryProgress(progress, mensaje = '') {
   }
 }
 
-// ⭐ Funciones globales para uso en toda la aplicación
 window.updateAcadelLibraryProgress = updateAcadelLibraryProgress;
 
 // Inicialización al cargar DOM

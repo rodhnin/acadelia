@@ -1,10 +1,3 @@
-/**
- * message-renderer.js - Sistema optimizado de renderizado de mensajes basado en tipos
- * Versión optimizada para seguridad, rendimiento y mantenibilidad
- * Con soporte para LaTeX/MathJax
- * ✅ REFACTORIZADO: Integra markdown-image-processor para procesamiento avanzado de imágenes
- * ✅ OPTIMIZADO: Imágenes en tiempo real sin delays innecesarios
- */
 import { APP_CONFIG, LATEX_PATTERNS} from '../core/config-pdf.js';
 import { getElement } from './ui-manager-pdf.js';
 import {
@@ -30,8 +23,6 @@ import {
 } from '../../../shared/mermaid-utils.js';
 import contentProcessing, { detectMultimodalContent, cleanMultimodalExistingContent } from './content-processing-pdf.js';
 
-// ==========================================
-// ==========================================
 import {
   processImagesOptimized,
   initializeImagePreviewHandlers,
@@ -49,9 +40,6 @@ let mathJaxLoading = false;
 let mathJaxQueue = [];
 let mathJaxProcessing = false;
 
-/**
- * ✅ NUEVA: Precarga el módulo MathJax para evitar delays
- */
 async function preloadMathJaxModule() {
   if (mathJaxModule || mathJaxLoading) return mathJaxModule;
   
@@ -80,9 +68,6 @@ async function preloadMathJaxModule() {
 
 preloadMathJaxModule();
 
-/**
- * ✅ NUEVA: Función centralizada para procesar MathJax sin colisiones
- */
 async function processMathJaxQueue() {
   if (mathJaxProcessing || mathJaxQueue.length === 0) return;
   
@@ -137,9 +122,6 @@ async function processMathJaxQueue() {
   }
 }
 
-/**
- * ✅ CORREGIDA: initializeMathJaxInContent - Usar cola en lugar de procesamiento directo
- */
 function initializeMathJaxInContent(container, options = {}) {
   if (!container || !container.nodeType || !container.isConnected) {
     return Promise.resolve();
@@ -462,7 +444,6 @@ function extractDocumentContent(originalMessage, fileName) {
     return textContent;
     
   } catch (e) {
-    // 🦫 CAMBIO: Error más amigable
     acadelError(
       "Error extrayendo documento", 
       `Acadel tuvo problemas procesando el archivo "${fileName}". Mi cerebro de capibara se confundió.`
@@ -541,7 +522,6 @@ function extractCodeContent(originalMessage, fileName) {
     
     return `// Acadel buscó por todas partes pero no encontró código para: ${normalizedFileName}\n// ¿Estás seguro de que hay código aquí?`;
   } catch (e) {
-    // 🦫 CAMBIO: Error más amigable
     acadelError(
       "Error extrayendo código", 
       `Acadel tuvo problemas extrayendo el código de "${fileName}": ${e.message}`
@@ -550,14 +530,7 @@ function extractCodeContent(originalMessage, fileName) {
   }
 }
 
-// ==========================================
-// ==========================================
 
-/**
- * ✅ OPTIMIZADO: Procesa imágenes externas inmediatamente sin delays
- * @param {HTMLElement} container - Contenedor con imágenes
- * @param {NodeList} externalImages - Lista de imágenes externas (opcional)
- */
 async function processExternalImagesRealTime(container, externalImages) {
   if (!externalImages) {
     externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
@@ -620,9 +593,6 @@ async function processExternalImagesRealTime(container, externalImages) {
   };
 }
 
-/**
- * ✅ NUEVA: Muestra placeholders inmediatamente para mejorar UX
- */
 function showImagePlaceholdersImmediately(container) {
   const imageContainers = container.querySelectorAll('.markdown-image-container');
   
@@ -688,9 +658,6 @@ function showImagePlaceholdersImmediately(container) {
   });
 }
 
-/**
- * ✅ NUEVA: Actualiza imagen en tiempo real y elimina placeholder
- */
 function updateImageRealTime(img, newSrc) {
   img.src = newSrc;
   img.dataset.originalSrc = newSrc;
@@ -717,20 +684,10 @@ function updateImageRealTime(img, newSrc) {
   console.log(`🔄 [REALTIME] Imagen actualizada inmediatamente: ${newSrc}`);
 }
 
-/**
- * ✅ REFACTORIZADO: Inicializa manejadores de eventos para imágenes optimizado
- * @param {HTMLElement} container - Contenedor con imágenes
- */
 function initializeImagePreviewHandlersOptimized(container) {
   return initializeImagePreviewHandlers(container);
 }
 
-/**
- * ✅ REFACTORIZADO: Maneja errores de imagen usando el nuevo sistema
- * @param {HTMLElement} img - Elemento de imagen con error
- * @param {string} mode - Modo de manejo ('inline' o 'modal')
- * @param {Object} options - Opciones adicionales
- */
 function handleImageErrorOptimized(img, mode = 'inline', options = {}) {
   return handleImageError(img, mode, {
     isMultimodal: options.isMultimodal || false,
@@ -814,7 +771,6 @@ function setupCleanupObserver() {
           });
         }
         
-        // ⚡ MATHEJAX INMEDIATO SIN DELAYS
         const elementText = element.textContent || '';
         if (elementText && containsMathExpressions(elementText)) {
           console.log('⚡ [OBSERVER] LaTeX inmediato en observer');
@@ -845,7 +801,6 @@ function setupCleanupObserver() {
               if (contentElement) {
                 pendingElements.push(contentElement);
                 
-                // ⚡ PROCESAMIENTO DE IMÁGENES INMEDIATO
                 const externalImages = contentElement.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
                 if (externalImages.length > 0) {
                   processExternalImagesRealTime(contentElement, externalImages);
@@ -859,7 +814,6 @@ function setupCleanupObserver() {
     
     if (hasNewContent && !processingScheduled) {
       processingScheduled = true;
-      // ⚡ REDUCIR DELAY DEL OBSERVER
       setManagedTimeout(processPendingElements, 50, 'cleanup-observer-fast');
     }
   });
@@ -1397,12 +1351,6 @@ function renderMermaidMessage(container, content) {
   }
 }
 
-/**
- * ✅ CORREGIDO: Renderiza un mensaje de texto con procesamiento inmediato de imágenes SIN afectar MathJax
- * @param {HTMLElement} container - Contenedor donde renderizar
- * @param {string} content - Contenido del mensaje
- * @param {string} role - Rol del mensaje (user o ai)
- */
 function renderTextMessage(container, content, role = '') {
   console.log('🔍 DEBUG: renderTextMessage iniciada', { role, contentType: typeof content });
   
@@ -1514,7 +1462,7 @@ function renderTextMessage(container, content, role = '') {
       }).catch(error => {
         console.error('❌ [RENDER-TEXT] Error MathJax:', error);
       });
-    }, 200); // ✅ DELAY MAYOR PARA TEXTO NORMAL
+    }, 200);
     
   } else {
     // Sin matemáticas, proceso normal
@@ -1529,7 +1477,7 @@ function renderTextMessage(container, content, role = '') {
       if (externalImages.length > 0) {
         processExternalImagesRealTime(container, externalImages);
       }
-    }, hasLatexContent ? 400 : 100); // ✅ DELAY MAYOR SI HAY MATEMÁTICAS
+    }, hasLatexContent ? 400 : 100);
   }
 }
 
@@ -1798,11 +1746,6 @@ function setupCodeBlockHighlighting(container) {
   });
 }
 
-/**
- * ✅ CORREGIDO: Renderiza tabla con detección específica de LATEX_PATTERNS
- * @param {HTMLElement} container - Contenedor del mensaje
- * @param {Object|string} content - Datos de la tabla
- */
 function renderTableMessage(container, content) {
   try {
     const tableData = processTableData(content);
@@ -1827,7 +1770,7 @@ function renderTableMessage(container, content) {
             console.error('❌ [TABLE] Error MathJax en tabla:', error);
           });
         }
-      }, 100); // ✅ DELAY MÍNIMO PARA ASEGURAR DOM
+      }, 100);
 
       // Botón de expansión
       addExpandButton(container, {
@@ -1991,7 +1934,6 @@ function renderImageMessage(container, content) {
         const placeholder = imgContainer.querySelector('.image-placeholder');
         if (placeholder) placeholder.style.display = 'flex';
         
-        // 🦫 CAMBIO: Notificación de error
         acadelWarning(
           "👻 Imagen fantasma detectada", 
           "Acadel no pudo cargar la imagen. Parece que se volvió invisible."
@@ -2028,7 +1970,6 @@ function renderImageMessage(container, content) {
 function renderErrorMessage(container, content) {
     const errorMessage = content.errorMessage || 'Error desconocido';
     
-    // 🦫 Mensajes específicos para problemas de documentos
     const documentErrorMessages = [
         "🦫 ¡Ups! Mi escáner de documentos peludo tuvo problemas leyendo tu archivo. ¡Como cuando el PDF está protegido con contraseña!",
         "🦫 Mi analizador académico se trabó como estudiante leyendo letra manuscrita. ¡Pero tranquilo, es temporal!",
@@ -2038,7 +1979,6 @@ function renderErrorMessage(container, content) {
         "🦫 ¡Oops! Mi extractor de texto peludo dice 'formato no compatible'. Los archivos a veces son caprichosos..."
     ];
     
-    // 🦫 Consejos específicos para documentos
     const documentTips = [
         "Verifica que tu documento esté en un formato compatible (PDF, DOCX, TXT)",
         "Intenta con una consulta más específica o usa palabras clave diferentes",
@@ -2053,7 +1993,6 @@ function renderErrorMessage(container, content) {
     
     clearElement(container);
     
-    // 🦫 ESTRUCTURA CON INLINE STYLES
     const errorContainer = createElement('div', { className: 'cancelled-message' });
     errorContainer.style.display = 'flex';
     errorContainer.style.alignItems = 'center';
@@ -2065,33 +2004,27 @@ function renderErrorMessage(container, content) {
     errorContainer.style.margin = '5px 0';
     errorContainer.style.borderLeft = '3px solid rgba(231,76,60,0.3)';
     
-    // 🦫 Icono específico para documentos
     const icon = createElement('i', { className: 'bx bx-file-blank' });
     icon.style.fontSize = '1.3rem';
     icon.style.color = '#e74c3c';
     errorContainer.appendChild(icon);
     
-    // 🦫 Span con el mensaje principal
     const errorSpan = createElement('span', {}, '🦫 Problema en la biblioteca digital');
     errorContainer.appendChild(errorSpan);
     
-    // 🦫 Detalles adicionales con inline styles
     const errorDetails = createElement('div', { className: 'cancelled-details' });
     errorDetails.style.fontSize = '0.85rem';
     errorDetails.style.color = '#888';
     errorDetails.style.margin = '8px 0 0 20px';
     
-    // 🦫 Contenido del mensaje
     const messageParagraph = createElement('p', {});
     messageParagraph.innerHTML = randomMessage;
     errorDetails.appendChild(messageParagraph);
     
-    // 🦫 Consejo específico para documentos
     const suggestionParagraph = createElement('p', {});
     suggestionParagraph.innerHTML = `💡 <strong>Consejo del Bibliotecario Acadel:</strong> ${randomTip}`;
     errorDetails.appendChild(suggestionParagraph);
     
-    // 🦫 Mensaje de ánimo final
     const motivationParagraph = createElement('p', {});
     const documentMotivations = [
         '📚 ¡La investigación académica continúa! Cada archivo es una nueva aventura de conocimiento',
@@ -2107,7 +2040,6 @@ function renderErrorMessage(container, content) {
     container.appendChild(errorContainer);
     container.appendChild(errorDetails);
     
-    // 🦫 Notificación amigable para problemas de documentos
     if (window.acadelInfo) {
         acadelInfo(
             "🦫 Pausa en el procesamiento",
@@ -2182,7 +2114,6 @@ function renderAlertMessage(container, content) {
   const alertContent = createElement('div', { className: 'alert-content' });
 
   if (title) {
-    // 🦫 CAMBIO: Título más personalizado
     const titleElem = createElement('h4', { className: 'alert-title' }, `🦫 Acadel ${type === 'info' ? 'informa' : type === 'warning' ? 'advierte' : type === 'success' ? 'celebra' : 'reporta'}: ${sanitizeText(title)}`);
     alertContent.appendChild(titleElem);
   }
@@ -2196,7 +2127,6 @@ function renderAlertMessage(container, content) {
   clearElement(container);
   container.appendChild(alertMessage);
 
-  // 🦫 CAMBIO: Notificación según el tipo de alerta
   const notificationMap = {
     info: () => acadelInfo("ℹ️ Información", message),
     warning: () => acadelWarning("⚠️ Advertencia", message),
@@ -2224,14 +2154,12 @@ function renderActionMessage(container, content) {
   const actionButtons = createElement('div', { className: 'action-buttons' });
 
   actions.forEach(action => {
-    // 🦫 CAMBIO: Botones más atractivos
     const button = createElement('button', {
       className: 'action-button',
       dataset: { action: action.id }
     }, `🎯 ${sanitizeText(action.label)}`);
 
     addEvent(button, 'click', (e) => {
-      // 🦫 CAMBIO: Notificación al hacer clic en acción
       acadelInfo(
         "🎯 Acción ejecutada", 
         `Acadel está procesando: ${action.label}`
@@ -2259,7 +2187,6 @@ function renderActionMessage(container, content) {
   clearElement(container);
   container.appendChild(actionMessage);
 
-  // 🦫 CAMBIO: Notificación de acciones disponibles
   acadelInfo(
     "🎯 Acciones disponibles", 
     `Acadel tiene ${actions.length} acción(es) disponible(s) para ti`
@@ -2278,7 +2205,6 @@ export function renderChatMessages(messages) {
   clearElement(chatMessages);
 
   if (!messages || messages.length === 0) {
-    // 🦫 CAMBIO: Notificación cuando no hay mensajes
     acadelInfo(
       "💬 Chat vacío", 
       "Acadel está listo para una nueva conversación. ¡Pregúntame lo que quieras!"
@@ -2554,7 +2480,7 @@ export function replaceLoadingMessage(loader, content, type = MESSAGE_TYPES.MESS
         }
       });
     }
-  }, 150); // ✅ DELAY PARA ASEGURAR DOM COMPLETO
+  }, 150);
 
   // Efectos visuales
   loader.classList.add('rendered');
@@ -2588,13 +2514,11 @@ function initializeInteractionAndScroll(messageElement) {
 export function replaceWithError(loadingMessage, errorMessage, originalQuery = '') {
     if (!loadingMessage) return;
     
-    // ⭐ SOLUCIÓN: Limpiar ID temporal si hay error
     if (window.tempChatIdForFiles) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error en respuesta`);
     }
     
-    // 🦫 Mensajes contextuales para chat de documentos
     const getDocumentErrorMessage = (error) => {
         const errorLower = error.toLowerCase();
         
@@ -2622,7 +2546,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         return genericDocumentMessages[Math.floor(Math.random() * genericDocumentMessages.length)];
     };
     
-    // 🦫 Consejos relacionados con documentos
     const documentAdvice = [
         "💾 Mientras tanto, ¿qué tal si organizas esos PDFs que tienes dispersos?",
         "📚 Momento perfecto para revisar el índice de tus documentos principales",
@@ -2654,7 +2577,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     const contextualMessage = getDocumentErrorMessage(errorMessage);
     const randomAdvice = documentAdvice[Math.floor(Math.random() * documentAdvice.length)];
     
-    // 🦫 ESTRUCTURA CON INLINE STYLES (como la función que funciona)
     const errorContent = `
         <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(231,76,60,0.05);border-radius:8px;margin:5px 0;border-left:3px solid rgba(231,76,60,0.3);">
             <i class="bx bx-confused" style="font-size:1.3rem;color:#e74c3c;"></i>
@@ -2677,7 +2599,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     loadingMessage.style.visibility = 'visible';
     loadingMessage.style.opacity = '1';
     
-    // 🦫 Notificación amigable para documentos
     if (window.acadelInfo) {
         const documentNotifications = [
             "Acadel está reorganizando su biblioteca digital peluda",
@@ -2839,12 +2760,6 @@ export function processServerResponse(data) {
   };
 }
 
-/**
- * ✅ CORREGIDO: Función mejorada para procesar la respuesta del servidor SIN afectar MathJax
- * @param {Object} data - Respuesta del servidor
- * @param {HTMLElement} loadingMessage - Elemento de mensaje en carga
- * @returns {boolean} true si se ha renderizado con éxito
- */
 export function processAndRenderResponse(data, loadingMessage) {
   if (!loadingMessage || !data) return false;
 
@@ -2935,7 +2850,7 @@ export function processAndRenderResponse(data, loadingMessage) {
         }).catch(error => {
           console.error('❌ [RESPONSE-GENERAL] Error MathJax:', error);
         });
-      }, 200); // ✅ MISMO DELAY QUE renderTextMessage
+      }, 200);
       
     } else {
       renderTextMessage(contentElem, textContent);
@@ -3051,11 +2966,6 @@ export function ensureFeedbackPersistence(force = false) {
   });
 }
 
-/**
- * ✅ CORREGIDO: Verifica si un texto contiene expresiones matemáticas usando LATEX_PATTERNS
- * @param {string} text - Texto a verificar
- * @returns {boolean} - true si contiene expresiones matemáticas
- */
 function containsMathExpressions(text) {
   if (typeof text !== 'string' || !text.trim()) {
     return false;
@@ -3094,12 +3004,7 @@ function containsMathExpressions(text) {
   return hasMatch;
 }
 
-// ==========================================
-// ==========================================
 
-/**
- * ✅ OPTIMIZADO: Sistema para capturar clics en imágenes utilizando delegación de eventos
- */
 function setupImagePreviewSystem() {
   if (window._imagePreviewSystemConfigured) return;
   window._imagePreviewSystemConfigured = true;
@@ -3116,13 +3021,12 @@ function setupImagePreviewSystem() {
                       e.target.closest('.markdown-image') ||
                       e.target.closest('.multimodal-container img') ||
                       e.target.closest('.markdown-image-container') ||
-                      e.target.closest('.chat-image-item'); // ⭐ AGREGAR ESTE SELECTOR
+                      e.target.closest('.chat-image-item');
                       
     if (imgTarget) {
       e.preventDefault();
       e.stopPropagation();
       
-      // ⭐ MEJORAR LA LÓGICA DE EXTRACCIÓN DE URL:
       let imageSrc;
       
       // Caso 1: Imagen de archivo adjunto del usuario
@@ -3144,7 +3048,6 @@ function setupImagePreviewSystem() {
         }
       }
       
-      // Solo mostrar vista previa si tenemos una URL válida
       if (imageSrc && typeof window.showFullImage === 'function') {
         console.log('🦫 Acadel: Abriendo imagen:', imageSrc);
         window.showFullImage(imageSrc);
@@ -3325,7 +3228,6 @@ function createModal(options = {}) {
     alignItems: 'center'
   });
   
-  // 🦫 CAMBIO: Botón de cierre más atractivo
   const closeButton = document.createElement('button');
   closeButton.innerHTML = '❌ Cerrar';
   
@@ -3414,14 +3316,13 @@ function showErrorModal() {
   
   // Icono
   const icon = document.createElement('i');
-  icon.className = 'bx bxs-confused'; // 🦫 CAMBIO: Icono más expresivo
+  icon.className = 'bx bxs-confused';
   Object.assign(icon.style, {
     fontSize: '3rem',
     color: 'white',
     marginBottom: '15px'
   });
   
-  // 🦫 CAMBIO: Mensaje más divertido
   const message = document.createElement('p');
   message.textContent = '👻 ¡Imagen fantasma detectada! Acadel no puede identificar esta imagen. Las imágenes fantasma son muy escurridizas.';
   Object.assign(message.style, {
@@ -3442,15 +3343,12 @@ function showErrorModal() {
     }
   });
   
-  // 🦫 CAMBIO: Notificación de error
   acadelWarning(
     "👻 Imagen fantasma", 
     "Acadel no pudo cargar la imagen. Parece que se volvió invisible."
   );
 }
 
-// ==========================================
-// ==========================================
 
 document.addEventListener('DOMContentLoaded', setupImagePreviewSystem);
 setTimeout(setupImagePreviewSystem, 1000);

@@ -138,7 +138,6 @@ updateProgress(progress, statusText = null) {
   // IMPORTANTE: No permitir reducir el progreso una vez alcanzado 100%
   if (this._progressLocked || this.progress === 100) {
     // Si ya alcanzamos 100%, no permitimos retrocesos
-    // Solo actualizamos texto si es necesario
     if (statusText && this.progressText && statusText !== this.progressText.textContent) {
       console.log(`Actualizando solo texto (progreso bloqueado): ${statusText}`);
       this.progressText.textContent = statusText;
@@ -480,7 +479,6 @@ updateProgress(progress, statusText = null) {
   reset(preserveProgress = false) {
     this.isAnimating = false;
     
-    // Solo resetear progreso si no se debe preservar
     if (!preserveProgress) {
       this.progress = 0;
       this._progressLocked = false; // MODIFICADO: Asegurarnos de desbloquear el progreso

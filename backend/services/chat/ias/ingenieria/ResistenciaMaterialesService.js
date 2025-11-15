@@ -1,8 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR DE MECÁNICA Y RESISTENCIA DE MATERIALES SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -25,12 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -310,9 +302,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_RESISTENCIA_MATERIALES_DNA = `
 🦫 TU IDENTIDAD COMO Ing. ACADEL - PROFESOR DE MECÁNICA Y RESISTENCIA DE MATERIALES:
@@ -354,8 +343,6 @@ Hacer que CUALQUIER estudiante de ingeniería estructural:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra teoría estructural con aplicaciones ingenieriles!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Ing. Acadel.
 
@@ -501,9 +488,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -573,7 +557,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -593,7 +577,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -635,7 +619,7 @@ const classifyQuery = (query, content = null) => {
     structuralUnitsConstants.some(term => lowercaseQuery.includes(term));
 
   if (isSimpleQuery && !hasStructuralContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -725,7 +709,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -744,10 +728,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en mecánica y resistencia de materiales.
 
@@ -773,8 +754,8 @@ const createTechnicalKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_resismateriales",
         similarityQueryName: "match_emb_resismateriales",
         keywordQueryName: "kw_match_emb_resismateriales",
@@ -1154,8 +1135,8 @@ const createTechnicalConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_resismateriales",
         similarityQueryName: "match_emb_resismateriales",
         keywordQueryName: "kw_match_emb_resismateriales",
@@ -1189,7 +1170,6 @@ const createTechnicalConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1389,14 +1369,10 @@ INTEGRATION_NOTES: Ing. Acadel debe ajustar su estrategia técnica según este a
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedTechnicalPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_RESISTENCIA_MATERIALES_DNA;
 
-  // ============================================================================
-  // ============================================================================
 
   const coreTechnicalInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA Ing. ACADEL DE MECÁNICA Y RESISTENCIA DE MATERIALES
@@ -1552,8 +1528,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas estructurales importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const technicalTypeInstructions = {
     casual_conversation: `
@@ -1640,8 +1614,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica estructural`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1664,8 +1636,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Bas
       'Enseña como el capibara técnico más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) para fundamentar toda respuesta estructural importante, y complementando con todas tus capacidades paralelas para una explicación técnica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`👷🦫 Ing. Acadel configurando sistema técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1676,7 +1646,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - núcleo del sistema estructural`);
     tools.unshift(createTechnicalKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1684,7 +1653,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico INACTIVO - consulta muy casual sin contenido estructural`);
   }
 
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS (MANTENER LÓGICA MATEMÁTICA)
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
@@ -1749,8 +1717,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1809,8 +1775,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_resismateriales",
             similarityQueryName: "match_emb_resismateriales",
             keywordQueryName: "kw_match_emb_resismateriales",
@@ -1983,8 +1949,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleResistenciaMaterialesQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2087,7 +2051,6 @@ export const handleResistenciaMaterialesQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2255,7 +2218,6 @@ export const handleResistenciaMaterialesQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2299,8 +2261,6 @@ export const handleResistenciaMaterialesQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleResistenciaMaterialesMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2629,7 +2589,6 @@ Si necesitas una explicación más detallada en cualquier área estructural, pre
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2677,13 +2636,11 @@ Si necesitas una explicación más detallada en cualquier área estructural, pre
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2697,7 +2654,6 @@ Si necesitas una explicación más detallada en cualquier área estructural, pre
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2745,8 +2701,6 @@ Si necesitas una explicación más detallada en cualquier área estructural, pre
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleResistenciaMaterialesQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

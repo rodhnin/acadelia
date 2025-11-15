@@ -200,9 +200,6 @@ export const cancelPendingRequest = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: cancelChatMessage
- */
 export const cancelChatMessage = async (req, res) => {
     const { chatId } = req.params;
     const userId = Number(req.headers['id_user'] || req.body.userId);
@@ -347,7 +344,6 @@ export const getChats = async (req, res) => {
 
     try {
         if (req.path.includes('/tool/')) {
-            // RUTA DE HERRAMIENTAS: /chats/:userId/tool/:herramientaId
             console.log('📊 Procesando ruta de herramientas');
 
             if (!herramientaId || isNaN(Number(herramientaId))) {
@@ -366,7 +362,6 @@ export const getChats = async (req, res) => {
             return;
         }
         else {
-            // RUTA DE AVAS: /chats/:userId/:avaId
             console.log('🤖 Procesando ruta de AVAs');
 
             if (!avaId || isNaN(Number(avaId))) {
@@ -530,9 +525,6 @@ export const deleteChat = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA SIN VALIDACIÓN DE TOKENS: updateChatMessage
- */
 export const updateChatMessage = async (req, res) => {
     const { chatId } = req.params;
     const { messageId, content } = req.body;
@@ -593,9 +585,6 @@ export const updateChatMessage = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA SIN VALIDACIÓN DE TOKENS: replaceInteraction
- */
 export const replaceInteraction = async (req, res) => {
     const { chatId } = req.params;
     const { userMessageId, aiMessageId, userContent, aiContent } = req.body;

@@ -75,7 +75,6 @@ export const handleUalaWebhook = async (req, res) => {
 
 async function handlePaymentSuccess(eventData) {
   try {
-    // 🆕 MEJORADO: Múltiples formas de extraer la referencia externa
     const order = eventData.order || eventData;
     const externalRef = order.external_reference || 
                        order.reference || 
@@ -101,7 +100,6 @@ async function handlePaymentSuccess(eventData) {
 
     console.log('🔍 Referencia externa encontrada:', externalRef);
 
-    // 🆕 NUEVO: Buscar por UUID si no hay formato PAY_xxx
     let paymentId;
     
     const match = externalRef.match(/PAY_(\d+)/);
@@ -109,7 +107,6 @@ async function handlePaymentSuccess(eventData) {
       paymentId = parseInt(match[1]);
       console.log('💳 Payment ID extraído del formato PAY_xxx:', paymentId);
     } else {
-      // 🆕 NUEVO: Buscar en BD por external_payment_id (UUID)
       console.log('🔍 Buscando pago por UUID en BD:', externalRef);
       
       try {
@@ -145,7 +142,6 @@ async function handlePaymentSuccess(eventData) {
 
 async function handlePaymentFailed(eventData) {
   try {
-    // 🆕 MEJORADO: Múltiples formas de extraer la referencia externa  
     const order = eventData.order || eventData;
     const externalRef = order.external_reference || 
                        order.reference || 
@@ -171,7 +167,6 @@ async function handlePaymentFailed(eventData) {
 
     console.log('🔍 Referencia externa para pago fallido:', externalRef);
 
-    // 🆕 NUEVO: Buscar por UUID si no hay formato PAY_xxx
     let paymentId;
     
     const match = externalRef.match(/PAY_(\d+)/);
@@ -179,7 +174,6 @@ async function handlePaymentFailed(eventData) {
       paymentId = parseInt(match[1]);
       console.log('💳 Payment ID extraído del formato PAY_xxx:', paymentId);
     } else {
-      // 🆕 NUEVO: Buscar en BD por external_payment_id (UUID)
       console.log('🔍 Buscando pago fallido por UUID en BD:', externalRef);
       
       try {

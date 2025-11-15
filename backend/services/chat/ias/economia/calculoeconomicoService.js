@@ -1,8 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO V4.0
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR CÁLCULO ECONÓMICO SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -25,12 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -331,9 +323,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_CALCULO_ECONOMICO_DNA = `
 🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE CÁLCULO ECONÓMICO Y MATEMÁTICAS APLICADAS:
@@ -377,8 +366,6 @@ Hacer que CUALQUIER estudiante de cálculo económico:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra matemáticas teóricas con aplicaciones económicas empresariales!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel.
 
@@ -524,9 +511,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -596,7 +580,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -616,7 +600,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -665,7 +649,7 @@ const classifyQuery = (query, content = null) => {
     aplicacionesEconomicas.some(term => lowercaseQuery.includes(term));
 
   if (isSimpleQuery && !hasCalculoEconomicoContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -755,7 +739,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -774,10 +758,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en cálculo económico y matemáticas aplicadas.
 
@@ -803,11 +784,11 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
-        tableName: "emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-        similarityQueryName: "match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-        keywordQueryName: "kw_match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
+        similarityK: 8,
+        keywordK: 6,
+        tableName: "emb_calculoeconomico",
+        similarityQueryName: "match_emb_calculoeconomico",
+        keywordQueryName: "kw_match_emb_calculoeconomico",
       });
 
       const timeoutPromise = new Promise((_, reject) =>
@@ -1234,11 +1215,11 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
-        tableName: "emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-        similarityQueryName: "match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-        keywordQueryName: "kw_match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
+        similarityK: 10,
+        keywordK: 8,
+        tableName: "emb_calculoeconomico",
+        similarityQueryName: "match_emb_calculoeconomico",
+        keywordQueryName: "kw_match_emb_calculoeconomico",
       });
 
       const searches = [
@@ -1269,7 +1250,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1469,14 +1449,10 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia técnica según este análi
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_CALCULO_ECONOMICO_DNA;
 
-  // ============================================================================
-  // ============================================================================
 
   const coreInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE CÁLCULO ECONÓMICO Y MATEMÁTICAS APLICADAS
@@ -1646,8 +1622,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas matemático-económicas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const typeSpecificInstructions = {
     casual_conversation: `
@@ -1734,8 +1708,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica matemático-económica`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1758,8 +1730,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Bas
       'Enseña como el capibara técnico más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) para fundamentar toda respuesta matemático-económica importante, y complementando con todas tus capacidades paralelas para una explicación técnica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Acadel configurando sistema técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1770,7 +1740,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - núcleo del sistema matemático-económico`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1778,7 +1747,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico INACTIVO - consulta muy casual sin contenido matemático-económico`);
   }
 
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
@@ -1843,8 +1811,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1903,11 +1869,11 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
-            tableName: "emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-            similarityQueryName: "match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
-            keywordQueryName: "kw_match_emb_calculoeconomico", // 🎯 ESPECÍFICO PARA CÁLCULO ECONÓMICO
+            similarityK: 6,
+            keywordK: 5,
+            tableName: "emb_calculoeconomico",
+            similarityQueryName: "match_emb_calculoeconomico",
+            keywordQueryName: "kw_match_emb_calculoeconomico",
           });
 
           const timeoutPromise = new Promise((_, reject) =>
@@ -2077,8 +2043,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleCalculoEconomicoQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2181,7 +2145,6 @@ export const handleCalculoEconomicoQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2349,7 +2312,6 @@ export const handleCalculoEconomicoQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2393,8 +2355,6 @@ export const handleCalculoEconomicoQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleCalculoEconomicoMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2723,7 +2683,6 @@ Si necesitas una explicación más detallada en matemáticas aplicadas, álgebra
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2771,13 +2730,11 @@ Si necesitas una explicación más detallada en matemáticas aplicadas, álgebra
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2791,7 +2748,6 @@ Si necesitas una explicación más detallada en matemáticas aplicadas, álgebra
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2839,8 +2795,6 @@ Si necesitas una explicación más detallada en matemáticas aplicadas, álgebra
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleCalculoEconomicoQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

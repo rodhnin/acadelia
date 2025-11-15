@@ -2,7 +2,7 @@
 import pool from "../../../lib/dbPool.js";
 import { supabase } from "../../../lib/supabaseService.js";
 import { embeddings } from '../../../lib/openai.js';
-import { notificationTracker } from '../../../utils/marketing/notificationTracker.js'; // ✅ IMPORTAR TRACKER
+import { notificationTracker } from '../../../utils/marketing/notificationTracker.js';
 
 export const memoryService = {
   async saveToMemory(memoryData) {

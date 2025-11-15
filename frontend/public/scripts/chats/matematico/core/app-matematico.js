@@ -242,10 +242,9 @@ async function initApp() {
   
   const mermaidPromise = initMermaidSystem();
   
-  // ⭐ APLICAR PIZARRÓN RESPONSIVO (sin skeleton que bloquee)
   import('../ui/ui-manager-matematico.js').then(uiModule => {
     if (typeof uiModule.applyInitialLoader === 'function') {
-      uiModule.applyInitialLoader(); // Solo pizarrón, contenido visible detrás
+      uiModule.applyInitialLoader();
     }
   });
 
@@ -425,7 +424,6 @@ async function initApp() {
         });
       });
 
-      // ⭐ Progreso final y cierre del pizarrón
       updateAcadelProgress(100, '🎉 ¡Teorema de inicialización del pizarrón completado!');
       
       setManagedTimeout(() => {
@@ -436,7 +434,6 @@ async function initApp() {
             uiModule.removeInitialLoader();
           }
 
-                // ⭐ Bienvenida mejorada del Profesor Acadel
             window.acadelConfetti(
               "🎓 ¡Pizarrón matemático listo! 🦫", 
               "El Profesor Acadel ha preparado su aula cuántica. ¡Desde ecuaciones simples hasta teoremas complejos, aquí resolvemos todo con estilo de capibara!"
@@ -473,7 +470,6 @@ async function initApp() {
   }
 }
 
-// ⭐ Funciones globales para uso en toda la aplicación
 window.updateAcadelProgress = updateAcadelProgress;
 
 // Inicialización al cargar DOM

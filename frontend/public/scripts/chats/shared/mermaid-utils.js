@@ -3,7 +3,6 @@
  * Con integración optimizada para el sistema de temas
  */
 
-// Variables para controlar el estado
 let mermaidInitialized = false;
 let mermaidLoadPromise = null;
 let isUpdatingTheme = false;
@@ -651,7 +650,6 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
   const svgElement = mermaidContainer.querySelector('svg');
   if (!svgElement) return;
   
-  // Variables para el pan y zoom
   let scale = 1;
   let originalWidth = svgElement.getBoundingClientRect().width;
   let translateX = 0;
@@ -693,7 +691,7 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
   }
   
   mermaidContainer.addEventListener('mousedown', (e) => {
-    if (e.button === 0) { // Solo botón izquierdo
+    if (e.button === 0) {
       isDragging = true;
       lastX = e.clientX;
       lastY = e.clientY;

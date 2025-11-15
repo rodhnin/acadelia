@@ -93,10 +93,9 @@ async function initApp() {
   
   const mermaidPromise = initMermaidSystem();
 
-    // ⭐ APLICAR PIZARRÓN RESPONSIVO (sin skeleton que bloquee)
   import('../ui/ui-manager-pdf.js').then(uiModule => {
     if (typeof uiModule.applyInitialLoader === 'function') {
-      uiModule.applyInitialLoader(); // Solo pizarrón, contenido visible detrás
+      uiModule.applyInitialLoader();
     }
   });
   
@@ -291,7 +290,6 @@ setTimeout(() => {
         });
       });
 
-      // ⭐ Progreso final y cierre de la biblioteca
       updateBibliotecaProgress(100, '🎉 ¡Catálogo bibliográfico completado!');
       
       setManagedTimeout(() => {
@@ -302,7 +300,6 @@ setTimeout(() => {
             uiModule.removeInitialLoader();
           }
           
-                // ⭐ Bienvenida especializada del Bibliotecario Acadel
                 window.acadelConfetti(
                   "🏛️ ¡Biblioteca digital abierta! 🦫", 
                   "El Profesor Acadel ha organizado su archivo personal. ¡Desde documentos simples hasta textos académicos complejos, aquí analizamos todo con sabiduría de capibara bibliotecario!"
@@ -355,7 +352,6 @@ function updateBibliotecaProgress(progress, mensaje = '') {
   }
 }
 
-// ⭐ Funciones globales para uso en toda la aplicación PDF
 window.updateBibliotecaProgress = updateBibliotecaProgress;
 
 // Inicialización al cargar DOM

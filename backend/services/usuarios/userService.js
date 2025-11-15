@@ -148,7 +148,7 @@ export class UserService {
                 success: true,
                 user: {
                     id_user: updatedUser.id_user,
-                    correo: currentEmail, // 🔧 FIX: Usar correo actual para notificaciones
+                    correo: currentEmail,
                     updatedEmail: updatedUser.correo // Nuevo correo si se actualizó
                 }
             };
@@ -172,9 +172,7 @@ export class UserService {
         }
     }
 
-    // ========================================
     // MÉTODOS PRIVADOS - LÓGICA DE NEGOCIO
-    // ========================================
 
     /**
      * Verificar disponibilidad de correo
@@ -380,9 +378,7 @@ export class UserService {
         };
     }
 
-    // ========================================
     // MÉTODOS EXISTENTES (mantener compatibilidad)
-    // ========================================
 
     static async createUser(correo, contraseña) {
         const salt = await bcrypt.genSalt(10);
@@ -557,7 +553,6 @@ export class UserService {
 
             const userData = rows[0];
 
-            // 🆕 NUEVO: Log para depuración
             console.log("Información de autenticación del usuario:", {
                 id: userData.id_user,
                 isGoogleUser: userData.isGoogleUser,

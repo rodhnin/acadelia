@@ -13,10 +13,6 @@ import {
 
 import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS PDF
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDF = async (req, res) => {
   try {
     console.log('🔍 queryPDF iniciado con TokenManager centralizado');
@@ -27,10 +23,8 @@ export const queryPDF = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES DE HERRAMIENTAS =====
     const validationErrors = validateToolQueryParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -92,10 +86,6 @@ export const queryPDF = async (req, res) => {
   }
 };
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS MULTIMODALES PDF
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDFMultimodal = async (req, res) => {
   try {
     console.log('🔍 queryPDFMultimodal iniciado con TokenManager centralizado');
@@ -108,10 +98,8 @@ export const queryPDFMultimodal = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
     const validationErrors = validateToolMultimodalParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -140,7 +128,6 @@ export const queryPDFMultimodal = async (req, res) => {
     const serviceFunction = async (params) => {
       const result = await handlePDFMultimodalQuery(params);
       
-      // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
       if (result.success && result.chatId) {
         await addRecentDocumentsToResult(result, params.userId || req.user?.id_user);
       }
@@ -180,10 +167,6 @@ export const queryPDFMultimodal = async (req, res) => {
   }
 };
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PDF MULTIMODAL SIN GUARDAR
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDFMultimodalWithoutSaving = async (req, res) => {
   try {
     console.log('🔄 queryPDFMultimodalWithoutSaving iniciado con TokenManager centralizado');
@@ -196,10 +179,8 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
     const validationErrors = validateToolMultimodalParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -267,9 +248,6 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
   }
 };
 
-/**
- * 🔧 HELPER: Agregar documentos recientes al resultado
- */
 async function addRecentDocumentsToResult(result, userId) {
   try {
     console.log(`🔍 Buscando documentos recientes para chat PDF: ${result.chatId}`);

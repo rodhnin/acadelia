@@ -139,7 +139,6 @@ function showDashboardLoader(container) {
     </div>
   `;
   
-  // 🆕 AGREGAR EVENT LISTENER PARA EL BOTÓN DE REFRESH (sin inline handler)
   const refreshBtn = container.querySelector('#dashboard-refresh-btn');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', async (e) => {
@@ -178,7 +177,6 @@ function showDashboardError(container, error) {
     </div>
   `;
   
-  // 🆕 AGREGAR EVENT LISTENERS PARA BOTONES DE RETRY (sin inline handlers)
   const retryBtn = container.querySelector('#dashboard-error-retry-btn');
   const manualRetryBtn = container.querySelector('#dashboard-manual-retry-btn');
   
@@ -252,7 +250,6 @@ function renderDashboard(container, summary, profiles, contents, trends) {
     </div>
   `;
   
-  // 🆕 CONFIGURAR EVENT LISTENERS (sin inline handlers)
   const mainRefreshBtn = container.querySelector('#dashboard-main-refresh-btn');
   
   if (mainRefreshBtn) {
@@ -347,7 +344,6 @@ function renderProfilesChart(profiles) {
     </div>
   `;
   
-  // Solo crear gráficos si Chart.js está disponible
   if (chartJsAvailable) {
     // Agrupar perfiles por carrera
     const carreraGroups = {};
@@ -497,7 +493,6 @@ function renderContentsChart(contents) {
       ).join('')}
     `;
     
-    // 🆕 AÑADIR EVENT LISTENERS A BOTONES (sin inline handlers)
     typesContainer.querySelectorAll('.content-type-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -519,7 +514,6 @@ function renderContentsChart(contents) {
     ? '<canvas id="content-chart-canvas"></canvas>'
     : '<div class="chart-placeholder">Gráfico no disponible (Chart.js requerido)</div>';
   
-  // Solo crear gráfico si Chart.js está disponible
   if (chartJsAvailable) {
     // Agrupar contenidos por canal
     const channelGroups = {};
@@ -625,7 +619,6 @@ function renderTrendsSection(trends) {
     </div>
   `).join('');
   
-  // 🆕 AÑADIR EVENT LISTENERS A TENDENCIAS (sin inline handlers)
   container.querySelectorAll('.trend-item').forEach((item) => {
     item.addEventListener('click', (e) => {
       e.preventDefault();

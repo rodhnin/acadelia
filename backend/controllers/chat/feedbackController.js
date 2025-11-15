@@ -106,11 +106,6 @@ export const processPendingFeedbacks = async (req, res) => {
   }
 };
 
-/**
- * ✅ NUEVA FUNCIÓN: Obtiene el contenido original de un mensaje específico con filtrado de contenido sensible
- * @param {Object} req - Objeto de solicitud
- * @param {Object} res - Objeto de respuesta
- */
 export const getMessageOriginalContent = async (req, res) => {
     const { chatId, messageId } = req.params;
     const userId = req.user?.id_user;

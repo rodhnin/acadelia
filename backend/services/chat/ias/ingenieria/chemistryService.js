@@ -1,9 +1,5 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO QUÍMICA V3.1 TÉCNICO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MULTIDISCIPLINARIO EN QUÍMICA TÉCNICO
 // Especializado en Química Completa con enfoque técnico riguroso
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,12 +22,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -310,9 +302,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO EN QUÍMICA
-// ============================================================================
 
 const PROFESOR_ACADEL_QUIMICA_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN QUÍMICA Y PROCESOS QUÍMICOS:
@@ -362,8 +351,6 @@ Hacer que CUALQUIER estudiante de química e ingeniería química:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra química teórica fundamental con aplicaciones industriales y tecnológicas!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
@@ -509,9 +496,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO QUÍMICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -626,7 +610,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido químico específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -646,7 +630,7 @@ const classifyQuery = (query, content = null) => {
 
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal químico
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -654,7 +638,7 @@ const classifyQuery = (query, content = null) => {
   let needsWebSearch = false;
 
   if (isSimpleQuery && !hasChemistryContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal químico
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -744,7 +728,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal químico
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -763,10 +747,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS QUÍMICAS TÉCNICAS
 const ACADEL_CHEMICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en química y procesos químicos.
 
@@ -792,8 +773,8 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto químico para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual química
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_quimica",
         similarityQueryName: "match_emb_quimica",
         keywordQueryName: "kw_match_emb_quimica",
@@ -1186,8 +1167,8 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos químicos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual química completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_quimica",
         similarityQueryName: "match_emb_quimica",
         keywordQueryName: "kw_match_emb_quimica",
@@ -1221,7 +1202,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS QUÍMICAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1421,15 +1401,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia química técnica 
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_QUIMICA_DNA;
 
-  // ============================================================================
-  // 🧪 INSTRUCCIONES QUÍMICAS TÉCNICAS CONSOLIDADAS
-  // ============================================================================
 
   const coreChemicalTechnicalInstructions = `
 # INSTRUCCIONES QUÍMICAS TÉCNICAS PARA PROFESOR ACADEL DE QUÍMICA Y PROCESOS QUÍMICOS
@@ -1590,8 +1565,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas científicas químicas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const chemicalTechnicalTypeInstructions = {
     casual_conversation: `
@@ -1678,8 +1651,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión química técnica real y aplicación práctica científica química`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1702,8 +1673,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Know
       'Enseña como el capibara químico técnico más brillante del universo, usando tu CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Knowledge Base) para fundamentar toda respuesta científica química importante, y complementando con todas tus capacidades paralelas para una explicación química técnica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema químico técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Químico Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1714,7 +1683,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Knowledge Base) - núcleo del sistema científico químico`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1722,7 +1690,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Químico Técnico INACTIVO - consulta muy casual sin contenido científico químico`);
   }
 
-  // 🧮 HERRAMIENTAS QUÍMICAS MATEMÁTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas químico-matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
@@ -1787,8 +1754,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1847,8 +1812,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes químicos necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index químico
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_quimica",
             similarityQueryName: "match_emb_quimica",
             keywordQueryName: "kw_match_emb_quimica",
@@ -2023,8 +1988,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleChemistryQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2127,7 +2090,6 @@ export const handleChemistryQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2295,7 +2257,6 @@ export const handleChemistryQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2339,8 +2300,6 @@ export const handleChemistryQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleChemistryMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2669,7 +2628,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2717,13 +2675,11 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2737,7 +2693,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2786,8 +2741,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleChemistryQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

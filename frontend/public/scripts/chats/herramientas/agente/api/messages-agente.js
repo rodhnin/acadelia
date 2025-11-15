@@ -486,10 +486,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
   return retryRequest(makeRequest, signal);
 }
 
-/**
- * Intenta ejecutar una función con reintentos en caso de error
- * ✅ ACTUALIZADA: Sin retry para límites de herramientas específicas
- */
 async function retryRequest(fn, signal = null, retries = 3, delay = 1000) {
   try {
     return await fn();
@@ -706,17 +702,6 @@ export async function updateChatMessage(chatId, messageId, content) {
   }
 }
 
-/**
- * ✅ handleResponse 100% DINÁMICO - SIN HARDCODEO
- * 
- * Maneja EXACTAMENTE lo que envía el backend sin fallbacks hardcodeados:
- * - TokenManager.buildOptimizedResponse()
- * - TokenManager.buildDynamicToolLimits()
- * - TokenManager.addWarningFlags()
- * - AccessValidationService error codes
- * 
- * CERO valores hardcodeados, todo dinámico del backend
- */
 export async function handleResponse(response, responseText = null) {
   if (!responseText) {
     responseText = await response.text();
@@ -731,8 +716,6 @@ export async function handleResponse(response, responseText = null) {
     throw new Error('Respuesta del servidor inválida');
   }
 
-  // ===============================================
-  // ===============================================
 
   if (!response.ok) {
     console.group(`🚨 HTTP ERROR RESPONSE`);
@@ -751,8 +734,6 @@ export async function handleResponse(response, responseText = null) {
       parsedError = data.error;
     }
 
-    // ===============================================
-    // ===============================================
     if (response.status === 429) {
 
       console.log(`🚨 [429 ERROR] Respuesta completa del backend:`, data);
@@ -769,7 +750,6 @@ export async function handleResponse(response, responseText = null) {
       if (isToolError) {
         console.log(`🔧 [TOOL ERROR] Error de herramienta detectado - Extrayendo TODOS los datos del backend`);
 
-        // ⭐ EXTRAER **ABSOLUTAMENTE TODO** lo que viene del backend
         const backendToolData = {
           toolSlug: data.toolSlug || data.toolInfo?.slug || data.accessInfo?.toolSlug || 'Agente',
           toolName: data.toolInfo?.name || data.toolInfo?.nombre || null,
@@ -799,7 +779,6 @@ export async function handleResponse(response, responseText = null) {
           resetTime: backendToolData.limits?.daily?.resetTime || backendToolData.limits?.hourly?.resetTime
         });
 
-        // ⭐ CREAR ERROR CON **TODOS** LOS DATOS DEL BACKEND
         const toolLimitError = {
           isFreeUserLimit: true,
           isToolLimit: true,
@@ -831,8 +810,6 @@ export async function handleResponse(response, responseText = null) {
       throw tokenLimitError;
     }
 
-    // ===============================================
-    // ===============================================
     if (response.status === 400) {
       const errorCode = data.error?.code || parsedError?.code;
 
@@ -862,7 +839,7 @@ export async function handleResponse(response, responseText = null) {
           isTokenLimit: true,
           status: 400,
           message: data.error.message || 'El chat ha excedido su límite de tokens',
-          maxTokens: data.tokenInfo?.max, // ✅ SIN fallback
+          maxTokens: data.tokenInfo?.max,
           exactCalculation: data.exactCalculation,
           tokenInfo: data.tokenInfo
         };
@@ -888,8 +865,6 @@ export async function handleResponse(response, responseText = null) {
       }
     }
 
-    // ===============================================
-    // ===============================================
     let errorMessage = '';
     if (parsedError?.message) {
       errorMessage = parsedError.message;
@@ -904,8 +879,6 @@ export async function handleResponse(response, responseText = null) {
     throw new Error(errorMessage);
   }
 
-  // ===============================================
-  // ===============================================
   if (!data.success) {
     let errorMessage = '';
     if (typeof data.error === 'string') {
@@ -918,8 +891,6 @@ export async function handleResponse(response, responseText = null) {
     throw new Error(errorMessage);
   }
 
-  // ===============================================
-  // ===============================================
   console.group('🔍 [BACKEND] Procesando respuesta exitosa del backend');
   console.log('📊 Datos del backend:', {
     success: data.success,
@@ -936,24 +907,18 @@ export async function handleResponse(response, responseText = null) {
     _warningExactCalculation: data._warningExactCalculation
   });
 
-  // ===============================================
-  // ===============================================
   if (data.accessInfo?.isAdmin || data.tokenInfo?.isAdmin) {
     console.log('👑 [BACKEND] Admin detectado - Sin procesamiento de warnings');
     console.groupEnd();
     return data;
   }
 
-  // ===============================================
-  // ===============================================
   if (data.tokenInfo?.max === 'unlimited' || data.accessInfo?.isPremium === true) {
     console.log('💎 [BACKEND] Usuario premium con acceso ilimitado');
     console.groupEnd();
     return data;
   }
 
-  // ===============================================
-  // ===============================================
   if (data.tokenInfo && typeof data.tokenInfo.current === 'number' &&
     (typeof data.tokenInfo.max === 'number' || data.tokenInfo.max === 'unlimited') &&
     data.tokenInfo.max !== 'unlimited') {
@@ -1018,8 +983,6 @@ export async function handleResponse(response, responseText = null) {
     }
   }
 
-  // ===============================================
-  // ===============================================
   if (data.warnings && Array.isArray(data.warnings) && data.warnings.length > 0) {
     console.log(`📊 [BACKEND] Procesando ${data.warnings.length} warnings del backend`);
 
@@ -1051,8 +1014,6 @@ export async function handleResponse(response, responseText = null) {
     }
   }
 
-  // ===============================================
-  // ===============================================
   if (data.toolLimits) {
     console.log(`📊 [BACKEND] ToolLimits del backend:`, data.toolLimits);
 
@@ -1139,8 +1100,6 @@ export async function handleResponse(response, responseText = null) {
     }
   }
 
-  // ===============================================
-  // ===============================================
 
   const warningsSummary = {
     hasTokenWarning: !!data._hasTokenWarning,
@@ -1171,9 +1130,6 @@ export async function handleResponse(response, responseText = null) {
   return data;
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: saveMarkdownImage con errores silenciosos
- */
 export async function saveMarkdownImage(imageUrl, chatId) {
   try {
     const payload = {
@@ -1224,5 +1180,5 @@ export default {
   updateChatMessage,
   saveMarkdownImage,
   getResponseOnlyWithoutSaving,
-  sendMessageWithAttachmentsWithoutSaving // ✅ NUEVA FUNCIÓN EXPORTADA
+  sendMessageWithAttachmentsWithoutSaving
 };

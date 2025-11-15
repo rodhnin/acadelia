@@ -335,7 +335,6 @@ function processParagraphsAndLineBreaks(html) {
 
   const lines = html.split('\n');
   
-  // Información sobre el estado actual de procesamiento
   let result = [];
   let currentParagraph = [];
   let inBlockElement = false;
@@ -411,7 +410,7 @@ function processParagraphsAndLineBreaks(html) {
       }
       else {
         // Limitar número de líneas vacías consecutivas
-        if (consecutiveEmptyLines < 1) { // Solo permitir 1 línea vacía como máximo
+        if (consecutiveEmptyLines < 1) {
           result.push('');
           consecutiveEmptyLines++;
         }
@@ -701,7 +700,6 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
   try {
     const chatId = getChatIdSafe();
     
-    // Solo verificar cache si imageUrlCache está disponible
     if (typeof window !== 'undefined' && window.imageUrlCache?.getLocalPath) {
       const cachedPath = window.imageUrlCache.getLocalPath(chatId, src);
       if (cachedPath) {
@@ -1413,9 +1411,7 @@ export function createMermaidBlockHTML(code) {
 `;
 }
 
-// ======================================
 // FUNCIONES DE ANÁLISIS DE CARACTERÍSTICAS
-// ======================================
 
 /**
  * Detecta qué características de Markdown están presentes
@@ -1495,9 +1491,7 @@ function detectMarkdownFeatures(text) {
   };
 }
 
-// ======================================
 // FUNCIONES AUXILIARES DE SEGURIDAD Y UTILIDAD
-// ======================================
 
 /**
  * Escapa caracteres HTML especiales
@@ -1519,9 +1513,7 @@ export function escapeHTML(text, forAttr = false) {
   return text.replace(forAttr ? /[&<>"']/g : /[&<>]/g, m => map[m]);
 }
 
-// ======================================
 // FUNCIONES DE DETECCIÓN Y PROCESAMIENTO ESPECÍFICAS
-// ======================================
 
 /**
  * Detecta y procesa tablas en texto
@@ -1590,7 +1582,6 @@ export function detectTableInText(text) {
     return { success: false, html: '' };
   }
 
-  // Si todo el texto es una sola tabla
   if (tableRanges.length === 1 && tableRanges[0].start <= 1 && tableRanges[0].end >= lines.length - 2) {
     try {
       const tableLines = lines.slice(tableRanges[0].start, tableRanges[0].end + 1);
@@ -1654,7 +1645,6 @@ export function detectAndProcessCode(text) {
   }
 
   try {
-    // ===== CAMBIO CLAVE: En lugar de extraer y procesar todo el texto =====
     // Reemplazamos cada bloque de código con un marcador único para procesarlo después
     let processedText = text;
     const codeBlocks = [];
@@ -1904,9 +1894,7 @@ export function linkify(text) {
   return convertPlainUrls(text);
 }
 
-// ======================================
 // EXPORTACIONES UNIFICADAS
-// ======================================
 
 export default {
   // Funciones principales

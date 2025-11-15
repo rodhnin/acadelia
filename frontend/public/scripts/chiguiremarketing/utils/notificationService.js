@@ -3,7 +3,6 @@ import {
   getNotifications, 
   getNotificationCounts, 
   clearNotifications, 
-  // 🆕 NUEVAS IMPORTACIONES PARA LIMPIEZA POR SECCIÓN
   clearSectionNotifications,
   markSectionAsViewed,
   getCurrentNotifications,
@@ -23,7 +22,7 @@ class NotificationService {
       onUpdate: [],
       onClear: [],
       onNewNotification: [],
-      onSectionCleared: [] // 🆕 NUEVO callback para limpieza por sección
+      onSectionCleared: []
     };
     
     this.isInitialized = false;
@@ -38,7 +37,6 @@ class NotificationService {
     window.addEventListener('newNotifications', this.handleNewNotifications.bind(this));
     window.addEventListener('notificationsCleared', this.handleNotificationsCleared.bind(this));
     
-    // 🆕 NUEVOS EVENTOS para limpieza por sección
     window.addEventListener('sectionNotificationsCleared', this.handleSectionNotificationsCleared.bind(this));
     window.addEventListener('sectionMarkedAsViewed', this.handleSectionMarkedAsViewed.bind(this));
     
@@ -108,7 +106,6 @@ class NotificationService {
     });
   }
   
-  // 🆕 NUEVO: Manejar limpieza de notificaciones por sección
   handleSectionNotificationsCleared(event) {
     const { section, notifications } = event.detail;
     
@@ -136,7 +133,6 @@ class NotificationService {
     });
   }
   
-  // 🆕 NUEVO: Manejar marcado de sección como vista
   handleSectionMarkedAsViewed(event) {
     const { section, notifications, userId } = event.detail;
     
@@ -219,7 +215,6 @@ class NotificationService {
     });
   }
   
-  // 🆕 NUEVO: Limpiar notificaciones de una sección específica EN EL SERVIDOR
   async clearSectionNotificationsPersistent(section) {
     try {
       console.log(`🧹 Iniciando limpieza persistente para sección: ${section}`);
@@ -227,7 +222,7 @@ class NotificationService {
       const sectionMapping = {
         'information': 'all', // Information muestra todas, así que limpia todas
         'profiles': 'profiles',
-        'content': 'contents', // Note: contents en plural en el backend
+        'content': 'contents',
         'trends': 'trends',
         'memory': 'memory'
       };
@@ -266,7 +261,6 @@ class NotificationService {
     }
   }
   
-  // 🆕 NUEVO: Fallback para limpiar notificaciones localmente
   clearSectionNotificationsLocal(section) {
     console.log(`🔄 Fallback: Limpiando notificaciones de ${section} localmente`);
     
@@ -300,7 +294,6 @@ class NotificationService {
     console.log(`🧹 Notificaciones de ${section} limpiadas localmente (fallback)`);
   }
   
-  // 🆕 NUEVO: Marcar sección como vista de forma persistente
   async markSectionAsViewedPersistent(section, userId = null) {
     try {
       console.log(`👁️ Marcando sección ${section} como vista en el servidor`);
@@ -540,12 +533,10 @@ class NotificationService {
     }
   }
   
-  // 🆕 NUEVA FUNCIÓN: Limpiar sección específica (interfaz pública)
   async clearSection(section) {
     return await this.clearSectionNotificationsPersistent(section);
   }
   
-  // 🆕 NUEVA FUNCIÓN: Marcar sección como vista (interfaz pública)
   async markSectionViewed(section, userId = null) {
     return await this.markSectionAsViewedPersistent(section, userId);
   }
@@ -574,7 +565,6 @@ class NotificationService {
     this.callbacks.onNewNotification.push(callback);
   }
   
-  // 🆕 NUEVO callback para limpieza por sección
   onSectionCleared(callback) {
     this.callbacks.onSectionCleared.push(callback);
   }

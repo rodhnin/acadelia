@@ -148,13 +148,6 @@ export function showDynamicConfirmModal(title, message) {
   });
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Modal especial de Acadel para copia manual
- * Muestra una modal académica para copiar texto manualmente cuando fallan los métodos automáticos
- * @param {string} text - Texto que se debe copiar manualmente
- * @param {Object} options - Opciones adicionales
- * @returns {Promise<boolean>} Promise que se resuelve cuando el usuario cierra la modal
- */
 export function showAcadelManualCopyModal(text, options = {}) {
   return new Promise((resolve) => {
     // Mensajes aleatorios del profesor Acadel
@@ -379,7 +372,7 @@ export function setupModalListeners() {
 export default {
   showConfirmationModal,
   showDynamicConfirmModal,
-  showAcadelManualCopyModal,  // ⭐ NUEVA EXPORTACIÓN
+  showAcadelManualCopyModal,
   showConfirmation,
   showEmptyChatModal,
   closeEmptyChatModal,

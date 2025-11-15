@@ -146,7 +146,6 @@ export const PDFStorageService = {
       await client.query('BEGIN');
       const batchSize = 10;
 
-      // Información crucial para debugging
       console.log(`Almacenando ${documents.length} documentos en la BD para chatId=${chatId}, userId=${userId}`);
       console.log(`Metadata de subida: ${JSON.stringify(metadata)}`);
 
@@ -436,7 +435,6 @@ export const PDFStorageService = {
 
       await fs.promises.writeFile(filePath, fileBuffer);
 
-      // Información de retorno
       return {
         success: true,
         originalName: originalFilename,
@@ -569,9 +567,8 @@ export const PDFStorageService = {
         const parts = file.split('_');
         const originalName = parts.slice(2).join('_');
 
-        // ⭐ SOLUCIÓN: Obtener pageCount desde la base de datos MEJORADO
         let pageCount = 0;
-        let actualTotalPages = 0; // 🎯 NUEVO: Diferencia entre páginas procesadas y total real
+        let actualTotalPages = 0;
 
         try {
           const documentsQuery = `
@@ -650,12 +647,12 @@ export const PDFStorageService = {
           lastModified: stats.mtime,
           pdfId: file,
 
-          pageCount: pageCount,                    // ✅ Páginas actualmente procesadas
-          totalPages: actualTotalPages,            // ✅ Total real de páginas
-          pagesProcessed: pageCount,               // ✅ Alias para claridad
-          pagesTotal: actualTotalPages,            // ✅ Alias para claridad
-          isFullyProcessed: pageCount >= actualTotalPages, // ✅ NUEVO: Estado de procesamiento
-          processingProgress: actualTotalPages > 0 ? Math.round((pageCount / actualTotalPages) * 100) : 100, // ✅ NUEVO: Porcentaje
+          pageCount: pageCount,
+          totalPages: actualTotalPages,
+          pagesProcessed: pageCount,
+          pagesTotal: actualTotalPages,
+          isFullyProcessed: pageCount >= actualTotalPages,
+          processingProgress: actualTotalPages > 0 ? Math.round((pageCount / actualTotalPages) * 100) : 100,
 
           debugInfo: {
             pagesInDB: pageCount,
@@ -664,7 +661,6 @@ export const PDFStorageService = {
             processingStatus: pageCount >= actualTotalPages ? 'completed' : 'in_progress'
           },
 
-          // Incluir URLs de vista previa y procesamiento en la respuesta
           endpoints: endpoints
         };
       };
@@ -885,7 +881,6 @@ export const PDFStorageService = {
         console.error('❌ Error con pdf-lib:', pdfLibError.message);
       }
 
-      // ÚLTIMO RECURSO: Estimación basada en tamaño del archivo
       const fileSizeKB = pdfBuffer.length / 1024;
       const estimatedPages = Math.max(1, Math.round(fileSizeKB / 100)); // ~100KB por página
       console.warn(`⚠️ Usando estimación por tamaño: ${estimatedPages} páginas`);
@@ -898,7 +893,6 @@ export const PDFStorageService = {
     }
   },
 
-  // ⭐ NUEVA función: Páginas ya procesadas
   async getReadyPageNumbers(chatId, userId) {
     const client = await pool.connect();
     try {

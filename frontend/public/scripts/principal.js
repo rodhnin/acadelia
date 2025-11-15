@@ -12,13 +12,12 @@
 
 // Configuración global del sistema de autenticación
 const AUTH_CONFIG = {
-    // Intervalos de verificación (milisegundos) - 🆕 AUMENTADOS PARA REDUCIR PRESIÓN
     SESSION: {
         INTERVAL: 420000,              // 7 minutos (aumentado de 5)
         MIN_TIME_BETWEEN_CHECKS: 90000, // 1.5 minutos entre verificaciones (aumentado)
         lastCheck: 0,                   // Timestamp de la última verificación
-        RETRY_DELAY: 1000,              // 🆕 Delay entre reintentos
-        MAX_RETRIES: 3                  // 🆕 Máximo de reintentos
+        RETRY_DELAY: 1000,
+        MAX_RETRIES: 3
     },
     
     // Longpolling
@@ -32,7 +31,7 @@ const AUTH_CONFIG = {
     TIMEOUTS: {
         LOGOUT_REDIRECT: 2000,      // Espera antes de redireccionar en logout
         RESET_VERIFICATION: 5000,   // Espera antes de reiniciar verificación
-        AUTH_VERIFICATION: 3000     // 🆕 Timeout para verificaciones de auth
+        AUTH_VERIFICATION: 3000
     },
     
     // Rutas de la API
@@ -63,7 +62,7 @@ const AUTH_CONFIG = {
 // Flag global para manejar el estado de cierre de sesión
 const SESSION_STATE = {
     isBeingTerminated: false,
-    renewalInProgress: false  // 🆕 Flag para renovaciones
+    renewalInProgress: false
 };
 
 // Estado global del sistema de longpolling
@@ -76,8 +75,8 @@ const LONGPOLL_STATE = {
 const AUTH_STATE = {
     verificationInProgress: false,
     verificationCompleted: false,
-    lastSuccessfulVerification: 0,  // 🆕 Timestamp de última verificación exitosa
-    consecutiveErrors: 0            // 🆕 Contador de errores consecutivos
+    lastSuccessfulVerification: 0,
+    consecutiveErrors: 0
 };
 
 // Control de estado para modales de intento de login
@@ -88,9 +87,6 @@ const LOGIN_ATTEMPT_STATE = {
     modalProcessingTimeout: null
 };
 
-/**
- * 🆕 Función de retry inteligente para operaciones de autenticación
- */
 async function retryOperation(operation, maxRetries = 3, delay = 1000, operationName = 'operation') {
     let lastError;
     
@@ -130,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userData) {
                 console.log('👤 Usuario autenticado:', userData.correo);
                 
-                // Solo configurar monitoreo básico
                 setupSessionMonitor();
                 setupLoginAttemptMonitor(userData.userId);
                 setupLogoutButton();
@@ -141,9 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-/**
- * 🆕 Verifica la autenticación del usuario con retry inteligente
- */
 async function verifyUserAuth() {
     if (AUTH_STATE.verificationInProgress) {
         console.log('📊 Verificación de autenticación ya en progreso, esperando...');
@@ -162,7 +154,6 @@ async function verifyUserAuth() {
     try {
         console.log('🔑 Iniciando verificación de autenticación...');
         
-        // 🆕 Usar retry inteligente para la verificación
         const authResult = await retryOperation(async () => {
             const response = await fetchWithCsrf(AUTH_CONFIG.API.AUTH, {
                 method: 'GET',
@@ -206,7 +197,6 @@ async function verifyUserAuth() {
 
         const authData = extractUserData(authResult);
         
-        // 🆕 Marcar si el token fue renovado
         if (authResult.tokenWasRenewed) {
             console.log('🔄 Token fue renovado automáticamente durante la verificación');
             SESSION_STATE.renewalInProgress = false; // Reset flag si estaba activo
@@ -230,19 +220,18 @@ async function verifyUserAuth() {
         window.lastAuthData = authData;
         AUTH_STATE.verificationCompleted = true;
         AUTH_STATE.verificationInProgress = false;
-        AUTH_STATE.lastSuccessfulVerification = Date.now(); // 🆕 Marcar timestamp
-        AUTH_STATE.consecutiveErrors = 0; // 🆕 Reset contador de errores
+        AUTH_STATE.lastSuccessfulVerification = Date.now();
+        AUTH_STATE.consecutiveErrors = 0;
         
         console.log('✅ Verificación de autenticación completada exitosamente');
         return authData;
         
     } catch (error) {
         AUTH_STATE.verificationInProgress = false;
-        AUTH_STATE.consecutiveErrors++; // 🆕 Incrementar contador de errores
+        AUTH_STATE.consecutiveErrors++;
         
         console.error('Error de autenticación:', error.message);
         
-        // 🆕 Solo redirigir si hay múltiples errores consecutivos o es un error crítico
         if (AUTH_STATE.consecutiveErrors >= 3 || error.message.includes('401')) {
             window.location.href = AUTH_CONFIG.ROUTES.LOGIN;
         }
@@ -265,9 +254,6 @@ function extractUserData(userData) {
     return { userId, correo, tokenWasRenewed: userData.tokenWasRenewed };
 }
 
-/**
- * 🆕 Verifica si el usuario tiene un perfil completo con retry
- */
 async function verifyUserProfile(userId) {
     if (window.profileVerifiedForUser === userId) {
         console.log('✅ Perfil ya verificado, omitiendo verificación redundante');
@@ -311,7 +297,6 @@ async function verifyUserProfile(userId) {
  * Wrapper para fetch con soporte CSRF automático y timeout
  */
 async function fetchWithCsrf(url, options = {}) {
-    // 🆕 Agregar timeout si no está presente
     if (options.timeout && !options.signal) {
         const controller = new AbortController();
         setTimeout(() => controller.abort(), options.timeout);
@@ -328,9 +313,6 @@ async function fetchWithCsrf(url, options = {}) {
     return fetch(url, options);
 }
 
-/**
- * 🆕 Verifica si el usuario ha aceptado los términos y condiciones con retry
- */
 async function verifyTermsAcceptance() {
     console.log('🔍 Verificando aceptación de términos y condiciones');
     
@@ -387,7 +369,7 @@ function setupSessionMonitor() {
         if (document.visibilityState === 'visible') {
             const now = Date.now();
             if (now - AUTH_CONFIG.SESSION.lastCheck >= AUTH_CONFIG.SESSION.MIN_TIME_BETWEEN_CHECKS) {
-                setTimeout(checkSessionState, 500); // 🆕 Pequeño delay al volver a la pestaña
+                setTimeout(checkSessionState, 500);
             }
         }
     });
@@ -395,9 +377,6 @@ function setupSessionMonitor() {
     console.log('✅ Sistema de monitoreo de sesión configurado (cada 7 minutos)');
 }
 
-/**
- * 🆕 Verifica el estado actual de la sesión con retry inteligente
- */
 async function checkSessionState() {
     const now = Date.now();
     if (now - AUTH_CONFIG.SESSION.lastCheck < AUTH_CONFIG.SESSION.MIN_TIME_BETWEEN_CHECKS) return;
@@ -407,7 +386,6 @@ async function checkSessionState() {
         return;
     }
     
-    // 🆕 Si hay una renovación en progreso, esperar
     if (SESSION_STATE.renewalInProgress) {
         console.log('🔄 Renovación de token en progreso, saltando verificación');
         return;
@@ -446,7 +424,6 @@ async function checkSessionState() {
         
         console.log('📊 Estado de sesión:', sessionResult.status);
         
-        // 🆕 Marcar si el token fue renovado
         if (sessionResult.tokenRenewed) {
             console.log('🔄 Token fue renovado automáticamente durante la verificación de sesión');
             SESSION_STATE.renewalInProgress = false;
@@ -455,7 +432,7 @@ async function checkSessionState() {
         switch (sessionResult.status) {
             case 'active':
                 console.log('✅ Sesión activa confirmada');
-                AUTH_STATE.consecutiveErrors = 0; // 🆕 Reset contador de errores
+                AUTH_STATE.consecutiveErrors = 0;
                 return;
                 
             case 'revoked':
@@ -489,7 +466,6 @@ async function checkSessionState() {
         console.log('⚠️ Error en verificación de sesión:', error.message);
         AUTH_STATE.consecutiveErrors++;
         
-        // 🆕 Solo actuar si hay múltiples errores consecutivos
         if (AUTH_STATE.consecutiveErrors >= 4) {
             console.error('💥 Múltiples errores consecutivos en verificación de sesión');
             showSessionEndedModal('Ocurrió un error en la verificación de sesión. Por favor, inicia sesión nuevamente.');
@@ -500,7 +476,6 @@ async function checkSessionState() {
     }
 }
 
-// 🆕 Función para obtener información amigable del User-Agent
 function getDisplayUserAgentInfo(attemptData) {
     if (attemptData.userAgentDisplay) {
         return {
@@ -717,7 +692,7 @@ function setupLoginAttemptMonitor(userId) {
         if (document.visibilityState === 'visible') {
             LONGPOLL_STATE.shouldContinuePolling = true;
             if (!LONGPOLL_STATE.isPolling) {
-                setTimeout(checkLoginAttemptsRealTime, 1000); // 🆕 Delay al volver a la pestaña
+                setTimeout(checkLoginAttemptsRealTime, 1000);
             }
         } else {
             LONGPOLL_STATE.shouldContinuePolling = false;
@@ -1342,9 +1317,6 @@ function setupLogoutButton() {
     });
 }
 
-/**
- * 🆕 Realiza el proceso de logout con retry mejorado
- */
 async function logoutUser(message = null) {
     if (window.logoutInProgress) {
         console.log('🔒 Logout ya en progreso, ignorando llamada duplicada');

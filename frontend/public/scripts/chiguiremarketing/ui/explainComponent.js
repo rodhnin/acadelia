@@ -1,16 +1,13 @@
 // explainComponent.js - VERSIÓN LIMPIA SIN CORRECCIÓN DE NEGRITA
 import { getDecisionVisualization, getExplanation } from '../api/marketingAPI.js';
 
-// ✨ IMPORTAR SOLO FUNCIONES CENTRALIZADAS
 import { renderMarkdownComplete, processSpecialElements } from '../utils/markdownParser.js';
 
-// ✨ FUNCIÓN DE LIMPIEZA BÁSICA - SIN CORRECCIÓN DE NEGRITA
 function preCleanMarkdownContent(content) {
   if (!content || typeof content !== 'string') {
     return content || '';
   }
   
-  // Solo limpieza básica de saltos de línea y espacios
   let cleaned = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
@@ -135,7 +132,6 @@ function createExplanationContent(explanation) {
   content.className = 'explanation-content';
   
   if (explanation && explanation.explanation) {
-    // Solo limpieza básica, la corrección de negrita se hace en markdownParser.js
     const cleanedExplanation = preCleanMarkdownContent(explanation.explanation);
     
     const explanationHtml = renderMarkdownComplete(cleanedExplanation);

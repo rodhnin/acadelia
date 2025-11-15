@@ -4,18 +4,8 @@ import { tokenCounter } from "../../services/shared/tokenCounterService.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 import logger from '../../utils/logger.js';
 
-/**
- * 🚀 ULTRA-CENTRALIZADO TOKEN MANAGER - VERSIÓN COMPLETA CORREGIDA
- * OBJETIVO: 100% de lógica de tokens centralizada - CERO redundancias
- * ELIMINA: Necesidad de importar preValidationFailed, AccessValidationService en controladores
- * GARANTIZA: Un solo punto de verdad para toda la lógica de tokens
- */
 export const TokenManager = {
 
-  /**
-   * 🎯 MÉTODO PRINCIPAL: Validación completa de tokens (PRE + POST + CONSTRUCCIÓN)
-   * REEMPLAZA: Toda la lógica manual en controladores
-   */
   async handleCompleteTokenValidation(req, res, options = {}) {
     const {
       chatId,
@@ -31,7 +21,6 @@ export const TokenManager = {
     try {
       logger.debug(`Validación completa de tokens iniciada`, { toolSlug, userId, chatId });
 
-      // ⚡ BYPASS ADMIN INMEDIATO
       if (accessInfo?.isAdmin) {
         logger.debug(`Admin bypass - Sin validación de tokens`, { toolSlug, userId });
         return {
@@ -107,10 +96,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * 🎯 MÉTODO ULTRA-CENTRALIZADO: Manejo completo de controller de herramientas
-   * REEMPLAZA: 90% del código duplicado en controladores de herramientas (Agent, PDF)
-   */
   async handleCompleteToolController(req, res, options = {}) {
     const {
       validationErrors,
@@ -154,7 +139,6 @@ export const TokenManager = {
     };
 
     try {
-      // ===== VALIDACIÓN DE ENTRADA =====
       if (validationErrors.length > 0) {
         logSecurityEvent(`${toolSlug.toUpperCase()}_VALIDATION_ERROR`, `Error de validación en ${toolSlug}`, {
           userId: req.body.userId || req.user?.id_user,
@@ -173,7 +157,6 @@ export const TokenManager = {
 
       this.logSuccessfulAccess(req, accessInfo, tokenInfo, tokenWarning, toolSlug, toolId, getToolNameById);
 
-      // ===== LÓGICA PRINCIPAL DEL CONTROLADOR =====
       const skipSaveMode = skipSave || req.body.skipSave === true || req.headers['x-skip-save'] === 'true';
 
       logger.debug(`Ejecutando servicio`, { toolSlug, skipSave: skipSaveMode, userId, chatId });
@@ -200,7 +183,6 @@ export const TokenManager = {
         await this.handleCacheInvalidation(result, chatId, query, accessInfo, toolSlug);
       }
 
-      // ===== CONSTRUCCIÓN DE RESPUESTA CENTRALIZADA =====
       const response = this.buildOptimizedResponse(
         result, req, accessInfo, tokenInfo, tokenWarning, tokenInfo.preValidationWarning, postResponseWarning,
         toolSlug, toolId, toolInfo, getToolNameById, isMultimodal ? `${toolSlug}_multimodal` : toolSlug
@@ -241,10 +223,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * 🎯 MÉTODO ULTRA-CENTRALIZADO: Manejo completo de controller AVA
-   * REEMPLAZA: 90% del código duplicado en controladores AVA
-   */
   async handleCompleteAvaController(req, res, options = {}) {
     const {
       validationErrors,
@@ -259,7 +237,6 @@ export const TokenManager = {
     } = options;
 
     try {
-      // ===== VALIDACIÓN DE ENTRADA =====
       if (validationErrors.length > 0) {
         logSecurityEvent(`${avaType.toUpperCase()}_VALIDATION_ERROR`, `Error de validación en ${avaType}`, {
           userId: req.body.userId || req.user?.id_user,
@@ -300,7 +277,6 @@ export const TokenManager = {
 
       logger.info(`Validación completa exitosa - Ejecutando servicio`, { avaType, userId, chatId });
 
-      // ===== EJECUTAR SERVICIO =====
       const result = await serviceFunction(req.body);
 
       const postResponseWarning = await this.handlePostValidation(
@@ -313,7 +289,6 @@ export const TokenManager = {
         await this.handleCacheInvalidation(result, chatId, query, avaAccessInfo, avaType);
       }
 
-      // ===== CONSTRUCCIÓN DE RESPUESTA CENTRALIZADA =====
       const responseMethod = isMultimodal ? 'buildAvaMultimodalResponse' : 'buildAvaResponse';
       const response = this[responseMethod](
         result, req, avaAccessInfo, tokenValidation.tokenInfo, tokenValidation.tokenWarning,
@@ -346,9 +321,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * 🚀 NUEVO: Log de acceso exitoso centralizado
-   */
   logSuccessfulAccess(req, accessInfo, tokenInfo, tokenWarning, toolSlug, toolId, getToolNameById) {
     logSecurityEvent(`${toolSlug.toUpperCase()}_ACCESS_GRANTED`, `Acceso concedido a herramienta ${toolSlug}`, {
       userId: req.body.userId || req.user?.id_user,
@@ -392,7 +364,6 @@ export const TokenManager = {
 
       toolInfo: this.buildToolInfo(toolSlug, toolId, toolInfo, accessInfo, getToolNameById, req.body.herramientaId),
 
-      // ⭐ LÍMITES ESPECÍFICOS DINÁMICOS DEL BACKEND ⭐
       toolLimits: this.buildDynamicToolLimits(toolSlug, accessInfo),
 
       accessInfo: {
@@ -630,9 +601,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * 🚀 NUEVO: Construir información de herramienta centralizada
-   */
   buildToolInfo(toolSlug, toolId, toolInfo, accessInfo, getToolNameById, herramientaId, tokenInfo = null, result = null) {
     const finalToolId = toolId || herramientaId;
     const toolName = toolInfo?.nombre || (getToolNameById ? getToolNameById(finalToolId) : toolSlug);
@@ -664,13 +632,7 @@ export const TokenManager = {
     };
   },
 
-  /**
-   * 🔒 MÉTODOS INTERNOS ENCAPSULADOS
-   */
 
-  /**
-   * ⚡ INTERNO: Pre-validación encapsulada completa
-   */
   async _handlePreValidationInternal(chatId, userId, query, content, responseType, toolSlug) {
     if (!chatId || !userId) {
       return { canProceed: true, warning: null };
@@ -720,9 +682,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * ⚡ INTERNO: Validación actual encapsulada
-   */
   async _handleCurrentValidationInternal(chatId, userId, toolSlug) {
     try {
       const validation = await AccessValidationService.validateTokenLimits(chatId, userId);
@@ -750,9 +709,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * ⚡ INTERNO: Construir respuesta de error de pre-validación
-   */
   _buildPreValidationErrorResponse(preValidation) {
     return {
       success: false,
@@ -766,9 +722,6 @@ export const TokenManager = {
     };
   },
 
-  /**
-   * ⚡ INTERNO: Construir respuesta de error de límite de tokens
-   */
   _buildTokenLimitErrorResponse(validation, toolSlug) {
     return {
       success: false,
@@ -782,9 +735,6 @@ export const TokenManager = {
     };
   },
 
-  /**
-   * ⚡ INTERNO: Token info para admin
-   */
   _buildAdminTokenInfo() {
     return {
       current: 0,
@@ -797,9 +747,6 @@ export const TokenManager = {
     };
   },
 
-  /**
-   * ⚡ INTERNO: Token info fallback
-   */
   _buildFallbackTokenInfo(errorMessage) {
     return {
       current: 0,
@@ -814,9 +761,6 @@ export const TokenManager = {
     };
   },
 
-  /**
-   * ⚡ INTERNO: Extraer texto de content multimodal
-   */
   _extractTextFromContent(content) {
     if (!content || !Array.isArray(content)) return '';
 
@@ -826,13 +770,7 @@ export const TokenManager = {
       .join('\n\n');
   },
 
-  /**
-   * ✅ MÉTODOS EXISTENTES OPTIMIZADOS (mantener compatibilidad)
-   */
 
-  /**
-   * ⚡ HELPER: Construir warnings array (elimina 95% duplicación)
-   */
   buildWarnings(tokenWarning, preValidationWarning, postResponseWarning, toolType = 'general') {
     const warnings = [];
 
@@ -877,9 +815,6 @@ export const TokenManager = {
     return warnings;
   },
 
-  /**
-   * ⚡ HELPER: Post-validación condicional optimizada (elimina 100% duplicación)
-   */
   async handlePostValidation(result, chatId, userId, accessInfo, skipSave = false, toolSlug = 'general') {
     if (!result?.success || !result?.answer || !chatId || !userId || accessInfo?.isAdmin || skipSave) {
       if (accessInfo?.isAdmin) {
@@ -919,9 +854,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * ⚡ HELPER: Invalidar cache optimizado (elimina 100% duplicación)
-   */
   async handleCacheInvalidation(result, chatId, query, accessInfo, toolSlug = 'general') {
     if (!result?.success || accessInfo?.isAdmin) {
       if (accessInfo?.isAdmin) {
@@ -938,9 +870,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * ⚡ HELPER: Invalidar cache multimodal optimizado
-   */
   async handleMultimodalCacheInvalidation(result, chatId, content, accessInfo, toolSlug = 'multimodal') {
     if (!result?.success || accessInfo?.isAdmin) {
       if (accessInfo?.isAdmin) {
@@ -958,9 +887,6 @@ export const TokenManager = {
     }
   },
 
-  /**
-   * ⚡ HELPER: Manejo de errores de tokens centralizado
-   */
   handleTokenError(error, req, toolSlug) {
     if (error.message && error.message.includes('excedería el límite de tokens')) {
       logSecurityEvent(`${toolSlug.toUpperCase()}_TOKEN_LIMIT_ERROR`, `Error de límite de tokens en ${toolSlug}`, {
@@ -991,9 +917,6 @@ export const TokenManager = {
     return null;
   },
 
-  /**
-   * ⚡ HELPER: Limpiar campos undefined de respuesta
-   */
   cleanResponse(response) {
     Object.keys(response).forEach(key => {
       if (response[key] === undefined) {
@@ -1003,9 +926,6 @@ export const TokenManager = {
     return response;
   },
 
-  /**
-   * 🆕 HELPER: Construir respuesta AVA centralizada (para controllers de AVAs)
-   */
   buildAvaResponse(result, req, avaAccessInfo, tokenInfo, tokenWarning, preValidationWarning, postResponseWarning, avaType, defaultAvaName) {
     const response = {
       ...result,
@@ -1032,9 +952,6 @@ export const TokenManager = {
     return response;
   },
 
-  /**
-   * 🆕 HELPER: Construir respuesta AVA multimodal centralizada
-   */
   buildAvaMultimodalResponse(result, req, avaAccessInfo, tokenInfo, tokenWarning, preValidationWarning, postResponseWarning, avaType, defaultAvaName) {
     const enhancedResult = {
       ...result,

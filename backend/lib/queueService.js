@@ -1,6 +1,5 @@
 import { Queue, Worker } from 'bullmq';
 
-// ⭐ CONFIGURACIÓN PARA FLY.IO + UPSTASH (igual que redis.js)
 function getRedisConnection() {
   if (process.env.REDIS_URL) {
     const isUpstash = process.env.REDIS_URL.includes('upstash.io');

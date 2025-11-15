@@ -23,7 +23,6 @@ export async function handleSubscription(eventData) {
   const newStatus = statusMap[event_type] || data.status;
   
   try {
-    // CAMBIO: En lugar de borrar, actualizamos la suscripción cancelada
     if (event_type === 'subscription.canceled') {
         await pool.query(
             `UPDATE suscripciones 

@@ -288,9 +288,7 @@ export const getPerfilDetailsByUserId = async (req, res) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS DEL CONTROLLER
-// ========================================
 
 /**
  * Validar entrada HTTP para creación de perfil

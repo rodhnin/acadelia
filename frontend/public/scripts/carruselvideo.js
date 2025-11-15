@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function moveCarousel(index) {
-        const movePixels = getMovePixels(); // Obtener los píxeles de movimiento
+        const movePixels = getMovePixels();
         track.style.transform = `translateX(-${index * movePixels}px)`;
     }
 

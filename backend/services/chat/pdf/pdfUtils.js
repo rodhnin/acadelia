@@ -221,7 +221,6 @@ export const PDFUtils = {
       const now = Date.now();
       
       for (const file of files) {
-        // Solo procesar archivos que parezcan temporales de PDF
         if (!file.startsWith('temp_') || !file.endsWith('.pdf')) {
           continue;
         }

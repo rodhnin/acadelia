@@ -31,7 +31,6 @@ export class ApiClient {
     cleaned = cleaned.replace(/[^}\]]*$/g, '');
     
     // Escapar comillas problemáticas básicas
-    // Solo escapar comillas que no estén ya escapadas
     cleaned = cleaned.replace(/([^\\])"/g, '$1\\"');
     if (cleaned.startsWith('"') && !cleaned.startsWith('\\"')) {
       cleaned = '\\"' + cleaned.substring(1);
@@ -78,7 +77,6 @@ export class ApiClient {
         console.log('❌ Error incluso con sanitización:', sanitizeError.message);
       }
       
-      // Último recurso
       console.error('💥 No se pudo parsear el JSON de ninguna manera');
       return {
         error: true,
@@ -97,7 +95,7 @@ export class ApiClient {
     // Opciones por defecto
     const defaultOptions = {
       headers: this.defaultHeaders,
-      credentials: 'include' // Incluir cookies para CSRF
+      credentials: 'include'
     };
     
     const requestOptions = {

@@ -154,7 +154,7 @@ function showQuestion(container, exam, examState) {
   questionElement.appendChild(optionsContainer);
   
   for (let optionIndex = 0; optionIndex < question.options.length; optionIndex++) {
-    const letter = String.fromCharCode(97 + optionIndex); // 🔧 SIN parseInt
+    const letter = String.fromCharCode(97 + optionIndex);
     let optionText = question.options[optionIndex];
     
     optionText = optionText.replace(new RegExp(`^${letter}\\)\\s*`, 'i'), '');

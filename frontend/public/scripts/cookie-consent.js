@@ -5,13 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Variables para evitar solicitudes múltiples
 let isSavingConsent = false;
 let lastSaveTime = 0;
 let currentUserId = null;
 let userChanged = false;
 
-// Variables para controlar botones de cookies
 let isAcceptingAllCookies = false;
 let isSavingCookiePreferences = false;
 

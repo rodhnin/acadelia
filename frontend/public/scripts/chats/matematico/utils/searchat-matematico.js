@@ -64,7 +64,6 @@ async function setupSearchModal() {
       if (appConfig && appConfig.avaId) {
         state.avaId = appConfig.avaId;
       } else {
-        // Último recurso: valor por defecto
         state.avaId = 4; // Valor por defecto (Patología)
         console.warn('No se pudo obtener avaId, usando valor por defecto 4');
       }
@@ -212,7 +211,6 @@ function openSearchModal() {
   
   searchModal.classList.add('visible');
 
-  // ⭐ NUEVO: Notificación de éxito al abrir
 acadelInfo("🔍 Buscador activado", "Acadel está listo para encontrar tus conversaciones");
   
   // Enfocar el input y cargar los chats
@@ -259,7 +257,7 @@ function closeSearchModal() {
     document.body.style.position = '';
     document.body.style.width = '';
     document.body.style.top = '';
-    window.scrollTo(0, scrollPosition); // Solo hacer scroll después de restaurar la posición del body
+    window.scrollTo(0, scrollPosition);
   }
   
   document.body.classList.remove('modal-open');
@@ -337,7 +335,6 @@ async function loadChats() {
     
     displayChats(state.allChats);
 
-    // ⭐ NUEVO: Notificación de éxito
     if (state.allChats.length > 0) {
       acadelExito("📚 Historial cargado", `Acadel encontró ${state.allChats.length} conversaciones en tu academia`);
     }
@@ -491,7 +488,6 @@ function setupSearchEvent() {
 function navigateToChat(chatId) {
   const chatPath = URL_CONFIG.chatPath(chatId);
   
-  // ⭐ NUEVO: Notificación de éxito antes de navegar
   acadelExito("🎯 Chat encontrado", "Acadel te lleva a tu conversación");
   
   closeSearchModal();

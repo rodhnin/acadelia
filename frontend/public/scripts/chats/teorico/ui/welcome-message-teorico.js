@@ -3,7 +3,6 @@ import { validateUUID } from '../../shared/validators.js';
 import { createElement, sanitizeText } from '../../shared/dom-helpers.js';
 import { getCurrentVariant, getWelcomeConfig } from '../core/config-teorico.js';
 
-// 🦫 IMPORTAR FUNCIONES DEL SISTEMA UNIFICADO DE ARCHIVOS
 import { 
   initWelcomeFileAttachments,
   getWelcomeAttachedFiles,
@@ -13,7 +12,6 @@ import {
   cleanupWelcomeAttachments 
 } from '../utils/file-attachments-teorico.js';
 
-// 🦫 IMPORTAR FUNCIONES DE VALIDACIÓN DESDE SHARED
 import {
   validateFile,
   validateContentLimits,
@@ -260,7 +258,6 @@ export async function showWelcomeMessage() {
   chatMessages.appendChild(welcomeInputContainer);
   chatMessages.appendChild(suggestionsDiv);
 
-  // 🦫 INICIALIZAR SISTEMA UNIFICADO DE ARCHIVOS PARA WELCOME
   console.log('🦫 Inicializando sistema de archivos unificado para Welcome...');
   
   if (window.welcomeFiles) {
@@ -305,7 +302,6 @@ export async function showWelcomeMessage() {
       });
     }
 
-    // Solo se usa el sistema unificado ahora
 
     // 2. Configurar textarea autoexpandible
     const welcomeTextarea = document.getElementById('welcome-message-input');
@@ -324,7 +320,6 @@ export async function showWelcomeMessage() {
       welcomeTextarea.focus();
     }
 
-    // 3. 🦫 CONFIGURAR BOTÓN DE ENVÍO CON SISTEMA UNIFICADO
     const welcomeSendBtn = document.getElementById('welcome-send-btn');
     if (welcomeSendBtn && welcomeTextarea) {
 const transferAndSendMessage = async () => {
@@ -346,7 +341,6 @@ const transferAndSendMessage = async () => {
   // Si excede el límite, detener ejecución
   if (exceedsCharLimit) return;
 
-  // 🦫 USAR SISTEMA UNIFICADO PARA VALIDAR ARCHIVOS
   const hasFiles = hasWelcomeAttachedFiles();
   
   if (!messageText && !hasFiles) return;
@@ -356,7 +350,6 @@ const transferAndSendMessage = async () => {
   if (mainTextarea) {
     mainTextarea.value = messageText;
 
-    // 2. 🦫 TRANSFERIR ARCHIVOS USANDO SISTEMA UNIFICADO
     if (hasFiles) {
       try {
         console.log('🚀 Transfiriendo archivos usando sistema unificado...');
@@ -389,10 +382,8 @@ const transferAndSendMessage = async () => {
       if (welcomeInputContainer && welcomeInputContainer.parentNode) welcomeInputContainer.remove();
       if (suggestionsDiv && suggestionsDiv.parentNode) suggestionsDiv.remove();
 
-      // 🦫 LIMPIAR SISTEMA UNIFICADO DE WELCOME
       cleanupWelcomeAttachments();
 
-      // ⭐ NOTIFICACIÓN ACADEL:
         acadelExito("🚀 ¡Mensaje enviado!", "Acadel transfirió tu consulta al chat principal");
 
       // 5. ENVIAR MENSAJE CON MÚLTIPLES FALLBACKS

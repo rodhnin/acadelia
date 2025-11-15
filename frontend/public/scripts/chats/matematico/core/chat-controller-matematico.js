@@ -57,7 +57,6 @@ import {
   showFreeUserAvaAccessNotice  // ← SOLO ESTA IMPORTACIÓN NUEVA
 } from '../../shared/chat-notices.js';
 
-// ===== SISTEMA DE GESTIÓN CENTRALIZADA =====
 
 /**
  * Gestor centralizado de DOM para optimizar querySelector calls
@@ -221,7 +220,6 @@ class ChatUtils {
     if (window.temporaryWelcomeFiles) {
       window.temporaryWelcomeFiles = null;
     }
-    // ⭐ NUEVO: Limpiar ID temporal si hubo error y no se completó el flujo normal
     if (window.tempChatIdForFiles) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error en creación`);
@@ -396,7 +394,6 @@ class ChatUtils {
 const domManager = new DOMManager();
 const eventManager = new EventManager();
 
-// ===== FUNCIONES PRINCIPALES OPTIMIZADAS =====
 
 /**
  * Inicializa el controlador de chat con gestión optimizada
@@ -519,10 +516,6 @@ function setupChatEventListeners() {
   eventManager.add(window, 'sendMessageRequest', handleSendMessage, false, 'send-message-request');
 }
 
-/**
- * ✅ VERIFICACIÓN SIMPLIFICADA PARA AVA PREMIUM
- * Solo verifica tokens generales de conversación (50k límite)
- */
 async function checkTokensBeforeSend(chatId) {
   if (!chatId) return { canProceed: true, warningInfo: null };
 
@@ -656,10 +649,8 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
     }
   }
 
-  // ⚡ AÑADIR AL DOM INMEDIATAMENTE
   chatMessages.appendChild(messageDiv);
 
-  // ⚡ RENDERIZAR MATEMÁTICAS INMEDIATAMENTE (sin setTimeout)
   if (role === 'user' && typeof content === 'string' &&
     (content.includes('$') || content.includes('\\(') || content.includes('\\)'))) {
     const contentElem = messageDiv.querySelector('.message-content');
@@ -675,7 +666,6 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
   return messageDiv;
 }
 
-// ===== FUNCIÓN constructSimplifiedMultimodalContent NUEVA =====
 
 /**
  * Construye el contenido HTML para mensajes multimodales - VERSIÓN SIMPLIFICADA
@@ -698,10 +688,8 @@ function constructSimplifiedMultimodalContent(text, files) {
   }
 
   if (files.length > 0) {
-    // ⭐ CONTENEDOR UNIFICADO PARA TODOS LOS ARCHIVOS ⭐
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR ARCHIVOS PRESERVANDO ORDEN ORIGINAL ⭐
     files.forEach((file, index) => {
       console.log(`📎 Procesando archivo ${index + 1}/${files.length}: ${file.file.name}`);
 
@@ -721,7 +709,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           `;
         }
       } else if (file.type === 'document' || file.type === 'code') {
-        // ⭐ RENDERIZAR DOCUMENTO CON ORDEN PRESERVADO ⭐
         const extension = file.file.name.split('.').pop().toLowerCase();
         let iconClass = 'bxs-file-txt';
         let attachmentType = 'document';
@@ -743,7 +730,6 @@ function constructSimplifiedMultimodalContent(text, files) {
         const fileName = file.file.name.length > 12 ? file.file.name.substring(0, 9) + '...' : file.file.name;
         const fileSize = ((file.file.size || 0) / 1024).toFixed(1);
 
-        // ⭐ CRÍTICO: Usar nombre completo en data-file-name para mapeo correcto ⭐
         html += `
           <div class="document-preview temp-preview" 
                data-file-name="${sanitize(file.file.name)}"
@@ -768,11 +754,6 @@ function constructSimplifiedMultimodalContent(text, files) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Procesa la respuesta del servidor y actualiza documentos temporales ⭐
- * @param {Object} data - Respuesta del servidor
- * @param {HTMLElement} messageElement - Elemento del mensaje del usuario
- */
 function processServerResponseDocuments(data, messageElement) {
   if (data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
     console.log('📄 Actualizando documentos temporales con fileIds del servidor...');
@@ -781,7 +762,6 @@ function processServerResponseDocuments(data, messageElement) {
 
     console.log(`🔍 Debug: ${tempPreviews.length} previews temporales, ${data.documents.length} documentos del servidor`);
 
-    // ⭐ NUEVO: Crear mapas para mejor búsqueda ⭐
     const serverDocsMap = new Map();
     data.documents.forEach(doc => {
       if (doc.originalName && doc.fileId) {
@@ -799,7 +779,6 @@ function processServerResponseDocuments(data, messageElement) {
       }
     });
 
-    // ⭐ MAPEO CORREGIDO: Por nombre de archivo ⭐
     let successCount = 0;
     let failCount = 0;
 
@@ -826,7 +805,6 @@ function processServerResponseDocuments(data, messageElement) {
       }
     }
 
-    // ⭐ FALLBACK: Si hay previews que no se mapearon, intentar por posición como último recurso ⭐
     const unmappedPreviews = Array.from(tempPreviews).filter(preview =>
       preview.classList.contains('temp-preview')
     );
@@ -860,12 +838,7 @@ function processServerResponseDocuments(data, messageElement) {
   }
 }
 
-/**
- * 🦫 SISTEMA DE MENSAJES DINÁMICOS PARA ACADEL PENSANDO
- * Mensajes variados para hacer la experiencia más divertida
- */
 
-// 🧠 ARRAY DE MENSAJES VARIADOS PARA "ACADEL ESTÁ PENSANDO"
 const ACADEL_THINKING_MESSAGES = [
   // Mensajes básicos de pensamiento
   {
@@ -1010,10 +983,6 @@ const ACADEL_PATIENCE_MESSAGES = [
   }
 ];
 
-/**
- * 🎲 FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE ACADEL PENSANDO
- * @returns {Object} Objeto con title y message aleatorios
- */
 function getRandomThinkingMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_THINKING_MESSAGES.length);
   const selectedMessage = ACADEL_THINKING_MESSAGES[randomIndex];
@@ -1023,10 +992,6 @@ function getRandomThinkingMessage() {
   return selectedMessage;
 }
 
-/**
- * ⏳ FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE PACIENCIA/OPERACIÓN LENTA
- * @returns {Object} Objeto con title y message aleatorios para operaciones lentas
- */
 function getRandomPatienceMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_PATIENCE_MESSAGES.length);
   const selectedMessage = ACADEL_PATIENCE_MESSAGES[randomIndex];
@@ -1036,16 +1001,6 @@ function getRandomPatienceMessage() {
   return selectedMessage;
 }
 
-/**
- * ✅ FUNCIÓN COMPLETAMENTE CORREGIDA: handleSendMessage
- * REEMPLAZAR la función handleSendMessage existente con esta versión
- * 
- * CORRIGE:
- * 1. Manejo completo cuando se excede límite en pre-validación
- * 2. Limpieza de estado y notificaciones
- * 3. Mostrar avisos apropiados al usuario
- * 4. Restauración completa de UI
- */
 export async function handleSendMessage() {
   if (window._isHandlingSend) {
     console.log('🚫 handleSendMessage ya en ejecución');
@@ -1054,7 +1009,6 @@ export async function handleSendMessage() {
 
   window._isHandlingSend = true;
 
-  // ⚡ VERIFICACIONES MÍNIMAS Y RÁPIDAS
   const textarea = domManager.textarea;
   const chatMessages = domManager.chatMessages;
 
@@ -1066,7 +1020,6 @@ export async function handleSendMessage() {
   const hasAttachments = temporaryFiles.length > 0 ||
     (typeof hasAttachedFiles === 'function' ? hasAttachedFiles() : false);
 
-  // ⚡ VALIDACIÓN MÍNIMA - Si no hay contenido, salir inmediatamente
   if (getState('isProcessing') || (!originalMessage && !hasAttachments)) {
     window._isHandlingSend = false;
     return;
@@ -1075,7 +1028,6 @@ export async function handleSendMessage() {
   setProcessingState(true);
   toggleUIState(true);
 
-  // 🦫 VARIABLES PARA TRACKING DE NOTIFICACIONES
   let thinkingNotificationId = null;
   let slowOperationNotificationId = null;
   let slowOperationTimeout = null;
@@ -1105,14 +1057,12 @@ export async function handleSendMessage() {
   };
 
   try {
-    // 🦫 NOTIFICACIÓN INMEDIATA DE PROCESAMIENTO
     const randomThinking = getRandomThinkingMessage();
     thinkingNotificationId = acadelLoading(
       randomThinking.title,
       randomThinking.message
     );
 
-    // ⚡ DIFERIR VALIDACIONES PESADAS
     await new Promise(resolve => requestAnimationFrame(resolve));
 
     const isValidLimit = await ChatUtils.validateCharacterLimit(originalMessage);
@@ -1133,12 +1083,10 @@ export async function handleSendMessage() {
       attachedFiles = getAttachedFiles();
     }
 
-    // ⚡ CREAR UI ELEMENTOS DE FORMA DIFERIDA
     if (originalMessage || hasAttachments) {
       messageElement = addMessageWithAttachmentsSimplified('user', originalMessage, attachedFiles);
     }
 
-    // ⚡ LIMPIAR PREVIEW CONTAINER INMEDIATAMENTE (ANTES DEL ENVÍO)
     if (hasAttachments) {
       console.log('📎 Limpiando preview container inmediatamente...');
       ChatUtils.cleanupFileAttachments();
@@ -1160,7 +1108,6 @@ export async function handleSendMessage() {
     loadingMessage = createLoadingMessage();
     chatMessages.appendChild(loadingMessage);
 
-    // ⚡ DIFERIR OPERACIONES DE SCROLL (no críticas)
     setTimeout(() => {
       if (messageElement) {
         scrollManager.scrollToElement(messageElement, {
@@ -1177,7 +1124,6 @@ export async function handleSendMessage() {
       }
     }, 0);
 
-    // ⚡ DIFERIR LIMPIEZA DE WELCOME (no crítica)
     if (isInWelcomeScreen) {
       setTimeout(() => {
         ChatUtils.cleanupWelcomeElements();
@@ -1185,7 +1131,6 @@ export async function handleSendMessage() {
       }, 100);
     }
 
-    // ⚡ DIFERIR NOTIFICACIONES DE ARCHIVOS (no críticas)
     if (hasAttachments && attachedFiles.length > 0) {
       setTimeout(() => {
         if (attachedFiles.length === 1) {
@@ -1244,7 +1189,6 @@ export async function handleSendMessage() {
 
     const abortController = ChatUtils.setupAbortController();
 
-    // 🦫 AVISO PARA OPERACIONES LENTAS (GUARDANDO REFERENCIA)
     slowOperationTimeout = setTimeout(() => {
       if (getState('isProcessing')) {
         if (thinkingNotificationId) {
@@ -1365,12 +1309,6 @@ async function handleSendMessageError(error, isNewChat, newChatId, currentChatId
   }
 }
 
-/**
- * ✅ renderSuccessfulResponse CORREGIDA - SOLO BACKEND REAL
- * REEMPLAZAR TODA la función renderSuccessfulResponse en chat-controller.js
- * 
- * SIN TRUNCAMIENTO - Solo flags que SÍ existen en TokenManager actual
- */
 async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChatId, tokenCheck = null) {
   await new Promise(resolve => requestAnimationFrame(resolve));
 
@@ -1452,7 +1390,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
         if (data.tokenInfo && typeof window.AcadelChatNotices?.updateDynamicLimits === 'function') {
           window.AcadelChatNotices.updateDynamicLimits(data.tokenInfo);
         }
-        // 🆕 FALLBACK: Usar tokenCheck si el backend no devolvió información completa
         if (!data.tokenInfo && tokenCheck && tokenCheck.warningInfo) {
           console.log('📊 [FRONTEND] Usando tokenCheck como fallback:', tokenCheck.warningInfo);
 
@@ -1598,7 +1535,6 @@ async function handleNewChatSuccess(newChatId) {
 
   history.pushState({}, '', URL_CONFIG.chatPath(newChatId));
 
-  // ⭐ NUEVO: Limpiar ID temporal después del éxito
   setTimeout(() => {
     if (window.tempChatIdForFiles === newChatId) {
       window.tempChatIdForFiles = null;
@@ -1637,16 +1573,6 @@ function updateExistingChatPosition() {
   }
 }
 
-/**
- * ✅ FUNCIÓN MEJORADA: handleSendMessageCatch
- * REEMPLAZAR la función handleSendMessageCatch existente con esta versión
- * 
- * MEJORAS:
- * 1. Detección más robusta de errores de tokens
- * 2. Manejo específico para errores HTTP 429
- * 3. Mejor extracción de información de límites del backend
- * 4. Preservación de mensajes del usuario en errores de tokens
- */
 async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatId, currentChatId, originalMessage) {
   console.group('🚨 HANDLE SEND MESSAGE CATCH');
   console.log('Error details:', {
@@ -1666,7 +1592,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     window._chatBeingCreated = null;
   }
 
-  // 🦫 CASO 1: ERROR DE CANCELACIÓN
   if (error.name === 'AbortError') {
     console.log("🚫 Error de cancelación detectado");
 
@@ -1848,7 +1773,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     };
   };
 
-  // 🦫 CASO 2: ERRORES DE TOKENS (UNIFICADO)
   if (isTokenError(error)) {
     console.log('🚫 Error de tokens detectado:', error);
 
@@ -1893,7 +1817,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 3: ERRORES DE RED/CONEXIÓN
   if (error.message && (
     error.message.includes('fetch') ||
     error.message.includes('network') ||
@@ -1920,7 +1843,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 4: ERRORES DE TIMEOUT
   if (error.message && (
     error.message.includes('timeout') ||
     error.message.includes('tiempo') ||
@@ -1945,7 +1867,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 5: ERRORES DE SERVIDOR
   if (error.message && (
     error.message.includes('servidor') ||
     error.message.includes('server') ||
@@ -1973,7 +1894,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 6: ERRORES DE AUTENTICACIÓN
   if (error.message && (
     error.message.includes('401') ||
     error.message.includes('403') ||
@@ -2000,7 +1920,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 7: ERRORES DE ARCHIVO/UPLOAD
   if (error.message && (
     error.message.includes('archivo') ||
     error.message.includes('file') ||
@@ -2025,7 +1944,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 8: ERROR GENERAL (FALLBACK)
   console.log('❌ Error general detectado:', error);
 
   if (loadingMessage) {
@@ -2040,7 +1958,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     "Acadel encontró un problema que no estaba en sus libros. Inténtalo de nuevo en un momento"
   );
 
-  // 🦫 MANEJO DE CHAT PROBLEMÁTICO SOLO PARA ERRORES GENERALES
   if (isNewChat && newChatId) {
     await handleNewChatError(newChatId);
   } else if (currentChatId) {
@@ -2055,16 +1972,12 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
   }
 }
 
-// =============================================================================
-// 🦫 MEJORA EN ChatUtils.validateCharacterLimit
-// =============================================================================
 
 ChatUtils.validateCharacterLimit = async function (text) {
   if (!text) return true;
 
   try {
     if (typeof exceedsLimit === 'function' && exceedsLimit(text)) {
-      // 🦫 USAR NUEVA FUNCIÓN DE ACADEL en lugar de showLimitExceededAlert
       if (typeof acadelWarning === 'function') {
         acadelWarning(
           "📝 ¡Mensaje muy extenso!",
@@ -2106,7 +2019,6 @@ async function handleNewChatError(newChatId) {
   setCurrentChat(null);
   history.pushState({}, '', URL_CONFIG.basePath);
 
-  // ⭐ NUEVO: Limpiar ID temporal en caso de error
   if (window.tempChatIdForFiles === newChatId) {
     window.tempChatIdForFiles = null;
     console.log(`🧹 Chat temporal limpiado por error: ${newChatId}`);
@@ -2190,7 +2102,7 @@ async function finalizeSendMessage(textarea) {
   }
 
   // Finalización estándar
-  if (textarea && !window.isCancellationInProgress) { // AGREGAR verificación
+  if (textarea && !window.isCancellationInProgress) {
     textarea.value = '';
   }
   setProcessingState(false);
@@ -2225,9 +2137,6 @@ async function finalizeSendMessage(textarea) {
   domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: handleNewChat con limpieza simplificada
- */
 export function handleNewChat() {
   if (typeof clearTokenWarnings === 'function') {
     clearTokenWarnings();
@@ -2328,9 +2237,6 @@ export function handleNewChat() {
   }
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: switchChat con limpieza simplificada
- */
 export async function switchChat(chatId) {
   console.log('🔄 switchChat llamado:', chatId);
 
@@ -2575,13 +2481,11 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
       await new Promise(resolve => requestAnimationFrame(resolve));
       renderChatMessages(messages);
 
-      // ⭐ CAMBIO PRINCIPAL: Reducir delay drásticamente de 300ms a 50ms ⭐
       setTimeout(() => {
         console.log('🔍 Procesando documentos existentes tras renderizado...');
         processExistingDocuments();
         processAllExistingMessages();
 
-        // ⭐ NUEVO: Procesamiento inmediato adicional después de un momento ⭐
         requestAnimationFrame(() => {
           import('../ui/content-processing-matematico.js').then(contentModule => {
             if (typeof contentModule.processMessagesImmediately === 'function') {
@@ -2734,9 +2638,6 @@ function restoreTextareaEvents() {
   }
 }
 
-/**
- * ⭐ NUEVA: Detecta y procesa JSON doblemente escapado ⭐
- */
 function processEscapedJSON(content) {
   if (typeof content === 'string' &&
     content.trim().startsWith('"{') &&
@@ -2795,9 +2696,6 @@ function processEscapedJSON(content) {
   return content;
 }
 
-/**
- * ⭐ CORREGIDA: Intercepta el renderizado de mensajes usando override ⭐
- */
 function setupMessageRenderingInterceptor() {
   // Método 1: Interceptar appendChild para detectar nuevos mensajes
   const originalAppendChild = Element.prototype.appendChild;
@@ -2821,9 +2719,6 @@ function setupMessageRenderingInterceptor() {
   console.log('✅ Interceptor de renderizado mejorado configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un elemento de mensaje después de ser agregado al DOM ⭐
- */
 function processMessageElement(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
@@ -2831,7 +2726,6 @@ function processMessageElement(messageElement) {
     textElements.forEach(textElement => {
       const content = textElement.textContent || textElement.innerHTML;
 
-      // Solo procesar si parece JSON y no ha sido procesado
       if (content &&
         typeof content === 'string' &&
         !textElement.hasAttribute('data-processed') &&
@@ -2859,23 +2753,18 @@ function processMessageElement(messageElement) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa todos los mensajes existentes al cargar ⭐
- */
 function processAllExistingMessages() {
   console.log('🔍 Procesando todos los mensajes existentes...');
 
   const userMessages = document.querySelectorAll('.user-message');
   console.log(`Encontrados ${userMessages.length} mensajes de usuario`);
 
-  // ⭐ CAMBIO: Usar delays muy pequeños en lugar de eliminarlos completamente ⭐
   userMessages.forEach((messageElement, index) => {
     setTimeout(() => {
       processMessageElement(messageElement); // Usar la función original
     }, index * 2); // Reducir de 10ms a 2ms entre mensajes
   });
 
-  // ⭐ NUEVO: Agregar procesamiento adicional inmediato DESPUÉS ⭐
   setTimeout(() => {
     import('../ui/content-processing-matematico.js').then(contentModule => {
       if (typeof contentModule.processMessagesImmediately === 'function') {
@@ -2885,9 +2774,6 @@ function processAllExistingMessages() {
   }, userMessages.length * 2 + 10); // Esperar a que termine el procesamiento original
 }
 
-/**
- * ⭐ NUEVA: Versión mejorada de formatMultimodalContentSync ⭐
- */
 function formatMultimodalContentSync(jsonData) {
   const text = jsonData.text || '';
   const images = jsonData.images || [];
@@ -2909,14 +2795,12 @@ function formatMultimodalContentSync(jsonData) {
     html += `<div class="multimodal-text">${processedText}</div>`;
   }
 
-  // ⭐ NUEVO: CONTENEDOR UNIFICADO PARA TODOS LOS ELEMENTOS ⭐
   const hasImages = images.length > 0;
   const hasDocuments = documents.length > 0;
 
   if (hasImages || hasDocuments) {
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR IMÁGENES DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasImages) {
       const validImages = images.filter(img => img && img.path);
 
@@ -2929,7 +2813,6 @@ function formatMultimodalContentSync(jsonData) {
       });
     }
 
-    // ⭐ PROCESAR DOCUMENTOS DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasDocuments) {
       const validDocuments = documents.filter(doc => doc && doc.fileId);
 
@@ -2960,9 +2843,6 @@ function formatMultimodalContentSync(jsonData) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Función para escapar HTML ⭐
- */
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
@@ -3254,7 +3134,6 @@ async function checkInitialChatFromURL() {
       if (messages) {
         renderChatMessages(messages);
 
-        // ⭐ PROCESAMIENTO INMEDIATO - SIN DELAY
         requestAnimationFrame(() => {
           console.log('🔍 Procesando documentos existentes inmediatamente...');
 
@@ -3353,9 +3232,6 @@ function handleKeyPress(e) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa contenido de mensaje para detectar JSON multimodal ⭐
- */
 function processMessageContent(messageContent, isAIMessage = false) {
   if (typeof messageContent === 'string' &&
     messageContent.trim().startsWith('{') &&
@@ -3380,9 +3256,6 @@ function processMessageContent(messageContent, isAIMessage = false) {
   return messageContent;
 }
 
-/**
- * ⭐ NUEVAS: Funciones auxiliares ⭐
- */
 function getIconForFileType(fileType) {
   const iconMap = {
     'document': 'bxs-file-txt',
@@ -3417,9 +3290,6 @@ function formatFileSizeSimple(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-/**
- * ⭐ NUEVA: Observer para procesar mensajes después de renderizarse ⭐
- */
 function setupMessageObserver() {
   const chatMessages = domManager.chatMessages;
   if (!chatMessages) return;
@@ -3448,9 +3318,6 @@ function setupMessageObserver() {
   console.log('✅ Observer de mensajes configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un mensaje individual después de renderizarse ⭐
- */
 function processExistingMessage(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content');
@@ -3510,10 +3377,6 @@ function processExistingMessage(messageElement) {
   }
 }
 
-/**
- * ⭐ FUNCIÓN MODIFICADA: handleDeleteChat con overlay de eliminación ⭐
- * REEMPLAZAR la función handleDeleteChat existente en chat-controller-matematico.js
- */
 export async function handleDeleteChat(chatId) {
   try {
     closeExistingModals();
@@ -3536,7 +3399,6 @@ export async function handleDeleteChat(chatId) {
         '¿Estás seguro de eliminar esta conversación? Una vez que Acadel la borre, no podrá recuperarla (ni siquiera con magia de capibara)',
         async () => {
           try {
-            // ⭐ MOSTRAR OVERLAY INMEDIATAMENTE DESPUÉS DE CONFIRMAR ⭐
             if (isCurrentChat) {
               showDeleteChatOverlay();
             }
@@ -3609,7 +3471,6 @@ export async function handleDeleteChat(chatId) {
                 history.pushState({}, '', '/matematico');
               }
 
-              // ⭐ PREPARAR BIENVENIDA Y OCULTAR OVERLAY ⭐
               setTimeout(() => {
                 const textarea = domManager.textarea;
                 const fixedSpace = domManager.fixedSpace;
@@ -3760,10 +3621,6 @@ export async function handleDeleteChat(chatId) {
   domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Muestra overlay de eliminación de chat ⭐
- * AÑADIR esta función al chat-controller-matematico.js
- */
 function showDeleteChatOverlay() {
   if (document.querySelector('.delete-chat-overlay')) {
     console.log('Overlay de eliminación ya existe');
@@ -3818,10 +3675,6 @@ function showDeleteChatOverlay() {
   window.currentDeleteChatOverlay = overlay;
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Oculta overlay de eliminación de chat ⭐
- * AÑADIR esta función al chat-controller-matematico.js
- */
 function hideDeleteChatOverlay() {
   const overlay = window.currentDeleteChatOverlay || document.querySelector('.delete-chat-overlay');
 
@@ -4259,7 +4112,6 @@ function setupDragDropEvents(fileUploadContainer) {
   eventManager.add(fileUploadContainer, 'drop', dropHandler, false, 'drag-drop');
 }
 
-// ===== FUNCIONES AUXILIARES PARA EDITOR MATEMÁTICO =====
 
 /**
  * Reinicia completamente el editor matemático
@@ -4502,7 +4354,6 @@ async function setupMathButton() {
   }
 }
 
-// ===== EXPORTACIONES Y COMPATIBILIDAD =====
 
 if (typeof window !== 'undefined') {
   window.handleNewChat = handleNewChat;

@@ -20,7 +20,6 @@ class NotificationTracker {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  // 🆕 NUEVA FUNCIÓN: Limpiar sección específica
   clearSection(section) {
     try {
       if (!this.savedElements.hasOwnProperty(section)) {
@@ -52,22 +51,18 @@ class NotificationTracker {
     }
   }
   
-  // 🆕 NUEVA FUNCIÓN: Obtener conteo total actual
   getTotalCount() {
     return Object.values(this.savedElements).reduce((sum, arr) => sum + arr.length, 0);
   }
   
-  // 🆕 NUEVA FUNCIÓN: Verificar si una sección tiene notificaciones
   hasNotificationsInSection(section) {
     return this.savedElements[section] && this.savedElements[section].length > 0;
   }
   
-  // 🆕 NUEVA FUNCIÓN: Obtener conteo por sección específica
   getCountBySection(section) {
     return this.savedElements[section] ? this.savedElements[section].length : 0;
   }
   
-  // ============== MÉTODOS TRANSFORMADOS PARA ACADELIA ==============
   
   trackProfile(profileData) {
     const notification = {
@@ -129,7 +124,6 @@ class NotificationTracker {
     return notification;
   }
   
-  // ============== GENERADORES DE TÍTULOS TRANSFORMADOS PARA ACADELIA ==============
   
   generateProfileTitle(profileData) {
     const metadata = profileData.metadata || profileData;
@@ -297,7 +291,6 @@ class NotificationTracker {
       return `${percentage}% popularidad - Early Acadel adoption opportunity`;
     }
     
-    // Información adicional si está disponible
     if (metadata.carreras_afectadas) {
       return `${percentage}% popularidad - Affects ${metadata.carreras_afectadas.join(', ')}`;
     }
@@ -360,7 +353,6 @@ class NotificationTracker {
       description = `📝 NOTED - Basic Acadel intelligence`;
     }
     
-    // Información adicional según tipo
     if (type.includes('viral')) {
       description += ` | Viralidad pattern`;
     } else if (type.includes('student') || type.includes('profile')) {
@@ -380,7 +372,6 @@ class NotificationTracker {
     return description;
   }
   
-  // ============== MÉTODOS ORIGINALES (SIN CAMBIOS) ==============
   
   getNotificationSummary() {
     const summary = {

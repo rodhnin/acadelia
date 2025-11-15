@@ -9,9 +9,6 @@ class ArgentinaSubscriptionJob {
     this.job = null;
   }
 
-  /**
-   * 🚀 Iniciar el job automático
-   */
   start() {
     if (this.job) {
       console.log('⚠️ Job de suscripciones Argentina ya está ejecutándose');
@@ -38,9 +35,6 @@ class ArgentinaSubscriptionJob {
     console.log('✅ Job de suscripciones Argentina iniciado correctamente');
   }
 
-  /**
-   * 🛑 Detener el job
-   */
   stop() {
     if (this.job) {
       this.job.stop();
@@ -49,17 +43,11 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * ▶️ Ejecutar el job manualmente
-   */
   async executeManually() {
     console.log('🔧 Ejecutando job de suscripciones Argentina manualmente...');
     return await this.executeJob();
   }
 
-  /**
-   * 🔄 Ejecutar el proceso completo de expiración + emails
-   */
   async executeJob() {
     if (this.isRunning) {
       console.log('⏳ Job de suscripciones Argentina ya está ejecutándose, saltando...');
@@ -217,9 +205,6 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * 📝 Guardar log de ejecución para auditoría
-   */
   async logJobExecution(data) {
     try {
       // Opcional: Si quieres guardar logs en BD, crear tabla job_executions_arg
@@ -252,9 +237,6 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * 📊 Obtener estado del job
-   */
   getStatus() {
     return {
       isRunning: this.isRunning,
@@ -265,9 +247,6 @@ class ArgentinaSubscriptionJob {
     };
   }
 
-  /**
-   * 🔍 Obtener próximas suscripciones a expirar (para testing)
-   */
   async getUpcomingExpirations(hours = 24) {
     try {
       const result = await pool.query(`

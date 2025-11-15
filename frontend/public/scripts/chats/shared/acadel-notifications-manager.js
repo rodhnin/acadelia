@@ -1,10 +1,4 @@
-/**
- * 🦫 SISTEMA DE NOTIFICACIONES DEL PROFESOR ACADEL - CONFETTI MEJORADO
- * Un sistema divertido y con personalidad para todas las notificaciones
- * VERSIÓN CON CONFETTI REALISTA
- */
 
-// ====== CONFIGURACIÓN Y FRASES DEL PROFESOR ACADEL ======
 const ACADEL_FRASES = {
   exito: {
     titulos: [
@@ -155,7 +149,6 @@ const ACADEL_ICONOS = {
   confetti: ['bx-party', 'bx-crown', 'bx-star', 'bx-rocket']
 };
 
-// ====== SISTEMA DE CONFETTI REALISTA ======
 class ConfettiParticle {
   constructor(x, y, color) {
     this.x = x;
@@ -323,7 +316,6 @@ class ConfettiSystem {
 // Instancia global del sistema de confetti
 const confettiSystem = new ConfettiSystem();
 
-// ====== CLASE PRINCIPAL DEL SISTEMA ======
 class AcadelNotificationManager {
   constructor() {
     this.container = null;
@@ -414,14 +406,12 @@ mostrar(tipo, titulo = null, mensaje = null, duracion = 2500, opciones = {}) {
   return id;
 }
 
-// ====== CREAR CLAVE ÚNICA PARA DETECTAR DUPLICADOS ======
 crearClaveUnica(tipo, titulo, mensaje) {
   const tituloNorm = (titulo || '').toLowerCase().trim();
   const mensajeNorm = (mensaje || '').toLowerCase().trim();
   return `${tipo}:${tituloNorm}:${mensajeNorm}`;
 }
 
-// ====== ACTUALIZAR NOTIFICACIÓN EXISTENTE ======
 actualizarNotificacion(id, titulo, mensaje, duracion) {
   const elemento = this.notifications.get(id);
   if (!elemento) return;
@@ -454,7 +444,6 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
     }, duracion);
   }
 }
-  // ====== CREAR ELEMENTO DE NOTIFICACIÓN - CON CONFETTI MEJORADO ======
   crear(notificacion) {
     // Si ya tenemos el máximo, eliminar la más antigua
     if (this.notifications.size >= this.maxVisible) {
@@ -496,7 +485,6 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
     requestAnimationFrame(() => {
       elemento.classList.add('show');
       
-      // ⭐ LANZAR CONFETTI SI ES TIPO CONFETTI
       if (notificacion.tipo === 'confetti') {
         setTimeout(() => {
           confettiSystem.launch(elemento);
@@ -516,7 +504,6 @@ if (notificacion.duracion > 0) {
     this.agregarEventos(elemento, notificacion);
   }
   
-  // ====== GESTIONAR STACK VISUAL ======
   gestionarStack() {
     const elementos = Array.from(this.container.children).filter(el => 
       el.classList.contains('notificacion-acadel')
@@ -549,7 +536,6 @@ if (notificacion.duracion > 0) {
     }
   }
   
-  // ====== CERRAR NOTIFICACIÓN ======
 cerrar(id) {
   const elemento = this.notifications.get(id);
   if (!elemento) return;
@@ -580,7 +566,6 @@ cerrar(id) {
   }, 300);
 }
   
-  // ====== PROCESAR COLA DE NOTIFICACIONES ======
   procesarCola() {
     if (this.queue.length > 0 && this.notifications.size < this.maxVisible) {
       const siguiente = this.queue.shift();
@@ -588,7 +573,6 @@ cerrar(id) {
     }
   }
   
-  // ====== OBTENER FRASE ALEATORIA ======
   obtenerFraseAleatoria(tipo) {
     const frases = ACADEL_FRASES[tipo] || ACADEL_FRASES.info;
     const titulo = frases.titulos[Math.floor(Math.random() * frases.titulos.length)];
@@ -597,13 +581,11 @@ cerrar(id) {
     return { titulo, mensaje };
   }
   
-  // ====== OBTENER ICONO ALEATORIO ======
   obtenerIconoAleatorio(tipo) {
     const iconos = ACADEL_ICONOS[tipo] || ACADEL_ICONOS.info;
     return iconos[Math.floor(Math.random() * iconos.length)];
   }
   
-  // ====== AGREGAR EVENTOS ======
   agregarEventos(elemento, notificacion) {
     if (notificacion.duracion > 0) {
       const progressBar = elemento.querySelector('.acadel-progress');
@@ -632,7 +614,6 @@ cerrar(id) {
     }
   }
   
-  // ====== LIMPIAR TODAS LAS NOTIFICACIONES ======
   limpiarTodas() {
     this.notifications.forEach((elemento, id) => {
       this.cerrar(id);
@@ -642,78 +623,47 @@ cerrar(id) {
   }
 }
 
-// ====== CREAR INSTANCIA GLOBAL ======
 const acadelNotifications = new AcadelNotificationManager();
 
-// ====== HACER LA INSTANCIA ACCESIBLE GLOBALMENTE ======
 window.acadelNotifications = acadelNotifications;
 
-// ====== FUNCIONES GLOBALES FÁCILES DE USAR ======
 
-/**
- * 🎉 Mostrar notificación de ÉXITO
- */
 window.acadelExito = (titulo, mensaje, duracion = 3000) => {
   return acadelNotifications.mostrar('exito', titulo, mensaje, duracion);
 };
 
-/**
- * ❌ Mostrar notificación de ERROR
- */
 window.acadelError = (titulo, mensaje, duracion = 3000) => {
   return acadelNotifications.mostrar('error', titulo, mensaje, duracion);
 };
 
-/**
- * ℹ️ Mostrar notificación de INFORMACIÓN
- */
 window.acadelInfo = (titulo, mensaje, duracion = 2000) => {
   return acadelNotifications.mostrar('info', titulo, mensaje, duracion);
 };
 
-/**
- * ⚠️ Mostrar notificación de ADVERTENCIA
- */
 window.acadelWarning = (titulo, mensaje, duracion = 3000) => {
   return acadelNotifications.mostrar('warning', titulo, mensaje, duracion);
 };
 
-/**
- * 🔄 Mostrar notificación de CARGA
- */
 window.acadelLoading = (titulo, mensaje, duracion = 0) => {
   return acadelNotifications.mostrar('loading', titulo, mensaje, duracion);
 };
 
-/**
- * 🎊 Mostrar notificación de CELEBRACIÓN CON CONFETTI REALISTA
- */
 window.acadelConfetti = (titulo, mensaje, duracion = 4000) => {
   return acadelNotifications.mostrar('confetti', titulo, mensaje, duracion);
 };
 
-/**
- * 🧹 Cerrar notificación específica
- */
 window.acadelCerrar = (id) => {
   return acadelNotifications.cerrar(id);
 };
 
-/**
- * 🧹 Limpiar todas las notificaciones
- */
 window.acadelLimpiarTodas = () => {
   return acadelNotifications.limpiarTodas();
 };
 
-/**
- * 🎯 Función general con más opciones
- */
 window.acadelMostrar = (tipo, titulo, mensaje, duracion = 5000, opciones = {}) => {
   return acadelNotifications.mostrar(tipo, titulo, mensaje, duracion, opciones);
 };
 
-// ====== INTEGRACIÓN CON EL SISTEMA EXISTENTE ======
 window.showError = (mensaje) => acadelError(null, mensaje);
 window.showSuccess = (mensaje) => acadelExito(null, mensaje);
 window.showNotification = (mensaje, tipo = 'info') => {
@@ -728,7 +678,6 @@ window.showNotification = (mensaje, tipo = 'info') => {
   return acadelNotifications.mostrar(tipoAcadel, null, mensaje);
 };
 
-// ⭐ FUNCIÓN DE PRUEBA MEJORADA
 window.testAcadelNotifications = () => {
   console.log('🧪 Probando sistema de notificaciones...');
   

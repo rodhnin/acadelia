@@ -43,10 +43,6 @@ export const isValidUUIDv4 = (uuid) => {
   return version === 4 && variant >= 8 && variant <= 11;
 };
 
-/**
- * ✅ USAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
- * Obtiene tipos de documento soportados desde backend-file-constants.js
- */
 export const getSupportedDocumentTypes = () => {
   const supportedMimeTypesConfig = createSupportedMimeTypesConfig();
   
@@ -66,26 +62,17 @@ export const getSupportedDocumentTypes = () => {
   };
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isSupportedDocumentType = (mimeType) => {
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.mimeTypes.includes(mimeType);
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isSupportedDocumentExtension = (extension) => {
   const normalizedExt = extension.startsWith('.') ? extension : `.${extension}`;
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.extensions.includes(normalizedExt.toLowerCase());
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isDocumentItem = (item) => {
   if (!item || typeof item !== 'object') return false;
   

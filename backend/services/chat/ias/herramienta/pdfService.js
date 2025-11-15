@@ -1,7 +1,4 @@
-// ============================================================================
-// ============================================================================
 // EL CAPIBARA MÁS SABIO EN HACER QUE ENTIENDAS TUS PROPIOS DOCUMENTOS
-// ============================================================================
 
 import pool from "../../../../lib/dbPool.js";
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -29,12 +26,8 @@ import {
 } from '../../../../utils/chat/documentReferenceHelper.js';
 import { cleanDocumentContextForPrompt } from '../../../../utils/chat/contentCleaner.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -311,8 +304,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// ============================================================================
 
 const PROFESOR_ACADEL_DOCUMENTALISTA_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN EDUCACIÓN MULTIDISCIPLINARIA:
@@ -354,8 +345,6 @@ Hacer que CUALQUIER estudiante de cualquier disciplina:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR TÉCNICO que integra rigor académico con aplicaciones interdisciplinarias reales!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const DOCUMENT_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
@@ -509,9 +498,6 @@ ${queryInfo.hasEmotionalContent ?
   
 🚀 **OBJETIVO:** Transforma esta información en enseñanza memorable con tu sabiduría pedagógica.`;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE MEJORADO DOCUMENTAL
-// ============================================================================
 
 const classifyDocumentQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -662,10 +648,7 @@ const classifyDocumentQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DOCUMENTALES
 const ACADEL_DOCUMENT_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en TODAS las disciplinas.
 
@@ -674,8 +657,6 @@ CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara pr
 ✅ SIEMPRE: Usar como si fuera su propio conocimiento universal
 `;
 
-// ============================================================================
-// ============================================================================
 
 // 1. BASE DE CONOCIMIENTOS DE DOCUMENTOS DEL ESTUDIANTE (MEJORADA CON CACHE)
 class CustomSupabaseHybridSearch extends SupabaseHybridSearch {
@@ -1359,14 +1340,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia según este análi
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedDocumentPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DOCUMENTALISTA_DNA;
 
-  // ============================================================================
-  // ============================================================================
 
   const coreInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA PROFESOR ACADEL DOCUMENTALISTA
@@ -1512,8 +1489,6 @@ La velocidad de la luz \\({{c}}\\) es constante.
 - Mantén diagramas simples enfocados en SU material (máximo 15 elementos)
 `;
 
-  // ============================================================================
-  // ============================================================================
 
   const typeSpecificInstructions = {
     concept_explanation: `
@@ -1557,8 +1532,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión real usando SU material cuando esté disponible`
   };
 
-  // ============================================================================
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1578,8 +1551,6 @@ ${queryInfo.hasEmotionalContent ? '- **Estado emocional:** Estudiante frustrado 
 ⚡ **OBJETIVO FINAL:** Enseña como el capibara documentalista más brillante del universo, usando todas tus capacidades cuando mejoren pedagógicamente tu explicación.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, chatId) => {
   // Herramientas básicas documentales personalizadas
@@ -1634,8 +1605,6 @@ const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, c
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 // Funciones existentes mejoradas con personalidad Acadel
 export const detectExamRequest = (query) => {
@@ -1867,7 +1836,7 @@ const createDocumentVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
 
       const imageUrl = await dalle.invoke(prompt);
@@ -1891,8 +1860,6 @@ const createDocumentVisualizationTool = () => tool(
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const handleQueryPDF = async (params) => {
   const { userId, avaId, herramientaId, chatId, query } = params;
@@ -2009,7 +1976,6 @@ export const handleQueryPDF = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2114,7 +2080,6 @@ export const handleQueryPDF = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2273,7 +2238,6 @@ Si tienes documentos específicos sobre este tema, súbelos y podremos profundiz
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2317,8 +2281,6 @@ Si tienes documentos específicos sobre este tema, súbelos y podremos profundiz
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePDFMultimodalQuery = async (params) => {
   const { userId, avaId, herramientaId, chatId, content } = params;
@@ -2647,7 +2609,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2697,13 +2658,11 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos documentales procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2717,7 +2676,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
         }
       },
 
-      // Información de seguridad documental
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2765,8 +2723,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const queryPDFWithoutSaving = async (params) => {
   const { userId, avaId, herramientaId, chatId, query } = params;

@@ -79,7 +79,7 @@ async function updateQueueStats(force = false) {
       const statsData = {
         isMonitoringStat: true, // Marca para identificar
         activeCount: activeCounts[type],
-        waitingCount: waitingCounts[type], // Incluir contador de espera
+        waitingCount: waitingCounts[type],
         waitingQueueSize: waitingQueues[type].length,
         completedCount: statsCounts[type].completed,
         failedCount: statsCounts[type].failed,
@@ -135,7 +135,7 @@ updateQueueStats(true).catch(console.error);
 // Programar actualización periódica con baja frecuencia
 setInterval(() => {
   updateQueueStats().catch(console.error);
-}, 10000); // Solo cada 10 segundos
+}, 10000);
 
 /**
  * Procesa la cola de espera para un tipo específico

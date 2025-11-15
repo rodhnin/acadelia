@@ -1,9 +1,3 @@
-/**
- * 🦫 chat-notices.js - VERSIÓN 100% ALINEADA CON BACKEND
- * ✅ EXACTAMENTE la misma lógica que AccessValidationService + TokenManager
- * ✅ SIN HARDCODEO: Todo viene del backend dinámicamente
- * ✅ FLAGS EXACTOS: Coinciden 1:1 con tokenManager.js
- */
 
 
 class SimpleTokenWarningManager {
@@ -105,7 +99,6 @@ class SimpleTokenWarningManager {
 
 const simpleTokenManager = new SimpleTokenWarningManager();
 
-// ===== CONFIGURACIÓN 100% DINÁMICA DEL BACKEND =====
 
 const CONFIG = {
   NOTICE_TYPES: {
@@ -179,10 +172,6 @@ let state = {
   }
 };
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: shouldShowWarning - EXACTA del backend
- * COPIA EXACTA de AccessValidationService.validateTokenLimits lógica
- */
 function shouldShowWarning(currentTokens, maxTokens, tokenInfo = null) {
   console.log(`📊 [BACKEND-ALIGNED] shouldShowWarning(${currentTokens}, ${maxTokens})`);
 
@@ -226,10 +215,6 @@ function shouldShowWarning(currentTokens, maxTokens, tokenInfo = null) {
 
   return result;
 }
-/**
- * ✅ FUNCIÓN 100% ALINEADA: shouldShowLimit - EXACTA del backend  
- * COPIA EXACTA de AccessValidationService.validateTokenLimits lógica
- */
 function shouldShowLimit(currentTokens, maxTokens, tokenInfo = null) {
   console.log(`📊 [BACKEND-ALIGNED] shouldShowLimit(${currentTokens}, ${maxTokens})`);
 
@@ -261,9 +246,6 @@ function shouldShowLimit(currentTokens, maxTokens, tokenInfo = null) {
   return result;
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: updateDynamicLimits del backend
- */
 function updateDynamicLimits(tokenInfo) {
   if (!tokenInfo || typeof tokenInfo !== 'object') {
     console.warn(`⚠️ [BACKEND-ALIGNED] tokenInfo inválido:`, tokenInfo);
@@ -370,9 +352,6 @@ export function updateDynamicToolLimits(toolLimitsData) {
   return true;
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: detectAndShowNotices - EXACTA lógica tokenManager.js
- */
 export function detectAndShowNotices(messageElement, backendResponse) {
   if (!messageElement || !backendResponse) return;
 
@@ -478,9 +457,6 @@ export function detectAndShowNotices(messageElement, backendResponse) {
   }
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: handleBackendWarningsExact - EXACTA del tokenManager.js
- */
 function handleBackendWarningsExact(messageElement, warnings, responseData) {
   console.log(`📊 [BACKEND-ALIGNED] Procesando warnings array EXACTO del tokenManager`);
 
@@ -631,9 +607,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
   });
 }
 
-/**
- * ✅ FUNCIÓN MEJORADA: handleBackendError - CON SOPORTE COMPLETO AVA
- */
 function handleBackendError(messageElement, responseData) {
   const { error } = responseData;
   const errorCode = error?.code || '';
@@ -702,9 +675,6 @@ export function debugBackendData(backendResponse) {
   return backendResponse;
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: showTokenWarningNotice
- */
 export function showTokenWarningNotice(messageElement, currentTokens, maxTokens, tokenInfo = null, forceShow = false) {
   // Bypass admin/premium
   if (shouldBypassNotices(tokenInfo)) {
@@ -756,9 +726,6 @@ export function showTokenWarningNotice(messageElement, currentTokens, maxTokens,
   console.log(`✅ [BACKEND-ALIGNED] WARNING mostrado según configuración EXACTA del backend`);
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: showTokenLimitNotice
- */
 export function showTokenLimitNotice(messageElement, maxTokens = null, tokenInfo = null, forceShow = false) {
   if (shouldBypassNotices(tokenInfo)) {
     return;
@@ -820,9 +787,6 @@ function shouldBypassNotices(tokenInfo) {
   return tokenInfo && (tokenInfo.isAdmin || tokenInfo.max === 'unlimited');
 }
 
-/**
- * ✅ FUNCIÓN 100% ALINEADA: showSmartTokenNotice
- */
 export function showSmartTokenNotice(messageElement, currentTokens, maxTokens, percentage = null, tokenInfo = null) {
   if (shouldBypassNotices(tokenInfo)) {
     return 'admin_or_premium_unlimited';
@@ -858,9 +822,6 @@ export function showSmartTokenNotice(messageElement, currentTokens, maxTokens, p
   return 'no_notice_needed';
 }
 
-/**
- * ✅ FUNCIONES AUXILIARES 100% ALINEADAS
- */
 
 function validateTokenData(currentTokens, maxTokens) {
   if (typeof currentTokens !== 'number' || currentTokens < 0) {
@@ -891,7 +852,6 @@ function getCurrentChatId() {
   }
 }
 
-// ===== RESTO DE FUNCIONES (mantener las originales) =====
 
 function createNoticeElement(config, data) {
   const { message, details, actionButton, noticeKey } = data;
@@ -1403,10 +1363,6 @@ export function getCurrentTokenLimit() {
   return state.dynamicLimits.maxTokensPerChat;
 }
 
-/**
- * ✅ NUEVA FUNCIÓN: showFreeUserAvaAccessNotice - ESPECÍFICA PARA AVA
- * Para usuarios gratuitos que intentan acceder a contenido premium
- */
 export function showFreeUserAvaAccessNotice(messageElement, avaName = 'contenido académico', careerName = 'esta carrera', upgradeInfo = {}) {
   console.log(`🔒 [AVA ACCESS] Mostrando aviso de usuario gratuito:`, {
     avaName,
@@ -1472,7 +1428,6 @@ export default {
   simpleTokenManager: simpleTokenManager
 };
 
-// 🦫 Crear acceso global para compatibilidad - 100% ALINEADO
 if (typeof window !== 'undefined') {
   window.AcadelChatNotices = {
     detectAndShowNotices,

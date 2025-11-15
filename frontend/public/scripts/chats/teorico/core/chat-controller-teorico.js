@@ -1,8 +1,3 @@
-/**
- * chat-controller.js Teorico - Controlador principal para las funciones de chat
- * ⭐ VERSIÓN ACTUALIZADA CON SISTEMA DE DOCUMENTOS MULTIMODALES ⭐
- * Compatible con el flujo: temp-preview → servidor → fileId → clickeable
- */
 
 import { URL_CONFIG, getCurrentVariant, getUrlConfig, getApiRoutes } from './config-teorico.js';
 import { getState, setCurrentChat, setProcessingState } from './state-teorico.js';
@@ -35,7 +30,6 @@ import { sanitizeText } from '../../shared/dom-helpers.js';
 import { showWelcomeMessage, clearDomCache, getCachedElement } from '../ui/welcome-message-teorico.js';
 import { initCharacterLimit, exceedsLimit, showLimitExceededAlert, hideLimitAlert } from '../../shared/character-limit.js';
 
-// ⭐ IMPORTACIONES ESPECÍFICAS PARA DOCUMENTOS ⭐
 import { processExistingDocuments, activateDocumentEvents, handleDocumentClick } from '../ui/content-processing-teorico.js';
 
 import {
@@ -46,9 +40,6 @@ import {
 } from '../../shared/chat-notices.js';
 
 
-/**
- * ⭐ FUNCIÓN MEJORADA: Muestra overlay de eliminación de chat ⭐
- */
 function showDeleteChatOverlay() {
   if (document.querySelector('.delete-chat-overlay')) {
     console.log('Overlay de eliminación ya existe');
@@ -103,9 +94,6 @@ function showDeleteChatOverlay() {
   window.currentDeleteChatOverlay = overlay;
 }
 
-/**
- * ⭐ FUNCIÓN MEJORADA: Oculta overlay de eliminación de chat ⭐
- */
 function hideDeleteChatOverlay() {
   const overlay = window.currentDeleteChatOverlay || document.querySelector('.delete-chat-overlay');
 
@@ -126,13 +114,6 @@ function hideDeleteChatOverlay() {
   }, 300);
 }
 
-/**
- * ⭐ FUNCIÓN NUEVA: Construye contenido multimodal simplificado para sistema teórico ⭐
- * Reemplaza completamente constructMultimodalContent() con layout unificado
- * @param {string} text - Texto del mensaje
- * @param {Array} files - Archivos adjuntos
- * @returns {string} HTML formateado con contenedor unificado
- */
 function constructSimplifiedMultimodalContent(text, files) {
   if (!files || files.length === 0) {
     return parseMarkdownToHTML(text || "");
@@ -149,7 +130,6 @@ function constructSimplifiedMultimodalContent(text, files) {
     html += `<div class="multimodal-text">${parseMarkdownToHTML(cleanedText)}</div>`;
   }
 
-  // ⭐ CONTENEDOR UNIFICADO: Todos los archivos juntos ⭐
   if (files.length > 0) {
     html += `<div class="unified-attachments">`;
 
@@ -162,7 +142,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           </div>
         `;
       } else if (file.type === 'document' || file.type === 'code') {
-        // ⭐ DOCUMENTOS COMO PREVIEW TEMPORAL ⭐
         const attachmentType = file.type;
         const language = file.data?.language || detectLanguageFromFileName(file.file.name);
         const iconClass = getFileIconForType(attachmentType, language);
@@ -193,12 +172,6 @@ function constructSimplifiedMultimodalContent(text, files) {
   return html;
 }
 
-/**
- * ⭐ FUNCIÓN NUEVA: Procesa respuesta del servidor para actualizar documentos temporales ⭐
- * Convierte .temp-preview en .clickable con fileId del servidor
- * @param {Object} data - Respuesta del servidor con documentos
- * @param {HTMLElement} messageElement - Elemento del mensaje de usuario
- */
 function processServerResponseDocuments(data, messageElement) {
   console.log('🔄 Procesando respuesta del servidor para documentos...');
 
@@ -211,7 +184,6 @@ function processServerResponseDocuments(data, messageElement) {
 
   console.log(`📎 Encontrados ${tempPreviews.length} documentos temporales, ${data.documents.length} documentos del servidor`);
 
-  // ⭐ MAPEO CORREGIDO: Por nombre de archivo en lugar de índice ⭐
   tempPreviews.forEach((tempPreview) => {
     const fileName = tempPreview.dataset.fileName;
 
@@ -220,7 +192,6 @@ function processServerResponseDocuments(data, messageElement) {
     if (serverDoc && serverDoc.fileId) {
       console.log(`🔗 Actualizando documento: ${serverDoc.originalName} → ${serverDoc.fileId}`);
 
-      // ⭐ CRÍTICO: Actualizar con fileId y hacer clickeable ⭐
       tempPreview.dataset.fileId = serverDoc.fileId;
       tempPreview.classList.remove('temp-preview');
       tempPreview.classList.add('clickable');
@@ -238,15 +209,11 @@ function processServerResponseDocuments(data, messageElement) {
     }
   });
 
-  // ⭐ ACTIVAR EVENTOS DE CLICK ⭐
   activateDocumentEvents(messageElement);
 
   console.log(`🎯 Eventos de click activados para ${tempPreviews.length} documentos`);
 }
 
-/**
- * ⭐ NUEVA: Detecta y procesa JSON doblemente escapado o normal ⭐
- */
 function processEscapedJSON(content) {
   if (typeof content === 'string' &&
     content.trim().startsWith('"{') &&
@@ -305,9 +272,6 @@ function processEscapedJSON(content) {
   return content;
 }
 
-/**
- * ⭐ NUEVA: Versión mejorada de formatMultimodalContentSync para sistema teórico ⭐
- */
 function formatMultimodalContentSync(jsonData) {
   const text = jsonData.text || '';
   const images = jsonData.images || [];
@@ -331,14 +295,12 @@ function formatMultimodalContentSync(jsonData) {
     html += `<div class="multimodal-text">${processedMarkdown}</div>`;
   }
 
-  // ⭐ CONTENEDOR UNIFICADO PARA TODOS LOS ELEMENTOS ⭐
   const hasImages = images.length > 0;
   const hasDocuments = documents.length > 0;
 
   if (hasImages || hasDocuments) {
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR IMÁGENES ⭐
     if (hasImages) {
       const validImages = images.filter(img => img && img.path);
 
@@ -351,7 +313,6 @@ function formatMultimodalContentSync(jsonData) {
       });
     }
 
-    // ⭐ PROCESAR DOCUMENTOS ⭐
     if (hasDocuments) {
       const validDocuments = documents.filter(doc => doc && doc.fileId);
 
@@ -382,10 +343,6 @@ function formatMultimodalContentSync(jsonData) {
   return html;
 }
 
-/**
- * ⭐ FUNCIÓN NUEVA: Configura interceptor para procesar mensajes automáticamente ⭐
- * Auto-detecta nuevos mensajes y los procesa para hacer documentos clickeables
- */
 function setupMessageRenderingInterceptor() {
   console.log('🔧 Configurando interceptor de renderizado de mensajes teórico...');
 
@@ -409,7 +366,6 @@ function setupMessageRenderingInterceptor() {
       }
     });
 
-    // ⭐ NUEVO: Procesar también mensajes JSON directamente ⭐
     processMessageElement(messageElement);
   }
 
@@ -437,9 +393,6 @@ function setupMessageRenderingInterceptor() {
   console.log('✅ Interceptor de renderizado teórico configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un elemento de mensaje después de ser agregado al DOM ⭐
- */
 function processMessageElement(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, .multimodal-text, div');
@@ -460,7 +413,6 @@ function processMessageElement(messageElement) {
         }
       }
 
-      // Solo procesar si parece JSON y no ha sido procesado
       if (content &&
         typeof content === 'string' &&
         !textElement.hasAttribute('data-processed') &&
@@ -500,10 +452,6 @@ function processMessageElement(messageElement) {
   }
 }
 
-/**
- * ⭐ FUNCIÓN NUEVA: Procesa todos los mensajes existentes para documentos ⭐
- * Se ejecuta al cargar chats existentes
- */
 function processAllExistingMessages() {
   console.log('🔍 Procesando todos los mensajes existentes en sistema teórico...');
 
@@ -535,7 +483,6 @@ function processAllExistingMessages() {
             try {
               const decodedText = decodeURIComponent(originalText);
 
-              // ⭐ DETECTAR MÚLTIPLES JSONs CONCATENADOS ⭐
               if (decodedText.includes('}{') && decodedText.includes('hasDocuments')) {
                 console.log('🔍 Detectados JSONs concatenados, procesando...');
                 const processedContent = processMultipleJSONs(decodedText);
@@ -554,7 +501,6 @@ function processAllExistingMessages() {
                 }
               }
 
-              // ⭐ PROCESAR JSON INDIVIDUAL ⭐
               const processedContent = processEscapedJSON(decodedText);
               if (processedContent !== decodedText) {
                 textElement.innerHTML = processedContent;
@@ -573,7 +519,6 @@ function processAllExistingMessages() {
             }
           }
 
-          // ⭐ PROCESAR CONTENIDO DIRECTO SI NO HAY originalText ⭐
           else if (content && (content.includes('hasDocuments') || content.includes('documents'))) {
             try {
               const processedContent = processEscapedJSON(content);
@@ -601,9 +546,6 @@ function processAllExistingMessages() {
   console.log(`✅ Procesamiento de mensajes existentes teórico completado`);
 }
 
-/**
- * ⭐ NUEVA: Observer para procesar mensajes después de renderizarse ⭐
- */
 function setupMessageObserver() {
   const chatMessages = document.querySelector('.chat-messages');
   if (!chatMessages) return;
@@ -633,9 +575,6 @@ function setupMessageObserver() {
 }
 
 
-/**
- * ⭐ FUNCIONES AUXILIARES ⭐
- */
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
@@ -677,9 +616,6 @@ function formatFileSizeSimple(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-/**
- * ⭐ FUNCIÓN PARA DETECTAR MÚLTIPLES JSONs EN UNA SOLA LÍNEA ⭐
- */
 function processMultipleJSONs(content) {
   if (typeof content === 'string' && content.includes('}{')) {
     try {
@@ -759,7 +695,6 @@ export function initChatController() {
       console.warn('Error al cargar módulos de manejo de errores:', error);
     });
 
-  // ⭐ NUEVO: Configurar interceptores y procesamiento de documentos ⭐
   setupMessageRenderingInterceptor();
   setupMessageObserver();
 
@@ -850,14 +785,6 @@ function setupChatEventListeners() {
   window.addEventListener('sendMessageRequest', handleSendMessage);
 }
 
-/**
- * ⭐ FUNCIÓN ACTUALIZADA: Añade mensaje con archivos usando el nuevo sistema ⭐
- * Ahora usa constructSimplifiedMultimodalContent() en lugar del método antiguo
- * @param {string} role - 'user' o 'ai'
- * @param {string} content - Contenido del mensaje
- * @param {Array} files - Archivos adjuntos (opcional)
- * @returns {HTMLElement} Elemento del mensaje
- */
 function addMessageWithAttachments(role, content, files = []) {
   const chatMessages = getElement('chatMessages');
   if (!chatMessages) return null;
@@ -900,7 +827,6 @@ function addMessageWithAttachments(role, content, files = []) {
         messageDiv.setAttribute('data-has-images', 'true');
       }
 
-      // ⭐ USAR EL NUEVO SISTEMA SIMPLIFICADO ⭐
       const multimodalContent = constructSimplifiedMultimodalContent(content, files);
 
       // El contenido ya está listo (no es promesa)
@@ -934,11 +860,6 @@ function addMessageWithAttachments(role, content, files = []) {
   return messageDiv;
 }
 
-/**
- * ⭐ FUNCIÓN NUEVA: Actualiza IDs de mensajes desde el servidor ⭐
- * Versión optimizada que solo actualiza los últimos mensajes
- * @param {string} chatId - ID del chat actual
- */
 function updateMessageIds(chatId) {
   if (!chatId) return;
 
@@ -969,14 +890,12 @@ function updateMessageIds(chatId) {
         lastAIMessage.dataset.serverId = id;
       }
 
-      // ⭐ NUEVO: Re-inicializar interacciones Y completar respuesta
       const { initResponseInteraction } = await import('../utils/response-interaction-teorico.js');
       if (initResponseInteraction) {
         const interactionManager = initResponseInteraction();
 
         interactionManager.processExistingMessages(true);
 
-        // ⭐ CRÍTICO: Notificar que la respuesta se completó
         setTimeout(() => {
           if (typeof interactionManager.onResponseComplete === 'function') {
             interactionManager.onResponseComplete();
@@ -994,12 +913,7 @@ function updateMessageIds(chatId) {
   }, 300);
 }
 
-/**
- * 🦫 SISTEMA DE MENSAJES DINÁMICOS PARA ACADEL PENSANDO
- * Mensajes variados para hacer la experiencia más divertida
- */
 
-// 🧠 ARRAY DE MENSAJES VARIADOS PARA "ACADEL ESTÁ PENSANDO"
 const ACADEL_THINKING_MESSAGES = [
   // Mensajes básicos de pensamiento
   {
@@ -1144,10 +1058,6 @@ const ACADEL_PATIENCE_MESSAGES = [
   }
 ];
 
-/**
- * 🎲 FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE ACADEL PENSANDO
- * @returns {Object} Objeto con title y message aleatorios
- */
 function getRandomThinkingMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_THINKING_MESSAGES.length);
   const selectedMessage = ACADEL_THINKING_MESSAGES[randomIndex];
@@ -1157,10 +1067,6 @@ function getRandomThinkingMessage() {
   return selectedMessage;
 }
 
-/**
- * ⏳ FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE PACIENCIA/OPERACIÓN LENTA
- * @returns {Object} Objeto con title y message aleatorios para operaciones lentas
- */
 function getRandomPatienceMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_PATIENCE_MESSAGES.length);
   const selectedMessage = ACADEL_PATIENCE_MESSAGES[randomIndex];
@@ -1170,10 +1076,6 @@ function getRandomPatienceMessage() {
   return selectedMessage;
 }
 
-/**
- * ✅ VERIFICACIÓN SIMPLIFICADA PARA AVA PREMIUM
- * Solo verifica tokens generales de conversación (50k límite)
- */
 async function checkTokensBeforeSend(chatId) {
   if (!chatId) return { canProceed: true, warningInfo: null };
 
@@ -1232,15 +1134,11 @@ async function checkTokensBeforeSend(chatId) {
   }
 }
 
-/**
- * ⭐ FUNCIÓN ACTUALIZADA: Maneja el envío de mensajes con el nuevo sistema ⭐
- * Ahora incluye procesamiento de documentos del servidor
- */
 export async function handleSendMessage() {
 
   let slowOperationTimeout;
   let slowOperationNotificationId = null;
-  let thinkingNotificationId = null; // 🦫 NUEVA VARIABLE
+  let thinkingNotificationId = null;
 
   // IMPORTANTE: Capturar archivos temporales de la bienvenida si existen
   const temporaryFiles = window.temporaryWelcomeFiles || [];
@@ -1283,9 +1181,7 @@ export async function handleSendMessage() {
     }
   }
 
-  // =====================================================================
   // SECCIÓN CRÍTICA 1: ELIMINAR LA UI DE BIENVENIDA
-  // =====================================================================
 
   // 1. Eliminar elementos de bienvenida INMEDIATAMENTE
   const welcomeElements = document.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container');
@@ -1297,9 +1193,7 @@ export async function handleSendMessage() {
     }
   });
 
-  // =====================================================================
   // SECCIÓN CRÍTICA 2: RESTAURAR LA UI PRINCIPAL INMEDIATAMENTE
-  // =====================================================================
 
   // Referencias a elementos clave
   const fixedSpace = document.querySelector('.fixed-space');
@@ -1426,9 +1320,7 @@ export async function handleSendMessage() {
     }
   }
 
-  // =====================================================================
   // SECCIÓN REGULAR: PROCESAR ARCHIVOS Y CONTINUAR CON EL MENSAJE
-  // =====================================================================
 
   const chatMessages = document.querySelector('.chat-messages');
   if (!mainTextarea || !chatMessages) return;
@@ -1449,9 +1341,7 @@ export async function handleSendMessage() {
   // No permitir mensajes vacíos sin archivos
   if (getState('isProcessing') || (!messageToSend && !hasAttachments)) return;
 
-  // =====================================================================
   // SECCIÓN CRÍTICA 3: LIMPIAR TEXTAREA Y MOSTRAR MENSAJES
-  // =====================================================================
 
   if (mainTextarea) {
     mainTextarea.value = '';
@@ -1473,12 +1363,10 @@ export async function handleSendMessage() {
     }
   }
 
-  // ⭐ MOSTRAR MENSAJE DEL USUARIO CON NUEVO SISTEMA ⭐
   let userMessageElement;
   try {
     userMessageElement = addMessageWithAttachments('user', messageToSend, attachedFiles);
 
-    // ⭐ NUEVO: No inicializar handlers aquí, esperar respuesta del servidor ⭐
     console.log(`📎 Mensaje de usuario mostrado con ${attachedFiles.length} archivos (temp-preview)`);
   } catch (error) {
     console.error('Error al mostrar mensaje del usuario:', error);
@@ -1512,9 +1400,7 @@ export async function handleSendMessage() {
     window.objectURLs = [];
   }
 
-  // =====================================================================
   // SECCIÓN REGULAR: PROCESO NORMAL DE ENVÍO DE MENSAJE
-  // =====================================================================
 
   let currentChatId = getState('currentChatId');
   let isNewChat = !currentChatId || !validateUUID(currentChatId);
@@ -1535,7 +1421,6 @@ export async function handleSendMessage() {
   try {
     setProcessingState(true);
 
-    // 🦫 NOTIFICACIÓN INMEDIATA CON MENSAJE ALEATORIO
     const randomThinking = getRandomThinkingMessage();
     thinkingNotificationId = acadelLoading(
       randomThinking.title,
@@ -1545,14 +1430,12 @@ export async function handleSendMessage() {
 
     slowOperationTimeout = setTimeout(() => {
       if (getState('isProcessing')) {
-        // 🦫 CERRAR la notificación de "pensando" antes de mostrar la de operación lenta
         if (thinkingNotificationId) {
           console.log(`🔔 Cerrando notificación "pensando" por timeout ID: ${thinkingNotificationId}`);
           acadelCerrar(thinkingNotificationId);
           thinkingNotificationId = null;
         }
 
-        // 🦫 MENSAJE ALEATORIO PARA OPERACIÓN LENTA
         const randomPatience = getRandomPatienceMessage();
         slowOperationNotificationId = acadelLoading(
           randomPatience.title,
@@ -1583,7 +1466,6 @@ export async function handleSendMessage() {
         newChatId = newChat.id;
         setCurrentChat(newChatId);
 
-        // ⭐ SOLUCIÓN: Establecer ID temporal para procesamiento de imágenes
         window.tempChatIdForFiles = newChatId;
         console.log(`🆔 Chat temporal establecido para procesamiento de imágenes: ${newChatId}`);
       } catch (error) {
@@ -1638,9 +1520,7 @@ export async function handleSendMessage() {
       }
     }
 
-    // ⭐ ENVIAR LA CONSULTA AL SERVIDOR (USA MESSAGES-TEORICO.JS ACTUALIZADO) ⭐
     let data;
-    // ⭐ ENVIAR LA CONSULTA AL SERVIDOR (USA MESSAGES-TEORICO.JS ACTUALIZADO) ⭐
     try {
       if (hasAttachments) {
         console.log(`📤 Enviando mensaje con ${attachedFiles.length} archivos adjuntos...`);
@@ -1717,7 +1597,6 @@ export async function handleSendMessage() {
       console.warn('Error al verificar avisos de tokens:', noticeError);
     }
 
-    // ⭐ CRÍTICO: PROCESAR DOCUMENTOS DEL SERVIDOR ANTES DE RENDERIZAR ⭐
     if (hasAttachments && userMessageElement && data.documents) {
       console.log(`🔄 Procesando ${data.documents.length} documentos del servidor...`);
       processServerResponseDocuments(data, userMessageElement);
@@ -1734,7 +1613,6 @@ export async function handleSendMessage() {
             const { current, max } = data.tokenInfo;
             const percentage = (current / max) * 100;
 
-            // Solo warning al 75% y límite al 100%
             if (current >= max) {
               if (typeof showTokenLimitNotice === 'function') {
                 showTokenLimitNotice(loadingMessage, max);
@@ -1787,7 +1665,6 @@ export async function handleSendMessage() {
             updateMessageIds(chatId);
           }
 
-          // ⭐ NUEVO: Notificar específicamente que la respuesta se completó
           setTimeout(async () => {
             try {
               const { initResponseInteraction } = await import('../utils/response-interaction-teorico.js');
@@ -1848,7 +1725,6 @@ export async function handleSendMessage() {
 
         updateHeaderForChat(newChatId);
 
-        // ⭐ SOLUCIÓN: Limpiar ID temporal después de que la URL se ha actualizado
         setTimeout(() => {
           if (window.tempChatIdForFiles === newChatId) {
             window.tempChatIdForFiles = null;
@@ -1934,7 +1810,6 @@ export async function handleSendMessage() {
       return; // ← SALIR SIN MÁS PROCESAMIENTO
     }
 
-    // 🦫 CASO 2: CANCELACIÓN (EXISTENTE)
     if (error.name === 'AbortError') {
 
       // NUEVO: Eliminar el chat si era nuevo
@@ -2054,7 +1929,6 @@ export async function handleSendMessage() {
           console.error('Error al actualizar sidebar después de marcar chat como problemático:', sidebarError);
         }
 
-        // ⭐ AGREGAR ESTE BLOQUE - RESTAURAR PANTALLA DE BIENVENIDA ⭐
         setTimeout(() => {
           const fixedSpace = getCachedElement('.fixed-space');
           if (fixedSpace) {
@@ -2089,9 +1963,7 @@ export async function handleSendMessage() {
       }
     }
   } finally {
-    // =====================================================================
     // SECCIÓN CRÍTICA 4: RESTAURACIÓN FINAL DE LA INTERFAZ
-    // =====================================================================
 
     if (isInWelcomeScreen) {
       try {
@@ -2226,7 +2098,6 @@ export async function handleSendMessage() {
       }
     }
 
-    // 🦫 CERRAR AMBAS NOTIFICACIONES DINÁMICAS
     if (thinkingNotificationId) {
       console.log(`🔔 Cerrando notificación dinámica "pensando" como fallback ID: ${thinkingNotificationId}`);
       acadelCerrar(thinkingNotificationId);
@@ -2245,7 +2116,6 @@ export async function handleSendMessage() {
       const wasCancellation = abortController && abortController.signal && abortController.signal.aborted;
 
       if (!wasCancellation) {
-        // Solo restaurar si NO fue cancelación
         toggleUIState(false);
       }
     }
@@ -2263,7 +2133,6 @@ export async function handleSendMessage() {
       window.welcomeFiles.clear();
     }
 
-    // ⭐ SOLUCIÓN: Limpiar ID temporal si hubo error y no se completó el flujo normal
     if (window.tempChatIdForFiles && (isNewChat && !newChatId)) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error en creación`);
@@ -2411,9 +2280,7 @@ export async function switchChat(chatId) {
       chatMessages.innerHTML = '<div class="loading-skeleton"><div class="skeleton-loader"></div></div>';
     }
 
-    // ------------------------------------------------
     // FASE 1: LIMPIEZA COMPLETA
-    // ------------------------------------------------
 
     // 1.1: Limpiar elementos de bienvenida
     document.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container').forEach(el => {
@@ -2559,9 +2426,7 @@ export async function switchChat(chatId) {
       'sidebar-expanded', 'has-modal', 'no-scroll', 'overflow-hidden'
     );
 
-    // ------------------------------------------------
     // FASE 2: ACTUALIZAR ESTADO E INTERFAZ
-    // ------------------------------------------------
 
     // 2.1: Actualizar estado del chat
     if (typeof setCurrentChat === 'function') {
@@ -2594,9 +2459,7 @@ export async function switchChat(chatId) {
       chatMessages.innerHTML = '';
     }
 
-    // ------------------------------------------------
     // FASE 3: CARGAR Y RENDERIZAR MENSAJES
-    // ------------------------------------------------
     try {
       let messages;
 
@@ -2616,7 +2479,6 @@ export async function switchChat(chatId) {
       if (typeof renderChatMessages === 'function' && messages) {
         renderChatMessages(messages);
 
-        // ⭐ NUEVO: Procesar documentos existentes después de renderizar ⭐
         setTimeout(() => {
           console.log('🔄 Procesando documentos existentes en switchChat...');
           processAllExistingMessages();
@@ -2657,9 +2519,7 @@ export async function switchChat(chatId) {
       console.error('Error al cargar mensajes del chat:', error);
     }
 
-    // ------------------------------------------------
     // FASE 4: RESTAURAR COMPONENTES Y FUNCIONALIDAD
-    // ------------------------------------------------
 
     // 4.1: Restaurar visibilidad del área de entrada, especialmente importante al venir de welcome screen
     if (fixedSpace) {
@@ -2866,7 +2726,6 @@ export async function switchChat(chatId) {
             currentTextarea.dispatchEvent(new Event('input'));
           }
         }).catch(() => {
-          // Último recurso: auto-resize directo
           currentTextarea.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
@@ -3154,7 +3013,6 @@ export async function handleDeleteChat(chatId) {
       return; // Usuario canceló
     }
 
-    // ⭐ MOSTRAR OVERLAY DESPUÉS DE CONFIRMAR ⭐
     if (isCurrentChat) {
       showDeleteChatOverlay();
     }
@@ -3309,7 +3167,6 @@ async function checkInitialChatFromURL() {
       if (messages) {
         renderChatMessages(messages);
 
-        // ⭐ NUEVO: Procesar documentos existentes después de cargar ⭐
         setTimeout(() => {
           console.log('🔄 Procesando documentos existentes en carga inicial...');
           processAllExistingMessages();
@@ -3362,7 +3219,6 @@ async function checkInitialChatFromURL() {
   }
 }
 
-// ⭐ FUNCIONES AUXILIARES NUEVAS PARA EL SISTEMA DE DOCUMENTOS ⭐
 
 /**
  * Detecta el lenguaje de programación por nombre de archivo
@@ -3444,7 +3300,6 @@ export default {
 
 };
 
-// ⭐ NUEVAS EXPORTACIONES PARA EL SISTEMA DE DOCUMENTOS ⭐
 export {
   addMessageWithAttachments,
   constructSimplifiedMultimodalContent,

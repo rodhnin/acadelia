@@ -1263,12 +1263,10 @@ class EmailService {
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
     const subtotalAmount = parseFloat(transaction.details?.totals?.subtotal) / 100;
@@ -1287,7 +1285,6 @@ class EmailService {
     const formattedSubtotal = formatter.format(subtotalAmount);
     const formattedTax = formatter.format(taxAmount);
 
-    // Información del período de facturación
     const startDate = transaction.billing_period?.starts_at
       ? new Date(transaction.billing_period.starts_at)
       : new Date();
@@ -1322,12 +1319,10 @@ class EmailService {
     const formattedStartDate = startDate.toLocaleDateString('es-ES', dateOptions);
     const formattedEndDate = endDate.toLocaleDateString('es-ES', dateOptions);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de facturación
     const invoiceId = transaction.invoice_id;
     const invoiceNumber = transaction.invoice_number;
 
@@ -1672,7 +1667,6 @@ class EmailService {
     const subscription = subscriptionData.data;
     const item = subscription.items?.[0];
 
-    // Información del producto
     const productName = item?.product?.name || 'Producto Acadelia';
     const productDescription = item?.product?.description || 'Asistente Virtual Académico';
 
@@ -1944,12 +1938,10 @@ class EmailService {
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const currencySymbol = getCurrencySymbol(currencyCode);
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
@@ -1963,12 +1955,10 @@ class EmailService {
 
     const formattedTotal = formatter.format(totalAmount);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de fecha del intento fallido
     const paymentAttemptDate = transaction.payments?.[0]?.created_at ?
       new Date(transaction.payments[0].created_at) : new Date();
 
@@ -2284,12 +2274,10 @@ class EmailService {
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const currencySymbol = getCurrencySymbol(currencyCode);
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
@@ -2307,12 +2295,10 @@ class EmailService {
     const formattedSubtotal = formatter.format(subtotalAmount);
     const formattedTax = formatter.format(taxAmount);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de fechas de facturación
     const billingPeriod = transaction.billing_period || {};
     const startDate = billingPeriod.starts_at ? new Date(billingPeriod.starts_at) : new Date();
     const endDate = billingPeriod.ends_at ? new Date(billingPeriod.ends_at) : new Date(startDate);
@@ -2342,7 +2328,6 @@ class EmailService {
     const formattedStartDate = startDate.toLocaleDateString('es-ES', dateOptions);
     const formattedEndDate = endDate.toLocaleDateString('es-ES', dateOptions);
 
-    // Información de facturación
     const invoiceId = transaction.invoice_id;
     const invoiceNumber = transaction.invoice_number;
 
@@ -2675,7 +2660,6 @@ class EmailService {
     const subscription = subscriptionData.data;
     const item = subscription.items?.[0];
 
-    // Información del producto
     const productName = item?.product?.name || 'Producto Acadelia';
     const productDescription = item?.product?.description || 'Asistente Virtual Académico';
 
@@ -3572,7 +3556,6 @@ class EmailService {
     const logoUrl = this.imageUrls.logo;
     const mascotaUrl = this.imageUrls.mascota;
 
-    // Información del dispositivo y ubicación
     const deviceInfo = options.deviceInfo || {};
     const ipAddress = deviceInfo.ipAddress || 'No disponible';
     const userAgent = deviceInfo.userAgent || 'No disponible';

@@ -1,13 +1,8 @@
-/**
- * file-handler.js - Utilidades optimizadas para manejar archivos con configuración centralizada
- * 🦫 ACTUALIZADO PARA PROFESOR ACADEL - Coherencia total entre frontend y backend
- */
 
 import { 
   createElement,
 } from './dom-helpers.js';
 
-// ====== IMPORTAR CONFIGURACIÓN CENTRALIZADA ======
 import {
   FILE_LIMITS,
   SUPPORTED_FILES,
@@ -21,10 +16,6 @@ import {
 // Control para carga de mammoth.js
 let mammothLoadPromise = null;
 
-/**
- * 🦫 NOTIFICACIONES ACADEL CENTRALIZADAS
- * Funciones para mostrar notificaciones con personalidad Acadel
- */
 function showAcadelError(messageKey, customMessage = null) {
   const message = ACADEL_FILE_MESSAGES[messageKey];
   if (typeof window.acadelError === 'function') {
@@ -62,13 +53,6 @@ export function getFileExtension(fileOrName) {
   return fileName.split('.').pop().toLowerCase();
 }
 
-/**
- * 🦫 VALIDACIÓN ACADEL CENTRALIZADA
- * Valida que un archivo cumpla con los estándares de Acadel
- * @param {File} file - Archivo a validar
- * @param {string} expectedType - Tipo esperado ('image', 'document', 'code')
- * @returns {Promise<boolean>} true si el archivo es válido
- */
 export async function validateFile(file, expectedType) {
   if (!file) {
     showAcadelError('UNSUPPORTED_TYPE', 'No se ha seleccionado ningún archivo');
@@ -138,13 +122,6 @@ export async function validateFile(file, expectedType) {
   }
 }
 
-/**
- * 🆕 NUEVA FUNCIÓN: Obtiene una vista previa del contenido del archivo
- * Para validar el tamaño antes de procesar completamente
- * @param {File} file - Archivo a pre-validar
- * @param {string} fileType - Tipo de archivo ('document' o 'code')
- * @returns {Promise<string>} Contenido del archivo (puede ser parcial)
- */
 async function getFileContentPreview(file, fileType) {
   return new Promise((resolve, reject) => {
     const extension = getFileExtension(file);
@@ -191,13 +168,6 @@ async function getFileContentPreview(file, fileType) {
 }
 
 
-/**
- * 🦫 VALIDACIÓN DE CONTENIDO DE TEXTO ACADEL
- * Valida límites de contenido de texto con notificaciones Acadel
- * @param {string} content - Contenido de texto 
- * @param {string} fileName - Nombre del archivo
- * @returns {Object} - {valid: boolean, content: string, truncated: boolean}
- */
 export function validateContentLimits(content, fileName) {
   console.log('🔍 Acadel validando contenido:', fileName, 'Caracteres:', content?.length || 0);
   
@@ -226,11 +196,6 @@ export function validateContentLimits(content, fileName) {
   return { valid: true, content: content, truncated: false };
 }
 
-/**
- * 🦫 VALIDACIÓN DE CANTIDAD DE ARCHIVOS ACADEL
- * @param {number} currentCount - Cantidad actual de archivos
- * @returns {boolean} true si es válido
- */
 export function validateFileCountLimit(currentCount) {
   const validation = validateFileCount(currentCount);
   
@@ -836,7 +801,6 @@ async function isTextFile(file) {
   }
 }
 
-// ====== EXPORTAR TODO ======
 export default {
   imageToBase64,
   extractTextFromFile,

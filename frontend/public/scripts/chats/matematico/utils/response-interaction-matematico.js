@@ -60,10 +60,6 @@ class ResponseInteractionManager {
     }, 1000, 'initial-cleanup');
   }
 
-  /**
- * ✅ NUEVO MÉTODO: Eliminar alerts genéricos cuando se muestra error específico de tokens
- * AGREGAR DENTRO DE LA CLASE
- */
   hideGenericAlerts() {
     try {
       const genericAlerts = document.querySelectorAll(
@@ -92,9 +88,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN CORREGIDA: Maneja errores de tokens (REEMPLAZAR la existente)
-   */
   handleTokenError(error, messageElement, forceShow = false) {
     if (this.isTokenError(error)) {
       console.log('🚫 Error de tokens detectado - Mostrando aviso');
@@ -390,20 +383,17 @@ class ResponseInteractionManager {
   addUserInteractionButtons(messageElement) {
     if (messageElement.querySelector('.user-response-actions')) return;
 
-    // ⭐ NUEVA VERIFICACIÓN: Verificar si hay procesamiento global activo
     const isGlobalProcessing = () => {
       return document.querySelector('.ai-message.processing') !== null ||
         getState('isProcessing') === true;
     };
 
-    // ⭐ NUEVA VERIFICACIÓN: Verificar si este es el último mensaje de usuario
     const isLastUserMessage = () => {
       const userMessages = document.querySelectorAll('.user-message');
       const lastUserMessage = userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
       return lastUserMessage === messageElement;
     };
 
-    // ⭐ OPTIMIZADO: Verificar si la respuesta de AI asociada está cancelada O procesando
     const nextAiMessage = this.getNextAiMessage(messageElement);
     if (nextAiMessage) {
       if (nextAiMessage.classList.contains('cancelled') ||
@@ -416,14 +406,12 @@ class ResponseInteractionManager {
         return;
       }
 
-      // ⭐ NUEVA VERIFICACIÓN: Si está procesando
       if (nextAiMessage.classList.contains('processing')) {
         console.log('🔄 Mensaje de usuario asociado a respuesta siendo procesada - no se añaden botones de edición');
         return;
       }
     }
 
-    // ⭐ NUEVA VERIFICACIÓN: Si es el último mensaje y hay procesamiento global activo
     if (isLastUserMessage() && isGlobalProcessing()) {
       console.log('🚫 Último mensaje de usuario durante procesamiento - no se añaden botones de edición');
       return;
@@ -462,9 +450,6 @@ class ResponseInteractionManager {
     messageElement.appendChild(actionsContainer);
   }
 
-  /**
-   * ⭐ NUEVA FUNCIÓN: Se ejecuta cuando una respuesta se completa para habilitar botones
-   */
   onResponseComplete() {
     console.log('🎯 Respuesta completada - verificando botones de último mensaje');
 
@@ -501,9 +486,6 @@ class ResponseInteractionManager {
     this.addUserInteractionButtons(lastUserMessage);
   }
 
-  /**
-   * ⭐ NUEVA FUNCIÓN: Verifica y actualiza el estado de todos los botones después de cambios
-   */
   refreshInteractionButtons() {
     console.log('🔄 Refrescando estado de botones de interacción');
 
@@ -931,9 +913,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ REEMPLAZAR COMPLETAMENTE handleStandardEdit
-   */
   async handleStandardEdit(messageElement, aiMessage, editedText, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1083,9 +1062,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ REEMPLAZAR COMPLETAMENTE handleMultimodalEdit
-   */
   async handleMultimodalEdit(messageElement, aiMessage, editedText, multimodalInfo, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1368,9 +1344,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ PASO 3: REEMPLAZAR COMPLETAMENTE handleStandardRetry
-   */
   async handleStandardRetry(messageElement, userMessage, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1520,9 +1493,6 @@ class ResponseInteractionManager {
   }
 
 
-  /**
-   * ✅ PASO 4: REEMPLAZAR COMPLETAMENTE handleMultimodalRetry
-   */
   async handleMultimodalRetry(messageElement, userMessage, multimodalInfo, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1863,7 +1833,6 @@ class ResponseInteractionManager {
   isAttachmentOnlyContent(text) {
     if (!text || !text.trim()) return true;
 
-    // Solo los tipos de archivos que realmente se pueden subir
     const attachmentPatterns = [
       // Documentos
       /\.(txt|pdf|docx|md|csv)\s*\d+(\.\d+)?\s*(KB|MB)/i,
@@ -1877,10 +1846,8 @@ class ResponseInteractionManager {
       // Patrones de texto que indican archivos
       /^\s*Aquí.*\.(txt|pdf|docx|md|csv|js|jsx|ts|tsx|py|java|cpp|c|h|cs|php|rb|go|rs|html|css|json|xml|sql|sh|jpg|jpeg|png|gif|webp|svg|bmp)/i,
 
-      // Solo tamaños de archivo
       /^\s*\d+(\.\d+)?\s*(KB|MB)\s*$/i,
 
-      // Solo espacios/saltos de línea
       /^[\s\n]*$/,
     ];
 
@@ -2226,9 +2193,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * *** FUNCIÓN SIMPLIFICADA: El backend hace toda la limpieza ***
-   */
   async handleCopyAction(messageElementFromContext) {
     console.log('🎯 [COPY] handleCopyAction llamado');
 
@@ -2831,7 +2795,6 @@ export function initResponseInteraction(processExisting = true) {
 
   exportRetryAction();
 
-  // ⭐ NUEVO: Retornar el instance con las nuevas funciones disponibles
   return {
     ...responseInteractionInstance,
     processExistingMessages: responseInteractionInstance.processExistingMessages.bind(responseInteractionInstance),
@@ -2842,7 +2805,6 @@ export function initResponseInteraction(processExisting = true) {
   };
 }
 
-// ⭐ NUEVA FUNCIÓN: Para llamar desde fuera cuando se complete una respuesta
 export function notifyResponseComplete() {
   if (responseInteractionInstance && typeof responseInteractionInstance.onResponseComplete === 'function') {
     responseInteractionInstance.onResponseComplete();
@@ -2856,7 +2818,6 @@ export function notifyResponseComplete() {
   }
 }
 
-// ⭐ NUEVA FUNCIÓN: Para refrescar manualmente el estado de botones
 export function refreshButtonsState() {
   if (responseInteractionInstance && typeof responseInteractionInstance.refreshInteractionButtons === 'function') {
     responseInteractionInstance.refreshInteractionButtons();

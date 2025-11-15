@@ -15,11 +15,6 @@ class FeedbackService {
     });
   }
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Filtra contenido sensible del mensaje
-   * @param {string} content - Contenido original del mensaje
-   * @returns {string} Contenido filtrado
-   */
   filterSensitiveContent(content) {
     if (!content || typeof content !== 'string') {
       return content;
@@ -64,7 +59,6 @@ class FeedbackService {
       /127\.0\.0\.1/g,
       /localhost:[0-9]+/gi,
       
-      // Información de base de datos
       /postgresql:\/\/[^\s\])\}]+/gi,
       /mysql:\/\/[^\s\])\}]+/gi,
       /mongodb:\/\/[^\s\])\}]+/gi,
@@ -102,11 +96,6 @@ class FeedbackService {
     return filteredContent;
   }
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Filtra contenido sensible en objetos JSON
-   * @param {any} obj - Objeto a filtrar
-   * @returns {any} Objeto filtrado
-   */
   filterJsonContent(obj) {
     if (typeof obj !== 'object' || obj === null) {
       return obj;
@@ -138,11 +127,6 @@ class FeedbackService {
     return filtered;
   }
 
-/**
-   * ✅ NUEVA FUNCIÓN MEJORADA: Limpia HTML y convierte a texto plano
-   * @param {string} htmlContent - Contenido HTML a limpiar
-   * @returns {string} Texto plano limpio
-   */
   cleanHtmlToPlainText(htmlContent) {
     if (!htmlContent || typeof htmlContent !== 'string') {
       return htmlContent;
@@ -228,11 +212,6 @@ class FeedbackService {
     }
   }
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Convierte MathJax HTML a LaTeX simple
-   * @param {string} content - Contenido con MathJax
-   * @returns {string} Contenido con LaTeX simple
-   */
   convertMathJaxToLatex(content) {
     try {
       content = content.replace(
@@ -265,11 +244,6 @@ class FeedbackService {
     }
   }
 
-  /**
-   * ✅ NUEVA FUNCIÓN: Convierte listas HTML a texto plano
-   * @param {string} content - Contenido con listas HTML
-   * @returns {string} Contenido con listas en texto plano
-   */
   convertHtmlListsToText(content) {
     try {
       content = content.replace(/<ul[^>]*>(.*?)<\/ul>/gs, (match, listContent) => {
@@ -303,9 +277,6 @@ class FeedbackService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN MEJORADA: Obtiene el contenido original de un mensaje específico
-   */
   async getMessageOriginalContent(chatId, userId, messageId) {
     try {
       console.log(`🔍 [FEEDBACK SERVICE] Verificando acceso - Chat: ${chatId}, Usuario: ${userId}, Mensaje: ${messageId}`);

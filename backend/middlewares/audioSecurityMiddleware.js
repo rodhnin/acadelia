@@ -105,7 +105,6 @@ export const validateAudioSecurity = async (req, res, next) => {
           }
         }
         
-        // Solo bloquear si ClamAV detectó virus específicos (no solo análisis heurístico)
         if (!scanResult.clean && !scanResult.skipped && scanResult.viruses && scanResult.viruses.length > 0) {
           return res.status(400).json({
             success: false,

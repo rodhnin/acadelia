@@ -540,7 +540,6 @@ renderExpenses() {
         // Total de gastos que son fiscalmente deducibles
         totals.deductibleExpenses += parseFloat(expense.amount || 0);
         
-        // Solo el IVA que es deducible
         totals.deductibleVAT += parseFloat(expense.tax_amount || 0);
       }
       
@@ -629,7 +628,7 @@ renderExpenses() {
             const txDate = new Date(tx.updated_at || tx.created_at);
             const start = new Date(dateFrom);
             const end = new Date(dateTo);
-            end.setHours(23, 59, 59, 999); // Incluir todo el día final
+            end.setHours(23, 59, 59, 999);
             
             return txDate >= start && txDate <= end;
           });
@@ -645,7 +644,6 @@ renderExpenses() {
         console.warn('Error con método alternativo:', err);
       }
       
-      // Si todo falla, al menos mostrar algún dato para testing
       console.warn('No se pudieron obtener datos de ingresos');
       return 0;
     } catch (error) {
@@ -876,7 +874,6 @@ renderExpenses() {
       const expenseDate = new Date(expense.date);
       const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
       
-      // Solo añadir si está dentro del rango de los últimos 12 meses
       if (monthsData[monthKey]) {
         monthsData[monthKey].total += parseFloat(expense.amount);
       }
@@ -1993,7 +1990,6 @@ exportExpenses() {
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
       
-      // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {}),
       
       // Opciones para deducibles

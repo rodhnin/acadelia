@@ -1,15 +1,10 @@
 
-// ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleEconomicHistoryQuery, handleEconomicHistoryMultimodalQuery, handleEconomicHistoryQueryWithoutSaving, handleEconomicHistoryMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/economia/historiaeconomicaService.js";
 import { validateQueryParams, validateMultimodalParams, generateAttachmentsSummary } from "../../../../utils/chat/theoryutils.js";
 import { logSecurityEvent } from '../../../../utils/securityLogger.js';
 import pool from '../../../../lib/dbPool.js';
-import { TokenManager } from "../../../../utils/shared/tokenManager.js"; // 🚀 ÚNICO IMPORT NECESARIO
+import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * ✅ FUNCIÓN ULTRA-SIMPLIFICADA: queryHistoriaEconomica
- * REDUCCIÓN: 90% menos código usando TokenManager.handleCompleteAvaController
- */
 export const queryHistoriaEconomica = async (req, res) => {
   const validationErrors = validateQueryParams(req.body);
   const avaAccessInfo = req.accessInfo?.avaAccess || {};
@@ -63,7 +58,6 @@ export const queryHistoriaEconomicaMultimodal = async (req, res) => {
         return result;
       }
 
-      // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
       if (result.success && result.chatId) {
         try {
           const client = await pool.connect();

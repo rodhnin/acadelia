@@ -4,7 +4,6 @@ import { logSecurityEvent } from '../utils/securityLogger.js';
 
 dotenv.config();
 
-// 🆕 Simple Circuit Breaker implementation
 class CircuitBreaker {
     constructor(threshold = 5, timeout = 30000) {
         this.threshold = threshold;
@@ -63,10 +62,8 @@ class RedisService {
         this.connectionPromise = null;
         this.isInitializing = false;
 
-        // 🆕 Circuit Breaker para operaciones críticas
         this.circuitBreaker = new CircuitBreaker(5, 30000);
 
-        // 🆕 Métricas de operaciones
         this.operationMetrics = {
             totalOperations: 0,
             failedOperations: 0,
@@ -89,20 +86,17 @@ class RedisService {
         if (process.env.REDIS_URL) {
             console.log('🚀 Conectando a Redis via REDIS_URL (Fly.io/Upstash)');
 
-            // ⭐ DETECTAR UPSTASH y configurar para FLY.IO
             const isUpstash = process.env.REDIS_URL.includes('upstash.io');
             const isProduction = process.env.NODE_ENV === 'production';
 
             console.log(`🔍 Upstash detectado: ${isUpstash}, Producción: ${isProduction}`);
 
             if (isUpstash) {
-                // ⭐ CONFIGURACIÓN ESPECÍFICA PARA FLY.IO + UPSTASH
                 redisConfig = {
                     host: process.env.REDIS_URL.match(/@([^:/?]+)/)?.[1],
                     port: parseInt(process.env.REDIS_URL.match(/:(\d+)(?:[/?]|$)/)?.[1]) || 6379,
                     password: process.env.REDIS_URL.match(/redis[s]?:\/\/[^:]*:([^@]+)@/)?.[1],
-                    family: 6, // ⭐ FORZAR IPv6 para Fly.io
-                    // ⭐ NO TLS - Fly.io maneja SSL internamente
+                    family: 6,
                     connectTimeout: 15000,
                     commandTimeout: 10000,
                     lazyConnect: true,
@@ -121,7 +115,7 @@ class RedisService {
                         return delay;
                     },
 
-                    enableOfflineQueue: false, // ⭐ DESHABILITAR para fallar rápido
+                    enableOfflineQueue: false,
                     autoResubscribe: false,
                     autoResendUnfulfilledCommands: false,
                 };
@@ -152,7 +146,7 @@ class RedisService {
                 port: redisConfig.port || 'via URL',
                 hasPassword: !!redisConfig.password,
                 passwordPrefix: redisConfig.password ? redisConfig.password.substring(0, 8) + '...' : 'NO PASSWORD',
-                hasTLS: false, // ⭐ SIN TLS para Fly.io
+                hasTLS: false,
                 family: redisConfig.family || 'default',
                 connectTimeout: redisConfig.connectTimeout,
                 isUpstash
@@ -203,7 +197,6 @@ class RedisService {
 
     async setupEventListeners() {
         return new Promise((resolve) => {
-            // ⭐ TIMEOUT DE CONEXIÓN INICIAL OPTIMIZADO PARA FLY.IO
             const isUpstash = process.env.REDIS_URL?.includes('upstash.io');
             const connectionTimeout = setTimeout(() => {
                 console.warn('⚠️ Redis: Timeout de conexión inicial, cambiando a modo fallback');
@@ -216,7 +209,6 @@ class RedisService {
                 this.isConnected = false;
                 this.operationMetrics.failedOperations++;
 
-                // ⭐ LOG ESPECÍFICO PARA FLY.IO/UPSTASH
                 if (err.code === 'ECONNREFUSED') {
                     console.log('🔴 Redis: Conexión rechazada. Verificar que Redis esté ejecutándose.');
                 } else if (err.code === 'ETIMEDOUT') {
@@ -251,7 +243,6 @@ class RedisService {
                 console.log('✅ Redis: Listo para recibir comandos');
                 this.isConnected = true;
 
-                // ⭐ VERIFICAR CONEXIÓN CON PING
                 this.client.ping()
                     .then(() => console.log('🏓 Redis: PING exitoso'))
                     .catch(err => console.warn('⚠️ Redis: PING falló:', err.message));
@@ -266,11 +257,9 @@ class RedisService {
                 this.isConnected = false;
             });
 
-            // ⭐ INTENTO DE CONEXIÓN INICIAL
             this.client.connect().catch((err) => {
                 console.error('❌ Redis: Error en conexión inicial:', err.message);
 
-                // ⭐ DIAGNÓSTICO ESPECÍFICO PARA FLY.IO
                 if (isUpstash) {
                     console.error('🔍 Upstash Debug Info:', {
                         redisUrl: process.env.REDIS_URL ? 'PRESENTE' : 'AUSENTE',
@@ -285,7 +274,6 @@ class RedisService {
                 resolve(false);
             });
 
-            // ⭐ MANEJO DE CIERRE GRACIOSO
             process.on('SIGINT', () => {
                 console.log('🔄 Cerrando conexión Redis...');
                 if (this.client) {
@@ -303,7 +291,6 @@ class RedisService {
         });
     }
 
-    // 🆕 Wrapper para operaciones con Circuit Breaker
     async executeWithCircuitBreaker(operation, operationName = 'redis_operation') {
         this.operationMetrics.totalOperations++;
 
@@ -323,7 +310,6 @@ class RedisService {
         }
     }
 
-    // ⭐ VERIFICAR SALUD DE REDIS
     async healthCheck() {
         if (!this.isConnected || !this.client) {
             return {
@@ -381,7 +367,6 @@ class RedisService {
         }
     }
 
-    // 🆕 Método simplificado para operaciones múltiples
     async executeSimple(operations) {
         return this.executeWithCircuitBreaker(async () => {
             if (!this.isConnected) {
@@ -702,7 +687,6 @@ class RedisService {
         };
     }
 
-    // 🆕 Método para resetear métricas
     resetMetrics() {
         this.operationMetrics = {
             totalOperations: 0,
@@ -712,7 +696,6 @@ class RedisService {
         };
     }
 
-    // ======== MÉTODOS PDF CACHE ========
 
     async invalidatePdfCache(pdfId) {
         if (!this.isConnected) {
@@ -805,7 +788,6 @@ class RedisService {
         }
     }
 
-    // ======== MÉTODOS DE EXTRACCIÓN ========
 
     _generateExtractionKey(operation, chatId, userId, pdfId, options = {}) {
         const normalizedOptions = {};

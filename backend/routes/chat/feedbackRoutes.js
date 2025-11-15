@@ -2,7 +2,7 @@ import express from 'express';
 import { 
     processFeedback, 
     processPendingFeedbacks,
-    getMessageOriginalContent  // ✅ Nueva importación
+    getMessageOriginalContent
 } from '../../controllers/chat/feedbackController.js';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
 import { isAdmin } from '../../middlewares/adminMiddleware.js';

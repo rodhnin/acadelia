@@ -18,9 +18,8 @@ class HybridChatMemory {
       },
       userMemory: {
         extractPersonalInfo: true,
-        maxPersonalFacts: 1    // Solo el más importante
+        maxPersonalFacts: 1
       },
-      // ✨ NUEVA CONFIGURACIÓN: Detección de continuación
       conversationFlow: {
         continuationThreshold: 0.7,  // Umbral para detectar continuaciones
         maxMessagesForContinuation: 2, // Revisar últimos 2 mensajes para contexto
@@ -34,8 +33,6 @@ class HybridChatMemory {
     };
   }
 
-  // ============================================================================
-  // ============================================================================
   
   async loadHybridChatMemory(userId, avaId, chatId, currentQuery, herramientaId = null) {
     console.log(`🧠 ========== MEMORIA HÍBRIDA ACTIVADA ==========`);
@@ -47,7 +44,6 @@ class HybridChatMemory {
         throw new Error("UUID de chat inválido");
       }
 
-      // ✨ NUEVA LÓGICA: Detectar si es continuación de conversación
       const isContinuation = await this.detectConversationContinuation(
         userId, avaId, chatId, currentQuery, herramientaId
       );
@@ -96,9 +92,6 @@ class HybridChatMemory {
     }
   }
 
-  // ============================================================================
-  // ✨ NUEVA FUNCIÓN: Detectar continuación de conversación
-  // ============================================================================
   
   async detectConversationContinuation(userId, avaId, chatId, currentQuery, herramientaId = null) {
     const client = await pool.connect();
@@ -191,8 +184,6 @@ class HybridChatMemory {
     }
   }
 
-  // ============================================================================
-  // ============================================================================
   
   async loadImmediateContext(userId, avaId, chatId, herramientaId = null) {
     const client = await pool.connect();
@@ -243,8 +234,6 @@ class HybridChatMemory {
     }
   }
 
-  // ============================================================================
-  // ============================================================================
   
   async loadSemanticMemory(userId, avaId, chatId, currentQuery, herramientaId = null) {
     try {
@@ -299,8 +288,6 @@ class HybridChatMemory {
     }
   }
 
-  // ============================================================================
-  // ============================================================================
   
   async loadUserMemory(userId, avaId, chatId, herramientaId = null) {
     const client = await pool.connect();
@@ -342,7 +329,6 @@ class HybridChatMemory {
         return [];
       }
       
-      // Solo extraer el dato más importante
       const mostImportantFact = result.rows[0];
       const fact = this.extractPersonalInfo(mostImportantFact.message);
       
@@ -364,9 +350,6 @@ class HybridChatMemory {
     }
   }
 
-  // ============================================================================
-  // 🧠 NUEVA FUNCIÓN: Combinar fuentes de memoria inteligentemente
-  // ============================================================================
   
   combineMemorySourcesIntelligently(immediateContext, semanticMemory, userMemory, currentQuery, isContinuation) {
     console.log(`🎯 Combinando fuentes de memoria (continuación: ${isContinuation})...`);
@@ -377,7 +360,7 @@ class HybridChatMemory {
       console.log(`⏭️ Modo continuación: priorizando MEMORIA DEL CHAT PARA EL PROFESOR ACADEL`);
       allMemory = [
         ...immediateContext,   // Prioridad MÁXIMA
-        ...userMemory.slice(0, 1) // Solo 1 dato personal si existe
+        ...userMemory.slice(0, 1)
       ];
     } else {
       console.log(`🆕 Modo nueva consulta: incluyendo memoria completa`);
@@ -416,8 +399,6 @@ class HybridChatMemory {
     }));
   }
 
-  // ============================================================================
-  // ============================================================================
   
   extractPersonalInfo(message) {
     // Patrones más específicos para información realmente importante
@@ -465,8 +446,6 @@ class HybridChatMemory {
   }
 }
 
-// ============================================================================
-// ============================================================================
 
 const hybridMemory = new HybridChatMemory();
 

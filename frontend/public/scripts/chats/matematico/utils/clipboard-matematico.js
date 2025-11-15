@@ -12,7 +12,6 @@ import {
   getAttribute
 } from '../../shared/dom-helpers.js';
 
-// ⭐ NUEVA IMPORTACIÓN: Modal de copia manual de Acadel
 import { showAcadelManualCopyModal } from '../ui/modals-matematico.js';
 
 // Constante para identificar timeouts de botones de copia
@@ -59,12 +58,6 @@ export async function copyToClipboard(text, options = {}) {
   return copyToClipboardFallback(text, { button, showNotification });
 }
 
-/**
- * ⭐ ACTUALIZADO: Manejador de fallback usando la modal de Acadel
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve o rechaza según el resultado
- */
 async function copyToClipboardFallback(text, options = {}) {
   const { button, showNotification = true } = options;
   
@@ -80,7 +73,6 @@ async function copyToClipboardFallback(text, options = {}) {
       updateButtonState(button, 'processing', originalButtonContent);
     }
     
-    // ⭐ NUEVO: Usar la modal de Acadel para copia manual
     const userInteracted = await showAcadelManualCopyModal(text, options);
     
     if (userInteracted) {
@@ -125,12 +117,6 @@ async function copyToClipboardFallback(text, options = {}) {
   }
 }
 
-/**
- * ⭐ MEJORADO: Actualiza el estado visual de un botón de copia
- * @param {HTMLElement} button - Elemento botón
- * @param {string} state - Estado ('success', 'error', 'processing', 'default')
- * @param {string} originalContent - Contenido original para restaurar
- */
 export function updateButtonState(button, state, originalContent) {
   if (!button) return;
   
@@ -148,7 +134,7 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.add('error');
       button.classList.remove('copied', 'processing');
       break;
-    case 'processing':  // ⭐ NUEVO ESTADO
+    case 'processing':
       newContent = '<i class="bx bx-loader-alt bx-spin"></i> Acadel...';
       button.classList.add('processing');
       button.classList.remove('copied', 'error');

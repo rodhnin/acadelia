@@ -36,17 +36,6 @@ const checkAdminRole = async (userId) => {
   }
 };
 
-/**
- * 🔒 MIDDLEWARE UNIFICADO DE AUTENTICACIÓN Y ROLES - CORREGIDO
- * 
- * NUEVO: Maneja redirecciones a /login correctamente
- * 
- * Maneja:
- * - Verificación del token JWT CON RENOVACIÓN AUTOMÁTICA
- * - Redirección obligatoria a /login para páginas HTML
- * - Verificación de rol admin para rutas admin
- * - Respuestas JSON apropiadas para APIs
- */
 export const requireAuthentication = (options = {}) => {
   const { 
     requireAdmin = false,
@@ -226,10 +215,6 @@ export const requireAuthentication = (options = {}) => {
   };
 };
 
-/**
- * 🔄 NUEVA FUNCIÓN: Middleware opcional que USA authMiddleware como base
- * Para rutas que pueden o no requerir autenticación pero quieren renovación
- */
 export const optionalAuthentication = (options = {}) => {
   const { 
     category = null 
@@ -273,10 +258,6 @@ export const optionalAuthentication = (options = {}) => {
   };
 };
 
-/**
- * 🎯 HELPERS PRE-CONFIGURADOS - MEJORADOS
- * Funciones de conveniencia para casos comunes usando el sistema refactorizado
- */
 
 /**
  * Middleware para vistas que requieren autenticación (dashboard, payments)
@@ -337,12 +318,7 @@ export const requireAuthForCategory = (category) => {
   return requireAuthentication(config[category] || {});
 };
 
-// ===== AGREGAR AL FINAL DEL ARCHIVO frontendAuthenticationMIddleware.js =====
 
-/**
- * 🔄 NUEVO: Middleware para redirigir usuarios YA autenticados
- * Útil para páginas como /login que no deberían ser accesibles si ya estás logueado
- */
 export const redirectIfAuthenticated = (options = {}) => {
   const { 
     redirectTo = '/principal',
@@ -351,7 +327,6 @@ export const redirectIfAuthenticated = (options = {}) => {
 
   return async (req, res, next) => {
     try {
-      // Solo aplicar a rutas específicas de autenticación
       const currentView = req.params.view || req.path.replace('/', '');
       
       if (!authRoutes.includes(currentView)) {
@@ -395,9 +370,6 @@ export const redirectIfAuthenticated = (options = {}) => {
   };
 };
 
-/**
- * 🎯 HELPER PRE-CONFIGURADO: Middleware para páginas de login/registro
- */
 export const redirectAuthenticatedUsers = redirectIfAuthenticated({
   redirectTo: '/principal',
   authRoutes: ['login', 'registro', '']

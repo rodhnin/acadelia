@@ -1,10 +1,6 @@
 
 import pool from "../../lib/dbPool.js";
 
-/**
- * 🔧 SERVICIO DE CACHE PARA AVAs - CORREGIDO
- * ✅ SOLUCIONADO: Logging detallado y verificación robusta de slugs
- */
 class AvaCacheService {
   constructor() {
     this.avaCache = new Set();
@@ -26,9 +22,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔍 VERIFICAR SI UNA RUTA ES UN AVA - CON LOGGING DETALLADO
-   */
   async isAvaRoute(slug) {
     try {
       console.log(`🔍 [AVA-CACHE] === VERIFICANDO RUTA: "${slug}" ===`);
@@ -74,9 +67,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔍 OBTENER DATOS COMPLETOS DE UN AVA POR SLUG - OPTIMIZADO
-   */
   async getAvaBySlug(slug) {
     try {
       console.log(`🔍 [AVA-CACHE] === OBTENIENDO DATOS COMPLETOS PARA: "${slug}" ===`);
@@ -141,9 +131,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔄 ACTUALIZAR CACHE SI ES NECESARIO
-   */
   async updateCacheIfNeeded() {
     const now = Date.now();
     const cacheAge = now - this.cacheLastUpdate;
@@ -158,9 +145,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔄 ACTUALIZAR CACHE DESDE BD - CON LOGGING DETALLADO
-   */
   async refreshCache() {
     console.log(`🔧 [AVA-CACHE] === ACTUALIZANDO CACHE DESDE BD ===`);
     
@@ -231,9 +215,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🧹 LIMPIAR CACHE MANUALMENTE
-   */
   clearCache() {
     this.avaCache.clear();
     this.avaDataCache.clear();
@@ -241,9 +222,6 @@ class AvaCacheService {
     console.log('🧹 [AVA-CACHE] Cache limpiado manualmente');
   }
 
-  /**
-   * ➕ AÑADIR SLUG AL CACHE
-   */
   addToCache(slug, avaData = null) {
     this.avaCache.add(slug);
     
@@ -255,9 +233,6 @@ class AvaCacheService {
     console.log(`➕ [AVA-CACHE] AVA "${slug}" añadido al cache`);
   }
 
-  /**
-   * ➖ REMOVER SLUG DEL CACHE
-   */
   removeFromCache(slug) {
     this.avaCache.delete(slug);
     
@@ -267,9 +242,6 @@ class AvaCacheService {
     console.log(`➖ [AVA-CACHE] AVA "${slug}" removido del cache`);
   }
 
-  /**
-   * 📊 OBTENER ESTADÍSTICAS DEL CACHE
-   */
   getCacheStats() {
     return {
       slugsCount: this.avaCache.size,
@@ -282,9 +254,6 @@ class AvaCacheService {
     };
   }
 
-  /**
-   * 🔍 DEBUGGING: BUSCAR SLUG SIMILAR
-   */
   findSimilarSlugs(searchSlug) {
     const normalizedSearch = searchSlug.toLowerCase().trim();
     const similar = [];

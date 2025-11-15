@@ -238,7 +238,6 @@ advanceToStage(stageIndex) {
   
   // Animación suave hasta el valor objetivo
   this.animateProgressTo(this.loadingProgress, targetValue, 600, () => {
-    // Solo simular progreso si no estamos ya por delante
     if (this.loadingProgress < newStage.end * 0.85) {
       this.simulateStageProgress(newStage);
     }
@@ -336,7 +335,6 @@ simulateStageProgress(stage) {
   // No simular en la etapa final
   if (stage.id === 'finish') return;
   
-  // Solo permitir una simulación por etapa para evitar múltiples intervalos
   if (this.currentSimulationInterval) {
     clearInterval(this.currentSimulationInterval);
   }

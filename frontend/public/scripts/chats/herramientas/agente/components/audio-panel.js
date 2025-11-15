@@ -1684,7 +1684,6 @@ getFileExtensionFromMimeType(mimeType) {
     }
   }
   
-  // Si todo falla, usar .mp3 como fallback seguro
   return '.mp3';
 }
 
@@ -2046,7 +2045,6 @@ async handleFileUpload(file) {
     
     // 5. Asegurarse de que el botón de audio está visible
     if (this.audioButton) {
-      // Solo mostrarlo si no hay transcripciones existentes
       const chatId = getState('currentChatId');
       if (chatId) {
         if (window.buttonUpdater && typeof window.buttonUpdater.updateButtons === 'function') {

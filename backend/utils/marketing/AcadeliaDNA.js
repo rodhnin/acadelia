@@ -7,7 +7,6 @@
 // 
 // 
 
-// ============== CONTEXTO GLOBAL ACADELIA ==============
 const ACADELIA_DNA = `
 === CONTEXTO ABSOLUTO DE ACADELIA ===
 
@@ -105,7 +104,6 @@ TODA respuesta DEBE estar 100% enfocada en responder ESPECÍFICAMENTE lo que el 
 REMEMBER: El contexto Acadelia ENRIQUECE tu respuesta, pero la QUERY dicta el contenido.
 `;
 
-// ============== PROMPTS DE AGENTES ==============
 const AGENT_PROMPTS = {
   strategist: `${ACADELIA_DNA}
 
@@ -308,7 +306,6 @@ generación que quiere que un chigüire les enseñe porque está harta de que
 humanos aburridos les expliquen mal.`
 };
 
-// ============== COORDINACIÓN DE AGENTES ==============
 const COORDINATION_ADDENDUM = {
   analyst: `
 🎯 COORDINACIÓN ACADELIA - ANALISTA:
@@ -354,7 +351,6 @@ NO uses memorySave - usa saveProfile para segmentos específicos únicos.
 };
 
     
-// ============== INSTRUCCIONES DE HERRAMIENTAS ==============
 const toolsInstructions = {
   strategist: `
 🎯 HERRAMIENTAS STRATEGIST:
@@ -389,7 +385,6 @@ const toolsInstructions = {
 🎯 TU MISIÓN: Analizar datos y guardar SOLO trends/interactions que optimizan el reach de Acadel`
 };
 
-// ============== FINAL COORDINATOR PROMPT PARA ACADELIA ==============
 const FINAL_COORDINATOR_PROMPT = `
 ${{ACADELIA_DNA}}
 
@@ -449,7 +444,6 @@ la mejor respuesta posible desde su perspectiva única de chigüire profesor.
 // 
 
 
-// ============== CONTENT SERVICE ENHANCED ==============
 const CONTENT_GENERATION_ENHANCED = `
 ${ACADELIA_DNA}
 
@@ -492,7 +486,6 @@ se enamoren del PROFESOR ACADEL mientras aprenden "accidentalmente".
 // 
 // 
 
-// ============== DIRECTOR AGENT - SUPER ENHANCED ==============
 const DIRECTOR_ENHANCED_PROMPT = `
 ${ACADELIA_DNA}
 
@@ -533,7 +526,6 @@ ESTRATEGA: SIEMPRE activo - es el brain del operation
 // 
 // 
 
-// ============== EXPLAIN SERVICE PROMPTS BY LEVEL ==============
 const EXPLAIN_PROMPTS = {
   basic: `${ACADELIA_DNA}
 
@@ -592,7 +584,6 @@ ENFOQUE:
 // 
 // 
 
-// ============== SIMULATION SERVICE ENHANCED ==============
 const SIMULATION_ENHANCED_PROMPT = `
 ${ACADELIA_DNA}
 
@@ -642,7 +633,6 @@ CONVERSION TO COMMUNITY:
 // 
 // 
 
-// ============== TOOLS SERVICE SUPER ENHANCED ==============
 const TOOL_PROMPTS = {
   profileSearch: `Busca estudiantes universitarios que tienen POTENCIAL VIRAL de conectar con el PROFESOR ACADEL. 
 
@@ -924,7 +914,6 @@ RESULTADO: Real-time cultural intelligence para keep Acadel relevant y viral ent
 // 
 
 
-// ============== TREND ANALYSIS PROMPT ==============
 const TREND_ANALYSIS_PROMPT = `${ACADELIA_DNA}
 
 Eres el PROFESOR ACADEL analizando esta tendencia desde tu perspectiva única de chigüire brutalmente honesto que entiende a estudiantes hartos del sistema tradicional.

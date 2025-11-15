@@ -86,7 +86,6 @@ function enableImageDragging() {
       return; // No activar arrastre en modo selección
     }
     
-    // Solo permitir arrastre cuando la imagen está ampliada
     if (viewerState.currentZoom <= 1) return;
     
     isDragging = true;
@@ -313,7 +312,6 @@ function handleDownload() {
  * @param {WheelEvent} e - Evento de rueda
  */
 function handleZoomGesture(e) {
-  // Solo activar zoom si se presiona Ctrl
   if (e.ctrlKey) {
     // Prevenir el default solo cuando vamos a hacer zoom
     e.preventDefault();
@@ -340,7 +338,6 @@ function handleZoomGestureRobust(e) {
   const shouldZoom = e.ctrlKey || e.metaKey; // Ctrl en Windows/Linux, Cmd en Mac
   
   if (shouldZoom) {
-    // Solo prevenir default cuando realmente vamos a hacer zoom
     try {
       e.preventDefault();
       e.stopPropagation();
@@ -492,7 +489,6 @@ async function updateThumbnails() {
       pagesToShow.push(totalPages);
     }
     
-    // Incluir la página actual si no es la primera ni la última
     if (currentPage > 1 && currentPage < totalPages) {
       pagesToShow.push(currentPage);
     }

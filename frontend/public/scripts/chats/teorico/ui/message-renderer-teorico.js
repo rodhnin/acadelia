@@ -1,9 +1,3 @@
-/**
- * message-renderer.js - Sistema optimizado de renderizado de mensajes basado en tipos
- * Versión optimizada para seguridad, rendimiento y mantenibilidad
- * 🦫 INTEGRADO CON SISTEMA DE NOTIFICACIONES ACADEL
- * ✅ REFACTORIZADO: Usa sistema avanzado de procesamiento de imágenes del PDF
- */
 import { APP_CONFIG } from '../core/config-teorico.js';
 import { getElement } from './ui-manager-teorico.js';
 import {
@@ -29,8 +23,6 @@ import {
 } from '../../shared/mermaid-utils.js';
 import contentProcessing, { detectMultimodalContent, cleanMultimodalExistingContent } from './content-processing-teorico.js';
 
-// ==========================================
-// ==========================================
 import {
   processImagesOptimized,
   initializeImagePreviewHandlers,
@@ -333,7 +325,6 @@ function extractDocumentContent(originalMessage, fileName) {
     return textContent;
     
   } catch (e) {
-    // 🦫 CAMBIO: Error más amigable
     acadelError(
       "Error extrayendo documento", 
       `Acadel tuvo problemas procesando el archivo "${fileName}". Mi cerebro de capibara se confundió.`
@@ -412,7 +403,6 @@ function extractCodeContent(originalMessage, fileName) {
     
     return `// Acadel buscó por todas partes pero no encontró código para: ${normalizedFileName}\n// ¿Estás seguro de que hay código aquí?`;
   } catch (e) {
-    // 🦫 CAMBIO: Error más amigable
     acadelError(
       "Error extrayendo código", 
       `Acadel tuvo problemas extrayendo el código de "${fileName}": ${e.message}`
@@ -421,14 +411,7 @@ function extractCodeContent(originalMessage, fileName) {
   }
 }
 
-// ==========================================
-// ==========================================
 
-/**
- * ✅ NUEVA FUNCIÓN: Procesa imágenes externas inmediatamente usando el sistema del PDF
- * @param {HTMLElement} container - Contenedor con imágenes
- * @param {NodeList} externalImages - Lista de imágenes externas (opcional)
- */
 async function processExternalImagesRealTime(container, externalImages) {
   if (!externalImages) {
     externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
@@ -448,20 +431,10 @@ async function processExternalImagesRealTime(container, externalImages) {
   return result;
 }
 
-/**
- * ✅ REFACTORIZADO: Usa el sistema de manejo de imágenes del PDF
- * @param {HTMLElement} container - Contenedor con imágenes
- */
 function initializeImagePreviewHandlersOptimized(container) {
   return initializeImagePreviewHandlers(container);
 }
 
-/**
- * ✅ REFACTORIZADO: Maneja errores de imagen usando el nuevo sistema del PDF
- * @param {HTMLElement} img - Elemento de imagen con error
- * @param {string} mode - Modo de manejo ('inline' o 'modal')
- * @param {Object} options - Opciones adicionales
- */
 function handleImageErrorOptimized(img, mode = 'inline', options = {}) {
   return handleImageError(img, mode, {
     isMultimodal: options.isMultimodal || false,
@@ -551,7 +524,7 @@ function setupCleanupObserver() {
         hasNewContent = true;
         
         mutation.addedNodes.forEach(node => {
-          if (node.nodeType === 1) { // Solo nodos de elemento
+          if (node.nodeType === 1) {
             const messages = node.classList?.contains('message') 
               ? [node]
               : Array.from(node.querySelectorAll('.message'));
@@ -1138,18 +1111,11 @@ function renderMermaidMessage(container, content) {
   }
 }
 
-/**
- * ✅ REFACTORIZADO: Renderiza un mensaje de texto con procesamiento optimizado de imágenes
- * @param {HTMLElement} container - Contenedor donde renderizar
- * @param {string} content - Contenido del mensaje
- * @param {string} role - Rol del mensaje (user o ai)
- */
 function renderTextMessage(container, content, role = '') {
   // VERIFICACIÓN CRÍTICA: Si es mensaje de IA, NO procesar como multimodal
   const isAIMessage = role === 'ai' || role === 'assistant';
   
   if (!isAIMessage) {
-    // Solo procesar como multimodal si es mensaje de usuario
     const processedContent = detectMultimodalContent(content, false);
 
     // Si el contenido cambió, es porque se procesó un mensaje multimodal
@@ -1220,7 +1186,6 @@ function renderTextMessage(container, content, role = '') {
   container.innerHTML = parseMarkdownToHTML(safeContent);
   
   if (hasImages) {
-    // ⭐ SOLO procesar si NO es contenido multimodal del usuario
     if (!container.querySelector('.multimodal-container .chat-image-item')) {
       initializeImagePreviewHandlersOptimized(container);
     }
@@ -1632,11 +1597,6 @@ function processTableData(content) {
   return null;
 }
 
-/**
- * ✅ REFACTORIZADO: Renderiza un mensaje de imagen - VERSIÓN CORREGIDA CON SISTEMA DEL PDF
- * @param {HTMLElement} container - Contenedor del mensaje
- * @param {Object|string} content - Datos de la imagen
- */
 function renderImageMessage(container, content) {
   try {
     console.log('🖼️ [DEBUG] Renderizando imagen, content recibido:', content);
@@ -1821,7 +1781,6 @@ function renderImageMessage(container, content) {
 function renderErrorMessage(container, content) {
     const errorMessage = content.errorMessage || 'Error desconocido';
     
-    // 🦫 Mensajes graciosos de Acadel para diferentes tipos de error (enseñanza general)
     const acadelErrorMessages = [
         "🦫 ¡Ups! Parece que mi cerebro de capibara tuvo un cortocircuito. Como cuando intentas estudiar sin cafeína...",
         "🦫 Mi peludo intelecto se trabó como estudiante en examen final. ¡Pero tranquilo, no es grave!",
@@ -1832,7 +1791,6 @@ function renderErrorMessage(container, content) {
         "🦫 Error 404: Sabiduría temporalmente en la piscina. Los capibaras necesitamos nuestros descansos acuáticos 🌊"
     ];
     
-    // 🦫 Consejos graciosos para el usuario (enseñanza general)
     const acadelAdvice = [
         "Mientras tanto, ¿qué tal si repasas esos apuntes que tienes pendientes? 📝",
         "Aprovecha para hidratarte, como buen capibara recomiendo agua abundante 💧",
@@ -1846,7 +1804,6 @@ function renderErrorMessage(container, content) {
     const randomMessage = acadelErrorMessages[Math.floor(Math.random() * acadelErrorMessages.length)];
     const randomAdvice = acadelAdvice[Math.floor(Math.random() * acadelAdvice.length)];
     
-    // 🦫 ESTRUCTURA EXACTA CON INLINE STYLES COMO EN cancelCurrentRequest()
     const errorContainer = createElement('div', { className: 'cancelled-message' });
     errorContainer.style.display = 'flex';
     errorContainer.style.alignItems = 'center';
@@ -1858,17 +1815,14 @@ function renderErrorMessage(container, content) {
     errorContainer.style.margin = '5px 0';
     errorContainer.style.borderLeft = '3px solid rgba(231,76,60,0.3)';
     
-    // 🦫 Icono divertido de Acadel confundido
     const icon = createElement('i', { className: 'bx bx-confused' });
     icon.style.fontSize = '1.3rem';
     icon.style.color = '#e74c3c';
     errorContainer.appendChild(icon);
     
-    // 🦫 Span con el mensaje principal
     const errorSpan = createElement('span', {}, randomMessage);
     errorContainer.appendChild(errorSpan);
     
-    // 🦫 Detalles adicionales con inline styles
     const errorDetails = createElement('div', { className: 'cancelled-details' });
     errorDetails.style.fontSize = '0.85rem';
     errorDetails.style.color = '#888';
@@ -1883,7 +1837,6 @@ function renderErrorMessage(container, content) {
     container.appendChild(errorContainer);
     container.appendChild(errorDetails);
     
-    // 🦫 Notificación de error específica pero amigable
     if (window.acadelInfo) {
         acadelInfo(
             "🦫 Momento de pausa capibarina",
@@ -1905,10 +1858,9 @@ function renderErrorContent(container, title, details = '') {
 
   const errorContainer = createElement('div', { className: errorClass });
 
-  const icon = createElement('i', { className: 'bx bx-dizzy' }); // 🦫 CAMBIO: Icono más expresivo
+  const icon = createElement('i', { className: 'bx bx-dizzy' });
   errorContainer.appendChild(icon);
 
-  // 🦫 CAMBIO: Texto más divertido
   const titleElem = createElement('p', {}, `🦫 ${sanitizeText(title)}`);
   errorContainer.appendChild(titleElem);
 
@@ -1959,7 +1911,6 @@ function renderAlertMessage(container, content) {
   const alertContent = createElement('div', { className: 'alert-content' });
 
   if (title) {
-    // 🦫 CAMBIO: Título más personalizado
     const titleElem = createElement('h4', { className: 'alert-title' }, `🦫 Acadel ${type === 'info' ? 'informa' : type === 'warning' ? 'advierte' : type === 'success' ? 'celebra' : 'reporta'}: ${sanitizeText(title)}`);
     alertContent.appendChild(titleElem);
   }
@@ -1973,7 +1924,6 @@ function renderAlertMessage(container, content) {
   clearElement(container);
   container.appendChild(alertMessage);
 
-  // 🦫 CAMBIO: Notificación según el tipo de alerta
   const notificationMap = {
     info: () => acadelInfo("ℹ️ Información", message),
     warning: () => acadelWarning("⚠️ Advertencia", message),
@@ -2001,14 +1951,12 @@ function renderActionMessage(container, content) {
   const actionButtons = createElement('div', { className: 'action-buttons' });
 
   actions.forEach(action => {
-    // 🦫 CAMBIO: Botones más atractivos
     const button = createElement('button', {
       className: 'action-button',
       dataset: { action: action.id }
     }, `🎯 ${sanitizeText(action.label)}`);
 
     addEvent(button, 'click', (e) => {
-      // 🦫 CAMBIO: Notificación al hacer clic en acción
       acadelInfo(
         "🎯 Acción ejecutada", 
         `Acadel está procesando: ${action.label}`
@@ -2036,7 +1984,6 @@ function renderActionMessage(container, content) {
   clearElement(container);
   container.appendChild(actionMessage);
 
-  // 🦫 CAMBIO: Notificación de acciones disponibles
   acadelInfo(
     "🎯 Acciones disponibles", 
     `Acadel tiene ${actions.length} acción(es) disponible(s) para ti`
@@ -2055,7 +2002,6 @@ export function renderChatMessages(messages) {
   clearElement(chatMessages);
 
   if (!messages || messages.length === 0) {
-    // 🦫 CAMBIO: Notificación cuando no hay mensajes
     acadelInfo(
       "💬 Chat vacío", 
       "Acadel está listo para una nueva conversación. ¡Pregúntame lo que quieras!"
@@ -2341,7 +2287,6 @@ function initializeInteractionAndScroll(messageElement) {
 export function replaceWithError(loadingMessage, errorMessage, originalQuery = '') {
     if (!loadingMessage) return;
     
-    // 🦫 Mensajes de error contextual según el tipo de problema (enseñanza general)
     const getContextualErrorMessage = (error) => {
         const errorLower = error.toLowerCase();
         
@@ -2369,7 +2314,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         return genericMessages[Math.floor(Math.random() * genericMessages.length)];
     };
     
-    // 🦫 Frases motivacionales educativas para no desanimar
     const motivationalPhrases = [
         "💡 Recuerda: Los grandes descubrimientos requieren paciencia y perseverancia",
         "🎯 Cada error es una oportunidad de aprender algo nuevo",
@@ -2401,7 +2345,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     const contextualMessage = getContextualErrorMessage(errorMessage);
     const randomMotivation = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
     
-    // 🦫 ESTRUCTURA EXACTA CON INLINE STYLES COMO EN cancelCurrentRequest()
     const errorContent = `
         <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(231,76,60,0.05);border-radius:8px;margin:5px 0;border-left:3px solid rgba(231,76,60,0.3);">
             <i class="bx bx-confused" style="font-size:1.3rem;color:#e74c3c;"></i>
@@ -2447,7 +2390,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         }
     }, 100);
     
-    // 🦫 Cerrar loading y mostrar mensaje amigable
     if (window.acadelCerrar && window.acadelInfo) {
         document.querySelectorAll('.notificacion-acadel.loading').forEach(notification => {
             const id = notification.dataset.id;
@@ -2912,7 +2854,6 @@ function createModal(options = {}) {
     alignItems: 'center'
   });
   
-  // 🦫 CAMBIO: Botón de cierre más atractivo
   const closeButton = document.createElement('button');
   closeButton.innerHTML = '❌ Cerrar';
   
@@ -3001,14 +2942,13 @@ function showErrorModal() {
   
   // Icono
   const icon = document.createElement('i');
-  icon.className = 'bx bx-confused'; // 🦫 CAMBIO: Icono más expresivo
+  icon.className = 'bx bx-confused';
   Object.assign(icon.style, {
     fontSize: '3rem',
     color: 'white',
     marginBottom: '15px'
   });
   
-  // 🦫 CAMBIO: Mensaje más divertido
   const message = document.createElement('p');
   message.textContent = '👻 ¡Imagen fantasma detectada! Acadel no puede identificar esta imagen. Las imágenes fantasma son muy escurridizas.';
   Object.assign(message.style, {
@@ -3029,16 +2969,12 @@ function showErrorModal() {
     }
   });
   
-  // 🦫 CAMBIO: Notificación de error
   acadelWarning(
     "👻 Imagen fantasma", 
     "Acadel no pudo cargar la imagen. Parece que se volvió invisible."
   );
 }
 
-/**
- * ✅ SISTEMA OPTIMIZADO PARA VISTA PREVIA DE IMÁGENES (ADAPTADO DEL PDF)
- */
 function setupImagePreviewSystem() {
   if (window._imagePreviewSystemConfigured) return;
   window._imagePreviewSystemConfigured = true;
@@ -3055,13 +2991,12 @@ function setupImagePreviewSystem() {
                       e.target.closest('.markdown-image') ||
                       e.target.closest('.multimodal-container img') ||
                       e.target.closest('.markdown-image-container') ||
-                      e.target.closest('.chat-image-item'); // ⭐ AGREGAR ESTE SELECTOR
+                      e.target.closest('.chat-image-item');
                       
     if (imgTarget) {
       e.preventDefault();
       e.stopPropagation();
       
-      // ⭐ MEJORAR LA LÓGICA DE EXTRACCIÓN DE URL:
       let imageSrc;
       
       // Caso 1: Imagen de archivo adjunto del usuario
@@ -3083,7 +3018,6 @@ function setupImagePreviewSystem() {
         }
       }
       
-      // Solo mostrar vista previa si tenemos una URL válida
       if (imageSrc && typeof window.showFullImage === 'function') {
         console.log('🦫 Acadel: Abriendo imagen:', imageSrc);
         window.showFullImage(imageSrc);

@@ -1029,7 +1029,6 @@ async loadRequiredData() {
     this.ui.showLoading('Cargando datos para informes...');
     
     const dataPromises = [
-      // Solo cargar si no tenemos datos
       this.transactions.length === 0 ? this.api.getTransactions() : Promise.resolve(this.transactions),
       this.subscriptions.length === 0 ? this.api.getSubscriptions() : Promise.resolve(this.subscriptions),
       this.users.length === 0 ? this.api.getUsers() : Promise.resolve(this.users),
@@ -2717,7 +2716,6 @@ exportSubscriptionsReportWithManager(reportData, fileName, options) {
       }
     });
     
-    // Solo la columna Precio debería tener total
     const columnsWithTotals = ['Precio'];
     
     const currencyFormats = {
@@ -2861,7 +2859,6 @@ calculateSubscriptionsSummary(subscriptions) {
       statusCounts[sub.status]++;
     }
     
-    // Solo calcular ingresos para suscripciones activas
     if (sub.status === 'active') {
       const priceInfo = this.calculateSubscriptionPrice(sub);
       
@@ -2952,7 +2949,7 @@ async generateUsersReport(options) {
           const registrationDate = new Date(user.fecha_registro || user.created_at);
           return registrationDate >= options.dateRange.start && registrationDate <= options.dateRange.end;
         }
-        return true; // Incluir usuarios sin fecha de registro
+        return true;
       });
     }
     
@@ -3411,7 +3408,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
     };
     
     // MEJORA: Preparar datos de análisis para el informe
-    // Incluir top 5 países por número de usuarios
     const topCountries = {};
     reportData.summary.countryDistribution.slice(0, 5).forEach(country => {
       topCountries[country.country] = {
@@ -3421,7 +3417,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
       };
     });
     
-    // Incluir top 5 productos por número de usuarios
     const topProducts = {};
     reportData.summary.productDistribution.slice(0, 5).forEach(product => {
       topProducts[product.product] = {
@@ -3797,7 +3792,6 @@ calculateMonthlyTrendsForProduct(transactions) {
     const txDate = new Date(tx.updated_at || tx.created_at);
     const monthKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
     
-    // Solo procesar si está en uno de los últimos 12 meses
     if (monthsMap[monthKey]) {
       monthsMap[monthKey].transactions++;
       
@@ -3966,7 +3960,6 @@ calculateMonthlyTrendsForAllProducts(transactions) {
     const txDate = new Date(tx.updated_at || tx.created_at);
     const monthKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
     
-    // Solo procesar si está en uno de los últimos 12 meses
     if (monthsMap[monthKey]) {
       monthsMap[monthKey].transactions++;
       
@@ -4440,7 +4433,6 @@ calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptio
     const txDate = new Date(tx.updated_at || tx.created_at);
     const monthKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
     
-    // Solo procesar si está en uno de los últimos 12 meses
     if (monthsMap[monthKey]) {
       monthsMap[monthKey].transactions++;
       
@@ -4493,7 +4485,6 @@ calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptio
     const expenseDate = new Date(expense.date);
     const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
     
-    // Solo procesar si está en uno de los últimos 12 meses
     if (monthsMap[monthKey]) {
       monthsMap[monthKey].expenses += parseFloat(expense.amount || 0) + parseFloat(expense.tax_amount || 0);
     }
@@ -4570,19 +4561,14 @@ async exportComprehensiveReportToExcel(reportData, fileName, options) {
       period: reportData.period
     });
     
-    // =========== SECCIÓN 1: RESUMEN EJECUTIVO ===========
     this.addExecutiveSummarySection(worksheet, reportData.executiveSummary);
     
-    // =========== SECCIÓN 2: ANÁLISIS FINANCIERO ===========
     this.addFinancialAnalysisSection(worksheet, reportData);
     
-    // =========== SECCIÓN 3: ANÁLISIS DE SUSCRIPCIONES ===========
     this.addSubscriptionAnalysisSection(worksheet, reportData);
     
-    // =========== SECCIÓN 4: ANÁLISIS DE PRODUCTOS ===========
     this.addProductAnalysisSection(worksheet, reportData);
     
-    // =========== SECCIÓN 5: TENDENCIAS MENSUALES ===========
     this.addMonthlyTrendsSection(worksheet, reportData.monthlyTrends);
     
     // Ajustar ancho de columnas
@@ -5935,7 +5921,6 @@ exportUsersReportToPDF(reportData, fileName, options) {
         percentage: inactivePercentage
       },
       
-      // Incluir análisis si está disponible
       ...(userAnalysis ? { userAnalysis } : {})
     });
     
@@ -7826,7 +7811,6 @@ exportSubscriptionsReportToPDF(reportData, fileName, options) {
       }
     });
     
-    // Solo la columna Precio debería tener total
     const columnsWithTotals = ['Precio'];
     
     const currencyFormats = {

@@ -1,8 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL EPISTEMOLOGÍA GENÉTICA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE EPISTEMOLOGÍA GENÉTICA SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -307,9 +299,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL EPISTEMOLOGÍA GENÉTICA DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE EPISTEMOLOGÍA GENÉTICA SUPREMO:
@@ -350,8 +339,6 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor de psicología, eres EL PROFESOR que integra psicología social, cognición social y teorías psicológicas como la epistemología genética real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Epistemología Genética.
 
@@ -497,9 +484,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE EPISTEMOLOGÍA GENÉTICA
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -594,7 +578,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -612,7 +596,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -646,7 +630,7 @@ const classifyQuery = (query, content = null) => {
     academicContexts.some(term => lowercaseQuery.includes(term));
   
   if (isSimpleQuery && !hasPsychologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -730,7 +714,7 @@ const classifyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -749,10 +733,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS PSICOLÓGICAS
 const ACADEL_PSYCHOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara psicólogo más brillante del universo en epistemología genética.
 
@@ -778,8 +759,8 @@ const createEpistemologyKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_epistemologia",
         similarityQueryName: "match_emb_epistemologia",
         keywordQueryName: "kw_match_emb_epistemologia",
@@ -1068,8 +1049,8 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_epistemologia",
         similarityQueryName: "match_emb_epistemologia",
         keywordQueryName: "kw_match_emb_epistemologia",
@@ -1105,7 +1086,6 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1295,8 +1275,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia psicológica según este an
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectPsychologyImageRequest = (query) => {
   const psychologyImageKeywords = [
@@ -1377,15 +1355,10 @@ const enhancePsychologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible para conceptos psicológicos`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedEpistemologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS DE EPISTEMOLOGÍA GENÉTICA CONSOLIDADAS
-  // ============================================================================
   
   const coreEpistemologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE EPISTEMOLOGÍA GENÉTICA INTEGRADO
@@ -1485,8 +1458,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas psicológicas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
   
   const epistemologyTypeInstructions = {
     casual_conversation: `
@@ -1559,8 +1530,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión real y aplicación práctica de epistemología genética`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1583,8 +1552,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara psicólogo más brillante del universo en epistemología genética, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta psicológica importante, y complementando con todas tus capacidades cuando mejoren pedagógicamente tu explicación psicológica'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1595,7 +1562,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
     createBravePsychologyAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema psicológico`);
     tools.unshift(createEpistemologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1660,8 +1626,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectPsychologyExamRequest = (query) => {
   const examKeywords = [
@@ -1720,8 +1684,8 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_epistemologia",
             similarityQueryName: "match_emb_epistemologia",
             keywordQueryName: "kw_match_emb_epistemologia",
@@ -1860,8 +1824,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEpistemologyQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1979,7 +1941,6 @@ export const handleEpistemologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2070,7 +2031,6 @@ export const handleEpistemologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2216,7 +2176,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2242,8 +2201,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEpistemologyMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2571,7 +2528,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const userMessageResult = await saveMultimodalMessage({
@@ -2627,7 +2583,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos neuropsicológicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2641,12 +2596,10 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         }
       },
       
-      // Información de seguridad neuropsicológica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
       
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2677,8 +2630,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleEpistemologyQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

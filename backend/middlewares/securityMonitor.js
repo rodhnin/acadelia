@@ -85,7 +85,6 @@ export const securityMonitor = async (req, res, next) => {
       return res.status(403).json({
         error: 'Acceso denegado',
         message: 'Tu IP ha sido bloqueada temporalmente. Contacta al administrador o espera 1 hora.',
-        // Información útil para desbloqueo (solo en desarrollo)
         unblockInfo: process.env.NODE_ENV !== 'production' ? {
           ip: clientIp,
           redisKey: `security:blacklist:${clientIp}`

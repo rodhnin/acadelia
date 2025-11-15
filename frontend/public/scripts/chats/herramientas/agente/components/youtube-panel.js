@@ -283,7 +283,6 @@ resetPanelData() {
       if (this.selectionActions && 
           this.selectionActions.classList.contains('visible') && 
           !e.target.closest('.youtube-selection-action')) {
-        // Solo cerramos si no hay selección activa o si el clic fue fuera de la selección
         const selection = window.getSelection();
         if (!selection || !selection.toString().trim()) {
           this.hideSelectionActions();
@@ -1098,7 +1097,6 @@ pauseMediaPlayback() {
    * Maneja el cambio de selección de texto
    */
   handleSelectionChange() {
-    // Solo procesar si el panel está visible
     if (!this.isVisible) return;
     
     const selection = window.getSelection();
@@ -1135,7 +1133,6 @@ pauseMediaPlayback() {
     this.selectionActions.style.top = `${rect.bottom + window.scrollY + 10}px`;
     this.selectionActions.style.left = `${rect.left + window.scrollX}px`;
     
-    // Solo mostrar si no está ya visible
     if (!this.selectionActions.classList.contains('visible')) {
       this.manuallyCloseSelectionActions = false;
       
@@ -1159,7 +1156,6 @@ pauseMediaPlayback() {
     setTimeout(() => {
       removeClass(this.selectionActions, 'visible');
       
-      // Solo limpiamos la selección si fue solicitado explícitamente
       if (this.manuallyCloseSelectionActions) {
         this.currentSelection = null;
         this.manuallyCloseSelectionActions = false;

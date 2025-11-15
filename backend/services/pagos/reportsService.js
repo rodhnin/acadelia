@@ -2826,7 +2826,6 @@ formatTrendsSection(doc, monthlyTrends) {
         amount = this.normalizeAmount(tx.amount) * this.normalizeAmount(tx.exchange_rate);
         // console.log(`Usando amount * exchange_rate: ${amount} para tx ${tx.transaction_id}`);
       }
-      // Si todo lo demás falla, usar lo que esté disponible
       else {
         const fallbackValue = tx.earnings || tx.amount || 0;
         amount = this.normalizeAmount(fallbackValue);

@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function createResponsiveButtons() {
-        // Solo crear los botones si estamos en móvil y no existen ya
         if (!isMobile()) return;
         
         if (!document.getElementById('mobile-ghost-register')) {

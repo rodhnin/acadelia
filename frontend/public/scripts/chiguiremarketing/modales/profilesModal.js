@@ -1273,7 +1273,6 @@ function createProfileDetailModal(profile) {
 function renderProfileDetailSections(metadata) {
   const sections = [];
   
-  // Información básica
   sections.push(`
     <div class="profile-detail-section">
       <h3><i class='bx bx-user'></i> Información Personal</h3>
@@ -1517,7 +1516,6 @@ if (document.readyState === 'loading') {
   initProfilesModal();
 }
 
-// 🆕 FUNCIÓN DE RESET PARA CONTENT MODAL
 function resetProfilesModalState() {
   console.log('🔄 Reiniciando estado de profiles modal...');
   

@@ -440,7 +440,6 @@ Reglas ESTRICTAS:
     }
   },
 
-  // 🆕 NUEVO: Eliminar contenido específico
   async deleteContent(contentId) {
     const client = await pool.connect();
     
@@ -511,7 +510,6 @@ Reglas ESTRICTAS:
     }
   },
 
-  // 🆕 NUEVO: Eliminar todos los contenidos
   async deleteAllContents() {
     const client = await pool.connect();
     

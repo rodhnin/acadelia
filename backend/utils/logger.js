@@ -37,7 +37,6 @@ const logger = winston.createLogger({
   ]
 });
 
-// Solo agregar consola en desarrollo
 if (!IS_PRODUCTION) {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(

@@ -1,10 +1,4 @@
-/**
- * 📚🦫 CONFIGURACIÓN CENTRALIZADA DE ARCHIVOS - PROFESOR ACADEL
- * Constantes compartidas entre frontend y backend para mantener coherencia
- * 🔄 ACTUALIZADO: Sincronizado con backend-file-constants.js
- */
 
-// ====== LÍMITES GENERALES ======
 export const FILE_LIMITS = {
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB para todos los archivos
   MAX_TEXT_CONTENT: 100000,        // 100K caracteres máximo de contenido extraído
@@ -16,7 +10,6 @@ export const FILE_LIMITS = {
   CODE_MAX_SIZE: 5 * 1024 * 1024       // 5MB para código
 };
 
-// ====== TIPOS DE ARCHIVO SOPORTADOS ======
 export const SUPPORTED_FILES = {
   IMAGES: {
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -103,7 +96,6 @@ export const SUPPORTED_FILES = {
   }
 };
 
-// ====== ARCHIVOS PROHIBIDOS ======
 export const FORBIDDEN_FILES = {
   BLOCKED_EXTENSIONS: ['pdf', 'exe', 'msi', 'app', 'deb', 'rpm', 'zip', 'rar', '7z'],
   BLOCKED_MIME_TYPES: [
@@ -127,7 +119,6 @@ export const FORBIDDEN_FILES = {
   }
 };
 
-// ====== MENSAJES DE ERROR ACADEL ======
 export const ACADEL_FILE_MESSAGES = {
   UNSUPPORTED_TYPE: {
     title: "¡Archivo rebelde detectado! 🤔",
@@ -180,12 +171,7 @@ export const ACADEL_FILE_MESSAGES = {
   }
 };
 
-// ====== FUNCIONES DE VALIDACIÓN ======
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA: Valida si un archivo es soportado por tipo
- * Ahora incluye todas las variantes de MIME types
- */
 export function validateFileType(file, expectedType = null) {
   const fileName = typeof file === 'string' ? file : file.name;
   const fileSize = typeof file === 'string' ? 0 : file.size;
@@ -297,9 +283,6 @@ export function validateFileCount(fileCount) {
   return { valid: true, reason: 'Cantidad válida' };
 }
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA: Obtiene información sobre tipos soportados
- */
 export function getSupportedTypesInfo() {
   return {
     images: {
@@ -332,7 +315,6 @@ export function getSupportedTypesInfo() {
   };
 }
 
-// ====== EXPORTAR PARA COMPATIBILIDAD ======
 export default {
   FILE_LIMITS,
   SUPPORTED_FILES,

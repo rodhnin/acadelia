@@ -376,11 +376,9 @@ maintainPositionDuringImageLoad(imageElement) {
   
   // Evento para cuando la imagen termina de cargar
   const handleImageLoad = () => {
-    // Solo ajustar si el usuario no ha scrolleado manualmente mientras tanto
     if (!this._userScrolled) {
       const newScrollTop = messageElement.offsetTop - messageTopPosition;
       
-      // Solo aplicar si la diferencia es significativa para evitar micro-ajustes
       if (Math.abs(this.chatContainer.scrollTop - newScrollTop) > 5) {
         this.chatContainer.scrollTo({
           top: newScrollTop,
@@ -540,7 +538,6 @@ setupImagePositionMaintenance(container) {
     if (!this.chatContainer || !window.ResizeObserver) return;
     
     const resizeObserver = new ResizeObserver((entries) => {
-      // Solo hacer scroll si estamos cerca del final (para no interrumpir lectura)
       if (this.isNearBottom()) {
         this.scrollToBottom({ 
           priority: 'low', 
@@ -662,7 +659,6 @@ setupImagePositionMaintenance(container) {
         (mutation.attributeName === 'class' || mutation.attributeName === 'disabled')) {
       const target = mutation.target;
       
-      // Solo detectar interacciones con opciones/botones existentes, no el renderizado inicial
       if ((target.classList?.contains('option') && target.classList.contains('correct')) || 
           (target.classList?.contains('option') && target.classList.contains('incorrect')) ||
           (target.hasAttribute('data-exam-option') && target.disabled)) {
@@ -700,7 +696,6 @@ setupImagePositionMaintenance(container) {
     if (mutation.type === 'attributes' && 
         (mutation.attributeName === 'data-exam-interaction-active' || 
          mutation.attributeName === 'data-exam-navigation')) {
-      // Solo cuando el valor es "true"
       if (mutation.target.getAttribute(mutation.attributeName) === 'true') {
         this.log('Detectado cambio en atributo de interacción de examen');
         return true;
@@ -1197,7 +1192,6 @@ restoreScrollPosition(force = false) {
       return;
     }
     
-    // Variables para detectar zoom
     let lastWidth = window.innerWidth;
     let lastHeight = window.innerHeight;
     let lastRatio = lastWidth / lastHeight;
@@ -1623,7 +1617,6 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
       
       const currentDistance = getTouchDistance(e.touches);
       
-      // Solo procesar si hay cambio significativo
       if (Math.abs(currentDistance - touchState.startDistance) > 5) {
         touchState.lastTouchTime = Date.now();
         

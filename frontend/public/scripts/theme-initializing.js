@@ -8,7 +8,6 @@ document.documentElement.classList.add('theme-initializing');
     const cookiePreferences = localStorage.getItem('cookiePreferences');
     if (cookiePreferences) {
       const preferences = JSON.parse(cookiePreferences);
-      // Solo obtener el tema guardado si hay consentimiento para cookies funcionales
       if (preferences && preferences.functional === true && localStorage.getItem('theme')) {
         savedTheme = localStorage.getItem('theme');
         console.log('Tema cargado de localStorage con consentimiento:', savedTheme);

@@ -37,7 +37,6 @@ router.post('/', express.text({ type: 'application/json' }), async (req, res) =>
   } catch (error) {
     console.error("⚠️ Error procesando webhook:", error.message);
     
-    // Responder con error, pero con código 200 para que Paddle no reintente
     // (según recomendaciones de Paddle para webhooks)
     return res.status(200).json({ 
       success: false, 

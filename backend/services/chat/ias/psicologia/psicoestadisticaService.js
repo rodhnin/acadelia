@@ -1,8 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR DE ESTADÍSTICA Y MÉTODOS CUANTITATIVOS EN PSICOLOGÍA SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -25,12 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestratorPsycho {
   constructor() {
@@ -325,9 +317,6 @@ class BraveSearchOrchestratorPsycho {
 
 const braveSearchOrchestratorPsycho = new BraveSearchOrchestratorPsycho();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO EN PSICOLOGÍA
-// ============================================================================
 
 const PROFESOR_ACADEL_PSICOESTADISTICA_DNA = `
 🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE ESTADÍSTICA Y MÉTODOS CUANTITATIVOS EN PSICOLOGÍA SUPREMO:
@@ -374,8 +363,6 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra estadística con investigación psicológica práctica!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const IMAGE_ANALYSIS_SYSTEM_PSYCHO = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel especializada en PSICOLOGÍA.
 
@@ -521,9 +508,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO PARA PSICOLOGÍA
-// ============================================================================
 
 const classifyQueryPsycho = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -612,7 +596,7 @@ const classifyQueryPsycho = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
@@ -760,7 +744,7 @@ const classifyQueryPsycho = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -779,10 +763,7 @@ const classifyQueryPsycho = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS PSICOLÓGICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT_PSYCHO = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en estadística y métodos cuantitativos aplicados a psicología.
 
@@ -808,9 +789,9 @@ const createTechnicalKnowledgeBaseToolPsycho = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
-        tableName: "emb_psicoestadistica", // 🧠 TABLA ESPECÍFICA PARA PSICOLOGÍA
+        similarityK: 8,
+        keywordK: 6,
+        tableName: "emb_psicoestadistica",
         similarityQueryName: "match_emb_psicoestadistica",
         keywordQueryName: "kw_match_emb_psicoestadistica",
       });
@@ -1200,9 +1181,9 @@ const createTechnicalConceptAnalyzerToolPsycho = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
-        tableName: "emb_psicoestadistica", // 🧠 TABLA ESPECÍFICA PARA PSICOLOGÍA
+        similarityK: 10,
+        keywordK: 8,
+        tableName: "emb_psicoestadistica",
         similarityQueryName: "match_emb_psicoestadistica",
         keywordQueryName: "kw_match_emb_psicoestadistica",
       });
@@ -1235,7 +1216,6 @@ const createTechnicalConceptAnalyzerToolPsycho = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1440,15 +1420,11 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia técnica según este análi
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedTechnicalPromptPsycho = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_PSICOESTADISTICA_DNA;
 
-// ============================================================================
 //  INSTRUCCIONES TÉCNICAS CONSOLIDADAS PARA PSICOLOGÍA
-// ============================================================================
   
 const coreTechnicalInstructionsPsycho = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE ESTADÍSTICA Y MÉTODOS CUANTITATIVOS EN PSICOLOGÍA
@@ -1612,8 +1588,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas científicas importantes**
 `;
 
-// ============================================================================
-// ============================================================================
 
 const technicalTypeInstructionsPsycho = {
   casual_conversation: `
@@ -1700,8 +1674,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica científica en investigación psicológica`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1724,8 +1696,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO PSICOLÓGICO (
   'Enseña como el capibara técnico más brillante del universo en estadística aplicada a psicología, usando tu CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) para fundamentar toda respuesta científica importante, y complementando con todas tus capacidades paralelas para una explicación técnica magistral especializada en investigación cuantitativa psicológica'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelAgentPsycho = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Acadel configurando sistema técnico optimizado para psicología para query tipo: ${queryInfo.type}, Cerebro Principal Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1736,7 +1706,6 @@ const createAcadelAgentPsycho = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchToolPsycho(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO PSICOLÓGICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO PSICOLÓGICO (Knowledge Base) - núcleo del sistema científico especializado`);
     tools.unshift(createTechnicalKnowledgeBaseToolPsycho(embeddings)); // Primer lugar para máxima prioridad
@@ -1744,7 +1713,6 @@ const createAcadelAgentPsycho = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico Psicológico INACTIVO - consulta muy casual sin contenido científico`);
   }
   
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS PARA PSICOLOGÍA (MANTENER LÓGICA MATEMÁTICA)
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas para psicología`);
     tools.push(createAcadelWolframToolPsycho());
@@ -1809,8 +1777,6 @@ const createAcadelAgentPsycho = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequestPsycho = (query) => {
   const examKeywords = [
@@ -1869,9 +1835,9 @@ const createExamChainPsycho = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
-            tableName: "emb_psicoestadistica", // 🧠 TABLA ESPECÍFICA PARA PSICOLOGÍA
+            similarityK: 6,
+            keywordK: 5,
+            tableName: "emb_psicoestadistica",
             similarityQueryName: "match_emb_psicoestadistica",
             keywordQueryName: "kw_match_emb_psicoestadistica",
           });
@@ -2043,8 +2009,6 @@ const hasDocumentsPsycho = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoStatisticsQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2147,7 +2111,6 @@ export const handlePsychoStatisticsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2315,7 +2278,6 @@ export const handlePsychoStatisticsQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2359,8 +2321,6 @@ export const handlePsychoStatisticsQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoStatisticsMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2689,7 +2649,6 @@ Si necesitas una explicación más detallada en metodología cuantitativa psicol
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2737,13 +2696,11 @@ Si necesitas una explicación más detallada en metodología cuantitativa psicol
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2757,7 +2714,6 @@ Si necesitas una explicación más detallada en metodología cuantitativa psicol
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2805,8 +2761,6 @@ Si necesitas una explicación más detallada en metodología cuantitativa psicol
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychoStatisticsQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

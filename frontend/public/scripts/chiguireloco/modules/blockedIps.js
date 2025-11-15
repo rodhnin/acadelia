@@ -166,7 +166,6 @@ const blockedIps = {
                     console.warn(`Error enriqueciendo datos geo para IP ${ip.ip}:`, error);
                 }
                 
-                // Si todo falla, devolver IP original
                 return ip;
             }));
             
@@ -330,7 +329,6 @@ const blockedIps = {
             }
         });
         
-        // Solo ajustar zoom si se añadieron marcadores
         if (markersAdded > 0) {
             fitMarkers();
         }

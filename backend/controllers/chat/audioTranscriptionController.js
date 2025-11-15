@@ -110,7 +110,6 @@ export const processAudioFile = (req, res) => {
       audioFilePath = req.file.path;
 
       try {
-        // MODIFICACIÓN: Implementar la lógica de seguridad directamente aquí
         // en lugar de llamar al middleware como un paso separado
 
         // 1. Verificación de firma de audio
@@ -150,7 +149,6 @@ export const processAudioFile = (req, res) => {
         console.log("Realizando escaneo con ClamAV...");
         const scanResult = await AudioSecurityService.scanFile(audioFilePath);
 
-        // Solo bloquear si ClamAV detectó virus específicos
         if (!scanResult.clean && !scanResult.skipped && scanResult.viruses && scanResult.viruses.length > 0) {
           logSecurityEvent('MALWARE_DETECTED', 'Malware detectado en archivo de audio', {
             userId: req.body.userId,
@@ -188,7 +186,6 @@ export const processAudioFile = (req, res) => {
           overridden: scanResult.overridden
         };
 
-        // Si todo está bien, continuar al siguiente paso
         next();
       } catch (securityError) {
         logSecurityEvent('AUDIO_SECURITY_ERROR', 'Error en verificación de seguridad de audio', {
@@ -249,7 +246,7 @@ export const processAudioFile = (req, res) => {
           fileName: req.file.originalname,
           fileType: req.file.mimetype,
           fileSize: req.file.size,
-          initialResponse: false, // ✅ Cambiar a false para procesar completamente
+          initialResponse: false,
           securityInfo
         };
 
@@ -424,7 +421,7 @@ export const processRecordedAudio = async (req, res) => {
         fileType: mimeType,
         fileSize: audioBuffer.length,
         source: 'recording',
-        initialResponse: false, // ✅ CAMBIO: false en lugar de true
+        initialResponse: false,
         rawAudioData: rawAudioData,
         securityInfo
       };

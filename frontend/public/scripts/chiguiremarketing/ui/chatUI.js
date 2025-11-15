@@ -3,7 +3,6 @@ import { streamQuery } from '../api/marketingAPI.js';
 import { integrateExplainComponent } from './explainComponent.js';
 import { createMarkdownStreamHandler } from './markdownStreamHandler.js';
 
-// ✨ IMPORTACIONES CENTRALIZADAS - TODO EL MARKDOWN VIENE DE AQUÍ
 import { 
   renderMarkdownComplete, 
   processSpecialElements,
@@ -29,10 +28,8 @@ export async function initChatUI(container) {
     return;
   }
   
-  // ✨ ASEGURAR INICIALIZACIÓN DEL SISTEMA CENTRALIZADO
   initMarkdownParser();
   
-  // ✨ EXPONER SOLO LAS FUNCIONES CENTRALIZADAS
   if (!window.renderMarkdown) {
     window.renderMarkdown = renderMarkdownComplete;
   }
@@ -460,7 +457,6 @@ async function processFirstMessage(message) {
   appendUserMessage(message);
   chatHistory.push({ role: 'user', content: message });
   
-  // ✨ NUEVO: Configurar estado de procesamiento como en handleSendMessage
   setInputDisabled(true);
   
   const sendButton = document.getElementById('sendButton');
@@ -478,7 +474,6 @@ async function processFirstMessage(message) {
     console.error('Error procesando primer mensaje:', error);
     appendSystemMessage('❌ Error procesando tu consulta. Por favor, intenta de nuevo.');
   } finally {
-    // ✨ NUEVO: Restaurar estado completo como en handleSendMessage
     isProcessing = false;
     setStatus('');
     currentController = null;
@@ -529,7 +524,6 @@ function handleInputKeydown(e) {
   }
 }
 
-// ✨ NUEVA FUNCIÓN: Controlar estado del input
 function setInputDisabled(disabled) {
   const inputEl = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
@@ -556,7 +550,6 @@ function setInputDisabled(disabled) {
 
 async function handleSendMessage() {
   if (isProcessing) {
-    // ✨ NUEVA FUNCIONALIDAD: Mostrar alerta en lugar de cancelar
     if (window.showNotification) {
       window.showNotification(
         'Por motivos de compatibilidad es mejor esperar la respuesta de la IA', 
@@ -580,7 +573,6 @@ async function handleSendMessage() {
   appendUserMessage(message);
   chatHistory.push({ role: 'user', content: message });
   
-  // ✨ NUEVO: Deshabilitar el input y cambiar botón
   setInputDisabled(true);
   
   const sendButton = document.getElementById('sendButton');
@@ -598,7 +590,6 @@ async function handleSendMessage() {
     console.error('Error procesando mensaje:', error);
     appendSystemMessage('❌ Error procesando tu consulta. Por favor, intenta de nuevo.');
   } finally {
-    // ✨ NUEVO: Rehabilitar el input y restaurar botón
     isProcessing = false;
     setStatus('');
     currentController = null;
@@ -632,7 +623,6 @@ async function handleQuery(query) {
     if (supportsStreaming()) {
       currentController = new AbortController();
       
-      // ✨ EL HANDLER AHORA USA EL SISTEMA CENTRALIZADO
       console.log('🎬 Creando MarkdownStreamHandler con sistema centralizado...');
       streamHandler = createMarkdownStreamHandler(messageEl, currentController);
       console.log('✅ MarkdownStreamHandler creado exitosamente');
@@ -1104,16 +1094,13 @@ function appendUserMessage(content) {
   return addedElement;
 }
 
-// ✨ FUNCIONES DE RENDERIZADO AHORA USAN SISTEMA CENTRALIZADO
 function appendAssistantMessage(content) {
   const element = createMessageElement('assistant');
   
-  // ✨ USAR FUNCIÓN CENTRALIZADA
   element.querySelector('.message-content').innerHTML = renderMarkdownComplete(content);
   
   const addedElement = appendMessageElement(element);
   
-  // ✨ USAR FUNCIÓN CENTRALIZADA
   processSpecialElements(element, true);
   
   setTimeout(() => {
@@ -1127,12 +1114,10 @@ function appendSystemMessage(content) {
   const element = document.createElement('div');
   element.className = 'message message-system';
   
-  // ✨ USAR FUNCIÓN CENTRALIZADA
   element.innerHTML = renderMarkdownComplete(content);
   
   const addedElement = appendMessageElement(element);
   
-  // ✨ USAR FUNCIÓN CENTRALIZADA
   processSpecialElements(element);
   
   setTimeout(() => {
@@ -1142,7 +1127,6 @@ function appendSystemMessage(content) {
   return addedElement;
 }
 
-// ✨ ELIMINADA LA FUNCIÓN renderMarkdown LOCAL - USA SOLO LA CENTRALIZADA
 
 // FUNCIONES GLOBALES - ACTUALIZADAS PARA USAR SISTEMA CENTRALIZADO
 window.openSidebarToViewData = function() {
@@ -1193,7 +1177,6 @@ window.markNotificationAsRead = function(button) {
   }
 };
 
-// ✨ EXPOSICIÓN GLOBAL USANDO FUNCIONES CENTRALIZADAS
 window.setThinkingState = setThinkingState;
 window.renderMarkdown = renderMarkdownComplete; // Usa la función centralizada
 window.processSpecialElements = processSpecialElements; // Usa la función centralizada

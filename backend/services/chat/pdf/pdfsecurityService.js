@@ -401,7 +401,6 @@ export const pdfSecurityService = {
       }
     ];
     
-    // Solo verificar SQL Injection en contextos específicos (como formularios, JavaScript o streams)
     const jsContexts = [
       /\/JavaScript\s*\(([\s\S]*?)\)/gi,
       /\/JS\s*\(([\s\S]*?)\)/gi,

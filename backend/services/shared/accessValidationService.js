@@ -5,15 +5,7 @@ import { tokenCounter } from "./tokenCounterService.js";
 import logger from '../../utils/logger.js';
 
 
-/**
- * ⚡ SERVICIO OPTIMIZADO: Validación de acceso ultrarrápida con cache agresivo
- * ✅ ACTUALIZADO: Usa tabla suscripciones (esquema original)
- * OBJETIVO: Reducir consultas BD redundantes de 14s a <1s
- */
 
-/**
- * ✅ CONFIGURACIÓN DINÁMICA DE LÍMITES - CAMBIAR SOLO AQUÍ
- */
 const TOOL_LIMITS_CONFIG = {
   'pdf': {
     FREE_DAILY: 40,
@@ -41,18 +33,12 @@ const TOKEN_LIMITS = {
 
 export const AccessValidationService = {
 
-  /**
-   * ⚡ CACHE AGRESIVO PARA USER STATUS
-   */
   _userStatusCache: new Map(),
   _userCacheTTL: 300000, // 5 minutos
   _toolInfoCache: new Map(),
   _toolCacheExpiry: 0,
   _CACHE_TTL: 300000, // 5 minutos
 
-  /**
-   * ✅ CONFIGURACIÓN DINÁMICA PROCESADA
-   */
   LIMITS: {
     TOOLS: (() => {
       const processed = { FREE_USER: {}, PREMIUM_USER: {} };
@@ -76,9 +62,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: User status con cache agresivo + TABLA SUSCRIPCIONES
-   */
   async getUserStatus(userId) {
     const cacheKey = `user_${userId}`;
     const now = Date.now();
@@ -110,13 +93,11 @@ export const AccessValidationService = {
         userRole: result.rows.length > 0 ? result.rows[0].id_rol : null
       };
 
-      // ⚡ Cache agresivo
       this._userStatusCache.set(cacheKey, {
         data: userStatus,
         timestamp: now
       });
 
-      // ⚡ Limpiar cache si está muy lleno
       if (this._userStatusCache.size > 1000) {
         const oldestKey = this._userStatusCache.keys().next().value;
         this._userStatusCache.delete(oldestKey);
@@ -140,25 +121,16 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Admin check ultrarrápido
-   */
   async isAdminUser(userId) {
     const status = await this.getUserStatus(userId);
     return status.isAdmin;
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Premium check ultrarrápido  
-   */
   async isPremiumUser(userId) {
     const status = await this.getUserStatus(userId);
     return status.isPremium || status.isAdmin; // Admins son premium+
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Tool info con cache
-   */
   async getToolInfo(toolSlug) {
     try {
       const now = Date.now();
@@ -192,9 +164,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Validación específica ultrarrápida
-   */
   async validateSpecificToolAccess(userId, toolSlug, isPremium = null) {
     try {
       logger.debug('Validando acceso específico a herramienta', { toolSlug, userId });
@@ -247,9 +216,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Usage stats con query mejorada
-   */
   async _getUsageStatsOptimized(userId, toolSlug = null) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -308,9 +274,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Validación con límites simplificada
-   */
   _validateToolWithLimitsOptimized(usageStats, limits, isPremium, toolSlug, toolId) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -369,9 +332,6 @@ export const AccessValidationService = {
     };
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Validación general más rápida
-   */
   async validateToolAccess(userId, isPremium = null) {
     try {
       logger.debug('Validación general de herramientas iniciada', { userId, isPremium });
@@ -397,7 +357,6 @@ export const AccessValidationService = {
         isPremium = userStatus.isPremium;
       }
 
-      // 🆓 USUARIOS PREMIUM: Acceso ilimitado
       if (isPremium) {
         return {
           success: true,
@@ -458,10 +417,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ CRÍTICO: AVA access - CORREGIDO para evitar bypass premium incorrecto
-   * ✅ SOLUCIONADO: Solo admins tienen bypass, usuarios premium deben tener suscripción específica
-   */
   async validateAvaAccess(userId, avaId) {
     try {
       console.log(`🔍 [ACCESS-VALIDATION] === VALIDANDO ACCESO AVA ===`);
@@ -687,9 +642,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Token limits ultrarrápido
-   */
   async validateTokenLimits(chatId, userId = null) {
     try {
       logger.debug('Validación de límites de tokens', { chatId, userId });
@@ -810,9 +762,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Pre-validación mejorada
-   */
   async validateTokensWithResponseEstimate(chatId, userId = null, query = "", responseType = "normal") {
     try {
       logger.debug('Pre-validación de tokens iniciada', { chatId, userId, queryLength: query.length });
@@ -922,9 +871,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: Post-response warnings ultrarrápido
-   */
   async recalculateTokenWarningsAfterResponse(chatId, userId = null) {
     try {
       if (userId) {
@@ -985,9 +931,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ⚡ OPTIMIZADO: User usage stats mejorado
-   */
   async getUserUsageStats(userId) {
     try {
       const userStatus = await this.getUserStatus(userId);
@@ -1025,9 +968,6 @@ export const AccessValidationService = {
     }
   },
 
-  /**
-   * ✅ FUNCIONES AUXILIARES OPTIMIZADAS
-   */
   getTokenConfiguration() {
     return {
       maxTokensPerChat: TOKEN_LIMITS.MAX_TOKENS_PER_CHAT,
@@ -1048,9 +988,6 @@ export const AccessValidationService = {
     };
   },
 
-  /**
-   * ⚡ NUEVO: Limpiar cache cuando sea necesario
-   */
   clearUserStatusCache(userId = null) {
     if (userId) {
       this._userStatusCache.delete(`user_${userId}`);

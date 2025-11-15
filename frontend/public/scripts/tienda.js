@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Variable para controlar el estado de la vista
     let isDetailView = false;
 
-    // ================= FUNCIONES CORE =================
     
     function getItemsToShow() {
         if (window.innerWidth <= 576) return 1;
@@ -44,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
             card.style.display !== 'none' && card.classList.contains('content-box')
         );
         
-        // Solo se activa el carousel si hay más que el número visible de tarjetas
         if (visibleCards.length <= itemsToShow) {
             track.style.transition = 'none';
             track.style.transform = 'none';
@@ -92,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
         nextBtn.style.display = currentIndex < maxIndex ? 'flex' : 'none';
     }
 
-    // ================= MEJORAS VISUALES =================
 
     const addEntranceEffects = () => {
         if (!track) return;
@@ -333,7 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         initIvaNoticeSystem();
 
-        // ================= SISTEMA DE AVISOS IVA =================
 
 function initIvaNoticeSystem() {
     addIvaNoticeToCards();
@@ -534,7 +530,6 @@ function handleFloatingNotice() {
         }
     };
 
-    // ================= FUNCIONES DE TARJETAS Y DATOS =================
     
     function showSkeleton() {
         const itemsToShow = getItemsToShow();
@@ -766,7 +761,6 @@ function asignarEventoComprar() {
     
     updateIvaNoticeVisibility();
 
-    // ================= CONTROL DE VISIBILIDAD DEL AVISO IVA =================
 
 function updateIvaNoticeVisibility() {
     const mainNotice = document.getElementById('mainIvaNotice');
@@ -796,7 +790,6 @@ function updateIvaNoticeVisibility() {
         }
     }
 }
-    // ================= EVENT HANDLERS =================
     function configurarEventos() {
         // Eventos para funciones de drag
         if (track) {
@@ -898,7 +891,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
 }
 
 
-    // ================= DRAG HANDLERS =================
     function startDrag(e) {
         if (isDetailView) return; // No permitir arrastrar en vista detalle
         
@@ -927,7 +919,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         }
     }
 
-    // ================= STYLES INJECTION =================
     
     // Inyectar estilos del skeleton
     const injectSkeletonStyles = () => {
@@ -1139,7 +1130,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
     `;
     document.head.appendChild(searchStyles);
     
-    // ================= INICIALIZACIÓN =================
     async function inicializar() {
         try {
             if (!track) {

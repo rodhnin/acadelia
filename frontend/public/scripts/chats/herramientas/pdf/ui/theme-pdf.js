@@ -1,9 +1,3 @@
-/**
- * theme.js - Gestión del tema de la aplicación
- * Versión optimizada con mejor seguridad y rendimiento
- * Ahora con verificación de consentimiento para cookies funcionales
- * Incluye soporte para cambio automático de temas de highlight.js CACHEROSOS 🔥
- */
 
 import { DOM_SELECTORS } from '../core/config-pdf.js';
 import scrollManager from '../../../shared/scroll-manager.js';
@@ -94,10 +88,6 @@ function setStorageWithConsent(key, value, cookieCategory) {
   }
 }
 
-/**
- * Actualiza el tema de highlight.js según el tema actual - CON TEMA CACHEROSO 🔥
- * @param {string} theme - 'light' o 'dark'
- */
 function updateHighlightTheme(theme) {
   const lightTheme = document.getElementById('hljs-light-theme');
   const darkTheme = document.getElementById('hljs-dark-theme');
@@ -257,7 +247,6 @@ export function toggleTheme() {
   
   updateHighlightTheme(newTheme);
 
-  // ⭐ UBICACIÓN PERFECTA: Notificaciones Acadel SOLO cuando usuario hace clic
   if (newTheme === THEMES.DARK) {
     acadelInfo("🌙 ¡Modo nocturno activado!", "Acadel configuró el tema oscuro para estudiar sin cansar la vista");
   } else {
@@ -523,7 +512,6 @@ function handleThemeChangeEvent(e) {
     
     const hasMermaidDiagrams = document.querySelectorAll('.mermaid-diagram').length > 0;
     
-    // Solo bloquear scroll si hay diagramas presentes
     if (hasMermaidDiagrams) {
       // Asegurarse de que scrollManager está disponible globalmente
       if (typeof scrollManager !== 'undefined') {

@@ -57,7 +57,6 @@ class AsyncProcessingQueue {
       });
     });
 
-    // ⭐ Priorización mejorada
     this.queue.sort((a, b) => {
       if (b.priority !== a.priority) {
         return b.priority - a.priority;

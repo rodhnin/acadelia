@@ -207,7 +207,6 @@ export class ExpensesService {
             const queryParams = [];
             const setValues = [];
             
-            // Incluir solo campos que están en expenseData
             if (expenseData.amount !== undefined) {
                 queryParams.push(expenseData.amount);
                 setValues.push(`amount = $${queryParams.length}`);

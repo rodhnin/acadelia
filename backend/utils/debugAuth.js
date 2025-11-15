@@ -366,7 +366,6 @@ class AuthDebugger {
     startRenewalMonitoring() {
         this.log('INFO', '🚀 Iniciando monitoreo de renovaciones');
         
-        // Tracking de renovaciones en progreso
         this.renewalTracking = new Map();
         
         // Interceptar función de renovación (si existe)
@@ -452,7 +451,6 @@ export const authDebugger = new AuthDebugger();
 
 // Middleware de debugging para insertar en rutas
 export const debugAuthMiddleware = (req, res, next) => {
-    // Solo ejecutar en rutas que requieren autenticación
     if (req.path.startsWith('/api/') && req.method !== 'GET') {
         authDebugger.traceAuthentication(req, 'middleware')
             .then(trace => {

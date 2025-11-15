@@ -246,10 +246,9 @@ export const saveConsent = async (req, res) => {
       path: "/",
     };
 
-    // Solo establecer domain en producción, NUNCA en localhost
     if (process.env.NODE_ENV === "production" && process.env.COOKIE_DOMAIN) {
       cookieOptions.domain = process.env.COOKIE_DOMAIN;
-      cookieOptions.secure = true; // Solo secure en producción
+      cookieOptions.secure = true;
       cookieOptions.sameSite = "Strict";
     }
 

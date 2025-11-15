@@ -339,9 +339,7 @@ function extractContentInfo(payload) {
     description = payload.post.content;
   }
   
-  // 🆕 NUEVO: EXTRAER CONTEXTO ENRIQUECIDO ESPECÍFICO POR TIPO
   
-  // ========== MEMES ==========
   if (payload.meme) {
     const meme = payload.meme;
     
@@ -387,7 +385,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== VIDEOS ==========
   if (payload.video || payload.contenido_video) {
     const video = payload.video || payload.contenido_video;
     
@@ -426,7 +423,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== EMAILS ==========
   if (payload.email) {
     const email = payload.email;
     
@@ -451,7 +447,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== CAMPAÑAS ==========
   if (payload.campaign) {
     const campaign = payload.campaign;
     
@@ -480,7 +475,6 @@ function extractContentInfo(payload) {
     }
   }
 
-  // ========== POSTS ENRIQUECIDOS ==========
   if (payload.post) {
     const post = payload.post;
     
@@ -542,8 +536,6 @@ function extractContentInfo(payload) {
     }
   }
 
-  // ========== POSTS ==========
-  // Información específica para POSTS ENRIQUECIDOS
   if (enrichedContext.type === 'post' && enrichedContext.postData) {
     const post = enrichedContext.postData;
     
@@ -684,7 +676,6 @@ function extractContentInfo(payload) {
   } 
 
 
-  // ========== INFORMACIÓN GENERAL ENRIQUECIDA ==========
   
   // Target Audience Enriquecido
   let targetAudience = null;
@@ -762,10 +753,8 @@ function extractContentInfo(payload) {
     enrichedContext.cta = payload.post.target.accion_deseada;
   }
   
-  // ========== GENERAR INFORMACIÓN ADICIONAL ENRIQUECIDA ==========
   additional = []; // Resetear array
   
-  // Información específica por tipo
   if (enrichedContext.type === 'meme' && enrichedContext.memeData) {
     const meme = enrichedContext.memeData;
     
@@ -935,7 +924,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // Información del target audience
   if (enrichedContext.targetAudience) {
     const target = enrichedContext.targetAudience;
     
@@ -3216,7 +3204,6 @@ if (typeof window !== 'undefined') {
   window.showResetContentModal = showResetContentModal;
 }
 
-// 🆕 FUNCIÓN DE RESET PARA CONTENT MODAL
 function resetContentModalState() {
   console.log('🔄 Reiniciando estado de content modal...');
   

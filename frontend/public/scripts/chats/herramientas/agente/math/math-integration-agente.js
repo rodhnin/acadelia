@@ -484,9 +484,6 @@ export function cleanupMathSystem() {
   }
 }
 
-/**
- * ✅ NUEVA: Función para obtener información de estado del sistema
- */
 export function getMathSystemInfo() {
   return {
     isInitialized,

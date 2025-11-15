@@ -1,8 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOLOGÍA GENERAL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE PSICOLOGÍA GENERAL SUPREMO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -309,9 +301,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOLOGÍA GENERAL DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE PSICOLOGÍA GENERAL SUPREMO:
@@ -352,8 +341,6 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor de psicología, eres EL PROFESOR que integra historia, funciones y biología como la psicología real!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const PSYCHOLOGY_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Psicología General.
 
@@ -499,9 +486,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO PSICOLÓGICO
-// ============================================================================
 
 const classifyPsychologyQuery = (query, content = null) => {
     const lowercaseQuery = query.toLowerCase();
@@ -595,7 +579,7 @@ const classifyPsychologyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -613,7 +597,7 @@ const classifyPsychologyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
@@ -658,7 +642,7 @@ const classifyPsychologyQuery = (query, content = null) => {
     psychologyContexts.some(term => lowercaseQuery.includes(term));
   
   if (isSimpleQuery && !hasPsychologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -737,7 +721,7 @@ const classifyPsychologyQuery = (query, content = null) => {
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -756,10 +740,7 @@ const classifyPsychologyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS PSICOLÓGICAS
 const ACADEL_PSYCHOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en psicología general.
 
@@ -785,8 +766,8 @@ const createPsychologyKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_psicologiageneral",
         similarityQueryName: "match_emb_psicologiageneral",
         keywordQueryName: "kw_match_emb_psicologiageneral",
@@ -1075,8 +1056,8 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_psicologiageneral",
         similarityQueryName: "match_emb_psicologiageneral",
         keywordQueryName: "kw_match_emb_psicologiageneral",
@@ -1112,7 +1093,6 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1302,8 +1282,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia psicológica según este an
   }
 );
 
-// ============================================================================
-// ============================================================================
 
 export const detectPsychologyImageRequest = (query) => {
   const psychologyImageKeywords = [
@@ -1344,7 +1322,7 @@ const createPsychologyVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1385,15 +1363,10 @@ const enhancePsychologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedPsychologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS PSICOLÓGICAS CONSOLIDADAS
-  // ============================================================================
   
   const corePsychologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE PSICOLOGÍA GENERAL
@@ -1494,8 +1467,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas psicológicas importantes**
 `;
 
-  // ============================================================================
-  // ============================================================================
   
   const psychologyTypeInstructions = {
     casual_conversation: `
@@ -1566,8 +1537,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las disciplinas fundamentales`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1590,8 +1559,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara psicólogo más brillante del universo, integrando historia y enfoques, funciones psicológicas y bases biológicas, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta psicológica importante, y complementando con todas tus capacidades paralelas para una explicación psicológica magistral'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
@@ -1602,7 +1569,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema psicológico`);
     tools.unshift(createPsychologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1667,8 +1633,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1727,8 +1691,8 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_psicologiageneral",
             similarityQueryName: "match_emb_psicologiageneral",
             keywordQueryName: "kw_match_emb_psicologiageneral",
@@ -1864,8 +1828,6 @@ const hasPsychologyDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychologyGeneralQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1983,7 +1945,6 @@ export const handlePsychologyGeneralQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2074,7 +2035,6 @@ export const handlePsychologyGeneralQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2220,7 +2180,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2246,8 +2205,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychologyGeneralMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2575,7 +2532,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const userMessageResult = await saveMultimodalMessage({
@@ -2631,7 +2587,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos neuropsicológicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2645,12 +2600,10 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         }
       },
       
-      // Información de seguridad neuropsicológica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
       
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2681,8 +2634,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handlePsychologyGeneralQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

@@ -21,7 +21,6 @@ export const ERROR_CODES = {
     UPGRADE_REQUIRED: 'TOOL_UPGRADE_REQUIRED',
     INVALID_TOOL: 'TOOL_INVALID_TOOL',
     
-    // 🆕 NUEVOS: Códigos específicos por herramienta
     SPECIFIC_TOOL: {
       PDF_DAILY_LIMIT_REACHED: 'TOOL_PDF_DAILY_LIMIT_REACHED',
       PDF_HOURLY_LIMIT_REACHED: 'TOOL_PDF_HOURLY_LIMIT_REACHED',
@@ -54,7 +53,7 @@ export const ERROR_CODES = {
     INVALID_AVA_ID: 'VALIDATION_INVALID_AVA_ID',
     INVALID_CHAT_ID: 'VALIDATION_INVALID_CHAT_ID',
     INVALID_CAREER_ID: 'VALIDATION_INVALID_CAREER_ID',
-    INVALID_TOOL_SLUG: 'VALIDATION_INVALID_TOOL_SLUG' // 🆕 NUEVO
+    INVALID_TOOL_SLUG: 'VALIDATION_INVALID_TOOL_SLUG'
   },
 
   // Errores del sistema
@@ -63,7 +62,7 @@ export const ERROR_CODES = {
     SERVICE_UNAVAILABLE: 'SYSTEM_SERVICE_UNAVAILABLE',
     INTERNAL_ERROR: 'SYSTEM_INTERNAL_ERROR',
     CONFIGURATION_ERROR: 'SYSTEM_CONFIGURATION_ERROR',
-    TOOL_INFO_ERROR: 'SYSTEM_TOOL_INFO_ERROR' // 🆕 NUEVO
+    TOOL_INFO_ERROR: 'SYSTEM_TOOL_INFO_ERROR'
   },
 
   // Errores de frontend/rutas
@@ -89,7 +88,6 @@ export const ERROR_MESSAGES = {
   [ERROR_CODES.TOOL_ACCESS.UPGRADE_REQUIRED]: 'Actualiza a premium para acceso ilimitado',
   [ERROR_CODES.TOOL_ACCESS.INVALID_TOOL]: 'Herramienta no válida o no disponible',
 
-  // 🆕 NUEVOS: Mensajes específicos por herramienta
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.PDF_DAILY_LIMIT_REACHED]: 'Has alcanzado tu límite diario para la herramienta PDF',
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.PDF_HOURLY_LIMIT_REACHED]: 'Has alcanzado tu límite por hora para la herramienta PDF',
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.AGENT_DAILY_LIMIT_REACHED]: 'Has alcanzado tu límite diario para la herramienta Agente',
@@ -111,13 +109,13 @@ export const ERROR_MESSAGES = {
   [ERROR_CODES.VALIDATION.INVALID_AVA_ID]: 'ID de AVA inválido',
   [ERROR_CODES.VALIDATION.INVALID_CHAT_ID]: 'ID de chat inválido',
   [ERROR_CODES.VALIDATION.INVALID_CAREER_ID]: 'ID de carrera inválido',
-  [ERROR_CODES.VALIDATION.INVALID_TOOL_SLUG]: 'Slug de herramienta inválido', // 🆕 NUEVO
+  [ERROR_CODES.VALIDATION.INVALID_TOOL_SLUG]: 'Slug de herramienta inválido',
 
   [ERROR_CODES.SYSTEM.DATABASE_ERROR]: 'Error en la base de datos',
   [ERROR_CODES.SYSTEM.SERVICE_UNAVAILABLE]: 'Servicio temporalmente no disponible',
   [ERROR_CODES.SYSTEM.INTERNAL_ERROR]: 'Error interno del servidor',
   [ERROR_CODES.SYSTEM.CONFIGURATION_ERROR]: 'Error de configuración del sistema',
-  [ERROR_CODES.SYSTEM.TOOL_INFO_ERROR]: 'Error obteniendo información de herramienta', // 🆕 NUEVO
+  [ERROR_CODES.SYSTEM.TOOL_INFO_ERROR]: 'Error obteniendo información de herramienta',
 
   [ERROR_CODES.FRONTEND.PAGE_ACCESS_DENIED]: 'No tienes acceso a esta página',
   [ERROR_CODES.FRONTEND.ROUTE_PROTECTED]: 'Esta ruta está protegida',
@@ -139,7 +137,6 @@ export const ERROR_STATUS_CODES = {
   [ERROR_CODES.TOOL_ACCESS.UPGRADE_REQUIRED]: 402,
   [ERROR_CODES.TOOL_ACCESS.INVALID_TOOL]: 400,
 
-  // 🆕 NUEVOS: Códigos HTTP específicos por herramienta
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.PDF_DAILY_LIMIT_REACHED]: 429,
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.PDF_HOURLY_LIMIT_REACHED]: 429,
   [ERROR_CODES.TOOL_ACCESS.SPECIFIC_TOOL.AGENT_DAILY_LIMIT_REACHED]: 429,
@@ -161,22 +158,19 @@ export const ERROR_STATUS_CODES = {
   [ERROR_CODES.VALIDATION.INVALID_AVA_ID]: 400,
   [ERROR_CODES.VALIDATION.INVALID_CHAT_ID]: 400,
   [ERROR_CODES.VALIDATION.INVALID_CAREER_ID]: 400,
-  [ERROR_CODES.VALIDATION.INVALID_TOOL_SLUG]: 400, // 🆕 NUEVO
+  [ERROR_CODES.VALIDATION.INVALID_TOOL_SLUG]: 400,
 
   [ERROR_CODES.SYSTEM.DATABASE_ERROR]: 500,
   [ERROR_CODES.SYSTEM.SERVICE_UNAVAILABLE]: 503,
   [ERROR_CODES.SYSTEM.INTERNAL_ERROR]: 500,
   [ERROR_CODES.SYSTEM.CONFIGURATION_ERROR]: 500,
-  [ERROR_CODES.SYSTEM.TOOL_INFO_ERROR]: 500, // 🆕 NUEVO
+  [ERROR_CODES.SYSTEM.TOOL_INFO_ERROR]: 500,
 
   [ERROR_CODES.FRONTEND.PAGE_ACCESS_DENIED]: 403,
   [ERROR_CODES.FRONTEND.ROUTE_PROTECTED]: 403,
   [ERROR_CODES.FRONTEND.CAREER_REQUIRED_FOR_PAGE]: 402
 };
 
-/**
- * 🆕 NUEVO: Helper para generar códigos de error específicos por herramienta
- */
 export const getSpecificToolErrorCode = (toolSlug, limitType) => {
   const slugMap = {
     'pdf': limitType === 'daily' 
@@ -211,9 +205,6 @@ export const createErrorResponse = (errorCode, additionalData = {}) => {
   };
 };
 
-/**
- * 🆕 NUEVO: Helper para crear respuestas de error específicas por herramienta
- */
 export const createSpecificToolErrorResponse = (toolSlug, limitType, additionalData = {}) => {
   const errorCode = getSpecificToolErrorCode(toolSlug, limitType);
   

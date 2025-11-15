@@ -87,9 +87,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN: Maneja errores de tokens específicamente
-   */
   handleTokenError(error, messageElement, forceShow = false) {
     if (this.isTokenError(error)) {
       console.log('🚫 Error de tokens detectado - Mostrando aviso');
@@ -104,9 +101,6 @@ class ResponseInteractionManager {
 
 
 
-  /**
-   * ✅ FUNCIÓN: Verifica si un error es relacionado con tokens
-   */
   isTokenError(error) {
     if (!error) return false;
 
@@ -358,10 +352,6 @@ class ResponseInteractionManager {
   /**
    * Extrae el ID del mensaje en el servidor desde un elemento DOM con validación mejorada
    */
-  /**
-     * Extrae el ID del mensaje en el servidor desde un elemento DOM con validación mejorada
-     * ✅ PRIORIZA IDs de servidor reales sobre IDs temporales del cliente
-     */
   extractServerMessageId(messageElement) {
     if (!messageElement || !messageElement.dataset) return null;
 
@@ -475,9 +465,6 @@ class ResponseInteractionManager {
     messageElement.appendChild(actionsContainer);
   }
 
-  /**
-   * ⭐ NUEVA FUNCIÓN: Se ejecuta cuando una respuesta se completa para habilitar botones
-   */
   onResponseComplete() {
     console.log('🎯 Respuesta completada - verificando botones de último mensaje');
 
@@ -514,9 +501,6 @@ class ResponseInteractionManager {
     this.addUserInteractionButtons(lastUserMessage);
   }
 
-  /**
-   * ⭐ NUEVA FUNCIÓN: Verifica y actualiza el estado de todos los botones después de cambios
-   */
   refreshInteractionButtons() {
     console.log('🔄 Refrescando estado de botones de interacción');
 
@@ -950,9 +934,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ handleMultimodalEdit - ADAPTADO DESDE MATEMÁTICO
-   */
   async handleMultimodalEdit(messageElement, aiMessage, editedText, multimodalInfo, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1121,9 +1102,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ handleStandardEdit - ADAPTADO DESDE MATEMÁTICO
-   */
   async handleStandardEdit(messageElement, aiMessage, editedText, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1371,9 +1349,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ handleMultimodalRetry - ADAPTADO DESDE MATEMÁTICO
-   */
   async handleMultimodalRetry(messageElement, userMessage, multimodalInfo, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1520,9 +1495,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * ✅ handleStandardRetry - ADAPTADO DESDE MATEMÁTICO
-   */
   async handleStandardRetry(messageElement, userMessage, abortController, ensureScrollUnlock, restoreUI) {
     const safetyTimeout = setManagedTimeout(() => {
       ensureScrollUnlock();
@@ -1869,7 +1841,6 @@ class ResponseInteractionManager {
   isAttachmentOnlyContent(text) {
     if (!text || !text.trim()) return true;
 
-    // Solo los tipos de archivos que realmente se pueden subir
     const attachmentPatterns = [
       // Documentos
       /\.(txt|pdf|docx|md|csv)\s*\d+(\.\d+)?\s*(KB|MB)/i,
@@ -1883,10 +1854,8 @@ class ResponseInteractionManager {
       // Patrones de texto que indican archivos
       /^\s*Aquí.*\.(txt|pdf|docx|md|csv|js|jsx|ts|tsx|py|java|cpp|c|h|cs|php|rb|go|rs|html|css|json|xml|sql|sh|jpg|jpeg|png|gif|webp|svg|bmp)/i,
 
-      // Solo tamaños de archivo
       /^\s*\d+(\.\d+)?\s*(KB|MB)\s*$/i,
 
-      // Solo espacios/saltos de línea
       /^[\s\n]*$/,
     ];
 
@@ -1906,7 +1875,6 @@ class ResponseInteractionManager {
   isAttachmentOnlyContent(text) {
     if (!text || !text.trim()) return true;
 
-    // Solo los tipos de archivos que realmente se pueden subir
     const attachmentPatterns = [
       // Documentos
       /\.(txt|pdf|docx|md|csv)\s*\d+(\.\d+)?\s*(KB|MB)/i,
@@ -1920,10 +1888,8 @@ class ResponseInteractionManager {
       // Patrones de texto que indican archivos
       /^\s*Aquí.*\.(txt|pdf|docx|md|csv|js|jsx|ts|tsx|py|java|cpp|c|h|cs|php|rb|go|rs|html|css|json|xml|sql|sh|jpg|jpeg|png|gif|webp|svg|bmp)/i,
 
-      // Solo tamaños de archivo
       /^\s*\d+(\.\d+)?\s*(KB|MB)\s*$/i,
 
-      // Solo espacios/saltos de línea
       /^[\s\n]*$/,
     ];
 
@@ -2152,12 +2118,12 @@ class ResponseInteractionManager {
         content = { code: data.code, language: data.language || 'javascript' };
       } else if (type === 'table' && (data.headers || data.rows)) {
         content = data;
-      } // ✅ FIX CRÍTICO: Para exámenes, buscar en data.data
+      }
       else if (type === 'exam' && data.data) {
-        content = data.data;  // ✅ CAMBIADO: data.data en lugar de data.exam
+        content = data.data;
       }
       else if (type === 'exam' && data.exam) {
-        content = data.exam;  // ✅ FALLBACK: por si viene en data.exam
+        content = data.exam;
       } else if (type === 'conversation' || type === 'message') {
         content = data.answer || data.content || data.message || data.data || '';
       } else {
@@ -2167,7 +2133,7 @@ class ResponseInteractionManager {
       content = data?.answer ||
         data?.content ||
         data?.message ||
-        data?.data ||                                              // ✅ NUEVO: Buscar en data.data
+        data?.data ||
         (typeof data === 'string' ? data : '') ||
         JSON.stringify(data);
     }
@@ -2310,9 +2276,6 @@ class ResponseInteractionManager {
     }
   }
 
-  /**
-   * *** FUNCIÓN SIMPLIFICADA: El backend hace toda la limpieza ***
-   */
   async handleCopyAction(messageElementFromContext) {
     console.log('🎯 [COPY] handleCopyAction llamado');
 
@@ -2954,7 +2917,6 @@ export function initResponseInteraction(processExisting = true) {
 
   exportRetryAction();
 
-  // ⭐ NUEVO: Retornar el instance con las nuevas funciones disponibles
   return {
     ...responseInteractionInstance,
     processExistingMessages: responseInteractionInstance.processExistingMessages.bind(responseInteractionInstance),
@@ -2965,7 +2927,6 @@ export function initResponseInteraction(processExisting = true) {
   };
 }
 
-// ⭐ NUEVA FUNCIÓN: Para llamar desde fuera cuando se complete una respuesta
 export function notifyResponseComplete() {
   if (responseInteractionInstance && typeof responseInteractionInstance.onResponseComplete === 'function') {
     responseInteractionInstance.onResponseComplete();
@@ -2979,7 +2940,6 @@ export function notifyResponseComplete() {
   }
 }
 
-// ⭐ NUEVA FUNCIÓN: Para refrescar manualmente el estado de botones
 export function refreshButtonsState() {
   if (responseInteractionInstance && typeof responseInteractionInstance.refreshInteractionButtons === 'function') {
     responseInteractionInstance.refreshInteractionButtons();

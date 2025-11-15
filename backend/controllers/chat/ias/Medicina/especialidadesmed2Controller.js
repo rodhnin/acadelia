@@ -1,15 +1,10 @@
 
-// ===== IMPORTACIONES NECESARIAS =====
 import { handleMedicalSpecialtiesQuery, handleMedicalSpecialtiesMultimodalQuery, handleMedicalSpecialtiesQueryWithoutSaving, handleMedicalSpecialtiesMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/Medicina/especialidadesmed2Service.js";
 import { validateQueryParams, validateMultimodalParams, generateAttachmentsSummary } from "../../../../utils/chat/theoryutils.js";
 import { logSecurityEvent } from '../../../../utils/securityLogger.js';
 import pool from '../../../../lib/dbPool.js';
-import { TokenManager } from "../../../../utils/shared/tokenManager.js"; // 🚀 ÚNICO IMPORT NECESARIO
+import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * ✅ FUNCIÓN ULTRA-SIMPLIFICADA: queryEspecialidadesMedicasII
- * REDUCCIÓN: 90% menos código usando TokenManager.handleCompleteAvaController
- */
 export const queryEspecialidadesMedicasII = async (req, res) => {
   const validationErrors = validateQueryParams(req.body);
   const avaAccessInfo = req.accessInfo?.avaAccess || {};
@@ -63,7 +58,6 @@ export const queryEspecialidadesMedicasIIMultimodal = async (req, res) => {
         return result;
       }
 
-      // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
       if (result.success && result.chatId) {
         try {
           const client = await pool.connect();

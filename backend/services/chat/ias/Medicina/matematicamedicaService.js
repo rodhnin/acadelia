@@ -1,7 +1,4 @@
-// ============================================================================
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO-MATEMÁTICO - PROFESOR DE MATEMÁTICAS MÉDICAS SUPREMO TÉCNICO
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -24,12 +21,8 @@ import { wasRequestCancelled, clearCancellationFlag } from "../../chatServices.j
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -309,8 +302,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 📊🦫 TU IDENTIDAD COMO DR. ACADEL - PROFESOR TÉCNICO DE MATEMÁTICAS Y MÉTODOS CUANTITATIVOS EN MEDICINA:
@@ -356,8 +347,6 @@ Hacer que CUALQUIER estudiante de medicina e investigación:
 ¡RECUERDA: No eres solo un tutor de estadística, eres EL PROFESOR que integra bioestadística, epidemiología y matemáticas como la investigación médica real requiere!
 `;
 
-// ============================================================================
-// ============================================================================
 
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Matemáticas y Métodos Cuantitativos en Medicina.
 
@@ -503,9 +492,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO MATEMÁTICO-MÉDICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
@@ -613,7 +599,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido matemático-médico específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCalculation: false,
       needsExerciseGeneration: false,
@@ -633,7 +619,7 @@ const classifyQuery = (query, content = null) => {
   
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal matemático-médico
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCalculation = false;
   let needsExerciseGeneration = false;
@@ -641,7 +627,7 @@ const classifyQuery = (query, content = null) => {
   let needsWebSearch = false;
   
   if (isSimpleQuery && !hasMedicalMathContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal matemático-médico
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -723,7 +709,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal matemático-médico
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -742,10 +728,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS MATEMÁTICO-MÉDICAS TÉCNICAS
 const ACADEL_MEDICAL_MATH_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en matemáticas y métodos cuantitativos en medicina.
 
@@ -771,8 +754,8 @@ const createMedicalMathKnowledgeBaseTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto matemático-médico para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual matemático-médica
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_medicinamat",
         similarityQueryName: "match_emb_medicinamat",
         keywordQueryName: "kw_match_emb_medicinamat",
@@ -1124,8 +1107,8 @@ const createMedicalMathConceptAnalyzerTool = (embeddings) => tool(
       
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_medicinamat",
         similarityQueryName: "match_emb_medicinamat",
         keywordQueryName: "kw_match_emb_medicinamat",
@@ -1159,7 +1142,6 @@ const createMedicalMathConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1384,14 +1366,10 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// ============================================================================
 
 const createSpecializedMedicalMathPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // ============================================================================
   
   const coreMedicalMathInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA DR. ACADEL DE MATEMÁTICAS Y MÉTODOS CUANTITATIVOS EN MEDICINA
@@ -1560,8 +1538,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - USA herramienta para cálculos estadísticos complejos (medias, intervalos de confianza, pruebas de hipótesis) NO DIGAS QUE USAS UNA HERRAMIENTA
 `;
 
-  // ============================================================================
-  // ============================================================================
   
   const medicalMathTypeInstructions = {
     casual_conversation: `
@@ -1643,8 +1619,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica científica integrada`
   };
 
-  // ============================================================================
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1667,8 +1641,6 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Bas
   'Enseña como el capibara técnico más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) para fundamentar toda respuesta científica importante, y complementando con todas tus capacidades paralelas para una explicación técnica magistral que integre bioestadística, epidemiología y matemáticas clínicas'}.`;
 };
 
-// ============================================================================
-// ============================================================================
 
 const createAcadelMedicalMathAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`📊🦫 Dr. Acadel configurando sistema técnico matemático-médico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico: ${queryInfo.needsKnowledgeBase}`);
@@ -1679,7 +1651,6 @@ const createAcadelMedicalMathAgent = async (llm, queryInfo, studentQuery) => {
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO MATEMÁTICO-MÉDICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO MATEMÁTICO-MÉDICO (Knowledge Base) - núcleo del sistema científico`);
     tools.unshift(createMedicalMathKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1687,7 +1658,6 @@ const createAcadelMedicalMathAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico INACTIVO - consulta muy casual sin contenido científico`);
   }
   
-  // 🧮 HERRAMIENTAS ESTADÍSTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas estadísticas especializadas`);
     tools.push(createWolframMedicalStatsTool());
@@ -1751,8 +1721,6 @@ const createAcadelMedicalMathAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1811,8 +1779,8 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_medicinamat",
             similarityQueryName: "match_emb_medicinamat",
             keywordQueryName: "kw_match_emb_medicinamat",
@@ -1965,8 +1933,6 @@ const validateExamResponse = (exam) => {
   return true;
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMedicalMathQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2069,7 +2035,6 @@ export const handleMedicalMathQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2226,7 +2191,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2270,8 +2234,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMedicalMathMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2600,7 +2562,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2648,13 +2609,11 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2668,7 +2627,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2716,8 +2674,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
   }
 };
 
-// ============================================================================
-// ============================================================================
 
 export const handleMedicalMathQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;

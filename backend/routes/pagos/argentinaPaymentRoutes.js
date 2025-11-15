@@ -1,15 +1,15 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
-import transferUpload from '../../middlewares/uploadMiddleware.js';  // ✅ USAR EL NUEVO
+import transferUpload from '../../middlewares/uploadMiddleware.js';
 import {
   createUalaOrder,
   submitBankTransfer,
   handleUalaCallback,
   getUserPayments,
   getUserSubscriptions,
-  getCarreraPrices,        // ✅ NUEVO
-  getAllCarrerasWithPrices  // ✅ NUEVO
+  getCarreraPrices,
+  getAllCarrerasWithPrices
 } from '../../controllers/pagos/argentinaPaymentController.js';
 import {
   handleUalaWebhook,
@@ -35,7 +35,6 @@ const webhookLimiter = rateLimit({
   legacyHeaders: false
 });
 
-// ===== RUTAS PÚBLICAS (SIN AUTENTICACIÓN) =====
 router.get('/carreras/precios', getAllCarrerasWithPrices);
 
 router.get('/carreras/:carreraId/precios', getCarreraPrices);
@@ -44,7 +43,6 @@ router.get('/carreras/:carreraId/precios', getCarreraPrices);
 router.get('/uala/callback/success', handleUalaCallback);
 router.get('/uala/callback/fail', handleUalaCallback);
 
-// ===== RUTAS PROTEGIDAS (CON AUTENTICACIÓN) =====
 router.post('/uala/create-order',
   authenticateUser,
   paymentLimiter,
@@ -54,11 +52,10 @@ router.post('/uala/create-order',
 router.post('/bank-transfer/submit',
   authenticateUser,
   paymentLimiter,
-  transferUpload.single('transferProof'),  // ✅ USAR EL NUEVO UPLOAD
+  transferUpload.single('transferProof'),
   submitBankTransfer
 );
 
-// ===== NUEVAS RUTAS PARA FRONTEND =====
 router.get('/user/payments', 
   authenticateUser,
   getUserPayments
@@ -69,7 +66,6 @@ router.get('/user/subscriptions',
   getUserSubscriptions
 );
 
-// ===== WEBHOOKS Y ADMIN =====
 router.post('/webhook/uala',
   webhookLimiter,
   express.json(), // Hookdeck envía JSON

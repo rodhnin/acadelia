@@ -56,7 +56,6 @@ export const specificToolLimitReached = (toolSlug, limitType, resetTime = null, 
   const toolName = toolFriendlyNames[toolSlug] || toolSlug.toUpperCase();
   const limitInfo = limits[limitType] || {};
   
-  // ⭐ USAR LÍMITES ESPECÍFICOS DEL BACKEND SI ESTÁN DISPONIBLES
   const specificLimits = toolLimits?.[limitType] || limitInfo;
   const used = specificLimits.used || 0;
   const limit = specificLimits.limit || 10;
@@ -73,7 +72,6 @@ export const specificToolLimitReached = (toolSlug, limitType, resetTime = null, 
       limitType,
       resetTime: resetTimeToUse,
       
-      // ⭐ LÍMITES ESPECÍFICOS DINÁMICOS DEL BACKEND
       specificLimits: {
         used: used,
         limit: limit,
@@ -82,7 +80,6 @@ export const specificToolLimitReached = (toolSlug, limitType, resetTime = null, 
         source: toolLimits?.source || 'backend_direct'
       },
       
-      // ⭐ LÍMITES COMPLETOS PARA EL FRONTEND
       toolLimits: toolLimits || {
         toolSlug,
         type: 'free_user_limits',
@@ -104,9 +101,6 @@ export const specificToolLimitReached = (toolSlug, limitType, resetTime = null, 
   return baseResponse;
 };
 
-/**
- * 🆕 NUEVO: Respuesta exitosa para herramienta específica
- */
 export const specificToolAccessSuccess = (toolSlug, data, usageInfo = {}) => {
   const toolFriendlyNames = {
     'pdf': 'PDF',
@@ -223,28 +217,24 @@ export const userAccessStatus = (userId, accessData) => ({
   userId,
   accessStatus: {
     isPremium: accessData.isPremium || false,
-    isAdmin: accessData.isAdmin || false, // 🆕 NUEVO CAMPO
+    isAdmin: accessData.isAdmin || false,
     activeSubscriptions: accessData.subscriptions || [],
     accessibleAvas: accessData.avas || [],
     toolLimits: {
       daily: accessData.dailyLimits || {},
       hourly: accessData.hourlyLimits || {},
-      // 🆕 NUEVO: Límites específicos por herramienta
       specificTools: accessData.toolLimits || {}
     },
     features: {
       unlimitedTools: accessData.isPremium || accessData.isAdmin || false,
       avaAccess: (accessData.avas || []).length > 0,
       premiumSupport: accessData.isPremium || accessData.isAdmin || false,
-      adminPrivileges: accessData.isAdmin || false // 🆕 NUEVO CAMPO
+      adminPrivileges: accessData.isAdmin || false
     }
   },
   timestamp: new Date().toISOString()
 });
 
-/**
- * 🆕 MODIFICADO: Respuestas de estadísticas de uso con información específica por herramienta
- */
 export const usageStats = (userId, stats) => ({
   success: true,
   userId,
@@ -253,13 +243,11 @@ export const usageStats = (userId, stats) => ({
       messagesUsed: stats.todayMessages || 0,
       tokensUsed: stats.todayTokens || 0,
       toolsUsed: stats.todayTools || [],
-      // 🆕 NUEVO: Uso específico por herramienta
       specificToolUsage: stats.specificToolUsage || {}
     },
     thisHour: {
       messagesUsed: stats.hourMessages || 0,
       tokensUsed: stats.hourTokens || 0,
-      // 🆕 NUEVO: Uso específico por herramienta en la última hora
       specificToolUsage: stats.hourlySpecificToolUsage || {}
     },
     total: {
@@ -272,7 +260,6 @@ export const usageStats = (userId, stats) => ({
       dailyMessageLimit: stats.dailyLimit || (stats.isPremium || stats.isAdmin ? 1000 : 15),
       hourlyMessageLimit: stats.hourlyLimit || (stats.isPremium || stats.isAdmin ? 100 : 15),
       tokenLimitPerChat: stats.isAdmin ? 'unlimited' : 50000,
-      // 🆕 NUEVO: Límites específicos por herramienta
       specificToolLimits: stats.toolLimits || {},
       isAdmin: stats.isAdmin || false,
       isPremium: stats.isPremium || false
@@ -321,9 +308,6 @@ export const frontendAccessDenied = (page, reason = 'career_required') => {
   });
 };
 
-/**
- * 🆕 MODIFICADO: Helper para formatear respuestas de límites con información específica por herramienta
- */
 export const formatLimitResponse = (limitInfo, isPremium = false, isAdmin = false, toolSpecificLimits = {}) => {
   if (isAdmin) {
     return {
@@ -371,7 +355,6 @@ export const formatLimitResponse = (limitInfo, isPremium = false, isAdmin = fals
         remaining: Math.max(0, (limitInfo.hourlyLimit || 15) - (limitInfo.hourlyUsed || 0)),
         resetTime: limitInfo.hourlyResetTime
       },
-      // 🆕 NUEVO: Límites específicos por herramienta
       specificTools: toolSpecificLimits,
       nextUpgrade: {
         benefits: [
@@ -396,7 +379,7 @@ export const withUpgradeInfo = (response, upgradeType = 'premium') => {
       benefits: [
         'Acceso ilimitado a todas las herramientas',
         'Sin límites de mensajes',
-        'Sin límites específicos por herramienta', // 🆕 NUEVO
+        'Sin límites específicos por herramienta',
         'Soporte prioritario'
       ],
       url: '/tienda',
@@ -420,9 +403,6 @@ export const withUpgradeInfo = (response, upgradeType = 'premium') => {
   };
 };
 
-/**
- * ✅ NUEVA: Respuesta de pre-validación fallida
- */
 export const preValidationFailed = (tokenInfo, suggestion = null) => {
   return createErrorResponse(ERROR_CODES.TOKEN_LIMITS.ESTIMATED_LIMIT_EXCEEDED, {
     currentTokens: tokenInfo.current,
@@ -438,9 +418,6 @@ export const preValidationFailed = (tokenInfo, suggestion = null) => {
   });
 };
 
-/**
- * ✅ NUEVA: Respuesta truncada exitosa
- */
 export const truncatedResponse = (originalResponse, truncationInfo, tokenInfo) => ({
   success: true,
   type: 'truncated_response',
@@ -471,9 +448,6 @@ export const truncatedResponse = (originalResponse, truncationInfo, tokenInfo) =
   timestamp: new Date().toISOString()
 });
 
-/**
- * ✅ NUEVA: Warning de pre-validación
- */
 export const preValidationWarning = (tokenInfo) => ({
   success: true,
   warning: {

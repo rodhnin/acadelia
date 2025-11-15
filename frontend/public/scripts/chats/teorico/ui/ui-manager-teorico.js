@@ -173,12 +173,10 @@ function disableInteractionButtons() {
  * Rehabilita todos los botones de interacción de mensajes
  */
 function enableInteractionButtons() {
-  // ⭐ NUEVO: Verificar si hay un mensaje siendo procesado actualmente
   const isProcessingMessage = () => {
     return document.querySelector('.ai-message.processing') !== null;
   };
 
-  // ⭐ NUEVO: Encontrar el último mensaje de usuario
   const getLastUserMessage = () => {
     const userMessages = document.querySelectorAll('.user-message');
     return userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
@@ -207,12 +205,10 @@ function enableInteractionButtons() {
     });
   });
 
-  // ⭐ CORREGIDO: Rehabilitar botones de edición de usuario CON EXCEPCIÓN
   const userActions = document.querySelectorAll('.user-response-actions');
   userActions.forEach(container => {
     const userMessage = container.closest('.user-message');
 
-    // ⭐ CRÍTICO: NO rehabilitar el último mensaje si se está procesando
     if (isCurrentlyProcessing && lastUserMessage && userMessage === lastUserMessage) {
       console.log('🚫 Manteniendo botón de edición deshabilitado para mensaje siendo procesado');
       return; // Saltar este mensaje, mantenerlo deshabilitado
@@ -249,13 +245,6 @@ function enableInteractionButtons() {
   console.log('✅ Botones de interacción rehabilitados (excepto último mensaje si está procesando)');
 }
 
-/**
- * Cambia el estado de la interfaz (habilitar/deshabilitar textarea y botón).
- * Versión actualizada que cambia el botón de enviar por uno de cancelar.
- * ⭐ CORREGIDO: Ahora refresca el estado de botones al habilitar
- * 
- * @param {boolean} disabled - true para deshabilitar.
- */
 export function toggleUIState(disabled) {
   if (!disabled && isCancellationInProgress) {
     return; // SALIR SIN HACER NADA
@@ -265,13 +254,11 @@ export function toggleUIState(disabled) {
     return;
   }
 
-  // ⭐ NUEVA FUNCIONALIDAD: Deshabilitar/habilitar botones de interacción ⭐
   if (disabled) {
     disableInteractionButtons();
   } else {
     enableInteractionButtons();
 
-    // ⭐ NUEVO: Refrescar estado de botones después de habilitar
     setTimeout(async () => {
       try {
         const { refreshButtonsState } = await import('../utils/response-interaction-teorico.js');
@@ -391,7 +378,6 @@ export function cancelCurrentRequest() {
       if (hasResponseButtons) {
         console.log('✅ [CANCEL] Mensaje con botones detectado - preservando respuesta real');
 
-        // Solo limpiar estado de loading y restaurar botón
         loadingMessage.classList.remove('processing');
         loadingMessage.removeAttribute('data-is-loading');
 
@@ -402,7 +388,7 @@ export function cancelCurrentRequest() {
           toggleUIState(false);
         }, 100);
 
-        return; // ✅ SALIR SIN APLICAR CLASES DE CANCELACIÓN
+        return;
       }
 
       loadingMessage.classList.remove('processing');
@@ -520,7 +506,6 @@ export function cancelCurrentRequest() {
   }
 }
 
-// ====== NUEVAS FUNCIONES AUXILIARES ======
 /**
  * Cambia el botón a modo cargando inmediatamente al cancelar
  */

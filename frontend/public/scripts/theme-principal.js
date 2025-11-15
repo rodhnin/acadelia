@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   if (document.querySelectorAll('.social-link:has(svg)').length > 0) {
-    // Solo preparar los iconos si existen en la página
     setupTwitterIcons();
     updateTwitterIcons(currentTheme);
   }
@@ -85,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     console.log('Event listener de menú configurado');
   } else {
-    // Solo mostrar warning en páginas con header layout que deberían tener menuToggle
     if (isHeaderLayout && !isSidebarLayout) {
       console.warn('Toggle de menú no encontrado en el DOM. Agregue un elemento con id="menuToggle" o data-function="menu-toggle"');
     }

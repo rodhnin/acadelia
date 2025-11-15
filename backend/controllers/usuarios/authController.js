@@ -7,10 +7,8 @@ import {
     getSecurityAlertInfo
 } from '../../utils/userAgentParser.js';
 
-// 🆕 Mapa para rastrear conexiones activas y sus timeouts
 const activeConnections = new Map();
 
-// 🆕 Cleanup automático de conexiones huérfanas
 const cleanupActiveConnections = () => {
     const now = Date.now();
     let cleanedCount = 0;
@@ -32,9 +30,6 @@ const cleanupActiveConnections = () => {
 
 setInterval(cleanupActiveConnections, 2 * 60 * 1000);
 
-/**
- * 🆕 Función helper para manejar cleanup de conexiones
- */
 const cleanupConnection = (connectionId) => {
     const connection = activeConnections.get(connectionId);
     if (connection) {
@@ -46,9 +41,6 @@ const cleanupConnection = (connectionId) => {
     }
 };
 
-/**
- * 🆕 Función helper para respuestas de longpolling mejoradas
- */
 const sendLongpollResponse = (res, data, statusCode = 200) => {
     if (!res.headersSent) {
         try {
@@ -167,7 +159,6 @@ export const longPollLoginAttempts = async (req, res) => {
             cleanupConnection(connectionId);
         }, 35000); // 35 segundos
 
-        // 🆕 Registrar conexión activa
         activeConnections.set(connectionId, {
             userId,
             req,
@@ -184,7 +175,6 @@ export const longPollLoginAttempts = async (req, res) => {
             cleanupConnection(connectionId);
         });
 
-        // 🆕 Manejar errores de la respuesta
         res.on('error', (error) => {
             Logger.error('Error en respuesta longpolling', error, { userId, connectionId });
             cleanupConnection(connectionId);
@@ -202,7 +192,6 @@ export const longPollLoginAttempts = async (req, res) => {
             connectionId
         });
 
-        // 🆕 Limpiar conexión en caso de error
         cleanupConnection(connectionId);
 
         if (!res.headersSent) {
@@ -277,13 +266,9 @@ function extractRequestData(req) {
     };
 }
 
-/**
- * 🆕 Manejar errores mejorado y convertirlos en respuestas HTTP apropiadas
- */
 function handleError(res, error, additionalInfo = {}) {
     Logger.error("Error en operación de autenticación", error, additionalInfo);
 
-    // 🆕 Evitar respuestas duplicadas
     if (res.headersSent) {
         Logger.warn("Intento de enviar respuesta cuando headers ya fueron enviados", additionalInfo);
         return;
@@ -329,15 +314,12 @@ function handleError(res, error, additionalInfo = {}) {
                 status: "error",
                 error: "Error interno del servidor",
                 code: "SERVER_ERROR",
-                // 🆕 Incluir detalles solo en desarrollo
                 ...(process.env.NODE_ENV === 'development' && { details: error.message })
             });
     }
 }
 
-// ========================================
 // ENDPOINTS HTTP (Solo manejo de Request/Response)
-// ========================================
 
 /**
  * Login de usuario
@@ -700,7 +682,6 @@ export const refreshToken = async (req, res) => {
 
         const tokens = await AuthService.refreshTokens(refreshToken);
 
-        // Solo actualizar access token cookie
         res.cookie("token", tokens.accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
@@ -728,7 +709,6 @@ export const refreshToken = async (req, res) => {
     }
 };
 
-// ==================== CONTROLLER SIMPLIFICADO ====================
 
 /**
  * Login con Google (solo redirecciones)
@@ -739,7 +719,6 @@ export const googleLogin = async (req, res) => {
         requestData.protocol = req.protocol;
         requestData.host = req.get('host');
 
-        // Solo manejar GET con código OAuth
         const { code, error } = req.query;
 
         if (error) {
@@ -818,7 +797,6 @@ export const checkLoginStatus = async (req, res) => {
     }
 };
 
-// 🆕 Cleanup al cerrar la aplicación
 process.on('SIGINT', () => {
     console.log('[AUTH] Limpiando conexiones activas...');
     for (const [connectionId, connection] of activeConnections) {

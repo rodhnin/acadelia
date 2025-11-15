@@ -33,7 +33,6 @@ const error = (message, ...args) => {
 export const setupCookieCsrf = (req, res, next) => {
     let csrfToken = req.cookies['XSRF-TOKEN'];
     
-    // Solo generar nuevo token si no existe o es inválido
     if (!csrfToken || csrfToken.length !== 40 || !/^[a-f0-9]{40}$/i.test(csrfToken)) {
         csrfToken = generateCsrfToken();
         
