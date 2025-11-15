@@ -79,37 +79,173 @@
 
 ## 🧱 Arquitectura (alto nivel)
 
+### 📂 Estructura del Proyecto
+
 ```
-/ (monorepo sugerido)
-├─ backend/           # API Express, servicios IA, colas
-│  ├─ controllers/
-│  ├─ services/       # RAG, OCR, transcripción, marketing, agentes
-│  ├─ middlewares/
-│  ├─ jobs/           # BullMQ (Redis)
-│  ├─ lib/            # OpenAI, Mistral, Supabase, Redis, FFmpeg, etc.
-│  └─ server.js       # Entrypoint
-├─ frontend/          # HTML + CSS + JS vanilla (branding Acadel)
+/ (monorepo)
+├─ backend/                  # API Express, servicios IA, colas
+│  ├─ controllers/           # 40+ controladores por agente/materia
+│  │  ├─ ingenieria/        # Álgebra, Cálculo, Física, etc.
+│  │  ├─ medicina/          # Patología, Semiología, Anatomía, etc.
+│  │  ├─ economia/          # Micro, Macro, Econometría, etc.
+│  │  ├─ psicologia/        # DSM-5, Psicoanálisis, Neuropsico, etc.
+│  │  └─ herramientas/      # PDF IA, Agente General
+│  ├─ services/             # Lógica de negocio
+│  │  ├─ chat/              # RAG, embeddings, memoria híbrida
+│  │  ├─ marketing/         # Sistema autónomo de marketing
+│  │  ├─ transcription/     # Whisper, procesamiento de audio
+│  │  ├─ ocr/               # Mistral OCR, procesamiento PDF
+│  │  └─ payments/          # Paddle, Ualá Bis
+│  ├─ middlewares/          # Seguridad, autenticación, rate limiting
+│  ├─ jobs/                 # BullMQ (colas de procesamiento)
+│  ├─ lib/                  # Clientes: OpenAI, Mistral, Supabase, Redis
+│  ├─ utils/                # Utilidades compartidas
+│  └─ server.js             # Punto de entrada principal (1036 líneas)
+├─ frontend/                # HTML + CSS + JS vanilla
 │  ├─ public/
-│  └─ views/
-├─ db/                # Esquemas/dumps
-│  └─ **Acadelia-DB.sql**  # Esquema base para **Supabase**
-├─ scripts/           # build/minify/ofuscación
-├─ config/            # claves de servicio
-│  └─ google-drive-key.json
-└─ docs/              # capturas y documentación
+│  │  ├─ css/               # Estilos modulares por tipo de chat
+│  │  │  ├─ chats/          # base, layout, components, utils
+│  │  │  └─ chiguiremarketing/  # Estilos del panel de marketing
+│  │  └─ scripts/           # JavaScript por funcionalidad
+│  │     ├─ chats/          # Lógica de chats (math, theory, tools)
+│  │     ├─ chiguireinteligente/  # Panel financiero
+│  │     ├─ chiguiremarketing/    # Panel de marketing
+│  │     └─ chiguiremente/        # Analytics
+│  └─ views/                # Templates HTML
+│     ├─ auth/              # Login, registro
+│     ├─ dashboard/         # Principal, mis avas, cuenta
+│     ├─ content/           # Chats por materia y herramientas
+│     └─ admin/             # Paneles administrativos
+├─ db/                      # Esquemas de base de datos
+│  └─ Acadelia-DB.sql       # Esquema completo para Supabase
+├─ scripts/                 # Build, minificación, ofuscación
+│  ├─ build-esbuild.js      # Build con esbuild + UglifyJS
+│  └─ revert-build.js       # Rollback de build
+├─ config/                  # Configuración de servicios
+│  └─ google-drive-key.json # Clave de servicio para Google Drive
+├─ uploads/                 # Archivos subidos por usuarios
+├─ docs/                    # Documentación y medios
+│  └─ media/                # Capturas, GIFs, videos
+├─ .github/                 # CI/CD workflows
+├─ Dockerfile               # Multi-stage build (development/production)
+├─ docker-compose.production.yml  # Orquestación de servicios
+└─ nginx.conf               # Configuración de Nginx (reverse proxy)
+```
+
+### 🏗️ Arquitectura de Sistema
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  CAPA DE PRESENTACIÓN                        │
+│                    (Nginx + Frontend)                        │
+│  - Servidor web estático (HTML/CSS/JS Vanilla)               │
+│  - Reverse proxy hacia el backend                            │
+│  - Cache optimizado para assets estáticos                    │
+│  - Compresión gzip                                           │
+└────────────────────────┬────────────────────────────────────┘
+                         │ HTTP/HTTPS
+┌────────────────────────▼────────────────────────────────────┐
+│                   CAPA DE APLICACIÓN                         │
+│                 (Node.js 22+ Express)                        │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  MIDDLEWARES DE SEGURIDAD (capas de protección)      │  │
+│  │  1. Helmet (Headers HTTP seguros)                    │  │
+│  │  2. CORS (configuración estricta)                    │  │
+│  │  3. CSRF Protection (cookie-based tokens)            │  │
+│  │  4. Rate Limiting (Redis distribuido)                │  │
+│  │  5. JWT Authentication (+ Refresh Tokens)            │  │
+│  │  6. Access Control (AVA/Herramientas)                │  │
+│  │  7. ClamAV (Antivirus en tiempo real)                │  │
+│  │  8. Request Monitoring & Logging                     │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  SISTEMA DE ENRUTAMIENTO                             │  │
+│  │  - /api/chat/*     → RAG, embeddings, agentes        │  │
+│  │  - /api/users/*    → Autenticación, perfiles         │  │
+│  │  - /api/payments/* → Paddle, Ualá Bis                │  │
+│  │  - /api/admin/*    → Analytics, seguridad, colas     │  │
+│  │  - /api/shared/*   → Recursos compartidos            │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  CONTROLADORES (40+ agentes especializados)          │  │
+│  │  📐 Ingeniería: Álgebra, Cálculo, Física, etc.       │  │
+│  │  🏥 Medicina: Patología, Semiología, Anatomía, etc.  │  │
+│  │  💰 Economía: Micro, Macro, Econometría, etc.        │  │
+│  │  🧠 Psicología: DSM-5, Psicoanálisis, etc.           │  │
+│  │  🛠️  Herramientas: PDF IA, Agente Multimodal         │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  SERVICIOS DE IA Y PROCESAMIENTO                     │  │
+│  │  - chatServices.js (orquestador central RAG)         │  │
+│  │  - RAG Services (Hybrid Search: BM25 + Vector)       │  │
+│  │  - Marketing Agent (sistema autónomo multi-agente)   │  │
+│  │  - Transcription Services (Whisper STT)              │  │
+│  │  - OCR Services (Mistral para PDFs)                  │  │
+│  │  - File Processing (PDF, audio, video, imágenes)     │  │
+│  │  - Image Storage & Analysis (GPT-4o Vision)          │  │
+│  └──────────────────────────────────────────────────────┘  │
+└──┬───────────┬──────────┬──────────┬─────────────────────────┘
+   │           │          │          │
+┌──▼─────┐ ┌──▼────┐ ┌──▼──────┐ ┌─▼──────────────────────────┐
+│SUPABASE│ │ REDIS │ │ BullMQ  │ │   APIS EXTERNAS            │
+│        │ │       │ │         │ │                            │
+│- Postgr│ │- Cache│ │- Colas: │ │- OpenAI GPT-4o / Whisper   │
+│  esQL  │ │- Sessi│ │  * openai│ │- Mistral OCR               │
+│- Vector│ │  ons  │ │  * pdf  │ │- WolframAlpha              │
+│  DB    │ │- Rate │ │  * audio│ │- Brave Search              │
+│  (RAG) │ │  Limit│ │  * youtube│ │- DALL-E                    │
+│- Storag│ │- Jobs │ │- Throttl│ │- Paddle (pagos)            │
+│  e     │ │- Locks│ │  ing    │ │- Ualá Bis (pagos ARG)      │
+│- Auth  │ │       │ │- Retry  │ │- YouTube (descarga)        │
+└────────┘ └───────┘ └─────────┘ └────────────────────────────┘
 ```
 
 ### 🧩 Tecnologías clave
 
--   **Node.js (ESM) + Express**
--   **Supabase** (Postgres + Storage + **Vector DB** para RAG)
--   **OpenAI** (LLM + **Whisper** STT)
--   **Mistral** (OCR)
--   **Redis + BullMQ** (colas/rate-limit distribuido)
--   **FFmpeg/ffprobe + ytdl-core** (ingestión de video/audio)
--   **Helmet · express-rate-limit · ClamAV · Winston** (seguridad/logs)
+**Backend:**
+-   **Runtime:** Node.js 22+ (ESM modules) con UV_THREADPOOL_SIZE=16
+-   **Framework:** Express.js 4.18.2
+-   **IA/LLM:** OpenAI GPT-4o, Whisper, DALL-E, text-embedding-ada-002
+-   **OCR:** Mistral OCR
+-   **Orquestación:** LangChain 0.3.12
+-   **Base de Datos:** Supabase (PostgreSQL 14+ con extensión pgvector)
+-   **Cache/Colas:** Redis 7 + BullMQ 5.49.1
+-   **Procesamiento Multimedia:** FFmpeg, ytdl-core, yt-dlp
+-   **Seguridad:** Helmet, JWT, bcrypt, ClamAV, express-rate-limit
+-   **Logging:** Winston
+-   **Pagos:** Paddle SDK, Ualá Bis
+-   **Búsqueda:** Brave Search API
+-   **Cálculo:** WolframAlpha API
 
-> **Requisitos críticos** para ejecutar: **Redis**, **ClamAV (`clamscan`)**, **pdftocairo**, **FFmpeg/ffprobe**.
+**Frontend:**
+-   **Core:** HTML5, CSS3, JavaScript Vanilla (sin frameworks)
+-   **Servidor Web:** Nginx (reverse proxy + static files)
+-   **Renderizado:** MathLive (LaTeX), Mermaid (diagramas)
+-   **UI/UX:** Diseño modular temático (Acadel)
+
+**Base de Datos:**
+-   **40+ tablas de embeddings** (una por agente/materia)
+-   **Sistema de chat:** `chat`, `chat_history`, `ava`, `herramienta`
+-   **Usuarios:** `users`, `cookie_consent`, `account_deletion_requests`
+-   **Marketing:** `marketing_trends`, `marketing_profiles`, `marketing_content`
+-   **Pagos:** `egresos`, `categorias_egresos`, `analisis_impuestos`
+
+**DevOps:**
+-   **Containerización:** Docker multi-stage (development/production)
+-   **Orquestación:** Docker Compose
+-   **CI/CD:** GitHub Actions (Node 20 + LFS)
+-   **Deployment:** Fly.io ready
+
+> **Requisitos críticos** para ejecutar:
+> - **Redis** (versión 7+, para colas y rate limiting)
+> - **ClamAV** (`clamscan`, para escaneo de archivos)
+> - **pdftocairo** (para renderizado de PDFs)
+> - **FFmpeg/ffprobe** (para procesamiento multimedia)
+> - **Node.js** (versión 22+)
 
 ---
 
@@ -568,6 +704,297 @@ HOOKDECK_SIGNING_SECRET=
     </tr>
   </table>
 </p>
+
+---
+
+## 🔬 Sistema RAG (Retrieval-Augmented Generation)
+
+El corazón de Acadelia es su sistema RAG avanzado que combina búsqueda semántica con conocimiento especializado por materia.
+
+### 🎯 Características del RAG
+
+-   **100% en Supabase**: No depende de bases de datos vectoriales externas (Pinecone, Weaviate, etc.)
+-   **Hybrid Search**: Combina BM25 (búsqueda por keywords) + Vector Similarity (embeddings)
+-   **OpenAI Embeddings**: `text-embedding-ada-002` (1536 dimensiones)
+-   **40+ bases de conocimiento**: Una tabla de embeddings por cada agente/materia
+-   **Limpieza de contexto**: Pre-procesamiento avanzado antes de enviar al LLM
+-   **Memoria híbrida**: Combina memoria a corto plazo (última conversación) y largo plazo (resúmenes vectorizados)
+-   **Cache inteligente (AcadelCache)**: Sistema de cache con categorización automática y TTL variable
+
+### 🔄 Flujo Completo del Sistema RAG
+
+```mermaid
+flowchart TB
+    A[Usuario hace pregunta] --> B{Análisis de intención}
+    B --> C[Categorización de query]
+    C --> D{Consulta cache}
+    D -->|Cache hit| E[Retorna respuesta cached]
+    D -->|Cache miss| F[Hybrid Search en Supabase]
+    F --> G[Recupera chunks relevantes]
+    G --> H[Carga memoria híbrida]
+    H --> I{Requiere herramientas?}
+    I -->|Sí - Matemático| J[WolframAlpha]
+    I -->|Sí - Búsqueda| K[Brave Search]
+    I -->|Sí - Imagen| L[DALL-E]
+    I -->|No| M[Construcción de prompt]
+    J --> M
+    K --> M
+    L --> M
+    M --> N[GPT-4o genera respuesta]
+    N --> O[Formateo LaTeX/Mermaid]
+    O --> P[Guardado en chat_history]
+    P --> Q[Actualización de cache]
+    Q --> R[Respuesta al usuario]
+```
+
+### 📊 Hybrid Search Explained
+
+El sistema usa una búsqueda híbrida que combina dos estrategias:
+
+**1. BM25 (Keyword Search):**
+-   Búsqueda tradicional por coincidencia de términos
+-   Excelente para queries específicas con términos técnicos
+-   Ejemplo: "ecuación diferencial de segundo orden"
+
+**2. Vector Similarity:**
+-   Búsqueda semántica basada en embeddings
+-   Captura significado y contexto, no solo palabras exactas
+-   Ejemplo: "cómo resolver problemas de movimiento" → encuentra contenido sobre cinemática
+
+**Implementación en código:**
+```javascript
+// backend/services/chat/{materia}Service.js
+const retriever = new SupabaseHybridSearch(embeddings, {
+  client: supabase,
+  tableName: 'emb_algebra',  // Tabla específica del agente
+  similarityK: 3,            // Top 3 resultados por similitud
+  keywordK: 2,               // Top 2 resultados por keywords
+  similarityThreshold: 0.6   // Umbral mínimo de similitud
+});
+```
+
+### 🧠 Memoria Híbrida
+
+**Memoria a Corto Plazo:**
+-   Últimos 10-20 mensajes de la conversación actual
+-   Cargada en cada request para mantener contexto
+-   Almacenada en `chat_history`
+
+**Memoria a Largo Plazo:**
+-   Resúmenes de conversaciones previas vectorizados
+-   Búsqueda semántica de contexto relevante de sesiones anteriores
+-   Consolidación periódica de conocimiento aprendido
+
+### 💾 Cache Inteligente (AcadelCache)
+
+Sistema de cache con categorización automática:
+
+**Categorías y TTL:**
+-   **Conceptos fundamentales**: 7 días (ej: "¿Qué es una integral?")
+-   **Cálculos específicos**: 3 días (ej: "Derivada de x² + 3x")
+-   **Información actualizable**: 1 día (ej: "Últimas investigaciones sobre...")
+
+**Beneficios:**
+-   Reducción de costos de API (menos llamadas a OpenAI)
+-   Respuestas más rápidas para queries comunes
+-   Consistencia en respuestas frecuentes
+
+---
+
+## 🚀 Instalación y Ejecución
+
+### Requisitos Previos
+
+**Software requerido:**
+```bash
+# Node.js
+node --version  # Debe ser >= 22
+
+# Redis
+redis-server --version  # Debe ser >= 7
+
+# FFmpeg
+ffmpeg -version
+
+# ClamAV
+clamscan --version
+
+# pdftocairo (parte de poppler-utils)
+pdftocairo -v
+```
+
+**Instalación de dependencias del sistema:**
+
+```bash
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y \
+  redis-server \
+  clamav clamav-daemon \
+  ffmpeg \
+  poppler-utils
+
+# macOS
+brew install redis clamav ffmpeg poppler
+
+# Iniciar servicios
+sudo systemctl start redis-server
+sudo systemctl start clamav-daemon
+```
+
+### Configuración del Proyecto
+
+**1. Clonar el repositorio:**
+```bash
+git clone https://github.com/rodhnin/acadelia.git
+cd acadelia
+```
+
+**2. Instalar dependencias de Node.js:**
+```bash
+npm install
+```
+
+**3. Configurar variables de entorno:**
+```bash
+# Copiar el archivo de ejemplo
+cp .env.example .env
+
+# Editar con tus claves
+nano .env
+```
+
+**Variables críticas que debes configurar:**
+```bash
+# Supabase (OBLIGATORIO)
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_ANON_KEY=tu-anon-key
+SUPABASE_SERVICE_KEY=tu-service-key
+
+# OpenAI (OBLIGATORIO)
+OPENAI_API_KEY=sk-tu-api-key
+
+# Redis (OBLIGATORIO)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Seguridad (CAMBIAR VALORES)
+JWT_SECRET=tu-secret-muy-seguro-aleatorio
+SESSION_SECRET=otro-secret-muy-seguro
+CSRF_SECRET=csrf-secret-aleatorio
+```
+
+**4. Configurar Base de Datos:**
+```bash
+# Importar el esquema en Supabase
+# Ve a tu dashboard de Supabase → SQL Editor
+# Ejecuta el contenido de db/Acadelia-DB.sql
+```
+
+**5. Iniciar ClamAV:**
+```bash
+# Actualizar base de datos de virus
+sudo freshclam
+
+# Iniciar el daemon
+sudo systemctl start clamav-daemon
+```
+
+### Modos de Ejecución
+
+**Desarrollo (con hot reload):**
+```bash
+npm run dev
+```
+
+**Producción (código optimizado):**
+```bash
+# Build del frontend (minificación + ofuscación)
+npm run build
+
+# Iniciar servidor
+npm start
+```
+
+**Docker (Recomendado para producción):**
+```bash
+# Con docker-compose
+docker-compose -f docker-compose.production.yml up -d
+
+# Ver logs
+docker-compose logs -f backend
+
+# Detener
+docker-compose down
+```
+
+### Verificar que Todo Funciona
+
+**1. Health Check del Backend:**
+```bash
+curl http://localhost:5000/api/config
+```
+
+Deberías ver:
+```json
+{
+  "status": "operational",
+  "environment": "development",
+  "features": {
+    "avaAccess": true,
+    "herramientaAccess": true
+  }
+}
+```
+
+**2. Verificar Redis:**
+```bash
+redis-cli ping
+# Debe responder: PONG
+```
+
+**3. Verificar ClamAV:**
+```bash
+sudo clamdscan --version
+```
+
+**4. Acceder a la aplicación:**
+-   Frontend: `http://localhost:3000` (si usas Nginx)
+-   Backend API: `http://localhost:5000`
+
+### Solución de Problemas Comunes
+
+**Error: "Cannot connect to Redis"**
+```bash
+# Verificar que Redis está corriendo
+sudo systemctl status redis-server
+
+# Si no está corriendo
+sudo systemctl start redis-server
+```
+
+**Error: "ClamAV: No such file or directory"**
+```bash
+# Verificar instalación
+which clamscan
+
+# Reinstalar si es necesario
+sudo apt-get install --reinstall clamav
+```
+
+**Error: "FFmpeg not found"**
+```bash
+# Verificar instalación
+which ffmpeg
+
+# Instalar si falta
+sudo apt-get install ffmpeg
+```
+
+**Error: "Cannot connect to Supabase"**
+-   Verifica que las variables `SUPABASE_URL` y `SUPABASE_ANON_KEY` sean correctas
+-   Verifica que importaste el esquema SQL correctamente
+-   Revisa los logs: `backend/logs/error.log`
 
 ---
 
