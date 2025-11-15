@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const question = item.querySelector('.faq-question');
         
         question.addEventListener('click', () => {
-            // Cerrar otras preguntas abiertas
             const currentlyActive = document.querySelector('.faq-item.active');
             if (currentlyActive && currentlyActive !== item) {
                 currentlyActive.classList.remove('active');

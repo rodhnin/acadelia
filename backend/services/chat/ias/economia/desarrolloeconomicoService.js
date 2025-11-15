@@ -1,9 +1,6 @@
 // ============================================================================
-// 🌍🦫 PROFESOR ACADEL DESARROLLO ECONÓMICO - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO ECONÓMICO - PROFESOR DE DESARROLLO ECONÓMICO SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Economía del Desarrollo ✅ Pobreza y Desigualdad ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +24,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +94,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -173,7 +167,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +187,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -263,7 +255,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -325,7 +316,6 @@ class BraveSearchOrchestrator {
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
 // ============================================================================
-// 🌍🦫 PROFESOR ACADEL DESARROLLO ECONÓMICO DNA - PERSONALIDAD DEL CAPIBARA ECONOMISTA SUPREMO
 // ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
@@ -365,10 +355,8 @@ Hacer que CUALQUIER estudiante de economía del desarrollo:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS ECONÓMICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES ECONÓMICAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA ECONÓMICA de Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes económicas (gráficas, datos, indicadores) con precisión académica extrema.
@@ -395,7 +383,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA ECONÓMICA de A
 
 Eres los OJOS ANALÍTICOS ECONÓMICOS de Acadel - él interpretará tu análisis con su sabiduría económica pedagógica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES ECONÓMICAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA ECONÓMICA de Acadel, el capibara economista más brillante del universo en desarrollo y desigualdad.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información económica de esta imagen para que Acadel pueda enseñar efectivamente integrando las dos disciplinas.
@@ -441,7 +428,6 @@ Proporciona un análisis económico estructurado, preciso y exhaustivo que permi
 
 **IMPORTANTE:** Sé OBSERVADOR ECONÓMICO, PRECISO y DETALLADO en las dos disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos económicos. Acadel se encargará de la pedagogía económica integrada pero necesita que seas muy detallista con todo lo que observas económicamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS ECONÓMICAS NORMALES (con y sin guardar)
 const UNIFIED_DEVELOPMENT_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA ECONÓMICA INTEGRADA:
 - Consulta del estudiante de economía del desarrollo: "${query}"
@@ -468,7 +454,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS ECONÓMICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_DEVELOPMENT_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN ECONÓMICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -523,7 +508,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -533,7 +517,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -555,7 +538,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -563,7 +545,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // DETECTAR GENERACIÓN DE IMÁGENES ECONÓMICAS
   const economicImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -588,7 +569,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar exámenes económicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de desarrollo", "test económico", "evaluación económica", "cuestionario"
@@ -632,9 +612,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -643,7 +621,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS ECONÓMICOS ESPECÍFICOS
   const economicTerms = [
     // Desarrollo
     'desarrollo económico', 'economic development', 'crecimiento', 'growth', 'lewis', 'rostow', 'transformación estructural',
@@ -658,25 +635,21 @@ const classifyQuery = (query, content = null) => {
     'índice', 'coeficiente', 'estadísticas', 'datos', 'análisis económico', 'política económica'
   ];
 
-  // 🔍 DETECTAR PAÍSES Y REGIONES QUE REQUIEREN KNOWLEDGE BASE
   const geographicTerms = [
     'américa latina', 'asia oriental', 'áfrica subsahariana', 'países en desarrollo', 'emerging markets',
     'brasil', 'méxico', 'china', 'india', 'corea', 'chile', 'colombia', 'perú'
   ];
 
-  // 🔍 DETECTAR ORGANISMOS Y ESTUDIOS ECONÓMICOS
   const economicOrganizations = [
     'banco mundial', 'world bank', 'pnud', 'undp', 'fmi', 'imf', 'cepal', 'eclac',
     'bid', 'iadb', 'ocde', 'oecd', 'unicef', 'fao', 'oit', 'ilo'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS ECONÓMICOS REALES
   const hasEconomicContent =
     economicTerms.some(term => lowercaseQuery.includes(term)) ||
     geographicTerms.some(term => lowercaseQuery.includes(term)) ||
     economicOrganizations.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasEconomicContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -701,7 +674,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'modelo de', 'teoría de'];
   const diagnosticKeywords = ['analizar', 'evaluar', 'interpretar', 'diagnosticar', 'caso de desarrollo', 'situación económica', 'problema'];
   const developmentKeywords = ['desarrollo', 'development', 'crecimiento', 'transformación', 'lewis', 'rostow', 'instituciones', 'gobernanza'];
@@ -710,7 +682,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'papers económicos', 'artículos', 'evidencia', 'noticias económicas'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos económicos', 'ejercicios', 'más casos'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -743,7 +714,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -753,7 +723,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional económica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo analizar'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -780,7 +749,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS ECONÓMICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS ECONÓMICAS
@@ -798,7 +766,6 @@ const createDevelopmentKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal económico (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -808,7 +775,6 @@ const createDevelopmentKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -818,7 +784,6 @@ const createDevelopmentKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_desarrolloeconomico",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -830,7 +795,6 @@ const createDevelopmentKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_ECONOMIC_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido económico específico sobre "${query}" en su biblioteca de desarrollo. Proceder con conocimiento económico general integrado y experiencia docente acumulada en desarrollo y desigualdad.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -850,7 +814,6 @@ ACADEL_ECONOMIC_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido e
 
 ACADEL_ECONOMIC_MEMORY_BANK: El cerebro principal de Acadel encontró información económica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base económico integrado, analogías memorables y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -877,7 +840,6 @@ ACADEL_ECONOMIC_MEMORY_BANK: El cerebro principal de Acadel activó la siguiente
 
 INTEGRATION_NOTES: Este es el conocimiento económico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en desarrollo y desigualdad. Debe integrar esta información naturalmente como si fuera su propia sabiduría económica, enriqueciéndola con casos de desarrollo específicos, analogías memorables y humor económico inteligente que conecte las dos disciplinas de manera pedagógica magistral.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1103,7 +1065,6 @@ const createDevelopmentConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto económico integrado: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1113,7 +1074,6 @@ const createDevelopmentConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_desarrolloeconomico",
       });
 
-      // 📚 BÚSQUEDAS ECONÓMICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `desarrollo económico ${concept}`,
@@ -1123,7 +1083,6 @@ const createDevelopmentConceptAnalyzerTool = (embeddings) => tool(
         `análisis empírico ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1156,7 +1115,6 @@ const createDevelopmentConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural económica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/🌍|✅|⚠️|📊|🎯|💡/g, '')
@@ -1335,7 +1293,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia económica según este aná
 );
 
 // ============================================================================
-// 📷 ECONOMIC IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES (MANTENIDA ORIGINAL)
 // ============================================================================
 
 export const detectDevelopmentImageRequest = (query) => {
@@ -1367,7 +1324,6 @@ export const extractDevelopmentImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema económico
 const createDevelopmentVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1402,7 +1358,6 @@ const createDevelopmentVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts económicos
 const enhanceDevelopmentImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración económica educativa de alta calidad integrando desarrollo y desigualdad: ${prompt}. 
@@ -1421,14 +1376,12 @@ const enhanceDevelopmentImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS ECONÓMICOS
 // ============================================================================
 
 const createSpecializedDevelopmentPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
   // ============================================================================
-  // 🌍 INSTRUCCIONES TÉCNICAS ECONÓMICAS CONSOLIDADAS
   // ============================================================================
 
   const coreEconomicInstructions = `
@@ -1528,7 +1481,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA ECONÓMICA - OPTIMIZADAS
   // ============================================================================
 
   const economicTypeInstructions = {
@@ -1612,7 +1564,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT ECONÓMICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
 
   return `${basePersonality}
@@ -1637,13 +1588,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE ECONÓMICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelDevelopmentAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🌍🦫 Acadel configurando sistema económico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveDevelopmentWebSearchTool(),
     createBraveDevelopmentImageSearchTool(),
@@ -1658,7 +1607,6 @@ const createAcadelDevelopmentAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido económico`);
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsDevelopmentSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando DevelopmentConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createDevelopmentConceptAnalyzerTool(embeddings));
@@ -1674,7 +1622,6 @@ const createAcadelDevelopmentAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createDevelopmentComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createDevelopmentFeedbackAnalyzerTool());
 
   console.log(`🌍🦫 Acadel SISTEMA ECONÓMICO COMPLETO configurado con ${tools.length} herramientas:`, tools.map(t => t.name));
@@ -1687,7 +1634,6 @@ const createAcadelDevelopmentAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt económico especializado y escapado
   const specializedPrompt = createSpecializedDevelopmentPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1719,7 +1665,6 @@ const createAcadelDevelopmentAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES ECONÓMICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1768,7 +1713,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen económico: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1778,7 +1722,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1788,7 +1731,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_desarrolloeconomico",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1800,7 +1742,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1815,7 +1756,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes
           return `Contexto económico base para "${input}": conocimiento fundamental en desarrollo y desigualdad. Acadel debe generar preguntas desde su experiencia económica consolidada, integrando las dos disciplinas con casos económicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1924,7 +1864,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA DE DESARROLLO - handleDevelopmentQuery
 // ============================================================================
 
 export const handleDevelopmentQuery = async (params) => {
@@ -1934,7 +1873,6 @@ export const handleDevelopmentQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1950,13 +1888,11 @@ export const handleDevelopmentQuery = async (params) => {
     // CLASIFICAR EL QUERY DE DESARROLLO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES DE DESARROLLO
     const { isImageRequest, prompt: imagePrompt } = detectDevelopmentImageRequest(query);
 
     console.log(`🌍🦫 Acadel analizando query de desarrollo integrado: "${query}"`);
     console.log(`📊 Clasificación de desarrollo: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES DE DESARROLLO
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización de desarrollo integrada: ${imagePrompt}`);
 
@@ -1965,7 +1901,6 @@ export const handleDevelopmentQuery = async (params) => {
       const developmentVisualizationTool = createDevelopmentVisualizationTool();
       const imageResponse = await developmentVisualizationTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1978,7 +1913,6 @@ export const handleDevelopmentQuery = async (params) => {
         };
       }
 
-      // Guardar la imagen de desarrollo localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -1993,7 +1927,6 @@ export const handleDevelopmentQuery = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2005,7 +1938,6 @@ export const handleDevelopmentQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2017,7 +1949,6 @@ export const handleDevelopmentQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2031,7 +1962,6 @@ export const handleDevelopmentQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para generación de imágenes
         if (isCacheable(query, 'desarrolloeconomico')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2043,7 +1973,6 @@ export const handleDevelopmentQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2064,7 +1993,6 @@ export const handleDevelopmentQuery = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes de desarrollo
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen de desarrollo integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2086,7 +2014,6 @@ export const handleDevelopmentQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2098,7 +2025,6 @@ export const handleDevelopmentQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2110,7 +2036,6 @@ export const handleDevelopmentQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2127,7 +2052,6 @@ export const handleDevelopmentQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para exámenes
         if (isCacheable(query, 'desarrolloeconomico')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2140,7 +2064,6 @@ export const handleDevelopmentQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2161,7 +2084,6 @@ export const handleDevelopmentQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA DE DESARROLLO (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2178,10 +2100,8 @@ export const handleDevelopmentQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico de desarrollo
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE DE DESARROLLO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelDevelopmentAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2208,7 +2128,6 @@ export const handleDevelopmentQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
 
-      // Fallback con personalidad Acadel de desarrollo integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas de desarrollo, pero no me rendiré.
 
 Sobre tu pregunta de desarrollo: **"${query}"**
@@ -2234,11 +2153,9 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
       };
     }
 
-    // Procesar respuesta de desarrollo
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2250,7 +2167,6 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2262,7 +2178,6 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2276,7 +2191,6 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
 
       await client.query("COMMIT");
 
-      // Cache inteligente
       if (isCacheable(query, 'desarrolloeconomico')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2290,7 +2204,6 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2333,7 +2246,6 @@ Si necesitas más detalles de desarrollo, pregúntame de nuevo y activaré todas
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA DE DESARROLLO - handleDevelopmentMultimodalQuery  
 // ============================================================================
 
 export const handleDevelopmentMultimodalQuery = async (params) => {
@@ -2359,7 +2271,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2371,7 +2282,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación de desarrollo
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto de desarrollo extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2382,7 +2292,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal de desarrollo integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS DE DESARROLLO CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2420,7 +2329,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES DE DESARROLLO CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2480,7 +2388,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS DE DESARROLLO ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes de desarrollo seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2550,11 +2457,9 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE DE DESARROLLO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal de desarrollo integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA DE DESARROLLO
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2587,7 +2492,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE DE DESARROLLO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2614,7 +2518,6 @@ export const handleDevelopmentMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto de desarrollo
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal de desarrollo, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes de desarrollo:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2640,11 +2543,9 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
       };
     }
 
-    // PROCESAR RESPUESTA DE DESARROLLO Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO MULTIMODAL INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2656,7 +2557,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal de desarrollo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2677,7 +2577,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
       // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
         client,
         userId,
@@ -2689,7 +2588,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2703,7 +2601,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
 
       await client.query("COMMIT");
 
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'desarrolloeconomico')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2717,7 +2614,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2785,7 +2681,6 @@ Si necesitas una explicación de desarrollo más detallada, pregúntame de nuevo
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS DE DESARROLLO
 // ============================================================================
 
 export const handleDevelopmentQueryWithoutSaving = async (params) => {
@@ -2808,12 +2703,10 @@ export const handleDevelopmentQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES DE DESARROLLO
     const { isImageRequest, prompt: imagePrompt } = detectDevelopmentImageRequest(query);
 
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES DE DESARROLLO (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2846,7 +2739,6 @@ export const handleDevelopmentQueryWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen de desarrollo localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2906,7 +2798,6 @@ export const handleDevelopmentQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA DE DESARROLLO (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2925,7 +2816,6 @@ export const handleDevelopmentQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE DE DESARROLLO CORREGIDO
       const { agent, tools } = await createAcadelDevelopmentAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3028,7 +2918,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content de desarrollo
     if (!content || !Array.isArray(content)) {
       console.error("Error: content de desarrollo no es un array válido en modo sin guardar:", content);
       return {
@@ -3047,7 +2936,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal de desarrollo integrado (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos de desarrollo en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3060,7 +2948,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido de desarrollo de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DE DESARROLLO INTEGRADO: ${doc.name || doc.filename || 'documento de desarrollo'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3074,7 +2961,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO DE DESARROLLO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido de desarrollo para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3135,7 +3021,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido de desarrollo recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3155,10 +3040,8 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido de desarrollo no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto de desarrollo
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos de desarrollo exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido de desarrollo no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3192,7 +3075,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes de desarrollo en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3252,7 +3134,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DESARROLLO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes de desarrollo convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3337,11 +3218,9 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial de desarrollo relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal de desarrollo integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada de desarrollo
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3372,7 +3251,6 @@ export const handleDevelopmentMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente de desarrollo especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelDevelopmentAgent(llm, queryInfo, combinedQuery);
 

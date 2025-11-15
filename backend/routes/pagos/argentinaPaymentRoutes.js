@@ -1,4 +1,3 @@
-// backend/routes/pagos/argentinaPaymentRoutes.js - USAR TU IMPORT ORIGINAL
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
@@ -37,10 +36,8 @@ const webhookLimiter = rateLimit({
 });
 
 // ===== RUTAS PÚBLICAS (SIN AUTENTICACIÓN) =====
-// ✅ NUEVO: Obtener todas las carreras con precios ARS
 router.get('/carreras/precios', getAllCarrerasWithPrices);
 
-// ✅ NUEVO: Obtener precios de una carrera específica
 router.get('/carreras/:carreraId/precios', getCarreraPrices);
 
 // Callbacks de Ualá (TUS ORIGINALES)

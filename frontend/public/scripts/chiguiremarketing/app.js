@@ -35,7 +35,6 @@ import './utils/formatting-marketing.js';
 // Servicio de notificaciones
 import notificationService from './utils/notificationService.js';
 
-// Configurar mermaid (configuración básica, el sistema unificado se encarga del resto)
 if (typeof mermaid !== 'undefined') {
   mermaid.initialize({
     startOnLoad: false,
@@ -302,7 +301,6 @@ function resetInformationModal() {
     if (window.mermaidManager && modalBody) {
       const mermaidDiagrams = modalBody.querySelectorAll('.mermaid');
       mermaidDiagrams.forEach(diagram => {
-        // Limpiar zoom si existe
         if (diagram._zoomPanInstance) {
           try {
             diagram._zoomPanInstance.destroy();
@@ -311,7 +309,6 @@ function resetInformationModal() {
           }
         }
         
-        // Limpiar atributos
         diagram.removeAttribute('data-processed');
         diagram.removeAttribute('data-zoom-enabled');
       });
@@ -322,7 +319,6 @@ function resetInformationModal() {
       const mathElements = modalBody.querySelectorAll('.MathJax, mjx-container, .has-math-content');
       mathElements.forEach(mathEl => {
         try {
-          // Limpiar clases y atributos de MathJax
           mathEl.classList.remove('has-math-content');
           mathEl.removeAttribute('data-math-confidence');
           mathEl.removeAttribute('data-math-types');
@@ -593,7 +589,6 @@ function updateClearButtonVisibilityWhenExpanded() {
 function updatePageTitle(notificationCount) {
   const baseTitle = 'Marketing IA - Acadelia';
   
-  // Validar que el count sea un número válido
   const count = typeof notificationCount === 'number' && notificationCount >= 0 ? 
     notificationCount : 0;
   
@@ -1132,7 +1127,6 @@ function checkNotificationServiceAvailability() {
   return isAvailable;
 }
 
-// Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     ensureThemeConsistency();

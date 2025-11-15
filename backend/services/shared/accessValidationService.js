@@ -1,4 +1,3 @@
-// backend/services/shared/accessValidationService.js (OPTIMIZADO CON TABLA SUSCRIPCIONES)
 
 import pool from "../../lib/dbPool.js";
 import { ERROR_CODES } from "../../utils/shared/errorCodes.js";
@@ -84,13 +83,11 @@ export const AccessValidationService = {
     const cacheKey = `user_${userId}`;
     const now = Date.now();
 
-    // 🚀 Cache hit ultrarrápido
     const cached = this._userStatusCache.get(cacheKey);
     if (cached && (now - cached.timestamp) < this._userCacheTTL) {
       return cached.data;
     }
 
-    // 🚀 Query única optimizada con tabla suscripciones
     try {
       const query = `
         SELECT 
@@ -202,7 +199,6 @@ export const AccessValidationService = {
     try {
       logger.debug('Validando acceso específico a herramienta', { toolSlug, userId });
 
-      // 🚀 Verificar status una sola vez
       const userStatus = await this.getUserStatus(userId);
 
       if (userStatus.isAdmin) {
@@ -220,12 +216,10 @@ export const AccessValidationService = {
         };
       }
 
-      // 🚀 Usar isPremium del status si no se proporciona
       if (isPremium === null) {
         isPremium = userStatus.isPremium;
       }
 
-      // 🚀 Obtener info de herramienta en paralelo con stats
       const [toolInfo, usageStats] = await Promise.all([
         this.getToolInfo(toolSlug),
         this._getUsageStatsOptimized(userId, toolSlug)
@@ -267,7 +261,6 @@ export const AccessValidationService = {
       let statsQuery, queryParams;
 
       if (toolSlug) {
-        // 🚀 Query específica para una herramienta (más rápida)
         statsQuery = `
           WITH time_bounds AS (
             SELECT 
@@ -287,7 +280,6 @@ export const AccessValidationService = {
         `;
         queryParams = [userId, toolSlug, todayStart, hourStart];
       } else {
-        // 🚀 Query general optimizada
         statsQuery = `
           WITH time_bounds AS (
             SELECT 
@@ -384,7 +376,6 @@ export const AccessValidationService = {
     try {
       logger.debug('Validación general de herramientas iniciada', { userId, isPremium });
 
-      // 🚀 Verificar status una sola vez
       const userStatus = await this.getUserStatus(userId);
 
       if (userStatus.isAdmin) {
@@ -402,7 +393,6 @@ export const AccessValidationService = {
         };
       }
 
-      // 🚀 Usar isPremium del status si no se proporciona
       if (isPremium === null) {
         isPremium = userStatus.isPremium;
       }
@@ -418,13 +408,11 @@ export const AccessValidationService = {
         };
       }
 
-      // 📊 USUARIOS GRATUITOS: Usar suma de herramientas optimizada
       const usageStats = await this._getUsageStatsOptimized(userId);
 
       const dailyUsed = parseInt(usageStats.daily_used) || 0;
       const hourlyUsed = parseInt(usageStats.hourly_used) || 0;
 
-      // Usar límites máximos de todas las herramientas configuradas
       const maxDailyLimit = Math.max(...Object.values(TOOL_LIMITS_CONFIG).map(cfg => cfg.FREE_DAILY));
       const maxHourlyLimit = Math.max(...Object.values(TOOL_LIMITS_CONFIG).map(cfg => cfg.FREE_HOURLY));
 
@@ -479,7 +467,6 @@ export const AccessValidationService = {
       console.log(`🔍 [ACCESS-VALIDATION] === VALIDANDO ACCESO AVA ===`);
       console.log(`🔍 [ACCESS-VALIDATION] Usuario: ${userId}, AVA: ${avaId}`);
 
-      // 👑 SOLO ADMINS TIENEN BYPASS TOTAL
       const userStatus = await this.getUserStatus(userId);
       console.log(`🔍 [ACCESS-VALIDATION] User status:`, {
         isAdmin: userStatus.isAdmin,
@@ -490,7 +477,6 @@ export const AccessValidationService = {
       if (userStatus.isAdmin) {
         console.log(`👑 [ACCESS-VALIDATION] Usuario es ADMIN - Acceso completo concedido`);
 
-        // Obtener info del AVA para logging completo
         try {
           const client = await pool.connect();
           try {
@@ -553,14 +539,12 @@ export const AccessValidationService = {
         }
       }
 
-      // 📋 USUARIOS REGULARES (INCLUYE PREMIUM): DEBEN TENER SUSCRIPCIÓN ESPECÍFICA
       console.log(`📋 [ACCESS-VALIDATION] Usuario regular - Verificando suscripción específica a carrera`);
       console.log(`⚠️ [ACCESS-VALIDATION] IMPORTANTE: Ser premium NO da acceso automático a AVAs`);
 
       const client = await pool.connect();
 
       try {
-        // 🔍 QUERY CRÍTICA: Verificar suscripción específica a la carrera del AVA
         const combinedQuery = `
         SELECT 
           a.id_ava, a.nom_ava, a.descripcion as ava_descripcion, a.id_carrera,
@@ -627,7 +611,6 @@ export const AccessValidationService = {
           imagen: data.carrera_imagen
         };
 
-        // 🚨 VERIFICACIÓN CRÍTICA: ¿El usuario tiene suscripción activa a ESTA carrera específica?
         if (!data.has_access || !data.subscription_id) {
           console.log(`❌ [ACCESS-VALIDATION] ACCESO DENEGADO - Usuario ${userId} NO tiene suscripción activa a carrera "${data.carrera_nombre}"`);
           console.log(`📋 [ACCESS-VALIDATION] Detalles del rechazo:`, {
@@ -653,7 +636,6 @@ export const AccessValidationService = {
           };
         }
 
-        // ✅ ACCESO CONCEDIDO - Usuario tiene suscripción válida a la carrera específica
         console.log(`✅ [ACCESS-VALIDATION] ACCESO CONCEDIDO - Usuario ${userId} tiene suscripción válida a carrera "${data.carrera_nombre}"`);
         console.log(`📋 [ACCESS-VALIDATION] Detalles del acceso:`, {
           subscriptionId: data.subscription_id,
@@ -712,7 +694,6 @@ export const AccessValidationService = {
     try {
       logger.debug('Validación de límites de tokens', { chatId, userId });
 
-      // 🚀 Verificar admin una sola vez si se proporciona userId
       if (userId) {
         const userStatus = await this.getUserStatus(userId);
 
@@ -736,7 +717,6 @@ export const AccessValidationService = {
         }
       }
 
-      // 🚀 USUARIOS REGULARES: Usar tokenCounter optimizado
       logger.debug('Usando tokenCounter optimizado', { chatId });
 
       const tokenResult = await tokenCounter.updateChatTokens(chatId);
@@ -754,7 +734,6 @@ export const AccessValidationService = {
         method: tokenResult.method
       });
 
-      // ✅ Verificar límite máximo
       if (totalTokens >= maxTokens) {
         logger.warn('Chat excedió límite de tokens', { chatId, totalTokens, maxTokens });
         return {
@@ -776,7 +755,6 @@ export const AccessValidationService = {
         };
       }
 
-      // ✅ Warning al 75%
       let warningLevel = 'none';
       if (totalTokens >= warningTokens) {
         warningLevel = 'high';
@@ -812,7 +790,6 @@ export const AccessValidationService = {
     } catch (error) {
       logger.error('Error en validación de límites de tokens', { error: error.message });
 
-      // 🛡️ Fallback ultrarrápido
       return {
         success: true,
         canProceed: true,
@@ -840,7 +817,6 @@ export const AccessValidationService = {
     try {
       logger.debug('Pre-validación de tokens iniciada', { chatId, userId, queryLength: query.length });
 
-      // 🚀 Verificar admin una sola vez
       if (userId) {
         const userStatus = await this.getUserStatus(userId);
         if (userStatus.isAdmin) {
@@ -860,7 +836,6 @@ export const AccessValidationService = {
         }
       }
 
-      // ✅ OBTENER ESTADO ACTUAL
       const currentValidation = await this.validateTokenLimits(chatId, userId);
       if (!currentValidation.success) {
         return currentValidation;
@@ -869,13 +844,11 @@ export const AccessValidationService = {
       const currentTokens = currentValidation.tokenInfo.current;
       const maxTokens = TOKEN_LIMITS.MAX_TOKENS_PER_CHAT;
 
-      // ✅ CALCULAR TOKENS EXACTOS
       const queryTokens = tokenCounter.countTokens(query);
       const responseTokensEstimate = tokenCounter.estimateResponseTokens(query, responseType);
       const totalNewTokens = queryTokens + responseTokensEstimate;
       const projectedTotal = currentTokens + totalNewTokens;
 
-      // ✅ MARGEN DE SEGURIDAD
       const safetyMargin = Math.floor(maxTokens * 0.1);
       const safeLimit = maxTokens - safetyMargin;
 
@@ -954,7 +927,6 @@ export const AccessValidationService = {
    */
   async recalculateTokenWarningsAfterResponse(chatId, userId = null) {
     try {
-      // 🚀 Verificar admin rápido
       if (userId) {
         const userStatus = await this.getUserStatus(userId);
         if (userStatus.isAdmin) {
@@ -962,7 +934,6 @@ export const AccessValidationService = {
         }
       }
 
-      // ✅ Invalidar cache y obtener estado actual
       await tokenCounter.invalidateChatCache(chatId);
       const currentValidation = await this.validateTokenLimits(chatId, userId);
 
@@ -983,7 +954,6 @@ export const AccessValidationService = {
       const tokenInfo = currentValidation.tokenInfo;
       const percentage = tokenInfo.percentage || 0;
 
-      // ✅ WARNING AL 75%
       if (tokenInfo.current >= TOKEN_LIMITS.WARNING_TOKENS) {
         return {
           type: 'token_limit_warning',
@@ -1020,10 +990,8 @@ export const AccessValidationService = {
    */
   async getUserUsageStats(userId) {
     try {
-      // 🚀 Verificar status una sola vez
       const userStatus = await this.getUserStatus(userId);
 
-      // 🚀 Obtener stats optimizados
       const usageStats = await this._getUsageStatsOptimized(userId);
 
       return {

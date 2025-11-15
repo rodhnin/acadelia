@@ -1,4 +1,3 @@
-// backend/middlewares/cache.js
 const redisService = require('../lib/redis');
 
 const cacheMiddleware = (options = {}) => {
@@ -18,7 +17,6 @@ const cacheMiddleware = (options = {}) => {
             const cachedData = await redisService.get(cacheKey);
             if (cachedData) return res.json(cachedData);
 
-            // Modificar res.json para cachear la respuesta
             const originalJson = res.json;
             res.json = function(data) {
                 redisService.set(cacheKey, data, expire);

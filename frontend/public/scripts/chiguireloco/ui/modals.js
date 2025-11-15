@@ -20,7 +20,6 @@ const modals = {
      * Inicializa los modales
      */
     init() {
-        // Inicializar todos los modales de Bootstrap
         document.querySelectorAll('.modal').forEach(modalElement => {
             this.modalInstances[modalElement.id] = new bootstrap.Modal(modalElement);
             
@@ -34,7 +33,6 @@ const modals = {
                     document.getElementById('unblock-confirmation').value = '';
                     document.getElementById('confirm-unblock-all').disabled = true;
                 } else if (modalElement.id === 'eventDetailsModal') {
-                    // Limpiar detalles del evento
                     document.getElementById('event-detail-data').innerText = '{}';
                 }
             });
@@ -47,17 +45,14 @@ const modals = {
      * Configura los event listeners para los modales
      */
     setupEventListeners() {
-        // Modal de bloqueo de IP
         document.getElementById('confirm-block-ip')?.addEventListener('click', () => {
             this.handleBlockIp();
         });
 
-        // Modal de revocación de tokens
         document.getElementById('confirm-revoke-tokens')?.addEventListener('click', () => {
             this.handleRevokeTokens();
         });
 
-        // Modal de confirmación de desbloqueo de todas las IPs
         const unblockConfirmField = document.getElementById('unblock-confirmation');
         if (unblockConfirmField) {
             unblockConfirmField.addEventListener('input', (e) => {
@@ -146,7 +141,6 @@ const modals = {
                 this.hide();
                 showNotification('Éxito', `IP ${ip} bloqueada por ${duration} minutos`, 'success');
                 
-                // Disparar evento para actualizar la lista de IPs bloqueadas
                 window.dispatchEvent(new CustomEvent('ipBlocked', { 
                     detail: { ip, reason, duration }
                 }));
@@ -179,7 +173,6 @@ const modals = {
                 this.hide();
                 showNotification('Éxito', `Tokens revocados para el usuario ${userId}`, 'success');
                 
-                // Disparar evento para actualizar información del usuario
                 window.dispatchEvent(new CustomEvent('tokensRevoked', { 
                     detail: { userId, reason, tokensRevoked: response.tokensRevoked }
                 }));
@@ -197,7 +190,6 @@ const modals = {
      * @param {Object} event - Objeto con datos del evento
      */
     showEventDetails(event) {
-        // Obtener referencias a los elementos del modal
         const detailId = document.getElementById('event-detail-id');
         const detailType = document.getElementById('event-detail-type');
         const detailSeverity = document.getElementById('event-detail-severity');
@@ -222,7 +214,6 @@ const modals = {
         if (detailIp) detailIp.textContent = event.ipAddress || '-';
         if (detailUser) detailUser.textContent = event.userId || '-';
         
-        // Formatear JSON de datos adicionales
         if (detailData) {
             try {
                 const jsonData = typeof event.data === 'string' 
@@ -237,17 +228,14 @@ const modals = {
             }
         }
         
-        // Habilitar/deshabilitar botones según datos disponibles
         const blockIpBtn = document.getElementById('block-ip-from-event');
         const revokeUserBtn = document.getElementById('revoke-user-from-event');
         
         if (blockIpBtn) blockIpBtn.disabled = !event.ipAddress;
         if (revokeUserBtn) revokeUserBtn.disabled = !event.userId;
         
-        // Guardar datos del evento actual para referencia
         this._currentEvent = event;
         
-        // Mostrar el modal
         this.show('eventDetailsModal');
     },
 
@@ -256,10 +244,8 @@ const modals = {
      */
     handleBlockIpFromEvent() {
         if (this._currentEvent && this._currentEvent.ipAddress) {
-            // Ocultar modal de detalles
             this.hide();
             
-            // Preparar modal de bloqueo
             this.prepareBlockIp(
                 this._currentEvent.ipAddress,
                 `Bloqueado desde evento: ${this._currentEvent.eventType} - ${this._currentEvent.id}`
@@ -272,10 +258,8 @@ const modals = {
      */
     handleRevokeTokensFromEvent() {
         if (this._currentEvent && this._currentEvent.userId) {
-            // Ocultar modal de detalles
             this.hide();
             
-            // Preparar modal de revocación
             this.prepareRevokeTokens(
                 this._currentEvent.userId,
                 `Revocado desde evento: ${this._currentEvent.eventType} - ${this._currentEvent.id}`

@@ -28,20 +28,16 @@ const TIMEOUT_KEYS = {
 export function renderExam(examData, container) {
   if (!container) return;
   
-  // Limpiar timeouts previos si los hubiera
   clearExamTimeouts();
   
-  // Limpiar eventos previos si los hubiera (en caso de rerenderizado)
   removeAllEvents(container);
   
   // Asegurar que el contenedor tenga la clase correcta
   container.className = 'exam-container';
-  // Marcar el contenedor como interactivo para el ScrollManager
   container.setAttribute('data-exam-interactive', 'true');
   container.setAttribute('data-has-math', 'true'); // Mantener para compatibilidad
   clearElement(container);
   
-  // Verificar que los datos del examen sean válidos
   if (!isValidExamData(examData)) {
     appendErrorMessage(container);
     return;
@@ -54,11 +50,9 @@ export function renderExam(examData, container) {
     questions: examData.questions
   };
   
-  // Crear estructura del examen
   const exam = buildExamStructure(examData, examState);
   container.appendChild(exam);
   
-  // Iniciar el examen
   updateProgress(exam, examState);
   showQuestion(container, exam, examState);
   
@@ -103,7 +97,6 @@ function appendErrorMessage(container) {
 function buildExamStructure(examData, examState) {
   const exam = createElement('div', { className: 'exam' });
   
-  // Crear header del examen
   const examHeader = createElement('div', { className: 'exam-header' });
   
   const title = createElement('h3', { className: 'exam-title' }, `Examen: ${examData.topic}`);
@@ -113,7 +106,6 @@ function buildExamStructure(examData, examState) {
   examHeader.appendChild(progress);
   exam.appendChild(examHeader);
   
-  // Crear contenedor de preguntas
   const questionContainer = createElement('div', { className: 'question-container' });
   exam.appendChild(questionContainer);
   
@@ -144,33 +136,27 @@ function showQuestion(container, exam, examState) {
   
   const question = examState.questions[examState.currentQuestion];
   
-  // Limpiar contenedor de preguntas y remover eventos previos
   clearElement(questionContainer);
   removeAllEvents(questionContainer);
   
-  // Crear elemento de pregunta
   const questionElement = createElement('div', { 
     className: 'question math-content',
     dataset: { hasMath: 'true' }
   });
   
-  // Añadir texto de la pregunta
   const questionTextElement = createElement('h4', { 
     className: 'question-text math-content' 
   });
   questionTextElement.textContent = question.question;
   questionElement.appendChild(questionTextElement);
   
-  // Crear contenedor de opciones
   const optionsContainer = createElement('div', { className: 'options' });
   questionElement.appendChild(optionsContainer);
   
-  // 🔧 CAMBIO CRÍTICO: Usar for loop en lugar de forEach para evitar problemas de ofuscación
   for (let optionIndex = 0; optionIndex < question.options.length; optionIndex++) {
     const letter = String.fromCharCode(97 + optionIndex); // 🔧 SIN parseInt
     let optionText = question.options[optionIndex];
     
-    // Limpiar el texto de la opción
     optionText = optionText.replace(new RegExp(`^${letter}\\)\\s*`, 'i'), '');
     
     const button = createElement('button', { 
@@ -189,12 +175,10 @@ function showQuestion(container, exam, examState) {
     button.appendChild(letterSpan);
     button.appendChild(textSpan);
     
-    // Añadir manejador de eventos
     addEvent(button, 'click', (e) => {
       container.setAttribute('data-exam-interaction-active', 'true');
       button.classList.add('clicked');
       
-      // Manejar scroll sin scrollHelper object
       if (window.scrollManager) {
         window.scrollManager.lockScrollWithReason('exam-option-click', 1000);
       }
@@ -212,7 +196,6 @@ function showQuestion(container, exam, examState) {
     optionsContainer.appendChild(button);
   }
   
-  // Añadir la pregunta al contenedor
   questionContainer.appendChild(questionElement);
 }
 
@@ -232,17 +215,14 @@ function handleAnswer(e, container, exam, examState) {
   
   const correctIndex = examState.questions[examState.currentQuestion].correctAnswer.charCodeAt(0) - 97;
   
-  // Deshabilitar todas las opciones
   questionContainer.querySelectorAll('.option').forEach(opt => {
     opt.disabled = true;
   });
   
-  // Actualizar contador y aplicar estilos
   if (parseInt(selected.dataset.index) === correctIndex) {
     examState.correctAnswers++;
     selected.classList.add('correct');
     
-    // 🎯 NOTIFICACIÓN POR RESPUESTA CORRECTA - 10 MENSAJES VARIADOS TEÓRICOS
     const motivationalMessages = [
       "¡Correcto! 🎯",
       "¡Exacto! 📚", 
@@ -273,7 +253,6 @@ function handleAnswer(e, container, exam, examState) {
     const randomMessage = motivationalMessages[randomIndex];
     const randomDetail = motivationalDetails[randomIndex];
     
-    // Mostrar notificación sutil para respuesta correcta
     if (typeof acadelInfo === 'function') {
       acadelInfo(randomMessage, randomDetail);
     }
@@ -285,7 +264,6 @@ function handleAnswer(e, container, exam, examState) {
       correctOption.classList.add('correct');
     }
     
-    // 🎯 NOTIFICACIÓN POR RESPUESTA INCORRECTA - 10 MENSAJES DE ALIENTO TEÓRICOS
     const encouragementMessages = [
       "¡No te preocupes! 🤔",
       "¡Casi! 💭",
@@ -316,7 +294,6 @@ function handleAnswer(e, container, exam, examState) {
     const randomEncouragement = encouragementMessages[randomIndex];
     const randomDetail = encouragementDetails[randomIndex];
     
-    // Mostrar notificación alentadora
     if (typeof acadelInfo === 'function') {
       acadelInfo(randomEncouragement, randomDetail);
     }
@@ -331,7 +308,6 @@ function handleAnswer(e, container, exam, examState) {
     explanationPromiseResolver = resolve;
   });
   
-  // Mostrar explicación después de un delay
   setManagedTimeout(() => {
     const explanation = createElement('div', { 
       className: 'explanation math-content',
@@ -340,25 +316,20 @@ function handleAnswer(e, container, exam, examState) {
     
     const explanationContent = createElement('div', { className: 'explanation-content' });
     
-    // Crear párrafo de explicación
     const explanationParagraph = createElement('p', { className: 'math-content' });
     explanationParagraph.innerHTML = `<strong>Explicación:</strong> ${examState.questions[examState.currentQuestion].explanation}`;
     
     explanationContent.appendChild(explanationParagraph);
     explanation.appendChild(explanationContent);
     
-    // Crear botón de siguiente
     const nextButton = createElement('button', { 
       className: 'next-question',
       dataset: { examNavigation: 'true' }
     }, examState.currentQuestion < examState.questions.length - 1 ? 'Siguiente pregunta' : 'Ver resultados');
     
-    // Añadir manejador
     addEvent(nextButton, 'click', () => {
-      // Marcar como navegación activa
       container.setAttribute('data-exam-navigation', 'true');
       
-      // Bloquear scroll temporalmente
       if (window.scrollManager) {
         window.scrollManager.lockScrollWithReason('exam-navigation', 800);
       }
@@ -371,7 +342,6 @@ function handleAnswer(e, container, exam, examState) {
         showResults(container, exam, examState);
       }
       
-      // Limpiar atributos después de tiempo suficiente
       setManagedTimeout(() => {
         container.removeAttribute('data-exam-interaction-active');
         container.removeAttribute('data-exam-navigation');
@@ -389,7 +359,6 @@ function handleAnswer(e, container, exam, examState) {
     setManagedTimeout(() => {
       container.removeAttribute('data-exam-interaction-active');
       
-      // Desbloquear scroll explícitamente
       if (window.scrollManager && window.scrollManager.scrollLocked && 
           window.scrollManager.lockReason && 
           window.scrollManager.lockReason.includes('exam')) {
@@ -398,7 +367,6 @@ function handleAnswer(e, container, exam, examState) {
     }, 800, TIMEOUT_KEYS.EXPLANATION);
   }, 1000, TIMEOUT_KEYS.EXPLANATION);
   
-  // Sistema de seguridad
   setManagedTimeout(async () => {
     try {
       const timeoutPromise = new Promise((_, reject) => {
@@ -436,17 +404,14 @@ function handleAnswer(e, container, exam, examState) {
  * @param {Object} examState - Estado del examen
  */
 function showResults(container, exam, examState) {
-  // Marcar que ya no hay interacciones activas
   container.removeAttribute('data-exam-interaction-active');
   container.removeAttribute('data-exam-navigation');
   
-  // Limpiar el contenido actual y eventos
   clearElement(exam);
   removeAllEvents(exam);
   
   const percentage = (examState.correctAnswers / examState.questions.length) * 100;
 
-  // 🎯 NOTIFICACIONES DEL PROFESOR ACADEL BASADAS EN RENDIMIENTO TEÓRICO
   if (percentage >= 95) {
     // EXCELENCIA ABSOLUTA - CONFETTI
     if (typeof acadelConfetti === 'function') {
@@ -505,7 +470,6 @@ function showResults(container, exam, examState) {
     }
   }
   
-  // Crear componentes de resultados
   const resultsContainer = createElement('div', { className: 'exam-completed' });
   
   const title = createElement('h4', {}, '¡Examen completado! 🎉');
@@ -519,7 +483,6 @@ function showResults(container, exam, examState) {
   scoreText.appendChild(separatorSpan);
   scoreText.appendChild(totalSpan);
   
-  // Determinar mensaje según porcentaje
   let resultClass, resultMessage;
   if (percentage >= 90) {
     resultClass = 'result-excellent';
@@ -534,19 +497,16 @@ function showResults(container, exam, examState) {
   
   const resultText = createElement('p', { className: `result-message ${resultClass}` }, resultMessage);
   
-  // Añadir componentes al contenedor
   resultsContainer.appendChild(title);
   resultsContainer.appendChild(scoreText);
   resultsContainer.appendChild(resultText);
   
   exam.appendChild(resultsContainer);
   
-  // Desbloquear el scroll después de mostrar resultados
   if (window.scrollManager) {
     window.scrollManager.unlockScrollWithReason('exam-completed');
   }
   
-  // Limpiar todos los timeouts asociados al examen
   clearExamTimeouts();
 }
 

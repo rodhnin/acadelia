@@ -1,4 +1,3 @@
-// backend/services/usuarios/scheduledUsersTasksService.js
 import pool from "../../lib/dbPool.js";
 import { TermsService } from "./termsService.js";
 
@@ -35,14 +34,12 @@ export class ScheduledUsersTasksService {
                 try {
                     let result;
                     
-                    // Ejecutar según el tipo de tarea
                     if (task.task_type === 'auto_terms_acceptance') {
                         const payload = JSON.parse(task.payload);
                         result = await TermsService.executeAutoAcceptance(payload.termsVersion);
                     }
                     // Aquí pueden agregarse más tipos de tareas en el futuro
                     
-                    // Marcar como completada
                     await pool.query(
                         `UPDATE scheduled_tasks 
                          SET status = 'completed', 
@@ -56,7 +53,6 @@ export class ScheduledUsersTasksService {
                 } catch (error) {
                     console.error(`Error ejecutando tarea ${task.id}:`, error);
                     
-                    // Marcar como fallida
                     await pool.query(
                         `UPDATE scheduled_tasks 
                          SET status = 'failed', 

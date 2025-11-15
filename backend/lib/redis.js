@@ -86,7 +86,6 @@ class RedisService {
 
         let redisConfig;
 
-        // 🎯 CONFIGURACIÓN ESPECÍFICA PARA FLY.IO + UPSTASH
         if (process.env.REDIS_URL) {
             console.log('🚀 Conectando a Redis via REDIS_URL (Fly.io/Upstash)');
 
@@ -127,7 +126,6 @@ class RedisService {
                     autoResendUnfulfilledCommands: false,
                 };
             } else {
-                // Para otros proveedores, usar URL directamente
                 redisConfig = {
                     url: process.env.REDIS_URL,
                     connectTimeout: 10000,
@@ -149,7 +147,6 @@ class RedisService {
                 };
             }
 
-            // 🔍 LOG DE DEBUG PARA FLY.IO
             console.log(`🚀 Configuración Redis:`, {
                 host: redisConfig.host || 'via URL',
                 port: redisConfig.port || 'via URL',
@@ -233,7 +230,6 @@ class RedisService {
                     console.log('🔒 Redis: Error SSL/TLS. Verificar configuración TLS para Upstash');
                 }
 
-                // Log de seguridad para errores críticos
                 logSecurityEvent('REDIS_CONNECTION_ERROR', 'Error en conexión a Redis', {
                     error: err.message,
                     code: err.code,
@@ -437,7 +433,6 @@ class RedisService {
             }
         }
 
-        // Verificar caché en memoria primero
         const memoryData = this.memoryCache.get(key);
         if (memoryData && memoryData.expiry > Date.now()) {
             return memoryData.value;
@@ -457,7 +452,6 @@ class RedisService {
 
             let parsedValue;
 
-            // Detectar tokens JWT u otras cadenas que no deben parsearse
             if (typeof value === 'string' &&
                 (value.startsWith('ey') || key.includes('token') || key.includes('Token'))) {
                 parsedValue = value;
@@ -474,7 +468,6 @@ class RedisService {
                 }
             }
 
-            // Guardar en caché de memoria con TTL
             this.memoryCache.set(key, {
                 value: parsedValue,
                 expiry: Date.now() + this.memoryCacheTTL

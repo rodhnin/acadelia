@@ -1,4 +1,3 @@
-// backend/controllers/chat/ComputacionController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleComputacionQuery, handleComputacionMultimodalQuery, handleComputacionQueryWithoutSaving, handleComputacionMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/ingenieria/computacionService.js";
@@ -17,7 +16,6 @@ export const queryComputacion = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 150+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryComputacionMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 200+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryComputacionMultimodalWithoutSaving = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 180+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

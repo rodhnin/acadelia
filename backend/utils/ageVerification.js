@@ -1,4 +1,3 @@
-// backend/utils/ageVerification.js
 import pool from "../lib/dbPool.js";
 
 /**
@@ -10,7 +9,6 @@ export async function isMinor(userId) {
   if (!userId) return false;
   
   try {
-    // Buscar perfil del usuario
     const query = `
       SELECT nacimiento 
       FROM perfil 
@@ -23,7 +21,6 @@ export async function isMinor(userId) {
       return false; // No hay perfil o fecha de nacimiento
     }
     
-    // Calcular edad
     const birthDate = new Date(rows[0].nacimiento);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -51,7 +48,6 @@ export async function getUserAge(userId) {
   if (!userId) return null;
   
   try {
-    // Buscar perfil del usuario
     const query = `
       SELECT nacimiento 
       FROM perfil 
@@ -64,7 +60,6 @@ export async function getUserAge(userId) {
       return null; // No hay perfil o fecha de nacimiento
     }
     
-    // Calcular edad
     const birthDate = new Date(rows[0].nacimiento);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();

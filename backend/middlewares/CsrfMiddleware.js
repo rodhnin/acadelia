@@ -74,7 +74,6 @@ export const verifyCookieCsrf = (req, res, next) => {
         return next();
     }
     
-    // Obtener tokens
     const receivedToken = req.headers['x-csrf-token'] || 
                          req.headers['x-xsrf-token'] || 
                          req.headers['csrf-token'] ||
@@ -161,7 +160,6 @@ export const resetCsrfToken = (req, res) => {
     });
 };
 
-// Logging de inicialización
 if (CONFIG.enableLogging) {
     console.log('🔒 [CSRF] Sistema simplificado cargado');
     console.log('  ✅ Sin transiciones complejas');

@@ -1,4 +1,3 @@
-// backend/utils/shared/responseTemplates.js (CON SOPORTE ESPECÍFICO POR HERRAMIENTA)
 
 import { ERROR_CODES, createErrorResponse } from './errorCodes.js';
 
@@ -46,7 +45,6 @@ export const toolLimitReached = (limitType, resetTime = null, upgradeMessage = n
   return baseResponse;
 };
 
-// ✅ MODIFICAR en backend/utils/shared/responseTemplates.js
 
 export const specificToolLimitReached = (toolSlug, limitType, resetTime = null, limits = {}, toolLimits = null) => {
   const toolFriendlyNames = {

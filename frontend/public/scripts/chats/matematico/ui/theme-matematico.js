@@ -50,7 +50,6 @@ function hasCookieConsent(category) {
     const preferences = JSON.parse(cookiePreferences);
     return preferences && preferences[category] === true;
   } catch (error) {
-    // ❌ ELIMINADO: console.error para producción
     return false;
   }
 }
@@ -67,7 +66,6 @@ function getStorageWithConsent(key, cookieCategory, defaultValue) {
     try {
       return localStorage.getItem(key);
     } catch (error) {
-      // ❌ ELIMINADO: console.error para producción
     }
   }
   return defaultValue;
@@ -82,7 +80,6 @@ function getStorageWithConsent(key, cookieCategory, defaultValue) {
  */
 function setStorageWithConsent(key, value, cookieCategory) {
   if (!hasCookieConsent(cookieCategory)) {
-    // ❌ ELIMINADO: console.log para producción
     return false;
   }
   
@@ -90,7 +87,6 @@ function setStorageWithConsent(key, value, cookieCategory) {
     localStorage.setItem(key, value);
     return true;
   } catch (error) {
-    // ❌ ELIMINADO: console.error para producción
     return false;
   }
 }
@@ -104,34 +100,28 @@ function updateHighlightTheme(theme) {
   const darkTheme = document.getElementById('hljs-dark-theme');
   
   if (!lightTheme || !darkTheme) {
-    // ❌ ELIMINADO: console.warn para producción
     return;
   }
   
   if (theme === THEMES.DARK) {
     lightTheme.disabled = true;
     darkTheme.disabled = false;
-    // ❌ ELIMINADO: Las notificaciones de Acadel ya no van aquí
   } else {
     lightTheme.disabled = false;
     darkTheme.disabled = true;
-    // ❌ ELIMINADO: Las notificaciones de Acadel ya no van aquí
   }
   
   // Volver a aplicar highlight.js a todos los bloques de código existentes
   if (window.hljs) {
-    // Usar requestAnimationFrame para evitar bloqueos
     requestAnimationFrame(() => {
       document.querySelectorAll('pre code').forEach(block => {
         try {
-          // Limpiar highlighting previo
           block.removeAttribute('data-highlighted');
           block.className = block.className.replace(/hljs[^\s]*/g, '').trim();
           
           // Re-aplicar highlighting con el nuevo tema
           window.hljs.highlightElement(block);
         } catch (error) {
-          // ❌ ELIMINADO: console.warn para producción
         }
       });
     });
@@ -143,7 +133,6 @@ function updateHighlightTheme(theme) {
  * Esta función debe ejecutarse lo antes posible
  */
 export function preloadTheme() {
-  // Usar el helper para verificar consentimiento para cookies funcionales
   const savedTheme = getStorageWithConsent('theme', 'functional', DEFAULT_THEME);
   
   if (document.documentElement) {
@@ -154,10 +143,8 @@ export function preloadTheme() {
     setAttribute(document.body, 'data-theme', savedTheme);
   }
   
-  // Actualizar meta tags de theme-color inmediatamente
   updateMetaThemeColor(savedTheme);
   
-  // Actualizar tema de highlight.js si está disponible (SIN notificaciones)
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     updateHighlightTheme(savedTheme);
   } else {
@@ -172,10 +159,8 @@ export function preloadTheme() {
  * Inicializa completamente el tema una vez que el DOM está listo
  */
 export function initializeTheme() {
-  // Usar el helper para verificar consentimiento para cookies funcionales
   const savedTheme = getStorageWithConsent('theme', 'functional', DEFAULT_THEME);
   
-  // Aplicar tema a los elementos principales
   if (document.documentElement) {
     setAttribute(document.documentElement, 'data-theme', savedTheme);
   }
@@ -184,23 +169,16 @@ export function initializeTheme() {
     setAttribute(document.body, 'data-theme', savedTheme);
   }
   
-  // Actualizar meta tags de theme-color
   updateMetaThemeColor(savedTheme);
   
-  // Actualizar ícono del toggle
   updateToggleIcon(savedTheme);
   
-  // Actualizar tema de highlight.js (SIN notificaciones)
   updateHighlightTheme(savedTheme);
   
-  // Inicializar sistema Mermaid
   initMermaidSystem().then(() => {
-    // ❌ ELIMINADO: console.log para producción
   }).catch(error => {
-    // ❌ ELIMINADO: console.warn para producción
   });
   
-  // Disparar un evento de cambio de tema para la inicialización
   dispatchThemeChangeEvent(savedTheme);
 }
 
@@ -217,16 +195,13 @@ export function toggleTheme() {
   
   themeUpdateInProgress = true;
   
-  // Usar documentElement en lugar de body para mayor consistencia
   const currentTheme = getAttribute(document.documentElement, 'data-theme') || THEMES.LIGHT;
   const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
   
   // PUNTO CLAVE 1: Bloquear scroll inmediatamente antes de cualquier operación
   if (typeof scrollManager !== 'undefined' && scrollManager.lockScrollWithReason) {
-    // Usar un bloqueo indefinido para asegurar que permanezca activo durante toda la operación
     scrollManager.lockScrollWithReason('theme-toggle-operation', 0);
     
-    // Marcar explícitamente que hay una operación de tema en proceso
     if (document.documentElement) {
       setAttribute(document.documentElement, 'data-theme-changing', 'true');
     }
@@ -236,17 +211,14 @@ export function toggleTheme() {
     scrollManager.saveScrollPosition();
   }
   
-  // Marcar que estamos actualizando diagramas (para que lo detecte isDiagramsUpdating)
   if (document.body) {
     setAttribute(document.body, 'data-updating-diagrams', 'true');
   }
   
-  // Agregar clase de transición para suavizar el cambio visualmente
   if (document.documentElement) {
     addClass(document.documentElement, 'theme-transition');
   }
   
-  // Guardar diagrama IDs y códigos antes del cambio de tema
   const diagramsData = [];
   document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
     if (diagram.id) {
@@ -261,7 +233,6 @@ export function toggleTheme() {
     }
   });
   
-  // Cambiar tema en ambos elementos principales
   if (document.documentElement) {
     setAttribute(document.documentElement, 'data-theme', newTheme);
   }
@@ -270,16 +241,12 @@ export function toggleTheme() {
     setAttribute(document.body, 'data-theme', newTheme);
   }
   
-  // Actualizar meta tags de theme-color
   updateMetaThemeColor(newTheme);
   
-  // Guardar en localStorage SOLO si hay consentimiento para cookies funcionales
   setStorageWithConsent('theme', newTheme, 'functional');
   
-  // Actualizar ícono
   updateToggleIcon(newTheme);
   
-  // 🔥 NUEVO: Actualizar tema de highlight.js (sin notificaciones aquí)
   updateHighlightTheme(newTheme);
   
   // ⭐ UBICACIÓN PERFECTA: Notificaciones Acadel SOLO cuando usuario hace clic
@@ -289,12 +256,10 @@ export function toggleTheme() {
     acadelInfo("☀️ ¡Modo diurno activado!", "Acadel configuró el tema claro, perfecto para estudiar de día");
   }
   
-  // Actualizar inmediatamente el tema de Mermaid
   if (window.mermaid) {
     updateMermaidTheme(newTheme);
   }
   
-  // Notificar cambio de tema (pero sin disparar actualización adicional)
   const event = new CustomEvent('themeChanged', {
     detail: { 
       theme: newTheme,
@@ -303,7 +268,6 @@ export function toggleTheme() {
   });
   document.dispatchEvent(event);
   
-  // Mostrar indicador de carga en los diagramas
   document.querySelectorAll('.mermaid-diagram').forEach(diagram => {
     const loadingHTML = `
       <div class="mermaid-loading">
@@ -314,12 +278,10 @@ export function toggleTheme() {
     diagram.innerHTML = loadingHTML;
   });
   
-  // Actualizar los diagramas Mermaid
   if (window.mermaid && diagramsData.length > 0) {
     refreshAllMermaidDiagrams().then(() => {
       cleanupAfterThemeChange();
     }).catch(error => {
-      // ❌ ELIMINADO: console.error para producción
       cleanupAfterThemeChange();
     });
   } else {
@@ -340,12 +302,10 @@ export function toggleTheme() {
     // Evitar ejecutar esta función varias veces
     if (!themeUpdateInProgress) return;
     
-    // Remover clase de transición
     if (document.documentElement) {
       removeClass(document.documentElement, 'theme-transition');
     }
     
-    // Limpiar estado de actualización
     if (document.body) {
       removeAttribute(document.body, 'data-updating-diagrams');
     }
@@ -355,25 +315,21 @@ export function toggleTheme() {
       removeAttribute(diagram, 'data-updating');
     });
     
-    // Desbloquear scroll si estaba bloqueado por esta operación
     if (typeof scrollManager !== 'undefined' && scrollManager.unlockScrollWithReason) {
       // Pequeño retraso adicional para asegurar que todos los renders estén completos
       setManagedTimeout(() => {
         scrollManager.unlockScrollWithReason('theme-toggle-complete');
         
-        // Eliminar marcador de cambio de tema
         if (document.documentElement) {
           removeAttribute(document.documentElement, 'data-theme-changing');
         }
         
-        // Restaurar posición de scroll si es necesario
         if (typeof scrollManager.restoreScrollPosition === 'function') {
           scrollManager.restoreScrollPosition();
         }
       }, 100, 'final-scroll-unlock');
     }
     
-    // Marcar como completado
     themeUpdateInProgress = false;
   }
 }
@@ -385,7 +341,6 @@ export function toggleTheme() {
 function updateMetaThemeColor(theme) {
   const metaTags = document.querySelectorAll('meta[name="theme-color"]');
   if (metaTags.length) {
-    // Activar el meta tag correspondiente al tema actual
     metaTags.forEach(tag => {
       const metaTheme = getAttribute(tag, 'data-theme-color');
       if (metaTheme === theme) {
@@ -396,7 +351,6 @@ function updateMetaThemeColor(theme) {
     // En caso de que no haya meta tags con data-theme-color
     const metaTag = document.querySelector('meta[name="theme-color"]');
     if (metaTag) {
-      // Usar un valor predeterminado si no hay meta tags específicos
       const color = theme === THEMES.DARK ? '#1a1a1a' : '#656d4a';
       setAttribute(metaTag, 'content', color);
     }
@@ -413,7 +367,6 @@ function manuallyRecreateAllDiagrams(diagramsData, theme) {
     return;
   }
   
-  // Inicializar Mermaid con el tema actual
   window.mermaid.initialize({
     theme: theme === THEMES.DARK ? 'dark' : 'default',
     startOnLoad: false,
@@ -433,28 +386,23 @@ function manuallyRecreateAllDiagrams(diagramsData, theme) {
       }
       
       try {
-        // Preparar el contenedor (usar innerHTML='' para mantener compatibilidad)
         diagramContainer.innerHTML = '';
         setAttribute(diagramContainer, 'data-code', diagramData.code);
         setAttribute(diagramContainer, 'data-theme', theme);
         setAttribute(diagramContainer, 'data-title', diagramData.title);
         
-        // Crear un nuevo elemento para el diagrama
         const newDiagramId = `manual-${diagramData.id}-${Date.now()}`;
         const newContainer = document.createElement('div');
         newContainer.id = newDiagramId;
         newContainer.className = 'mermaid';
         newContainer.textContent = diagramData.code;
         
-        // Agregar al DOM
         diagramContainer.appendChild(newContainer);
         
-        // Renderizar después de un breve retraso
         setManagedTimeout(() => {
           try {
             window.mermaid.init(undefined, newContainer);
           } catch (renderError) {
-            // Usar innerHTML para preservar el formato HTML de este mensaje de error
             const errorHTML = `
               <div class="mermaid-error">
                 <i class='bx bx-error'></i>
@@ -464,7 +412,6 @@ function manuallyRecreateAllDiagrams(diagramsData, theme) {
             `;
             diagramContainer.innerHTML = errorHTML;
             
-            // Agregar comportamiento al botón de reintento
             const retryBtn = diagramContainer.querySelector('.retry-render-btn');
             if (retryBtn) {
               addEvent(retryBtn, 'click', () => {
@@ -486,7 +433,6 @@ function manuallyRecreateAllDiagrams(diagramsData, theme) {
 function recreateMermaidDiagrams() {
   if (!window.mermaid) return;
   
-  // Actualizar configuración con el tema actual
   const currentTheme = getAttribute(document.documentElement, 'data-theme') || THEMES.LIGHT;
   window.mermaid.initialize({
     theme: currentTheme === THEMES.DARK ? 'dark' : 'default',
@@ -527,7 +473,6 @@ function recreateMermaidDiagrams() {
 export function updateToggleIcon(theme) {
   const themeToggle = document.querySelector(DOM_SELECTORS.themeToggle);
   if (themeToggle) {
-    // Usar HTML seguro para iconos
     const iconHTML = theme === THEMES.DARK
       ? '<i class="bx bxs-sun"></i>'
       : '<i class="bx bxs-moon"></i>';
@@ -565,10 +510,8 @@ function handleThemeChangeEvent(e) {
       return;
     }
     
-    // 🔥 Actualizar tema de highlight.js cuando cambia el tema (SIN notificaciones)
     updateHighlightTheme(theme);
     
-    // Determinar si hay diagramas que necesitan actualización
     const hasMermaidDiagrams = document.querySelectorAll('.mermaid-diagram').length > 0;
     
     // Solo bloquear scroll si hay diagramas presentes
@@ -585,12 +528,10 @@ function handleThemeChangeEvent(e) {
         try {
           hljs.highlightElement(block);
         } catch (error) {
-          // ❌ ELIMINADO: console.warn para producción
         }
       });
     }
     
-    // Actualizar MathJax si está disponible (importante para matemático!)
     if (window.MathJax) {
       window.MathJax.typeset();
     }
@@ -612,10 +553,8 @@ export function dispatchThemeChangeEvent(theme) {
  * Inicializa todo el sistema de temas
  */
 export function initThemeSystem() {
-  // Aplicar tema lo antes posible
   preloadTheme();
   
-  // Esperar a que esté listo el DOM para configuración completa
   if (document.readyState === 'loading') {
     addEvent(document, 'DOMContentLoaded', () => {
       initializeTheme();

@@ -67,7 +67,6 @@ export class YouTubePanel {
  * Debe llamarse cuando se cambia de chat
  */
 resetPanelData() {
-  // Limpiar datos de transcripción
   this.videoData = null;
   this.audioData = null;
   this.player = null;
@@ -78,10 +77,8 @@ resetPanelData() {
   this.currentSearchIndex = -1;
   this.currentlyHighlightedSegment = null;
   
-  // Detener cualquier reproducción en curso
   this.pauseMediaPlayback();
   
-  // Detener seguimiento de tiempo
   this.stopTrackingTime();
   
   // Si el panel está visible, cerrarlo
@@ -89,21 +86,18 @@ resetPanelData() {
     this.togglePanel();
   }
   
-  // Limpiar contenedor del panel si existe
   if (this.panelContainer) {
     const contentContainer = this.panelContainer.querySelector('.youtube-transcription-container');
     if (contentContainer) {
       contentContainer.innerHTML = '';
     }
     
-    // Restaurar título genérico
     const titleElement = this.panelContainer.querySelector('.youtube-panel-title');
     if (titleElement) {
       titleElement.textContent = 'Transcripción';
     }
   }
   
-  // Resetear estado
   this.currentMode = null;
 }
   
@@ -111,7 +105,6 @@ resetPanelData() {
    * Inicializa el panel de transcripciones
    */
   init() {
-    // Crear elementos UI
     this.createTriggerButton();
     this.createPanelContainer();
     this.setupEventListeners();
@@ -135,7 +128,6 @@ resetPanelData() {
     button.setAttribute('title', 'Ver transcripción');
     button.style.display = 'none'; // Inicialmente oculto
     
-    // Añadir efecto de clic
     button.addEventListener('mousedown', () => {
       button.style.transform = 'scale(0.95)';
     });
@@ -190,15 +182,12 @@ resetPanelData() {
     document.body.appendChild(container);
     this.panelContainer = container;
     
-    // Configurar evento de cierre
     const closeButton = container.querySelector('.youtube-panel-close');
     if (closeButton) {
-      // Eliminar cualquier evento previo y agregar uno nuevo limpio
       removeEvent(closeButton, 'click');
       closeButton.addEventListener('click', () => this.onPanelClose());
     }
     
-    // Crear contenedor para acciones de selección
     this.selectionActions = createElement('div', {
       className: 'youtube-selection-actions'
     });
@@ -218,7 +207,6 @@ resetPanelData() {
     `;
     document.body.appendChild(this.selectionActions);
     
-    // Configurar botones de acción
     this.setupSelectionActionButtons();
   }
   
@@ -230,7 +218,6 @@ resetPanelData() {
     const copyTextBtn = this.selectionActions.querySelector('.copy-text');
     const closeActionBtn = this.selectionActions.querySelector('.close-menu');
     
-    // Eliminar listeners previos para evitar duplicados
     if (usePromptBtn) {
       usePromptBtn.replaceWith(usePromptBtn.cloneNode(true)); // Elimina todos los eventos
       const newUsePromptBtn = this.selectionActions.querySelector('.use-prompt');
@@ -270,7 +257,6 @@ resetPanelData() {
    * Configura los event listeners para el panel
    */
   setupEventListeners() {
-    // Escuchar selección de texto en el panel
     document.addEventListener('mouseup', (e) => {
       // Evitar capturar selección si estamos haciendo clic en un botón específico
       if (e.target.closest('.youtube-panel-close') || 
@@ -282,7 +268,6 @@ resetPanelData() {
       setTimeout(() => this.handleSelectionChange(e), 10);
     });
     
-    // Manejo de clics fuera del menú de selección
     document.addEventListener('mousedown', (e) => {
       // Si el clic fue dentro del menú de selección, no hacer nada
       if (this.selectionActions && this.selectionActions.contains(e.target)) {
@@ -306,7 +291,6 @@ resetPanelData() {
       }
     });
     
-    // Manejar click en panel
     if (this.panelContainer) {
       // Evitar que clics en el contenido afecten al chat, pero permitir botón de cierre
       this.panelContainer.addEventListener('click', (e) => {
@@ -315,7 +299,6 @@ resetPanelData() {
           return;
         }
         
-        // Para todo lo demás, detener propagación
         e.stopPropagation();
       });
     }
@@ -371,7 +354,6 @@ resetPanelData() {
       }
       
     } catch (error) {
-      // SILENCIOSO: No notificar errores de verificación
     }
   }
   
@@ -391,16 +373,13 @@ togglePanel() {
       document.body.classList.remove('youtube-panel-open'); // ← AGREGAR ESTA LÍNEA
       this.isVisible = false;
       
-      // Detener reproducciones si están activas
       this.pauseMediaPlayback();
       
-      // Detener intervalo de seguimiento
       this.stopTrackingTime();
       
       // Si hay un menú de selección visible, ocultarlo
       this.hideSelectionActions();
     } else {
-      // Aplicar clase para iniciar transición
       addClass(this.panelContainer, 'active');
       document.body.classList.add('youtube-panel-open'); // ← AGREGAR ESTA LÍNEA
       this.isVisible = true;
@@ -415,7 +394,6 @@ togglePanel() {
         }, 300);
       }
       
-      // Verificar si necesitamos cargar nuevos datos
       const currentState = getState ? getState('currentChatId') : null;
       const needsReload = (!this.videoData && !this.audioData) || 
                           (this.currentChatId !== currentState) ||
@@ -423,27 +401,22 @@ togglePanel() {
       
       // Si el chat actual es diferente, limpiar datos anteriores
       if (this.currentChatId !== currentState) {
-        // Limpiar datos de transcripción
         this.videoData = null;
         this.audioData = null;
         this.timestamps = [];
         
-        // Actualizar ID de chat
         this.currentChatId = currentState;
         
         // Limpieza visual
         const contentContainer = this.panelContainer.querySelector('.youtube-transcription-container');
         if (contentContainer) {
-          // Mostrar mensaje de carga
           contentContainer.innerHTML = '<div class="loading-message">Cargando transcripción para el nuevo chat...</div>';
         }
       }
       
-      // Cargar datos de transcripción si es necesario
       if (needsReload) {
         this.currentChatId = currentState;
         
-        // Mostrar spinner mientras carga
         const spinner = this.panelContainer.querySelector('.youtube-spinner');
         if (spinner) {
           spinner.style.display = 'flex';
@@ -459,7 +432,6 @@ togglePanel() {
  */
 pauseMediaPlayback() {
   try {
-    // Pausar video si está activado
     if (this.currentMode === 'youtube') {
       // Método 1: Usar API oficial de YouTube
       if (this.ytPlayer && typeof this.ytPlayer.pauseVideo === 'function') {
@@ -474,29 +446,22 @@ pauseMediaPlayback() {
       }
     }
     
-    // Pausar audio si está activado
     if (this.currentMode === 'audio' && this.audioPlayer) {
       this.audioPlayer.pause();
       
-      // Intentar vaciar la fuente para prevenir reproducciones fantasma
       try {
-        // Guardar volumen actual para restaurarlo si se vuelve a usar
         const currentVolume = this.audioPlayer.volume;
         this.audioPlayer.volume = 0; // Silenciar primero para prevenir sonidos al cambiar
         
-        // Limpiar propiedades de reproducción
         this.audioPlayer.currentTime = 0;
         
-        // Restaurar volumen después de un breve retraso
         setTimeout(() => {
           if (this.audioPlayer) this.audioPlayer.volume = currentVolume;
         }, 100);
       } catch (innerError) {
-        // SILENCIOSO: Error reiniciando propiedades de audio
       }
     }
     
-    // Buscar directamente elementos de audio en el panel por seguridad adicional
     if (this.panelContainer) {
       const audioplayers = this.panelContainer.querySelectorAll('audio');
       if (audioplayers.length > 0) {
@@ -508,7 +473,6 @@ pauseMediaPlayback() {
       }
     }
   } catch (error) {
-    // SILENCIOSO: Error pausando reproducción
   }
 }
   
@@ -521,7 +485,6 @@ pauseMediaPlayback() {
       this.playerStateInterval = null;
     }
     
-    // Limpiar el resaltado actual
     this.clearHighlightedSegment();
   }
   
@@ -534,10 +497,8 @@ pauseMediaPlayback() {
       this.hideSelectionActions();
     }
     
-    // Detener el seguimiento de tiempo
     this.stopTrackingTime();
     
-    // Cerrar el panel
     this.togglePanel();
   }
   
@@ -548,13 +509,11 @@ pauseMediaPlayback() {
     if (!this.currentChatId) return;
     
     try {
-      // Mostrar spinner
       const spinner = this.panelContainer.querySelector('.youtube-spinner');
       if (spinner) {
         spinner.style.display = 'flex';
       }
       
-      // Determinar si cargar datos de video o audio
       if (this.currentMode === 'youtube') {
         const response = await fetch(`/api/video-transcription/chat/${this.currentChatId}/video-data`);
         const data = await response.json();
@@ -587,7 +546,6 @@ pauseMediaPlayback() {
       // ERROR CAMUFLADO: Error de conexión
       this.showError('Acadel perdió la conexión. Como cuando se me corta el internet en plena clase');
     } finally {
-      // Ocultar spinner
       const spinner = this.panelContainer.querySelector('.youtube-spinner');
       if (spinner) {
         spinner.style.display = 'none';
@@ -618,13 +576,11 @@ pauseMediaPlayback() {
     
     const { metadata, transcriptions } = this.videoData;
     
-    // Actualizar título del panel
     const panelTitle = this.panelContainer.querySelector('.youtube-panel-title');
     if (panelTitle) {
       panelTitle.textContent = metadata.title || 'Transcripción de Video';
     }
     
-    // Construir el contenido del panel
     const content = document.createElement('div');
     content.innerHTML = `
       <div class="youtube-video-container">
@@ -660,7 +616,6 @@ pauseMediaPlayback() {
       </div>
     `;
     
-    // Reemplazar el contenido actual
     clearElement(this.panelContainer);
     this.panelContainer.appendChild(content);
     
@@ -679,13 +634,10 @@ pauseMediaPlayback() {
       closeButton.addEventListener('click', () => this.onPanelClose());
     }
     
-    // Inicializar el reproductor de YouTube con API
     this.initYouTubePlayer(metadata.videoId);
     
-    // Procesar y mostrar transcripciones
     this.processTranscriptions(transcriptions);
     
-    // Configurar eventos de búsqueda
     this.setupSearchControls();
   }
   
@@ -699,16 +651,13 @@ pauseMediaPlayback() {
     
     const { metadata, transcriptions } = this.audioData;
     
-    // Actualizar título del panel
     const panelTitle = this.panelContainer.querySelector('.youtube-panel-title');
     if (panelTitle) {
       panelTitle.textContent = metadata.title || 'Transcripción de Audio';
     }
     
-    // Construir el contenido del panel
     const content = document.createElement('div');
     
-    // Verificar si existe URL de reproducción
     const playbackUrl = metadata.playbackUrl || '';
     
     content.innerHTML = `
@@ -748,7 +697,6 @@ pauseMediaPlayback() {
       </div>
     `;
     
-    // Reemplazar el contenido actual
     clearElement(this.panelContainer);
     this.panelContainer.appendChild(content);
     
@@ -767,13 +715,10 @@ pauseMediaPlayback() {
       closeButton.addEventListener('click', () => this.onPanelClose());
     }
     
-    // Inicializar el reproductor de audio
     this.initAudioPlayer();
     
-    // Procesar y mostrar transcripciones
     this.processTranscriptions(transcriptions);
     
-    // Configurar eventos de búsqueda
     this.setupSearchControls();
   }
   
@@ -786,7 +731,6 @@ pauseMediaPlayback() {
     const nextButton = this.panelContainer.querySelector('#youtube-search-next');
     const downloadButton = this.panelContainer.querySelector('#youtube-download-button');
     
-    // Activar búsqueda al escribir (con pequeño retraso para evitar muchas búsquedas)
     if (searchInput) {
       addEvent(searchInput, 'input', (e) => {
         clearTimeout(this.searchTimeout);
@@ -818,10 +762,8 @@ pauseMediaPlayback() {
   initYouTubePlayer(videoId) {
     if (!videoId) return;
     
-    // Detener seguimiento actual si existe
     this.stopTrackingTime();
     
-    // Crear el reproductor de YouTube usando la API
     if (typeof YT !== 'undefined' && YT.Player) {
       this.ytPlayer = new YT.Player('youtube-player', {
         videoId: videoId,
@@ -837,7 +779,6 @@ pauseMediaPlayback() {
         }
       });
     } else {
-      // Fallback si la API de YouTube no está disponible - usar iframe normal
       const playerContainer = document.getElementById('youtube-player');
       if (playerContainer) {
         playerContainer.innerHTML = `
@@ -852,14 +793,12 @@ pauseMediaPlayback() {
         this.player = document.getElementById('youtube-iframe');
       }
       
-      // Intentar cargar la API de YouTube de forma dinámica
       this.loadYouTubeAPI().then(() => {
         // Reintentar después de cargar la API
         setTimeout(() => {
           this.initYouTubePlayer(videoId);
         }, 2000);
       }).catch(() => {
-        // SILENCIOSO: Error cargando API de YouTube
       });
     }
   }
@@ -874,7 +813,6 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Configurar eventos del reproductor de audio
     this.audioPlayer.addEventListener('play', () => {
       this.startTrackingTime();
     });
@@ -899,7 +837,6 @@ pauseMediaPlayback() {
         return;
       }
       
-      // Crear script para API de YouTube
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
       
@@ -908,12 +845,10 @@ pauseMediaPlayback() {
         resolve();
       };
       
-      // Manejar error de carga
       tag.onerror = function() {
         reject(new Error('Error al cargar la API de YouTube'));
       };
       
-      // Agregar script al documento
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
       
@@ -931,7 +866,6 @@ pauseMediaPlayback() {
    * @param {Event} event - Evento de YouTube
    */
   onPlayerReady(event) {
-    // SILENCIOSO: Player listo
   }
   
   /**
@@ -941,10 +875,8 @@ pauseMediaPlayback() {
   onPlayerStateChange(event) {
     // YT.PlayerState.PLAYING = 1
     if (event.data === 1) {
-      // Iniciar seguimiento de tiempo cuando se reproduce
       this.startTrackingTime();
     } else {
-      // Detener seguimiento cuando no se reproduce
       this.stopTrackingTime();
     }
   }
@@ -953,10 +885,8 @@ pauseMediaPlayback() {
    * Inicia el seguimiento del tiempo actual de reproducción
    */
   startTrackingTime() {
-    // Limpiar intervalo existente si hay uno
     this.stopTrackingTime();
     
-    // Crear nuevo intervalo para seguimiento
     this.playerStateInterval = setInterval(this.trackCurrentTime, 200);
   }
   
@@ -969,7 +899,6 @@ pauseMediaPlayback() {
     try {
       let currentTime = 0;
       
-      // Obtener tiempo actual según el tipo de reproductor
       if (this.currentMode === 'youtube' && this.ytPlayer) {
         currentTime = this.ytPlayer.getCurrentTime();
       } else if (this.currentMode === 'audio' && this.audioPlayer) {
@@ -980,7 +909,6 @@ pauseMediaPlayback() {
         this.highlightCurrentSegment(currentTime);
       }
     } catch (error) {
-      // SILENCIOSO: Error seguimiento de tiempo
       this.stopTrackingTime();
     }
   }
@@ -992,13 +920,11 @@ pauseMediaPlayback() {
   highlightCurrentSegment(currentTime) {
     if (!this.timestamps || !this.timestamps.length) return;
     
-    // Buscar el segmento que coincide con el tiempo actual
     const currentSegment = this.timestamps.find(segment => 
       currentTime >= segment.startSeconds && 
       currentTime <= segment.endSeconds
     );
     
-    // Si no se encuentra un segmento o es el mismo que ya está resaltado, no hacer nada
     if (!currentSegment || 
         (this.currentlyHighlightedSegment && 
          this.currentlyHighlightedSegment.startSeconds === currentSegment.startSeconds &&
@@ -1006,13 +932,10 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Limpiar resaltado anterior
     this.clearHighlightedSegment();
     
-    // Establecer nuevo segmento resaltado
     this.currentlyHighlightedSegment = currentSegment;
     
-    // Buscar y resaltar el segmento en la UI
     const sections = this.panelContainer.querySelectorAll('.youtube-transcription-section');
     let highlightedSection = null;
     
@@ -1028,7 +951,6 @@ pauseMediaPlayback() {
         // Encontrar la sección correspondiente
         const textElement = section.querySelector('.youtube-transcription-text');
         if (textElement) {
-          // Agregar clase de resaltado
           textElement.classList.add('youtube-current-segment');
           marker.classList.add('active');
           highlightedSection = section;
@@ -1056,11 +978,9 @@ pauseMediaPlayback() {
     const container = this.panelContainer;
     if (!container) return;
     
-    // Eliminar resaltado de todos los segmentos
     const highlightedTexts = container.querySelectorAll('.youtube-current-segment');
     highlightedTexts.forEach(el => el.classList.remove('youtube-current-segment'));
     
-    // Limpiar marcadores de timestamp activos excepto los activados manualmente
     const activeMarkers = container.querySelectorAll('.youtube-timestamp-marker.active');
     activeMarkers.forEach(marker => {
       // Mantener marcador activo si fue activado manualmente
@@ -1082,26 +1002,21 @@ pauseMediaPlayback() {
     
     this.timestamps = [];
     
-    // Extraer todos los timestamps de todas las transcripciones
     transcriptions.forEach(trans => {
       if (trans.timestamps && Array.isArray(trans.timestamps)) {
         this.timestamps.push(...trans.timestamps);
       }
     });
     
-    // Ordenar timestamps por tiempo de inicio
     this.timestamps.sort((a, b) => a.startSeconds - b.startSeconds);
     
-    // Verificar si hay transcripciones
     if (this.timestamps.length === 0) {
       transcriptionContainer.innerHTML = '<p class="no-transcriptions">No hay transcripciones disponibles.</p>';
       return;
     }
     
-    // Crear un fragmento para mejor rendimiento
     const fragment = document.createDocumentFragment();
     
-    // Generar HTML para cada item
     this.timestamps.forEach(item => {
       const section = document.createElement('div');
       section.className = 'youtube-transcription-section';
@@ -1124,7 +1039,6 @@ pauseMediaPlayback() {
       fragment.appendChild(section);
     });
     
-    // Limpiar contenedor y añadir el fragmento
     clearElement(transcriptionContainer);
     transcriptionContainer.appendChild(fragment);
   }
@@ -1136,7 +1050,6 @@ pauseMediaPlayback() {
   handleTimestampClick(e) {
     const startTime = parseFloat(e.currentTarget.getAttribute('data-start'));
     
-    // Marcar este marcador como activado manualmente
     e.currentTarget.setAttribute('data-manually-activated', 'true');
     
     // Navegamos al tiempo específico según el tipo de reproductor
@@ -1155,12 +1068,10 @@ pauseMediaPlayback() {
             }
           }
         } else if (this.currentMode === 'audio' && this.audioPlayer) {
-          // Para reproductor de audio
           this.audioPlayer.currentTime = startTime;
           this.audioPlayer.play();
         }
       } catch (error) {
-        // SILENCIOSO: Error controlando reproductor
       }
       
       // Resaltar visualmente el elemento clickeado
@@ -1171,7 +1082,6 @@ pauseMediaPlayback() {
       });
       e.currentTarget.classList.add('active');
       
-      // Quitar atributo después de un tiempo para permitir que la sincronización automática retome
       setTimeout(() => {
         e.currentTarget.removeAttribute('data-manually-activated');
       }, 3000);
@@ -1196,7 +1106,6 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Verificar si la selección está dentro del panel de transcripción
     let insideTranscription = false;
     let node = selection.anchorNode;
     
@@ -1217,10 +1126,8 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Guardar la selección actual
     this.currentSelection = selection.toString().trim();
     
-    // Mostrar el menú de acciones cerca de la selección con animación
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     
@@ -1230,12 +1137,10 @@ pauseMediaPlayback() {
     
     // Solo mostrar si no está ya visible
     if (!this.selectionActions.classList.contains('visible')) {
-      // Resetear el flag de cierre manual
       this.manuallyCloseSelectionActions = false;
       
       addClass(this.selectionActions, 'visible');
       
-      // Animar entrada
       setTimeout(() => {
         this.selectionActions.style.opacity = '1';
         this.selectionActions.style.transition = 'opacity 0.25s cubic-bezier(0.19, 1, 0.22, 1)';
@@ -1249,10 +1154,8 @@ pauseMediaPlayback() {
   hideSelectionActions() {
     if (!this.selectionActions) return;
     
-    // Animar salida
     this.selectionActions.style.opacity = '0';
     
-    // Usar setTimeout en lugar de transitions para mayor control
     setTimeout(() => {
       removeClass(this.selectionActions, 'visible');
       
@@ -1270,14 +1173,11 @@ pauseMediaPlayback() {
   useAsPrompt() {
     if (!this.currentSelection) return;
     
-    // Obtener referencia al textarea del chat
     const textarea = document.querySelector(DOM_SELECTORS.textarea);
     if (!textarea) return;
     
-    // Agregar prefijo "Explicame esto:" al texto seleccionado
     const promptText = `Explicame esto: ${this.currentSelection}`;
     
-    // Insertar el texto formateado en el textarea
     textarea.value = promptText;
     
     // Enfocar el textarea y simular un evento de input para actualizar la UI
@@ -1315,7 +1215,6 @@ pauseMediaPlayback() {
     // Botón para feedback visual
     const copyBtn = this.selectionActions.querySelector('.copy-text');
     
-    // Usar la utilidad de clipboard para copiar
     copyToClipboard(this.currentSelection, { 
       button: copyBtn,
       showNotification: true
@@ -1335,7 +1234,6 @@ pauseMediaPlayback() {
       </div>
     `;
     
-    // Reemplazar el contenido actual
     clearElement(this.panelContainer);
     this.panelContainer.appendChild(content);
     
@@ -1360,7 +1258,6 @@ pauseMediaPlayback() {
    * @param {string} query - Texto a buscar
    */
   performSearch(query) {
-    // Limpiar resultados anteriores
     this.clearHighlights();
     this.searchResults = [];
     this.currentSearchIndex = -1;
@@ -1370,10 +1267,8 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Obtener todas las secciones de texto
     const textSections = this.panelContainer.querySelectorAll('.youtube-transcription-text');
     
-    // Buscar coincidencias y resaltarlas
     let totalMatches = 0;
     
     textSections.forEach((section, sectionIndex) => {
@@ -1381,7 +1276,6 @@ pauseMediaPlayback() {
       const lcText = text.toLowerCase();
       const lcQuery = query.toLowerCase();
       
-      // Guardar el texto original
       if (!section.dataset.originalText) {
         section.dataset.originalText = text;
       }
@@ -1389,9 +1283,7 @@ pauseMediaPlayback() {
       let lastIndex = 0;
       let index;
       
-      // Buscar todas las ocurrencias
       while ((index = lcText.indexOf(lcQuery, lastIndex)) > -1) {
-        // Registrar la coincidencia
         this.searchResults.push({
           section,
           sectionIndex,
@@ -1407,7 +1299,6 @@ pauseMediaPlayback() {
     // Resaltar los resultados en el texto
     this.highlightSearchResults();
     
-    // Actualizar contador y habilitar/deshabilitar botones
     this.updateSearchCount(totalMatches);
     
     // Navegar al primer resultado si hay alguno
@@ -1420,7 +1311,6 @@ pauseMediaPlayback() {
    * Resalta los resultados de la búsqueda
    */
   highlightSearchResults() {
-    // Crear un mapa para agrupar resultados por sección
     const sectionMap = new Map();
     
     this.searchResults.forEach(result => {
@@ -1430,15 +1320,12 @@ pauseMediaPlayback() {
       sectionMap.get(result.section).push(result);
     });
     
-    // Procesar cada sección
     sectionMap.forEach((results, section) => {
       const originalText = section.dataset.originalText;
       if (!originalText) return;
       
-      // Ordenar por posición (de atrás hacia adelante para no afectar índices)
       results.sort((a, b) => b.startIndex - a.startIndex);
       
-      // Crear HTML con los resaltados
       let html = originalText;
       results.forEach(result => {
         const before = html.substring(0, result.startIndex);
@@ -1469,7 +1356,6 @@ pauseMediaPlayback() {
       }
     });
     
-    // Limpiar también resultado activo
     const activeMatch = this.panelContainer.querySelector('.youtube-search-match.active');
     if (activeMatch) {
       activeMatch.classList.remove('active');
@@ -1483,20 +1369,17 @@ pauseMediaPlayback() {
   navigateSearch(direction) {
     if (this.searchResults.length === 0) return;
     
-    // Actualizar índice
     if (direction === 'next') {
       this.currentSearchIndex = (this.currentSearchIndex + 1) % this.searchResults.length;
     } else {
       this.currentSearchIndex = (this.currentSearchIndex - 1 + this.searchResults.length) % this.searchResults.length;
     }
     
-    // Eliminar resaltado activo anterior
     const previousActive = this.panelContainer.querySelector('.youtube-search-match.active');
     if (previousActive) {
       previousActive.classList.remove('active');
     }
     
-    // Aplicar nuevo resaltado activo
     const matches = this.panelContainer.querySelectorAll('.youtube-search-match');
     const activeMatch = Array.from(matches).find(
       match => parseInt(match.dataset.index) === this.currentSearchIndex
@@ -1528,7 +1411,6 @@ pauseMediaPlayback() {
         : `${count} resultados`;
     }
     
-    // Habilitar/deshabilitar botones
     const hasResults = count > 0;
     if (prevButton) prevButton.disabled = !hasResults;
     if (nextButton) nextButton.disabled = !hasResults;
@@ -1569,7 +1451,6 @@ pauseMediaPlayback() {
       return;
     }
     
-    // Obtener metadatos según el tipo de transcripción
     let title, source;
     if (this.currentMode === 'youtube') {
       title = this.videoData.metadata.title || 'Video de YouTube';
@@ -1579,24 +1460,20 @@ pauseMediaPlayback() {
       source = this.audioData.metadata.type || 'Audio';
     }
     
-    // Crear contenido del archivo
     let content = `Transcripción: ${title}\n`;
     content += `Fuente: ${source}\n\n`;
     content += `Fecha de descarga: ${new Date().toLocaleString()}\n\n`;
     content += `=".=".=".=".=".=".=".=".=".=".=".=".=".=".=".=".=".=".=".=\n\n`;
     
-    // Añadir cada segmento de la transcripción
     this.timestamps.forEach(timestamp => {
       content += `[${timestamp.startTime} - ${timestamp.endTime}]\n`;
       content += `${timestamp.content || ''}\n\n`;
     });
     
     try {
-      // Generar archivo para descargar
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       
-      // Crear enlace de descarga y dispararlo
       const a = document.createElement('a');
       a.href = url;
       a.download = `transcripcion-${this.sanitizeFilename(title)}.txt`;
@@ -1611,7 +1488,6 @@ pauseMediaPlayback() {
         );
       }
       
-      // Limpiar
       setTimeout(() => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
@@ -1642,8 +1518,6 @@ pauseMediaPlayback() {
   }
 }
 
-// Crear y exportar una instancia única
 export const youtubePanel = new YouTubePanel();
 
-// Exportar por defecto para permitir importación simple
 export default youtubePanel;

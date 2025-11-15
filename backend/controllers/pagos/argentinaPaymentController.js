@@ -1,11 +1,9 @@
-// backend/controllers/pagos/argentinaPaymentController.js
 import argentinaPaymentService from '../../services/pagos/argentinaPaymentService.js';
 import { googleDriveService } from '../../utils/googleDriveService.js';
 import { argentinaEmailService } from '../../services/email/argentinaEmailService.js';
 import pool from '../../lib/dbPool.js';
 import fs from 'fs/promises';
 
-// Crear orden con Ualá
 export const createUalaOrder = async (req, res) => {
   try {
     const { carreraId, billingCycle } = req.body;
@@ -19,7 +17,6 @@ export const createUalaOrder = async (req, res) => {
       });
     }
 
-    // Obtener información de la carrera usando las nuevas columnas de precios ARS
     const carreraResult = await pool.query(
       `SELECT 
         id_carrera, 
@@ -51,7 +48,6 @@ export const createUalaOrder = async (req, res) => {
 
     console.log(`📊 Precio obtenido: ${carrera.price} ARS para ${carrera.nombre} (${billingCycle})`);
 
-    // ✅ CREAR ORDEN CON MEJOR MANEJO DE ERRORES
     try {
       const result = await argentinaPaymentService.createUalaOrder(
         userId, 
@@ -67,7 +63,6 @@ export const createUalaOrder = async (req, res) => {
     } catch (ualaError) {
       console.error('❌ Error específico de Ualá:', ualaError);
 
-      // ✅ MANEJO ESPECÍFICO DE ERRORES DE UALÁ
       if (ualaError.message?.includes('temporal') || 
           ualaError.message?.includes('Reintentando') ||
           ualaError.isRetryable) {
@@ -132,7 +127,6 @@ export const createUalaOrder = async (req, res) => {
   } catch (error) {
     console.error('❌ Error general en createUalaOrder:', error);
     
-    // ✅ ERROR GENERAL DEL SISTEMA
     if (error.message.includes('suscripción activa')) {
       return res.status(409).json({ 
         success: false, 
@@ -157,7 +151,6 @@ export const createUalaOrder = async (req, res) => {
   }
 };
 
-// ✅ NUEVO: Endpoint para obtener precios de una carrera
 export const getCarreraPrices = async (req, res) => {
   try {
     const { carreraId } = req.params;
@@ -205,7 +198,6 @@ export const getCarreraPrices = async (req, res) => {
   }
 };
 
-// ✅ NUEVO: Endpoint para obtener todas las carreras con precios
 export const getAllCarrerasWithPrices = async (req, res) => {
   try {
     const result = await pool.query(
@@ -248,7 +240,6 @@ export const getAllCarrerasWithPrices = async (req, res) => {
   }
 };
 
-// Procesar transferencia bancaria (sin cambios en la lógica principal)
 export const submitBankTransfer = async (req, res) => {
   try {
     const { 
@@ -262,7 +253,6 @@ export const submitBankTransfer = async (req, res) => {
     const userId = req.user.id_user;
     const transferImage = req.file;
 
-    // ✅ DEBUG: Ver qué llega exactamente
     console.log('📨 Datos recibidos en submitBankTransfer:');
     console.log('carreraId:', carreraId, '(tipo:', typeof carreraId, ')');
     console.log('billingCycle:', billingCycle);
@@ -273,7 +263,6 @@ export const submitBankTransfer = async (req, res) => {
     console.log('userId:', userId);
     console.log('transferImage:', transferImage ? transferImage.originalname : 'No file');
 
-    // ✅ CONVERSIÓN DE TIPOS ANTES DE VALIDAR
     const processedData = {
       carreraId: parseInt(carreraId), // Convertir string a number
       billingCycle,
@@ -309,7 +298,6 @@ export const submitBankTransfer = async (req, res) => {
       });
     }
 
-    // Validar imagen
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!allowedTypes.includes(transferImage.mimetype)) {
       await fs.unlink(transferImage.path).catch(() => {});
@@ -339,7 +327,6 @@ export const submitBankTransfer = async (req, res) => {
       await fs.unlink(transferImage.path).catch(() => {});
     }
 
-    // Procesar datos para el service
     const transferData = {
       accountHolder: processedData.accountHolder.trim(),
       amount: processedData.amount,
@@ -366,7 +353,6 @@ export const submitBankTransfer = async (req, res) => {
 
     console.log('✅ Transferencia procesada exitosamente:', result);
 
-    // ✅ NUEVO: Enviar email de pago en revisión
     try {
       await argentinaEmailService.sendPaymentUnderReviewFromId(result.paymentId);
       console.log(`📧 Email de pago en revisión enviado para pago ${result.paymentId}`);
@@ -417,7 +403,6 @@ export const handleUalaCallback = async (req, res) => {
   }
 };
 
-// Obtener pagos del usuario (sin cambios)
 export const getUserPayments = async (req, res) => {
   try {
     const userId = req.user.id_user;
@@ -463,7 +448,6 @@ export const getUserPayments = async (req, res) => {
   }
 };
 
-// Obtener suscripciones del usuario (sin cambios)
 export const getUserSubscriptions = async (req, res) => {
   try {
     const userId = req.user.id_user;

@@ -1,4 +1,3 @@
-// backend/middlewares/frontendProtectionMiddleware.js - CORREGIDO
 
 import { AccessValidationService } from "../services/shared/accessValidationService.js";
 import { frontendAccessDenied } from "../utils/shared/responseTemplates.js";
@@ -79,7 +78,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
       return next();
     }
 
-    // 🔍 EXTRAER SLUG DE LA RUTA (manejar UUIDs en la URL)
     let slug = requestPath.substring(1); // Remover el '/' inicial
     let chatUuid = null;
 
@@ -92,13 +90,11 @@ export const protectFrontendRoutes = async (req, res, next) => {
 
     console.log(`🔍 [FRONTEND-PROTECTION] Slug extraído: "${slug}" de ruta: ${requestPath}`);
 
-    // 🔒 VALIDAR COINCIDENCIA DE CHAT UUID CON TIPO DE SLUG
     if (chatUuid) {
       try {
         const { getChatInfo } = await import('../services/chat/chatServices.js');
         const chatInfo = await getChatInfo(chatUuid);
 
-        // Verificar si es AVA y el chat también es AVA
         const isAvaSlug = await avaCacheService.isAvaRoute(slug);
         const isHerramientaSlug = await herramientaCacheService.isHerramientaRoute(slug);
 
@@ -157,7 +153,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
     if (isHerramienta) {
       console.log(`🔧 [FRONTEND-PROTECTION] Procesando herramienta: ${slug}`);
 
-      // ✅ HERRAMIENTAS REQUIEREN AUTENTICACIÓN
       const userInfo = extractUserFromSession(req);
 
       if (!userInfo.isAuthenticated) {
@@ -177,12 +172,10 @@ export const protectFrontendRoutes = async (req, res, next) => {
         }
       }
 
-      // ✅ Usuario autenticado, permitir acceso a herramienta
       console.log(`✅ [FRONTEND-PROTECTION] Acceso a herramienta concedido: ${slug} para usuario ${userInfo.userId}`);
       return next();
     }
 
-    // 🔍 VERIFICAR SI ES UN AVA - CON LOGGING DETALLADO
     console.log(`🔍 [FRONTEND-PROTECTION] Verificando si "${slug}" es un AVA...`);
 
     const isAva = await avaCacheService.isAvaRoute(slug);
@@ -195,7 +188,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
       return next();
     }
 
-    // 🔒 *** ES UN AVA - VERIFICAR AUTENTICACIÓN ***
     console.log(`🔒 [FRONTEND-PROTECTION] === PROCESANDO AVA: ${slug} ===`);
 
     const userInfo = extractUserFromSession(req);
@@ -217,11 +209,9 @@ export const protectFrontendRoutes = async (req, res, next) => {
       }
     }
 
-    // 🎓 *** VERIFICAR ACCESO ESPECÍFICO A LA CARRERA ***
     console.log(`🎓 [FRONTEND-PROTECTION] Usuario autenticado: ${userInfo.userId}, verificando acceso a carrera...`);
 
     try {
-      // Obtener datos completos del AVA para validación
       const avaData = await avaCacheService.getAvaBySlug(slug);
 
       console.log(`🔍 [FRONTEND-PROTECTION] Datos del AVA:`, {
@@ -245,7 +235,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
         return next();
       }
 
-      // *** VALIDACIÓN CRÍTICA: VERIFICAR SUSCRIPCIÓN A LA CARRERA ESPECÍFICA ***
       console.log(`🔍 [FRONTEND-PROTECTION] Validando acceso del usuario ${userInfo.userId} al AVA ${avaData.id_ava} (carrera: ${avaData.carrera_nombre})`);
 
       const validation = await AccessValidationService.validateAvaAccess(
@@ -264,7 +253,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
       });
 
       if (!validation.canProceed) {
-        // *** ACCESO DENEGADO - USUARIO NO TIENE SUSCRIPCIÓN A ESTA CARRERA ***
         console.log(`❌ [FRONTEND-PROTECTION] ACCESO DENEGADO - Usuario ${userInfo.userId} NO tiene suscripción a carrera "${avaData.carrera_nombre}" para AVA "${avaData.nom_ava}"`);
 
         logSecurityEvent('FRONTEND_AVA_CAREER_REQUIRED', 'Usuario sin suscripción a carrera intentando acceder a AVA', {
@@ -285,7 +273,6 @@ export const protectFrontendRoutes = async (req, res, next) => {
         }
       }
 
-      // *** ACCESO PERMITIDO - USUARIO TIENE SUSCRIPCIÓN VÁLIDA ***
       console.log(`✅ [FRONTEND-PROTECTION] ACCESO CONCEDIDO - Usuario ${userInfo.userId} tiene acceso válido a AVA "${avaData.nom_ava}" (carrera: "${avaData.carrera_nombre}")`);
 
       logSecurityEvent('FRONTEND_AVA_ACCESS_GRANTED', 'Acceso concedido a AVA con suscripción válida', {

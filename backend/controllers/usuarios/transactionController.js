@@ -19,7 +19,6 @@ export const getTransactions = async (req, res) => {
             data: transactions
         });
     } catch (error) {
-        // Log de error en acceso a transacciones
         logSecurityEvent('TRANSACTION_ACCESS_ERROR', 'Error accediendo a información de transacciones', {
             targetUserId: req.params.userId,
             requesterId: req.user?.id_user,

@@ -5,7 +5,6 @@
 
 import { getPDFPreview } from '../services/pdf-api.js';
 
-// Para un manejo optimizado, mantenemos registro de las páginas cargadas
 const loadedPages = {};
 const pagePromises = {};
 
@@ -20,19 +19,16 @@ export async function loadPDFJS() {
   }
   
   try {
-    // Cargar de CDN
     const pdfjsScript = document.createElement('script');
     pdfjsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
     pdfjsScript.async = true;
     
-    // Esperar a que cargue
     await new Promise((resolve, reject) => {
       pdfjsScript.onload = resolve;
       pdfjsScript.onerror = reject;
       document.head.appendChild(pdfjsScript);
     });
     
-    // Cargar worker
     const pdfjsWorker = document.createElement('script');
     pdfjsWorker.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
     pdfjsWorker.async = true;
@@ -75,13 +71,11 @@ export async function getPageAsImage(pdfId, pageNumber, options = {}) {
     return loadedPages[cacheKey];
   }
   
-  // Crear nueva promesa para este pedido
   pagePromises[cacheKey] = getPDFPreview({
     pdfId: pdfId,
     page: pageNumber,
     ...options
   }).then(imageUrl => {
-    // Guardar en caché cuando termine
     loadedPages[cacheKey] = imageUrl;
     delete pagePromises[cacheKey];
     return imageUrl;
@@ -119,10 +113,8 @@ export function preloadPages(pdfId, pageNumbers, options = {}) {
  */
 export async function getPageDimensions(pdfId, pageNumber) {
   try {
-    // Cargar la imagen de la página
     const imageUrl = await getPageAsImage(pdfId, pageNumber);
     
-    // Crear imagen temporal para obtener dimensiones
     return new Promise((resolve, reject) => {
       const img = new Image();
       
@@ -144,7 +136,6 @@ export async function getPageDimensions(pdfId, pageNumber) {
   } catch (error) {
     // Error silencioso con fallback - no afecta la experiencia del usuario significativamente
     console.error('Error obteniendo dimensiones de página:', error);
-    // Devolver dimensiones aproximadas como fallback
     return {
       width: 595, // Tamaño A4 estándar en puntos
       height: 842,
@@ -157,7 +148,6 @@ export async function getPageDimensions(pdfId, pageNumber) {
  * Limpia los recursos utilizados y caché
  */
 export function cleanup() {
-  // Limpiar caché de páginas (silencioso, es mantenimiento interno)
   Object.keys(loadedPages).forEach(key => {
     const url = loadedPages[key];
     if (url && url.startsWith('blob:')) {

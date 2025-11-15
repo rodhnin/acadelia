@@ -2,7 +2,6 @@
  * Módulo principal que inicializa y coordina todos los componentes del Panel
  */
 
-// Importar módulos necesarios
 import { ApiService } from './modules/api-inteligente.js';
 import { UiManager } from './modules/ui-inteligente.js';
 import { DashboardModule } from './modules/dashboard-inteligente.js';
@@ -19,7 +18,6 @@ import { EventBus } from './utils/event-bus-inteligente.js';
 import { ExpensesModule } from './modules/expenses-inteligente.js';
 
 
-// Función helper para obtener un número aleatorio en un rango
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -65,28 +63,21 @@ async init() {
     // Simular progreso de carga para la pantalla inicial
     this.startProgressAnimation();
     
-    // Inicializar servicios centrales
     await this.initCoreServices();
     
-    // Inicializar cada módulo
     for (const [name, module] of Object.entries(this.modules)) {
       await this.initModule(name, module);
     }
     
-    // Configurar navegación y eventos globales
     this.setupNavigation();
     this.setupEventListeners();
     
-    // AÑADIR ESTA LÍNEA: Asegurar que el tema esté sincronizado
     this.ensureThemeSynchronization();
     
-    // Marcar como inicializado
     this.isInitialized = true;
     
-    // Completar progreso y ocultar pantalla de carga
     this.finishLoading();
     
-    // Mostrar el dashboard por defecto
     this.ui.showSection('dashboard');
     
     console.log('Panel de administración financiera inicializado correctamente');
@@ -101,7 +92,6 @@ async init() {
  * Añade esta función dentro de tu clase App, después del constructor
  */
 async loadExcelJS() {
-  // Verificar si ya está cargado
   if (window.ExcelJS) {
     console.log('ExcelJS ya está disponible');
     return true;
@@ -110,15 +100,12 @@ async loadExcelJS() {
   console.log('Cargando biblioteca ExcelJS para exportaciones mejoradas...');
   
   return new Promise((resolve, reject) => {
-    // Crear elemento script
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js';
     script.async = true;
     
-    // Manejar eventos de carga
     script.onload = () => {
       console.log('ExcelJS cargado correctamente');
-      // Asignar ExcelJS al objeto window para que export.js pueda usarlo
       window.ExcelJS = ExcelJS;
       resolve(true);
     };
@@ -128,7 +115,6 @@ async loadExcelJS() {
       resolve(false); // Resolvemos con false en lugar de rechazar para seguir con la inicialización
     };
     
-    // Añadir script al documento
     document.body.appendChild(script);
   });
 }
@@ -147,7 +133,6 @@ startProgressAnimation() {
   // Forzar tema correcto en la pantalla de carga
   this.syncLoadingScreenTheme();
   
-  // Definir las etapas de carga y sus rangos de porcentaje
   this.loadingStages = [
     { id: 'init', name: 'Inicialización', start: 0, end: 15, 
       messages: ['Inicializando componentes', 'Preparando entorno', 'Configurando sistema']},
@@ -183,7 +168,6 @@ startProgressAnimation() {
  * Colocar esta función después de setupEventListeners()
  */
 ensureThemeSynchronization() {
-  // Verificar que el estado del toggle coincida con el tema real
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
     const isDarkMode = document.body.classList.contains('dark-mode');
@@ -208,7 +192,6 @@ syncLoadingScreenTheme() {
   const loadingScreen = document.getElementById('loading-screen');
   if (!loadingScreen) return;
   
-  // Determinar preferencia de tema
   let darkModePreferred = false;
   
   try {
@@ -224,7 +207,6 @@ syncLoadingScreenTheme() {
     console.warn('Error al leer preferencia de tema:', error);
   }
   
-  // Aplicar clase de tema directamente a la pantalla de carga
   if (darkModePreferred) {
     document.body.classList.add('dark-mode');
   } else {
@@ -239,7 +221,6 @@ syncLoadingScreenTheme() {
 advanceToStage(stageIndex) {
   if (stageIndex >= this.loadingStages.length) return;
   
-  // Detener cualquier simulación actual
   if (this.currentSimulationInterval) {
     clearInterval(this.currentSimulationInterval);
     this.currentSimulationInterval = null;
@@ -249,12 +230,10 @@ advanceToStage(stageIndex) {
   const newStage = this.loadingStages[stageIndex];
   this.currentStage = stageIndex;
   
-  // Actualizar marcadores visuales
   this.updateStageMarkers(newStage.id);
   this.setLoadingStageText(newStage.messages);
   
   // Importante: verificar si el progreso actual ya excede el inicio de la nueva etapa
-  // para evitar retrocesos en la barra
   const targetValue = Math.max(this.loadingProgress, newStage.start);
   
   // Animación suave hasta el valor objetivo
@@ -405,7 +384,6 @@ simulateStageProgress(stage) {
     this.progressBar.style.width = `${cappedValue}%`;
     this.loadingProgress = cappedValue;
     
-    // Actualizar texto de porcentaje
     if (this.percentageText) {
       this.percentageText.textContent = `${Math.round(cappedValue)}%`;
     }
@@ -417,7 +395,6 @@ simulateStageProgress(stage) {
  * Añade esta función dentro de tu clase App, después de loadExcelJS
  */
 async loadPDFMake() {
-  // Verificar si ya está cargado
   if (window.pdfMake) {
     console.log('pdfMake ya está disponible');
     return true;
@@ -426,16 +403,13 @@ async loadPDFMake() {
   console.log('Cargando biblioteca pdfMake para exportaciones a PDF...');
   
   return new Promise((resolve, reject) => {
-    // Crear elemento script para pdfmake
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js';
     script.async = true;
     
-    // Manejar eventos de carga para pdfmake
     script.onload = () => {
       console.log('pdfMake cargado correctamente');
       
-      // Cargar vfs_fonts.js después de pdfmake
       const fontsScript = document.createElement('script');
       fontsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js';
       fontsScript.async = true;
@@ -459,7 +433,6 @@ async loadPDFMake() {
       resolve(false); // Resolvemos con false en lugar de rechazar para seguir con la inicialización
     };
     
-    // Añadir script al documento
     document.body.appendChild(script);
   });
 }
@@ -469,38 +442,30 @@ async loadPDFMake() {
  */
 async initCoreServices() {
   try {
-    // Inicializar API
     await this.api.init();
     this.updateLoadingProgress(20);
     
-    // Inicializar UI
     this.ui.init();
     this.updateLoadingProgress(25);
     
-    // Inicializar tema
     await this.themeManager.init();
     this.updateLoadingProgress(30);
     
-    // Cargar ExcelJS para exportaciones mejoradas
     await this.loadExcelJS();
     this.advanceToStage(2); // Avanzar a la etapa de módulos
     
-    // Cargar pdfmake para exportaciones a PDF
     await this.loadPDFMake();
     this.updateLoadingProgress(45);
     
-    // Inicializar selector de rango de fechas (MODIFICADO: pasar eventBus)
     try {
       console.log('Inicializando DateRangeManager con eventBus...');
       await this.dateRangeManager.init(this.eventBus);
       console.log('DateRangeManager inicializado correctamente');
     } catch (error) {
       console.error('Error al inicializar DateRangeManager:', error);
-      // Continuar con la inicialización a pesar del error
     }
     this.updateLoadingProgress(50);
     
-    // AÑADIR: Hacer accesible el event bus para exportManager
     if (!window.financeAdmin) {
       window.financeAdmin = {};
     }
@@ -520,7 +485,6 @@ async initCoreServices() {
 async initModule(name, module) {
   console.log(`Inicializando módulo: ${name}`);
   
-  // Actualizar mensaje de carga
   if (this.stageText) {
     this.stageText.style.opacity = 0;
     setTimeout(() => {
@@ -531,7 +495,6 @@ async initModule(name, module) {
   
   await module.init();
   
-  // Incrementar progreso basado en la cantidad de módulos
   const progressIncrement = 20 / this.totalModules;
   this.updateLoadingProgress(this.loadingProgress + progressIncrement);
   
@@ -546,23 +509,18 @@ async initModule(name, module) {
    * Configura la navegación entre secciones
    */
   setupNavigation() {
-    // Obtener todos los enlaces de navegación
     const navLinks = document.querySelectorAll('.nav-link');
     
-    // Configurar evento de clic para cada enlace
     navLinks.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         
-        // Obtener sección a mostrar
         const sectionId = link.getAttribute('data-section');
         if (!sectionId) return;
         
-        // Actualizar enlaces activos
         navLinks.forEach(navLink => navLink.classList.remove('active'));
         link.classList.add('active');
         
-        // Mostrar sección correspondiente
         this.ui.showSection(sectionId);
         
         // En móvil, cerrar sidebar automáticamente
@@ -570,12 +528,10 @@ async initModule(name, module) {
           this.ui.toggleSidebar(false);
         }
         
-        // Actualizar URL con hash para historial
         window.location.hash = sectionId;
       });
     });
     
-    // Procesar hash inicial de URL si existe
     this.handleInitialHash();
   }
   
@@ -624,7 +580,6 @@ async initModule(name, module) {
     // Toggle de tema claro/oscuro
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
-    // Usar 'click' y 'change' para mayor compatibilidad entre navegadores
     themeToggle.addEventListener('click', () => {
       console.log('Theme toggle clicked');
       this.themeManager.toggleTheme();
@@ -635,20 +590,17 @@ async initModule(name, module) {
       this.themeManager.toggleTheme();
     });
     
-    // Sincronizar estado inicial
     themeToggle.checked = this.themeManager.isDarkMode();
     console.log('Theme toggle initial state:', themeToggle.checked);
   } else {
     console.warn('Theme toggle element not found');
   }
     
-    // Manejar eventos de cambio de fecha
     document.getElementById('date-range').addEventListener('change', (e) => {
       const dateRange = e.target.value;
       this.eventBus.emit('dateRangeChanged', dateRange);
     });
     
-    // Escuchar eventos de redimensionamiento para ajustar responsive
     window.addEventListener('resize', () => {
       this.ui.handleResize();
     });
@@ -661,7 +613,6 @@ async initModule(name, module) {
     // Avanzar a la etapa final
     this.advanceToStage(this.loadingStages.length - 1);
     
-    // Mostrar mensaje de finalización
     if (this.stageText) {
       this.stageText.style.opacity = 0;
       setTimeout(() => {
@@ -670,16 +621,13 @@ async initModule(name, module) {
       }, 300);
     }
     
-    // Animar hasta el 100%
     this.animateProgressTo(this.loadingProgress, 100, 800, () => {
       // Pequeña pausa antes de ocultar
       setTimeout(() => {
-        // Ocultar la pantalla de carga
         window.financeAdmin.hideLoadingScreen();
       }, 600);
     });
     
-    // Limpiar intervalos si existen
     if (this.loadingInterval) {
       clearInterval(this.loadingInterval);
     }
@@ -690,20 +638,16 @@ async initModule(name, module) {
    * @param {Error} error - Error ocurrido
    */
   handleInitError(error) {
-    // Limpiar intervalo de animación si existe
     if (this.loadingInterval) {
       clearInterval(this.loadingInterval);
     }
     
-    // Ocultar pantalla de carga
     window.financeAdmin.hideLoadingScreen();
     
-    // Mostrar mensaje de error al usuario
     this.ui.showErrorMessage('Error al inicializar la aplicación', error.message);
     
     console.error('Detalles del error:', error);
   }
 }
 
-// Exportar la instancia única de la aplicación
 export default new App();

@@ -13,7 +13,6 @@ const loader = {
      * Inicializa el loader
      */
     init() {
-        // Crear el elemento del loader si no existe
         if (!this.loaderElement) {
             this.createLoaderElement();
         }
@@ -23,7 +22,6 @@ const loader = {
      * Crea el elemento HTML del loader
      */
     createLoaderElement() {
-        // Crear contenedor principal
         this.loaderElement = document.createElement('div');
         this.loaderElement.className = 'security-loader';
         this.loaderElement.innerHTML = `
@@ -40,7 +38,6 @@ const loader = {
             </div>
         `;
 
-        // Agregar estilos CSS inline (se puede mover a CSS)
         const style = document.createElement('style');
         style.textContent = `
             .security-loader {
@@ -102,7 +99,6 @@ const loader = {
             }
         `;
 
-        // Agregar el loader y los estilos al body
         document.head.appendChild(style);
         document.body.appendChild(this.loaderElement);
     },

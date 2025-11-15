@@ -61,23 +61,18 @@ class UnifiedFileAttachmentManager {
 
     console.log(`🦫 Acadel inicializando sistema de archivos (${this.context})...`);
 
-    // Limpiar cualquier cosa previa
     this.eventManager.cleanup();
 
-    // Verificar elementos DOM esenciales
     const elements = this.getDOMElements();
     if (!this.validateDOMElements(elements)) {
       console.warn(`🦫 Acadel: Elementos DOM no encontrados para ${this.context}`);
       return;
     }
 
-    // Configurar todos los event listeners
     this.setupAllEventListeners(elements);
 
-    // Crear elementos necesarios
     this.createMissingElements(elements);
 
-    // Configurar observadores
     this.setupObservers();
 
     console.log(`✅ Acadel: Sistema de archivos listo (${this.context})`);
@@ -116,10 +111,8 @@ class UnifiedFileAttachmentManager {
   // ====== VALIDAR ELEMENTOS ESENCIALES ======
   validateDOMElements(elements) {
     if (this.context === 'welcome') {
-      // Para welcome, solo necesitamos que exista el contenedor
       return elements.filePreviewContainer !== null;
     } else {
-      // Para chat, necesitamos los inputs
       const required = ['imageUploadInput', 'documentUploadInput', 'codeUploadInput'];
       return required.some(key => elements[key] !== null);
     }
@@ -139,7 +132,6 @@ class UnifiedFileAttachmentManager {
     // Cámara
     this.setupCameraListeners(elements);
 
-    // Modal de preview
     this.setupPreviewModalListeners(elements);
 
     // Mobile (solo para chat)
@@ -166,7 +158,6 @@ class UnifiedFileAttachmentManager {
       this.eventManager.add(input, 'change', async (event) => {
         await this.handleFileSelection(event, fileType);
 
-        // Cerrar menús
         if (this.context === 'welcome') {
           const attachmentOptions = document.getElementById('welcome-attachment-options');
           if (attachmentOptions) attachmentOptions.classList.remove('show');
@@ -209,7 +200,6 @@ class UnifiedFileAttachmentManager {
     // IMPORTANTE: Remover listeners existentes si los hay
     this.removeDragDropListeners();
 
-    // Crear una función handler única y controlada
     const dropHandler = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -284,7 +274,6 @@ class UnifiedFileAttachmentManager {
       }
     };
 
-    // Agregar todos los listeners con referencias guardadas para poder removerlos
     this.dragDropListeners = {
       documentDragEnter: documentDragEnter,
       documentDragLeave: documentDragLeave,
@@ -296,7 +285,6 @@ class UnifiedFileAttachmentManager {
       clickOutsideHandler: clickOutsideHandler
     };
 
-    // Agregar listeners
     this.eventManager.add(document, 'dragenter', documentDragEnter);
     this.eventManager.add(document, 'dragleave', documentDragLeave);
     this.eventManager.add(document, 'dragend', documentDragEnd);
@@ -327,7 +315,6 @@ class UnifiedFileAttachmentManager {
       this.eventManager.add(button, 'click', async () => {
         await this.openCamera();
 
-        // Cerrar menús según contexto
         if (this.context === 'welcome') {
           const attachmentOptions = document.getElementById('welcome-attachment-options');
           if (attachmentOptions) attachmentOptions.classList.remove('show');
@@ -401,17 +388,14 @@ class UnifiedFileAttachmentManager {
 
   // ====== CREAR ELEMENTOS FALTANTES ======
   createMissingElements(elements) {
-    // Crear contenedor de preview si no existe
     if (!elements.filePreviewContainer) {
       if (this.context === 'welcome') {
-        // Buscar el contenedor de welcome input
         const welcomeInputContainer = document.querySelector('.welcome-input-container');
         if (welcomeInputContainer) {
           const previewContainer = document.createElement('div');
           previewContainer.className = 'file-preview-container welcome-file-preview-container';
           previewContainer.id = 'welcome-file-preview-container';
 
-          // Insertar antes del input-container
           const inputContainer = welcomeInputContainer.querySelector('.input-container');
           if (inputContainer) {
             welcomeInputContainer.insertBefore(previewContainer, inputContainer);
@@ -420,7 +404,6 @@ class UnifiedFileAttachmentManager {
           }
         }
       } else {
-        // Lógica original para chat
         const chatInputContainer = document.querySelector('.chat-input-container');
         if (chatInputContainer) {
           const previewContainer = document.createElement('div');
@@ -430,7 +413,6 @@ class UnifiedFileAttachmentManager {
       }
     }
 
-    // Crear modal de preview si no existe
     if (!elements.previewModal) {
       this.createPreviewModal();
     }
@@ -489,11 +471,9 @@ class UnifiedFileAttachmentManager {
     this.operationLock = true;
 
     try {
-      // VALIDAR LÍMITE DE ARCHIVOS ANTES DE PROCESAR
       const currentFiles = this.getCurrentFileCount();
       console.log(`📊 Archivos actuales: ${currentFiles}, Intentando agregar: ${files.length}`);
 
-      // VERIFICAR LÍMITE TOTAL
       const totalFiles = currentFiles + files.length;
       if (totalFiles > 4) { // Límite de 4 archivos
         this.showAcadelError('TOO_MANY_FILES',
@@ -501,7 +481,6 @@ class UnifiedFileAttachmentManager {
         return;
       }
 
-      // Obtener contenedor
       let previewContainer = this.getDOMElements().filePreviewContainer;
       if (!previewContainer && this.context === 'welcome') {
         this.createMissingElements({});
@@ -516,12 +495,10 @@ class UnifiedFileAttachmentManager {
       let processedCount = 0;
       let errorCount = 0;
 
-      // PROCESAR ARCHIVOS SECUENCIALMENTE (más seguro)
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
         try {
-          // Verificar límite antes de cada archivo
           const currentCount = this.getCurrentFileCount();
           if (currentCount >= 4) {
             this.showAcadelWarning('TOO_MANY_FILES',
@@ -541,7 +518,6 @@ class UnifiedFileAttachmentManager {
         }
       }
 
-      // Mostrar resultado final
       if (processedCount > 0 && errorCount === 0) {
         this.showAcadelSuccess('FILES_READY',
           `Acadel procesó ${processedCount} archivo${processedCount > 1 ? 's' : ''} perfectamente`);
@@ -553,7 +529,6 @@ class UnifiedFileAttachmentManager {
     } finally {
       this.operationLock = false;
 
-      // Limpiar estados visuales
       const elements = this.getDOMElements();
       if (elements.fileUploadContainer) {
         elements.fileUploadContainer.classList.remove('active', 'dragging');
@@ -586,14 +561,12 @@ class UnifiedFileAttachmentManager {
 
   // ====== PROCESAR ARCHIVO INDIVIDUAL ======
   async handleSingleFilePreview(file) {
-    // Detectar tipo de archivo
     const typeValidation = validateFileType(file);
     if (!typeValidation.valid) {
       this.showAcadelError(typeValidation.messageKey, typeValidation.reason);
       throw new Error('Archivo no válido según Acadel');
     }
 
-    // Validación completa
     const validationResult = await validateFile(file, typeValidation.detectedType);
     if (!validationResult.valid) {
       throw new Error('Archivo no válido según validación completa');
@@ -603,7 +576,6 @@ class UnifiedFileAttachmentManager {
     const fileId = `${this.prefix}file-${this.state.nextId++}`;
     console.log(`🆔 Acadel generó ID: ${fileId} para: ${file.name} (${this.context})`);
 
-    // Generar preview visual
     let previewHtml = '';
     if (typeValidation.detectedType === 'code') {
       previewHtml = await generateCodePreview(file, fileId);
@@ -611,7 +583,6 @@ class UnifiedFileAttachmentManager {
       previewHtml = await generateFilePreview(file, fileId);
     }
 
-    // Agregar indicador de truncado si aplica
     if (validationResult.truncated) {
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = previewHtml;
@@ -626,7 +597,6 @@ class UnifiedFileAttachmentManager {
       }
     }
 
-    // Crear y agregar elemento visual
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = previewHtml;
     const previewElement = tempDiv.firstElementChild;
@@ -634,7 +604,6 @@ class UnifiedFileAttachmentManager {
     const previewContainer = this.getDOMElements().filePreviewContainer;
     previewContainer.appendChild(previewElement);
 
-    // Guardar en estado
     const fileData = {
       file: file,
       type: typeValidation.detectedType,
@@ -643,7 +612,6 @@ class UnifiedFileAttachmentManager {
       truncated: validationResult.truncated
     };
 
-    // Agregar base64 para imágenes si es necesario
     if (typeValidation.detectedType === 'image') {
       try {
         fileData.previewBase64 = await imageToBase64(file);
@@ -667,7 +635,6 @@ class UnifiedFileAttachmentManager {
       return;
     }
 
-    // VERIFICAR LÍMITE ANTES DE PROCESAR
     const currentFiles = this.getCurrentFileCount();
     if (currentFiles >= 4) {
       this.showAcadelError('TOO_MANY_FILES',
@@ -697,13 +664,11 @@ class UnifiedFileAttachmentManager {
   async openCamera() {
     console.log(`🦫 Acadel abriendo cámara (${this.context})...`);
 
-    // Verificar límite de archivos
     const currentFiles = this.getCurrentFileCount();
     if (!validateFileCountLimit(currentFiles + 1)) {
       return;
     }
 
-    // Limpiar cámara anterior
     this.closeCamera();
 
     const cameraHTML = `
@@ -822,7 +787,6 @@ class UnifiedFileAttachmentManager {
     previewBody.innerHTML = '';
     previewBody.className = 'preview-body';
 
-    // Mostrar loading
     const loadingElement = document.createElement('div');
     loadingElement.className = 'preview-loading';
     loadingElement.innerHTML = `
@@ -940,7 +904,6 @@ class UnifiedFileAttachmentManager {
         codeContainer.appendChild(codeWrapper);
         previewBody.appendChild(codeContainer);
 
-        // Aplicar highlight si está disponible
         setTimeout(() => {
           if (typeof hljs !== 'undefined') {
             hljs.highlightElement(codeElement);
@@ -1050,7 +1013,6 @@ class UnifiedFileAttachmentManager {
     modalElement.innerHTML = modalHTML;
     document.body.appendChild(modalElement.firstElementChild);
 
-    // Configurar listeners inmediatamente después de crear
     const previewClose = document.getElementById(this.context === 'welcome' ? 'welcome-preview-close' : 'preview-close');
     const previewModal = document.getElementById(modalId);
 
@@ -1127,7 +1089,6 @@ class UnifiedFileAttachmentManager {
       elements.fileUploadContainer.classList.remove('active', 'dragging');
     }
 
-    // Limpiar inputs según contexto
     if (this.context === 'welcome') {
       ['welcome-image-input', 'welcome-document-input', 'welcome-code-input'].forEach(id => {
         const input = document.getElementById(id);
@@ -1165,7 +1126,6 @@ class UnifiedFileAttachmentManager {
       return [];
     }
 
-    // ✅ PROTECCIÓN CONTRA TRANSFERENCIA MÚLTIPLE
     if (this._isTransferring) {
       console.log('🚫 Transferencia ya en progreso');
       return [];
@@ -1177,13 +1137,11 @@ class UnifiedFileAttachmentManager {
       const welcomeFiles = this.getAttachedFiles();
       console.log(`🚀 Transfiriendo ${welcomeFiles.length} archivos de welcome a chat`);
 
-      // ✅ VERIFICAR SI YA HAY ARCHIVOS TEMPORALES
       if (window.temporaryWelcomeFiles) {
         console.warn('⚠️ Ya existen archivos temporales, limpiando...');
         delete window.temporaryWelcomeFiles;
       }
 
-      // Guardar archivos para transferir
       if (welcomeFiles.length > 0) {
         window.temporaryWelcomeFiles = welcomeFiles.map(fileData => ({
           file: fileData.file,
@@ -1194,7 +1152,6 @@ class UnifiedFileAttachmentManager {
 
       return welcomeFiles;
     } finally {
-      // ✅ LIBERAR FLAG CON DELAY
       setTimeout(() => {
         this._isTransferring = false;
       }, 100);
@@ -1208,7 +1165,6 @@ class UnifiedFileAttachmentManager {
       return;
     }
 
-    // ✅ PROTECCIÓN CONTRA PROCESAMIENTO MÚLTIPLE
     if (this._isReceiving) {
       console.log('🚫 Ya recibiendo archivos transferidos');
       return;
@@ -1221,13 +1177,11 @@ class UnifiedFileAttachmentManager {
     this._isReceiving = true;
 
     try {
-      // ✅ COPIA LOCAL Y LIMPIEZA INMEDIATA
       const filesToProcess = [...window.temporaryWelcomeFiles];
       delete window.temporaryWelcomeFiles;
 
       console.log(`🎯 Recibiendo ${filesToProcess.length} archivos transferidos desde welcome`);
 
-      // Procesar cada archivo transferido
       for (const fileData of filesToProcess) {
         await this.handleSingleFilePreview(fileData.file);
       }
@@ -1237,7 +1191,6 @@ class UnifiedFileAttachmentManager {
       console.error('❌ Error al transferir archivos:', error);
     } finally {
       this._isReceiving = false;
-      // ✅ LIMPIEZA ADICIONAL POR SEGURIDAD
       if (window.temporaryWelcomeFiles) {
         delete window.temporaryWelcomeFiles;
       }
@@ -1293,33 +1246,26 @@ class UnifiedFileAttachmentManager {
     this.state.isDestroyed = true;
     this.operationLock = false;
 
-    // Cerrar cámara
     this.closeCamera();
 
-    // Remover listeners específicos de drag & drop
     this.removeDragDropListeners();
 
-    // Limpiar todos los event listeners
     this.eventManager.cleanup();
 
-    // Desconectar observadores
     if (this.previewObserver) {
       this.previewObserver.disconnect();
       this.previewObserver = null;
     }
 
-    // Limpiar estado
     this.state.files.clear();
     this.state.processingQueue.clear();
     this.state.nextId = 1;
 
-    // Limpiar DOM
     const previewContainer = this.getDOMElements().filePreviewContainer;
     if (previewContainer) {
       previewContainer.innerHTML = '';
     }
 
-    // Limpiar clases visuales
     const elements = this.getDOMElements();
     if (elements.fileUploadContainer) {
       elements.fileUploadContainer.classList.remove('active', 'dragging');
@@ -1373,7 +1319,6 @@ export function initFileAttachments() {
   fileAttachmentManager = new UnifiedFileAttachmentManager('chat');
   fileAttachmentManager.initialize();
 
-  // Recibir archivos transferidos desde welcome si los hay
   setTimeout(() => {
     fileAttachmentManager.receiveTransferredFiles();
   }, 100);
@@ -1499,7 +1444,6 @@ function setupEmergencyDragCleanup() {
   if (window._dragCleanupSetup) return;
   window._dragCleanupSetup = true;
 
-  // Función para limpiar todas las áreas de drag
   const cleanupDragAreas = () => {
     const areas = document.querySelectorAll('#drag-drop-area, .file-upload-container');
     areas.forEach(area => {
@@ -1532,7 +1476,6 @@ function setupEmergencyDragCleanup() {
   console.log('✅ Limpieza de emergencia para drag-drop configurada');
 }
 
-// Ejecutar la configuración cuando se cargue el módulo
 if (typeof window !== 'undefined') {
   setupEmergencyDragCleanup();
 }
@@ -1577,7 +1520,6 @@ if (typeof window !== 'undefined') {
 
     console.log(`🌍 handleDroppedFiles global: ${files.length} archivos`);
 
-    // Determinar contexto
     const isWelcome = document.querySelector('.welcome-message') !== null;
 
     let promise;
@@ -1599,7 +1541,6 @@ if (typeof window !== 'undefined') {
         window._acadel_drop_processing = false;
       });
     } else {
-      // Fallback si no es una Promise
       setTimeout(() => {
         window._acadel_drop_processing = false;
       }, 1000);

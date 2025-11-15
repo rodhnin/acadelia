@@ -220,7 +220,6 @@ class ConfettiSystem {
   }
   
   createCanvas(notification) {
-    // Crear canvas si no existe
     if (!this.canvas) {
       this.canvas = document.createElement('canvas');
       this.canvas.className = 'acadel-confetti-canvas';
@@ -235,7 +234,6 @@ class ConfettiSystem {
       this.canvas.style.borderRadius = '16px';
       this.canvas.style.overflow = 'hidden';
       
-      // Agregar al container de notificaciones
       const container = document.querySelector('.acadel-notifications-container');
       if (container) {
         container.appendChild(this.canvas);
@@ -258,15 +256,12 @@ class ConfettiSystem {
     
     this.createCanvas();
     
-    // Obtener posición de la notificación
     const rect = notification.getBoundingClientRect();
     const containerRect = document.querySelector('.acadel-notifications-container').getBoundingClientRect();
     
-    // Calcular posición relativa al contenedor
     const startX = rect.left - containerRect.left + rect.width / 2;
     const startY = rect.top - containerRect.top + rect.height;
     
-    // Crear partículas desde el bottom center de la notificación
     const particleCount = 25 + Math.random() * 15;
     
     for (let i = 0; i < particleCount; i++) {
@@ -276,7 +271,6 @@ class ConfettiSystem {
       this.particles.push(particle);
     }
     
-    // Iniciar animación si no está activa
     if (!this.isActive) {
       this.isActive = true;
       this.animate();
@@ -286,10 +280,8 @@ class ConfettiSystem {
   animate() {
     if (!this.ctx) return;
     
-    // Limpiar canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    // Actualizar y renderizar partículas
     this.particles = this.particles.filter(particle => {
       const alive = particle.update();
       if (alive) {
@@ -298,7 +290,6 @@ class ConfettiSystem {
       return alive;
     });
     
-    // Continuar animación si hay partículas
     if (this.particles.length > 0) {
       this.animationId = requestAnimationFrame(() => this.animate());
     } else {
@@ -313,7 +304,6 @@ class ConfettiSystem {
       this.animationId = null;
     }
     
-    // Limpiar canvas
     if (this.ctx) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
@@ -349,7 +339,6 @@ class AcadelNotificationManager {
   }
   
   init() {
-    // Crear contenedor si no existe
     if (!document.querySelector('.acadel-notifications-container')) {
       this.container = document.createElement('div');
       this.container.className = 'acadel-notifications-container';
@@ -380,14 +369,12 @@ class AcadelNotificationManager {
 mostrar(tipo, titulo = null, mensaje = null, duracion = 2500, opciones = {}) {
   const id = ++this.currentId;
   
-  // Obtener frase aleatoria si no se proporciona
   if (!titulo || !mensaje) {
     const frases = this.obtenerFraseAleatoria(tipo);
     titulo = titulo || frases.titulo;
     mensaje = mensaje || frases.mensaje;
   }
   
-  // Crear key único para detectar duplicados
   const duplicateKey = this.crearClaveUnica(tipo, titulo, mensaje);
   
   // Si ya existe una notificación idéntica, actualizarla en lugar de crear nueva
@@ -396,7 +383,6 @@ mostrar(tipo, titulo = null, mensaje = null, duracion = 2500, opciones = {}) {
     const existingElement = this.notifications.get(existingId);
     
     if (existingElement && !existingElement.classList.contains('hide')) {
-      // Actualizar la notificación existente
       this.actualizarNotificacion(existingId, titulo, mensaje, duracion);
       return existingId;
     } else {
@@ -416,7 +402,6 @@ mostrar(tipo, titulo = null, mensaje = null, duracion = 2500, opciones = {}) {
     ...opciones
   };
   
-  // Registrar en el mapa de duplicados
   this.duplicateMap.set(duplicateKey, id);
   
   // Si hay muchas notificaciones visibles, agregar a la cola
@@ -431,7 +416,6 @@ mostrar(tipo, titulo = null, mensaje = null, duracion = 2500, opciones = {}) {
 
 // ====== CREAR CLAVE ÚNICA PARA DETECTAR DUPLICADOS ======
 crearClaveUnica(tipo, titulo, mensaje) {
-  // Normalizar texto para comparación más efectiva
   const tituloNorm = (titulo || '').toLowerCase().trim();
   const mensajeNorm = (mensaje || '').toLowerCase().trim();
   return `${tipo}:${tituloNorm}:${mensajeNorm}`;
@@ -442,7 +426,6 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
   const elemento = this.notifications.get(id);
   if (!elemento) return;
   
-  // Actualizar contenido
   const tituloEl = elemento.querySelector('.acadel-titulo');
   const mensajeEl = elemento.querySelector('.acadel-mensaje');
   const progressEl = elemento.querySelector('.acadel-progress');
@@ -458,16 +441,13 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
     progressEl.style.animation = 'acadel-progress-animation var(--duration) linear forwards';
   }
   
-  // Agregar efecto visual de actualización
   elemento.classList.add('updated');
   setTimeout(() => elemento.classList.remove('updated'), 300);
   
-  // Limpiar timeout anterior si existe
   if (elemento.autoCloseTimeout) {
     clearTimeout(elemento.autoCloseTimeout);
   }
   
-  // Configurar nuevo auto-close si tiene duración
   if (duracion > 0) {
     elemento.autoCloseTimeout = setTimeout(() => {
       this.cerrar(id);
@@ -508,14 +488,11 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
       ${notificacion.duracion > 0 ? `<div class="acadel-progress" style="--duration: ${notificacion.duracion}ms;"></div>` : ''}
     `;
     
-    // Agregar al contenedor
     this.container.appendChild(elemento);
     this.notifications.set(notificacion.id, elemento);
     
-    // Gestionar stacking
     this.gestionarStack();
     
-    // Mostrar con animación
     requestAnimationFrame(() => {
       elemento.classList.add('show');
       
@@ -527,7 +504,6 @@ actualizarNotificacion(id, titulo, mensaje, duracion) {
       }
     });
     
-// Almacenar información adicional en el elemento
 elemento.duplicateKey = notificacion.duplicateKey;
 elemento.autoCloseTimeout = null;
 
@@ -537,7 +513,6 @@ if (notificacion.duracion > 0) {
     this.cerrar(notificacion.id);
   }, notificacion.duracion);
 }
-    // Agregar eventos adicionales
     this.agregarEventos(elemento, notificacion);
   }
   
@@ -579,33 +554,27 @@ cerrar(id) {
   const elemento = this.notifications.get(id);
   if (!elemento) return;
   
-  // Limpiar timeout si existe
   if (elemento.autoCloseTimeout) {
     clearTimeout(elemento.autoCloseTimeout);
     elemento.autoCloseTimeout = null;
   }
   
-  // Limpiar del mapa de duplicados
   if (elemento.duplicateKey) {
     this.duplicateMap.delete(elemento.duplicateKey);
   }
   
-  // Agregar clase de ocultamiento
   elemento.classList.add('hide');
   
-  // Actualizar el stack inmediatamente
   setTimeout(() => {
     this.gestionarStack();
   }, 50);
   
-  // Eliminar del DOM después de la animación
   setTimeout(() => {
     if (elemento.parentNode) {
       elemento.parentNode.removeChild(elemento);
     }
     this.notifications.delete(id);
     
-    // Actualizar stack nuevamente después de eliminar
     this.gestionarStack();
     this.procesarCola();
   }, 300);
@@ -636,7 +605,6 @@ cerrar(id) {
   
   // ====== AGREGAR EVENTOS ======
   agregarEventos(elemento, notificacion) {
-    // Pausar auto-close en hover
     if (notificacion.duracion > 0) {
       const progressBar = elemento.querySelector('.acadel-progress');
       

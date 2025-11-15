@@ -2,7 +2,6 @@ import { getState } from '../core/state-pdf.js';
 import { validateUUID } from '../../../shared/validators.js';
 import { sanitizeText } from '../../../shared/dom-helpers.js';
 
-// 📄 IMPORTAR FUNCIONES DEL SISTEMA UNIFICADO DE ARCHIVOS
 import { 
   initWelcomeFileAttachments,
   hasWelcomeAttachedFiles,
@@ -10,7 +9,6 @@ import {
   cleanupWelcomeAttachments 
 } from '../utils/file-attachments-pdf.js';
 
-// 📄 IMPORTAR FUNCIONES DE VALIDACIÓN DESDE SHARED
 import {
   validateContentLimits,
   validateFileCountLimit 
@@ -91,12 +89,10 @@ export async function showWelcomeMessage() {
     void fixedSpace.offsetHeight;
   }
 
-  // Verificar si estamos en una ruta con ID de chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[2];
 
   if (chatId && validateUUID(chatId)) {
-    // Restaurar visibilidad del textarea original ya que no mostraremos bienvenida
     if (fixedSpace) {
       applyStyles(fixedSpace, {
         opacity: null,
@@ -108,10 +104,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Obtener nombre del usuario
   const userName = await getUserName();
 
-  // Obtener referencias a elementos existentes
   const chatMessages = document.querySelector('.chat-messages');
 
   if (!chatMessages) {
@@ -124,10 +118,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Limpiar cualquier mensaje de bienvenida previo
   chatMessages.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container').forEach(el => el.remove());
 
-  // Crear mensaje de bienvenida
   const welcomeDiv = document.createElement('div');
   welcomeDiv.className = 'welcome-message';
   welcomeDiv.innerHTML = `
@@ -142,7 +134,6 @@ export async function showWelcomeMessage() {
   </div>
 `;
 
-  // Crear contenedor de input para nuevo chat
   const welcomeInputContainer = document.createElement('div');
   welcomeInputContainer.className = 'centered-input-container welcome-input-container';
   welcomeInputContainer.innerHTML = `
@@ -210,7 +201,6 @@ export async function showWelcomeMessage() {
     </div>
   `;
 
-  // Crear contenedor de sugerencias
   const suggestionsDiv = document.createElement('div');
   suggestionsDiv.className = 'suggestions-container';
 
@@ -235,7 +225,6 @@ const suggestions = [
         welcomeTextarea.value = suggestion.text;
         welcomeTextarea.focus();
 
-        // Disparar evento input para que se ajuste el tamaño
         welcomeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
@@ -243,24 +232,19 @@ const suggestions = [
     suggestionsDiv.appendChild(suggestionBtn);
   });
 
-  // Añadir elementos al DOM
   chatMessages.appendChild(welcomeDiv);
   chatMessages.appendChild(welcomeInputContainer);
   chatMessages.appendChild(suggestionsDiv);
 
-  // 📄 INICIALIZAR SISTEMA UNIFICADO DE ARCHIVOS PARA WELCOME
   console.log('📄 Inicializando sistema de archivos unificado para Welcome...');
   
-  // Limpiar sistema anterior si existe
   if (window.welcomeFiles) {
     window.welcomeFiles.clear();
     delete window.welcomeFiles;
   }
   
-  // Inicializar el sistema unificado
   await initWelcomeFileAttachments();
 
-  // Inicializar limitador de caracteres para el textarea de bienvenida
   const welcomeTextareaInit = document.getElementById('welcome-message-input');
   if (welcomeTextareaInit) {
     try {
@@ -273,14 +257,12 @@ const suggestions = [
     }
   }
 
-  // Configurar funcionalidades inmediatamente (sin setTimeout)
   try {
     // 1. Configurar el botón de adjuntos
     const welcomeAttachBtn = document.getElementById('welcome-attach-btn');
     const attachmentOptions = document.getElementById('welcome-attachment-options');
 
     if (welcomeAttachBtn && attachmentOptions) {
-      // Configurar de manera directa para evitar problemas de event bubbling
       welcomeAttachBtn.onclick = function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -289,7 +271,6 @@ const suggestions = [
         attachmentOptions.classList.toggle('show');
       };
 
-      // Cerrar al hacer clic fuera
       document.addEventListener('click', function (event) {
         if (attachmentOptions.classList.contains('show') &&
           !welcomeAttachBtn.contains(event.target) &&
@@ -299,12 +280,10 @@ const suggestions = [
       });
     }
 
-    // 📄 CONFIGURAR DRAG & DROP ESPECÍFICO PARA WELCOME (PARA COMPATIBILIDAD)
     const welcomeFileUploadContainer = document.getElementById('welcome-file-upload-container');
     const welcomeDragDropArea = document.getElementById('welcome-drag-drop-area');
 
     if (welcomeFileUploadContainer && welcomeDragDropArea) {
-      // Función específica para manejar archivos en welcome con validación previa
       const handleWelcomeDroppedFiles = async (files) => {
         console.log('🏠 handleWelcomeDroppedFiles - Procesando en bienvenida:', files.length, 'archivos');
 
@@ -314,7 +293,6 @@ const suggestions = [
           let processedCount = 0;
           let errorCount = 0;
 
-          // Validar límite total de archivos
           const currentFiles = document.querySelectorAll('#welcome-file-preview-container .file-preview[data-file-id]').length;
           const totalFiles = currentFiles + files.length;
           
@@ -322,10 +300,8 @@ const suggestions = [
             return;
           }
 
-          // Procesar cada archivo con validación previa
           for (const file of files) {
             try {
-              // Validación de tipo usando el sistema unificado
               const typeValidation = validateFileType(file);
               if (!typeValidation.valid) {
                 acadelError(
@@ -336,7 +312,6 @@ const suggestions = [
                 continue;
               }
 
-              // *** VALIDACIÓN DE CONTENIDO ESPECÍFICA PARA WELCOME ***
               if (typeValidation.detectedType === 'document' || typeValidation.detectedType === 'code') {
                 let contentToValidate = '';
 
@@ -346,7 +321,6 @@ const suggestions = [
                     const { extractTextFromFile } = await import('../../../shared/file-handler.js');
                     contentToValidate = await extractTextFromFile(file);
                   } else {
-                    // Para TXT, leer directamente
                     contentToValidate = await new Promise((resolve, reject) => {
                       const reader = new FileReader();
                       reader.onload = (e) => resolve(e.target.result);
@@ -364,7 +338,6 @@ const suggestions = [
                   });
                 }
 
-                // Validar límites de contenido
                 console.log('🔍 Validando contenido en welcome');
                 const validation = validateContentLimits(contentToValidate, file.name);
 
@@ -380,7 +353,6 @@ const suggestions = [
               }
 
               // Si llegamos aquí, el archivo pasó todas las validaciones específicas
-              // Crear un objeto File (puede ser el mismo) y enviarlo al sistema unificado
               const validFile = file;
               
               // El sistema unificado se encargará del resto del procesamiento
@@ -401,7 +373,6 @@ const suggestions = [
           // Los archivos válidos se procesarán por el sistema unificado
           // Solo llamamos al sistema unificado si hay archivos válidos
           if (processedCount > 0) {
-            // Filtrar solo archivos válidos para enviar al sistema unificado
             const validFiles = [];
             let validIndex = 0;
             
@@ -418,13 +389,11 @@ const suggestions = [
               }
             }
 
-            // Llamar al sistema unificado con archivos ya validados
             if (window.handleDroppedFiles && validFiles.length > 0) {
               await window.handleDroppedFiles(validFiles);
             }
           }
 
-          // Mostrar resultado final
           if (processedCount > 0 && errorCount === 0) {
             console.log(`🎉 Welcome procesó ${processedCount} archivos exitosamente`);
           } else if (processedCount > 0 && errorCount > 0) {
@@ -441,13 +410,10 @@ const suggestions = [
             "Acadel tuvo un problema técnico procesando los archivos. ¿Podrías intentar de nuevo?"
           );
         } finally {
-          // Limpiar estados visuales
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
         }
       };
 
-      // Configurar eventos de drag & drop específicos para welcome
-      // Mostrar al iniciar arrastre
       document.addEventListener('dragenter', (e) => {
         e.preventDefault();
         // Solo si hay archivos y estamos en bienvenida
@@ -480,14 +446,12 @@ const suggestions = [
         }
       });
 
-      // Ocultar contenedor al finalizar el arrastre
       document.addEventListener('dragend', () => {
         if (document.querySelector('.welcome-message')) {
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
         }
       });
 
-      // Detectar cuando el arrastre abandona completamente el documento
       document.addEventListener('dragleave', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
@@ -498,7 +462,6 @@ const suggestions = [
         }
       });
 
-      // Detectar cuando se presiona la tecla Escape
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.querySelector('.welcome-message') &&
           welcomeFileUploadContainer.classList.contains('active')) {
@@ -506,7 +469,6 @@ const suggestions = [
         }
       });
 
-      // Detectar clics fuera del área de drop para ocultar el contenedor
       document.addEventListener('click', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
@@ -516,7 +478,6 @@ const suggestions = [
         }
       });
 
-      // Fallback: temporizador para abandonar arrastre
       let welcomeDragTimer;
       document.addEventListener('dragenter', () => {
         if (!document.querySelector('.welcome-message')) return;
@@ -533,7 +494,6 @@ const suggestions = [
         }, 2000); // 2 segundos sin eventos de arrastre = abandonado
       });
 
-      // 📄 PROCESAR ARCHIVOS SOLTADOS CON LÓGICA ESPECÍFICA DE WELCOME
       welcomeFileUploadContainer.addEventListener('drop', async (e) => {
         e.preventDefault();
         console.log('🏠 Welcome drop detectado con', e.dataTransfer.files.length, 'archivos');
@@ -548,13 +508,11 @@ const suggestions = [
     const welcomeTextarea = document.getElementById('welcome-message-input');
     if (welcomeTextarea) {
       function autoResizeTextarea() {
-        // Guardar la posición de scroll actual y la posición del cursor
         const scrollPos = window.scrollY;
 
         welcomeTextarea.style.height = 'auto';
         welcomeTextarea.style.height = (welcomeTextarea.scrollHeight) + 'px';
 
-        // Restaurar la posición de scroll para evitar saltos
         window.scrollTo(0, scrollPos);
       }
 
@@ -563,14 +521,11 @@ const suggestions = [
       welcomeTextarea.focus();
     }
 
-    // 3. 📄 CONFIGURAR BOTÓN DE ENVÍO CON SISTEMA UNIFICADO
     const welcomeSendBtn = document.getElementById('welcome-send-btn');
     if (welcomeSendBtn && welcomeTextarea) {
-      // Función principal para transferir y enviar mensaje - VERSIÓN SIMPLIFICADA CON SISTEMA UNIFICADO
       const transferAndSendMessage = async () => {
         const messageText = welcomeTextarea.value.trim();
 
-        // Verificar límite de caracteres
         let exceedsCharLimit = false;
         try {
           const charLimitModule = await import('../../../shared/character-limit.js');
@@ -587,10 +542,8 @@ const suggestions = [
         // Si excede el límite, detener ejecución
         if (exceedsCharLimit) return;
 
-        // 📄 USAR SISTEMA UNIFICADO PARA VALIDAR ARCHIVOS
         const hasFiles = hasWelcomeAttachedFiles();
         
-        // Validación original
         if (!messageText && !hasFiles) return;
 
         // 1. Transferir mensaje al textarea principal
@@ -598,7 +551,6 @@ const suggestions = [
         if (mainTextarea) {
           mainTextarea.value = messageText;
 
-          // 2. 📄 TRANSFERIR ARCHIVOS USANDO SISTEMA UNIFICADO
           if (hasFiles) {
             try {
               console.log('🚀 Transfiriendo archivos usando sistema unificado...');
@@ -612,7 +564,6 @@ const suggestions = [
           // MODIFICACIÓN CLAVE: Restaurar visibilidad del textarea original
           const fixedSpace = document.querySelector('.fixed-space');
           if (fixedSpace) {
-            // Restaurar completamente todas las propiedades CSS
             fixedSpace.style.removeProperty('opacity');
             fixedSpace.style.removeProperty('display');
             fixedSpace.style.removeProperty('pointer-events');
@@ -623,18 +574,15 @@ const suggestions = [
             void fixedSpace.offsetHeight;
           }
 
-          // Restaurar visibilidad de botones
           const sendButton = document.querySelector('.input-box button:nth-child(2)');
           if (sendButton) sendButton.style.pointerEvents = 'auto';
 
-          // Esperar un instante para que la UI se actualice
           setTimeout(async () => {
             // 4. Eliminar elementos de bienvenida
             if (welcomeDiv && welcomeDiv.parentNode) welcomeDiv.remove();
             if (welcomeInputContainer && welcomeInputContainer.parentNode) welcomeInputContainer.remove();
             if (suggestionsDiv && suggestionsDiv.parentNode) suggestionsDiv.remove();
 
-            // 📄 LIMPIAR SISTEMA UNIFICADO DE WELCOME
             cleanupWelcomeAttachments();
 
             // ⭐ NOTIFICACIÓN PDF:
@@ -709,7 +657,6 @@ const suggestions = [
         }
       };
 
-      // Configurar eventos con funciones explícitas (no usar referencias directas)
       welcomeSendBtn.addEventListener('click', function (e) {
         e.preventDefault();
         transferAndSendMessage();
@@ -733,7 +680,6 @@ const suggestions = [
     }
   });
 
-  // Ocultar cualquier alerta de límite que pueda estar visible
   try {
     const { hideLimitAlert } = await import('../../../shared/character-limit.js');
     if (typeof hideLimitAlert === 'function') {
@@ -750,16 +696,13 @@ const suggestions = [
  */
 async function getUserName() {
   try {
-    // Obtener userId del estado global
     const userId = getState('userId');
 
     if (!userId) {
       return 'usuario';
     }
 
-    // Intentar obtener el perfil del usuario usando fetchUserProfile
     try {
-      // Importar dinámicamente el módulo auth para acceder a fetchUserProfile
       const authModule = await import('../api/auth-pdf.js');
       const profile = await authModule.fetchUserProfile(userId);
 
@@ -773,12 +716,10 @@ async function getUserName() {
       }
     } catch (profileError) {
       console.warn('Error al obtener perfil para nombre:', profileError);
-      // Continuar con el método de respaldo si falla obtener el perfil
     }
 
     // Respaldo: Si falla obtener el perfil o no tiene nombre, formatear el userId
     if (typeof userId === 'string' && userId.includes('@')) {
-      // Permitir solo caracteres alfanuméricos para máxima seguridad
       const namePart = userId.split('@')[0].replace(/[^a-z0-9._-]/gi, '');
       return namePart
         .replace(/[._-]/g, ' ')
@@ -800,13 +741,11 @@ async function getUserName() {
 export function sanitizeBase64(base64) {
   if (!base64 || typeof base64 !== 'string') return '';
 
-  // Verificar si es un data URL válido
   if (base64.startsWith('data:')) {
     const validPattern = /^data:(image\/[a-z]+);base64,[a-zA-Z0-9+/=]+$/;
     return validPattern.test(base64) ? base64 : '';
   }
 
-  // Verificar si es base64 crudo
   const validBase64 = /^[a-zA-Z0-9+/=]+$/;
   return validBase64.test(base64) ? base64 : '';
 }

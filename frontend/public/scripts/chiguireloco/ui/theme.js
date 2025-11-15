@@ -19,26 +19,20 @@ const theme = {
      * Inicializa el tema
      */
     init() {
-        // Recuperar tema de localStorage o usar claro por defecto
         this.currentTheme = localStorage.getItem(this.storageKey) || 'light';
         
-        // Aplicar tema inicial
         this.applyTheme(this.currentTheme);
         
-        // Configurar listener para cambio de tema
         const themeToggle = document.getElementById('theme-toggle');
         const themeLabel = document.getElementById('theme-label');
         
         if (themeToggle) {
-            // Establecer estado inicial del toggle
             themeToggle.checked = this.currentTheme === 'dark';
             
-            // Actualizar etiqueta de tema
             if (themeLabel) {
                 themeLabel.textContent = this.currentTheme === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
             }
             
-            // Escuchar cambios en el toggle
             themeToggle.addEventListener('change', (e) => {
                 const newTheme = e.target.checked ? 'dark' : 'light';
                 this.setTheme(newTheme);
@@ -54,16 +48,13 @@ const theme = {
         this.currentTheme = themeName;
         this.applyTheme(themeName);
         
-        // Guardar en localStorage
         localStorage.setItem(this.storageKey, themeName);
         
-        // Actualizar etiqueta de tema
         const themeLabel = document.getElementById('theme-label');
         if (themeLabel) {
             themeLabel.textContent = themeName === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
         }
         
-        // Disparar evento para que otros módulos puedan reaccionar al cambio
         window.dispatchEvent(new CustomEvent('themechange', {
             detail: { theme: themeName }
         }));

@@ -3,7 +3,6 @@ import pool from "../../lib/dbPool.js";
 const createCarrera = async ({ nombre, descripcion, month, year, imagen }) => {
   if (!nombre) throw new Error("El nombre de la carrera es obligatorio");
 
-  // Verificar si ya existe una carrera con este nombre
   const checkQuery = "SELECT id_carrera FROM carrera WHERE nombre = $1";
   const checkResult = await pool.query(checkQuery, [nombre]);
   
@@ -11,7 +10,6 @@ const createCarrera = async ({ nombre, descripcion, month, year, imagen }) => {
     throw new Error("Ya existe una carrera con este nombre");
   }
 
-  // Obtener el siguiente ID disponible
   const nextIdQuery = "SELECT COALESCE(MAX(id_carrera), 0) + 1 AS next_id FROM carrera";
   const nextIdResult = await pool.query(nextIdQuery);
   const nextId = nextIdResult.rows[0].next_id;

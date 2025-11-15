@@ -1,4 +1,3 @@
-// backend/routes/chat/documentRoutes.js
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -28,7 +27,6 @@ router.get('/:fileId/info', authenticateUser, async (req, res) => {
     const { fileId } = req.params;
     const userId = req.user.id_user;
     
-    // Validar UUID
     if (!isValidUUID(fileId)) {
       return res.status(400).json({
         success: false,
@@ -39,7 +37,6 @@ router.get('/:fileId/info', authenticateUser, async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener información del archivo y verificar que pertenece al usuario
       const query = `
         SELECT fa.*, u.id_user
         FROM file_attachments fa
@@ -58,13 +55,11 @@ router.get('/:fileId/info', authenticateUser, async (req, res) => {
       
       const fileInfo = result.rows[0];
       
-      // Actualizar accessed_at
       await client.query(
         'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
         [fileId]
       );
       
-      // Log de acceso
       logSecurityEvent('DOCUMENT_ACCESS', 'Acceso a información de documento', {
         userId,
         fileId,
@@ -73,7 +68,6 @@ router.get('/:fileId/info', authenticateUser, async (req, res) => {
         ip: req.ip
       }, 'low');
       
-      // Devolver información del archivo (sin contenido completo por seguridad)
       res.json({
         success: true,
         file: {
@@ -124,7 +118,6 @@ router.get('/:fileId/content', authenticateUser, async (req, res) => {
     const { fileId } = req.params;
     const userId = req.user.id_user;
     
-    // Validar UUID
     if (!isValidUUID(fileId)) {
       return res.status(400).json({
         success: false,
@@ -135,7 +128,6 @@ router.get('/:fileId/content', authenticateUser, async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener el archivo y verificar permisos
       const query = `
         SELECT fa.*, u.id_user
         FROM file_attachments fa
@@ -154,13 +146,11 @@ router.get('/:fileId/content', authenticateUser, async (req, res) => {
       
       const fileInfo = result.rows[0];
       
-      // Actualizar accessed_at
       await client.query(
         'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
         [fileId]
       );
       
-      // Log de acceso al contenido
       logSecurityEvent('DOCUMENT_CONTENT_ACCESS', 'Acceso a contenido de documento', {
         userId,
         fileId,
@@ -169,7 +159,6 @@ router.get('/:fileId/content', authenticateUser, async (req, res) => {
         ip: req.ip
       }, 'low');
       
-      // Devolver contenido
       res.json({
         success: true,
         file: {
@@ -212,7 +201,6 @@ router.get('/:fileId/download', authenticateUser, async (req, res) => {
     const { fileId } = req.params;
     const userId = req.user.id_user;
     
-    // Validar UUID
     if (!isValidUUID(fileId)) {
       return res.status(400).json({
         success: false,
@@ -223,7 +211,6 @@ router.get('/:fileId/download', authenticateUser, async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener información del archivo y verificar permisos
       const query = `
         SELECT fa.*, u.id_user
         FROM file_attachments fa
@@ -242,10 +229,8 @@ router.get('/:fileId/download', authenticateUser, async (req, res) => {
       
       const fileInfo = result.rows[0];
       
-      // Construir ruta completa del archivo
       const fullPath = path.join(process.cwd(), fileInfo.file_path.replace(/^\//, ''));
       
-      // Verificar que el archivo existe físicamente
       if (!fs.existsSync(fullPath)) {
         return res.status(404).json({
           success: false,
@@ -253,13 +238,11 @@ router.get('/:fileId/download', authenticateUser, async (req, res) => {
         });
       }
       
-      // Actualizar accessed_at
       await client.query(
         'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
         [fileId]
       );
       
-      // Log de descarga
       logSecurityEvent('DOCUMENT_DOWNLOAD', 'Descarga de documento', {
         userId,
         fileId,
@@ -269,12 +252,10 @@ router.get('/:fileId/download', authenticateUser, async (req, res) => {
         ip: req.ip
       }, 'low');
       
-      // Configurar headers para descarga
       res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(fileInfo.original_name)}"`);
       res.setHeader('Content-Type', fileInfo.mime_type || 'application/octet-stream');
       res.setHeader('Content-Length', fileInfo.file_size);
       
-      // Enviar archivo
       res.sendFile(fullPath);
       
     } finally {
@@ -307,7 +288,6 @@ router.get('/chat/:chatId', authenticateUser, async (req, res) => {
     const { chatId } = req.params;
     const userId = req.user.id_user;
     
-    // Validar UUID
     if (!isValidUUID(chatId)) {
       return res.status(400).json({
         success: false,
@@ -318,7 +298,6 @@ router.get('/chat/:chatId', authenticateUser, async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener archivos del chat que pertenecen al usuario
       const query = `
         SELECT fa.file_id, fa.original_name, fa.file_size, fa.mime_type, 
                fa.file_extension, fa.attachment_type, fa.language, 
@@ -360,7 +339,6 @@ router.delete('/:fileId', authenticateUser, async (req, res) => {
     const { fileId } = req.params;
     const userId = req.user.id_user;
     
-    // Validar UUID
     if (!isValidUUID(fileId)) {
       return res.status(400).json({
         success: false,
@@ -373,7 +351,6 @@ router.delete('/:fileId', authenticateUser, async (req, res) => {
     try {
       await client.query('BEGIN');
       
-      // Obtener información del archivo antes de eliminarlo
       const selectQuery = `
         SELECT fa.*, u.id_user
         FROM file_attachments fa
@@ -393,19 +370,16 @@ router.delete('/:fileId', authenticateUser, async (req, res) => {
       
       const fileInfo = selectResult.rows[0];
       
-      // Eliminar archivo físico
       const fullPath = path.join(process.cwd(), fileInfo.file_path.replace(/^\//, ''));
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath);
       }
       
-      // Eliminar registro de la base de datos
       const deleteQuery = 'DELETE FROM file_attachments WHERE file_id = $1 AND user_id = $2';
       await client.query(deleteQuery, [fileId, userId]);
       
       await client.query('COMMIT');
       
-      // Log de eliminación
       logSecurityEvent('DOCUMENT_DELETE', 'Eliminación de documento', {
         userId,
         fileId,
@@ -537,7 +511,6 @@ router.post('/retrieve-for-retry', authenticateUser, async (req, res) => {
         });
       }
       
-      // Convertir a formato compatible con frontend
       const documents = result.rows.map(doc => ({
         type: doc.attachment_type === 'code' ? "file" : "document",
         name: doc.original_name,
@@ -546,7 +519,6 @@ router.post('/retrieve-for-retry', authenticateUser, async (req, res) => {
         attachment_type: doc.attachment_type,
         language: doc.language,
         file_size: doc.file_size,
-        // Enviar contenido como base64
         content_base64: Buffer.from(doc.extracted_content).toString('base64'),
         fileId: doc.file_id,
         filePath: doc.file_path
@@ -660,7 +632,6 @@ router.post('/get-message-for-retry', authenticateUser, async (req, res) => {
       let values;
       
       if (userMessageId) {
-        // Buscar por ID específico - CORREGIDO: usar timestamp
         query = `
           SELECT id, message, is_multimodal, timestamp
           FROM chat_history 
@@ -670,7 +641,6 @@ router.post('/get-message-for-retry', authenticateUser, async (req, res) => {
         `;
         values = [chatId, userId, userMessageId];
       } else {
-        // Buscar el último mensaje multimodal del usuario en este chat - CORREGIDO: usar timestamp
         query = `
           SELECT id, message, is_multimodal, timestamp
           FROM chat_history 
@@ -698,14 +668,12 @@ router.post('/get-message-for-retry', authenticateUser, async (req, res) => {
         message_preview: messageRow.message.substring(0, 100) + '...'
       });
       
-      // Parsear el mensaje JSON
 let messageData;
 try {
   let rawMessage = messageRow.message;
   
   console.log('🔍 Raw message from DB:', rawMessage.substring(0, 200) + '...');
   
-  // *** NUEVO: Decodificar HTML entities PRIMERO ***
   if (rawMessage.includes('&quot;') || rawMessage.includes('&amp;') || rawMessage.includes('&lt;') || rawMessage.includes('&gt;')) {
     rawMessage = rawMessage
       .replace(/&quot;/g, '"')
@@ -723,13 +691,11 @@ try {
     console.log('📝 Removed triple quotes');
   }
   
-  // Reemplazar escapes dobles por escapes simples
   if (rawMessage.includes('\\"')) {
     rawMessage = rawMessage.replace(/\\"/g, '"');
     console.log('📝 Fixed double escapes');
   }
   
-  // *** CRÍTICO: Quitar comillas externas si el mensaje es un STRING de JSON ***
   if (rawMessage.startsWith('"') && rawMessage.endsWith('"')) {
     rawMessage = rawMessage.slice(1, -1);
     console.log('📝 Removed outer quotes - message was a JSON string');
@@ -739,7 +705,6 @@ try {
   
   messageData = JSON.parse(rawMessage);
   
-  // *** NUEVO: Validar que el parsing fue exitoso ***
   console.log('✅ Parsed messageData properties:', {
     hasText: !!messageData.text,
     hasImage: messageData.hasImage,
@@ -759,7 +724,6 @@ try {
   });
 }
       
-      // *** CORREGIDO: Acceder a las propiedades correctas ***
       console.log(`✅ Mensaje multimodal encontrado:`, {
         id: messageRow.id,
         hasDocuments: messageData.hasDocuments,           // CORRECTO
@@ -771,7 +735,6 @@ try {
         images_length: messageData.images?.length || 0
       });
       
-      // Verificar que realmente es multimodal
       if (!messageData.hasImage && !messageData.hasDocuments) {
         console.log('⚠️ Mensaje encontrado pero no es multimodal según su contenido');
         return res.json({

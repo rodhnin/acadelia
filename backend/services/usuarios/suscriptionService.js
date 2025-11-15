@@ -16,7 +16,6 @@ export const getUserSubscriptions = async (userId) => {
         
         const result = await pool.query(query, [userId]);
         
-        // Procesar el estado de cada suscripción
         const subscriptions = result.rows.map(subscription => {
             return {
                 ...subscription,
@@ -33,7 +32,6 @@ export const getUserSubscriptions = async (userId) => {
     }
 };
 
-// Función auxiliar para obtener detalles del estado
 const getStatusDetails = (status) => {
     const statusMap = {
         'active': {
@@ -61,7 +59,6 @@ const getStatusDetails = (status) => {
     return statusMap[status] || statusMap.default;
 };
 
-// Obtener suscripciones por estado
 export const getSubscriptionsByStatus = async (userId, status) => {
     try {
         const query = `

@@ -6,7 +6,6 @@ import ffprobeInstaller from '@ffprobe-installer/ffprobe';
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
-// Log para verificar configuración (opcional)
 console.log('FFmpeg configurado con:', {
   ffmpegPath: ffmpegInstaller.path,
   ffprobePath: ffprobeInstaller.path,

@@ -24,7 +24,6 @@ const TITLE_MAX_LENGTH = 25;
 function truncateTitle(title) {
   if (!title) return '';
   
-  // Sanitizar el título para prevenir XSS
   const safeTitle = sanitizeText(title);
   
   return safeTitle.length > TITLE_MAX_LENGTH 
@@ -70,20 +69,17 @@ function processChats(chats) {
     };
   }
 
-  // Añadir el título truncado para mostrar en la UI
   const processedChats = chats.map(chat => ({
     ...chat,
     displayTitle: truncateTitle(chat.title)
   }));
   
-  // Ordenar por fecha (más recientes primero)
   processedChats.sort((a, b) => {
     const dateA = getMostRecentChatDate(a);
     const dateB = getMostRecentChatDate(b);
     return dateB - dateA;
   });
 
-  // Obtener fechas de referencia
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
@@ -109,7 +105,6 @@ function processChats(chats) {
   // Inicio de este año
   const thisYearStart = new Date(now.getFullYear(), 0, 1);
   
-  // Definir grupos
   const grouped = {
     today: [],
     yesterday: [],
@@ -125,7 +120,6 @@ function processChats(chats) {
   processedChats.forEach(chat => {
     const chatDate = getMostRecentChatDate(chat);
     
-    // Comprobar si el chat tiene una fecha válida
     if (isNaN(chatDate.getTime())) {
       grouped.today.push(chat);
       return;
@@ -177,14 +171,12 @@ export async function updateChatPosition(chatId) {
       throw new Error('ID de chat inválido');
     }
     
-    // Obtener todos los chats actualizados
     const chats = await loadChatHistory();
     
     if (!chats || !chats.allChats || chats.allChats.length === 0) {
       return false;
     }
     
-    // Buscar el chat actual y actualizar fecha
     const currentChat = chats.allChats.find(chat => chat.id === chatId);
     if (currentChat) {
       currentChat.last_message_date = new Date().toISOString();
@@ -197,14 +189,12 @@ export async function updateChatPosition(chatId) {
     // Mantener activo el chat actual
     const chatItem = document.querySelector(`[data-chat-id="${chatId}"]`);
     if (chatItem) {
-      // Usar las funciones de DOM helpers
       document.querySelectorAll('.sidebar-item').forEach(item => {
         removeClass(item, 'active');
       });
       addClass(chatItem, 'active');
     }
     
-    // Actualizar el encabezado
     updateHeaderForChat(chatId);
     
     return true;
@@ -237,24 +227,19 @@ export async function loadChatHistory() {
 
     let chats = await response.json();
     
-    // Limpiar chats problemáticos del sistema
     try {
       // Primero limpiar automáticamente los chats problemáticos
       chats = await cleanProblematicChats(chats);
       
       // NUEVO: Verificar chats problemáticos y actualizar el localStorage
-      // Importar la función de verificación de chats problemáticos
       const { isChatProblematic, problematicChatIds, saveProblematicChatsToStorage } = await import('../utils/chat-error-handler-matematico.js');
       
       if (typeof isChatProblematic === 'function') {
-        // Obtener lista de IDs de los chats recibidos del servidor
         const existingChatIds = new Set(chats.map(chat => chat.id));
         
-        // Verificar si hay chats en la lista de problemáticos que ya no existen en el servidor
         if (problematicChatIds && problematicChatIds.size > 0) {
           let chatsPurged = false;
           
-          // Filtrar los chats que están marcados como problemáticos pero ya no existen en el servidor
           for (const problemChatId of problematicChatIds) {
             if (!existingChatIds.has(problemChatId)) {
               console.log(`Eliminando chat ${problemChatId} de la lista de problemáticos porque ya no existe en el servidor`);
@@ -269,7 +254,6 @@ export async function loadChatHistory() {
           }
         }
         
-        // Filtrar chats problemáticos
         chats = chats.filter(chat => !isChatProblematic(chat.id));
       }
     } catch (cleanupError) {
@@ -277,10 +261,8 @@ export async function loadChatHistory() {
       console.warn('Error durante la limpieza de chats problemáticos:', cleanupError);
     }
     
-    // Procesar chats (truncar títulos y agrupar por tiempo)
     const processedData = processChats(chats);
     
-    // Guardar los chats en el estado
     processedData.allChats.forEach(chat => {
       registerChat(chat.id, chat);
     });
@@ -339,7 +321,6 @@ export async function createNewChat(query) {
     const userId = getState('userId');
     const avaId = getState('avaId');
     
-    // Sanitizar la consulta inicial para mayor seguridad
     const safeQuery = sanitizeText(query);
     
     const response = await fetch(API_ROUTES.createChat, {
@@ -360,10 +341,8 @@ export async function createNewChat(query) {
     
     const newChat = await response.json();
     
-    // Añadir el título truncado para la UI
     newChat.displayTitle = truncateTitle(newChat.title);
     
-    // Guardar el nuevo chat en el estado
     registerChat(newChat.id, newChat);
     
     return newChat;
@@ -388,7 +367,6 @@ export async function updateChatTitle(chatId, newTitle) {
       throw new Error('ID de chat inválido');
     }
     
-    // Sanitizar el nuevo título para mayor seguridad
     const safeTitle = sanitizeText(newTitle);
     
     const url = API_ROUTES.chatTitle(chatId);
@@ -407,7 +385,6 @@ export async function updateChatTitle(chatId, newTitle) {
     
     const result = await response.json();
     
-    // Actualizar en el estado con el título truncado para visualización
     const chat = getState(`chats.${chatId}`);
     if (chat) {
       chat.title = safeTitle;
@@ -467,7 +444,6 @@ export async function deleteChat(chatId, forceDelete = false) {
     
     // Métodos alternativos solo si forceDelete es true
     if (forceDelete) {
-      // Intentar con flags adicionales
       try {
         const response = await fetch(url, {
           method: 'DELETE',
@@ -483,7 +459,6 @@ export async function deleteChat(chatId, forceDelete = false) {
         if (response.ok) return true;
       } catch (alt1Error) {}
       
-      // Intentar actualizar primero para marcar como eliminado
       try {
         const updateUrl = API_ROUTES.chatUpdate 
           ? API_ROUTES.chatUpdate(chatId) 
@@ -537,7 +512,6 @@ async function cleanProblematicChats(chats) {
     return chats;
   }
 
-  // Importar funciones necesarias del módulo de manejo de errores
   try {
     const { isChatProblematic, removeProblematicChat } = await import('../utils/chat-error-handler-matematico.js');
     if (!isChatProblematic || !removeProblematicChat) {
@@ -555,7 +529,6 @@ async function cleanProblematicChats(chats) {
     
     console.log(`Se encontraron ${problematicChats.length} chats problemáticos para eliminar automáticamente`);
     
-    // Eliminar cada chat problemático
     const deletionPromises = problematicChats.map(chat => 
       removeProblematicChat(chat.id)
         .catch(error => {
@@ -564,10 +537,8 @@ async function cleanProblematicChats(chats) {
         })
     );
     
-    // Esperar a que se completen todas las eliminaciones
     await Promise.allSettled(deletionPromises);
     
-    // Retornar solo los chats no problemáticos
     return chats.filter(chat => !isChatProblematic(chat.id));
   } catch (error) {
     console.error('Error en la limpieza automática de chats problemáticos:', error);

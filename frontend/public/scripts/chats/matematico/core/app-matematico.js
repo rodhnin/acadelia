@@ -30,10 +30,8 @@ import { validateUUID } from '../../shared/validators.js';
 import { initializeState } from './state-matematico.js';
 import acadelEmojiIntegration, { enhanceAcadelMessageRenderer } from '../../shared/acadel-emoji-integration.js';
 
-// Exportar un evento personalizado para señalizar cuando la variante está inicializada
 export const VARIANT_INITIALIZED_EVENT = 'variantInitialized';
 
-// Crear un evento dispatcher para comunicar con otros módulos
 export const eventDispatcher = {
   dispatchVariantInitialized(variantData) {
     const event = new CustomEvent(VARIANT_INITIALIZED_EVENT, { detail: variantData });
@@ -79,18 +77,15 @@ function ensureVariantInitialization() {
   if (currentVariant && currentVariant.toLowerCase() === firstSegment.toLowerCase()) {
     console.log(`✓ Variante ya inicializada correctamente: ${currentVariant}`);
     
-    // Verificar avaId
     const config = getAppConfig();
     if (config && config.avaId) {
       console.log(`✓ avaId configurado: ${config.avaId}`);
       
-      // Verificar rutas API
       const routes = getApiRoutes();
       if (routes && routes.query && !routes.query.includes('undefined')) {
         console.log(`✓ Rutas API configuradas correctamente`);
         console.log(`✓ Ruta query: ${routes.query}`);
         
-        // Registrar estado de inicialización
         initState.variantInitialized = true;
         initState.variantData = {
           variantKey: getCurrentVariantKey(),
@@ -98,7 +93,6 @@ function ensureVariantInitialization() {
           avaId: config.avaId
         };
         
-        // Notificar a otros módulos
         eventDispatcher.dispatchVariantInitialized(initState.variantData);
         
         return true;
@@ -123,7 +117,6 @@ function ensureVariantInitialization() {
     return false;
   }
   
-  // Establecer variante directamente
   const success = setCurrentVariantFromUrl(firstSegment);
   
   if (success) {
@@ -131,15 +124,12 @@ function ensureVariantInitialization() {
     console.log(`✓ Variante actual: ${getCurrentVariant()}`);
     console.log(`✓ Clave de variante: ${getCurrentVariantKey()}`);
     
-    // Verificar configuración
     const config = getAppConfig();
     console.log(`✓ Configuración: avaId=${config?.avaId}`);
     
-    // Verificar rutas API
     const routes = getApiRoutes();
     console.log(`✓ Ruta query: ${routes?.query}`);
     
-    // Registrar estado de inicialización
     initState.variantInitialized = true;
     initState.variantData = {
       variantKey: getCurrentVariantKey(),
@@ -147,7 +137,6 @@ function ensureVariantInitialization() {
       avaId: config?.avaId
     };
     
-    // Notificar a otros módulos
     eventDispatcher.dispatchVariantInitialized(initState.variantData);
     
     return true;
@@ -157,7 +146,6 @@ function ensureVariantInitialization() {
   }
 }
 
-// Ejecutar inicialización sincrónica INMEDIATAMENTE (antes del DOMContentLoaded)
 const initResult = ensureVariantInitialization();
 console.log(`Resultado de inicialización sincrónica: ${initResult ? '✓ Éxito' : '❌ Fallo'}`);
 
@@ -188,7 +176,6 @@ function initScrollSystem() {
     }
   });
 
-  // Configurar detector de zoom
   if (typeof scrollManager.setupBrowserZoomHandler === 'function') {
     scrollManager.setupBrowserZoomHandler();
   }
@@ -233,14 +220,12 @@ function initScrollSystem() {
  * @param {string} mensaje - Mensaje del Profesor Acadel
  */
 function updateAcadelProgress(progress, mensaje = '') {
-  // Actualizar progreso visual del pizarrón
   import('../ui/ui-manager-matematico.js').then(uiModule => {
     if (typeof uiModule.updateAcadelLoaderProgress === 'function') {
       uiModule.updateAcadelLoaderProgress(progress);
     }
   });
   
-  // Log con personalidad del Profesor Acadel
   if (mensaje) {
     console.log(`🦫 Acadel [${progress}%]: ${mensaje}`);
   }
@@ -250,13 +235,11 @@ function updateAcadelProgress(progress, mensaje = '') {
  * Inicializa la aplicación de chat matemático con secuencia optimizada
  */
 async function initApp() {
-  // Verificar configuración inicial
   console.log("📋 Profesor Acadel iniciando pizarrón matemático:");
   console.log(`- Variante: ${getCurrentVariant()}`);
   console.log(`- avaId: ${getAppConfig()?.avaId}`);
   console.log(`- API: ${getApiRoutes()?.query}`);
   
-  // Inicializar Mermaid temprano
   const mermaidPromise = initMermaidSystem();
   
   // ⭐ APLICAR PIZARRÓN RESPONSIVO (sin skeleton que bloquee)
@@ -266,7 +249,6 @@ async function initApp() {
     }
   });
 
-  // Detectar estado de chat
   const pathSegments = window.location.pathname.split('/');
   const currentVariant = getCurrentVariant();
   const appConfig = getAppConfig();
@@ -276,7 +258,6 @@ async function initApp() {
     variantValues.includes(segment.toLowerCase())) + 1;
   const chatId = pathSegments[chatSegmentIndex];
 
-  // Configurar bienvenida si es necesario
   if (!chatId || !validateUUID(chatId)) {
     document.documentElement.classList.add('welcome-pending');
     const variantClass = currentVariant.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -331,7 +312,6 @@ async function initApp() {
     initPreviewPanel();
     initFileAttachments();
 
-    // Inicializar sistema de Emoji
     console.log('🎨 Acadel: Configurando sistema emoji académico...');
     try {
       await acadelEmojiIntegration.init();
@@ -341,7 +321,6 @@ async function initApp() {
       console.warn('⚠️ Sistema Acadel emoji no pudo inicializarse:', error);
     }
     
-    // Configurar Mermaid globalmente
     window.renderMermaidDiagram = async function(containerId, code) {
       const { initializeMermaidDiagram } = await import('../../shared/mermaid-utils.js');
       return initializeMermaidDiagram(containerId, code);
@@ -375,7 +354,6 @@ async function initApp() {
     setupMathObserver();
     await processAllChatMessages();
 
-    // Esperar MathJax con timeout optimizado
     await Promise.race([
       new Promise(resolve => setTimeout(resolve, 600)),
       new Promise(resolve => {
@@ -391,7 +369,6 @@ async function initApp() {
       })
     ]);
 
-    // Verificar Mermaid
     try {
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Timeout Mermaid')), 3000)
@@ -456,7 +433,6 @@ async function initApp() {
           if (typeof uiModule.removeAcadelInitialLoader === 'function') {
             uiModule.removeAcadelInitialLoader();
           } else if (typeof uiModule.removeInitialLoader === 'function') {
-            // Fallback para compatibilidad
             uiModule.removeInitialLoader();
           }
 
@@ -467,7 +443,6 @@ async function initApp() {
             );
 
           
-          // Limpiar estado de inicialización
           setManagedTimeout(() => {
             document.body.classList.remove('initializing');
             console.log('🦫 Profesor Acadel: ¡Pizarrón matemático completamente operativo y responsivo!');
@@ -486,7 +461,6 @@ async function initApp() {
       "Hasta los capibara más sabios a veces escriben mal en la pizarra. El Profesor Acadel sugiere recargar para limpiar el pizarrón y empezar con ecuaciones frescas y nuevas."
     );
 
-    // Limpiar pizarrón en caso de error
     import('../ui/ui-manager-matematico.js').then(uiModule => {
       if (typeof uiModule.removeAcadelInitialLoader === 'function') {
         uiModule.removeAcadelInitialLoader(true);

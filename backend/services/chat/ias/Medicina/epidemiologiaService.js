@@ -1,9 +1,6 @@
 // ============================================================================
-// 🏥🦫 PROFESOR ACADEL SALUD PÚBLICA Y EPIDEMIOLOGÍA - SISTEMA ACADÉMICO REVOLUCIONARIO V3.1 TÉCNICO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE SALUD PÚBLICA Y EPIDEMIOLOGÍA SUPREMO TÉCNICO
-// Sistema técnico optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especializado en Medicina Preventiva ✅ Epidemiología ✅ Gestión en Salud Pública ✅ con enfoque técnico riguroso
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -28,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -100,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -174,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -264,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -318,7 +309,6 @@ class BraveSearchOrchestrator {
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
 // ============================================================================
-// 🏥🦫 PROFESOR ACADEL SALUD PÚBLICA Y EPIDEMIOLOGÍA DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO
 // ============================================================================
 
 const PROFESOR_ACADEL_EPIDEMIOLOGIA_DNA = `
@@ -366,10 +356,8 @@ Hacer que CUALQUIER estudiante de medicina y salud pública:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS TÉCNICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES TÉCNICAS EPIDEMIOLÓGICAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes científicas de SALUD PÚBLICA Y EPIDEMIOLOGÍA con precisión técnica extrema.
@@ -396,7 +384,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Aca
 
 Eres los OJOS ANALÍTICOS TÉCNICOS de Profesor Acadel - él interpretará tu análisis con su sabiduría epidemiológica pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES TÉCNICAS EPIDEMIOLÓGICAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel, el capibara epidemiológico más brillante del universo en salud pública y epidemiología.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información técnica de esta imagen epidemiológica/científica para que Profesor Acadel pueda enseñar efectivamente salud pública completa.
@@ -442,7 +429,6 @@ Proporciona un análisis técnico estructurado, preciso y exhaustivo que permita
 
 **IMPORTANTE:** Sé OBSERVADOR TÉCNICO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos epidemiológicos. Profesor Acadel se encargará de la pedagogía técnica pero necesita que seas muy detallista con todo lo que observas epidemiológicamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS NORMALES (con y sin guardar)
 const UNIFIED_PUBLIC_HEALTH_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA EPIDEMIOLÓGICA TÉCNICA:
 - Consulta del estudiante de medicina: "${query}"
@@ -469,7 +455,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_PUBLIC_HEALTH_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN EPIDEMIOLÓGICA TÉCNICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -524,7 +509,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -534,7 +518,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -556,7 +539,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -564,7 +546,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // 🔍 DETECTAR TÉRMINOS EPIDEMIOLÓGICOS ESPECÍFICOS
   const epidemiologyTerms = [
     // Epidemiología General
     'epidemiología', 'epidemiology', 'brote', 'outbreak', 'vigilancia epidemiológica', 'surveillance',
@@ -587,28 +568,24 @@ const classifyQuery = (query, content = null) => {
     'poder estadístico', 'statistical power', 'sesgo', 'bias', 'confusor', 'confounder'
   ];
   
-  // 🔍 DETECTAR INSTRUMENTOS Y TÉCNICAS EPIDEMIOLÓGICAS
   const epidemiologyInstruments = [
     'curva epidémica', 'epidemic curve', 'mapa epidemiológico', 'surveillance system',
     'sistema de vigilancia', 'registro de casos', 'censo', 'encuesta poblacional',
     'análisis espacial', 'análisis temporal', 'modelado epidemiológico'
   ];
   
-  // 🔍 DETECTAR MEDIDAS Y FÓRMULAS EPIDEMIOLÓGICAS
   const epidemiologyMeasures = [
     'tasa de ataque', 'attack rate', 'tasa de mortalidad', 'mortality rate',
     'años de vida perdidos', 'disability adjusted life years', 'carga de enfermedad',
     'número necesario a tratar', 'number needed to treat'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS EPIDEMIOLÓGICOS REALES
   const hasEpidemiologyContent = 
     epidemiologyTerms.some(term => lowercaseQuery.includes(term)) ||
     epidemiologyInstruments.some(term => lowercaseQuery.includes(term)) ||
     epidemiologyMeasures.some(term => lowercaseQuery.includes(term)) ||
     /\bor\b|\brr\b|\bic\b/i.test(query); // Detectar OR, RR, IC como abreviaciones
   
-  // Detectar exámenes
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -654,9 +631,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL EPIDEMIOLÓGICO
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal epidemiológico
@@ -666,7 +641,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasEpidemiologyContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal epidemiológico
     const result = {
@@ -692,7 +666,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS EPIDEMIOLÓGICAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'principio', 'teoría de'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'odds ratio', 'riesgo relativo'];
   const theoryKeywords = ['teoría', 'ley', 'principio', 'demostrar', 'derivar', 'fundamento', 'mecanismo de'];
@@ -701,7 +674,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos avances', 'nuevos estudios', 'papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
   
-  // ✅ CLASIFICACIÓN EPIDEMIOLÓGICA CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -738,14 +710,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar nivel de cálculos epidemiológicos
   const mathKeywords = ['odds ratio', 'riesgo relativo', 'intervalo de confianza', 'poder estadístico', 'tamaño muestral', 'chi cuadrado'];
   if (mathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -755,7 +725,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'epidemiología es difícil'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -783,7 +752,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS EPIDEMIOLÓGICAS TÉCNICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS EPIDEMIOLÓGICAS TÉCNICAS
@@ -801,7 +769,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel activando cerebro principal epidemiológico (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -811,7 +778,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL EPIDEMIOLÓGICO
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto epidemiológico para mejores decisiones
@@ -821,7 +787,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_epidemiologia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL EPIDEMIOLÓGICO
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Epidemiology Knowledge Base timeout')), 30000)
       );
@@ -833,7 +798,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_EPIDEMIOLOGY_MEMORY_BANK: El cerebro principal epidemiológico de Profesor Acadel no tiene contenido técnico específico sobre "${query}" en su biblioteca científica epidemiológica. Proceder con conocimiento epidemiológico técnico general y experiencia científica acumulada en salud pública.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -853,7 +817,6 @@ ACADEL_EPIDEMIOLOGY_MEMORY_BANK: El cerebro principal epidemiológico de Profeso
 
 ACADEL_EPIDEMIOLOGY_MEMORY_BANK: El cerebro principal epidemiológico de Profesor Acadel encontró información técnica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base epidemiológico técnico, analogías científicas epidemiológicas precisas y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -880,7 +843,6 @@ ACADEL_EPIDEMIOLOGY_MEMORY_BANK: El cerebro principal epidemiológico de Profeso
 
 INTEGRATION_NOTES: Este es el conocimiento epidemiológico técnico central que Profesor Acadel usará como base neurológica principal para su respuesta. Representa su comprensión epidemiológica profunda acumulada. Debe integrar esta información naturalmente como si fuera su propia sabiduría epidemiológica científica, enriqueciéndola con casos técnicos epidemiológicos específicos, analogías científicas epidemiológicas precisas y metodología pedagógica epidemiológica rigurosa.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1210,7 +1172,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel analizando concepto epidemiológico técnico: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN EPIDEMIOLÓGICA
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos epidemiológicos
@@ -1220,7 +1181,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_epidemiologia",
       });
       
-      // 📚 BÚSQUEDAS EPIDEMIOLÓGICAS TÉCNICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto epidemiológico técnico ${concept}`,
         `principios epidemiológicos ${concept}`,
@@ -1230,7 +1190,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         `estudios epidemiológicos técnicos ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA EPIDEMIOLÓGICA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1263,7 +1222,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural epidemiológica técnica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1452,14 +1410,12 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia epidemiológica t�
 );
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS EPIDEMIOLÓGICOS TÉCNICOS
 // ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_EPIDEMIOLOGIA_DNA;
 
   // ============================================================================
-  // 🏥 INSTRUCCIONES EPIDEMIOLÓGICAS TÉCNICAS CONSOLIDADAS
   // ============================================================================
   
 const coreEpidemiologyTechnicalInstructions = `
@@ -1624,7 +1580,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
 // ============================================================================
-// 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA EPIDEMIOLÓGICA TÉCNICA - OPTIMIZADAS
 // ============================================================================
 
 const epidemiologyTechnicalTypeInstructions = {
@@ -1713,7 +1668,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT EPIDEMIOLÓGICO TÉCNICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1738,13 +1692,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL EPIDEMIOLÓGICO TÉCNIC
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE EPIDEMIOLÓGICO TÉCNICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema epidemiológico técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Epidemiológico Técnico: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1766,7 +1718,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createCalculatorTool());
   }
   
-  // ✅ HERRAMIENTAS EPIDEMIOLÓGICAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis epidemiológico técnico paralelo profundo`);
     tools.push(createConceptAnalyzerTool(embeddings));
@@ -1782,7 +1733,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL EPIDEMIOLÓGICA TÉCNICA SIEMPRE DISPONIBLE
   tools.push(createFeedbackAnalyzerTool());
   
   console.log(`🦫 Profesor Acadel SISTEMA EPIDEMIOLÓGICO TÉCNICO COMPLETO configurado con ${tools.length} herramientas epidemiológicas técnicas:`, tools.map(t => t.name));
@@ -1796,7 +1746,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocionalEpidemiologicaTecnica: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt epidemiológico técnico especializado y escapado
   const specializedPrompt = createSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1828,7 +1777,6 @@ const createAcadelPublicHealthAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES EPIDEMIOLÓGICAS TÉCNICAS OPTIMIZADAS
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1877,7 +1825,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Profesor Acadel generando contexto epidemiológico técnico para examen: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1887,7 +1834,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES EPIDEMIOLÓGICOS
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes epidemiológicos necesitamos variedad
@@ -1897,7 +1843,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_epidemiologia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES EPIDEMIOLÓGICOS
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Epidemiology exam context timeout')), 30000)
           );
@@ -1909,7 +1854,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1924,7 +1868,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Epidemiology exam context error: ${error.message}`);
           
-          // Fallback para exámenes epidemiológicos técnicos
           return `Contexto epidemiológico técnico base para "${input}": conocimiento fundamental en medicina preventiva, epidemiología y gestión sanitaria. Profesor Acadel debe generar preguntas desde su experiencia epidemiológica técnica consolidada, con casos prácticos poblacionales realistas y conceptos fundamentales epidemiológicos técnicos.`;
         }
       },
@@ -2068,7 +2011,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA ACADÉMICA - handlePublicHealthQuery
 // ============================================================================
 
 export const handlePublicHealthQuery = async (params) => {
@@ -2078,7 +2020,6 @@ export const handlePublicHealthQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2097,7 +2038,6 @@ export const handlePublicHealthQuery = async (params) => {
     console.log(`🏥🦫 Dr. Acadel analizando query académico integrado: "${query}"`);
     console.log(`📊 Clasificación académica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes académicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen académico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2165,7 +2105,6 @@ export const handlePublicHealthQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen  (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2203,7 +2142,6 @@ export const handlePublicHealthQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA ACADÉMICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2220,10 +2158,8 @@ export const handlePublicHealthQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico académico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelPublicHealthAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2250,7 +2186,6 @@ export const handlePublicHealthQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel académica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas académicas, pero no me rendiré.
 
 Sobre tu pregunta académica: **"${query}"**
@@ -2276,7 +2211,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
       };
     }
 
-    // Procesar respuesta académica
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
@@ -2323,7 +2257,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2383,7 +2316,6 @@ Si necesitas más detalles académicos o cálculos estadísticos específicos, p
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA ACADÉMICA - handlePublicHealthMultimodalQuery  
 // ============================================================================
 
 export const handlePublicHealthMultimodalQuery = async (params) => {
@@ -2409,7 +2341,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2421,7 +2352,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación académica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto académico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2432,7 +2362,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal académico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS ACADÉMICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2470,7 +2399,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES ACADÉMICAS CON VALIDACIÓN COMPLETA
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2530,7 +2458,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2600,11 +2527,9 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE ACADÉMICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA ACADÉMICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2637,7 +2562,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2664,7 +2588,6 @@ export const handlePublicHealthMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto académico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal académico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes académicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2690,7 +2613,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
       };
     }
 
-    // PROCESAR RESPUESTA ACADÉMICA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
@@ -2706,7 +2628,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2758,7 +2679,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2842,7 +2762,6 @@ Si necesitas cálculos estadísticos específicos o una explicación académica 
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS ACADÉMICAS
 // ============================================================================
 
 export const handlePublicHealthQueryWithoutSaving = async (params) => {
@@ -2899,7 +2818,6 @@ export const handlePublicHealthQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA ACADÉMICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2918,7 +2836,6 @@ export const handlePublicHealthQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE ACADÉMICO CORREGIDO
       const { agent, tools } = await createAcadelPublicHealthAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3020,7 +2937,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content académico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content académico no es un array válido en modo sin guardar:", content);
       return {
@@ -3039,7 +2955,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
     
     console.log(`🧠 Query multimodal académico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos académicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3052,7 +2967,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido académico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO ACADÉMICO INTEGRADO: ${doc.name || doc.filename || 'documento académico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3066,7 +2980,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO ACADÉMICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido académico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3127,7 +3040,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
                 console.log(`✅ [RETRY/EDIT] Contenido académico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3147,10 +3059,8 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
           return `${fileInfo} ${typeInfo}\n[Contenido académico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto académico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos académicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido académico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3184,7 +3094,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
       }
     }
 
-    // ✅ PROCESAR IMÁGENES ACADÉMICAS COMPLETO - MODO RETRY/EDIT
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3244,7 +3153,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3329,11 +3237,9 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Cargar historial académico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada académica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3364,7 +3270,6 @@ export const handlePublicHealthMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Crear agente académico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelPublicHealthAgent(llm, queryInfo, combinedQuery);
 
@@ -3429,7 +3334,6 @@ Para cálculos estadísticos específicos o análisis académico más detallado,
       chatId,
       timestamp: new Date().toISOString(),
       
-      // ✅ ESTADÍSTICAS CORRECTAS DE ARCHIVOS PROCESADOS
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -3443,7 +3347,6 @@ Para cálculos estadísticos específicos o análisis académico más detallado,
         }
       },
       
-      // ✅ INFORMACIÓN DE SEGURIDAD
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined

@@ -54,16 +54,13 @@ class UniversalMathProcessor {
     console.log('🧮 Inicializando Sistema Universal de MathJax...');
     
     try {
-      // Esperar a que MathJax esté disponible
       await this.waitForMathJax();
       
-      // Configurar MathJax con configuración robusta
       this.configureMathJax();
       
       this.isInitialized = true;
       console.log('✅ Sistema Universal de MathJax inicializado');
       
-      // Procesar elementos en cola
       this.processQueue();
       
     } catch (error) {
@@ -80,7 +77,6 @@ class UniversalMathProcessor {
           resolve();
         }
       } else {
-        // Intentar cargar MathJax si no está disponible
         console.log('⏳ MathJax no detectado, esperando...');
         let attempts = 0;
         const checkInterval = setInterval(() => {
@@ -183,7 +179,6 @@ class UniversalMathProcessor {
     this.config.patterns.alternativeDelimiters.forEach((pattern, index) => {
       const matches = content.match(pattern);
       if (matches) {
-        // Verificar que realmente contenga matemáticas
         const hasRealMath = matches.some(match => {
           return this.containsMathContent(match);
         });
@@ -217,7 +212,6 @@ class UniversalMathProcessor {
       totalMatches += exprMatches.length;
     }
     
-    // Calcular confianza
     const confidence = Math.min(totalMatches * 0.2, 1);
     
     return {
@@ -318,7 +312,6 @@ class UniversalMathProcessor {
       }
     ];
     
-    // Aplicar conversiones
     conversions.forEach(({ pattern, replacement }) => {
       let match;
       pattern.lastIndex = 0;
@@ -448,12 +441,10 @@ class UniversalMathProcessor {
     }
     
     try {
-      // Usar la API moderna si está disponible
       if (MathJax.typesetPromise) {
         await MathJax.typesetPromise([element]);
         console.log('✅ MathJax renderizado exitosamente (API moderna)');
         
-        // Limpiar marcadores
         element.classList.remove('has-math-content');
         element.removeAttribute('data-math-confidence');
         element.removeAttribute('data-math-types');
@@ -464,7 +455,6 @@ class UniversalMathProcessor {
         return true;
         
       } else if (MathJax.Hub && MathJax.Hub.Queue) {
-        // Fallback para versiones anteriores
         return new Promise((resolve) => {
           MathJax.Hub.Queue(
             ["Typeset", MathJax.Hub, element],
@@ -487,7 +477,6 @@ class UniversalMathProcessor {
     } catch (error) {
       console.error('❌ Error renderizando MathJax:', error);
       
-      // Intentar con método de emergencia
       return this.emergencyRender(element);
     }
   }
@@ -569,7 +558,6 @@ class UniversalMathProcessor {
   async processCompleteContent(element) {
     if (!element) return false;
     
-    // Buscar elementos marcados durante el streaming
     const markedElements = element.querySelectorAll('.has-math-content');
     
     if (markedElements.length > 0) {
@@ -580,7 +568,6 @@ class UniversalMathProcessor {
       }
     }
     
-    // Procesar el elemento principal también
     return await this.processElement(element, { isStreaming: false, forceProcess: true });
   }
   
@@ -624,7 +611,6 @@ class UniversalMathProcessor {
   }
 }
 
-// Crear instancia global
 const universalMathProcessor = new UniversalMathProcessor();
 
 // Funciones de conveniencia para integrar con el sistema existente

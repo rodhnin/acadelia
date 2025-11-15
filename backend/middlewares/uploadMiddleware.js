@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
   }
 });
 
-// Filtrar solo archivos PDF (TU ORIGINAL)
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true);
@@ -30,12 +29,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Configurar límites (TU ORIGINAL)
 const limits = {
   fileSize: 5 * 1024 * 1024, // Limitar a 5MB
 };
 
-// Exportar el middleware configurado (TU ORIGINAL)
 export const uploadInvoice = multer({
   storage: storage,
   fileFilter: fileFilter,

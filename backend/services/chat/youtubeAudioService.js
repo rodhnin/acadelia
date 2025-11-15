@@ -1,4 +1,3 @@
-// backend/services/chat/youtubeAudioService.js - SISTEMA DE FALLBACK COMPLETO Y ARREGLADO
 
 import fs from 'fs';
 import path from 'path';
@@ -20,7 +19,6 @@ const execPromise = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Crear directorio para subidas si no existe
 const rootDir = path.resolve(__dirname, '../../../');
 const uploadsDir = path.join(rootDir, 'uploads/youtube');
 if (!fs.existsSync(uploadsDir)) {
@@ -37,10 +35,8 @@ export const YouTubeAudioService = {
     tempDir: uploadsDir,
     ffmpegPath: process.env.NODE_ENV === 'production' ? 'ffmpeg' : ffmpegInstaller.path,
     ffprobePath: process.env.NODE_ENV === 'production' ? 'ffprobe' : ffprobeInstaller.path,
-    // 🚀 YOUTUBE MP3 2025 API (PRINCIPAL)
     rapidApiKey: process.env.RAPIDAPI_KEY,
     rapidApiHost: process.env.RAPIDAPI_HOST || 'youtube-mp3-2025.p.rapidapi.com',
-    // 🔧 RAPIDAPI USERNAME para whitelist
     rapidApiUsername: process.env.RAPIDAPI_USERNAME || 'acadeliasystem',
   },
 
@@ -63,7 +59,6 @@ export const YouTubeAudioService = {
       fileDownloadDuration: 0,
       downloadSource: 'youtube-mp3-2025',
       apiSuccess: false,
-      // ✅ NUEVA: Variable para metadatos extraídos
       extractedMetadata: null
     };
   },
@@ -118,7 +113,6 @@ export const YouTubeAudioService = {
     try {
       console.log(`📡 Preparando metadatos para video ${videoId}...`);
 
-      // Usar metadatos extraídos de la API si están disponibles
       if (this.extractedMetadata) {
         console.log('✅ Usando metadatos reales de API');
 
@@ -134,7 +128,6 @@ export const YouTubeAudioService = {
         };
       }
 
-      // Fallback: metadatos básicos
       return {
         videoId: videoId,
         title: `Video de YouTube (${videoId})`,
@@ -220,7 +213,6 @@ export const YouTubeAudioService = {
     const downloadStartTime = Date.now();
     let lastError = null;
 
-    // ✅ CORRECCIÓN CRÍTICA: Verificar cancelación ANTES de iniciar descarga
     const chatId = this.getCurrentChatId?.() || this.processingChatId;
     if (chatId) {
       console.log(`🔍 [${chatId}] Verificando cancelación antes de iniciar descarga...`);
@@ -249,7 +241,6 @@ export const YouTubeAudioService = {
     for (let i = 0; i < apiStrategies.length; i++) {
       const strategy = apiStrategies[i];
 
-      // ✅ CORRECCIÓN CRÍTICA: Verificar cancelación ANTES de cada API
       if (chatId) {
         console.log(`🔍 [${chatId}] Verificando cancelación antes de ${strategy.name}...`);
         const isCancelled = await this.checkCancellationOptimized(chatId);
@@ -284,14 +275,12 @@ export const YouTubeAudioService = {
     throw new Error(`Todas las APIs fallaron. Último error: ${lastError?.message || 'Desconocido'}`);
   },
 
-  // 🚀 CORRECCIÓN 3: API principal SIN timeouts excesivos
   async downloadWithOriginalAPI(videoId, url) {
     const tempFilePath = path.join(this.config.tempDir, `${videoId}_${uuidv4()}.mp3`);
 
     console.log('📡 API YouTube MP3 2025...');
     const apiStartTime = Date.now();
 
-    // ✅ TIMEOUT REDUCIDO de 30s a 15s
     const apiResponse = await axios({
       method: 'GET',
       url: `https://${this.config.rapidApiHost}/v1/social/youtube/audio`,
@@ -315,7 +304,6 @@ export const YouTubeAudioService = {
       throw new Error('API principal falló: Sin datos');
     }
 
-    // ✅ VERIFICACIÓN MEJORADA
     if (audioData.error && audioData.error !== 'false' && audioData.error !== false) {
       throw new Error(`API principal falló: ${audioData.error}`);
     }
@@ -324,7 +312,6 @@ export const YouTubeAudioService = {
       throw new Error(`API principal falló: ${audioData.message}`);
     }
 
-    // ✅ EXTRAER METADATOS
     this.extractedMetadata = {
       title: audioData.title || audioData.video_title || audioData.name || null,
       duration: audioData.lengthSeconds || audioData.duration || audioData.length || null,
@@ -376,14 +363,12 @@ export const YouTubeAudioService = {
     const data = apiResponse.data;
     console.log('🔍 Respuesta de ytjar:', data);
 
-    // ✅ ARREGLO: Verificar más campos posibles
     const downloadUrl = data.link || data.download_url || data.url || data.downloadLink || data.mp3;
 
     if (!downloadUrl) {
       throw new Error('Backup API 3 falló: Sin enlace de descarga en respuesta');
     }
 
-    // Extraer metadatos
     this.extractedMetadata = {
       title: data.title || null,
       duration: data.duration || null,
@@ -443,11 +428,9 @@ export const YouTubeAudioService = {
         response.data.on('data', async (chunk) => {
           downloadedBytes += chunk.length;
 
-          // ✅ VERIFICAR CANCELACIÓN cada 2MB (menos frecuente)
           if (chatId && (downloadedBytes % (2 * 1024 * 1024) < chunk.length)) {
             const now = Date.now();
 
-            // Verificar cada 3 segundos durante descarga
             if (now - lastCancellationCheck > 3000) {
               try {
                 const isCancelled = await this.checkCancellationOptimized(chatId);
@@ -533,7 +516,6 @@ export const YouTubeAudioService = {
       let fileToTranscribe = audioFilePath;
       let segmentFiles = [];
 
-      // ✅ VERIFICACIÓN CRÍTICA ANTES DE TRANSCRIBIR
       console.log(`🔍 [${chatId}] Verificando cancelación antes de transcribir...`);
       const isCancelled = await this.checkCancellationOptimized(chatId);
       if (isCancelled) {
@@ -565,7 +547,6 @@ export const YouTubeAudioService = {
         let timeOffset = 0;
 
         for (let i = 0; i < segmentFiles.length; i++) {
-          // ✅ VERIFICACIÓN EN CADA SEGMENTO
           const isCancelledSegment = await this.checkCancellationOptimized(chatId);
           if (isCancelledSegment) {
             console.log(`🚫 [${chatId}] ❌ CANCELACIÓN en segmento ${i + 1} - PARANDO`);
@@ -600,7 +581,6 @@ export const YouTubeAudioService = {
     }
   },
 
-  // AGREGAR estas funciones al FINAL de youtubeAudioService.js (antes del export default)
 
   /**
    * 🚀 NUEVO: Obtener estado de procesamiento en tiempo real
@@ -611,13 +591,11 @@ export const YouTubeAudioService = {
     const now = Date.now();
     const elapsed = now - metrics.startTime;
 
-    // ✅ ESTADOS ESPECÍFICOS para mejor UX
     let status = 'unknown';
     let progress = 0;
     let estimatedTimeRemaining = null;
     let currentStep = 'Inicializando...';
 
-    // ✅ DETECTAR ESTADO ACTUAL basado en métricas
     if (metrics.apiSuccess && metrics.downloadDuration > 0) {
       if (metrics.transcriptionDuration > 0) {
         if (metrics.processedChunks > 0) {
@@ -644,7 +622,6 @@ export const YouTubeAudioService = {
       progress = Math.min(25, elapsed / 1000);
     }
 
-    // ✅ ESTIMACIÓN DE TIEMPO basada en métricas reales
     if (status === 'downloading') {
       estimatedTimeRemaining = '15-30 segundos';
     } else if (status === 'processing_audio') {
@@ -674,7 +651,6 @@ export const YouTubeAudioService = {
         processedChunks: metrics.processedChunks,
         failedChunks: metrics.failedChunks
       },
-      // ✅ CRÍTICO: Indicadores para frontend sobre frecuencia de polling
       pollingSuggestion: {
         interval: this.getSuggestedPollingInterval(status, elapsed),
         shouldContinue: status !== 'completed' && status !== 'error' && status !== 'cancelled',
@@ -710,7 +686,6 @@ export const YouTubeAudioService = {
     if (!chatId) return false;
 
     try {
-      // ✅ VENTANA REDUCIDA: Solo últimos 8 segundos para evitar conflictos
       const result = await pool.query(
         `SELECT COUNT(*) as count, 
             MAX(cancellation_timestamp) as latest_cancellation,
@@ -726,7 +701,6 @@ export const YouTubeAudioService = {
       const cancelCount = parseInt(result.rows[0].count, 10);
       const secondsAgo = parseFloat(result.rows[0].seconds_ago || 999);
 
-      // ✅ CONDICIÓN ESTRICTA: Solo cancelaciones MUY recientes
       const isCancelled = cancelCount > 0 && secondsAgo < 8;
 
       if (isCancelled) {
@@ -746,7 +720,6 @@ export const YouTubeAudioService = {
     const downloadStartTime = Date.now();
     let lastError = null;
 
-    // ✅ VERIFICACIÓN CRÍTICA ANTES DE INICIAR
     const chatId = this.getCurrentChatId?.() || this.processingChatId;
     if (chatId) {
       const isCancelled = await this.checkCancellationOptimized(chatId);
@@ -772,7 +745,6 @@ export const YouTubeAudioService = {
     for (let i = 0; i < apiStrategies.length; i++) {
       const strategy = apiStrategies[i];
 
-      // ✅ VERIFICACIÓN ANTES DE CADA API
       if (chatId) {
         const isCancelled = await this.checkCancellationOptimized(chatId);
         if (isCancelled) {
@@ -793,7 +765,6 @@ export const YouTubeAudioService = {
         return result;
 
       } catch (error) {
-        // ✅ RE-LANZAR CANCELACIÓN INMEDIATAMENTE
         if (error.message === 'Procesamiento cancelado por el usuario') {
           throw error;
         }
@@ -817,7 +788,6 @@ export const YouTubeAudioService = {
    */
   // 4. CORREGIR transcribeSingleFile() - Verificaciones cada 3 segundos (no 2)
   async transcribeSingleFile(audioFilePath, chatId) {
-    // ✅ VERIFICACIÓN ANTES de transcribir
     if (chatId) {
       const isCancelled = await this.checkCancellationOptimized(chatId);
       if (isCancelled) {
@@ -834,7 +804,6 @@ export const YouTubeAudioService = {
     try {
       console.log(`🤖 [${chatId}] Enviando a OpenAI Whisper...`);
 
-      // ✅ VERIFICADOR MENOS AGRESIVO durante Whisper
       let cancelCheckInterval;
       const startCancelChecker = () => {
         cancelCheckInterval = setInterval(async () => {
@@ -1099,7 +1068,6 @@ export const YouTubeAudioService = {
     let videoId = null;
 
     try {
-      // ✅ PASO 0: LIMPIAR FLAGS ANTIGUOS INMEDIATAMENTE al iniciar nuevo proceso
       console.log(`🧹 [${chatId}] Limpiando flags antiguos antes de procesar nuevo video...`);
       try {
         await pool.query(
@@ -1128,7 +1096,6 @@ export const YouTubeAudioService = {
 
       console.log(`🚀 [${chatId}] Procesando video: ${url} (ID: ${videoId})`);
 
-      // ✅ VERIFICACIÓN 1: ANTES DE DESCARGA
       console.log(`🔍 [${chatId}] VERIFICACIÓN 1: Antes de descarga`);
       const isCancelledBeforeDownload = await this.checkCancellationOptimized(chatId);
       if (isCancelledBeforeDownload) {
@@ -1141,7 +1108,6 @@ export const YouTubeAudioService = {
       audioFilePath = await this.downloadAndConvertToMp3(videoId, url);
       console.log(`✅ [${chatId}] Descarga completada: ${audioFilePath}`);
 
-      // ✅ VERIFICACIÓN 2: DESPUÉS DE DESCARGA
       console.log(`🔍 [${chatId}] VERIFICACIÓN 2: Después de descarga - REVISANDO CANCELACIÓN`);
       const isCancelledAfterDownload = await this.checkCancellationOptimized(chatId);
       if (isCancelledAfterDownload) {
@@ -1168,7 +1134,6 @@ export const YouTubeAudioService = {
         throw new Error(`La duración del video (${videoMetadata.duration} segundos) excede el máximo permitido`);
       }
 
-      // ✅ VERIFICACIÓN 3: ANTES DE TRANSCRIPCIÓN
       console.log(`🔍 [${chatId}] VERIFICACIÓN 3: Antes de transcripción - REVISANDO CANCELACIÓN`);
       const isCancelledBeforeTranscription = await this.checkCancellationOptimized(chatId);
       if (isCancelledBeforeTranscription) {
@@ -1182,7 +1147,6 @@ export const YouTubeAudioService = {
       const transcription = await this.transcribeAudio(audioFilePath, chatId);
       console.log(`✅ [${chatId}] Transcripción completada: ${transcription.length} caracteres`);
 
-      // ✅ VERIFICACIÓN 4: DESPUÉS DE TRANSCRIPCIÓN
       console.log(`🔍 [${chatId}] VERIFICACIÓN 4: Después de transcripción - REVISANDO CANCELACIÓN`);
       const isCancelledAfterTranscription = await this.checkCancellationOptimized(chatId);
       if (isCancelledAfterTranscription) {
@@ -1196,7 +1160,6 @@ export const YouTubeAudioService = {
       const chunks = await this.splitTranscriptionToChunks(transcription, combinedMetadata);
       this.processingMetrics.totalChunks = chunks.length;
 
-      // ✅ VERIFICACIÓN 5: ANTES DE ALMACENAR
       console.log(`🔍 [${chatId}] VERIFICACIÓN 5: Antes de almacenamiento - REVISANDO CANCELACIÓN`);
       const isCancelledBeforeStoring = await this.checkCancellationOptimized(chatId);
       if (isCancelledBeforeStoring) {
@@ -1205,7 +1168,6 @@ export const YouTubeAudioService = {
       }
       console.log(`✅ [${chatId}] Sin cancelación antes de almacenamiento - CONTINUANDO`);
 
-      // ALMACENAR
       console.log(`💾 [${chatId}] Almacenando chunks...`);
       await this.storeTranscriptionInDB(chunks, userId, chatId, combinedMetadata);
 
@@ -1229,7 +1191,6 @@ export const YouTubeAudioService = {
       if (error.message === 'Procesamiento cancelado por el usuario') {
         console.log(`🚫 [${chatId}] ⚡ PROCESAMIENTO CANCELADO - Enviando respuesta y limpiando flags`);
 
-        // ✅ LIMPIEZA INMEDIATA (SIN DELAY) de flags después de cancelación
         try {
           const chatServices = await import('./chatServices.js');
           await chatServices.clearCancellationFlag(chatId);
@@ -1257,13 +1218,10 @@ export const YouTubeAudioService = {
         };
       }
 
-      // MANEJO DE OTROS ERRORES
       throw this.enhanceError(error);
     } finally {
-      // Limpiar chatId tracking
       this.processingChatId = null;
 
-      // Cleanup de archivos temporales
       if (audioFilePath && fs.existsSync(audioFilePath)) {
         try {
           fs.unlinkSync(audioFilePath);
@@ -1294,7 +1252,6 @@ export const YouTubeAudioService = {
     if (metadata.herramientaId === 2) { // Solo para Agente
       console.log(`🤖 [AGENTE] YouTube procesado - programando limpieza de flags...`);
 
-      // Limpiar flags residuales después de procesamiento exitoso
       setTimeout(async () => {
         try {
           await pool.query(
@@ -1366,7 +1323,6 @@ Mi capacidad de análisis universal no se ve afectada. Puedes intentar de nuevo 
       const batchSize = 10;
 
       for (let i = 0; i < chunks.length; i += batchSize) {
-        // ✅ VERIFICAR CANCELACIÓN cada lote de chunks
         const isCancelled = await this.checkCancellationOptimized(chatId);
         if (isCancelled) {
           console.log(`🚫 [${chatId}] CANCELACIÓN detectada durante almacenamiento - lote ${Math.floor(i / batchSize) + 1}`);

@@ -1,8 +1,6 @@
 // ============================================================================
-// 📚🦫 PROFESOR ACADEL DOCUMENTALISTA - ESPECIALISTA EN APUNTES ESTUDIANTILES
 // ============================================================================
 // EL CAPIBARA MÁS SABIO EN HACER QUE ENTIENDAS TUS PROPIOS DOCUMENTOS
-// Sistema completamente renovado con personalidad Profesor Acadel + Brave Search + Cache Inteligente
 // ============================================================================
 
 import pool from "../../../../lib/dbPool.js";
@@ -32,12 +30,10 @@ import {
 import { cleanDocumentContextForPrompt } from '../../../../utils/chat/contentCleaner.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO (IMPORTADO DE PATOLOGÍA)
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR ACADÉMICO INTEGRADO (ADAPTADO DE PATOLOGÍA)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -104,7 +100,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -178,7 +173,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'academic_web',
@@ -199,7 +193,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -268,7 +261,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'academic_images',
@@ -320,7 +312,6 @@ class BraveSearchOrchestrator {
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
 // ============================================================================
-// 📚🦫 PROFESOR ACADEL DOCUMENTALISTA DNA - PERSONALIDAD ESPECIALIZADA EN APUNTES
 // ============================================================================
 
 const PROFESOR_ACADEL_DOCUMENTALISTA_DNA = `
@@ -364,10 +355,8 @@ Hacer que CUALQUIER estudiante de cualquier disciplina:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DOCUMENTALES - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DOCUMENTALES
 const DOCUMENT_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes de contenido educativo, apuntes, documentos, diagramas, capturas de pantalla con precisión académica extrema.
@@ -394,7 +383,6 @@ const DOCUMENT_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Pro
 
 Eres los OJOS ANALÍTICOS de PROFESOR Acadel - él interpretará tu análisis con su sabiduría pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DOCUMENTALES
 const DOCUMENT_IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel, el capibara más brillante en hacer que estudiantes entiendan conceptos.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información de esta imagen para que Profesor Acadel pueda enseñar efectivamente.
@@ -440,7 +428,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Profes
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos. Profesor Acadel se encargará de la pedagogía pero necesita que seas muy detallista con todo lo que observas.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DOCUMENTALES NORMALES
 const UNIFIED_DOCUMENT_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA:
 - Consulta del estudiante: "${query}"
@@ -470,7 +457,6 @@ ${queryInfo.hasEmotionalContent ?
 
 🚀 **OBJETIVO:** Responde usando tu metodología pedagógica adaptada al contexto detectado.`;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DOCUMENTALES MULTIMODALES
 const UNIFIED_DOCUMENT_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -530,7 +516,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyDocumentQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -540,7 +525,6 @@ const classifyDocumentQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // Detectar exámenes (mantener funcionalidad existente)
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario",
@@ -576,7 +560,6 @@ const classifyDocumentQuery = (query, content = null) => {
       complexity: 'medium'
     };
 
-    // ✅ CACHE SET CORRECTO
     intelligentCache.setComponent('classification', { query: lowercaseQuery, hasContent: !!content }, result, {
       hash: cacheKey,
       timestamp: Date.now()
@@ -585,7 +568,6 @@ const classifyDocumentQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar generación de imágenes
   const imageKeywords = [
     "genera una imagen", "crear imagen", "dibuja", "dibujar", "generar imagen",
     "muestra una imagen", "imagen de", "visualiza", "ilustra",
@@ -602,7 +584,6 @@ const classifyDocumentQuery = (query, content = null) => {
       complexity: 'low'
     };
 
-    // ✅ CACHE SET CORRECTO
     intelligentCache.setComponent('classification', { query: lowercaseQuery, hasContent: !!content }, result, {
       hash: cacheKey,
       timestamp: Date.now()
@@ -652,13 +633,11 @@ const classifyDocumentQuery = (query, content = null) => {
     needsStudyStrategy = true;
   }
 
-  // Detectar si necesita búsqueda académica complementaria
   const linkKeywords = ['enlaces', 'links', 'fuentes', 'referencias', 'más información', 'bibliografía', 'recursos'];
   if (linkKeywords.some(k => lowercaseQuery.includes(k))) {
     needsAcademicSearch = true;
   }
 
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -673,7 +652,6 @@ const classifyDocumentQuery = (query, content = null) => {
     hasMultimedia: content && Array.isArray(content) && content.length > 0
   };
 
-  // ✅ CACHE SET CORRECTO
   intelligentCache.setComponent('classification', { query: lowercaseQuery, hasContent: !!content }, result, {
     hash: cacheKey,
     timestamp: Date.now()
@@ -685,7 +663,6 @@ const classifyDocumentQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DOCUMENTALES COMPLETAMENTE SINCRONIZADAS CON Profesor ACADEL
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DOCUMENTALES
@@ -698,7 +675,6 @@ CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara pr
 `;
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DOCUMENTALES ESPECIALIZADAS PARA Profesor ACADEL (CON BRAVE SEARCH)
 // ============================================================================
 
 // 1. BASE DE CONOCIMIENTOS DE DOCUMENTOS DEL ESTUDIANTE (MEJORADA CON CACHE)
@@ -748,7 +724,6 @@ const createStudentDocumentBaseTool = (embeddings, userId, chatId) => tool(
     try {
       console.log(`📚🦫 Profesor Acadel accediendo a documentos del estudiante: ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold, userId, chatId };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -774,7 +749,6 @@ const createStudentDocumentBaseTool = (embeddings, userId, chatId) => tool(
 
 ACADEL_STUDENT_DOCUMENTS: No encontré contenido específico sobre "${query}" en tus documentos subidos. Proceder con explicación general y sugerir al estudiante que suba material específico sobre este tema.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -784,7 +758,6 @@ ACADEL_STUDENT_DOCUMENTS: No encontré contenido específico sobre "${query}" en
         return result;
       }
 
-      // Aplicar filtro de relevancia igual que en createMedicalKnowledgeBaseTool
       const relevantDocs = docs.filter(doc =>
         doc.metadata?.score ? doc.metadata.score >= relevance_threshold : true
       );
@@ -794,7 +767,6 @@ ACADEL_STUDENT_DOCUMENTS: No encontré contenido específico sobre "${query}" en
 
 ACADEL_STUDENT_DOCUMENTS: Información sobre "${query}" disponible en tus documentos pero no suficientemente específica. Proceder con explicación general basada en el material disponible.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -819,7 +791,6 @@ ACADEL_STUDENT_DOCUMENTS: ${cleanContent}
 
 INTEGRATION_NOTES: Este contenido representa exactamente lo que el estudiante tiene en sus documentos subidos sobre "${query}". Profesor Acadel debe usar este material específico como base principal de su explicación, conectando conceptos y aclarando confusiones basándose en el propio material del estudiante.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1041,7 +1012,6 @@ FALLBACK_ACTION: Profesor Acadel debe manejar con humor: "${site_domain} está m
 const createConceptExplainerFromDocsTool = (embeddings, userId, chatId) => tool(
   async ({ concept, explanation_style = "step_by_step" }) => {
     try {
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const conceptKey = { concept, explanation_style, userId, chatId };
       const cacheKey = generateContentHash(conceptKey);
 
@@ -1081,7 +1051,6 @@ const createConceptExplainerFromDocsTool = (embeddings, userId, chatId) => tool(
       if (allDocs.length === 0) {
         const result = `ACADEL_CONCEPT_EXPLAINER: Explicación de "${concept}" basada en experiencia pedagógica general. El estudiante debería subir material específico sobre este concepto para explicación personalizada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setComponent('concept_explainer', { concept, explanation_style, userId, chatId }, result, {
           hash: cacheKey,
           docsFound: 0,
@@ -1105,7 +1074,6 @@ MATERIAL_ESPECÍFICO_DEL_ESTUDIANTE: ${cleanInfo}
 
 INTEGRATION_NOTES: Profesor Acadel debe estructurar explicación natural del concepto integrando: definición clara basada en SUS documentos, ejemplos específicos de SUS apuntes, aplicaciones mencionadas en SU material, ejercicios/práctica de SUS documentos. Usar humor y analogías memorables conectadas con SU material específico.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setComponent('concept_explainer', { concept, explanation_style, userId, chatId }, result, {
         hash: cacheKey,
         docsFound: allDocs.length,
@@ -1168,7 +1136,6 @@ INTEGRATION_NOTES: Profesor Acadel debe implementar verificación usando su esti
 const createStudyMaterialOrganizerTool = (embeddings, userId, chatId) => tool(
   async ({ organization_type = "conceptual", focus_area = "general" }) => {
     try {
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const organizerKey = { organization_type, focus_area, userId, chatId };
       const cacheKey = generateContentHash(organizerKey);
 
@@ -1187,7 +1154,6 @@ const createStudyMaterialOrganizerTool = (embeddings, userId, chatId) => tool(
         chatId,
       });
 
-      // Buscar diferentes tipos de contenido en sus documentos
       const organizationSearches = {
         conceptual: ["conceptos", "definiciones", "principios", "teoría"],
         chronological: ["fechas", "períodos", "historia", "evolución"],
@@ -1215,7 +1181,6 @@ CONTENIDO_DETECTADO_EN_SUS_DOCUMENTOS: ${organizationData.substring(0, 2000)}...
 
 INTEGRATION_NOTES: Profesor Acadel debe crear estrategia de organización personalizada basada en el contenido específico detectado en sus documentos. Proponer estructura que haga sentido para SU material particular, crear cronogramas basados en SUS apuntes, sugerir agrupaciones lógicas de SUS conceptos, diseñar método de repaso específico para SU contenido.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setComponent('study_organizer', { organization_type, focus_area, userId, chatId }, result, {
         hash: cacheKey,
         contentLength: organizationData.length,
@@ -1244,7 +1209,6 @@ INTEGRATION_NOTES: Profesor Acadel debe crear estrategia de organización person
 const createDocumentSummaryCreatorTool = (embeddings, userId, chatId) => tool(
   async ({ summary_type = "comprehensive", length = "medium", focus_topic = "" }) => {
     try {
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const summaryKey = { summary_type, length, focus_topic, userId, chatId };
       const cacheKey = generateContentHash(summaryKey);
 
@@ -1269,7 +1233,6 @@ const createDocumentSummaryCreatorTool = (embeddings, userId, chatId) => tool(
       if (docs.length === 0) {
         const result = `ACADEL_SUMMARY_CREATOR: No hay suficiente material en los documentos del estudiante para crear resumen específico sobre "${searchQuery}". Sugerir al estudiante que suba más material sobre este tema.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setComponent('document_summary', { summary_type, length, focus_topic, userId, chatId }, result, {
           hash: cacheKey,
           docsFound: 0,
@@ -1292,7 +1255,6 @@ MEDIO: Desarrollo de ideas principales de SU material, conexiones entre concepto
 EXTENSO: Análisis completo de SU contenido, síntesis profunda de SUS apuntes, aplicaciones y ejemplos de SU material específico.
 `;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setComponent('document_summary', { summary_type, length, focus_topic, userId, chatId }, result, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1398,14 +1360,12 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia según este análi
 );
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DOCUMENTALES
 // ============================================================================
 
 const createSpecializedDocumentPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DOCUMENTALISTA_DNA;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES TÉCNICAS CONSOLIDADAS (SIN REDUNDANCIA)
   // ============================================================================
 
   const coreInstructions = `
@@ -1553,7 +1513,6 @@ La velocidad de la luz \\({{c}}\\) es constante.
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA
   // ============================================================================
 
   const typeSpecificInstructions = {
@@ -1599,7 +1558,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT FINAL OPTIMIZADO
   // ============================================================================
 
   return `${basePersonality}
@@ -1621,7 +1579,6 @@ ${queryInfo.hasEmotionalContent ? '- **Estado emocional:** Estudiante frustrado 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE DOCUMENTAL COMPLETAMENTE SINCRONIZADO
 // ============================================================================
 
 const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, chatId) => {
@@ -1632,7 +1589,6 @@ const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, c
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // Agregar herramientas especializadas según necesidades
   if (queryInfo.needsDocumentBase) {
     tools.push(createStudentDocumentBaseTool(embeddings, userId, chatId));
   }
@@ -1648,7 +1604,6 @@ const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, c
 
   console.log(`📚🦫 Profesor Acadel configurando ${tools.length} herramientas documentales coordinadas:`, tools.map(t => t.name));
 
-  // Crear prompt documental especializado y escapado
   const specializedPrompt = createSpecializedDocumentPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1680,7 +1635,6 @@ const createAcadelDocumentAgent = async (llm, queryInfo, studentQuery, userId, c
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES DOCUMENTALES MEJORADAS
 // ============================================================================
 
 // Funciones existentes mejoradas con personalidad Acadel
@@ -1774,7 +1728,6 @@ const createExamChain = (llm, format, topic, userId, chatId, questionCount = 5) 
   return RunnableSequence.from([
     {
       context: async (input) => {
-        // ✅ CACHE CHECK CORRECTO usando generateContentHash
         const contextKey = { topic: input, operation: 'exam_context', userId, chatId };
         const cacheKey = generateContentHash(contextKey);
 
@@ -1795,7 +1748,6 @@ const createExamChain = (llm, format, topic, userId, chatId, questionCount = 5) 
         const docs = await retriever.hybridSearch(input, 5);
         const context = docs.join("\n\n");
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setComponent('exam_context', { topic: input, userId, chatId }, context, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -1940,7 +1892,6 @@ const createDocumentVisualizationTool = () => tool(
 );
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL DOCUMENTAL - handleQueryPDF (CON CACHE Y BACKGROUND SAVE)
 // ============================================================================
 
 export const handleQueryPDF = async (params) => {
@@ -1950,7 +1901,6 @@ export const handleQueryPDF = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1969,13 +1919,11 @@ export const handleQueryPDF = async (params) => {
     console.log(`📚🦫 Profesor Acadel analizando query documental: "${query}"`);
     console.log(`📊 Clasificación documental: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Detectar solicitudes especiales
     const { isExamRequest, format, questionCount } = detectExamRequest(query);
     const { isImageRequest, prompt: imagePrompt } = detectImageRequest(query);
 
     const topic = isExamRequest ? extractExamTopic(query) : null;
 
-    // Manejar generación de imágenes educativas
     if (isImageRequest) {
       console.log(`🎨 Profesor Acadel generando visualización educativa: ${imagePrompt}`);
 
@@ -1984,7 +1932,6 @@ export const handleQueryPDF = async (params) => {
       const dalleTool = createDocumentVisualizationTool();
       const imageResponse = await dalleTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1997,7 +1944,6 @@ export const handleQueryPDF = async (params) => {
         };
       }
 
-      // Guardar la imagen localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -2009,7 +1955,6 @@ export const handleQueryPDF = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 SAVE EN TIEMPO REAL - IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2055,7 +2000,6 @@ export const handleQueryPDF = async (params) => {
 
       } catch (saveError) {
         console.error('❌ Error guardando imagen en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2092,7 +2036,6 @@ export const handleQueryPDF = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes documentales
     if (isExamRequest) {
       console.log(`📝 Profesor Acadel generando examen documental: formato=${format}, preguntas=${questionCount}, tema=${topic}`);
 
@@ -2114,7 +2057,6 @@ export const handleQueryPDF = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, format, questionCount);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2163,7 +2105,6 @@ export const handleQueryPDF = async (params) => {
 
       } catch (saveError) {
         console.error('❌ Error guardando examen en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2201,7 +2142,6 @@ export const handleQueryPDF = async (params) => {
       return responseData;
     }
 
-    // CARGAR HISTORIAL RELEVANTE PARA DOCUMENTOS
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query, herramientaId),
     ]);
@@ -2218,10 +2158,8 @@ export const handleQueryPDF = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico documental
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE DOCUMENTAL ESPECIALIZADO
     const { agent, tools } = await createAcadelDocumentAgent(llm, queryInfo, query, userId, chatId);
 
     const agentExecutor = new AgentExecutor({
@@ -2248,7 +2186,6 @@ export const handleQueryPDF = async (params) => {
     } catch (error) {
       console.error("Error en agente Profesor Acadel documental:", error);
 
-      // Fallback con personalidad Profesor Acadel documental
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas documentales, pero no me rendiré.
 
 Sobre tu consulta: **"${query}"**
@@ -2274,11 +2211,9 @@ Si tienes documentos específicos sobre este tema, súbelos y podremos profundiz
       };
     }
 
-    // Procesar respuesta documental
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - ANTES DEL RETURN
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2324,7 +2259,6 @@ Si tienes documentos específicos sobre este tema, súbelos y podremos profundiz
 
     } catch (saveError) {
       console.error('❌ Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2384,7 +2318,6 @@ Si tienes documentos específicos sobre este tema, súbelos y podremos profundiz
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL DOCUMENTAL - handlePDFMultimodalQuery (CON CACHE Y BACKGROUND SAVE)
 // ============================================================================
 
 export const handlePDFMultimodalQuery = async (params) => {
@@ -2410,7 +2343,6 @@ export const handlePDFMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2422,7 +2354,6 @@ export const handlePDFMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación documental
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto documental extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2433,7 +2364,6 @@ export const handlePDFMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal documental clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS ESTUDIANTILES CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2471,7 +2401,6 @@ export const handlePDFMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES DOCUMENTALES (apuntes, capturas, etc.) CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2531,7 +2460,6 @@ export const handlePDFMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ESTUDIANTILES ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2601,11 +2529,9 @@ export const handlePDFMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE DOCUMENTAL
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal documental", herramientaId);
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA DOCUMENTAL
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2638,7 +2564,6 @@ export const handlePDFMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE DOCUMENTAL ESPECIALIZADO
     queryInfo.needsDocumentBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2665,7 +2590,6 @@ export const handlePDFMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Profesor Acadel:", error);
 
-      // Fallback robusto documental
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal documental, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes de tus apuntes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2691,11 +2615,9 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
       };
     }
 
-    // PROCESAR RESPUESTA DOCUMENTAL Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2708,7 +2630,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal documental con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2762,7 +2683,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
 
     } catch (saveError) {
       console.error('❌ Error guardando multimodal en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2846,7 +2766,6 @@ Si necesitas una explicación más detallada sobre tu material específico, preg
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR DOCUMENTALES MEJORADAS
 // ============================================================================
 
 export const queryPDFWithoutSaving = async (params) => {
@@ -2867,7 +2786,6 @@ export const queryPDFWithoutSaving = async (params) => {
       };
     }
 
-    // Detectar tipo de solicitud
     const { isExamRequest, format, questionCount } = detectExamRequest(query);
     const { isImageRequest, prompt: imagePrompt } = detectImageRequest(query);
 
@@ -2875,7 +2793,6 @@ export const queryPDFWithoutSaving = async (params) => {
 
     console.log(`🔄 Profesor Acadel (modo sin guardar): "${query}" - examen=${isExamRequest}, imagen=${isImageRequest}`);
 
-    // Manejar generación de imágenes
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2908,7 +2825,6 @@ export const queryPDFWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2932,7 +2848,6 @@ export const queryPDFWithoutSaving = async (params) => {
       };
     }
 
-    // Manejar exámenes
     if (isExamRequest) {
       const wasCancelledBeforeExam = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeExam) {
@@ -2981,7 +2896,6 @@ export const queryPDFWithoutSaving = async (params) => {
     // Conversación normal con agente documental
     const queryInfo = classifyDocumentQuery(query);
 
-    // CARGAR MEMORIA HÍBRIDA DOCUMENTAL (modo sin guardar)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query, herramientaId),
     ]);
@@ -3000,7 +2914,6 @@ export const queryPDFWithoutSaving = async (params) => {
 
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // USAR AGENTE DOCUMENTAL
     const { agent, tools } = await createAcadelDocumentAgent(llm, queryInfo, query, userId, chatId);
 
     const agentExecutor = new AgentExecutor({
@@ -3102,7 +3015,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content documental
     if (!content || !Array.isArray(content)) {
       console.error("Error: content documental no es un array válido en modo sin guardar:", content);
       return {
@@ -3120,7 +3032,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal documental (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3133,7 +3044,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // Recuperar contenido documental de BD para documentos sin contenido
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO ESTUDIANTIL: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3146,7 +3056,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // Recuperar contenido de BD si no lo tiene
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
 
           // Por fileId si existe
@@ -3257,7 +3166,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3317,7 +3225,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO DOCUMENTAL: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3402,11 +3309,9 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal documental", herramientaId);
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3437,7 +3342,6 @@ export const handlePDFMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente documental especializado
     queryInfo.needsDocumentBase = true;
     const { agent, tools } = await createAcadelDocumentAgent(llm, queryInfo, combinedQuery, userId, chatId);
 

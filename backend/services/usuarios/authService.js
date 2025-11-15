@@ -1,4 +1,3 @@
-// backend/services/usuarios/authService.js - VERSIÓN MEJORADA PARA PRODUCCIÓN
 import pool from "../../lib/dbPool.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -67,7 +66,6 @@ export class AuthService {
             }
         }
 
-        // Crear nueva operación con TTL
         const operationPromise = (async () => {
             try {
                 Logger.debug(`Iniciando operación con lock: ${key}`);
@@ -141,7 +139,6 @@ export class AuthService {
             try {
                 Logger.info(`Generando tokens para usuario ${user.id_user}`);
 
-                // Obtener rol del usuario
                 let userRole = 1;
                 try {
                     const roleQuery = `SELECT p.id_rol FROM perfil p WHERE p.id_usuario = $1`;
@@ -159,7 +156,6 @@ export class AuthService {
                     id_rol: userRole
                 };
 
-                // Generar sessionId único para esta sesión
                 const sessionId = crypto.randomBytes(16).toString('hex');
 
                 // Token de acceso con sessionId incluido
@@ -208,7 +204,6 @@ export class AuthService {
                 )
             ]).catch(() => null);
 
-            // Crear nueva sesión CON IP
             const newSession = {
                 sessionId,
                 refreshToken,
@@ -405,7 +400,6 @@ export class AuthService {
             try {
                 Logger.info(`Revocando otras sesiones`, { userId });
 
-                // Decodificar el token actual para obtener el sessionId
                 let currentSessionId;
                 try {
                     const decoded = jwt.verify(currentToken, ACCESS_TOKEN_SECRET);
@@ -641,7 +635,6 @@ export class AuthService {
                 }
             }
 
-            // Generar tokens de sesión JWT
             const sessionTokens = await this.generateTokens(user);
 
             return {
@@ -789,10 +782,8 @@ export class AuthService {
         try {
             Logger.info(`Creando intento de login`, { userId });
 
-            // Extraer información de la solicitud
             const { userAgent, ipAddress } = requestData;
 
-            // Parsear el User-Agent
             const userAgentInfo = parseUserAgent(userAgent);
             const userAgentDisplay = formatUserAgentForDisplay(userAgent, {
                 showIcons: true,
@@ -800,17 +791,14 @@ export class AuthService {
             });
             const securityInfo = getSecurityAlertInfo(userAgent);
 
-            // Generar código de verificación aleatorio (6 dígitos)
             const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-            // Generar ID único para el intento
             const attemptId = crypto.randomUUID ?
                 crypto.randomUUID() :
                 Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
             Logger.info(`Intento creado`, { attemptId, hasCode: !!verificationCode });
 
-            // Obtener información geográfica
             let locationInfo = 'Ubicación desconocida';
             try {
                 const geo = getLocationFromIP(ipAddress);
@@ -874,7 +862,6 @@ export class AuthService {
                 Logger.warn('Error guardando intento en Redis', { error: error.message });
             });
 
-            // Crear objeto de datos del intento para notificación
             const attemptData = {
                 id: attemptId,
                 ipAddress,
@@ -933,7 +920,6 @@ export class AuthService {
                 verificationCode = rows[0].verification_code;
             }
 
-            // Importar el servicio de email
             const { emailService } = await import('../../services/email/emailService.js');
 
             // Recoger información de la solicitud desde las variables globales
@@ -942,7 +928,6 @@ export class AuthService {
 
             Logger.info(`Enviando código de verificación`, { email });
 
-            // Usar el servicio para enviar el email con el código
             await emailService.sendVerificationCode(email, verificationCode, {
                 userAgent,
                 ipAddress
@@ -976,7 +961,6 @@ export class AuthService {
      */
     static async cleanupCsrfTokens(userId, sessionData) {
         try {
-            // Limpiar del cache de transiciones si existe
             if (global.tokenTransitionCache && global.tokenTransitionCache.has) {
                 const cacheKeys = [userId, sessionData.sessionID, sessionData.ip];
                 cacheKeys.forEach(key => {
@@ -1003,7 +987,6 @@ export class AuthService {
     static async performLogin(correo, contraseña, options = {}) {
         const { mantenerSesionesActivas = false, requestData } = options;
 
-        // Validación básica
         if (!correo || !contraseña) {
             throw new Error("Datos de acceso incompletos");
         }
@@ -1029,7 +1012,6 @@ export class AuthService {
             const user = rows[0];
             userCredentials = user;
 
-            // Verificar contraseña
             const isValidPassword = await bcrypt.compare(contraseña, user.contraseña);
 
             if (!isValidPassword) {
@@ -1042,7 +1024,6 @@ export class AuthService {
                 throw new Error("INVALID_CREDENTIALS");
             }
 
-            // Verificar si el correo está verificado
             if (!user.email_verified) {
                 logSecurityEvent('LOGIN_FAILURE', 'Correo no verificado', {
                     userId: user.id_user,
@@ -1056,7 +1037,6 @@ export class AuthService {
             Logger.info(`Credenciales válidas`, { userId: user.id_user });
 
             // ⭐ AQUÍ ESTÁ EL CAMBIO PRINCIPAL:
-            // Verificar si el usuario ya tiene una sesión activa Y si es de un IP diferente
             const currentSession = await redisService.get(`session:${user.id_user}`);
 
             if (currentSession && !mantenerSesionesActivas) {
@@ -1065,21 +1045,16 @@ export class AuthService {
                 const sessionIP = currentSession.ipAddress;
 
                 if (currentIP && sessionIP && currentIP === sessionIP) {
-                    // ✅ MISMO IP: Permitir login sin verificación
                     Logger.info(`Mismo IP detectado (${currentIP}), permitiendo login directo`, { userId: user.id_user });
                 } else {
-                    // ❌ IP DIFERENTE: Requiere verificación
                     Logger.info(`IP diferente detectado. Sesión: ${sessionIP}, Actual: ${currentIP}`, { userId: user.id_user });
 
-                    // Crear registro de intento de inicio de sesión
                     const attemptId = await this.createLoginAttempt(user.id_user, requestData);
 
-                    // Enviar código de verificación por correo
                     await this.sendVerificationEmail(user.correo, attemptId);
 
                     Logger.info(`Código de verificación enviado por IP diferente`, { attemptId });
 
-                    // Devolver respuesta indicando que se requiere verificación
                     return {
                         status: "verification_required",
                         message: "Detectamos un inicio de sesión desde un dispositivo o ubicación diferentes",
@@ -1100,10 +1075,8 @@ export class AuthService {
             throw credentialError;
         }
 
-        // Generar tokens solo si llegamos hasta aquí
         const result = await this.generateTokens(userCredentials, requestData?.ipAddress);
 
-        // Log de inicio de sesión exitoso
         logSecurityEvent('LOGIN_TOKEN_GENERATED', 'Inicio de sesión completado con token', {
             userId: result.user.id_user,
             ip: requestData?.ipAddress,
@@ -1123,7 +1096,6 @@ export class AuthService {
             }
         }
 
-        // Actualizar last_login
         try {
             const updateLastLoginQuery = "UPDATE usuario SET last_login = NOW() WHERE id_user = $1 RETURNING last_login";
             await pool.query(updateLastLoginQuery, [userCredentials.id_user]);
@@ -1150,7 +1122,6 @@ export class AuthService {
      * Obtener intentos de login pendientes (lógica de negocio)
      */
     static async getPendingLoginAttemptsLogic(userId) {
-        // Buscar intentos pendientes
         const query = `
             SELECT 
                 id, 
@@ -1175,7 +1146,6 @@ export class AuthService {
         // Enriquecer los datos con información geográfica y User-Agent parseado
         const attempt = rows[0];
 
-        // Obtener información geográfica de la IP
         try {
             const geo = getLocationFromIP(attempt.ipAddress);
             attempt.location = geo.formattedLocation;
@@ -1199,13 +1169,11 @@ export class AuthService {
             });
             const securityInfo = getSecurityAlertInfo(attempt.userAgent);
 
-            // Agregar información parseada al objeto attempt
             attempt.userAgentInfo = userAgentInfo;
             attempt.userAgentDisplay = userAgentDisplay;
             attempt.securityInfo = securityInfo;
         } catch (uaError) {
             Logger.warn('Error parseando User-Agent', { error: uaError.message });
-            // Agregar valores por defecto
             attempt.userAgentInfo = parseUserAgent('');
             attempt.userAgentDisplay = 'Dispositivo desconocido';
             attempt.securityInfo = getSecurityAlertInfo('');
@@ -1218,7 +1186,6 @@ export class AuthService {
      * Responder a intento de login (lógica de negocio)
      */
     static async respondToLoginAttemptLogic(attemptId, approved, userId) {
-        // Buscar el intento en la base de datos
         const query = `
             SELECT user_id FROM login_attempts 
             WHERE id = $1 AND status = 'pending' AND expires_at > NOW()
@@ -1230,12 +1197,10 @@ export class AuthService {
             throw new Error("Intento de login no encontrado o ya procesado");
         }
 
-        // Verificar que el usuario respondiendo sea el dueño de la cuenta
         if (userId != rows[0].user_id) {
             throw new Error("No tienes permiso para responder a este intento");
         }
 
-        // Actualizar estado del intento
         const updateQuery = `
             UPDATE login_attempts 
             SET status = $1, 
@@ -1245,7 +1210,6 @@ export class AuthService {
 
         await pool.query(updateQuery, [approved ? 'approved' : 'rejected', attemptId]);
 
-        // Actualizar en Redis también
         await redisService.set(
             `login_attempt:${attemptId}`,
             {
@@ -1266,7 +1230,6 @@ export class AuthService {
      * Verificar código de login (lógica de negocio)
      */
     static async verifyLoginCodeLogic(email, code, attemptId, forceLogin) {
-        // Buscar usuario por email
         const userQuery = "SELECT id_user FROM usuario WHERE LOWER(correo) = LOWER($1)";
         const userResult = await pool.query(userQuery, [email]);
 
@@ -1276,10 +1239,8 @@ export class AuthService {
 
         const userId = userResult.rows[0].id_user;
 
-        // Verificar el código y estado del intento
         let attempt;
 
-        // Intentar obtener de Redis primero (más rápido)
         attempt = await redisService.get(`login_attempt:${attemptId}`);
 
         if (!attempt) {
@@ -1302,7 +1263,6 @@ export class AuthService {
             attempt = rows[0];
         }
 
-        // Verificar si el intento es válido y el código es correcto
         const isValid = attempt.valid !== undefined ? attempt.valid : true;
         if (!isValid) {
             throw new Error("El código ha expirado");
@@ -1373,7 +1333,6 @@ export class AuthService {
         } else {
             // Si solo queremos verificar sin forzar login
 
-            // Marcar este intento como aprobado
             const updateQuery = `
                 UPDATE login_attempts 
                 SET status = 'approved', 
@@ -1383,7 +1342,6 @@ export class AuthService {
 
             await pool.query(updateQuery, [attemptId]);
 
-            // Actualizar también en Redis
             await redisService.set(
                 `login_attempt:${attemptId}`,
                 {
@@ -1407,10 +1365,8 @@ export class AuthService {
      * Reenviar código de verificación (lógica de negocio)
      */
     static async resendVerificationCodeLogic(email, attemptId) {
-        // Generar nuevo código
         const newCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Actualizar código en base de datos
         const query = `
             UPDATE login_attempts 
             SET verification_code = $1,
@@ -1426,7 +1382,6 @@ export class AuthService {
             throw new Error("Intento de inicio de sesión no encontrado");
         }
 
-        // Actualizar también en Redis
         const attempt = await redisService.get(`login_attempt:${attemptId}`);
         if (attempt) {
             await redisService.set(
@@ -1440,7 +1395,6 @@ export class AuthService {
             );
         }
 
-        // Enviar nuevo código por correo
         await this.sendVerificationEmail(email, attemptId);
 
         return { message: "Código reenviado correctamente" };
@@ -1450,7 +1404,6 @@ export class AuthService {
      * Verificar estado de sesión (lógica de negocio)
      */
     static async checkSessionStatusLogic(userId, sessionId) {
-        // Verificar sesión activa
         const activeSession = await redisService.get(`session:${userId}`);
 
         if (!activeSession || activeSession.sessionId !== sessionId) {
@@ -1471,7 +1424,6 @@ export class AuthService {
      * Verificar credenciales sin generar tokens (lógica de negocio)
      */
     static async checkLoginStatusLogic(correo, contraseña, requestData) {
-        // Validación básica
         if (!correo || !contraseña) {
             return {
                 authenticated: false,
@@ -1485,7 +1437,6 @@ export class AuthService {
             const { rows } = await pool.query(userQuery, [correo.trim()]);
 
             if (rows.length === 0) {
-                // Log de seguridad para usuario no encontrado
                 logSecurityEvent('LOGIN_STATUS_CHECK', 'Usuario no encontrado', {
                     email: correo,
                     ip: requestData?.ipAddress,
@@ -1510,7 +1461,6 @@ export class AuthService {
                 };
             }
 
-            // Verificar contraseña solo si existe
             if (!user.contraseña) {
                 logSecurityEvent('LOGIN_STATUS_CHECK', 'Cuenta sin contraseña', {
                     userId: user.id_user,
@@ -1524,7 +1474,6 @@ export class AuthService {
                 };
             }
 
-            // Verificar contraseña
             const isValidPassword = await bcrypt.compare(contraseña, user.contraseña);
 
             if (!isValidPassword) {
@@ -1557,7 +1506,6 @@ export class AuthService {
                 };
             }
 
-            // Verificar si el usuario ya tiene una sesión activa
             const hasActiveSess = await this.hasActiveSession(user.id_user);
 
             if (hasActiveSess) {
@@ -1625,7 +1573,6 @@ export class AuthService {
         if (userId) {
             await this.logout(userId, refreshToken);
 
-            // Limpiar CSRF tokens
             await this.cleanupCsrfTokens(userId, sessionData);
 
             logSecurityEvent('LOGOUT', 'Cierre de sesión exitoso', {

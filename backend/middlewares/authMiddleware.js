@@ -1,4 +1,3 @@
-// backend/middlewares/authMiddleware.js - VERSIÓN MEJORADA PARA PRODUCCIÓN
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/usuarios/authService.js";
 import { redisService } from "../lib/redis.js";
@@ -34,10 +33,8 @@ setInterval(cleanupRenewalCache, 5 * 60 * 1000);
  * Maneja respuestas 401 según el tipo de solicitud
  */
 const handle401 = (req, res, errorMessage = "Acceso denegado, no hay token", errorCode = "NO_TOKEN") => {
-    // Log básico para monitoreo
     console.log(`[AUTH] 401 - ${errorCode}: ${errorMessage} | Path: ${req.path} | RefreshToken: ${!!req.cookies.refresh_token}`);
     
-    // Respuesta JSON para APIs
     if (req.path.startsWith('/api/') || 
         req.xhr || 
         req.get('accept')?.includes('application/json') ||
@@ -49,7 +46,6 @@ const handle401 = (req, res, errorMessage = "Acceso denegado, no hay token", err
         });
     }
     
-    // Respuesta HTML para páginas web
     const errorPath = path.join(projectRoot, 'frontend', 'views', 'error', '401.html');
     if (fs.existsSync(errorPath)) {
         return res.status(401).sendFile(errorPath);
@@ -284,7 +280,6 @@ export const authenticateUser = async (req, res, next) => {
             }
         }
         
-        // Verificar estructura del token
         if (!decoded.id_user || !decoded.sessionId) {
             console.error(`[AUTH] Token con formato incorrecto`);
             return handle401(req, res, "Token inválido: formato incorrecto", "INVALID_TOKEN");
@@ -424,7 +419,6 @@ export const optionalAuthenticateUser = async (req, res, next) => {
             next();
             
         } catch (jwtError) {
-            // Intentar renovación si el token expiró
             if (jwtError.name === 'TokenExpiredError' && req.cookies.refresh_token) {
                 try {
                     const tokens = await renewTokenWithLock(req.cookies.refresh_token, res, req);

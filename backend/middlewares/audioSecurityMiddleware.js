@@ -7,8 +7,6 @@ import fs from 'fs';
  */
 export const validateAudioSecurity = async (req, res, next) => {
     try {
-        // Para subidas con multer, el archivo estará en req.file
-        // Para grabaciones (base64), será diferente
         if (!req.file && !req.body.audioData) {
           return res.status(400).json({
             success: false,
@@ -20,18 +18,14 @@ export const validateAudioSecurity = async (req, res, next) => {
         let fileBuffer = null;
         let isTemporaryFile = false;
         
-        // Manejar archivo subido con multer
         if (req.file) {
           filePath = req.file.path;
           console.log(`Validando archivo de audio subido: ${filePath}`);
         }
-        // Manejar grabación de audio en base64
         else if (req.body.audioData) {
-          // Decodificar datos base64
           const base64Data = req.body.audioData.replace(/^data:audio\/[^;]+;?(?:codecs=[^;,]+)?;base64,/, '');
           fileBuffer = Buffer.from(base64Data, 'base64');
           
-          // Crear archivo temporal para el escaneo
           const tempFileName = `temp_audio_${Date.now()}.webm`;
           filePath = `/tmp/${tempFileName}`;
           fs.writeFileSync(filePath, fileBuffer);
@@ -45,7 +39,6 @@ export const validateAudioSecurity = async (req, res, next) => {
           // Si ya tenemos el buffer, usarlo directamente
           const audioType = AudioSecurityService.identifyAudioType(fileBuffer);
           if (!audioType.valid) {
-            // Limpiar archivo temporal si fue creado
             if (isTemporaryFile && filePath && fs.existsSync(filePath)) {
               fs.unlinkSync(filePath);
             }
@@ -68,7 +61,6 @@ export const validateAudioSecurity = async (req, res, next) => {
             
             const audioType = AudioSecurityService.identifyAudioType(buffer);
             if (!audioType.valid) {
-              // Limpiar archivo temporal si fue creado
               if (isTemporaryFile && filePath && fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
               }
@@ -82,7 +74,6 @@ export const validateAudioSecurity = async (req, res, next) => {
             console.log(`Tipo de audio identificado: ${audioType.name}`);
           } catch (error) {
             console.error("Error al leer archivo para verificación:", error);
-            // Continuar con el proceso y dejar que ClamAV haga su verificación
           }
         }
         
@@ -93,7 +84,6 @@ export const validateAudioSecurity = async (req, res, next) => {
         // MEJORA: Incluso si el análisis adicional de seguridad detecta algo,
         // vamos a continuar pero con una advertencia, para evitar falsos positivos
         
-        // Convertir cualquier nota de seguridad en advertencia pero permitir continuar
         if (scanResult.securityNotes) {
           console.log(`⚠️ Notas de seguridad (no bloqueantes): ${scanResult.securityNotes.message || JSON.stringify(scanResult.securityNotes)}`);
           req.securityNotes = scanResult.securityNotes;
@@ -106,7 +96,6 @@ export const validateAudioSecurity = async (req, res, next) => {
           }
         }
         
-        // Limpiar archivo temporal si fue creado
         if (isTemporaryFile && filePath && fs.existsSync(filePath)) {
           try {
             fs.unlinkSync(filePath);

@@ -1,4 +1,3 @@
-// backend/controllers/chat/feedbackController.js
 import feedbackService from '../../services/chat/feedbackService.js';
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 
@@ -11,9 +10,7 @@ export const processFeedback = async (req, res) => {
   try {
     const { chatId, messageId, type, feedback, messageContent } = req.body;
     
-    // Validación básica
     if (!type || !messageId) {
-      // Log de intento con datos incompletos
       logSecurityEvent('INCOMPLETE_FEEDBACK', 'Intento de enviar feedback con datos incompletos', {
         userId: req.user?.id_user,
         chatId: chatId,
@@ -26,7 +23,6 @@ export const processFeedback = async (req, res) => {
       });
     }
 
-    // Preparar datos para guardar
     const feedbackData = {
       type,
       feedback: feedback || '',
@@ -36,14 +32,11 @@ export const processFeedback = async (req, res) => {
       id_user: req.user ? req.user.id_user : null
     };
 
-    // Guardar en la base de datos
     const savedFeedback = await feedbackService.saveFeedback(feedbackData);
     
-    // Intentar enviar el correo de forma asíncrona para no bloquear la respuesta
     setTimeout(() => {
       feedbackService.sendFeedbackEmail(savedFeedback.id)
         .catch(emailError => {
-          // Log de error en envío de correo de feedback
           logSecurityEvent('FEEDBACK_EMAIL_ERROR', 'Error enviando correo de feedback', {
             feedbackId: savedFeedback.id,
             userId: req.user?.id_user,
@@ -62,7 +55,6 @@ export const processFeedback = async (req, res) => {
       data: { id: savedFeedback.id }
     });
   } catch (error) {
-    // Log de error general en procesamiento de feedback
     logSecurityEvent('FEEDBACK_PROCESSING_ERROR', 'Error procesando feedback', {
       userId: req.user?.id_user,
       chatId: req.body.chatId,
@@ -87,7 +79,6 @@ export const processFeedback = async (req, res) => {
  */
 export const processPendingFeedbacks = async (req, res) => {
   try {
-    // Log de acceso a procesamiento masivo (solo admins)
     logSecurityEvent('ADMIN_PROCESS_FEEDBACKS', 'Administrador procesando feedbacks pendientes', {
       adminId: req.user?.id_user,
       ip: req.ip
@@ -100,7 +91,6 @@ export const processPendingFeedbacks = async (req, res) => {
       data: results
     });
   } catch (error) {
-    // Log de error en procesamiento masivo de feedbacks
     logSecurityEvent('PENDING_FEEDBACKS_ERROR', 'Error procesando feedbacks pendientes', {
       adminId: req.user?.id_user,
       error: error.message,
@@ -125,7 +115,6 @@ export const getMessageOriginalContent = async (req, res) => {
     const { chatId, messageId } = req.params;
     const userId = req.user?.id_user;
 
-    // Validaciones básicas
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }

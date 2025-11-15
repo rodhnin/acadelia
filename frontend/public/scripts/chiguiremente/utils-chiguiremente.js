@@ -10,16 +10,13 @@ export function setupThemeToggle(callback = null) {
     const loaderImage = document.getElementById('loader-gif');
     const mainLogo = document.getElementById('main-logo');
     
-    // Verificar que los elementos existen antes de continuar
     if (!themeToggle) {
         console.warn('Theme toggle button not found');
         return;
     }
     
-    // Comprobar preferencia guardada
     const savedTheme = localStorage.getItem('theme');
     
-    // Función para aplicar tema
     function applyTheme(isDark) {
         if (isDark) {
             document.body.classList.remove('light-theme');
@@ -37,19 +34,16 @@ export function setupThemeToggle(callback = null) {
             if (mainLogo) mainLogo.src = '/images/Imagotipo.webp';
         }
         
-        // Ejecutar callback si existe
         if (typeof callback === 'function') {
             callback();
         }
     }
     
-    // Aplicar tema según la preferencia guardada o según la preferencia del sistema
     const shouldUseDarkTheme = savedTheme === 'dark' || 
         (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
     
     applyTheme(shouldUseDarkTheme);
     
-    // Cambiar tema al hacer clic en el botón
     themeToggle.addEventListener('click', () => {
         const isCurrentlyLight = document.body.classList.contains('light-theme');
         
@@ -67,16 +61,13 @@ export function setupThemeToggle(callback = null) {
  * Configuración del loader inicial
  */
 export function setupLoader() {
-    // Ocultar loader cuando todo esté cargado
     window.addEventListener('load', () => {
         const loader = document.getElementById('app-loader');
         
         if (!loader) return;
         
-        // Agregar transición de salida
         loader.style.opacity = '0';
         
-        // Eliminar loader después de la transición
         setTimeout(() => {
             loader.style.display = 'none';
         }, 300);
@@ -99,7 +90,6 @@ export function showNotification({ title, message, type = 'info', duration = 400
         return null;
     }
     
-    // Crear notificación
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     
@@ -133,17 +123,14 @@ export function showNotification({ title, message, type = 'info', duration = 400
     
     notification.innerHTML = notificationHTML;
     
-    // Establecer contenido de forma segura
     const titleElement = notification.querySelector('.notification-title');
     const messageElement = notification.querySelector('.notification-message');
     
     if (titleElement) titleElement.textContent = title;
     if (messageElement) messageElement.textContent = message;
     
-    // Agregar al contenedor
     container.appendChild(notification);
     
-    // Configurar botón de cierre
     const closeButton = notification.querySelector('.notification-close');
     if (closeButton) {
         closeButton.addEventListener('click', () => {
@@ -190,19 +177,16 @@ export function setupConfirmModal() {
         return;
     }
     
-    // Cerrar modal al hacer clic en cancelar
     confirmCancel.addEventListener('click', () => {
         confirmModal.style.display = 'none';
     });
     
-    // Cerrar modal al hacer clic fuera del contenido
     confirmModal.addEventListener('click', (e) => {
         if (e.target === confirmModal) {
             confirmModal.style.display = 'none';
         }
     });
     
-    // Cerrar modal con tecla Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && confirmModal.style.display === 'flex') {
             confirmModal.style.display = 'none';
@@ -233,22 +217,18 @@ export function showConfirmModal(options = {}) {
         return;
     }
     
-    // Establecer textos usando textContent para seguridad
     title.textContent = options.title || 'Confirmar acción';
     message.textContent = options.message || '¿Estás seguro de que deseas realizar esta acción?';
     okButton.textContent = options.okText || 'Confirmar';
     cancelButton.textContent = options.cancelText || 'Cancelar';
     
-    // Establecer clase del botón OK
     okButton.className = options.okType === 'danger' ? 'danger-button' : 'primary-button';
     
-    // Limpiar eventos previos creando nuevos elementos
     const newOkButton = okButton.cloneNode(true);
     const newCancelButton = cancelButton.cloneNode(true);
     okButton.parentNode.replaceChild(newOkButton, okButton);
     cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
     
-    // Configurar eventos
     newOkButton.addEventListener('click', () => {
         if (typeof options.onConfirm === 'function') {
             options.onConfirm();
@@ -263,7 +243,6 @@ export function showConfirmModal(options = {}) {
         modal.style.display = 'none';
     });
     
-    // Mostrar modal
     modal.style.display = 'flex';
 }
 
@@ -282,10 +261,8 @@ export function validateForm(form, customValidations = {}) {
     const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
     
-    // Limpiar mensajes de error previos
     clearFormErrors(form);
     
-    // Validar cada campo
     inputs.forEach(input => {
         const fieldName = input.name;
         const fieldValue = input.value ? input.value.trim() : '';
@@ -361,7 +338,6 @@ export function getFormData(form) {
  * @returns {string} - Token CSRF o cadena vacía
  */
 export function getCSRFToken() {
-    // Obtener token de elemento meta
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     if (csrfMeta) {
         return csrfMeta.getAttribute('content') || '';
@@ -383,7 +359,6 @@ export function getCSRFToken() {
 export function formatDate(date) {
     const d = new Date(date);
     
-    // Verificar que la fecha es válida
     if (isNaN(d.getTime())) {
         console.warn('Invalid date provided to formatDate');
         return '';
@@ -412,7 +387,6 @@ export async function fetchWithCSRF(url, options = {}) {
         }
     };
     
-    // Combinar opciones
     const finalOptions = {
         ...defaultOptions,
         ...options,
@@ -425,7 +399,6 @@ export async function fetchWithCSRF(url, options = {}) {
     try {
         const response = await fetch(url, finalOptions);
         
-        // Verificar si la respuesta es exitosa
         if (!response.ok) {
             let errorMessage = `Error de servidor: ${response.status}`;
             
@@ -433,7 +406,6 @@ export async function fetchWithCSRF(url, options = {}) {
                 const errorData = await response.json();
                 errorMessage = errorData.message || errorData.error || errorMessage;
             } catch (parseError) {
-                // Si no se puede parsear como JSON, usar mensaje genérico
                 console.warn('Could not parse error response as JSON');
             }
             

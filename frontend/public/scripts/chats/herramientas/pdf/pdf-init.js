@@ -40,7 +40,6 @@ export async function initializePDF(options = {}) {
   try {
     console.log('Iniciando sistema PDF mejorado con soporte LaTeX...');
     
-    // ✅ SOLUCIÓN: Verificar si MathJax ya está disponible
     if (window.MathJax && window.MathJax.typesetPromise) {
       console.log('✅ MathJax ya está disponible globalmente, omitiendo inicialización');
     } else {
@@ -161,7 +160,6 @@ function setupPDFStateListeners() {
     updateUploaderVisibility(false);
   });
   
-  // Verificar inicialmente
   checkPDF().then(hasPDF => {
     updateUploaderVisibility(hasPDF);
   });
@@ -171,15 +169,12 @@ function setupPDFStateListeners() {
  * Configura listener para cambios de chat
  */
 function setupChatChangeListener() {
-  // Limpiar intervalo existente si lo hay
   if (chatCheckInterval) {
     clearInterval(chatCheckInterval);
   }
   
-  // Observar cambios en currentChatId
   let lastChatId = getState('currentChatId');
   
-  // Verificar el chatId cada segundo
   chatCheckInterval = setInterval(() => {
     const currentChatId = getState('currentChatId');
     
@@ -187,10 +182,8 @@ function setupChatChangeListener() {
     if (currentChatId !== lastChatId) {
       console.log(`PDF: Chat cambió de ${lastChatId || 'ninguno'} a ${currentChatId || 'ninguno'}`);
       
-      // Actualizar referencia
       lastChatId = currentChatId;
       
-      // Iniciar verificación para el nuevo chat o limpiar si no hay
       if (currentChatId) {
         console.log(`Verificando PDF para chat: ${currentChatId}`);
         initPDFCheck();
@@ -210,21 +203,17 @@ function setupChatChangeListener() {
 export function cleanupPDF() {
   if (!isInitialized) return;
   
-  // Limpiar intervalo
   if (chatCheckInterval) {
     clearInterval(chatCheckInterval);
     chatCheckInterval = null;
   }
   
-  // Ocultar panel
   togglePDFPanel(false);
   
-  // Limpiar animación del chigüire si existe
   if (chiguireAnimation) {
     chiguireAnimation.stop();
   }
   
-  // Importar y ejecutar funciones de limpieza
   import('./utils/pdf-renderer.js')
     .then(module => {
       if (module.cleanup) module.cleanup();

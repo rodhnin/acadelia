@@ -1,4 +1,3 @@
-// backend/services/chat/feedbackService.js
 import pool from '../../lib/dbPool.js';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
@@ -80,12 +79,10 @@ class FeedbackService {
       /at \/[^\n]*/gi,
     ];
 
-    // Aplicar filtros
     sensitivePatterns.forEach(pattern => {
       filteredContent = filteredContent.replace(pattern, '[CONTENIDO_FILTRADO]');
     });
 
-    // Filtrar contenido en formato JSON/markdown que pueda contener URLs
     try {
       // Si es un JSON string, parsearlo y filtrar
       if (filteredContent.trim().startsWith('{') && filteredContent.trim().endsWith('}')) {
@@ -97,7 +94,6 @@ class FeedbackService {
       // No es JSON válido, continuar con el filtrado normal
     }
 
-    // Filtrar imágenes base64 muy largas (mantener solo una muestra)
     filteredContent = filteredContent.replace(
       /data:image\/[^;]+;base64,[A-Za-z0-9+\/=]{100,}/g,
       'data:image/[TIPO];base64,[IMAGEN_BASE64_FILTRADA]'
@@ -123,7 +119,6 @@ class FeedbackService {
     const filtered = {};
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === 'string') {
-        // Filtrar URLs y rutas en valores string
         if (key.toLowerCase().includes('url') || 
             key.toLowerCase().includes('path') ||
             key.toLowerCase().includes('src') ||
@@ -156,7 +151,6 @@ class FeedbackService {
     let cleanText = htmlContent;
 
     try {
-      // 🧹 REMOVER ELEMENTOS HTML ESPECÍFICOS
       const htmlCleanupPatterns = [
         // Elementos MathJax completos
         /<mjx-container[^>]*>.*?<\/mjx-container>/gs,
@@ -184,23 +178,17 @@ class FeedbackService {
         cleanText = cleanText.replace(pattern, '');
       });
 
-      // 🔄 CONVERTIR ELEMENTOS MATEMÁTICOS A LATEX SIMPLE
       cleanText = this.convertMathJaxToLatex(cleanText);
 
-      // 🔄 CONVERTIR LISTAS HTML A TEXTO PLANO
       cleanText = this.convertHtmlListsToText(cleanText);
 
-      // 🔄 CONVERTIR PÁRRAFOS A TEXTO CON SALTOS DE LÍNEA
       cleanText = cleanText.replace(/<p[^>]*>(.*?)<\/p>/gs, '$1\n\n');
 
-      // 🔄 CONVERTIR IMÁGENES A TEXTO DESCRIPTIVO
       cleanText = cleanText.replace(/<img[^>]*alt="([^"]*)"[^>]*>/g, '[$1]');
       cleanText = cleanText.replace(/<img[^>]*>/g, '[Imagen]');
 
-      // 🧹 REMOVER TODAS LAS ETIQUETAS HTML RESTANTES
       cleanText = cleanText.replace(/<[^>]*>/g, '');
 
-      // 🧹 DECODIFICAR ENTIDADES HTML
       const htmlEntities = {
         '&amp;': '&',
         '&lt;': '<',
@@ -221,13 +209,9 @@ class FeedbackService {
         cleanText = cleanText.replace(new RegExp(entity, 'g'), char);
       });
 
-      // 🧹 LIMPIEZA FINAL
       cleanText = cleanText
-        // Limpiar espacios múltiples
         .replace(/[ \t]+/g, ' ')
-        // Limpiar saltos de línea múltiples (máximo 2)
         .replace(/\n\s*\n\s*\n+/g, '\n\n')
-        // Limpiar espacios al inicio/final de líneas
         .replace(/^[ \t]+|[ \t]+$/gm, '')
         // Trim general
         .trim();
@@ -236,7 +220,6 @@ class FeedbackService {
 
     } catch (error) {
       console.warn('⚠️ [FEEDBACK SERVICE] Error limpiando HTML:', error);
-      // Fallback: limpieza básica
       return htmlContent
         .replace(/<[^>]*>/g, '')
         .replace(/&[a-zA-Z0-9#]+;/g, ' ')
@@ -252,11 +235,9 @@ class FeedbackService {
    */
   convertMathJaxToLatex(content) {
     try {
-      // Extraer contenido de span.math-inline que contenga MathJax
       content = content.replace(
         /<span class="math-inline"[^>]*>.*?<mjx-container[^>]*>.*?<mjx-math[^>]*>(.*?)<\/mjx-math>.*?<\/mjx-container>.*?<\/span>/gs,
         (match) => {
-          // Buscar texto matemático limpio en el match
           const textMatch = match.match(/>\s*(sin|cos|tan|log|ln|pi|theta|alpha|beta|gamma|delta|sigma|mu|x|y|z|\d|\+|\-|\*|\/|\(|\)|,|\s)+\s*</);
           if (textMatch) {
             let mathText = textMatch[0].replace(/^>\s*/, '').replace(/\s*<$/, '');
@@ -291,7 +272,6 @@ class FeedbackService {
    */
   convertHtmlListsToText(content) {
     try {
-      // Convertir listas no ordenadas
       content = content.replace(/<ul[^>]*>(.*?)<\/ul>/gs, (match, listContent) => {
         const items = listContent.match(/<li[^>]*>(.*?)<\/li>/gs);
         if (items) {
@@ -304,7 +284,6 @@ class FeedbackService {
         return '';
       });
 
-      // Convertir listas ordenadas
       content = content.replace(/<ol[^>]*>(.*?)<\/ol>/gs, (match, listContent) => {
         const items = listContent.match(/<li[^>]*>(.*?)<\/li>/gs);
         if (items) {
@@ -331,7 +310,6 @@ class FeedbackService {
     try {
       console.log(`🔍 [FEEDBACK SERVICE] Verificando acceso - Chat: ${chatId}, Usuario: ${userId}, Mensaje: ${messageId}`);
       
-      // Verificar que el chat existe y pertenece al usuario
       const chatCheck = await pool.query(
         `SELECT id_chat FROM chat WHERE id_chat = $1 AND id_user = $2 AND is_deleted = false`,
         [chatId, userId]
@@ -347,7 +325,6 @@ class FeedbackService {
 
       console.log(`✅ [FEEDBACK SERVICE] Acceso verificado - Obteniendo mensaje ${messageId}`);
 
-      // Obtener el mensaje específico
       const messageQuery = `
         SELECT 
           ch.id,
@@ -385,7 +362,6 @@ class FeedbackService {
           // Puede estar doblemente stringificado
           let parsed = originalContent;
           
-          // Intentar parsear múltiples niveles de stringify
           while (typeof parsed === 'string' && 
                  (parsed.startsWith('"{') || parsed.startsWith('{'))) {
             try {
@@ -395,7 +371,6 @@ class FeedbackService {
             }
           }
           
-          // Extraer solo el texto del mensaje multimodal
           if (typeof parsed === 'object' && parsed.text) {
             originalContent = parsed.text;
             console.log(`✅ [FEEDBACK SERVICE] Texto extraído de objeto multimodal`);
@@ -405,15 +380,12 @@ class FeedbackService {
           }
         } catch (e) {
           console.warn('⚠️ [FEEDBACK SERVICE] Error parseando mensaje multimodal para copia:', e);
-          // Usar el contenido original si no se puede parsear
         }
       }
 
-      // 🔄 NUEVA LIMPIEZA: Convertir HTML a texto plano ANTES del filtrado
       console.log(`🧹 [FEEDBACK SERVICE] Limpiando HTML y convirtiendo a texto plano`);
       const cleanPlainText = this.cleanHtmlToPlainText(originalContent);
 
-      // Aplicar filtrado de contenido sensible AL TEXTO LIMPIO
       console.log(`🔒 [FEEDBACK SERVICE] Aplicando filtros de seguridad`);
       const filteredContent = this.filterSensitiveContent(cleanPlainText);
       
@@ -497,7 +469,6 @@ class FeedbackService {
  * @returns {Promise<Object>} Resultado del envío
  */
 async sendFeedbackEmail(feedbackId) {
-  // Obtener el feedback de la base de datos con información del usuario y mensaje
   const query = `
     SELECT 
       f.*, 
@@ -526,7 +497,6 @@ async sendFeedbackEmail(feedbackId) {
     
     const feedback = rows[0];
     
-    // Preparar texto del correo (en formato texto plano estructurado)
     const emailText = `
 FEEDBACK DE USUARIO EN ACADELIA
 ==============================
@@ -546,7 +516,6 @@ ${feedback.message_content || feedback.original_message || 'No disponible'}
 Este es un mensaje automático del sistema de Acadelia.
     `;
     
-    // Configurar opciones del correo
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.FEEDBACK_EMAIL || process.env.EMAIL_USER,
@@ -554,9 +523,7 @@ Este es un mensaje automático del sistema de Acadelia.
       text: emailText
     };
     
-    // Intentar enviar el correo pero manejar errores
     try {
-      // Intentar enviar correo
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Email de feedback enviado:', info.messageId);
       
@@ -572,11 +539,9 @@ Este es un mensaje automático del sistema de Acadelia.
         feedbackId: feedbackId
       };
     } catch (emailError) {
-      // Manejar específicamente errores de envío de correo
       console.error('Error enviando email de feedback:', emailError);
       
       // No actualizar estado en BD para que pueda reintentarse después
-      // Devolver información sobre el error pero sin lanzar excepción
       return { 
         success: false, 
         error: emailError.message,

@@ -1,4 +1,3 @@
-// backend/controllers/chat/economia/desarrolloeconomicoController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleDevelopmentQuery, handleDevelopmentMultimodalQuery, handleDevelopmentQueryWithoutSaving, handleDevelopmentMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/economia/desarrolloeconomicoService.js";
@@ -17,7 +16,6 @@ export const queryDesarrolloEconomico = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryDesarrolloEconomicoMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryDesarrolloEconomicoMultimodalWithoutSaving = async (req, res) 
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

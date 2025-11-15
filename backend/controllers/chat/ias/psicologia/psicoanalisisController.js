@@ -1,4 +1,3 @@
-// backend/controllers/chat/psicologia/psicoanalisisController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handlePsychoanalysisQuery, handlePsychoanalysisMultimodalQuery, handlePsychoanalysisQueryWithoutSaving, handlePsychoanalysisMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/psicologia/psicoanalisisService.js";
@@ -17,7 +16,6 @@ export const queryPsicoanalisis = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryPsicoanalisisMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryPsicoanalisisMultimodalWithoutSaving = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

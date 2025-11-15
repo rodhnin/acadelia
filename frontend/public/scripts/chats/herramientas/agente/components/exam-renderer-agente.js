@@ -27,25 +27,20 @@ const TIMEOUT_KEYS = {
 export function renderExam(examData, container) {
   if (!container) return;
   
-  // Limpiar timeouts previos si los hubiera
   clearExamTimeouts();
   
-  // Limpiar eventos previos si los hubiera (en caso de rerenderizado)
   removeAllEvents(container);
   
   // Asegurar que el contenedor tenga la clase correcta
   container.className = 'exam-container';
-  // Marcar el contenedor como interactivo para el ScrollManager
   container.setAttribute('data-exam-interactive', 'true');
   clearElement(container);
   
-  // Verificar que los datos del examen sean válidos
   if (!isValidExamData(examData)) {
     appendErrorMessage(container);
     return;
   }
   
-  // Inicializar MathJax de forma temprana
   const mathJaxPromise = initializeMathJax();
   
   // Estado del examen
@@ -55,14 +50,11 @@ export function renderExam(examData, container) {
     questions: examData.questions
   };
   
-  // Crear estructura del examen
   const exam = buildExamStructure(examData, examState);
   container.appendChild(exam);
   
-  // Marcar el contenedor principal para asegurar que se procese
   container.setAttribute('data-has-math', 'true');
   
-  // Iniciar el examen
   updateProgress(exam, examState);
   showQuestion(container, exam, examState, mathJaxPromise);
   
@@ -107,7 +99,6 @@ function appendErrorMessage(container) {
 function buildExamStructure(examData, examState) {
   const exam = createElement('div', { className: 'exam' });
   
-  // Crear header del examen usando createElementWithHTML para contenido estático seguro
   const examHeader = createElement('div', { className: 'exam-header' });
   
   const title = createElement('h3', { className: 'exam-title' }, `Examen: ${examData.topic}`);
@@ -117,7 +108,6 @@ function buildExamStructure(examData, examState) {
   examHeader.appendChild(progress);
   exam.appendChild(examHeader);
   
-  // Crear contenedor de preguntas
   const questionContainer = createElement('div', { className: 'question-container' });
   exam.appendChild(questionContainer);
   
@@ -149,18 +139,15 @@ async function showQuestion(container, exam, examState, mathJaxPromise) {
   
   const question = examState.questions[examState.currentQuestion];
   
-  // Limpiar
   clearElement(questionContainer);
   removeAllEvents(questionContainer);
   
-  // Crear pregunta SIMPLE
   const questionElement = createElement('div', { className: 'question' });
   
   const questionTextElement = createElement('h4', { className: 'question-text' });
   questionTextElement.innerHTML = question.question; // Usar innerHTML directamente
   questionElement.appendChild(questionTextElement);
   
-  // Crear opciones SIMPLES
   const optionsContainer = createElement('div', { className: 'options' });
   
   question.options.forEach((option, i) => {
@@ -181,7 +168,6 @@ async function showQuestion(container, exam, examState, mathJaxPromise) {
   questionElement.appendChild(optionsContainer);
   questionContainer.appendChild(questionElement);
   
-  // Renderizar MathJax DESPUÉS, sin bloquear
   setTimeout(() => {
     if (window.MathJax && window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise([questionElement]).catch(() => {});
@@ -204,10 +190,8 @@ async function handleAnswer(e, container, exam, examState, mathJaxPromise) {
   
   const correctIndex = examState.questions[examState.currentQuestion].correctAnswer.charCodeAt(0) - 97;
   
-  // Deshabilitar opciones
   questionContainer.querySelectorAll('.option').forEach(opt => opt.disabled = true);
   
-  // Aplicar estilos
   if (parseInt(selected.dataset.index) === correctIndex) {
     examState.correctAnswers++;
     selected.classList.add('correct');
@@ -219,7 +203,6 @@ async function handleAnswer(e, container, exam, examState, mathJaxPromise) {
     acadelInfo("¡Inténtalo! 💭", "Aprendemos de los errores");
   }
   
-  // Mostrar explicación SIN timeouts complejos
   setTimeout(() => {
     const explanation = createElement('div', { className: 'explanation' });
     explanation.innerHTML = `<p><strong>Explicación:</strong> ${examState.questions[examState.currentQuestion].explanation}</p>`;
@@ -257,17 +240,14 @@ async function handleAnswer(e, container, exam, examState, mathJaxPromise) {
  * @param {Object} examState - Estado del examen
  */
 function showResults(container, exam, examState) {
-  // Marcar que ya no hay interacciones activas
   container.removeAttribute('data-exam-interaction-active');
   container.removeAttribute('data-exam-navigation');
   
-  // Limpiar el contenido actual y eventos
   clearElement(exam);
   removeAllEvents(exam);
   
   const percentage = (examState.correctAnswers / examState.questions.length) * 100;
 
-  // 🎯 NOTIFICACIONES DEL PROFESOR ACADEL BASADAS EN RENDIMIENTO (CONTEXTO ACADÉMICO GENERAL)
   if (percentage >= 95) {
     // EXCELENCIA ABSOLUTA - CONFETTI
     acadelConfetti(
@@ -312,7 +292,6 @@ function showResults(container, exam, examState) {
     );
   }
   
-  // Crear componentes de resultados
   const resultsContainer = createElement('div', { className: 'exam-completed' });
   
   const title = createElement('h4', {}, '¡Examen completado! 🎉');
@@ -326,7 +305,6 @@ function showResults(container, exam, examState) {
   scoreText.appendChild(separatorSpan);
   scoreText.appendChild(totalSpan);
   
-  // Determinar mensaje según porcentaje
   let resultClass, resultMessage;
   if (percentage >= 90) {
     resultClass = 'result-excellent';
@@ -341,19 +319,16 @@ function showResults(container, exam, examState) {
   
   const resultText = createElement('p', { className: `result-message ${resultClass}` }, resultMessage);
   
-  // Añadir componentes al contenedor
   resultsContainer.appendChild(title);
   resultsContainer.appendChild(scoreText);
   resultsContainer.appendChild(resultText);
   
   exam.appendChild(resultsContainer);
   
-  // Desbloquear el scroll después de mostrar resultados
   if (window.scrollManager) {
     window.scrollManager.unlockScrollWithReason('exam-completed');
   }
   
-  // Limpiar todos los timeouts asociados al examen
   clearExamTimeouts();
 }
 
@@ -367,7 +342,6 @@ function initializeMathJax() {
   
   return new Promise(async (resolve, reject) => {
     try {
-      // Importar el módulo de mathjax-config
       const mathModule = await import('../math/mathjax-config-agente.js');
       if (!mathModule || typeof mathModule.renderMath !== 'function') {
         console.warn('Módulo MathJax no disponible');
@@ -375,7 +349,6 @@ function initializeMathJax() {
         return;
       }
       
-      // Crear una nueva promesa de inicialización
       window._mathJaxInitPromise = new Promise(async (resolveInit) => {
         try {
           // Si MathJax ya está disponible
@@ -455,15 +428,12 @@ function prepareLatexContent(text) {
   ];
   
   // Si el texto no tiene delimitadores $ pero contiene patrones matemáticos,
-  // buscar y envolver esos patrones con delimitadores
   if (!text.includes('$')) {
     for (const pattern of mathPatterns) {
       // Si encuentra el patrón, buscar la palabra completa o expresión
       if (pattern.test(text)) {
-        // Buscar expresiones matemáticas y envolverlas con $
         text = text.replace(/([a-z0-9]+(\^[0-9]+)?(\s*[\+\-\*\/]\s*[a-z0-9]+(\^[0-9]+)?)+)/g, 
                           match => {
-                            // Verificar si ya está envuelto en $
                             if (match.startsWith('$') && match.endsWith('$')) {
                               return match;
                             }

@@ -1,4 +1,3 @@
-// backend/controllers/chat/especialidadesmed1Controller.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleMedicalSpecialtiesQuery, handleMedicalSpecialtiesMultimodalQuery, handleMedicalSpecialtiesQueryWithoutSaving, handleMedicalSpecialtiesMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/Medicina/especialidadesmed1Service.js";
@@ -17,7 +16,6 @@ export const queryEspecialidadesMed1 = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryEspecialidadesMed1Multimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryEspecialidadesMed1MultimodalWithoutSaving = async (req, res) =
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

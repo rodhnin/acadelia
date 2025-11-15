@@ -35,7 +35,6 @@ class HybridChatMemory {
   }
 
   // ============================================================================
-  // 🔄 FUNCIÓN PRINCIPAL MEJORADA - CARGAR MEMORIA HÍBRIDA
   // ============================================================================
   
   async loadHybridChatMemory(userId, avaId, chatId, currentQuery, herramientaId = null) {
@@ -44,7 +43,6 @@ class HybridChatMemory {
     console.log(`🔍 Query actual: "${currentQuery.substring(0, 100)}..."`);
     
     try {
-      // Validar UUID del chat
       if (!isValidUUID(chatId)) {
         throw new Error("UUID de chat inválido");
       }
@@ -68,12 +66,10 @@ class HybridChatMemory {
       if (!isContinuation) {
         console.log(`🔍 Activando búsqueda semántica (nueva consulta)`);
         
-        // Cargar memoria semántica solo para consultas nuevas
         semanticMemory = await this.loadSemanticMemory(
           userId, avaId, chatId, currentQuery, herramientaId
         );
         
-        // Cargar memoria de usuario solo para consultas nuevas
         userMemory = await this.loadUserMemory(
           userId, avaId, chatId, herramientaId
         );
@@ -96,7 +92,6 @@ class HybridChatMemory {
       
     } catch (error) {
       console.error("Error en memoria híbrida:", error);
-      // Fallback seguro a solo MEMORIA DEL CHAT PARA EL PROFESOR ACADEL
       return await this.loadImmediateContext(userId, avaId, chatId, herramientaId);
     }
   }
@@ -126,7 +121,6 @@ class HybridChatMemory {
            currentQuery.toLowerCase().includes('explica') ||
            currentQuery.toLowerCase().includes('no entiendo'))) {
         
-        // Verificar si hay contexto reciente relevante
         const recentMessages = await client.query(`
           SELECT message, role, timestamp
           FROM chat_history 
@@ -198,7 +192,6 @@ class HybridChatMemory {
   }
 
   // ============================================================================
-  // 📅 1. MEMORIA DEL CHAT PARA EL PROFESOR ACADEL MEJORADO
   // ============================================================================
   
   async loadImmediateContext(userId, avaId, chatId, herramientaId = null) {
@@ -251,14 +244,12 @@ class HybridChatMemory {
   }
 
   // ============================================================================
-  // 🔍 2. MEMORIA SEMÁNTICA MÁS CONSERVADORA
   // ============================================================================
   
   async loadSemanticMemory(userId, avaId, chatId, currentQuery, herramientaId = null) {
     try {
       console.log(`🔍 Buscando memoria semántica relevante...`);
       
-      // Generar embedding para la consulta actual
       const queryEmbedding = await embeddings.embedQuery(currentQuery);
       
       let rpcParams;
@@ -286,7 +277,6 @@ class HybridChatMemory {
       
       if (error) throw error;
       
-      // Filtrar por umbral MÁS ESTRICTO
       const relevantMemories = (data || []).filter(item => 
         item.similarity >= this.config.semanticMemory.similarityThreshold
       );
@@ -310,7 +300,6 @@ class HybridChatMemory {
   }
 
   // ============================================================================
-  // 👤 3. MEMORIA DE USUARIO MÁS SELECTIVA
   // ============================================================================
   
   async loadUserMemory(userId, avaId, chatId, herramientaId = null) {
@@ -385,14 +374,12 @@ class HybridChatMemory {
     let allMemory = [];
     
     if (isContinuation) {
-      // Para continuaciones: SOLO MEMORIA DEL CHAT PARA EL PROFESOR ACADEL + datos básicos del usuario
       console.log(`⏭️ Modo continuación: priorizando MEMORIA DEL CHAT PARA EL PROFESOR ACADEL`);
       allMemory = [
         ...immediateContext,   // Prioridad MÁXIMA
         ...userMemory.slice(0, 1) // Solo 1 dato personal si existe
       ];
     } else {
-      // Para nuevas consultas: incluir todo pero con balance
       console.log(`🆕 Modo nueva consulta: incluyendo memoria completa`);
       allMemory = [
         ...immediateContext,   // Prioridad alta
@@ -401,10 +388,8 @@ class HybridChatMemory {
       ];
     }
     
-    // Eliminar duplicados
     allMemory = this.removeDuplicatesIntelligently(allMemory);
     
-    // Ordenar por prioridad (más importante primero)
     allMemory.sort((a, b) => b.priority - a.priority);
     
     // Limitar tokens de forma más inteligente
@@ -432,7 +417,6 @@ class HybridChatMemory {
   }
 
   // ============================================================================
-  // 🔧 FUNCIONES AUXILIARES MEJORADAS
   // ============================================================================
   
   extractPersonalInfo(message) {
@@ -453,7 +437,6 @@ class HybridChatMemory {
       }
     }
     
-    // Para mensajes sin patrón específico, ser más selectivo
     return message.length > 150 ? message.substring(0, 100) + "..." : message;
   }
   
@@ -462,7 +445,6 @@ class HybridChatMemory {
     const recentContent = new Set();
     
     return memories.filter(memory => {
-      // Para mensajes recientes, usar contenido completo como huella
       if (memory.isRecent) {
         const recentFingerprint = memory.content.substring(20, 80).toLowerCase();
         if (recentContent.has(recentFingerprint)) {
@@ -472,7 +454,6 @@ class HybridChatMemory {
         return true;
       }
       
-      // Para memoria semántica, usar huella más pequeña
       const fingerprint = memory.content.substring(0, 60).toLowerCase();
       if (seen.has(fingerprint)) {
         return false;
@@ -485,17 +466,14 @@ class HybridChatMemory {
 }
 
 // ============================================================================
-// 🚀 FUNCIONES EXPORTADAS (NOMBRES MANTENIDOS)
 // ============================================================================
 
 const hybridMemory = new HybridChatMemory();
 
-// Función principal (nombre mantenido)
 const loadHybridChatMemory = async (userId, avaId, chatId, currentQuery, herramientaId = null) => {
   return await hybridMemory.loadHybridChatMemory(userId, avaId, chatId, currentQuery, herramientaId);
 };
 
-// Función de formateo mejorada (nombre mantenido)
 const formatHybridMemoryForPrompt = (hybridMemory) => {
   if (!hybridMemory || hybridMemory.length === 0) {
     return [];

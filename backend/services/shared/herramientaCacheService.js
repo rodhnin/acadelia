@@ -1,4 +1,3 @@
-// backend/services/shared/herramientaCacheService.js
 
 import pool from "../../lib/dbPool.js";
 
@@ -13,7 +12,6 @@ class HerramientaCacheService {
     this.lastUpdate = null;
     this.CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
     
-    // Inicializar cache al crear la instancia
     this.initializeCache();
   }
 
@@ -46,12 +44,10 @@ class HerramientaCacheService {
       
       const { rows } = await pool.query(query);
       
-      // Limpiar cache anterior
       this.cache.clear();
       
       // Llenar cache con nuevos datos
       for (const herramienta of rows) {
-        // Normalizar el slug para búsquedas (minúsculas, sin espacios)
         const normalizedSlug = herramienta.slug.toLowerCase().trim();
         
         this.cache.set(normalizedSlug, {
@@ -89,15 +85,12 @@ class HerramientaCacheService {
    */
   async isHerramientaRoute(slug) {
     try {
-      // Actualizar cache si es necesario
       if (this.needsRefresh()) {
         await this.refreshCache();
       }
       
-      // Normalizar el slug de entrada
       const normalizedSlug = slug.toLowerCase().trim();
       
-      // Verificar en cache
       const isHerramienta = this.cache.has(normalizedSlug);
       
       console.log(`🔍 Verificando herramienta "${slug}" (normalizado: "${normalizedSlug}"): ${isHerramienta ? 'SÍ' : 'NO'}`);
@@ -118,15 +111,12 @@ class HerramientaCacheService {
    */
   async getHerramientaBySlug(slug) {
     try {
-      // Actualizar cache si es necesario
       if (this.needsRefresh()) {
         await this.refreshCache();
       }
       
-      // Normalizar el slug de entrada
       const normalizedSlug = slug.toLowerCase().trim();
       
-      // Buscar en cache
       const herramienta = this.cache.get(normalizedSlug);
       
       if (herramienta) {
@@ -182,5 +172,4 @@ class HerramientaCacheService {
   }
 }
 
-// Exportar instancia singleton
 export const herramientaCacheService = new HerramientaCacheService();

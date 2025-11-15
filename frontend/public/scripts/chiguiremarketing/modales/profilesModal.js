@@ -31,11 +31,9 @@ const PERSONALITY_COLORS = {
   'Desconocido': '#B2BEC3'
 };
 
-// Inicializar la modal de perfiles
 export function initProfilesModal() {
   console.log('🎯 Inicializando modal de perfiles...');
   
-  // Configurar event listener para cuando se abra la modal
   const profilesModal = document.getElementById('profilesModal');
   if (profilesModal) {
     profilesModal.addEventListener('modal:open', handleProfilesModalOpen);
@@ -45,7 +43,6 @@ export function initProfilesModal() {
   }
 }
 
-// Limpiar todos los event listeners activos
 function cleanupEventListeners() {
   console.log('🧹 Limpiando event listeners...');
   
@@ -60,7 +57,6 @@ function cleanupEventListeners() {
   activeEventListeners.clear();
 }
 
-// Función helper para registrar event listeners con cleanup automático
 function addEventListenerWithCleanup(element, event, handler, options = false) {
   element.addEventListener(event, handler, options);
   
@@ -72,24 +68,18 @@ function addEventListenerWithCleanup(element, event, handler, options = false) {
   return cleanup;
 }
 
-// Manejar apertura de la modal
 async function handleProfilesModalOpen() {
   console.log('📂 Abriendo modal de perfiles...');
   
   try {
-    // Limpiar event listeners anteriores
     cleanupEventListeners();
     
-    // Mostrar loading
     showProfilesLoading();
     
-    // Cargar datos de perfiles
     await loadProfilesData();
     
-    // Renderizar dashboard
     renderProfilesDashboard();
     
-    // Configurar eventos
     setupProfilesEvents();
     
     console.log('✅ Modal de perfiles cargada correctamente');
@@ -99,7 +89,6 @@ async function handleProfilesModalOpen() {
   }
 }
 
-// Mostrar estado de carga
 function showProfilesLoading() {
   const modalBody = document.querySelector('#profilesModal .modal-body');
   if (modalBody) {
@@ -112,7 +101,6 @@ function showProfilesLoading() {
   }
 }
 
-// Mostrar error
 function showProfilesError(message) {
   const modalBody = document.querySelector('#profilesModal .modal-body');
   if (modalBody) {
@@ -128,7 +116,6 @@ function showProfilesError(message) {
   }
 }
 
-// Cargar datos de perfiles desde la API
 async function loadProfilesData() {
   console.log('📊 Cargando datos de perfiles...');
   
@@ -190,14 +177,12 @@ async function loadProfilesData() {
   }
 }
 
-// Renderizar el dashboard completo
 function renderProfilesDashboard() {
   console.log('🎨 Renderizando dashboard de perfiles...');
   
   const modalBody = document.querySelector('#profilesModal .modal-body');
   if (!modalBody) return;
   
-  // Procesar estadísticas
   const analytics = processProfilesAnalytics();
   
   modalBody.innerHTML = `
@@ -268,13 +253,11 @@ function renderProfilesDashboard() {
     </div>
   `;
   
-  // Inicializar gráficos después de que el DOM se actualice
   setTimeout(() => {
     initializeProfilesCharts(analytics);
   }, 100);
 }
 
-// Renderizar header del dashboard
 function renderProfilesHeader() {
   return `
     <div class="profiles-dashboard-header">
@@ -310,7 +293,6 @@ function renderProfilesHeader() {
   `;
 }
 
-// Renderizar tarjetas de resumen
 function renderProfilesSummaryCards(analytics) {
   return `
     <div class="profiles-summary-cards">
@@ -343,7 +325,6 @@ function renderProfilesSummaryCards(analytics) {
   `;
 }
 
-// Renderizar contenido principal
 function renderProfilesMainContent(analytics) {
   return `
     <div class="profiles-main-grid">
@@ -411,7 +392,6 @@ function renderProfilesMainContent(analytics) {
   `;
 }
 
-// Renderizar contenido de perfiles (grid o tabla)
 function renderProfilesContent() {
   if (filteredProfiles.length === 0) {
     return `
@@ -433,7 +413,6 @@ function renderProfilesContent() {
   }
 }
 
-// Renderizar tarjeta de perfil individual con botón de eliminar
 function renderProfileCard(profile) {
   const metadata = profile.metadata || {};
   const hobbies = metadata.hobbies || [];
@@ -489,7 +468,6 @@ function renderProfileCard(profile) {
   `;
 }
 
-// Renderizar tabla de perfiles con botones de eliminar
 function renderProfilesTable() {
   return `
     <table class="profiles-table">
@@ -531,7 +509,6 @@ function renderProfilesTable() {
   `;
 }
 
-// ✅ CONFIGURAR EVENTOS DE LA MODAL - VERSIÓN CORREGIDA
 function setupProfilesEvents() {
   console.log('🔧 Configurando eventos de perfiles...');
   
@@ -570,7 +547,6 @@ function setupProfilesEvents() {
     addEventListenerWithCleanup(btn, 'click', handleViewChange);
   });
   
-  // ✅ DELEGACIÓN DE EVENTOS CORREGIDA - SOLO UNA VEZ
   const modalBody = document.querySelector('#profilesModal .modal-body');
   if (modalBody) {
     addEventListenerWithCleanup(modalBody, 'click', handleModalBodyClick);
@@ -579,14 +555,12 @@ function setupProfilesEvents() {
   console.log('✅ Eventos configurados');
 }
 
-// ✅ FUNCIÓN CENTRALIZADA PARA MANEJAR CLICKS EN LA MODAL
 function handleModalBodyClick(e) {
   // Prevenir propagación para botones de acción
   if (e.target.closest('.profile-action-btn') || e.target.closest('.profile-card-delete')) {
     e.stopPropagation();
   }
   
-  // ✅ GRID VIEW: Ver detalles solo si no es botón de eliminar
   if (e.target.closest('.profile-card') && !e.target.closest('.profile-card-delete')) {
     const profileId = e.target.closest('.profile-card').dataset.id;
     if (profileId) {
@@ -596,7 +570,6 @@ function handleModalBodyClick(e) {
     return;
   }
   
-  // ✅ TABLE VIEW: Ver detalles SOLO desde botón específico
   if (e.target.closest('.profile-view-btn')) {
     const profileId = e.target.closest('.profile-view-btn').dataset.profileId;
     if (profileId) {
@@ -606,7 +579,6 @@ function handleModalBodyClick(e) {
     return;
   }
   
-  // ✅ ELIMINAR PERFIL ESPECÍFICO
   if (e.target.closest('.profile-card-delete') || e.target.closest('.profile-delete-btn')) {
     e.preventDefault();
     e.stopPropagation();
@@ -619,7 +591,6 @@ function handleModalBodyClick(e) {
   }
 }
 
-// ✅ MODAL DE RESETEO CORREGIDA
 function showResetProfilesModal() {
   console.log('🚀 Mostrando modal de reseteo...');
   
@@ -629,12 +600,10 @@ function showResetProfilesModal() {
     return;
   }
   
-  // Limpiar handlers previos si existen
   if (resetModal._cleanup) {
     resetModal._cleanup();
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = resetModal.querySelector('.profiles-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todos';
@@ -661,7 +630,6 @@ function showResetProfilesModal() {
     handleResetAllProfiles(resetModal);
   };
   
-  // ✅ ESC HANDLER MEJORADO
   const handleEsc = (e) => {
     if (e.key === 'Escape' && resetModal.classList.contains('active')) {
       e.preventDefault();
@@ -672,7 +640,6 @@ function showResetProfilesModal() {
     }
   };
   
-  // ✅ CLICK OUTSIDE HANDLER
   const handleOutsideClick = (e) => {
     if (e.target === resetModal) {
       console.log('🖱️ Click fuera de modal de reseteo');
@@ -680,7 +647,6 @@ function showResetProfilesModal() {
     }
   };
   
-  // Agregar event listeners
   closeBtn.addEventListener('click', closeHandler);
   cancelBtn.addEventListener('click', closeHandler);
   confirmBtn.addEventListener('click', confirmHandler);
@@ -689,7 +655,6 @@ function showResetProfilesModal() {
   // ESC con máxima prioridad
   document.addEventListener('keydown', handleEsc, true);
   
-  // Función de cleanup
   resetModal._cleanup = () => {
     closeBtn.removeEventListener('click', closeHandler);
     cancelBtn.removeEventListener('click', closeHandler);
@@ -699,16 +664,13 @@ function showResetProfilesModal() {
     delete resetModal._cleanup;
   };
   
-  // Activar modal
   resetModal.classList.add('active');
   console.log('✅ Modal de reseteo activada');
 }
 
-// ✅ CERRAR MODAL DE RESETEO CORREGIDA
 function closeResetProfilesModal(resetModal) {
   console.log('🚪 Cerrando modal de reseteo...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = resetModal.querySelector('.profiles-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todos';
@@ -719,7 +681,6 @@ function closeResetProfilesModal(resetModal) {
   
   resetModal.classList.remove('active');
   
-  // Ejecutar cleanup si existe
   if (resetModal._cleanup) {
     resetModal._cleanup();
   }
@@ -727,11 +688,9 @@ function closeResetProfilesModal(resetModal) {
   console.log('✅ Modal de reseteo cerrada y limpiada');
 }
 
-// ✅ FUNCIÓN PARA MANEJAR ELIMINACIÓN DE PERFIL ESPECÍFICO CORREGIDA
 async function handleDeleteProfile(profileId) {
   console.log('🗑️ Iniciando eliminación de perfil:', profileId);
   
-  // Verificar que el perfil existe
   const profile = profilesData.find(p => p.id === profileId);
   if (!profile) {
     console.warn('❌ Perfil no encontrado:', profileId);
@@ -745,7 +704,6 @@ async function handleDeleteProfile(profileId) {
   showDeleteProfileModal(profile);
 }
 
-// ✅ MODAL DE ELIMINACIÓN ESPECÍFICA CORREGIDA
 function showDeleteProfileModal(profile) {
   console.log('🚀 Mostrando modal de eliminar para:', profile.metadata?.nombre || profile.id);
   
@@ -755,12 +713,10 @@ function showDeleteProfileModal(profile) {
     return;
   }
   
-  // Limpiar handlers previos si existen
   if (deleteModal._cleanup) {
     deleteModal._cleanup();
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = deleteModal.querySelector('.profile-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -823,7 +779,6 @@ function showDeleteProfileModal(profile) {
     }
   };
   
-  // Agregar event listeners
   closeBtn.addEventListener('click', closeHandler);
   cancelBtn.addEventListener('click', closeHandler);
   confirmBtn.addEventListener('click', confirmHandler);
@@ -832,7 +787,6 @@ function showDeleteProfileModal(profile) {
   // ESC con máxima prioridad
   document.addEventListener('keydown', handleEsc, true);
   
-  // Función de cleanup
   deleteModal._cleanup = () => {
     closeBtn.removeEventListener('click', closeHandler);
     cancelBtn.removeEventListener('click', closeHandler);
@@ -842,16 +796,13 @@ function showDeleteProfileModal(profile) {
     delete deleteModal._cleanup;
   };
   
-  // Activar modal
   deleteModal.classList.add('active');
   console.log('✅ Modal de eliminar activada');
 }
 
-// ✅ CERRAR MODAL DE ELIMINACIÓN ESPECÍFICA CORREGIDA
 function closeDeleteProfileModal(deleteModal) {
   console.log('🚪 Cerrando modal de eliminar...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = deleteModal.querySelector('.profile-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -862,7 +813,6 @@ function closeDeleteProfileModal(deleteModal) {
   
   deleteModal.classList.remove('active');
   
-  // Ejecutar cleanup si existe
   if (deleteModal._cleanup) {
     deleteModal._cleanup();
   }
@@ -873,7 +823,6 @@ function closeDeleteProfileModal(deleteModal) {
 function resetAllDeleteModals() {
   console.log('🔄 Reseteando todas las modales de eliminación...');
   
-  // Modal de eliminación individual
   const deleteModal = document.querySelector('#profileDeleteModal');
   if (deleteModal) {
     const confirmBtn = deleteModal.querySelector('.profile-delete-confirm');
@@ -891,7 +840,6 @@ function resetAllDeleteModals() {
     }
   }
   
-  // Modal de eliminación masiva
   const resetModal = document.querySelector('#profilesResetModal');
   if (resetModal) {
     const confirmBtn = resetModal.querySelector('.profiles-reset-confirm');
@@ -913,20 +861,17 @@ function resetAllDeleteModals() {
 }
 
 
-// Función para manejar eliminación masiva
 async function handleResetAllProfiles(resetModal) {
   console.log('🔥 Iniciando eliminación masiva...');
   
   const confirmBtn = resetModal.querySelector('.profiles-reset-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar todos',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -937,7 +882,6 @@ async function handleResetAllProfiles(resetModal) {
     const response = await deleteAllProfiles();
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -963,7 +907,6 @@ async function handleResetAllProfiles(resetModal) {
   } catch (error) {
     console.error('❌ Error eliminando todos los perfiles:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -977,20 +920,17 @@ async function handleResetAllProfiles(resetModal) {
   }
 }
 
-// Función para confirmar eliminación de perfil específico
 async function confirmDeleteProfile(profileId, deleteModal) {
   console.log('🔥 Confirmando eliminación de perfil:', profileId);
   
   const confirmBtn = deleteModal.querySelector('.profile-delete-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -1002,7 +942,6 @@ async function confirmDeleteProfile(profileId, deleteModal) {
     console.log('📥 Respuesta de eliminación:', response);
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -1028,7 +967,6 @@ async function confirmDeleteProfile(profileId, deleteModal) {
   } catch (error) {
     console.error('❌ Error eliminando perfil:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1092,7 +1030,6 @@ function processProfilesAnalytics() {
     analytics.locationDistribution[location] = (analytics.locationDistribution[location] || 0) + 1;
   });
   
-  // Calcular promedios y tops
   analytics.avgAge = ageCount > 0 ? totalAge / ageCount : 0;
   
   // Encontrar los más comunes
@@ -1123,13 +1060,11 @@ function initializeProfilesCharts(analytics) {
     personalityChart.destroy();
   }
   
-  // Preparar datos para el gráfico
   const personalityData = Object.entries(analytics.personalityDistribution);
   const labels = personalityData.map(([type]) => type);
   const data = personalityData.map(([, count]) => count);
   const colors = personalityData.map(([type]) => PERSONALITY_COLORS[type] || '#B2BEC3');
   
-  // Crear gráfico de dona
   personalityChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -1237,7 +1172,6 @@ async function handleProfilesRefresh() {
   try {
     showProfilesLoading();
     
-    // Limpiar event listeners antes de recargar
     cleanupEventListeners();
     
     await loadProfilesData();
@@ -1258,13 +1192,11 @@ async function handleProfilesRefresh() {
 function handleViewChange(event) {
   const newView = event.currentTarget.getAttribute('data-view');
   
-  // Actualizar botones activos
   document.querySelectorAll('.profiles-view-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   event.currentTarget.classList.add('active');
   
-  // Cambiar vista
   currentView = newView;
   updateProfilesView();
 }
@@ -1277,7 +1209,6 @@ function updateProfilesView() {
   }
 }
 
-// Mostrar detalles de perfil
 function showProfileDetails(profileId) {
   const profile = profilesData.find(p => p.id === profileId);
   if (!profile) {
@@ -1296,14 +1227,12 @@ function createProfileDetailModal(profile) {
   
   console.log('🎯 Creando modal de detalles para:', metadata.nombre || profile.id);
   
-  // Remover modal anterior si existe
   const existingModal = document.getElementById('profile-detail-modal');
   if (existingModal) {
     console.log('🧹 Removiendo modal anterior');
     closeProfileDetailModal(existingModal);
   }
   
-  // Crear nueva modal
   const modal = document.createElement('div');
   modal.id = 'profile-detail-modal';
   modal.className = 'profile-detail-modal';
@@ -1327,15 +1256,12 @@ function createProfileDetailModal(profile) {
     </div>
   `;
   
-  // Agregar al DOM
   document.body.appendChild(modal);
   
   console.log('✅ Modal de detalles agregada al DOM');
   
-  // Configurar eventos
   setupProfileDetailEvents(modal);
   
-  // Mostrar modal con animación
   setTimeout(() => {
     modal.classList.add('active');
     console.log('🎭 Modal de detalles activada');
@@ -1494,7 +1420,6 @@ function renderProfileDetailSections(metadata) {
 }
 
 function setupProfileDetailEvents(modal) {
-  // Limpiar handlers previos si existen
   if (modal._cleanup) {
     modal._cleanup();
   }
@@ -1527,7 +1452,6 @@ function setupProfileDetailEvents(modal) {
     }
   };
   
-  // Agregar event listeners
   if (closeBtn) {
     closeBtn.addEventListener('click', closeHandler);
   }
@@ -1541,7 +1465,6 @@ function setupProfileDetailEvents(modal) {
   // ESC con máxima prioridad
   document.addEventListener('keydown', handleEsc, true);
   
-  // Función de cleanup
   modal._cleanup = () => {
     if (closeBtn) closeBtn.removeEventListener('click', closeHandler);
     modal.removeEventListener('click', handleOutsideClick);
@@ -1561,7 +1484,6 @@ function closeProfileDetailModal(modal) {
   
   modal.classList.remove('active');
   
-  // Ejecutar cleanup si existe
   if (modal._cleanup) {
     modal._cleanup();
   }
@@ -1574,7 +1496,6 @@ function closeProfileDetailModal(modal) {
   }, 300);
 }
 
-// Función auxiliar para capitalizar
 function capitalizeFirst(str) {
   if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -1600,7 +1521,6 @@ if (document.readyState === 'loading') {
 function resetProfilesModalState() {
   console.log('🔄 Reiniciando estado de profiles modal...');
   
-  // Limpiar variables globales del módulo
   if (typeof profilesData !== 'undefined') {
     profilesData = [];
   }
@@ -1621,7 +1541,6 @@ function resetProfilesModalState() {
     }
   }
   
-  // Limpiar event listeners activos
   if (typeof activeEventListeners !== 'undefined' && activeEventListeners instanceof Set) {
     activeEventListeners.forEach(cleanup => {
       try {
@@ -1633,7 +1552,6 @@ function resetProfilesModalState() {
     activeEventListeners.clear();
   }
   
-  // ✅ NUEVO: Resetear modales de eliminación
   resetAllDeleteModals();
   
   console.log('✅ Estado de profiles modal reiniciado completamente');
@@ -1647,10 +1565,8 @@ if (typeof window !== 'undefined') {
   window.createProfileDetailModal = createProfileDetailModal;
   window.closeProfileDetailModal = closeProfileDetailModal;
   
-  // ✅ NUEVO: Exportar función de reseteo de modales
   window.resetAllDeleteModals = resetAllDeleteModals;
   
-  // Actualizar objeto profilesModal
   if (!window.profilesModal) {
     window.profilesModal = {};
   }

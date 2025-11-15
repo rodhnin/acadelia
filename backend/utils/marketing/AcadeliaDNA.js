@@ -1,4 +1,3 @@
-// SISTEMA COMPLETO DE PROMPTS PARA ACADELIA
 // Contexto de marca integrado en TODOS los aspectos de la IA
 
 

@@ -53,7 +53,6 @@ export function initMarkdownParser() {
     // Configuración global única
     marked.setOptions(MARKDOWN_CONFIG.marked);
     
-    // Crear renderer personalizado
     globalRenderer = new marked.Renderer();
     
     // Personalizar renderer
@@ -115,7 +114,6 @@ export function renderMarkdown(content, options = {}) {
     initMarkdownParser();
   }
 
-  // Validar entrada
   if (!content || typeof content !== 'string') {
     return content || '';
   }
@@ -124,7 +122,6 @@ export function renderMarkdown(content, options = {}) {
     // ✨ NUEVO: PREPROCESAMIENTO MATEMÁTICO UNIVERSAL
     let processedContent = content;
     if (allowMath) {
-      // Usar el nuevo sistema universal
       processedContent = preprocessUniversalMath(processedContent);
       console.log('🧮 Contenido preprocesado con Sistema Universal de MathJax');
     }
@@ -178,7 +175,6 @@ export function renderMarkdownComplete(content) {
 
 // ✨ FUNCIÓN CORREGIDA PARA MANEJAR \n**texto**
 function preprocessContentFixed(content, isStreaming) {
-  // Normalizar saltos de línea
   content = content
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
@@ -186,7 +182,6 @@ function preprocessContentFixed(content, isStreaming) {
 
   console.log('🔧 Aplicando corrección PROTEGIDA para \\n\\n**texto**...');
 
-  // ✅ PASO 1: ESCAPAR temporalmente los ** problemáticos con un placeholder único
   const BOLD_PLACEHOLDER = '___BOLD_PROTECTED___';
   const protectedPairs = [];
   
@@ -225,7 +220,6 @@ function preprocessContentFixed(content, isStreaming) {
       .replace(/^(\s*[-+*])([^\s])/gm, '$1 $2');
   }
 
-  // ✅ PASO 2: RESTAURAR los ** protegidos AL FINAL
   protectedPairs.forEach((boldText, index) => {
     const placeholder = `${BOLD_PLACEHOLDER}${index}${BOLD_PLACEHOLDER}`;
     content = content.replace(placeholder, boldText);
@@ -259,7 +253,6 @@ function postProcessHtml(html, isStreaming, allowMath, allowDiagrams) {
     .replace(/<p>\s*(<strong>)/g, '<p>$1')       // Limpiar espacios antes de <strong>
     .replace(/(<\/strong>)\s*<\/p>/g, '$1</p>'); // Limpiar espacios después de </strong>
 
-  // Procesar Mermaid si está permitido
   if (allowDiagrams && html.includes('language-mermaid')) {
     html = html.replace(
       /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
@@ -286,7 +279,6 @@ function postProcessHtml(html, isStreaming, allowMath, allowDiagrams) {
 function unifiedFallbackRendererFixed(content, isStreaming) {
   let html = escapeHtml(content);
   
-  // Procesar bloques de código primero
   const codeBlocks = [];
   html = html.replace(/```(\w*)\n?([\s\S]*?)\n?```/g, (match, lang, code) => {
     const language = lang.trim() || 'text';
@@ -303,10 +295,8 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
     return placeholder;
   });
   
-  // Procesar código inline
   html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
   
-  // Procesar encabezados
   html = html
     .replace(/^#### (.*?)$/gm, '<h4>$1</h4>')
     .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
@@ -318,7 +308,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
     .replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em>$1</em>');
   
-  // Procesar listas
   html = html
     .replace(/^(\s*[-*+])\s+(.+)$/gm, '<li>$2</li>')
     .replace(/(<li>.*<\/li>)\n(?!<li>)/g, '$1</ul>\n')
@@ -327,7 +316,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
   // ✨ PROCESAMIENTO MEJORADO DE PÁRRAFOS CON CORRECCIÓN PARA \n**texto**
   html = processLineBreaksImproved(html);
   
-  // Restaurar bloques de código
   codeBlocks.forEach((block, index) => {
     html = html.replace(`__CODE_BLOCK_${index}__`, block);
   });
@@ -337,7 +325,6 @@ function unifiedFallbackRendererFixed(content, isStreaming) {
 
 // ✨ FUNCIÓN CORREGIDA PARA PROCESAR SALTOS DE LÍNEA
 function processLineBreaksImproved(html) {
-  // Dividir en líneas para procesamiento
   const lines = html.split('\n');
   const result = [];
   let currentParagraph = [];
@@ -347,7 +334,6 @@ function processLineBreaksImproved(html) {
     const line = lines[i];
     const trimmedLine = line.trim();
     
-    // Detectar bloques especiales (headers, listas, código)
     const isSpecialLine = trimmedLine.match(/^<h[1-6]>/) || 
                          trimmedLine.match(/^<\/h[1-6]>/) ||
                          trimmedLine.startsWith('<ul>') ||
@@ -356,7 +342,6 @@ function processLineBreaksImproved(html) {
                          trimmedLine.startsWith('__CODE_BLOCK_');
     
     if (isSpecialLine) {
-      // Cerrar párrafo actual si existe
       if (currentParagraph.length > 0) {
         result.push('<p>' + currentParagraph.join('<br>') + '</p>');
         currentParagraph = [];
@@ -391,7 +376,6 @@ function processLineBreaksImproved(html) {
     }
   }
   
-  // Cerrar último párrafo si existe
   if (currentParagraph.length > 0) {
     result.push('<p>' + currentParagraph.join('<br>') + '</p>');
   }
@@ -399,7 +383,6 @@ function processLineBreaksImproved(html) {
   // ✨ LIMPIEZA FINAL PARA EVITAR PROBLEMAS CON \n**texto**
   let finalHtml = result.join('\n');
   
-  // Eliminar párrafos vacíos que puedan haberse creado
   finalHtml = finalHtml
     .replace(/<p>\s*<\/p>/g, '')
     .replace(/<p><\/p>/g, '')
@@ -429,7 +412,6 @@ export function processSpecialElements(element, isStreamingComplete = false) {
 
   console.log('🔧 Procesando elementos especiales...', isStreamingComplete ? '(completo)' : '(streaming)');
 
-  // Procesar código con highlight.js
   const codeElements = element.querySelectorAll('pre code:not(.hljs)');
   if (codeElements.length > 0 && typeof hljs !== 'undefined') {
     codeElements.forEach(block => {
@@ -441,7 +423,6 @@ export function processSpecialElements(element, isStreamingComplete = false) {
     });
   }
 
-  // Procesar Mermaid solo si streaming está completo
   if (isStreamingComplete) {
     const mermaidElements = element.querySelectorAll('.mermaid:not([data-processed="true"])');
     if (mermaidElements.length > 0 && typeof mermaid !== 'undefined') {
@@ -472,7 +453,6 @@ export function processSpecialElements(element, isStreamingComplete = false) {
     processUniversalMath(element, true);
   }
 
-  // Procesar gráficos Chart.js
   processChartElements(element);
 }
 

@@ -232,7 +232,6 @@ async function processDocumentAndCodeFiles(documentFiles, codeFiles) {
 
   console.log(`📄 [OPTIMIZED] Procesando ${documentFiles.length} documentos y ${codeFiles.length} archivos de código`);
 
-  // Procesar documentos
   for (const docFile of documentFiles) {
     try {
       const dataUrl = await fileToBase64(docFile.file);
@@ -251,7 +250,6 @@ async function processDocumentAndCodeFiles(documentFiles, codeFiles) {
     }
   }
 
-  // Procesar archivos de código
   for (const codeFile of codeFiles) {
     try {
       const dataUrl = await fileToBase64(codeFile.file);
@@ -283,7 +281,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
 
     console.log('📦 [MULTIMODAL] Procesando archivos:', files.length);
 
-    // *** SEPARAR ARCHIVOS RECUPERADOS Y NUEVOS ***
     const filesFromBackend = files.filter(f => f._retrievedFromBackend);
     const regularFiles = files.filter(f => !f._retrievedFromBackend);
 
@@ -291,13 +288,10 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       console.log(`📋 [MULTIMODAL] ${filesFromBackend.length} archivos recuperados del backend`);
     }
 
-    // Sanitizar el mensaje
     const safeMessage = message ? sanitizeText(message) : '';
 
-    // Preparar contenido
     const content = [];
 
-    // Agregar texto
     if (safeMessage && safeMessage.trim()) {
       content.push({
         type: "text",
@@ -305,7 +299,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       });
     }
 
-    // *** PROCESAR ARCHIVOS RECUPERADOS DEL BACKEND ***
     for (const fileFromBackend of filesFromBackend) {
       console.log(`📄 [MULTIMODAL] Procesando archivo recuperado:`, {
         type: fileFromBackend.type,
@@ -314,7 +307,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
         hasDataUrl: !!fileFromBackend.data_url
       });
 
-      // *** CASO 1: IMAGEN RECUPERADA ***
       if (fileFromBackend.type === 'image_url' && fileFromBackend.image_url) {
         console.log(`🖼️ [MULTIMODAL] Añadiendo imagen recuperada`);
 
@@ -326,7 +318,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
           }
         });
       }
-      // *** CASO 2: DOCUMENTO RECUPERADO ***
       else if (['file', 'document'].includes(fileFromBackend.type) && fileFromBackend.data_url) {
         console.log(`📄 [MULTIMODAL] Añadiendo documento recuperado: ${fileFromBackend.name}`);
 
@@ -336,19 +327,16 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
           filename: fileFromBackend.name,
           name: fileFromBackend.name,
           mime_type: fileFromBackend.mime_type,
-          // *** AGREGAR CONTENIDO EXTRAÍDO SI ESTÁ DISPONIBLE ***
           extractedContent: fileFromBackend.extractedContent,
           attachment_type: fileFromBackend.attachment_type,
           language: fileFromBackend.language
         });
       }
-      // *** CASO 3: FORMATO INESPERADO ***
       else {
         console.warn(`⚠️ [MULTIMODAL] Archivo recuperado con formato inesperado:`, fileFromBackend);
       }
     }
 
-    // *** PROCESAR ARCHIVOS REGULARES (NUEVOS) ***
     const imageFiles = regularFiles.filter(f => f.type === 'image');
     const documentFiles = regularFiles.filter(f => f.type === 'document');
     const codeFiles = regularFiles.filter(f => f.type === 'code');
@@ -371,7 +359,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       throw new Error('Error al procesar archivos: ' + processingError.message);
     }
 
-    // Verificar contenido
     if (content.length === 0) {
       throw new Error('No hay contenido para enviar');
     }
@@ -382,7 +369,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       texto: content.find(c => c.type === 'text')?.text?.substring(0, 50) + '...'
     });
 
-    // Enviar
     const payload = { userId, avaId, chatId, content };
     const options = createFetchOptions(payload, signal);
     const response = await fetch(API_ROUTES.multimodal, options);
@@ -402,7 +388,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
 
     console.log('🔄 [MULTIMODAL RETRY/EDIT] Procesando archivos SIN GUARDAR:', files.length);
 
-    // *** SEPARAR ARCHIVOS RECUPERADOS Y NUEVOS ***
     const filesFromBackend = files.filter(f => f._retrievedFromBackend);
     const regularFiles = files.filter(f => !f._retrievedFromBackend);
 
@@ -410,13 +395,10 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       console.log(`📋 [MULTIMODAL RETRY/EDIT] ${filesFromBackend.length} archivos recuperados para reintento`);
     }
 
-    // Sanitizar el mensaje
     const safeMessage = message ? sanitizeText(message) : '';
 
-    // Preparar contenido
     const content = [];
 
-    // Agregar texto
     if (safeMessage && safeMessage.trim()) {
       content.push({
         type: "text",
@@ -424,7 +406,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       });
     }
 
-    // *** PROCESAR ARCHIVOS RECUPERADOS DEL BACKEND ***
     for (const fileFromBackend of filesFromBackend) {
       console.log(`📄 [MULTIMODAL RETRY/EDIT] Procesando archivo recuperado:`, {
         type: fileFromBackend.type,
@@ -433,7 +414,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
         hasDataUrl: !!fileFromBackend.data_url
       });
 
-      // *** CASO 1: IMAGEN RECUPERADA ***
       if (fileFromBackend.type === 'image_url' && fileFromBackend.image_url) {
         console.log(`🖼️ [MULTIMODAL RETRY/EDIT] Añadiendo imagen recuperada`);
 
@@ -445,7 +425,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
           }
         });
       }
-      // *** CASO 2: DOCUMENTO RECUPERADO ***
       else if (['file', 'document'].includes(fileFromBackend.type) && fileFromBackend.data_url) {
         console.log(`📄 [MULTIMODAL RETRY/EDIT] Añadiendo documento recuperado: ${fileFromBackend.name}`);
 
@@ -455,19 +434,16 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
           filename: fileFromBackend.name,
           name: fileFromBackend.name,
           mime_type: fileFromBackend.mime_type,
-          // *** MANTENER CONTENIDO EXTRAÍDO ***
           extractedContent: fileFromBackend.extractedContent,
           attachment_type: fileFromBackend.attachment_type,
           language: fileFromBackend.language
         });
       }
-      // *** CASO 3: FORMATO INESPERADO ***
       else {
         console.warn(`⚠️ [MULTIMODAL RETRY/EDIT] Archivo recuperado con formato inesperado:`, fileFromBackend);
       }
     }
 
-    // *** PROCESAR ARCHIVOS REGULARES (SI LOS HAY) ***
     const imageFiles = regularFiles.filter(f => f.type === 'image');
     const documentFiles = regularFiles.filter(f => f.type === 'document');
     const codeFiles = regularFiles.filter(f => f.type === 'code');
@@ -490,7 +466,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       throw new Error('Error al procesar archivos: ' + processingError.message);
     }
 
-    // Verificar contenido
     if (content.length === 0) {
       throw new Error('No hay contenido para enviar');
     }
@@ -501,11 +476,9 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       texto: content.find(c => c.type === 'text')?.text?.substring(0, 50) + '...'
     });
 
-    // *** ENVIAR A ENDPOINT SIN GUARDAR ***
     const payload = { userId, avaId, chatId, content };
     const options = createFetchOptions(payload, signal);
 
-    // *** USAR RUTA ESPECÍFICA PARA PATOLOGÍA SIN GUARDAR ***
     const response = await fetch(API_ROUTES.multimodalWithoutSaving, options);
     return await handleResponse(response);
   };
@@ -528,25 +501,21 @@ async function retryRequest(fn, signal = null, retries = 3, delay = 1000) {
       retriesLeft: retries
     });
 
-    // 🚫 NO RETRY: Error de usuario gratuito en AVA
     if (error.isFreeUserAvaError || error.noRetry) {
       console.log('🚫 [RETRY] No retry para error AVA 402');
       throw error;
     }
 
-    // 🚫 NO RETRY: Errores de tokens
     if (error.isTokenLimit || error.isPreValidationLimit) {
       console.log('🚫 [RETRY] No retry for token errors');
       throw error;
     }
 
-    // 🚫 NO RETRY: Cancelación
     if (error.name === 'AbortError' || (signal && signal.aborted)) {
       console.log('🚫 [RETRY] No retry for abort errors');
       throw error;
     }
 
-    // 🚫 NO RETRY: Bad Request
     if (error.message && error.message.includes('400')) {
       console.log('🚫 [RETRY] No retry for 400 errors');
       throw error;
@@ -608,34 +577,27 @@ export async function replaceInteraction(chatId, userMessageId, aiMessageId, use
       hasHTMLEscapes: userContent?.includes('&quot;')
     });
 
-    // *** OPTIMIZADO: Manejo inteligente del contenido del usuario ***
     let safeUserContent;
     try {
-      // *** VERIFICAR SI ES JSON MULTIMODAL ***
       if (typeof userContent === 'string' && userContent.trim().startsWith('{')) {
-        // *** INTENTAR PARSEAR PARA VERIFICAR QUE ES JSON VÁLIDO ***
         JSON.parse(userContent);
         safeUserContent = userContent; // *** NO SANITIZAR JSON ***
         console.log('✅ [REPLACE] JSON multimodal detectado, preservando estructura');
       } else {
-        // *** ES TEXTO NORMAL, SANITIZAR ***
         safeUserContent = sanitizeText(userContent);
         console.log('✅ [REPLACE] Texto normal detectado, sanitizando');
       }
     } catch (jsonError) {
-      // *** SI NO ES JSON VÁLIDO, SANITIZAR COMO TEXTO ***
       safeUserContent = sanitizeText(userContent);
       console.log('✅ [REPLACE] JSON inválido, sanitizando como texto');
     }
 
-    // Preparar payload básico
     const payload = {
       userId: userId,
       userContent: safeUserContent,
       aiContent: aiContent
     };
 
-    // Extraer IDs numéricos si es posible
     const userIdNum = extractNumericId(userMessageId);
     const aiIdNum = extractNumericId(aiMessageId);
 
@@ -728,7 +690,6 @@ export async function handleResponse(response, responseText = null) {
   if (!response.ok) {
     console.log(`🚨 HTTP ERROR: ${response.status}`, data);
 
-    // 💳 CASO ESPECÍFICO AVA: Error 402 - Usuario gratuito
     if (response.status === 402) {
       console.log(`💳 [AVA 402] Usuario gratuito sin acceso - SIN RETRY`);
 
@@ -741,7 +702,6 @@ export async function handleResponse(response, responseText = null) {
         careerInfo: data.careerInfo || null,
         upgradeInfo: data.upgradeInfo || null,
         responseData: data,
-        // 🚫 CRÍTICO: SIN RETRY
         noRetry: true
       };
       throw freeUserAvaError;
@@ -824,7 +784,6 @@ export async function saveMarkdownImage(imageUrl, chatId) {
 
     const response = await fetch('/api/chats/save-markdown-image', options);
 
-    // ✅ MANEJO SILENCIOSO - sin logs
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Error HTTP ${response.status}: ${errorText}`);
@@ -838,17 +797,14 @@ export async function saveMarkdownImage(imageUrl, chatId) {
       throw new Error('Respuesta del servidor no válida');
     }
 
-    // ✅ VERIFICACIÓN SILENCIOSA - sin logs
     if (!data.success) {
       const errorMsg = data.error || data.message || 'Error desconocido al guardar imagen';
       throw new Error(errorMsg);
     }
 
-    // ✅ RETORNO SILENCIOSO - sin logs de éxito
     return data;
 
   } catch (error) {
-    // ✅ SILENCIOSO: No throw, no console.error
     return {
       success: false,
       error: error.message,

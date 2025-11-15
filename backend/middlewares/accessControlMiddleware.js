@@ -1,4 +1,3 @@
-// backend/middlewares/accessControlMiddleware.js (OPTIMIZADO - SIN CACHE DUPLICADO)
 
 import { AccessValidationService } from "../services/shared/accessValidationService.js";
 import { ERROR_CODES, getErrorStatusCode } from "../utils/shared/errorCodes.js";
@@ -27,7 +26,6 @@ export const verifyToolAccess = async (req, res, next) => {
     const { userId } = req.body;
     const userFromAuth = req.user?.id_user;
 
-    // 🚀 Validación de autorización optimizada
     if (!userId || (userFromAuth && userId !== userFromAuth)) {
       logSecurityEvent('TOOL_ACCESS_USER_MISMATCH', 'Intento de acceso con userId diferente al autenticado', {
         requestedUserId: userId,
@@ -76,7 +74,6 @@ export const verifyToolAccess = async (req, res, next) => {
       return next();
     }
 
-    // 📋 USUARIOS REGULARES: Validación optimizada
     logger.debug('Usuario regular - Validando límites', { 
       userId, 
       isPremium: userStatus.isPremium 
@@ -153,7 +150,6 @@ export const verifyAvaAccess = async (req, res, next) => {
     const { userId, avaId } = req.body;
     const userFromAuth = req.user?.id_user;
 
-    // 🚀 Validación optimizada
     if (!userId || (userFromAuth && userId !== userFromAuth)) {
       logSecurityEvent('AVA_ACCESS_USER_MISMATCH', 'Intento de acceso a AVA con userId diferente al autenticado', {
         requestedUserId: userId,
@@ -211,7 +207,6 @@ export const verifyAvaAccess = async (req, res, next) => {
         avaId
       };
 
-      // 🚀 Obtener info del AVA en background (no bloquear)
       setImmediate(async () => {
         try {
           const validation = await AccessValidationService.validateAvaAccess(userId, avaId);
@@ -227,7 +222,6 @@ export const verifyAvaAccess = async (req, res, next) => {
       return next();
     }
 
-    // 📋 USUARIOS REGULARES: Validación completa
     const validation = await AccessValidationService.validateAvaAccess(userId, avaId);
 
     if (!validation.canProceed) {
@@ -343,19 +337,15 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       }
     }
 
-    // 🚀 USUARIOS REGULARES: Validación optimizada en paralelo
     logger.debug('Ejecutando validación optimizada para usuarios regulares', { userId });
 
-    // 🚀 OPERACIONES EN PARALELO PARA MÁXIMA VELOCIDAD
     const validationPromises = [];
     
-    // 1️⃣ Validación actual de tokens (siempre)
     validationPromises.push(
       AccessValidationService.validateTokenLimits(chatId, userId)
         .then(result => ({ type: 'current', result }))
     );
 
-    // 2️⃣ Pre-validación solo si hay query/content (en paralelo)
     const textToValidate = query || (content && Array.isArray(content) ? 
       content.filter(item => item && item.type === 'text')
              .map(item => item.text)
@@ -373,7 +363,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
     // ⚡ EJECUTAR TODAS LAS VALIDACIONES EN PARALELO
     const validationResults = await Promise.all(validationPromises);
     
-    // 🚀 PROCESAR RESULTADOS
     let currentValidation = null;
     let preValidation = null;
     
@@ -385,7 +374,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       }
     }
 
-    // ✅ VERIFICAR LÍMITE ACTUAL
     if (!currentValidation.canProceed) {
       logSecurityEvent('TOKEN_LIMIT_EXCEEDED', 'Límite de tokens excedido en chat', {
         userId: userId,
@@ -412,7 +400,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       });
     }
 
-    // ✅ VERIFICAR PRE-VALIDACIÓN SI EXISTE
     if (preValidation && !preValidation.canProceed) {
       logSecurityEvent('PRE_VALIDATION_FAILED', 'Pre-validación falló en validación unificada', {
         userId,
@@ -431,7 +418,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       });
     }
 
-    // ✅ CONFIGURAR INFORMACIÓN UNIFICADA
     const tokenInfo = {
       ...currentValidation.tokenInfo,
       exactCalculation: true
@@ -455,7 +441,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       method: 'optimized_unified_parallel'
     } : null;
 
-    // 🚀 LOGGING OPTIMIZADO
     if (tokenWarning) {
       logSecurityEvent('TOKEN_LIMIT_WARNING', 'Advertencia de límite de tokens', {
         userId: userId,
@@ -496,7 +481,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
 
     logger.error('Error en validación unificada de tokens', { error: error.message });
 
-    // ✅ FALLBACK ULTRARRÁPIDO
     try {
       logger.debug('Usando fallback ultrarrápido');
       
@@ -682,7 +666,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
         }
       }
 
-      // 📋 USUARIOS REGULARES: Validación específica optimizada
       logger.debug('Usuario regular - Validando límites específicos', { toolSlug, userId });
 
       const userStatus = await AccessValidationService.getUserStatus(userId);
@@ -838,7 +821,6 @@ export const clearUserStatusCache = (userId = null) => {
 };
 
 // ================================
-// 🗑️ FUNCIONES LEGACY DEPRECADAS (compatibilidad)
 // ================================
 
 export const checkTokenLimits = checkTokenLimitsUnified;

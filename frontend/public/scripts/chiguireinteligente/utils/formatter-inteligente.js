@@ -32,7 +32,6 @@ export function formatCurrency(amount, currencyCode = DEFAULT_CURRENCY, locale =
     }
   }
   
-  // Formatear según locale y moneda
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currencyCode
@@ -49,10 +48,8 @@ export function formatCurrency(amount, currencyCode = DEFAULT_CURRENCY, locale =
 export function formatDate(date, format = 'medium', locale = DEFAULT_LOCALE) {
   if (!date) return '';
   
-  // Convertir a objeto Date si es string
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   
-  // Verificar si la fecha es válida
   if (isNaN(dateObj.getTime())) {
     console.warn(`Fecha inválida: ${date}`);
     return '';
@@ -68,7 +65,6 @@ export function formatDate(date, format = 'medium', locale = DEFAULT_LOCALE) {
     datetime: { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
   };
   
-  // Formatear según opciones
   return new Intl.DateTimeFormat(locale, formatOptions[format] || formatOptions.medium).format(dateObj);
 }
 
@@ -85,7 +81,6 @@ export function formatPercentage(value, fromDecimal = true, decimals = 1, locale
     return '0%';
   }
   
-  // Convertir a número si es string
   if (typeof value === 'string') {
     value = parseFloat(value);
   }
@@ -95,7 +90,6 @@ export function formatPercentage(value, fromDecimal = true, decimals = 1, locale
     value = value * 100;
   }
   
-  // Formatear según locale
   return new Intl.NumberFormat(locale, {
     style: 'percent',
     minimumFractionDigits: decimals,
@@ -115,12 +109,10 @@ export function formatNumber(value, decimals = 0, locale = DEFAULT_LOCALE) {
     return '0';
   }
   
-  // Convertir a número si es string
   if (typeof value === 'string') {
     value = parseFloat(value);
   }
   
-  // Formatear según locale
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals

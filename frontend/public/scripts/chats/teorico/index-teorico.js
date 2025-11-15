@@ -5,11 +5,9 @@
  * y delega la configuración de variante a app.js
  */
 
-// Importar app.js directamente - la detección e inicialización
 // de variante se realizará en ensureVariantInitialization()
 import './core/app-teorico.js';
 
-// Registrar información de depuración
 console.log('Punto de entrada inicializado - delegando configuración de variante a app.js');
 
 // Los módulos específicos de la variante pueden ser cargados aquí si es necesario

@@ -14,11 +14,9 @@ export const AudioSecurityService = {
    */
   async scanFile(filePath) {
     try {
-      // Crear copia temporal en /tmp
       const tempFileName = `scan_${Date.now()}_${path.basename(filePath)}`;
       const tempFilePath = `/tmp/${tempFileName}`;
       
-      // Copiar archivo a escanear a /tmp
       await fs.promises.copyFile(filePath, tempFilePath);
       console.log(`Archivo copiado a ${tempFilePath} para escaneo`);
       
@@ -31,7 +29,6 @@ export const AudioSecurityService = {
         console.log("ClamAV no detectó amenazas, realizando verificación adicional de audio...");
         
         try {
-          // Establecer un timeout para la verificación adicional
           const additionalCheckPromise = new Promise(async (resolve) => {
             try {
               // Leer el archivo para verificación adicional
@@ -49,7 +46,6 @@ export const AudioSecurityService = {
             }
           });
           
-          // Establecer un timeout de 15 segundos para la verificación adicional
           const timeoutPromise = new Promise(resolve => {
             setTimeout(() => {
               resolve({ 
@@ -72,7 +68,6 @@ export const AudioSecurityService = {
             clamResult.viruses = [...(clamResult.viruses || []), 'Audio con contenido sospechoso'];
             clamResult.additionalInfo = additionalCheck;
           } else {
-            // Mostrar el mensaje completo incluyendo la puntuación
             console.log(`Verificación adicional de audio: ${additionalCheck.message}`);
             // Aunque no sea lo suficientemente sospechoso para bloquearlo, incluir la info en el resultado
             if (additionalCheck.riskScore > 0) {
@@ -84,7 +79,6 @@ export const AudioSecurityService = {
         }
       }
       
-      // Limpiar archivo temporal
       try {
         fs.unlinkSync(tempFilePath);
         console.log(`Archivo temporal eliminado: ${tempFilePath}`);
@@ -108,7 +102,6 @@ export const AudioSecurityService = {
     try {
       console.log("Analizando contenido potencialmente malicioso en archivo de audio...");
       
-      // Convertir a hex para buscar patrones binarios (solo los primeros bytes para firmas y el encabezado)
       const headerHex = audioBuffer.slice(0, 500).toString('hex');
       
       console.log(`Audio analizado: tamaño=${audioBuffer.length} bytes`);
@@ -141,7 +134,6 @@ export const AudioSecurityService = {
       let hasValidAudioSignature = false;
       let detectedAudioType = null;
       
-      // Verificar firmas de audio válidas en los primeros bytes
       for (const { pattern, name, type } of validAudioSignatures) {
         if (headerHex.toLowerCase().startsWith(pattern) || headerHex.toLowerCase().includes(pattern.toLowerCase())) {
           hasValidAudioSignature = true;
@@ -188,7 +180,6 @@ export const AudioSecurityService = {
           description: 'JavaScript alert en metadatos' 
         },
                 
-        // Detectar shellcode - más específico
         { 
           pattern: 'e8000000005b31c9', 
           name: 'shellcode-specific', 
@@ -216,13 +207,10 @@ export const AudioSecurityService = {
         console.log('⚠️ No se detectó una firma de audio válida');
       }
       
-      // Buscar patrones sospechosos específicos
       // MEJORA: Usar dos estrategias diferentes según el tamaño del archivo
       if (audioBuffer.length < 10 * 1024 * 1024) { // Para archivos < 10MB
-        // Usar buffer completo para archivos pequeños
         const fullHex = audioBuffer.toString('hex');
         
-        // Buscar patrones sospechosos específicos
         for (const { pattern, name, score, description } of suspiciousPatterns) {
           if (fullHex.toLowerCase().includes(pattern.toLowerCase())) {
             console.log(`⚠️ Patrón sospechoso detectado: ${name} - ${description}`);
@@ -231,8 +219,6 @@ export const AudioSecurityService = {
           }
         }
       } else {
-        // Para archivos grandes, verificar en múltiples puntos
-        // Dividir y verificar por segmentos para evitar usar demasiada memoria
         const checkPoints = [
           0, // Inicio del archivo
           Math.floor(audioBuffer.length * 0.25), // 25% del archivo
@@ -260,13 +246,10 @@ export const AudioSecurityService = {
       // que pueden aparecer legítimamente en los metadatos
       if (detectedAudioType === 'mp3' && headerHex.includes('494433')) {
         // Si es un MP3 con ID3 tag y se detectó 'mz-exe' o 'shellcode-pattern',
-        // verificar si son falsos positivos comunes en metadatos ID3
         
-        // Verificar si la detección de ejecutables es en los metadatos (al inicio)
         if (detections['pe-exe-header'] && headerHex.includes('4d5a90000300000004000000ffff')) {
           console.log('ℹ️ Verificando posible falso positivo en ID3 tag...');
           
-          // Analizar el contexto de la coincidencia
           const headerAnalysis = this.analyzeID3Context(headerHex);
           
           // Si es parte de un ID3 frame legítimo, ignorar la detección
@@ -352,7 +335,6 @@ export const AudioSecurityService = {
    * @returns {Object} - Resultado del análisis
    */
     analyzeID3Context(hexData) {
-      // Verificar si hay ID3 tag
       if (!hexData.includes('494433')) {
         return { isLikelyID3Data: false };
       }
@@ -361,7 +343,6 @@ export const AudioSecurityService = {
       const id3HeaderPattern = /494433[0-9a-f]{2}[0-9a-f]{2}[0-9a-f]{8}/i;
       const hasID3Structure = id3HeaderPattern.test(hexData);
       
-      // Verificar si la coincidencia "MZ" está dentro de un frame de ID3 conocido
       const knownID3Frames = [
         'APIC', // Imagen embebida - 41504943
         'COMM', // Comentario - 434f4d4d
@@ -412,17 +393,14 @@ export const AudioSecurityService = {
       return { valid: false, reason: 'Archivo demasiado pequeño para ser un audio válido' };
     }
 
-    // Verificar cada firma conocida
     for (const sig of signatures) {
       let match = true;
       const offsetToCheck = sig.offset || 0;
       
-      // Verificar si el buffer tiene suficientes bytes para esta firma
       if (buffer.length < offsetToCheck + sig.bytes.length) {
         continue;
       }
       
-      // Comprobar cada byte de la firma
       for (let i = 0; i < sig.bytes.length; i++) {
         if (buffer[offsetToCheck + i] !== sig.bytes[i]) {
           match = false;
@@ -463,7 +441,6 @@ export const AudioSecurityService = {
       // Variable para rastrear si el proceso ha terminado
       let processCompleted = false;
       
-      // Usar opciones avanzadas para mejorar la detección
       const clamdscan = spawn('clamdscan', [
         '--fdpass',             // Hereda permisos del usuario que ejecuta
         '--stdout',             // Vuelca el reporte por stdout
@@ -545,7 +522,6 @@ export const AudioSecurityService = {
         resolve(false);
       });
       
-      // Establecer un timeout para evitar bloqueos
       setTimeout(() => resolve(false), 1000);
     });
   }

@@ -1,25 +1,20 @@
-// backend/controllers/usuarios/deleteUserController.js
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 import { deleteAccountService } from '../../services/usuarios/deleteAccountService.js';
 
 // Controlador para la eliminación de cuenta de usuario
 export const deleteUserController = {
-  // Solicitar eliminación de cuenta (generar código de verificación)
   requestDeletion: async (req, res) => {
     try {
       const userId = req.user.id_user;
       
-      // Generar solicitud de eliminación
       const { deletionToken, verificationCode } = await deleteAccountService.generateDeletionRequest({
         userId,
         ip: req.ip,
         userAgent: req.headers['user-agent']
       });
       
-      // Obtener email del usuario
       const email = await deleteAccountService.getUserEmail(userId);
       
-      // Enviar correo con código de verificación
       await deleteAccountService.sendVerificationEmail(email, verificationCode);
       
       // Éxito - devolver deletionToken
@@ -44,7 +39,6 @@ export const deleteUserController = {
     }
   },
   
-  // Confirmar eliminación de cuenta
   confirmDeletion: async (req, res) => {
     try {
       const userId = req.user.id_user;
@@ -56,7 +50,6 @@ export const deleteUserController = {
       console.log('- deletionToken:', deletionToken);
       console.log('- reason:', reason);
       
-      // Validar datos requeridos
       if (!verificationCode || !deletionToken) {
         console.log('Error: Faltan datos obligatorios');
         return res.status(400).json({ 
@@ -65,7 +58,6 @@ export const deleteUserController = {
         });
       }
       
-      // Validar solicitud de eliminación
       const validation = await deleteAccountService.validateDeletionRequest({
         userId,
         verificationCode,
@@ -88,14 +80,12 @@ export const deleteUserController = {
       
       console.log('Código verificado correctamente');
       
-      // Marcar solicitud como completada
       await deleteAccountService.markRequestCompleted({
         userId,
         deletionToken,
         reason
       });
       
-      // Eliminar cuenta del usuario
       await deleteAccountService.deleteUserAccount(
         userId, 
         req.ip, 
@@ -103,10 +93,8 @@ export const deleteUserController = {
         reason
       );
       
-      // Limpiar cookies de sesión
       _clearSessionCookies(res);
       
-      // Enviar respuesta exitosa
       console.log('Cuenta eliminada correctamente y sesión terminada');
       res.status(200).json({
         success: true,
@@ -130,7 +118,6 @@ export const deleteUserController = {
   }
 };
 
-// Función auxiliar para limpiar cookies de sesión
 function _clearSessionCookies(res) {
   res.clearCookie("token", {
     httpOnly: true,

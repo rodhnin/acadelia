@@ -469,17 +469,14 @@ export const VARIANTS = {
 }
 };
 
-// Para compatibilidad con código existente
 export const APP_VARIANTS = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [key, variant.urlSegment])
 );
 
-// Para compatibilidad con código existente
 export const URL_TO_VARIANT = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [variant.urlSegment, key])
 );
 
-// Para compatibilidad con código existente
 export const VARIANT_CONFIG = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [variant.urlSegment, variant.welcomeConfig])
 );
@@ -493,7 +490,6 @@ function detectVariantFromUrl() {
   const pathSegments = path.split('/').filter(Boolean);
   const firstSegment = pathSegments[0]; // Mantener case-sensitive para slugs como "CienciasAplicadas"
   
-  // Buscar directamente en la estructura VARIANTS
   for (const [key, variant] of Object.entries(VARIANTS)) {
     if (variant.urlSegment === firstSegment) {
       _lastDetectedVariantKey = key;
@@ -505,7 +501,6 @@ function detectVariantFromUrl() {
     }
   }
   
-  // Fallback con búsqueda insensible a mayúsculas/minúsculas
   const lowerFirstSegment = firstSegment?.toLowerCase();
   for (const [key, variant] of Object.entries(VARIANTS)) {
     if (variant.urlSegment.toLowerCase() === lowerFirstSegment) {
@@ -565,7 +560,6 @@ export function setCurrentVariant(variantKey) {
     return true;
   }
   
-  // Si no se encuentra la variante, intentar buscarla insensible a mayúsculas/minúsculas
   const upperKey = variantKey?.toUpperCase();
   if (upperKey && upperKey in VARIANTS) {
     _lastDetectedVariantKey = upperKey;
@@ -815,12 +809,10 @@ export const DOM_SELECTORS = {
   }
 };
 
-// Para mantener compatibilidad con código existente - ahora se calculan bajo demanda
 export const URL_CONFIG = getUrlConfig();
 export const APP_CONFIG = getAppConfig();
 export const API_ROUTES = getApiRoutes();
 
-// Exportar todo para mantener compatibilidad
 export default {
   VARIANTS,
   APP_VARIANTS,

@@ -1,9 +1,7 @@
-// backend/controllers/pagos/argentinaWebhookController.js
 import hookdeckValidator from '../../middlewares/hookdeckValidator.js';
 import argentinaPaymentService from '../../services/pagos/argentinaPaymentService.js';
 import pool from '../../lib/dbPool.js';
 
-// Verificar eventos duplicados
 async function checkDuplicateEvent(eventId) {
   try {
     const result = await pool.query(
@@ -23,7 +21,6 @@ async function checkDuplicateEvent(eventId) {
 
 export const handleUalaWebhook = async (req, res) => {
   try {
-    // ✅ VALIDACIÓN CON HEADERS REALES
     if (!hookdeckValidator.skipValidation()) {
       if (!hookdeckValidator.validateSignature(req)) {
         console.error('❌ Firma de Hookdeck inválida');
@@ -33,7 +30,6 @@ export const handleUalaWebhook = async (req, res) => {
       console.log('⚠️ Validación de Hookdeck omitida');
     }
 
-    // Obtener info del evento con headers corregidos
     const eventInfo = hookdeckValidator.getEventInfo(req);
     
     console.log('📨 Webhook recibido:', {
@@ -43,13 +39,11 @@ export const handleUalaWebhook = async (req, res) => {
       body: req.body
     });
 
-    // Verificar duplicados
     if (await checkDuplicateEvent(eventInfo.eventId)) {
       console.log('⚠️ Evento duplicado, ignorando');
       return res.status(200).json({ received: true, duplicate: true });
     }
 
-    // Procesar evento
     const eventData = req.body;
     console.log('📝 Payload completo:', JSON.stringify(eventData, null, 2));
 
@@ -61,7 +55,6 @@ export const handleUalaWebhook = async (req, res) => {
 
     console.log('🎯 Tipo de evento:', eventType);
 
-    // Procesar según tipo
     if (['order.paid', 'payment.success', 'PAID', 'COMPLETED'].includes(eventType)) {
       await handlePaymentSuccess(eventData);
     } else if (['order.failed', 'payment.failed', 'FAILED', 'REJECTED'].includes(eventType)) {
@@ -111,7 +104,6 @@ async function handlePaymentSuccess(eventData) {
     // 🆕 NUEVO: Buscar por UUID si no hay formato PAY_xxx
     let paymentId;
     
-    // Intentar extraer payment_id del formato PAY_xxx
     const match = externalRef.match(/PAY_(\d+)/);
     if (match) {
       paymentId = parseInt(match[1]);
@@ -139,7 +131,6 @@ async function handlePaymentSuccess(eventData) {
       }
     }
 
-    // Confirmar pago
     const result = await argentinaPaymentService.confirmPayment(paymentId, 'webhook');
     
     if (result.success && !result.alreadyCompleted) {
@@ -183,7 +174,6 @@ async function handlePaymentFailed(eventData) {
     // 🆕 NUEVO: Buscar por UUID si no hay formato PAY_xxx
     let paymentId;
     
-    // Intentar extraer payment_id del formato PAY_xxx
     const match = externalRef.match(/PAY_(\d+)/);
     if (match) {
       paymentId = parseInt(match[1]);
@@ -224,7 +214,6 @@ async function handlePaymentFailed(eventData) {
   }
 }
 
-// Limpiar eventos viejos (ejecutar periódicamente)
 export async function cleanupOldEvents() {
   try {
     const result = await pool.query(

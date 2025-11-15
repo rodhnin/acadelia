@@ -25,12 +25,9 @@ export async function crearNuevaHerramienta(req, res) {
     
     const herramienta = await crearHerramienta({ nombre, descripcion, slug, imagen });
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -90,12 +87,9 @@ export async function actualizarHerramientaById(req, res) {
       imagen 
     });
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -123,18 +117,14 @@ export async function eliminarHerramientaById(req, res) {
   try {
     const { id } = req.params;
     
-    // Obtener información de la herramienta antes de eliminarla
     const herramienta = await obtenerHerramientaPorId(id);
     const nombreHerramienta = herramienta ? herramienta.nombre : `Herramienta #${id}`;
     
     await eliminarHerramienta(id);
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({

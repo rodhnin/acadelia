@@ -7,7 +7,6 @@ const LoadingOverlay = {
     count: 0,
     
     init() {
-        // Crear el overlay si aún no existe
         if (!this.overlay) {
             this.overlay = document.createElement('div');
             this.overlay.className = 'loading-overlay';
@@ -83,13 +82,11 @@ const LoadingOverlay = {
         this.init();
         this.count++;
         
-        // Actualizar el mensaje
         const textElement = this.overlay.querySelector('.spinner-text');
         if (textElement) {
             textElement.textContent = message;
         }
         
-        // Mostrar el overlay
         this.overlay.classList.add('active');
         document.body.classList.add('modal-open');
     },
@@ -116,7 +113,6 @@ const LoadingOverlay = {
     }
 };
 
-// Sistema de Modales
 class ModalManager {
     constructor() {
         this.activeModal = null;
@@ -124,7 +120,6 @@ class ModalManager {
     }
 
     init() {
-        // Crear estilos para modales
         const modalStyles = document.createElement('style');
         modalStyles.textContent = `
             .payment-modal {
@@ -308,12 +303,10 @@ class ModalManager {
     }
 
     show(content) {
-        // Cerrar modal anterior si existe
         if (this.activeModal) {
             this.close();
         }
 
-        // Crear nueva modal
         this.activeModal = document.createElement('div');
         this.activeModal.className = 'payment-modal';
         this.activeModal.innerHTML = content;
@@ -321,7 +314,6 @@ class ModalManager {
         document.body.appendChild(this.activeModal);
         document.body.classList.add('modal-open');
         
-        // Mostrar con animación
         requestAnimationFrame(() => {
             this.activeModal.classList.add('show');
         });
@@ -335,26 +327,22 @@ class ModalManager {
     setupEventListeners() {
         if (!this.activeModal) return;
 
-        // Cerrar al hacer clic fuera
         this.activeModal.addEventListener('click', (e) => {
             if (e.target === this.activeModal) {
                 this.close();
             }
         });
 
-        // Cerrar con botón X
         const closeBtn = this.activeModal.querySelector('.close-modal');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.close());
         }
 
-        // Cerrar con botones que tengan clase close-modal-btn
         const closeModalBtns = this.activeModal.querySelectorAll('.close-modal-btn');
         closeModalBtns.forEach(btn => {
             btn.addEventListener('click', () => this.close());
         });
 
-        // Cerrar con ESC
         const escHandler = (e) => {
             if (e.key === 'Escape') {
                 this.close();
@@ -378,7 +366,6 @@ class ModalManager {
         }, 300);
     }
 
-    // Modal específico para información de factura
     showInvoiceInfo() {
         const content = `
             <div class="modal-content">
@@ -421,7 +408,6 @@ function showAlert(message, type = 'info', duration = 3000) {
     }
 }
 
-// Función helper para hacer peticiones a la API
 async function makeApiRequest(endpoint, options = {}) {
     const defaultOptions = {
         headers: {
@@ -626,7 +612,6 @@ class PaymentHistory {
         
         const config = this.getPaymentConfig(payment);
         
-        // Validación de datos
         const productName = payment.product_name || 'Producto';
         const interval = payment.interval || '';
         const paymentMethod = payment.payment_method ? payment.payment_method.toUpperCase() : '';
@@ -1003,7 +988,6 @@ class CustomFilterSelect {
     }
 
     init() {
-        // Buscar todos los selectores de filtro
         const selects = document.querySelectorAll('.payment-filter select');
         
         selects.forEach(select => {
@@ -1012,13 +996,11 @@ class CustomFilterSelect {
     }
 
     createCustomDropdown(select) {
-        // Crear el contenedor del selector personalizado
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
         select.parentNode.insertBefore(wrapper, select);
         wrapper.appendChild(select);
         
-        // Crear el botón que muestra la selección actual
         const button = document.createElement('div');
         button.className = 'custom-select-button';
         button.innerHTML = `
@@ -1027,42 +1009,33 @@ class CustomFilterSelect {
         `;
         wrapper.appendChild(button);
         
-        // Crear la lista desplegable
         const dropdown = document.createElement('div');
         dropdown.className = 'custom-select-dropdown';
         wrapper.appendChild(dropdown);
         
-        // Añadir las opciones a la lista desplegable
         for (let i = 0; i < select.options.length; i++) {
             const option = document.createElement('div');
             option.className = 'custom-select-option';
             option.innerHTML = select.options[i].text;
             option.setAttribute('data-value', select.options[i].value);
             
-            // Marcar la opción seleccionada
             if (select.selectedIndex === i) {
                 option.classList.add('selected');
             }
             
-            // Añadir evento de clic a la opción
             option.addEventListener('click', () => {
-                // Actualizar el valor del select original
                 select.value = option.getAttribute('data-value');
                 
-                // Actualizar el texto del botón
                 button.querySelector('span').textContent = option.textContent;
                 
-                // Disparar el evento change en el select original
                 const event = new Event('change');
                 select.dispatchEvent(event);
                 
-                // Actualizar las clases selected
                 dropdown.querySelectorAll('.custom-select-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
                 option.classList.add('selected');
                 
-                // Cerrar el dropdown
                 this.closeDropdown(dropdown);
             });
             
@@ -1073,25 +1046,21 @@ class CustomFilterSelect {
         button.addEventListener('click', (e) => {
             e.stopPropagation();
             
-            // Cerrar todos los otros dropdowns abiertos primero
             document.querySelectorAll('.custom-select-dropdown.open').forEach(dd => {
                 if (dd !== dropdown) {
                     dd.classList.remove('open');
                 }
             });
             
-            // Abrir/cerrar este dropdown
             dropdown.classList.toggle('open');
             button.classList.toggle('active');
         });
         
-        // Cerrar dropdown al hacer clic fuera
         document.addEventListener('click', () => {
             this.closeDropdown(dropdown);
             button.classList.remove('active');
         });
         
-        // Ocultar el select original
         select.style.display = 'none';
     }
     
@@ -1103,7 +1072,6 @@ class CustomFilterSelect {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    // Agregar estilos para el selector personalizado (reutilizar los existentes)
     const customSelectStyles = document.createElement('style');
     customSelectStyles.textContent = `
         .custom-select-wrapper {
@@ -1203,12 +1171,10 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(customSelectStyles);
 
-    // Agregar estilos principales
     const styleSheet = document.createElement('style');
     styleSheet.textContent = styles;
     document.head.appendChild(styleSheet);
 
-    // Inicializar componentes
     LoadingOverlay.init();
     window.paymentHistory = new PaymentHistory();
     paymentHistory.loadPayments();

@@ -56,7 +56,6 @@ async function fetchWithCSRF(url, options = {}) {
             'Content-Type': 'application/json',
         };
         
-        // Añadir token CSRF si es necesario
         if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method)) {
             defaultHeaders['X-CSRF-Token'] = csrfToken;
         }
@@ -73,7 +72,6 @@ async function fetchWithCSRF(url, options = {}) {
         const response = await fetch(url, fetchOptions);
         
         if (!response.ok) {
-            // Manejo específico de errores
             if (response.status === 401) {
                 console.error('Sesión expirada o token inválido');
                 showNotification('Error', 'Sesión expirada. Por favor inicia sesión nuevamente.', 'error');
@@ -82,7 +80,6 @@ async function fetchWithCSRF(url, options = {}) {
                 showNotification('Error', 'No tienes permisos para realizar esta acción', 'error');
             }
             
-            // Intentar obtener mensaje de error del servidor
             let errorMessage;
             try {
                 const errorData = await response.json();
@@ -118,13 +115,11 @@ export async function getSecurityMetrics() {
  * @returns {Promise<Object>} Lista de eventos y datos de paginación
  */
 export async function getSecurityEvents(filters = {}, page = 1, limit = 50) {
-    // Construir query string
     const params = new URLSearchParams({
         page,
         limit
     });
     
-    // Añadir filtros a los parámetros
     Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
             params.append(key, value);
@@ -332,12 +327,10 @@ export async function cleanQueue(queueType) {
  * @returns {Promise<Blob>} Blob con los datos exportados
  */
 export async function exportSecurityEvents(filters = {}, format = 'csv') {
-    // Construir query string
     const params = new URLSearchParams({
         format
     });
     
-    // Añadir filtros a los parámetros
     Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
             params.append(key, value);
@@ -426,7 +419,6 @@ function showNotification(title, message, type = 'info') {
         if (toastMessage) toastMessage.textContent = message;
         if (toastTime) toastTime.textContent = 'ahora';
         
-        // Añadir clase según tipo
         toast.className = toast.className.replace(/bg-\w+/g, '');
         
         switch (type) {
@@ -443,7 +435,6 @@ function showNotification(title, message, type = 'info') {
                 toast.classList.add('bg-info');
         }
         
-        // Mostrar toast usando Bootstrap
         if (window.bootstrap && typeof bootstrap.Toast === 'function') {
             const bsToast = new bootstrap.Toast(toast);
             bsToast.show();
@@ -455,7 +446,6 @@ function showNotification(title, message, type = 'info') {
             }, 5000);
         }
     } else {
-        // Fallback a alert si no hay sistema de notificaciones
         console.log(`[${type.toUpperCase()}] ${title}: ${message}`);
     }
 }

@@ -7,12 +7,10 @@ import { logSecurityEvent } from '../../utils/securityLogger.js';
  */
 export const getSecurityEvents = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) { // Asumiendo que 3 es el rol de admin
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
-    // Extraer parámetros de solicitud
     const { 
       page = 1, 
       limit = 50, 
@@ -24,7 +22,6 @@ export const getSecurityEvents = async (req, res) => {
       endDate 
     } = req.query;
     
-    // Construir objeto de filtros
     const filters = {};
     if (eventType) filters.eventType = eventType;
     if (severity) filters.severity = severity;
@@ -33,7 +30,6 @@ export const getSecurityEvents = async (req, res) => {
     if (startDate) filters.startDate = new Date(startDate);
     if (endDate) filters.endDate = new Date(endDate);
     
-    // Obtener eventos
     const result = await securityService.getSecurityEvents(
       filters,
       parseInt(page),
@@ -52,7 +48,6 @@ export const getSecurityEvents = async (req, res) => {
  */
 export const getSecurityMetrics = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -70,7 +65,6 @@ export const getSecurityMetrics = async (req, res) => {
  */
 export const revokeUserTokens = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -81,7 +75,6 @@ export const revokeUserTokens = async (req, res) => {
       return res.status(400).json({ error: 'Se requiere userId y reason' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador revocó tokens de usuario', {
       adminId: req.user.id_user,
       targetUserId: userId,
@@ -101,7 +94,6 @@ export const revokeUserTokens = async (req, res) => {
  */
 export const blockIP = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -112,7 +104,6 @@ export const blockIP = async (req, res) => {
       return res.status(400).json({ error: 'Se requiere IP y razón' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador bloqueó IP', {
       adminId: req.user.id_user,
       ip,
@@ -133,7 +124,6 @@ export const blockIP = async (req, res) => {
  */
 export const unblockIP = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -144,7 +134,6 @@ export const unblockIP = async (req, res) => {
       return res.status(400).json({ error: 'Se requiere IP' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador desbloqueó IP', {
       adminId: req.user.id_user,
       ip
@@ -163,7 +152,6 @@ export const unblockIP = async (req, res) => {
  */
 export const getBlockedIPs = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -181,7 +169,6 @@ export const getBlockedIPs = async (req, res) => {
  */
 export const getFailedLoginAttempts = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -199,7 +186,6 @@ export const getFailedLoginAttempts = async (req, res) => {
  */
 export const getSuspiciousActivity = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -217,7 +203,6 @@ export const getSuspiciousActivity = async (req, res) => {
  */
 export const getUserSecurityInfo = async (req, res) => {
   try {
-    // Verificar permisos (solo admins o el propio usuario)
     const userId = req.params.userId;
     
     if (req.user.id_rol !== 3 && req.user.id_user != userId) {
@@ -237,7 +222,6 @@ export const getUserSecurityInfo = async (req, res) => {
  */
 export const logCustomSecurityEvent = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -248,7 +232,6 @@ export const logCustomSecurityEvent = async (req, res) => {
       return res.status(400).json({ error: 'Se requiere tipo de evento y mensaje' });
     }
     
-    // Registrar evento
     await securityService.registerSecurityEvent(
       eventType,
       message,
@@ -265,14 +248,12 @@ export const logCustomSecurityEvent = async (req, res) => {
   }
 };
 
-// Agregar estas funciones al final de securityController.js
 
 /**
  * Obtiene la configuración del sistema de seguridad
  */
 export const getSecurityConfig = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
@@ -290,19 +271,16 @@ export const getSecurityConfig = async (req, res) => {
  */
 export const saveSecurityConfig = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
     const config = req.body;
     
-    // Validar configuración
     if (!config) {
       return res.status(400).json({ error: 'Configuración inválida' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador actualizó configuración de seguridad', {
       adminId: req.user.id_user,
       changes: config
@@ -321,12 +299,10 @@ export const saveSecurityConfig = async (req, res) => {
  */
 export const resetSecurityCounters = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador reinició contadores de seguridad', {
       adminId: req.user.id_user
     });
@@ -344,12 +320,10 @@ export const resetSecurityCounters = async (req, res) => {
  */
 export const runSecurityDiagnostic = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador ejecutó diagnóstico de seguridad', {
       adminId: req.user.id_user
     });
@@ -367,14 +341,12 @@ export const runSecurityDiagnostic = async (req, res) => {
  */
 export const getSecurityLogs = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
     const { type = 'security', lines = 100 } = req.query;
     
-    // Validar parámetros
     if (!['security', 'error', 'combined'].includes(type)) {
       return res.status(400).json({ error: 'Tipo de log no válido' });
     }
@@ -397,30 +369,24 @@ export const getSecurityLogs = async (req, res) => {
  */
 export const exportSecurityEvents = async (req, res) => {
   try {
-    // Verificar permisos (solo admins)
     if (req.user.id_rol !== 3) {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
     
-    // Obtener parámetros
     const { format = 'csv', ...filters } = req.query;
     
-    // Validar formato
     if (!['csv', 'json', 'excel'].includes(format)) {
       return res.status(400).json({ error: 'Formato no válido' });
     }
     
-    // Registrar acción de administrador
     logSecurityEvent('ADMIN_ACTION', 'Administrador exportó eventos de seguridad', {
       adminId: req.user.id_user,
       format,
       filters
     });
     
-    // Obtener datos
     const { events, fileContent, filename } = await securityService.exportSecurityEvents(filters, format);
     
-    // Configurar cabeceras según formato
     if (format === 'csv') {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

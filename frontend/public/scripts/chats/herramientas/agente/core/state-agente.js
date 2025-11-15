@@ -29,7 +29,6 @@ export function updateState(property, value) {
   if (property in state) {
     state[property] = value;
     
-    // Actualizar timestamp de última interacción
     state.lastInteraction = Date.now();
     return true;
   }
@@ -50,7 +49,6 @@ export function getState(property) {
     if (mainProp === 'chats' && state.chats instanceof Map) {
       return state.chats.get(subProp);
     }
-    // Para otras propiedades anidadas (como preferences)
     return state[mainProp]?.[subProp];
   }
   
@@ -144,7 +142,6 @@ export function addMathExpression(expression, isFavorite = false) {
     state.mathHistory.splice(index, 1);
   }
   
-  // Añadir al principio del historial
   state.mathHistory.unshift(expression);
   
   // Limitar el tamaño del historial
@@ -152,7 +149,6 @@ export function addMathExpression(expression, isFavorite = false) {
     state.mathHistory.pop();
   }
   
-  // Manejar favoritos si es necesario
   if (isFavorite && !state.preferences.favorites.includes(expression)) {
     state.preferences.favorites.push(expression);
   }

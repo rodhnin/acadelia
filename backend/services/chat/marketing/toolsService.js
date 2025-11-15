@@ -12,7 +12,6 @@ import { simulationService } from "./simulationService.js";
 import { openai } from "../../../lib/openai.js";
 import pool from "../../../lib/dbPool.js";
 import { TOOL_PROMPTS } from '../../../utils/marketing/AcadeliaDNA.js';
-// ✅ IMPORTACIÓN ACTUALIZADA - AHORA USA EL SISTEMA INTELIGENTE CON EMBEDDINGS
 import UniquenessMiddleware from "./uniquenessMiddleware.js";
 
 /**
@@ -20,7 +19,6 @@ import UniquenessMiddleware from "./uniquenessMiddleware.js";
  */
 export async function extractProfileDataFromQuery(query) {
   try {
-    // Usar IA para extraer datos estructurados del query
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini-2024-07-18",
       messages: [
@@ -39,7 +37,6 @@ export async function extractProfileDataFromQuery(query) {
 
     const extractedData = JSON.parse(completion.choices[0].message.content);
     
-    // Normalizar campos clave
     const normalizedData = {};
     
     if (extractedData.nombre) normalizedData.nombre = extractedData.nombre;
@@ -75,12 +72,10 @@ export async function extractProfileDataFromQuery(query) {
     return normalizedData;
   } catch (error) {
     console.error("Error extrayendo datos del query:", error);
-    // Devolver objeto vacío si hay error
     return {};
   }
 }
 
-// ✅ TRACKER Y CONTADORES SIN CAMBIOS
 const sessionTracker = {
   processedProfiles: new Set(),
   processedContents: new Set(),
@@ -328,7 +323,6 @@ const contentToProfilesMatchTool = tool(
 
 // ============== HERRAMIENTAS ESPECÍFICAS CON SISTEMA INTELIGENTE ==============
 
-// ✅ STRATEGIST MEMORY SAVE - AHORA USA EL SISTEMA INTELIGENTE
 const strategistMemorySaveTool = tool(
   async ({ type, content, source, importance }) => {
     try {
@@ -365,7 +359,6 @@ const strategistMemorySaveTool = tool(
         });
       }
 
-      // ✅ USAR SISTEMA INTELIGENTE CON EMBEDDINGS Y IA
       console.log("🔍 STRATEGIST: Verificando unicidad con Sistema Inteligente...");
       
       const verification = await UniquenessMiddleware.beforeSave('memory', {
@@ -405,7 +398,6 @@ const strategistMemorySaveTool = tool(
         }
       }
 
-      // ✅ RESTO DE LÓGICA ORIGINAL PERO CON LOGGING MEJORADO
       let calculatedImportance = Math.max(0.7, importance || 0.7);
       
       const summary = await generateMemorySummary(type, content);
@@ -472,7 +464,6 @@ const strategistMemorySaveTool = tool(
   }
 );
 
-// ✅ PROFILE AGENT SAVE - AHORA USA EL SISTEMA INTELIGENTE
 const saveProfileTool = tool(
   async ({ profileData, source = "profile_agent", importance = 0.5 }) => {
     try {
@@ -488,7 +479,6 @@ const saveProfileTool = tool(
         });
       }
       
-      // ✅ PROCESAR Y NORMALIZAR DATOS (lógica original mantenida)
       let processedData = profileData;
       if (typeof profileData === 'string') {
         try {
@@ -516,7 +506,6 @@ const saveProfileTool = tool(
         processedData = { descripcion: String(profileData) };
       }
       
-      // Normalizar campos clave (lógica original mantenida)
       if (processedData.carrera || processedData.Carrera) {
         const carrera = (processedData.carrera || processedData.Carrera).trim();
         processedData.carrera = carrera;
@@ -547,7 +536,6 @@ const saveProfileTool = tool(
         }
       }
 
-      // ✅ USAR SISTEMA INTELIGENTE CON EMBEDDINGS Y IA
       console.log("🔍 PROFILE AGENT: Verificando unicidad con Sistema Inteligente...");
       
       const verification = await UniquenessMiddleware.beforeSave('profile', processedData);
@@ -569,7 +557,6 @@ const saveProfileTool = tool(
         });
       }
       
-      // ✅ Inferir personalidad MBTI si no existe (lógica original mantenida)
       const hasMBTI = processedData.personalidad && 
                      String(processedData.personalidad).match(/\b[EI][NS][TF][JP]\b/i);
       
@@ -633,7 +620,6 @@ const saveProfileTool = tool(
         agent_source: "profile_specialist"
       });
       
-      // ✅ GUARDAR INSIGHT DEL PERFIL CON SISTEMA INTELIGENTE
       const memoryVerification = await UniquenessMiddleware.beforeSave('memory', {
         memoryType: "profile_insight",
         content: newProfileInsight
@@ -688,7 +674,6 @@ const saveProfileTool = tool(
   }
 );
 
-// ✅ CREATIVE AGENT SAVE - AHORA USA EL SISTEMA INTELIGENTE
 const saveContentTool = tool(
   async ({ type, channel, payload, source = "creative_agent", importance = 0.5 }) => {
     try {
@@ -704,7 +689,6 @@ const saveContentTool = tool(
         });
       }
       
-      // ✅ SANITIZACIÓN (lógica original mantenida)
       let sanitizedPayload = payload;
       
       if (payload && (typeof payload === 'object' || typeof payload === 'string')) {
@@ -745,7 +729,6 @@ const saveContentTool = tool(
         }
       }
 
-      // Normalizar tipo y canal (lógica original mantenida)
       let normalizedType = type;
       let normalizedChannel = channel;
       
@@ -788,7 +771,6 @@ const saveContentTool = tool(
         sanitizedPayload = { content: String(sanitizedPayload) };
       }
       
-      // ✅ USAR SISTEMA INTELIGENTE CON EMBEDDINGS Y IA
       console.log("🔍 CREATIVE AGENT: Verificando unicidad con Sistema Inteligente...");
       
       const verification = await UniquenessMiddleware.beforeSave('content', {
@@ -848,7 +830,6 @@ const saveContentTool = tool(
         agent_source: "creative_specialist"
       });
       
-      // ✅ GUARDAR INSIGHT CREATIVO CON SISTEMA INTELIGENTE
       const memoryVerification = await UniquenessMiddleware.beforeSave('memory', {
         memoryType: "creative_insight",
         content: contentInsight
@@ -905,13 +886,11 @@ const saveContentTool = tool(
   }
 );
 
-// ✅ GENERATE CONTENT TOOL - CON SISTEMA INTELIGENTE
 const generateContentTool = tool(
   async ({ type, channel, target, theme, source = "creative_generation", importance = 0.6 }) => {
     try {
       console.log("🎨 CREATIVE AGENT: Generando contenido con Sistema Inteligente...");
       
-      // Procesar y normalizar parámetros (lógica original mantenida)
       let processedType = type || "content";
       let processedChannel = channel || "Instagram";
       let processedTarget = target;
@@ -963,7 +942,6 @@ const generateContentTool = tool(
         });
       }
       
-      // ✅ VERIFICAR UNICIDAD ANTES DE GENERAR CON SISTEMA INTELIGENTE
       console.log("🔍 CREATIVE AGENT: Verificando unicidad antes de generar con Sistema Inteligente...");
       
       const verification = await UniquenessMiddleware.beforeSave('content', {
@@ -1019,7 +997,6 @@ const generateContentTool = tool(
         agent_source: "creative_generation"
       });
       
-      // ✅ GUARDAR INSIGHT CREATIVO CON SISTEMA INTELIGENTE
       const memoryVerification = await UniquenessMiddleware.beforeSave('memory', {
         memoryType: "creative_insight",
         content: contentInsight
@@ -1074,7 +1051,6 @@ const generateContentTool = tool(
   }
 );
 
-// ✅ ANALYST AGENT SAVE - CON SISTEMA INTELIGENTE
 const saveTrendTool = tool(
   async ({ theme, popularity = 0.5, metadata = {}, source = "analyst_agent", importance = 0.6 }) => {
     try {
@@ -1091,7 +1067,6 @@ const saveTrendTool = tool(
         });
       }
 
-      // ✅ NORMALIZACIÓN DE DATOS (lógica original mantenida)
       let normalizedTheme = theme;
       let normalizedPopularity = popularity;
       let normalizedMetadata = metadata;
@@ -1132,7 +1107,6 @@ const saveTrendTool = tool(
         normalizedMetadata = {};
       }
       
-      // ✅ USAR SISTEMA INTELIGENTE CON EMBEDDINGS Y IA
       console.log("🔍 ANALYST AGENT: Verificando unicidad con Sistema Inteligente...");
       
       const verification = await UniquenessMiddleware.beforeSave('trend', {
@@ -1197,7 +1171,6 @@ const saveTrendTool = tool(
         agent_source: "analyst_specialist"
       });
       
-      // ✅ GUARDAR INSIGHT ANALÍTICO CON SISTEMA INTELIGENTE
       const memoryVerification = await UniquenessMiddleware.beforeSave('memory', {
         memoryType: "trend_analysis",
         content: trendInsight
@@ -1255,7 +1228,6 @@ const saveTrendTool = tool(
   }
 );
 
-// ✅ RECORD INTERACTION - CON SISTEMA INTELIGENTE
 const recordInteractionTool = tool(
   async ({ profileId, contentId, channel, action }) => {
     try {
@@ -1278,7 +1250,6 @@ const recordInteractionTool = tool(
         }
       }
       
-      // ✅ USAR SISTEMA INTELIGENTE (las interacciones no usan embeddings, pero sí el middleware)
       console.log("🔍 ANALYST AGENT: Verificando unicidad de interacción...");
       
       const verification = await UniquenessMiddleware.beforeSave('interaction', {
@@ -1316,7 +1287,6 @@ const recordInteractionTool = tool(
         agent_source: "analyst_specialist"
       });
       
-      // ✅ GUARDAR INSIGHT ANALÍTICO CON SISTEMA INTELIGENTE
       const memoryVerification = await UniquenessMiddleware.beforeSave('memory', {
         memoryType: "interaction_analysis",
         content: interactionInsight
@@ -1364,7 +1334,6 @@ const recordInteractionTool = tool(
   }
 );
 
-// ✅ SIMULACIÓN SIN CAMBIOS (no guarda datos, no necesita sistema inteligente)
 const simulateCampaignTool = tool(
   async ({ campaignData, audienceData }) => {
     try {
@@ -1431,7 +1400,6 @@ export const getMarketingTools = (agentType = 'strategist') => {
   
   console.log(`🛠️ Obteniendo herramientas CON Sistema Inteligente de Embeddings para: ${agentType.toUpperCase()}`);
   
-  // ✅ HERRAMIENTAS COMPARTIDAS
   const sharedTools = [
     profileSearchTool,
     contentSearchTool,
@@ -1441,7 +1409,6 @@ export const getMarketingTools = (agentType = 'strategist') => {
     contentToProfilesMatchTool
   ];
   
-  // ✅ HERRAMIENTAS ESPECÍFICAS CON SISTEMA INTELIGENTE
   switch (agentType.toLowerCase()) {
     case 'strategist':
       console.log("🎯 STRATEGIST: Herramientas estratégicas CON Sistema Inteligente");
@@ -1485,7 +1452,6 @@ export const getMarketingTools = (agentType = 'strategist') => {
   }
 };
 
-// ✅ FUNCIONES AUXILIARES MANTENIDAS (sin cambios significativos en la implementación)
 async function generateMemorySummary(type, content, importanceHint = null) {
   // ... [Implementación original mantenida por brevedad] ...
   // Esta función genera resúmenes, NO verifica unicidad (eso lo hace el sistema inteligente)
@@ -1864,7 +1830,6 @@ async function inferPersonalityType(profileData) {
   }
 }
 
-// ✅ EXPORTAR FUNCIONES NECESARIAS
 export { 
   generateMemorySummary,
   UniquenessMiddleware

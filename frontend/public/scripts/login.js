@@ -38,9 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'asynchronous response'
         ];
 
-        // Reemplazar console.error
         console.error = function (...args) {
-            // Verificar si algún argumento contiene patrones a suprimir
             const shouldSuppress = args.some(arg => {
                 if (typeof arg === 'string') {
                     return errorPatterns.some(pattern => arg.includes(pattern));
@@ -61,7 +59,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             originalConsoleError.apply(console, args);
         };
 
-        // Reemplazar console.warn
         console.warn = function (...args) {
             // Suprimir warnings específicos
             if (args.some(arg =>
@@ -73,13 +70,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // Mostrar otros warnings normalmente
             originalConsoleWarn.apply(console, args);
         };
 
         // Interceptar promesas no manejadas
         window.addEventListener('unhandledrejection', function (event) {
-            // Verificar si el error es de los que queremos suprimir
             if (event.reason && event.reason.message && (
                 event.reason.message.includes('message channel closed') ||
                 event.reason.message.includes('asynchronous response')
@@ -97,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== UTILIDADES Y DETECCIÓN DE MENSAJES ====================
 
-    // Sistema mejorado para detectar y mostrar mensajes de cierre de sesión
     const detectLogoutMessage = () => {
         // 1. Verificar si hay mensaje en sessionStorage (método original)
         const logoutMessage = sessionStorage.getItem('logout_message');
@@ -114,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (sessionStatus === 'revoked') {
                 showAlert('Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.', 'info');
-                // Limpiar la URL para evitar que el mensaje aparezca en recargas
                 history.replaceState(null, '', window.location.pathname);
                 return true;
             }
@@ -148,15 +141,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return false;
     };
 
-    // Ejecutar la detección de mensajes de cierre
     detectLogoutMessage();
 
-    // Marcar navegaciones normales para evitar falsos positivos
     document.querySelectorAll('a').forEach(link => {
         if (!link.href.includes('login')) {
             link.addEventListener('click', () => {
                 localStorage.setItem('normalNavigation', 'true');
-                // Borrar esta marca después de un tiempo
                 setTimeout(() => localStorage.removeItem('normalNavigation'), 5000);
             });
         }
@@ -167,10 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== VERIFICACIÓN DE AUTENTICACIÓN ====================
 
-    // Función mejorada para verificar autenticación
     const checkAuthentication = async () => {
         try {
-            // Usar la nueva ruta auth-status que siempre devuelve 200
             const response = await fetch('/api/usuarios/auth-status', {
                 method: 'GET',
                 credentials: 'include',
@@ -181,7 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Verificar si la respuesta es válida
             if (!response.ok) {
                 if (isDevelopment) {
                     console.log('Error en respuesta de auth-status:', response.status);
@@ -190,7 +177,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return false;
             }
 
-            // Intentar parsear la respuesta
             let data;
             try {
                 data = await response.json();
@@ -202,7 +188,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return false;
             }
 
-            // Verificar si está autenticado
             if (data.authenticated) {
                 if (isDevelopment) {
                     console.log('Usuario autenticado:', data.user);
@@ -221,14 +206,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
 
                     try {
-                        // Intentar renovar token
                         const refreshResponse = await fetch('/api/usuarios/refresh-token', {
                             method: 'POST',
                             credentials: 'include'
                         });
 
                         if (refreshResponse.ok) {
-                            // Verificar nuevamente
                             const checkAgain = await fetch('/api/usuarios/auth-status', {
                                 method: 'GET',
                                 credentials: 'include'
@@ -261,7 +244,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log(`Usuario no autenticado: ${data.reason || 'desconocido'}`);
                 }
 
-                // Mostrar contenido de login
                 document.body.style.display = 'flex';
                 return false;
             }
@@ -271,13 +253,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log(`Error general en verificación:`, error);
             }
 
-            // Mostrar contenido en caso de error
             document.body.style.display = 'flex';
             return false;
         }
     };
 
-    // Verificar autenticación al cargar
     await checkAuthentication();
 
     // ==================== ELEMENTOS DOM Y VARIABLES ====================
@@ -317,9 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== FUNCIONES AUXILIARES ====================
 
-    // Función para mostrar un wrapper específico y ocultar los demás
     const showWrapper = (wrapperToShow) => {
-        // Ocultar todos los wrappers primero
         [loginWrapper, emailConfirmationWrapper, passwordRecoveryWrapper, verificationWrapper].forEach(wrapper => {
             if (wrapper) {
                 wrapper.style.display = 'none';
@@ -328,7 +306,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Mostrar el wrapper seleccionado
         if (wrapperToShow) {
             wrapperToShow.style.display = 'flex';
             setTimeout(() => {
@@ -339,7 +316,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
 
-    // Función para deshabilitar el botón de login
     const disableLoginButton = () => {
         const loginButton = formLogin.querySelector('button[type="submit"]');
 
@@ -349,7 +325,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             loginButton.style.opacity = '0.7';
             loginButton.style.cursor = 'not-allowed';
 
-            // Cambiar el texto y agregar spinner
             const originalText = loginButton.textContent;
             loginButton.setAttribute('data-original-text', originalText);
             loginButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Procesando...';
@@ -363,7 +338,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para rehabilitar el botón de login
     const enableLoginButton = () => {
         const loginButton = formLogin.querySelector('button[type="submit"]');
 
@@ -373,7 +347,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             loginButton.style.opacity = '1';
             loginButton.style.cursor = 'pointer';
 
-            // Restaurar el texto original
             const originalText = loginButton.getAttribute('data-original-text') || 'Ingresar';
             loginButton.textContent = originalText;
 
@@ -392,7 +365,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
 
-    // Función para deshabilitar el botón de registro
     const disableRegisterButton = () => {
         const registerButton = formRegistro.querySelector('button[type="submit"]');
 
@@ -402,7 +374,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             registerButton.style.opacity = '0.7';
             registerButton.style.cursor = 'not-allowed';
 
-            // Cambiar el texto y agregar spinner
             const originalText = registerButton.textContent;
             registerButton.setAttribute('data-original-text', originalText);
             registerButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Procesando...';
@@ -416,7 +387,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para rehabilitar el botón de registro
     const enableRegisterButton = () => {
         const registerButton = formRegistro.querySelector('button[type="submit"]');
 
@@ -426,7 +396,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             registerButton.style.opacity = '1';
             registerButton.style.cursor = 'pointer';
 
-            // Restaurar el texto original
             const originalText = registerButton.getAttribute('data-original-text') || 'Registrarse';
             registerButton.textContent = originalText;
 
@@ -446,7 +415,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-    // Función para deshabilitar el botón de verificación
     const disableVerifyButton = () => {
         const verifyButton = document.getElementById('verify-button');
 
@@ -456,7 +424,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             verifyButton.style.opacity = '0.7';
             verifyButton.style.cursor = 'not-allowed';
 
-            // Cambiar el texto y agregar spinner
             const originalText = verifyButton.textContent;
             verifyButton.setAttribute('data-original-text', originalText);
             verifyButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Verificando...';
@@ -471,7 +438,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para rehabilitar el botón de verificación
     const enableVerifyButton = () => {
         const verifyButton = document.getElementById('verify-button');
 
@@ -481,7 +447,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             verifyButton.style.opacity = '1';
             verifyButton.style.cursor = 'pointer';
 
-            // Restaurar el texto original
             const originalText = verifyButton.getAttribute('data-original-text') || 'Verificar y acceder';
             verifyButton.innerHTML = '<i class="bx bx-check"></i> ' + originalText.replace(/^.*?\s/, ''); // Mantener solo el texto sin el icono
 
@@ -501,21 +466,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     // ==================== FUNCIONES PRINCIPALES ====================
 
-    // Función de login mejorada para manejar todos los tipos de respuestas
     const handleLogin = async (email, password, isNewUser = false) => {
         // Prevenir múltiples ejecuciones
         if (isLoginProcessing) {
             return;
         }
 
-        // Deshabilitar botón inmediatamente
         disableLoginButton();
 
         try {
-            // Crear notificación de carga
             const notificationId = window.notifyService.loading("Verificando credenciales...");
 
-            // Verificar si hay un temporizador de rate limiting
             const retryKey = 'login_retry_until';
             const retryUntil = localStorage.getItem(retryKey);
 
@@ -548,7 +509,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error('Error de conexión. Por favor verifica tu internet.');
             }
 
-            // Verificar respuesta HTTP de login-status
             if (!statusResponse.ok) {
                 if (isDevelopment) {
                     console.log(`Error en login-status: ${statusResponse.status}`);
@@ -557,7 +517,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error('Error al verificar credenciales');
             }
 
-            // Parsear respuesta JSON de login-status
             let statusData;
             try {
                 statusData = await statusResponse.json();
@@ -569,7 +528,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error('Error al procesar respuesta del servidor');
             }
 
-            // Actualizar notificación para mostrar progreso
             window.notifyService.update(notificationId, "Validando acceso...", 'info');
 
             // NUEVO: Verificar si es una cuenta de Google
@@ -579,7 +537,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (googleButton) {
                     googleButton.classList.add('highlight-google-button');
 
-                    // Eliminar la clase después de unos segundos
                     setTimeout(() => {
                         googleButton.classList.remove('highlight-google-button');
                     }, 5000);
@@ -596,13 +553,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 window.notifyService.update(notificationId, 'Cuenta no verificada. Por favor verifica tu correo electrónico.', 'warning', 4000);
 
-                // Actualizar el correo electrónico en la vista de reenvío
                 const userEmailElement = document.getElementById('userEmail');
                 if (userEmailElement) {
                     userEmailElement.textContent = email;
                 }
 
-                // Configurar evento de reenvío solo si no está ya configurado
                 const resendButton = document.querySelector('.resend-btn');
                 if (resendButton && !resendButton.hasAttribute('email-set')) {
                     resendButton.setAttribute('email-set', 'true');
@@ -629,13 +584,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
 
-                // Mostrar la vista de confirmación
                 showWrapper(emailConfirmationWrapper);
 
                 throw new Error('Por favor verifica tu correo electrónico para iniciar sesión');
             }
 
-            // Manejar error en login-status (con código 200)
             if (statusData.status === "error") {
                 if (statusData.code === "RATE_LIMITED" && statusData.retryAfter) {
                     const retryTime = Date.now() + (statusData.retryAfter * 1000);
@@ -681,7 +634,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     throw new Error('Error de conexión al iniciar sesión');
                 }
 
-                // Comprobar respuesta de login
                 let loginData;
                 try {
                     loginData = await loginResponse.json();
@@ -693,7 +645,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     throw new Error('Error al procesar respuesta del servidor');
                 }
 
-                // Verificar si es una respuesta de verificación
                 if ((loginResponse.status === 200 && loginData.status === "verification_required") ||
                     (loginResponse.status === 409) ||
                     (loginData.requiresVerification)) {
@@ -701,7 +652,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     window.notifyService.update(notificationId, 'Verificación de seguridad enviada a tu correo', 'success', 3000);
 
                     if (loginData.attemptId) {
-                        // Mostrar modal de verificación
                         showVerificationModal(email, loginData.attemptId);
                         return;
                     } else {
@@ -755,7 +705,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     throw new Error('Error de conexión al completar inicio de sesión');
                 }
 
-                // Verificar respuesta de login
                 if (!loginResponse.ok) {
                     let errorData;
                     try {
@@ -771,7 +720,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
 
-                // Mostrar mensaje de éxito con el notificationId existente
                 if (isNewUser) {
                     window.notifyService.update(notificationId, "Registro exitoso. Completando perfil...", 'success', 3000);
                     // Breve retraso antes de redireccionar
@@ -790,7 +738,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             // El error ya se ha mostrado en notificación dentro del código
 
-            // Limpiar cookies por si acaso
             document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             document.cookie = 'refresh_token=; Path=/api/usuarios/refresh-token; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         } finally {
@@ -799,7 +746,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Función para guardar datos de sesión
     const saveCredentials = (email, password, remember) => {
         if (remember) {
             localStorage.setItem('userEmail', email);
@@ -812,7 +758,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Cargar datos guardados si existen
     const loadSavedCredentials = () => {
         const savedEmail = localStorage.getItem('userEmail');
         const savedPassword = localStorage.getItem('userPassword');
@@ -836,24 +781,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Mostrar modal de verificación por código
     function showVerificationModal(email, attemptId) {
-        // Actualizar el correo mostrado en la pantalla de verificación
         const verificationEmailElement = document.getElementById('verification-email');
         if (verificationEmailElement) {
             verificationEmailElement.textContent = email;
         }
 
-        // Almacenar el attemptId como atributo de datos para usarlo más tarde
         verificationWrapper.dataset.attemptId = attemptId;
 
-        // Limpiar cualquier código anterior
         const codeInput = document.getElementById('verification-code');
         if (codeInput) {
             codeInput.value = '';
         }
 
-        // Configurar el botón de reenvío como deshabilitado inicialmente
         const resendButton = document.getElementById('resend-button');
         if (resendButton) {
             resendButton.setAttribute('disabled', 'true');
@@ -861,15 +801,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             resendButton.style.pointerEvents = 'none';
         }
 
-        // Mostrar el wrapper de verificación
         showWrapper(verificationWrapper);
 
-        // Iniciar el contador
         startCountdown();
 
-        // Configurar los eventos si aún no están configurados
         if (!verificationWrapper.dataset.eventsSet) {
-            // Manejar el botón de verificación
             const verifyButton = document.getElementById('verify-button');
             if (verifyButton) {
                 verifyButton.addEventListener('click', () => {
@@ -890,7 +826,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
-            // Manejar el botón de reenvío
             const resendButton = document.getElementById('resend-button');
             if (resendButton) {
                 resendButton.addEventListener('click', () => {
@@ -906,12 +841,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const codeInput = document.getElementById('verification-code');
             if (codeInput) {
                 codeInput.addEventListener('input', (e) => {
-                    // Remover caracteres no numéricos
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
                 });
             }
 
-            // Marcar que los eventos ya están configurados
             verificationWrapper.dataset.eventsSet = 'true';
         }
 
@@ -919,19 +852,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         showAlert('Hemos enviado un código de verificación a tu correo', 'info');
     }
 
-    // Iniciar cuenta regresiva
     function startCountdown() {
         let minutes = 10;
         let seconds = 0;
         const countdownElement = document.getElementById('countdown');
         const resendButton = document.getElementById('resend-button');
 
-        // Limpiar cualquier intervalo anterior
         if (window.countdownInterval) {
             clearInterval(window.countdownInterval);
         }
 
-        // Deshabilitar el botón de reenvío inicialmente
         if (resendButton) {
             resendButton.setAttribute('disabled', 'true');
             resendButton.style.opacity = '0.5';
@@ -944,7 +874,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     clearInterval(interval);
                     countdownElement.textContent = '00:00';
 
-                    // Habilitar el botón de reenvío
                     if (resendButton) {
                         resendButton.removeAttribute('disabled');
                         resendButton.style.opacity = '1';
@@ -958,22 +887,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 seconds--;
             }
 
-            // Formatear tiempo
             const displayMinutes = minutes.toString().padStart(2, '0');
             const displaySeconds = seconds.toString().padStart(2, '0');
             countdownElement.textContent = `${displayMinutes}:${displaySeconds}`;
         }, 1000);
 
-        // Guardar referencia al intervalo
         window.countdownInterval = interval;
     }
 
-    // Solicitar nuevo código
     async function requestNewCode(email, attemptId) {
         try {
             const notificationId = window.notifyService.loading('Solicitando nuevo código...');
 
-            // Obtener token CSRF fresco
             const csrfToken = window.csrfUtils ? window.csrfUtils.refreshToken() : null;
 
             const response = await fetch('/api/usuarios/login-attempts/resend-code', {
@@ -989,7 +914,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentials: 'include'
             });
 
-            // Manejar respuesta
             let data;
             try {
                 data = await response.json();
@@ -998,7 +922,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error('Error al procesar la respuesta del servidor');
             }
 
-            // Verificar si la respuesta es satisfactoria
             if (!response.ok || (data.status === "error")) {
                 window.notifyService.update(notificationId, data.error || 'Error al solicitar un nuevo código', 'error', 3000);
                 throw new Error(data.error || 'Error al solicitar un nuevo código');
@@ -1014,10 +937,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Verificar código ingresado
-    // Verificar código ingresado
     async function verifyCode(email, code, attemptId) {
-        // Deshabilitar botón inmediatamente
         disableVerifyButton();
 
         try {
@@ -1092,7 +1012,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 7. Esperar un momento antes de redirigir
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Actualizar notificación para indicar redirección
             window.notifyService.update(notificationId, 'Redirigiendo a tu cuenta...', 'success', 1500);
 
             // 8. Redirigir después de un breve momento adicional
@@ -1111,7 +1030,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== GOOGLE SIGN-IN ====================
 
-    // Función para mostrar el estado del botón de Google
     const updateGoogleButtonState = (state) => {
         const customGoogleBtn = document.getElementById('customGoogleBtn');
         const googleRegisterBtn = document.querySelector('.social-button.google-register');
@@ -1163,7 +1081,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const initializeGoogleAuth = async () => {
         try {
-            // Obtener configuración
             const configResponse = await fetch('/api/config');
             const config = await configResponse.json();
             window.APP_CONFIG = config;
@@ -1213,13 +1130,11 @@ const setupGoogleRedirectButtons = () => {
         const originalHTML = button.innerHTML;
         
         try {
-            // Mostrar loading inmediatamente
             const span = button.querySelector('span');
             if (span) {
                 span.innerHTML = '<i class="bx bx-loader-alt bx-spin" style="margin-right: 8px;"></i>Conectando con Google...';
             }
 
-            // Cargar configuración si no existe
             if (!window.APP_CONFIG?.GOOGLE_CLIENT_ID) {
                 const configResponse = await fetch('/api/config');
                 if (!configResponse.ok) throw new Error('Error cargando configuración');
@@ -1232,7 +1147,6 @@ const setupGoogleRedirectButtons = () => {
                 }
             }
 
-            // Construir URL de redirección
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
             const redirectUri = isLocalhost 
                 ? `${window.location.protocol}//${window.location.host}/api/usuarios/google-login`
@@ -1253,25 +1167,20 @@ const setupGoogleRedirectButtons = () => {
             console.error('Error en Google Auth:', error);
             showAlert(error.message || 'Error al conectar con Google', 'error');
             
-            // Restaurar estado
             button.innerHTML = originalHTML;
             button.dataset.processing = 'false';
         }
     };
 
-    // Configurar botones inmediatamente cuando se encuentra en el DOM
     const setupButton = (selector) => {
         const button = document.querySelector(selector);
         if (button) {
-            // Remover listeners existentes
             button.removeEventListener('click', handleGoogleRedirect);
-            // Agregar nuevo listener
             button.addEventListener('click', handleGoogleRedirect);
             console.log(`✅ Botón Google configurado: ${selector}`);
         }
     };
 
-    // Configurar ambos botones
     setupButton('#customGoogleBtn');
     setupButton('.social-button.google-register');
 };
@@ -1294,10 +1203,8 @@ const setupGoogleRedirectButtons = () => {
 
     // ==================== MANEJO DEL DOM Y EVENTOS ====================
 
-    // Cargar credenciales guardadas al iniciar
     loadSavedCredentials();
 
-    // Cambiar entre formularios de login y registro
     if (linkRegistro) {
         linkRegistro.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1327,7 +1234,6 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // Manejar Login tradicional (con submit)
     if (formLogin) {
         formLogin.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1341,20 +1247,17 @@ const setupGoogleRedirectButtons = () => {
             const password = document.getElementById('contraseñaLogin').value;
             const rememberMe = document.getElementById('recordarme')?.checked || false;
 
-            // Validar datos básicos
             if (!email || !password) {
                 showAlert('Por favor completa todos los campos', 'warning');
                 return;
             }
 
-            // Guardar credenciales si se seleccionó "recordarme"
             saveCredentials(email, password, rememberMe);
 
             await handleLogin(email, password);
         });
     }
 
-    // Manejar Registro con cambio a vista de confirmación
     if (formRegistro) {
         formRegistro.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1369,7 +1272,6 @@ const setupGoogleRedirectButtons = () => {
             const confirmPassword = document.getElementById('confirmarContraseña').value;
             const acceptTerms = document.getElementById('aceptarTerminos').checked;
 
-            // Validaciones básicas
             if (!email || !password || !confirmPassword) {
                 showAlert('Por favor completa todos los campos', 'warning');
                 return;
@@ -1380,20 +1282,16 @@ const setupGoogleRedirectButtons = () => {
                 return;
             }
 
-            // Verificar aceptación de términos (doble verificación)
             if (!acceptTerms) {
                 showAlert('Debes aceptar los términos y condiciones para registrarte', 'warning');
                 return;
             }
 
-            // Deshabilitar botón inmediatamente
             disableRegisterButton();
 
             try {
-                // Crear notificación
                 const notificationId = window.notifyService.loading('Verificando disponibilidad...');
 
-                // Verificar disponibilidad de correo primero
                 const checkResponse = await fetch('/api/usuarios/registration-status', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1413,10 +1311,8 @@ const setupGoogleRedirectButtons = () => {
                     throw new Error(checkData.message || 'Este correo ya está registrado');
                 }
 
-                // Actualizar notificación
                 window.notifyService.update(notificationId, 'Creando cuenta...', 'info');
 
-                // Proceder con el registro
                 const response = await fetch('/api/usuarios/usuarios', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1435,23 +1331,18 @@ const setupGoogleRedirectButtons = () => {
                     throw new Error(errorData.error || 'Error en el registro');
                 }
 
-                // Obtener datos de respuesta
                 const data = await response.json();
 
-                // Actualizar el correo electrónico en la vista de confirmación
                 const userEmailElement = document.getElementById('userEmail');
                 if (userEmailElement) {
                     userEmailElement.textContent = email;
                 }
 
-                // Configurar el botón de reenvío de correo
                 const resendButton = document.querySelector('.resend-btn');
                 if (resendButton) {
-                    // Limpiar eventos anteriores
                     const newResendBtn = resendButton.cloneNode(true);
                     resendButton.parentNode.replaceChild(newResendBtn, resendButton);
 
-                    // Agregar nuevo evento con el correo actual
                     newResendBtn.addEventListener('click', async () => {
                         try {
                             const resendId = window.notifyService.loading('Enviando correo de verificación...');
@@ -1475,10 +1366,8 @@ const setupGoogleRedirectButtons = () => {
                     });
                 }
 
-                // Mostrar la vista de confirmación de correo
                 showWrapper(emailConfirmationWrapper);
 
-                // Mostrar mensaje de éxito
                 window.notifyService.update(notificationId, 'Registro exitoso. Por favor, verifica tu correo electrónico.', 'success', 3000);
 
             } catch (error) {
@@ -1491,7 +1380,6 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // Manejar clic en "¿Olvidaste tu contraseña?"
     if (forgotPasswordLink) {
         forgotPasswordLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1499,7 +1387,6 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // Manejar los enlaces "Regresar a inicio de sesión"
     backToLoginLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1508,7 +1395,6 @@ const setupGoogleRedirectButtons = () => {
         });
     });
 
-    // Manejar el formulario de recuperación de contraseña
     if (recoveryForm) {
         recoveryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1522,7 +1408,6 @@ const setupGoogleRedirectButtons = () => {
             try {
                 showAlert('Procesando solicitud...', 'info');
 
-                // Obtener CSRF token si está disponible
                 const csrfToken = window.csrfUtils && typeof window.csrfUtils.refreshToken === 'function' ?
                     window.csrfUtils.refreshToken() : null;
 
@@ -1543,7 +1428,6 @@ const setupGoogleRedirectButtons = () => {
 
                 showAlert('Si el correo existe, recibirás instrucciones para restablecer tu contraseña', 'success');
 
-                // Limpiar el campo de correo
                 document.getElementById('recoveryEmail').value = '';
 
                 // Volver a la vista de login después de un tiempo
@@ -1556,7 +1440,6 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // Manejar clic en el botón de reenviar correo de confirmación
     const resendButton = document.querySelector('.resend-btn');
     if (resendButton) {
         resendButton.addEventListener('click', () => {
@@ -1567,7 +1450,6 @@ const setupGoogleRedirectButtons = () => {
 
     // ==================== VALIDACIÓN DE CONTRASEÑAS ====================
 
-    // Manejar visibilidad de contraseña
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
     togglePasswordButtons.forEach((button) => {
@@ -1593,7 +1475,6 @@ const setupGoogleRedirectButtons = () => {
         });
     });
 
-    // Validación de fuerza de contraseña
     const passwordRegister = document.getElementById('contraseñaRegistro');
     const confirmPassword = document.getElementById('confirmarContraseña');
 
@@ -1614,9 +1495,7 @@ const setupGoogleRedirectButtons = () => {
         });
     }
 
-    // Función para validar fuerza de contraseña
     function validatePasswordStrength(password) {
-        // Eliminar indicador existente
         const existingIndicator = document.querySelector('.password-strength');
         if (existingIndicator) {
             existingIndicator.remove();
@@ -1634,7 +1513,6 @@ const setupGoogleRedirectButtons = () => {
         if (password.match(/\d/)) strength += 1;
         if (password.match(/[^a-zA-Z\d]/)) strength += 1;
 
-        // Determinar mensaje y color
         if (strength === 0) {
             message = 'Muy débil';
             color = '#ff4d4d';
@@ -1652,16 +1530,13 @@ const setupGoogleRedirectButtons = () => {
             color = '#4d4dff';
         }
 
-        // Crear indicador
         const strengthIndicator = document.createElement('div');
         strengthIndicator.className = 'password-strength';
 
-        // Insertar después del campo de contraseña
         const passwordInput = document.getElementById('contraseñaRegistro');
         const parentDiv = passwordInput.closest('.input-box');
         parentDiv.insertAdjacentElement('afterend', strengthIndicator);
 
-        // Crear estructura HTML
         strengthIndicator.innerHTML = `
             <div class="strength-bar">
                 <div class="strength-fill"></div>
@@ -1669,20 +1544,16 @@ const setupGoogleRedirectButtons = () => {
             <span style="color: ${color};">${message}</span>
         `;
 
-        // Obtener el elemento de relleno y aplicar estilos
         const strengthFill = strengthIndicator.querySelector('.strength-fill');
         strengthFill.style.width = `${(strength / 4) * 100}%`;
         strengthFill.style.backgroundColor = color;
 
-        // Añadir transición para suavizar el cambio de ancho
         setTimeout(() => {
             strengthFill.style.transition = 'width 0.3s ease-in-out';
         }, 10);
     }
 
-    // Función para validar coincidencia de contraseñas
     function validatePasswordMatch(password, confirm) {
-        // Eliminar mensaje existente
         const existingMessage = document.querySelector('.password-match');
         if (existingMessage) {
             existingMessage.remove();
@@ -1699,13 +1570,11 @@ const setupGoogleRedirectButtons = () => {
             matchMessage.innerHTML = '<span style="color: #ff4d4d;">✗ Las contraseñas no coinciden</span>';
         }
 
-        // Aplicar estilos
         matchMessage.style.marginTop = '-10px';
         matchMessage.style.marginBottom = '10px';
         matchMessage.style.fontSize = '0.8rem';
         matchMessage.style.width = '100%';
 
-        // Insertar después del campo de confirmación
         const confirmInput = document.getElementById('confirmarContraseña');
         const parentDiv = confirmInput.closest('.input-box');
         parentDiv.insertAdjacentElement('afterend', matchMessage);
@@ -1713,6 +1582,5 @@ const setupGoogleRedirectButtons = () => {
 
     // ==================== INICIALIZACIÓN FINAL ====================
 
-    // Iniciar Google Auth después de un breve retardo
     setTimeout(initializeGoogleAuth, 200);
 });

@@ -15,26 +15,20 @@ export class ThemeManager {
     init() {
       console.log('Inicializando gestor de temas');
       
-      // Obtener preferencia guardada
       this.loadThemePreference();
       
-      // Aplicar tema inicial
       this.applyTheme();
       
-      // Obtener referencia al toggle de tema
       this.themeToggle = document.getElementById('theme-toggle');
       
-      // Sincronizar estado del toggle con tema actual
       if (this.themeToggle) {
         this.themeToggle.checked = this.darkModeEnabled;
         
-        // Escuchar cambios en el toggle
         this.themeToggle.addEventListener('change', () => {
           this.toggleTheme();
         });
       }
       
-      // Escuchar cambios en las preferencias del sistema
       this.setupSystemPreferenceListener();
       
       return true;
@@ -45,16 +39,12 @@ export class ThemeManager {
      */
     loadThemePreference() {
       try {
-        // Cambiar a tema claro por defecto
         this.darkModeEnabled = false;
         
-        // Verificar si cookieHelpers está disponible
         if (window.cookieHelpers) {
-          // Usar cookieHelpers para obtener la preferencia guardada con verificación de consentimiento
           const savedPreference = window.cookieHelpers.getStorageWithConsent(this.THEME_KEY, 'functional', null);
           
           if (savedPreference !== null) {
-            // Usar preferencia guardada
             this.darkModeEnabled = savedPreference === 'true';
             console.log(`Tema cargado con consentimiento: ${this.darkModeEnabled ? 'oscuro' : 'claro'}`);
           } else {
@@ -69,7 +59,6 @@ export class ThemeManager {
           const savedPreference = localStorage.getItem(this.THEME_KEY);
           
           if (savedPreference !== null) {
-            // Usar preferencia guardada
             this.darkModeEnabled = savedPreference === 'true';
           } else {
             // Si no hay preferencia guardada, usar preferencia del sistema
@@ -90,9 +79,7 @@ export class ThemeManager {
      */
     saveThemePreference() {
       try {
-        // Verificar si cookieHelpers está disponible
         if (window.cookieHelpers) {
-          // Guardar con verificación de consentimiento
           const saved = window.cookieHelpers.setStorageWithConsent(
             this.THEME_KEY, 
             this.darkModeEnabled.toString(), 
@@ -121,12 +108,10 @@ export class ThemeManager {
     applyTheme() {
       console.log("APLICANDO TEMA:", this.darkModeEnabled ? "OSCURO" : "CLARO");
       
-      // Activar transiciones (si es la primera vez)
       if (!document.documentElement.classList.contains('theme-transitions-enabled')) {
         document.documentElement.classList.add('theme-transitions-enabled');
       }
       
-      // Aplicar directamente al body y html
       if (this.darkModeEnabled) {
         document.body.classList.add('dark-mode');
         document.documentElement.classList.add('dark-mode');
@@ -142,7 +127,6 @@ export class ThemeManager {
       // No necesitamos forzar un repintado como antes
       // El resto de la función queda igual
       
-      // Actualizar meta tag de theme-color para la barra de direcciones en móvil
       this.updateMetaThemeColor();
       
       // Indicar explícitamente a otros scripts que el tema ha cambiado
@@ -170,7 +154,6 @@ export class ThemeManager {
         document.head.appendChild(metaThemeColor);
       }
       
-      // Establecer el color según el tema
       metaThemeColor.content = this.darkModeEnabled ? '#212529' : '#f0efe7';
     }
     
@@ -195,13 +178,10 @@ export class ThemeManager {
         // Invertir estado actual
         this.darkModeEnabled = !this.darkModeEnabled;
         
-        // Guardar preferencia (con verificación de consentimiento)
         this.saveThemePreference();
         
-        // Aplicar tema
         this.applyTheme();
         
-        // Sincronizar explícitamente el estado del toggle
         if (this.themeToggle) {
           this.themeToggle.checked = this.darkModeEnabled;
           console.log('Toggle state updated to:', this.themeToggle.checked);
@@ -224,18 +204,14 @@ export class ThemeManager {
     setupSystemPreferenceListener() {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       
-      // Función para manejar cambios
       const handleSystemThemeChange = (e) => {
         // Solo cambiar si no hay preferencia guardada
         let preferenceExists = false;
         
-        // Verificar con cookieHelpers si está disponible
         if (window.cookieHelpers) {
-          // Verificar consentimiento y existencia de preferencia
           const savedPreference = window.cookieHelpers.getStorageWithConsent(this.THEME_KEY, 'functional', null);
           preferenceExists = savedPreference !== null;
         } else {
-          // Verificar directamente
           preferenceExists = localStorage.getItem(this.THEME_KEY) !== null;
         }
         
@@ -243,7 +219,6 @@ export class ThemeManager {
           this.darkModeEnabled = e.matches;
           this.applyTheme();
           
-          // Sincronizar toggle
           if (this.themeToggle) {
             this.themeToggle.checked = this.darkModeEnabled;
           }
@@ -252,12 +227,10 @@ export class ThemeManager {
         }
       };
       
-      // Añadir listener con soporte para navegadores antiguos
       try {
         if (mediaQuery.addEventListener) {
           mediaQuery.addEventListener('change', handleSystemThemeChange);
         } else {
-          // Fallback para navegadores antiguos
           mediaQuery.addListener(handleSystemThemeChange);
         }
       } catch (error) {
@@ -297,7 +270,6 @@ export class ThemeManager {
         this.saveThemePreference();
         this.applyTheme();
         
-        // Sincronizar toggle
         if (this.themeToggle) {
           this.themeToggle.checked = this.darkModeEnabled;
         }

@@ -10,7 +10,6 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-// Configurar logger principal
 const logger = createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: format.combine(
@@ -39,7 +38,6 @@ const logger = createLogger({
   ]
 });
 
-// Logger específico para seguridad
 const securityLogger = createLogger({
   level: 'info',
   format: format.combine(

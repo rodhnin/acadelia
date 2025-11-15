@@ -17,7 +17,6 @@ export function initPDFButtonController(uploader, panelTrigger) {
   uploaderButton = uploader;
   panelTriggerButton = panelTrigger;
   
-  // Aplicar estilos iniciales para asegurar misma posición
   ensureSamePosition();
 }
 
@@ -27,7 +26,6 @@ export function initPDFButtonController(uploader, panelTrigger) {
 function ensureSamePosition() {
   if (!uploaderButton || !panelTriggerButton) return;
   
-  // Aplicar mismas propiedades de posicionamiento
   const positionProps = {
     position: 'fixed',
     right: '24px',
@@ -51,7 +49,6 @@ export function updatePDFButtonsVisibility(hasPDF) {
   console.log(`Actualizando visibilidad de botones PDF: hasPDF=${hasPDF}`);
   
   if (!uploaderButton || !panelTriggerButton) {
-    // Intentar obtener referencias si no existen
     uploaderButton = document.querySelector('.pdf-upload-button');
     panelTriggerButton = document.querySelector('.pdf-panel-trigger');
     
@@ -61,7 +58,6 @@ export function updatePDFButtonsVisibility(hasPDF) {
     }
   }
   
-  // Verificar si estamos en pantalla de bienvenida/chat nuevo
   const isWelcome = isWelcomeState();
   
   if (isWelcome) {
@@ -72,7 +68,6 @@ export function updatePDFButtonsVisibility(hasPDF) {
     return;
   }
   
-  // Para chats existentes, alternar según si hay PDF
   console.log(`Chat existente con PDF=${hasPDF}: ${hasPDF ? 'mostrando botón de panel' : 'mostrando botón de subida'}`);
   
   // Forzar animación suave
@@ -90,7 +85,6 @@ export function updatePDFButtonsVisibility(hasPDF) {
       void uploaderButton.offsetHeight;
       void panelTriggerButton.offsetHeight;
       
-      // Restaurar opacidad para animación suave
       setTimeout(() => {
         uploaderButton.style.opacity = '';
         panelTriggerButton.style.opacity = '';

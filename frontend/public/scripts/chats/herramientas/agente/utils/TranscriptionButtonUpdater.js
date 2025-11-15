@@ -36,7 +36,6 @@ class TranscriptionButtonUpdater {
     this.audioPanel = audioPanel;
     this.currentChatId = getState('currentChatId');
     
-    // Suscribirse a eventos relevantes
     this.setupEventListeners();
     
     this.initialized = true;
@@ -64,7 +63,6 @@ class TranscriptionButtonUpdater {
     
     // Evento cuando se cargan mensajes
     eventBus.on('messages:loaded', () => {
-      // Verificar si el chat ha cambiado
       const chatId = getState('currentChatId');
       if (chatId && chatId !== this.currentChatId) {
         this.currentChatId = chatId;
@@ -101,14 +99,12 @@ class TranscriptionButtonUpdater {
           panel.recorder = null;
           panel.audioChunks = [];
           
-          // Cerrar menú si está abierto
           if (typeof panel.closeAudioMenu === 'function') {
             panel.closeAudioMenu();
           }
         }
       }
     } catch (error) {
-      // SILENCIOSO: No notificar errores técnicos internos
     }
   }
 
@@ -134,13 +130,11 @@ class TranscriptionButtonUpdater {
    * @param {Object} data - Datos del evento
    */
   onChatChanged(data) {
-    // Actualizar el chatId actual
     const newChatId = data?.chatId || getState('currentChatId');
     if (newChatId !== this.currentChatId) {
       this.currentChatId = newChatId;
       
       // Programar la actualización de botones con un pequeño retraso
-      // para asegurar que los datos del chat estén cargados
       setTimeout(() => {
         this.updateButtons();
       }, 300);
@@ -186,7 +180,6 @@ class TranscriptionButtonUpdater {
     this.updateInProgress = true;
     
     try {
-      // Obtener el chat actual
       const chatId = getState('currentChatId');
       if (!chatId) {
         // Si no hay chat activo, ocultar todos los botones
@@ -194,7 +187,6 @@ class TranscriptionButtonUpdater {
         return true;
       }
       
-      // Actualizar el chatId actual
       this.currentChatId = chatId;
       
       // 1. Verificar si hay alguna transcripción completada (general)
@@ -232,7 +224,6 @@ class TranscriptionButtonUpdater {
         this.showAudioButton();
       } else {
         // No hay transcripciones
-        // Ocultar botón de YouTube y mostrar botón de audio
         this.hideYouTubeButton();
         this.showAudioButton();
       }
@@ -242,7 +233,6 @@ class TranscriptionButtonUpdater {
       
       return true;
     } catch (error) {
-      // SILENCIOSO: No mostrar errores técnicos al usuario
       // En caso de error, mantener estado seguro: ocultar YouTube y mostrar audio
       this.hideYouTubeButton();
       this.showAudioButton();
@@ -261,21 +251,18 @@ class TranscriptionButtonUpdater {
     if (!chatId) return;
     
     try {
-      // Verificar procesamiento de YouTube
       const youtubeProcessingChat = localStorage.getItem('youtubeProcessingChat');
       if (youtubeProcessingChat === chatId) {
         this.hideAudioButton();
         return;
       }
       
-      // Verificar procesamiento de audio
       const audioProcessingChat = localStorage.getItem('audioProcessingChat');
       if (audioProcessingChat === chatId) {
         this.hideAudioButton();
         return;
       }
     } catch (error) {
-      // SILENCIOSO: No notificar errores internos
     }
   }
   
@@ -289,7 +276,6 @@ class TranscriptionButtonUpdater {
     const button = this.youtubePanel.triggerButton;
     button.style.display = 'flex';
     
-    // Configurar el botón según el modo
     if (mode === 'audio') {
       button.innerHTML = '<i class="bx bx-headphone"></i>';
       button.setAttribute('title', 'Ver transcripción de audio');
@@ -298,7 +284,6 @@ class TranscriptionButtonUpdater {
       button.setAttribute('title', 'Ver transcripción de video');
     }
     
-    // Actualizar el modo en el youtubePanel
     this.youtubePanel.currentMode = mode;
     this.youtubePanel.currentChatId = this.currentChatId;
   }
@@ -339,8 +324,6 @@ class TranscriptionButtonUpdater {
   }
 }
 
-// Crear instancia única
 const buttonUpdater = new TranscriptionButtonUpdater();
 
-// Exportar instancia
 export default buttonUpdater;

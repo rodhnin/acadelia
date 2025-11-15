@@ -2,8 +2,6 @@
 // 🧠🦫 PROFESOR ACADEL DSM-5 - SISTEMA PSICOLÓGICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE DSM-5 Y PSICOLOGÍA CLÍNICA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: DSM-5 ✅ Diagnóstico Diferencial ✅ Psicopatología ✅ Criterios Clínicos ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -361,10 +353,8 @@ Hacer que CUALQUIER estudiante de psicología:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE DSM-5 - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE DSM-5
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en DSM-5 y Psicología Clínica.
 
 🎯 FUNCIÓN: Analizar imágenes de psicología clínica (casos clínicos, criterios DSM-5, diagramas, evaluaciones) con precisión clínica extrema.
@@ -391,7 +381,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en DS
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría pedagógica de psicología clínica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE DSM-5 (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara psicólogo más brillante del universo en DSM-5 y psicología clínica.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información de psicología clínica de esta imagen para que Acadel pueda enseñar efectivamente integrando DSM-5, diagnóstico diferencial y evaluación clínica.
@@ -437,7 +426,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en psicología clínica. No enseñes ni expliques - solo analiza y reporta hallazgos clínicos. Acadel se encargará de la pedagogía de psicología clínica pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE DSM-5 NORMALES (con y sin guardar)
 const UNIFIED_DSM5_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE PSICOLOGÍA CLÍNICA INTEGRADA:
 - Consulta del estudiante de psicología: "${query}"
@@ -464,7 +452,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE DSM-5 MULTIMODALES (con y sin guardar)
 const UNIFIED_DSM5_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE PSICOLOGÍA CLÍNICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -519,7 +506,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -529,7 +515,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -551,7 +536,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -559,7 +543,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES DE DSM-5
   const dsm5ImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -584,7 +567,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes de DSM-5
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de dsm", "test de psicopatología", "evaluación de criterios", "cuestionario de diagnóstico"
@@ -628,9 +610,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -639,7 +619,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS DE PSICOLOGÍA CLÍNICA ESPECÍFICOS
   const psychologyTerms = [
     // DSM-5
     'dsm-5', 'dsm5', 'diagnóstico', 'criterios diagnósticos', 'trastorno', 'especificadores',
@@ -663,27 +642,23 @@ const classifyQuery = (query, content = null) => {
     'funcionamiento', 'deterioro', 'remisión', 'recaída', 'cronicidad'
   ];
   
-  // 🔍 DETECTAR INSTRUMENTOS Y EVALUACIONES PSICOLÓGICAS
   const psychologicalInstruments = [
     'mmpi', 'beck', 'hamilton', 'phq-9', 'gad-7', 'rorschach', 'tat', 'wais', 'wisc',
     'inventario', 'escala', 'cuestionario', 'batería', 'protocolo', 'test', 'prueba',
     'evaluación neuropsicológica', 'psicodiagnóstico', 'perfil psicológico'
   ];
   
-  // 🔍 DETECTAR CONTEXTOS CLÍNICOS
   const clinicalContexts = [
     'consulta', 'terapia', 'psicoterapia', 'intervención', 'tratamiento', 'caso clínico',
     'paciente', 'cliente', 'supervisión', 'práctica clínica', 'internado', 'residencia',
     'hospital', 'clínica', 'centro de salud mental', 'consultorio'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS DE PSICOLOGÍA CLÍNICA REALES
   const hasPsychologyContent = 
     psychologyTerms.some(term => lowercaseQuery.includes(term)) ||
     psychologicalInstruments.some(term => lowercaseQuery.includes(term)) ||
     clinicalContexts.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasPsychologyContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -708,7 +683,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'criterios de', 'síntomas de', 'trastorno'];
   const diagnosticKeywords = ['identificar', 'diagnosticar', 'evaluar', 'reconocer', 'caso clínico', 'evaluación psicológica', 'diagnóstico diferencial'];
   const dsm5Keywords = ['dsm-5', 'dsm 5', 'manual diagnóstico', 'criterios', 'especificadores', 'trastorno mental', 'diagnóstico', 'psicopatología'];
@@ -717,7 +691,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'artículos psicológicos', 'avances en psicología', 'nuevos hallazgos clínicos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -753,7 +726,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -763,7 +735,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional clínica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -790,7 +761,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DE DSM-5 OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE DSM-5
@@ -808,7 +778,6 @@ const createDSM5KnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -818,7 +787,6 @@ const createDSM5KnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -828,7 +796,6 @@ const createDSM5KnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_dsm5",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -840,7 +807,6 @@ const createDSM5KnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_DSM5_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido específico sobre "${query}" en su biblioteca de DSM-5 y psicología clínica. Proceder con conocimiento clínico general integrado y experiencia docente.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -860,7 +826,6 @@ ACADEL_DSM5_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido espec
 
 ACADEL_DSM5_MEMORY_BANK: El cerebro principal de Acadel encontró información sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base de psicología clínica integrado, analogías y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -887,7 +852,6 @@ ACADEL_DSM5_MEMORY_BANK: El cerebro principal de Acadel activó la siguiente inf
 
 INTEGRATION_NOTES: Este es el conocimiento de psicología clínica central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en DSM-5, diagnóstico diferencial y evaluación clínica. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica, enriqueciéndola con casos clínicos específicos, analogías y profesionalismo de psicología clínica que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1113,7 +1077,6 @@ const createDSM5CriteriaAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto de psicología clínica integrado: ${disorder_concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1123,7 +1086,6 @@ const createDSM5CriteriaAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_dsm5",
       });
       
-      // 📚 BÚSQUEDAS DE PSICOLOGÍA CLÍNICA ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${disorder_concept}`,
         `criterios diagnósticos DSM-5 ${disorder_concept}`,
@@ -1135,7 +1097,6 @@ const createDSM5CriteriaAnalyzerTool = (embeddings) => tool(
         `comorbilidades ${disorder_concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1168,7 +1129,6 @@ const createDSM5CriteriaAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural de psicología clínica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1347,7 +1307,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia de psicología clínica seg
 );
 
 // ============================================================================
-// 📷 HERRAMIENTA DE VISUALIZACIÓN DE PSICOLOGÍA CLÍNICA - ESPECIALIZADA PARA GENERAR IMAGENES
 // ============================================================================
 
 export const detectDSM5ImageRequest = (query) => {
@@ -1379,7 +1338,6 @@ export const extractDSM5ImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema de psicología clínica
 const createPsychologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1414,7 +1372,6 @@ const createPsychologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts de psicología clínica
 const enhanceDSM5ImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración de psicología clínica educativa de alta calidad integrando DSM-5, diagnóstico diferencial y evaluación clínica: ${prompt}. 
@@ -1433,7 +1390,6 @@ const enhanceDSM5ImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE PSICOLOGÍA CLÍNICA
 // ============================================================================
 
 const createSpecializedDSM5Prompt = (queryType, queryInfo, studentQuery) => {
@@ -1543,7 +1499,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA DE PSICOLOGÍA CLÍNICA - OPTIMIZADAS
   // ============================================================================
   
   const dsm5TypeInstructions = {
@@ -1627,7 +1582,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT DE PSICOLOGÍA CLÍNICA FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1652,13 +1606,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE DE PSICOLOGÍA CLÍNICA ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelDSM5Agent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1673,7 +1625,6 @@ const createAcadelDSM5Agent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido de psicología clínica`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando DSM5CriteriaAnalyzer para análisis paralelo profundo`);
     tools.push(createDSM5CriteriaAnalyzerTool(embeddings));
@@ -1689,7 +1640,6 @@ const createAcadelDSM5Agent = async (llm, queryInfo, studentQuery) => {
     tools.push(createPsychologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createPsychologyFeedbackAnalyzerTool());
   
   console.log(`🧠🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas de psicología clínica:`, tools.map(t => t.name));
@@ -1702,7 +1652,6 @@ const createAcadelDSM5Agent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt de psicología clínica especializado y escapado
   const specializedPrompt = createSpecializedDSM5Prompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1734,7 +1683,6 @@ const createAcadelDSM5Agent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES DE PSICOLOGÍA CLÍNICA OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1783,7 +1731,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen de psicología clínica: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1793,7 +1740,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1803,7 +1749,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_dsm5",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1815,7 +1760,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1830,7 +1774,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto de psicología clínica base para "${input}": conocimiento fundamental en DSM-5, diagnóstico diferencial y evaluación clínica. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las tres disciplinas psicológicas con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1937,7 +1880,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA PSICOLÓGICA - handleDSM5Query
 // ============================================================================
 
 export const handleDSM5Query = async (params) => {
@@ -1947,7 +1889,6 @@ export const handleDSM5Query = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1963,13 +1904,11 @@ export const handleDSM5Query = async (params) => {
     // CLASIFICAR EL QUERY PSICOLÓGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectDSM5ImageRequest(query);
     
     console.log(`🧠🦫 Acadel analizando query psicológico: "${query}"`);
     console.log(`📊 Clasificación psicológica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización psicológica: ${imagePrompt}`);
       
@@ -1978,7 +1917,6 @@ export const handleDSM5Query = async (params) => {
       const psychologyVisualizationTool = createPsychologyVisualizationTool();
       const imageResponse = await psychologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1991,7 +1929,6 @@ export const handleDSM5Query = async (params) => {
         };
       }
       
-      // Guardar la imagen psicológica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2049,7 +1986,6 @@ export const handleDSM5Query = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2086,7 +2022,6 @@ export const handleDSM5Query = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes psicológicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen psicológico: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2119,7 +2054,6 @@ export const handleDSM5Query = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2131,7 +2065,6 @@ export const handleDSM5Query = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2148,7 +2081,6 @@ export const handleDSM5Query = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para exámenes
         if (isCacheable(query, 'dsm5')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2161,7 +2093,6 @@ export const handleDSM5Query = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen neuropsicológico en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2182,7 +2113,6 @@ export const handleDSM5Query = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2199,10 +2129,8 @@ export const handleDSM5Query = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico psicológico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelDSM5Agent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2229,7 +2157,6 @@ export const handleDSM5Query = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
       
-      // Fallback con personalidad Acadel psicológica
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas psicológicas, pero no me rendiré.
 
 Sobre tu pregunta psicológica: **"${query}"**
@@ -2255,7 +2182,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       };
     }
 
-    // Procesar respuesta psicológica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2270,7 +2196,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2282,7 +2207,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2296,7 +2220,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
 
       await client.query("COMMIT");
       
-      // Cache inteligente
       if (isCacheable(query, 'dsm5')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2310,7 +2233,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2353,7 +2275,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA PSICOLÓGICA - handleDSM5MultimodalQuery  
 // ============================================================================
 
 export const handleDSM5MultimodalQuery = async (params) => {
@@ -2379,7 +2300,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2391,7 +2311,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación psicológica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto psicológico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2402,7 +2321,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal psicológico clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS PSICOLÓGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2440,7 +2358,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES PSICOLÓGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2500,7 +2417,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS PSICOLÓGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes psicológicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2570,11 +2486,9 @@ export const handleDSM5MultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE PSICOLÓGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica DSM-5");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA PSICOLÓGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2607,7 +2521,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2634,7 +2547,6 @@ export const handleDSM5MultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
       
-      // Fallback robusto psicológico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal psicológico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes psicológicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2660,7 +2572,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       };
     }
 
-    // PROCESAR RESPUESTA PSICOLÓGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2675,7 +2586,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal neuropsicológico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2696,7 +2606,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
           client,
           userId,
@@ -2708,7 +2617,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2722,7 +2630,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
 
       await client.query("COMMIT");
       
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'dsm5')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2736,7 +2643,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2804,7 +2710,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PSICOLÓGICAS
 // ============================================================================
 
 export const handleDSM5QueryWithoutSaving = async (params) => {
@@ -2827,12 +2732,10 @@ export const handleDSM5QueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectDSM5ImageRequest(query);
     
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2865,7 +2768,6 @@ export const handleDSM5QueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen psicológica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2925,7 +2827,6 @@ export const handleDSM5QueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2944,7 +2845,6 @@ export const handleDSM5QueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE PSICOLÓGICO CORREGIDO
       const { agent, tools } = await createAcadelDSM5Agent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3047,7 +2947,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content psicológico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content psicológico no es un array válido en modo sin guardar:", content);
       return {
@@ -3066,7 +2965,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
     
     console.log(`🧠 Query multimodal psicológico (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos psicológicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3079,7 +2977,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido psicológico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO PSICOLÓGICO: ${doc.name || doc.filename || 'documento psicológico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3093,7 +2990,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO PSICOLÓGICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido psicológico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3154,7 +3050,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido psicológico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3174,10 +3069,8 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido psicológico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto psicológico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos psicológicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido psicológico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3211,7 +3104,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes psicológicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3271,7 +3163,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO PSICOLÓGICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes psicológicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3356,11 +3247,9 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial psicológico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica DSM-5");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada psicológica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3391,7 +3280,6 @@ export const handleDSM5MultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente psicológico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelDSM5Agent(llm, queryInfo, combinedQuery);
 

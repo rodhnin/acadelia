@@ -34,15 +34,12 @@ export class DashboardModule {
 async init() {
   console.log('Inicializando módulo de dashboard');
   
-  // Inicializar variables para almacenar datos completos
   this.allTransactions = [];
   this.allSubscriptions = [];
   this.dateRange = null;
   
-  // Escuchar eventos relevantes
   this.setupEventListeners();
   
-  // Suscribirse a cambios de fecha
   this.eventBus.on('dateRangeChanged', (range) => {
     console.log('Dashboard: Rango de fechas cambiado:', range);
     this.dateRange = range;
@@ -50,7 +47,6 @@ async init() {
     this.refreshDashboardWithLocalData();
   });
   
-  // Cargar datos iniciales
   await this.loadDashboardData();
 }
   
@@ -58,18 +54,14 @@ async init() {
    * Configura event listeners específicos del dashboard
    */
   setupEventListeners() {
-    // Escuchar cambios de periodo en gráfico de ingresos
     document.querySelectorAll('[data-period]').forEach(button => {
       button.addEventListener('click', (e) => {
-        // Remover clase activa de todos los botones
         document.querySelectorAll('[data-period]').forEach(btn => {
           btn.classList.remove('active');
         });
         
-        // Añadir clase activa al botón clicado
         e.target.classList.add('active');
         
-        // Cambiar periodo del gráfico
         const period = e.target.getAttribute('data-period');
         this.updateRevenueChart(period);
       });
@@ -111,10 +103,8 @@ async init() {
 onSectionActivated() {
   console.log('Dashboard: Sección activada');
   
-  // Almacenar la sección actual
   this.currentSection = 'dashboard';
   
-  // Verificar si los gráficos existen, y si no, inicializarlos
   const hasCharts = this.charts.revenue || 
                    this.charts.products || 
                    this.charts.geo ||
@@ -141,17 +131,14 @@ onSectionActivated() {
 async loadDashboardData() {
   try {
     console.log('Dashboard: Cargando datos iniciales desde API');
-    // Cargar datos de transacciones y suscripciones
     const [transactions, subscriptions] = await Promise.all([
       this.api.getTransactions(),
       this.api.getSubscriptions()
     ]);
     
-    // Guardar datos completos para filtrado posterior
     this.allTransactions = transactions;
     this.allSubscriptions = subscriptions;
     
-    // Aplicar filtro de fechas si ya existe un rango
     if (this.dateRange) {
       console.log('Dashboard: Aplicando filtro de fechas a datos recién cargados');
       const filteredData = this.filterDataByDateRange(transactions, subscriptions, this.dateRange);
@@ -162,10 +149,8 @@ async loadDashboardData() {
       this.summaryData = this.generateSummaryData(transactions, subscriptions);
     }
     
-    // Actualizar UI con los datos
     this.updateDashboardUI();
     
-    // Inicializar gráficos
     this.initCharts();
     
     return true;
@@ -185,9 +170,7 @@ async loadDashboardData() {
  */
 generateSummaryData(transactions, subscriptions) {
   // PARTE 1: CÁLCULO DE PERÍODOS
-  // Crear los rangos para los ingresos basados en las transacciones filtradas
 
-  // Obtener rango de fechas actual del selector (si está disponible)
   let startDate, endDate, prevStartDate, prevEndDate;
   
   if (this.dateRange) {
@@ -198,7 +181,6 @@ generateSummaryData(transactions, subscriptions) {
     // Asegurar que endDate incluye todo el día
     endDate.setHours(23, 59, 59, 999);
     
-    // Calcular el período anterior de igual duración
     const duration = endDate.getTime() - startDate.getTime();
     prevEndDate = new Date(startDate.getTime() - 1); // Día anterior al inicio del período actual
     prevStartDate = new Date(prevEndDate.getTime() - duration); // Mismo número de días
@@ -222,14 +204,12 @@ generateSummaryData(transactions, subscriptions) {
   console.log('Comparando con período anterior:', prevStartDate, 'a', prevEndDate);
   
   // PARTE 2: FILTRAR TRANSACCIONES SEGÚN LOS PERÍODOS CALCULADOS
-  // Filtrar transacciones del período actual
   const currentPeriodTransactions = transactions.filter(t => {
     if (!t.updated_at) return false;
     const txDate = new Date(t.updated_at);
     return txDate >= startDate && txDate <= endDate;
   });
   
-  // Filtrar transacciones del período anterior
   const prevPeriodTransactions = transactions.filter(t => {
     if (!t.updated_at) return false;
     const txDate = new Date(t.updated_at);
@@ -237,7 +217,6 @@ generateSummaryData(transactions, subscriptions) {
   });
   
   // PARTE 3: CÁLCULO DE INGRESOS
-  // Calcular ingresos totales netos usando las transacciones del período actual
   // Importante: Usar earnings_eur para ingresos netos, no amount_eur
   const totalEarnings = currentPeriodTransactions.reduce((sum, t) => 
     sum + parseFloat(t.earnings_eur || 0), 0);
@@ -253,19 +232,15 @@ generateSummaryData(transactions, subscriptions) {
     earningsIncrease = ((totalEarnings - prevPeriodEarnings) / prevPeriodEarnings) * 100;
   }
   
-  // Mostrar información detallada para depuración
   console.log(`INGRESOS - Actual: ${totalEarnings}, Anterior: ${prevPeriodEarnings}, Cambio: ${earningsIncrease}%`);
   
   // PARTE 4: CÁLCULO DE LOS DEMÁS KPIS
-  // Calcular también los ingresos brutos para mostrar en otros lugares
   const totalRevenueBruto = currentPeriodTransactions.reduce((sum, t) => 
     sum + parseFloat(t.amount_eur || 0), 0);
   
-  // Calcular comisiones totales
   const totalFees = currentPeriodTransactions.reduce((sum, t) => 
     sum + parseFloat(t.fee_amount_eur || 0), 0);
   
-  // Contar suscripciones activas en el período actual
   const activeSubscriptions = subscriptions.filter(s => s.status === 'active').length;
   
   // CORRECCIÓN: Contar suscripciones expiradas SOLO en el período actual
@@ -283,11 +258,9 @@ generateSummaryData(transactions, subscriptions) {
     return createDate >= startDate && createDate <= endDate;
   }).length;
   
-  // Calcular IVA total usando tax_amount_eur
   const totalTax = currentPeriodTransactions.reduce((sum, t) => 
     sum + parseFloat(t.tax_amount_eur || 0), 0);
   
-  // Contar transacciones en España vs. fuera
   const spainTransactions = currentPeriodTransactions.filter(t => t.country_code === 'ES');
   const spainTax = spainTransactions.reduce((sum, t) => 
     sum + parseFloat(t.tax_amount_eur || 0), 0);
@@ -302,7 +275,6 @@ generateSummaryData(transactions, subscriptions) {
     return cancelDate >= startDate && cancelDate <= endDate;
   }).length;
   
-  // Para la tasa de cancelación, considerar suscripciones activas + canceladas en el período
   const relevantSubscriptionsForRate = activeSubscriptions + canceledSubscriptions;
   const cancellationRate = relevantSubscriptionsForRate === 0 ? 0 : 
     (canceledSubscriptions / relevantSubscriptionsForRate) * 100;
@@ -347,7 +319,6 @@ generateSummaryData(transactions, subscriptions) {
   const averageMargin = totalAmountEur === 0 ? 0 : (totalEarnings / totalAmountEur) * 100;
   
   // TRANSACCIONES PROMEDIO POR DÍA
-  // Calcular la duración en días del período seleccionado
   const periodDurationMs = endDate.getTime() - startDate.getTime();
   const periodDays = Math.max(1, Math.ceil(periodDurationMs / (1000 * 60 * 60 * 24)));
   const avgTransactionsPerDay = currentPeriodTransactions.length / periodDays;
@@ -361,7 +332,6 @@ generateSummaryData(transactions, subscriptions) {
   // Recopilar datos de divisas
   const currencyData = this.generateCurrencyData(currentPeriodTransactions);
   
-  // Preparar transacciones recientes
   const recentTransactions = [...currentPeriodTransactions]
     .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
     .slice(0, 5);
@@ -375,7 +345,6 @@ generateSummaryData(transactions, subscriptions) {
   console.log(`DASHBOARD STATS: Suscripciones expiradas en período: ${expiredSubscriptions}`);
   console.log(`DASHBOARD STATS: Cancelaciones en período: ${canceledSubscriptions}`);
   
-  // Devolver objeto con todos los datos calculados
   return {
     totalEarnings,          // Ingresos NETOS (basados en earnings_eur)
     earningsIncrease,       // CORREGIDO: Incremento correctamente calculado
@@ -398,7 +367,6 @@ generateSummaryData(transactions, subscriptions) {
     recentTransactions,
     allTransactions: transactions,
     allSubscriptions: subscriptions,
-    // Añadir información del período para depuración/referencia
     currentPeriod: {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -425,7 +393,6 @@ generateSummaryData(transactions, subscriptions) {
       const productId = t.product_id;
       const productName = t.product_name || `Producto ${productId}`;
       
-      // Usar earnings_eur para mostrar ingresos netos
       const earnings = parseFloat(t.earnings_eur || 0);
       const amount = parseFloat(t.amount_eur || 0);
       
@@ -445,7 +412,6 @@ generateSummaryData(transactions, subscriptions) {
       products[productId].brutoTotal += amount;
       products[productId].count += 1;
       
-      // Almacenar datos de moneda original para el tooltip mejorado
       const currency = t.currency_code || 'EUR';
       if (!products[productId].currencies[currency]) {
         products[productId].currencies[currency] = {
@@ -474,7 +440,6 @@ generateSummaryData(transactions, subscriptions) {
     transactions.forEach(t => {
       const countryCode = t.country_code || 'UNKNOWN';
       
-      // Usar earnings_eur para ingresos netos
       const earnings = parseFloat(t.earnings_eur || 0);
       const amount = parseFloat(t.amount_eur || 0);
       
@@ -494,7 +459,6 @@ generateSummaryData(transactions, subscriptions) {
       countries[countryCode].brutoTotal += amount;
       countries[countryCode].count += 1;
       
-      // Almacenar datos de moneda original para el tooltip mejorado
       const currency = t.currency_code || 'EUR';
       if (!countries[countryCode].currencies[currency]) {
         countries[countryCode].currencies[currency] = {
@@ -537,7 +501,6 @@ generateSummaryData(transactions, subscriptions) {
         };
       }
       
-      // Incrementar totales
       currencies[currencyCode].amountTotal += parseFloat(t.amount_eur || 0);
       currencies[currencyCode].amountOriginal += parseFloat(t.amount || 0);
       currencies[currencyCode].earningsTotal += parseFloat(t.earnings_eur || 0);
@@ -547,7 +510,6 @@ generateSummaryData(transactions, subscriptions) {
       currencies[currencyCode].count += 1;
     });
     
-    // Calcular tasas de cambio promedio
     Object.values(currencies).forEach(currency => {
       if (currency.code !== 'EUR' && currency.amountOriginal > 0) {
         currency.avgRate = currency.amountTotal / currency.amountOriginal;
@@ -565,7 +527,6 @@ generateSummaryData(transactions, subscriptions) {
 updateDashboardUI() {
   if (!this.summaryData) return;
   
-  // Actualizar KPIs existentes con valores corregidos
   
   // Ingresos (mostrar ingresos netos)
   this.ui.updateElement('total-revenue', formatCurrency(this.summaryData.totalEarnings));
@@ -573,32 +534,27 @@ updateDashboardUI() {
   // Variación vs período anterior (usando el valor calculado)
   const increaseValue = this.summaryData.earningsIncrease;
   
-  // Log adicional para depuración
   console.log(`UI: Actualizando incremento a ${increaseValue}%`);
   
   // Actualización directa del elemento sin usar this.ui.updateElement
   const increaseElement = document.getElementById('revenue-increase');
   if (increaseElement) {
-    // Aplicar el formateo directamente indicando que NO está en formato decimal
     increaseElement.textContent = formatPercentage(increaseValue, false);
     
     // También actualizar clases y colores según el valor
     if (increaseValue < 0) {
-      // Para valores negativos - ROJO
       increaseElement.classList.remove('text-primary');
       increaseElement.classList.remove('text-info');
       increaseElement.classList.remove('text-white');
       increaseElement.classList.remove('text-success');
       increaseElement.classList.add('text-danger');
       
-      // Cambiar ícono de flecha arriba a flecha abajo
       const iconElement = increaseElement.previousElementSibling;
       if (iconElement && iconElement.classList.contains('bi-arrow-up')) {
         iconElement.classList.remove('bi-arrow-up');
         iconElement.classList.add('bi-arrow-down');
       }
     } else {
-      // Para valores positivos o cero - CAMBIAR A UN COLOR CON MEJOR CONTRASTE
       // Opciones:
       // - text-primary (azul)
       // - text-info (azul claro)
@@ -614,7 +570,6 @@ updateDashboardUI() {
       // Añadimos el nuevo color para incremento positivo
       increaseElement.classList.add('text-primary'); // AZUL para ganancias
       
-      // Cambiar ícono de flecha abajo a flecha arriba
       const iconElement = increaseElement.previousElementSibling;
       if (iconElement && iconElement.classList.contains('bi-arrow-down')) {
         iconElement.classList.remove('bi-arrow-down');
@@ -625,7 +580,6 @@ updateDashboardUI() {
     console.warn('Elemento revenue-increase no encontrado en el DOM');
   }
   
-  // Actualizar el resto de KPIs usando el método normal
   this.ui.updateElement('active-subscriptions', this.summaryData.activeSubscriptions);
   this.ui.updateElement('new-subscriptions', this.summaryData.newSubscriptions);
   this.ui.updateElement('total-tax', formatCurrency(this.summaryData.totalTax));
@@ -639,7 +593,6 @@ updateDashboardUI() {
   this.ui.updateElement('top-product-count', this.summaryData.topProduct.count);
   this.ui.updateElement('average-margin', formatPercentage(this.summaryData.averageMargin));
   
-  // Añadir más información de depuración visible en la consola
   console.log('DASHBOARD UI UPDATED');
   console.log('Período actual:', this.summaryData.currentPeriod);
   console.log('Período anterior:', this.summaryData.previousPeriod);
@@ -657,7 +610,6 @@ updateDashboardUI() {
     averageMargin: this.summaryData.averageMargin
   });
   
-  // Actualizar tabla de transacciones recientes
   this.updateRecentTransactionsTable();
 }
   
@@ -668,7 +620,6 @@ updateDashboardUI() {
     if (!this.summaryData || !this.summaryData.recentTransactions) return;
     
     this.ui.updateTable('recent-transactions', this.summaryData.recentTransactions, (transaction) => {
-      // Mostrar tanto moneda original como EUR, y además ingresos netos
       const amount = parseFloat(transaction.amount || 0);
       const amountEur = parseFloat(transaction.amount_eur || 0);
       const earningsEur = parseFloat(transaction.earnings_eur || 0);
@@ -697,16 +648,12 @@ updateDashboardUI() {
   initCharts() {
     if (!this.summaryData) return;
     
-    // Inicializar gráfico de ingresos
     this.initRevenueChart();
     
-    // Inicializar gráfico de productos
     this.initProductsChart();
     
-    // Inicializar gráfico geográfico
     this.initGeoChart();
     
-    // Inicializar nuevos gráficos
     this.initCurrencyChart();
   }
   
@@ -717,10 +664,8 @@ updateDashboardUI() {
     const ctx = document.getElementById('currency-chart');
     if (!ctx || !this.summaryData.currencyData) return;
     
-    // Obtener datos para el gráfico
     const currencyData = this.summaryData.currencyData;
     
-    // Preparar datos para Chart.js
     const labels = currencyData.map(c => c.code);
     const amountTotals = currencyData.map(c => c.amountTotal);
     const earningsTotals = currencyData.map(c => c.earningsTotal);
@@ -788,7 +733,6 @@ updateDashboardUI() {
       }
     };
     
-    // Crear gráfico
     this.charts.currency = new Chart(ctx, config);
   }
   
@@ -890,10 +834,8 @@ updateDashboardUI() {
       }
     };
     
-    // Actualizar datos según las transacciones reales
     this.updateChartDataByMonth(config, this.summaryData.allTransactions);
     
-    // Crear gráfico
     this.charts.revenue = new Chart(ctx, config);
   }
   
@@ -913,13 +855,11 @@ updateDashboardUI() {
       const date = new Date(t.updated_at);
       const month = date.getMonth();
       
-      // Sumar ingresos brutos y netos
       monthlyBruto[month] += parseFloat(t.amount_eur || 0);
       monthlyNeto[month] += parseFloat(t.earnings_eur || 0);
       monthlyCount[month] += 1;
     });
     
-    // Actualizar datasets
     config.data.datasets[0].data = monthlyBruto;
     config.data.datasets[1].data = monthlyNeto;
     config.data.datasets[2].data = monthlyCount;
@@ -932,13 +872,10 @@ updateDashboardUI() {
   updateRevenueChart(period) {
     if (!this.charts.revenue || !this.summaryData) return;
     
-    // Actualizar configuración según período
     const config = this.charts.revenue.config;
     
-    // Actualizar etiquetas según el período
     if (period === 'monthly') {
       config.data.labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      // Actualizar datos mensuales
       this.updateChartDataByMonth(config, this.summaryData.allTransactions);
     } 
     else if (period === 'quarterly') {
@@ -964,7 +901,6 @@ updateDashboardUI() {
       config.data.datasets[2].data = quarterlyCount;
     } 
     else if (period === 'yearly') {
-      // Mostrar los últimos 3 años
       const currentYear = new Date().getFullYear();
       config.data.labels = [`${currentYear-2}`, `${currentYear-1}`, `${currentYear}`];
       
@@ -991,7 +927,6 @@ updateDashboardUI() {
       config.data.datasets[2].data = yearlyCount;
     }
     
-    // Actualizar gráfico
     this.charts.revenue.update();
   }
   
@@ -1002,12 +937,10 @@ updateDashboardUI() {
     const ctx = document.getElementById('products-chart');
     if (!ctx) return;
     
-    // Ordenar productos por ingresos netos
     const sortedProducts = [...this.summaryData.productData]
       .sort((a, b) => b.total - a.total)
       .slice(0, 5); // Top 5 productos
     
-    // Preparar datos
     const labels = sortedProducts.map(p => p.name);
     const values = sortedProducts.map(p => p.total); // Usar ingresos netos
     
@@ -1068,7 +1001,6 @@ updateDashboardUI() {
       }
     };
     
-    // Crear gráfico
     this.charts.products = new Chart(ctx, config);
   }
   
@@ -1079,11 +1011,9 @@ updateDashboardUI() {
     const ctx = document.getElementById('geo-chart');
     if (!ctx) return;
     
-    // Ordenar países por ingresos netos
     const sortedCountries = [...this.summaryData.geoData]
       .sort((a, b) => b.total - a.total);
     
-    // Preparar datos
     const labels = sortedCountries.map(c => c.name);
     const values = sortedCountries.map(c => c.total); // Usar ingresos netos
     
@@ -1145,7 +1075,6 @@ updateDashboardUI() {
       }
     };
     
-    // Crear gráfico
     this.charts.geo = new Chart(ctx, config);
   }
   
@@ -1153,19 +1082,16 @@ updateDashboardUI() {
  * Redimensiona los gráficos
  */
 resizeCharts() {
-  // Verificar si estamos en la sección correcta
   if (this.currentSection !== 'dashboard') {
     console.log('Dashboard: No estamos en la sección de dashboard, omitiendo resize');
     return;
   }
   
-  // Agregar un pequeño retraso para asegurar que el DOM esté listo
   setTimeout(() => {
     Object.keys(this.charts).forEach(chartKey => {
       const chart = this.charts[chartKey];
       if (chart && chart.canvas && document.body.contains(chart.canvas)) {
         try {
-          // Usar update() en lugar de resize() para mayor compatibilidad
           chart.update();
         } catch (error) {
           console.warn(`Error al redimensionar gráfico ${chartKey}:`, error);
@@ -1173,7 +1099,6 @@ resizeCharts() {
       } else if (chart) {
         // El gráfico existe pero su canvas no está en el DOM
         console.log(`Dashboard: Canvas del gráfico ${chartKey} no está en el DOM, recreando...`);
-        // Eliminarlo de nuestra referencia
         this.charts[chartKey] = null;
       }
     });
@@ -1192,13 +1117,11 @@ resizeCharts() {
    */
     async refreshDashboard() {
       console.log('Dashboard: Refrescando datos desde API');
-      // Limpiar caché para obtener datos frescos
       this.api.clearCache();
       
       // Recargar datos
       await this.loadDashboardData();
       
-      // Notificar actualización
       this.ui.showSuccessMessage('Dashboard actualizado correctamente');
     }
 /**
@@ -1215,28 +1138,23 @@ refreshDashboardWithLocalData() {
     return;
   }
   
-  // Convertir fechas a objetos Date
   const startDate = new Date(this.dateRange.start);
   const endDate = new Date(this.dateRange.end);
   
-  // Calcular la duración del período actual en milisegundos
   const periodDuration = endDate.getTime() - startDate.getTime();
   
-  // Calcular el período anterior equivalente
   const prevEndDate = new Date(startDate.getTime() - 1); // Día anterior al inicio del período actual
   const prevStartDate = new Date(prevEndDate.getTime() - periodDuration); // Mismo número de días
   
   console.log(`Período actual: ${this.dateRange.start} a ${this.dateRange.end}`);
   console.log(`Período anterior: ${prevStartDate.toISOString().split('T')[0]} a ${prevEndDate.toISOString().split('T')[0]}`);
   
-  // Filtrar transacciones del período actual
   const currentTransactions = this.allTransactions.filter(t => {
     if (!t.updated_at) return false;
     const txDate = new Date(t.updated_at);
     return txDate >= startDate && txDate <= endDate;
   });
   
-  // Filtrar transacciones del período anterior
   const prevTransactions = this.allTransactions.filter(t => {
     if (!t.updated_at) return false;
     const txDate = new Date(t.updated_at);
@@ -1246,14 +1164,12 @@ refreshDashboardWithLocalData() {
   console.log(`Transacciones período actual: ${currentTransactions.length}`);
   console.log(`Transacciones período anterior: ${prevTransactions.length}`);
   
-  // Calcular ingresos de ambos períodos para comparación
   const currentEarnings = currentTransactions.reduce((sum, t) => 
     sum + parseFloat(t.earnings_eur || 0), 0);
   
   const prevEarnings = prevTransactions.reduce((sum, t) => 
     sum + parseFloat(t.earnings_eur || 0), 0);
   
-  // Calcular incremento porcentual con la fórmula corregida
   let earningsIncrease = 0;
   if (prevEarnings === 0) {
     earningsIncrease = currentEarnings > 0 ? 100 : 0;
@@ -1271,7 +1187,6 @@ refreshDashboardWithLocalData() {
   console.log(`Ingresos período anterior: ${prevEarnings}`);
   console.log(`Incremento calculado: ${earningsIncrease}%`);
   
-  // Filtrar suscripciones según el período actual (no necesitamos las del anterior para KPIs)
   const filteredSubscriptions = this.filterSubscriptionsByDateRange(
     this.allSubscriptions, 
     startDate, 
@@ -1280,7 +1195,6 @@ refreshDashboardWithLocalData() {
   
   console.log(`Suscripciones filtradas: ${filteredSubscriptions.length}`);
   
-  // Generar datos resumidos para el dashboard
   this.summaryData = this.generateSummaryData(
     currentTransactions,
     filteredSubscriptions
@@ -1290,10 +1204,8 @@ refreshDashboardWithLocalData() {
   this.summaryData.earningsIncrease = earningsIncrease;
   this.summaryData.calculatedPrevEarnings = prevEarnings; // Guardar para referencia
   
-  // Actualizar la UI
   this.updateDashboardUIWithCorrectPercentage();
   
-  // Actualizar gráficos con los nuevos datos
   this.updateChartsWithFilteredData();
   
   // Pequeña notificación para el usuario
@@ -1310,7 +1222,6 @@ refreshDashboardWithLocalData() {
  */
 filterSubscriptionsByDateRange(subscriptions, startDate, endDate) {
   return subscriptions.filter(subscription => {
-    // Para suscripciones que se crearon en el rango
     if (subscription.created_at) {
       const createdDate = new Date(subscription.created_at);
       if (createdDate >= startDate && createdDate <= endDate) {
@@ -1318,7 +1229,6 @@ filterSubscriptionsByDateRange(subscriptions, startDate, endDate) {
       }
     }
     
-    // Para suscripciones que se actualizaron en el rango
     if (subscription.updated_at && subscription.created_at) {
       const updatedDate = new Date(subscription.updated_at);
       const createdDate = new Date(subscription.created_at);
@@ -1330,7 +1240,6 @@ filterSubscriptionsByDateRange(subscriptions, startDate, endDate) {
       }
     }
     
-    // Para suscripciones activas durante el período
     if (subscription.created_at) {
       const createdDate = new Date(subscription.created_at);
       
@@ -1364,23 +1273,19 @@ updateDashboardUIWithCorrectPercentage() {
     return;
   }
   
-  // Actualizar elementos estándar
   this.ui.updateElement('total-revenue', formatCurrency(this.summaryData.totalEarnings));
   
   // IMPORTANTE: Verificación y manipulación directa del porcentaje
   const increaseValue = this.summaryData.earningsIncrease;
   
-  // Log detallado para verificar el valor antes de mostrarlo
   console.log(`UI: Valor de incremento a mostrar: ${increaseValue}%`);
   console.log(`UI: Estado financiero - Actual: ${this.summaryData.totalEarnings}€, Anterior: ${this.summaryData.calculatedPrevEarnings}€`);
   
   // Actualización directa del elemento
   const increaseElement = document.getElementById('revenue-increase');
   if (increaseElement) {
-    // Aplicar el formateo directamente indicando que NO está en formato decimal
     increaseElement.textContent = formatPercentage(increaseValue, false);
     
-    // Actualizar estilos según el valor
     if (increaseValue < 0) {
       // Estilo para negativos
       increaseElement.classList.remove('text-primary');
@@ -1402,7 +1307,6 @@ updateDashboardUIWithCorrectPercentage() {
       increaseElement.classList.remove('text-info');
       increaseElement.classList.remove('text-white');
       
-      // USAR AZUL para mejor contraste con fondo verde
       increaseElement.classList.add('text-primary');
       
       // Flecha arriba
@@ -1416,7 +1320,6 @@ updateDashboardUIWithCorrectPercentage() {
     console.warn('Elemento revenue-increase no encontrado en el DOM');
   }
   
-  // Actualizar el resto de elementos normalmente
   this.ui.updateElement('active-subscriptions', this.summaryData.activeSubscriptions);
   this.ui.updateElement('new-subscriptions', this.summaryData.newSubscriptions);
   this.ui.updateElement('total-tax', formatCurrency(this.summaryData.totalTax));
@@ -1430,7 +1333,6 @@ updateDashboardUIWithCorrectPercentage() {
   this.ui.updateElement('top-product-count', this.summaryData.topProduct.count);
   this.ui.updateElement('average-margin', formatPercentage(this.summaryData.averageMargin));
   
-  // Actualizar tabla de transacciones recientes
   this.updateRecentTransactionsTable();
 }
 
@@ -1444,26 +1346,19 @@ updateDashboardUIWithCorrectPercentage() {
 filterDataByDateRange(transactions, subscriptions, dateRange) {
   console.log(`Dashboard: Filtrando datos por rango: ${dateRange.start} a ${dateRange.end}`);
   
-  // Convertir fechas de string a objetos Date
   const startDate = new Date(dateRange.start);
   const endDate = new Date(dateRange.end);
   
-  // Establecer endDate al final del día para incluir todo el día final
   endDate.setHours(23, 59, 59, 999);
   
-  // Filtrar transacciones
   const filteredTransactions = transactions.filter(transaction => {
-    // Verificar que updated_at existe
     if (!transaction.updated_at) return false;
     
-    // Usar updated_at como campo de fecha principal
     const transactionDate = new Date(transaction.updated_at);
     return transactionDate >= startDate && transactionDate <= endDate;
   });
   
-  // Filtrar suscripciones con lógica mejorada
   const filteredSubscriptions = subscriptions.filter(subscription => {
-    // Para suscripciones que se crearon en el rango
     if (subscription.created_at) {
       const createdDate = new Date(subscription.created_at);
       if (createdDate >= startDate && createdDate <= endDate) {
@@ -1471,7 +1366,6 @@ filterDataByDateRange(transactions, subscriptions, dateRange) {
       }
     }
     
-    // Para suscripciones que se actualizaron en el rango (cancelaciones, pausas, etc.)
     if (subscription.updated_at && subscription.created_at) {
       const updatedDate = new Date(subscription.updated_at);
       const createdDate = new Date(subscription.created_at);
@@ -1483,7 +1377,6 @@ filterDataByDateRange(transactions, subscriptions, dateRange) {
       }
     }
     
-    // Para suscripciones activas durante el período (creadas antes o durante el período
     // y aún activas o que expiraron/se cancelaron después del período)
     if (subscription.created_at) {
       const createdDate = new Date(subscription.created_at);
@@ -1518,7 +1411,6 @@ filterDataByDateRange(transactions, subscriptions, dateRange) {
  * Actualiza los gráficos con los datos filtrados
  */
 updateChartsWithFilteredData() {
-  // Verificar que estamos en la sección de dashboard
   if (this.currentSection !== 'dashboard') {
     console.log('Dashboard: No estamos en la sección dashboard, omitiendo actualización de gráficos');
     return;
@@ -1532,19 +1424,16 @@ updateChartsWithFilteredData() {
       console.log('Dashboard: Manteniendo gráfico de ingresos sin cambios (según requerimiento)');
     }
     
-    // Actualizar el gráfico de productos si existe
     if (this.charts.products && this.charts.products.canvas && 
         document.body.contains(this.charts.products.canvas)) {
       this.updateProductsChart();
     }
     
-    // Actualizar el gráfico geográfico si existe
     if (this.charts.geo && this.charts.geo.canvas && 
         document.body.contains(this.charts.geo.canvas)) {
       this.updateGeoChart();
     }
     
-    // Actualizar gráfico de divisas si existe
     if (this.charts.currency && this.charts.currency.canvas && 
         document.body.contains(this.charts.currency.canvas)) {
       this.updateCurrencyChart();
@@ -1563,20 +1452,16 @@ updateChartsWithFilteredData() {
 updateProductsChart() {
   if (!this.charts.products || !this.summaryData) return;
   
-  // Ordenar productos por ingresos netos
   const sortedProducts = [...this.summaryData.productData]
     .sort((a, b) => b.total - a.total)
     .slice(0, 5); // Top 5 productos
   
-  // Preparar datos
   const labels = sortedProducts.map(p => p.name);
   const values = sortedProducts.map(p => p.total); // Usar ingresos netos
   
-  // Actualizar datos del gráfico
   this.charts.products.data.labels = labels;
   this.charts.products.data.datasets[0].data = values;
   
-  // Actualizar el gráfico
   this.charts.products.update();
   
   console.log('Dashboard: Gráfico de productos actualizado con datos filtrados');
@@ -1588,19 +1473,15 @@ updateProductsChart() {
 updateGeoChart() {
   if (!this.charts.geo || !this.summaryData) return;
   
-  // Ordenar países por ingresos netos
   const sortedCountries = [...this.summaryData.geoData]
     .sort((a, b) => b.total - a.total);
   
-  // Preparar datos
   const labels = sortedCountries.map(c => c.name);
   const values = sortedCountries.map(c => c.total); // Usar ingresos netos
   
-  // Actualizar datos del gráfico
   this.charts.geo.data.labels = labels;
   this.charts.geo.data.datasets[0].data = values;
   
-  // Actualizar el gráfico
   this.charts.geo.update();
 }
 
@@ -1608,10 +1489,8 @@ updateGeoChart() {
  * Actualiza el gráfico de divisas con los datos actuales
  */
 updateCurrencyChart() {
-  // AÑADIR ESTAS VERIFICACIONES AL INICIO
   if (!this.charts.currency) return;
   
-  // Verificar que el canvas del gráfico sigue en el DOM
   const canvas = this.charts.currency.canvas;
   if (!canvas || !canvas.parentNode || !document.body.contains(canvas)) {
     console.log('Dashboard: Canvas del gráfico de divisas no está en el DOM, omitiendo actualización');
@@ -1619,18 +1498,14 @@ updateCurrencyChart() {
   }
   
   try {
-    // Obtener datos para el gráfico
     const currencyData = this.summaryData.currencyData;
     
-    // Preparar datos para Chart.js
     const labels = currencyData.map(c => c.code);
     const earningsTotals = currencyData.map(c => c.earningsTotal);
     
-    // Actualizar datos del gráfico
     this.charts.currency.data.labels = labels;
     this.charts.currency.data.datasets[0].data = earningsTotals;
     
-    // Actualizar el gráfico
     this.charts.currency.update();
   } catch (error) {
     console.warn('Error al actualizar gráfico de divisas:', error);

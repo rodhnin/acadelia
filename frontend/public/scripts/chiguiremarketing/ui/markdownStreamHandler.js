@@ -50,7 +50,6 @@ export class MarkdownStreamHandler {
   processChunk(chunk) {
     if (!chunk || this.isComplete) return;
     
-    // Guardar chunk sin modificar
     this.chunks.push(chunk);
     this.fullContent += chunk;
     
@@ -63,12 +62,10 @@ export class MarkdownStreamHandler {
       }
     }
     
-    // Detectar contenido Mermaid durante el streaming
     if (!this.hasMermaidContent) {
       this.hasMermaidContent = this.detectMermaidContent(this.fullContent);
     }
     
-    // Verificar contenido antes de renderizar
     const hasValidContent = this.fullContent.trim().length > 0;
     const hasEnoughContent = this.fullContent.length >= this.MIN_CHUNK_SIZE;
     
@@ -123,7 +120,6 @@ export class MarkdownStreamHandler {
       // Renderizado directo sin transiciones
       const html = renderMarkdownStreaming(this.fullContent, true);
       
-      // Actualizar DOM directamente
       this.contentEl.innerHTML = html;
       
       // ✨ NUEVO: Procesar elementos especiales de manera limitada durante streaming
@@ -176,7 +172,6 @@ export class MarkdownStreamHandler {
           });
       }
       
-      // Procesar otros elementos que no sean Mermaid o matemáticas complejas
       const mathElements = this.contentEl.querySelectorAll('.math-expression:not(.processed)');
       if (mathElements.length > 0) {
         mathElements.forEach(el => {
@@ -218,7 +213,6 @@ export class MarkdownStreamHandler {
     
     this.isComplete = true;
     
-    // Cancelar renders pendientes
     if (this.renderTimeout) {
       clearTimeout(this.renderTimeout);
       this.renderTimeout = null;
@@ -272,7 +266,6 @@ export class MarkdownStreamHandler {
         } catch (mathError) {
           console.error('❌ Error procesando matemáticas:', mathError);
           
-          // Fallback: intentar procesamiento básico
           console.log('🔄 Intentando procesamiento matemático de respaldo...');
           setTimeout(() => {
             if (window.forceProcessMath) {
@@ -286,7 +279,6 @@ export class MarkdownStreamHandler {
       if (this.hasMermaidContent && window.mermaidManager) {
         console.log('🎨 Procesando diagramas Mermaid con sistema unificado...');
         
-        // Verificar que el MermaidManager esté inicializado
         if (window.mermaidManager.isInitialized) {
           await window.mermaidManager.processContainer(this.contentEl);
           this.mermaidProcessed = true;
@@ -323,7 +315,6 @@ export class MarkdownStreamHandler {
    */
   postProcessElements() {
     try {
-      // Actualizar highlight.js para cualquier código que pueda haberse perdido
       const newCodeBlocks = this.contentEl.querySelectorAll('pre code:not(.hljs)');
       if (newCodeBlocks.length > 0 && typeof hljs !== 'undefined') {
         newCodeBlocks.forEach(block => {
@@ -354,7 +345,6 @@ export class MarkdownStreamHandler {
         }, 1000);
       }
       
-      // Verificar que los diagramas Mermaid se procesaron correctamente
       if (this.hasMermaidContent) {
         const unprocessedMermaid = this.contentEl.querySelectorAll('.mermaid:not([data-processed])');
         if (unprocessedMermaid.length > 0) {

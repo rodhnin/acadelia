@@ -13,30 +13,22 @@ const state = {
 export function initCreationModule() {
     console.log('Inicializando módulo de creación...');
     
-    // Configurar navegación de tabs
     setupTabNavigation();
     
-    // Configurar visualización de vistas previas de imágenes
     setupImagePreviews();
     
-    // Configurar envío de formularios
     setupFormSubmission();
     
-    // Escuchar activación de vista
     document.addEventListener('viewActivated', (event) => {
         if (event.detail.view === 'creation') {
-            // Cargar datos necesarios cuando se active la vista
             loadCarrerasDropdown();
             
-            // Configurar previews de nuevo (por si DOM se refresca)
             setupImagePreviews();
             
-            // Resetear a la pantalla de bienvenida
             resetToWelcomeTab();
         }
     });
     
-    // Cargar datos iniciales si estamos en la vista de creación
     if (window.location.hash === '#creation') {
         loadCarrerasDropdown();
     }
@@ -51,16 +43,13 @@ export function initCreationModule() {
  * Resetea a la pestaña de bienvenida
  */
 function resetToWelcomeTab() {
-    // Obtener referencia a todas las pestañas y botones
     const tabButtons = document.querySelectorAll('#creation-view .tab-button');
     const tabPanes = document.querySelectorAll('#creation-view .tab-pane');
     const welcomeTab = document.getElementById('welcome-tab');
     
-    // Desactivar todos los botones y tabs
     tabButtons.forEach(btn => btn.classList.remove('active'));
     tabPanes.forEach(pane => pane.classList.remove('active'));
     
-    // Activar la pestaña de bienvenida
     if (welcomeTab) {
         welcomeTab.classList.add('active');
         state.activeTab = 'welcome-tab';
@@ -74,9 +63,7 @@ function setupTabNavigation() {
     const tabButtons = document.querySelectorAll('#creation-view .tab-button');
     const tabPanes = document.querySelectorAll('#creation-view .tab-pane');
     
-    // Limpiar listeners existentes
     tabButtons.forEach(button => {
-        // Clonar elemento para remover todos los listeners
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
     });
@@ -98,17 +85,14 @@ function handleTabClick(event) {
     const tabButtons = document.querySelectorAll('#creation-view .tab-button');
     const tabPanes = document.querySelectorAll('#creation-view .tab-pane');
     
-    // Ocultar pantalla de bienvenida
     const welcomeTab = document.getElementById('welcome-tab');
     if (welcomeTab) {
         welcomeTab.classList.remove('active');
     }
     
-    // Desactivar todos los botones y tabs
     tabButtons.forEach(btn => btn.classList.remove('active'));
     tabPanes.forEach(pane => pane.classList.remove('active'));
     
-    // Activar el botón y tab seleccionados
     button.classList.add('active');
     const tabId = button.dataset.tab;
     const targetTab = document.getElementById(tabId);
@@ -116,7 +100,6 @@ function handleTabClick(event) {
         targetTab.classList.add('active');
     }
     
-    // Actualizar estado
     state.activeTab = tabId;
 }
 
@@ -142,16 +125,13 @@ function setupImagePreviews() {
         
         console.log(`Configurando vista previa para: ${config.id}`);
         
-        // Remover listener anterior si existe
         if (state.fileChangeHandlers.has(config.id)) {
             fileInput.removeEventListener('change', state.fileChangeHandlers.get(config.id));
         }
         
-        // Crear nuevo handler
         const handler = (event) => handleFileChange(event, config);
         state.fileChangeHandlers.set(config.id, handler);
         
-        // Agregar nuevo listener
         fileInput.addEventListener('change', handler);
     });
 }
@@ -167,7 +147,6 @@ function handleFileChange(event, config) {
     
     console.log(`Cambio detectado en: ${config.id}`);
     
-    // Obtener elementos relacionados
     const nameSpan = document.getElementById(config.nameId);
     const previewContainer = document.getElementById(config.previewId);
     
@@ -177,10 +156,8 @@ function handleFileChange(event, config) {
     }
     
     if (file) {
-        // Actualizar el nombre del archivo
         updateFileName(nameSpan, file.name);
         
-        // Mostrar vista previa si es una imagen
         if (file.type.match('image.*')) {
             showImagePreview(file, previewContainer, fileInput, nameSpan);
         } else {
@@ -224,13 +201,10 @@ function hidePreview(previewContainer) {
 function showImagePreview(file, previewContainer, fileInput, nameSpan) {
     console.log(`Procesando vista previa para: ${file.name}`);
     
-    // Limpiar contenedor previo
     previewContainer.innerHTML = '';
     
-    // Crear estructura de previsualización
     const elements = createPreviewElements(file.name);
     
-    // Configurar botón de eliminar
     setupRemoveButton(elements.removeButton, fileInput, nameSpan, previewContainer);
     
     // Ensamblar estructura
@@ -244,7 +218,6 @@ function showImagePreview(file, previewContainer, fileInput, nameSpan) {
     previewContainer.appendChild(elements.imageWrapper);
     previewContainer.style.display = 'block';
     
-    // Cargar imagen
     loadImagePreview(file, elements.image, elements.loading);
 }
 
@@ -326,14 +299,11 @@ function createLoadingIndicator() {
  */
 function setupRemoveButton(removeButton, fileInput, nameSpan, previewContainer) {
     removeButton.addEventListener('click', () => {
-        // Limpiar input de archivo
         fileInput.value = '';
         
-        // Actualizar UI
         updateFileName(nameSpan, 'No se ha seleccionado ningún archivo');
         hidePreview(previewContainer);
         
-        // Disparar evento change para actualizar el formulario
         fileInput.dispatchEvent(new Event('change'));
     });
 }
@@ -350,12 +320,10 @@ function loadImagePreview(file, imageElement, loadingElement) {
     reader.onload = function(e) {
         imageElement.src = e.target.result;
         
-        // Ocultar carga cuando la imagen termine de cargar
         imageElement.onload = function() {
             loadingElement.style.display = 'none';
         };
         
-        // Manejar error de carga
         imageElement.onerror = function() {
             console.error('Error al cargar la imagen');
             loadingElement.style.display = 'none';
@@ -385,9 +353,7 @@ function setupFormSubmission() {
     formConfigs.forEach(config => {
         const form = document.getElementById(config.id);
         if (form) {
-            // Remover listener anterior si existe
             form.removeEventListener('submit', config.handler);
-            // Agregar nuevo listener
             form.addEventListener('submit', config.handler);
         }
     });
@@ -567,17 +533,13 @@ function getButtonContent(button) {
 function setButtonLoading(button, loadingText) {
     button.disabled = true;
     
-    // Limpiar contenido actual
     button.innerHTML = '';
     
-    // Crear icono de carga
     const icon = document.createElement('i');
     icon.className = 'bx bx-loader-alt bx-spin';
     
-    // Crear texto
     const text = document.createTextNode(` ${loadingText}`);
     
-    // Agregar elementos
     button.appendChild(icon);
     button.appendChild(text);
 }
@@ -621,31 +583,25 @@ async function loadCarrerasDropdown() {
     if (!select) return;
     
     try {
-        // Mostrar estado de carga
         select.disabled = true;
         
-        // Limpiar opciones y agregar opción de carga
         select.innerHTML = '';
         const loadingOption = document.createElement('option');
         loadingOption.value = '';
         loadingOption.textContent = 'Cargando carreras...';
         select.appendChild(loadingOption);
         
-        // Obtener carreras del servidor
         const carreras = await fetchWithCSRF('/api/carrera/carrera', {
             method: 'GET'
         });
         
-        // Limpiar opciones existentes
         select.innerHTML = '';
         
-        // Agregar opción por defecto
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Selecciona una carrera';
         select.appendChild(defaultOption);
         
-        // Añadir opciones de carreras
         if (Array.isArray(carreras)) {
             carreras.forEach(carrera => {
                 const option = document.createElement('option');
@@ -657,7 +613,6 @@ async function loadCarrerasDropdown() {
     } catch (error) {
         console.error('Error al cargar carreras:', error);
         
-        // Limpiar y mostrar error
         select.innerHTML = '';
         const errorOption = document.createElement('option');
         errorOption.value = '';

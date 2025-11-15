@@ -23,7 +23,6 @@ const eventRegistry = new WeakMap();
 export function sanitizeText(text, options = {}) {
   if (!text || typeof text !== 'string') return '';
   
-  // ✅ NUEVA LÓGICA: Detectar si es JSON válido
   const isJSON = (() => {
     const trimmed = text.trim();
     if ((!trimmed.startsWith('{') || !trimmed.endsWith('}')) && 
@@ -38,34 +37,28 @@ export function sanitizeText(text, options = {}) {
     }
   })();
   
-  // ✅ SI ES JSON VÁLIDO, NO TOCAR
   if (isJSON) {
     console.log('🔍 JSON detectado, preservando estructura sin escape');
     return text;
   }
   
-  // ✅ OPCIÓN PARA FORZAR ESCAPE DE COMILLAS (para atributos HTML)
   const forceQuoteEscape = options.forceQuoteEscape || options.htmlAttribute || false;
   
-  // ✅ MAPEO INTELIGENTE: Solo escapar comillas si es necesario
   const map = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;'
   };
   
-  // ✅ SOLO agregar escape de comillas si se solicita explícitamente
   if (forceQuoteEscape) {
     map['"'] = '&quot;';
     map["'"] = '&#039;';
   }
   
-  // ✅ CREAR REGEX DINÁMICAMENTE según el mapeo
   const regex = new RegExp(`[${Object.keys(map).map(k => k === '&' ? '\\&' : k).join('')}]`, 'g');
   
   const result = text.replace(regex, m => map[m]);
   
-  // ✅ LOG PARA DEBUGGING
   if (result !== text) {
     console.log('🔧 Sanitización aplicada:', {
       original: text.substring(0, 50) + '...',
@@ -122,7 +115,6 @@ export function createElement(tag, attributes = {}, content = null) {
   
   const element = document.createElement(tag);
   
-  // Asignar atributos
   Object.entries(attributes).forEach(([key, value]) => {
     if (key === 'className') {
       element.className = value;
@@ -141,10 +133,8 @@ export function createElement(tag, attributes = {}, content = null) {
     }
   });
   
-  // Asignar contenido de forma segura
   if (content) {
     if (typeof content === 'string') {
-      // Usar textContent para texto simple (seguro contra XSS)
       element.textContent = content;
     } else if (content instanceof HTMLElement) {
       element.appendChild(content);
@@ -167,13 +157,11 @@ export function createElement(tag, attributes = {}, content = null) {
         }
       });
       
-      // Añadir texto restante si lo hay
       if (textParts.length) {
         const textNode = document.createTextNode(textParts.join(''));
         nodeParts.push(textNode);
       }
       
-      // Añadir todos los nodos de una vez
       nodeParts.forEach(node => element.appendChild(node));
     }
   }
@@ -212,7 +200,6 @@ export function addEvent(element, eventType, handler, options = {}) {
   try {
     element.addEventListener(eventType, handler, options);
     
-    // Registrar el evento para posible limpieza posterior
     if (!eventRegistry.has(element)) {
       eventRegistry.set(element, []);
     }
@@ -240,7 +227,6 @@ export function removeEvent(element, eventType, handler) {
   try {
     element.removeEventListener(eventType, handler);
     
-    // Actualizar el registro de eventos
     if (eventRegistry.has(element)) {
       const events = eventRegistry.get(element);
       const updatedEvents = events.filter(
@@ -298,21 +284,17 @@ export function setManagedTimeout(callback, delay, key) {
     return -1;
   }
   
-  // Limpiar el timeout anterior con la misma clave si existe
   if (key && timeoutRegistry[key]) {
     clearTimeout(timeoutRegistry[key]);
   }
   
-  // Crear nuevo timeout
   const timeoutId = setTimeout(() => {
     if (typeof callback === 'function') {
       callback();
     }
-    // Limpiar la referencia cuando se ejecuta
     if (key) delete timeoutRegistry[key];
   }, delay);
   
-  // Registrar el timeout
   if (key) timeoutRegistry[key] = timeoutId;
   
   return timeoutId;
@@ -327,7 +309,6 @@ export function clearManagedTimeouts(key) {
     clearTimeout(timeoutRegistry[key]);
     delete timeoutRegistry[key];
   } else if (!key) {
-    // Limpiar todos los timeouts
     Object.keys(timeoutRegistry).forEach(timeoutKey => {
       clearTimeout(timeoutRegistry[timeoutKey]);
       delete timeoutRegistry[timeoutKey];
@@ -353,7 +334,6 @@ export function clearElement(element) {
   } catch (error) {
     console.warn('Error al vaciar elemento:', error);
     
-    // Fallback a innerHTML
     try {
       element.innerHTML = '';
       return true;
@@ -419,7 +399,6 @@ export function hasClass(element, className) {
   } catch (error) {
     console.warn(`Error al comprobar clase ${className}:`, error);
     
-    // Fallback a expresión regular
     return new RegExp(`(^| )${className}( |$)`, 'gi').test(element.className);
   }
 }
@@ -544,7 +523,6 @@ export function removeAttribute(element, attributeName) {
   }
 }
 
-// Permitir limpieza automática al descargar la página
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
     clearManagedTimeouts();

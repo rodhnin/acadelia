@@ -28,22 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // Variable global para almacenar el token de eliminación
   let deletionToken = localStorage.getItem('account_deletion_token') || null;
   
-  // Función para mostrar el modal de confirmación
   function showConfirmModal() {
     confirmModal.classList.add('active');
-    // Resetear el formulario
     confirmText.value = '';
     confirmCheck.checked = false;
     updateDeleteButton();
     
-    // Añadir animación al abrir
     const modalContent = confirmModal.querySelector('.modal-content');
     modalContent.style.animation = 'modalOpen 0.4s ease forwards';
   }
   
-  // Función para ocultar el modal de confirmación
   function hideConfirmModal() {
-    // Añadir animación al cerrar
     const modalContent = confirmModal.querySelector('.modal-content');
     modalContent.style.animation = 'modalClose 0.3s ease forwards';
     
@@ -52,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 300);
   }
   
-  // Función para mostrar el modal de verificación
   function showVerificationModal() {
     hideConfirmModal();
     
@@ -61,15 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
       verificationModal.classList.add('active');
       verificationCode.value = '';
       
-      // Añadir animación al abrir
       const modalContent = verificationModal.querySelector('.modal-content');
       modalContent.style.animation = 'modalOpen 0.4s ease forwards';
     }, 350);
   }
   
-  // Función para ocultar el modal de verificación
   function hideVerificationModal() {
-    // Añadir animación al cerrar
     const modalContent = verificationModal.querySelector('.modal-content');
     modalContent.style.animation = 'modalClose 0.3s ease forwards';
     
@@ -78,22 +69,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 300);
   }
   
-  // Función para mostrar el modal de carga
   function showLoadingModal(message = 'Procesando tu solicitud...') {
     loadingText.textContent = message;
     loadingModal.classList.add('active');
   }
   
-  // Función para ocultar el modal de carga
   function hideLoadingModal() {
     loadingModal.classList.remove('active');
   }
   
-  // Función para mostrar el modal de éxito
   function showSuccessModal() {
     successModal.classList.add('active');
     
-    // Iniciar cuenta regresiva
     let countdown = 5;
     countdownElement.textContent = countdown;
     
@@ -108,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
   }
   
-  // Función para actualizar el estado del botón de eliminación
   function updateDeleteButton() {
     if (confirmText.value.trim().toUpperCase() === 'ELIMINAR' && confirmCheck.checked) {
       finalConfirmDelete.disabled = false;
@@ -117,7 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Añadir animaciones CSS
   const style = document.createElement('style');
   style.textContent = `
     @keyframes modalOpen {
@@ -188,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
       showLoadingModal('Enviando solicitud de código de verificación...');
       
       try {
-        // Solicitar código de verificación al servidor
         const response = await fetch('/api/usuarios/cuenta/solicitar-eliminacion', {
           method: 'POST',
           headers: {
@@ -203,34 +187,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response.ok && data.success) {
           console.log('Solicitud exitosa, token recibido:', data.deletionToken);
           
-          // Guardar el token en localStorage para persistencia entre recargas de página
           deletionToken = data.deletionToken;
           localStorage.setItem('account_deletion_token', deletionToken);
           
-          // Ocultar el modal de carga y mostrar el de verificación
           hideLoadingModal();
           showVerificationModal();
         } else {
-          // Mostrar error
           hideLoadingModal();
           console.error('Error en la respuesta:', data);
           
-          // Crear un modal de error personalizado
           showCustomModal('Error', `No se pudo enviar el código de verificación: ${data.error || 'Error desconocido'}`, 'error');
         }
       } catch (error) {
         hideLoadingModal();
         console.error('Error al solicitar código de verificación:', error);
         
-        // Crear un modal de error personalizado
         showCustomModal('Error de conexión', 'No se pudo conectar con el servidor. Por favor intenta de nuevo más tarde.', 'error');
       }
     });
   }
   
-  // Función para mostrar modal personalizado
   function showCustomModal(title, message, type = 'info') {
-    // Crear elementos del modal
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay active';
     
@@ -299,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
     
-    // Cerrar al hacer clic fuera
     modalOverlay.addEventListener('click', function(e) {
       if (e.target === modalOverlay) {
         modalContent.style.animation = 'modalClose 0.3s ease forwards';
@@ -319,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
       showLoadingModal('Reenviando código de verificación...');
       
       try {
-        // Solicitar nuevo código de verificación
         const response = await fetch('/api/usuarios/cuenta/solicitar-eliminacion', {
           method: 'POST',
           headers: {
@@ -336,11 +311,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response.ok && data.success) {
           console.log('Reenvío exitoso, nuevo token recibido:', data.deletionToken);
           
-          // Actualizar el token
           deletionToken = data.deletionToken;
           localStorage.setItem('account_deletion_token', deletionToken);
           
-          // Mostrar mensaje de éxito y volver al modal de verificación
           showCustomModal('Código reenviado', 'Se ha enviado un nuevo código a tu correo electrónico.', 'success');
           
           // Volver a mostrar el modal de verificación después de cerrar el modal de éxito
@@ -384,7 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
       showLoadingModal('Verificando código y procesando eliminación...');
       
       try {
-        // Preparar el cuerpo de la solicitud
         const bodyData = {
           verificationCode: code,
           deletionToken: deletionToken,
@@ -393,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Datos a enviar:', bodyData);
         
-        // Enviar solicitud al servidor para eliminar cuenta
         const response = await fetch('/api/usuarios/cuenta/confirmar-eliminacion', {
           method: 'POST',
           headers: {
@@ -404,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
           credentials: 'include'
         });
         
-        // Intentar parsear la respuesta como JSON
         let data;
         try {
           data = await response.json();
@@ -418,13 +388,10 @@ document.addEventListener('DOMContentLoaded', function() {
         hideLoadingModal();
         
         if (response.ok && data.success) {
-          // Limpiar el token de localStorage
           localStorage.removeItem('account_deletion_token');
           
-          // Mostrar modal de éxito
           showSuccessModal();
         } else {
-          // Mostrar error específico
           if (data.error && data.error.includes('expirado')) {
             showCustomModal('Código expirado', 'La solicitud ha expirado. Por favor solicita un nuevo código de verificación.', 'error');
             setTimeout(() => showConfirmModal(), 500);
@@ -443,7 +410,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Cerrar modales si se hace clic fuera del contenido
   window.addEventListener('click', function(e) {
     if (e.target === confirmModal) {
       hideConfirmModal();

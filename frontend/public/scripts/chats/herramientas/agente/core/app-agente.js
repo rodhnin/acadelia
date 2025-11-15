@@ -49,7 +49,6 @@ function initScrollSystem() {
     }
   });
 
-  // Configurar detector de zoom
   if (typeof scrollManager.setupBrowserZoomHandler === 'function') {
     scrollManager.setupBrowserZoomHandler();
   }
@@ -93,13 +92,11 @@ function initScrollSystem() {
  * Inicializa la aplicación de chat matemático con secuencia optimizada
  */
 async function initApp() {
-  // Verificar configuración inicial
   console.log("🤖 Agente Acadel iniciando terminal tecnológico:");
   console.log("- Sistema de transcripción: PREPARANDO");
   console.log("- Motor de búsqueda: INDEXANDO");
   console.log("- IA académica: CALIBRANDO");
   
-  // Inicializar Mermaid temprano
   const mermaidPromise = initMermaidSystem();
   
   // ⭐ APLICAR TERMINAL TECNOLÓGICO (sin skeleton que bloquee)
@@ -109,11 +106,9 @@ async function initApp() {
     }
   });
 
-  // Detectar estado de chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[pathSegments.length - 1] || pathSegments[pathSegments.length - 2];
 
-  // Configurar bienvenida si es necesario
   if (!chatId || chatId === 'agente') {
     document.documentElement.classList.add('welcome-pending');
     document.body.classList.add('initializing');
@@ -132,7 +127,6 @@ async function initApp() {
     await initializeMessageRenderers();
     updateAcadelTechProgress(15, '🧠 Núcleo de IA cargado');
 
-    // Verificar procesamiento existente
     const currentChatId = getState('currentChatId');
     if (currentChatId) {
       checkForOngoingProcessing(currentChatId);
@@ -172,7 +166,6 @@ async function initApp() {
     initPreviewPanel();
     initFileAttachments();
 
-    // Inicializar sistema Emoji
     console.log('🎨 Acadel: Configurando sistema emoji académico...');
     try {
       await acadelEmojiIntegration.init();
@@ -182,7 +175,6 @@ async function initApp() {
       console.warn('⚠️ Sistema Acadel emoji no pudo inicializarse:', error);
     }
     
-    // Configurar sistema de audio avanzado
     try {
       const audioInitPromise = import('../components/audio-panel.js').then(audioModule => {
         if (audioModule.audioPanel && typeof audioModule.audioPanel.init === 'function') {
@@ -217,7 +209,6 @@ async function initApp() {
       console.warn('🤖 Acadel: Sistema de audio en modo de compatibilidad:', error);
     }
     
-    // Configurar Mermaid globalmente
     window.renderMermaidDiagram = async function(containerId, code) {
       const { initializeMermaidDiagram } = await import('../../../shared/mermaid-utils.js');
       return initializeMermaidDiagram(containerId, code);
@@ -251,7 +242,6 @@ async function initApp() {
     setupMathObserver();
     await processAllChatMessages();
 
-    // Esperar MathJax con timeout optimizado
     await Promise.race([
       new Promise(resolve => setTimeout(resolve, 600)),
       new Promise(resolve => {
@@ -267,7 +257,6 @@ async function initApp() {
       })
     ]);
 
-    // Verificar Mermaid
     try {
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Timeout Mermaid')), 3000)
@@ -288,7 +277,6 @@ async function initApp() {
     await initSearchModal();
     window.searchModalInitialized = true;
 
-    // Inicializar sistema de transcripción avanzado
     try {
       await initTranscriptionSystem();
       console.log('🎥 Acadel: Sistema de transcripción de video y audio activado');
@@ -347,7 +335,6 @@ async function initApp() {
           if (typeof uiModule.removeAcadelTechLoader === 'function') {
             uiModule.removeAcadelTechLoader();
           } else if (typeof uiModule.removeInitialLoader === 'function') {
-            // Fallback para compatibilidad
             uiModule.removeInitialLoader();
           }
 
@@ -357,7 +344,6 @@ async function initApp() {
                 "Tu asistente de IA académica está listo para transcribir, buscar y resolver cualquier desafío de estudio. ¡Modo capibara inteligente activado!"
               );
           
-          // Limpiar estado de inicialización
           setManagedTimeout(() => {
             document.body.classList.remove('initializing');
             console.log('🤖 Agente Acadel: ¡Terminal tecnológico completamente operativo!');
@@ -367,7 +353,6 @@ async function initApp() {
       
     }, 900);
 
-    // Configurar listeners globales para audio
     try {
       window.addEventListener('popstate', () => {
         setTimeout(() => {
@@ -410,7 +395,6 @@ async function initApp() {
       "El Agente Acadel detectó un fallo en su matriz. Como buen capibara tech, sugiere reiniciar el sistema para recalibrar todos los protocolos."
     );
 
-    // Limpiar terminal en caso de error
     import('../ui/ui-manager-agente.js').then(uiModule => {
       if (typeof uiModule.removeAcadelTechLoader === 'function') {
         uiModule.removeAcadelTechLoader(true);
@@ -429,14 +413,12 @@ async function initApp() {
  * @param {string} mensaje - Mensaje del Agente Acadel
  */
 function updateAcadelTechProgress(progress, mensaje = '') {
-  // Actualizar progreso visual del terminal
   import('../ui/ui-manager-agente.js').then(uiModule => {
     if (typeof uiModule.updateAcadelTechProgress === 'function') {
       uiModule.updateAcadelTechProgress(progress);
     }
   });
   
-  // Log con personalidad del Agente Acadel
   if (mensaje) {
     console.log(`🤖 Agente Acadel [${progress}%]: ${mensaje}`);
   }

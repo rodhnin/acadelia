@@ -65,7 +65,6 @@ export class AnalyticsModule {
     async init() {
       console.log('Inicializando módulo de análisis financiero');
       
-      // Suscribirse a cambios de fecha - MODIFICADO para ignorar cambios
       this.eventBus.on('dateRangeChanged', (range) => {
         console.log('Analytics: Ignorando cambio de rango de fechas. Análisis financiero no actualiza por fecha.');
         // Almacenamos el rango pero no actualizamos nada automáticamente
@@ -89,7 +88,6 @@ export class AnalyticsModule {
         }
       });
       
-      // Cargar datos iniciales
       await this.loadAnalyticsData();
       
       return true;
@@ -101,10 +99,8 @@ export class AnalyticsModule {
 onSectionActivated() {
   console.log('Sección de análisis activada');
   
-  // Almacenar la sección actual
   this.currentSection = 'analytics';
   
-  // Actualizar gráficos al mostrar la sección
   if (document.getElementById('mrr-chart')) {
     this.resizeCharts();
   }
@@ -118,7 +114,6 @@ onSectionActivated() {
     return;
   }
   
-  // Cargar datos si no se han cargado aún
   this.loadAnalyticsData();
 }
 
@@ -131,7 +126,6 @@ onSectionDeactivated() {
   // Destruir gráficos para liberar recursos
   this.destroyCharts();
   
-  // Actualizar la sección actual
   this.currentSection = null;
 }
   
@@ -140,12 +134,10 @@ onSectionDeactivated() {
  */
 async loadAnalyticsData() {
   try {
-    // Mostrar indicador de carga solo si estamos en la sección
     if (this.currentSection === 'analytics') {
       this.ui.showLoading('Cargando datos de análisis...');
     }
     
-    // Obtener datos de transacciones, suscripciones, usuarios y gastos
     const [transactions, subscriptions, users, expenses] = await Promise.all([
       this.api.getTransactions(),
       this.api.getSubscriptions(),
@@ -156,7 +148,6 @@ async loadAnalyticsData() {
       })
     ]);
     
-    // Almacenar datos
     this.transactionsData = transactions;
     this.subscriptionsData = subscriptions;
     this.usersData = users;
@@ -164,39 +155,27 @@ async loadAnalyticsData() {
     
     console.log(`Datos cargados: ${transactions.length} transacciones, ${subscriptions.length} suscripciones, ${users.length} usuarios, ${expenses.length} gastos`);
     
-    // Analizar tasas de cambio promedio
     this.analyzeExchangeRates();
     
-    // Calcular métricas
     this.calculateMetrics();
     
-    // Calcular series de MRR
     this.calculateMRRSeries();
     
-    // Generar proyección de ingresos
     this.generateRevenueForecast();
     
-    // Generar datos de cohortes
     this.generateCohortData();
     
-    // Analizar productos
     this.analyzeProducts();
     
-    // Analizar distribución geográfica
     this.analyzeGeoDistribution();
     
-    // Analizar comisiones
     this.analyzeCommissions();
     
-    // Actualizar UI con métricas calculadas
     this.updateMetricsUI();
     
-    // Inicializar gráficos SOLO si estamos en la sección de analytics
     if (this.currentSection === 'analytics') {
-      // Verificar si hay gráficos creados, si no, crearlos
       this.initCharts();
       
-      // Ocultar indicador de carga
       this.ui.hideLoading();
     }
     
@@ -204,7 +183,6 @@ async loadAnalyticsData() {
   } catch (error) {
     console.error('Error al cargar datos de análisis:', error);
     
-    // Mostrar error y ocultar carga solo si estamos en la sección
     if (this.currentSection === 'analytics') {
       this.ui.hideLoading();
       this.ui.showErrorMessage('Error en análisis financiero', 'No se pudieron obtener los datos necesarios para el análisis.');
@@ -240,7 +218,6 @@ async loadAnalyticsData() {
       }
     });
     
-    // Calcular tasas promedio
     Object.keys(ratesByCode).forEach(currency => {
       const rates = ratesByCode[currency];
       if (rates.length > 0) {
@@ -256,19 +233,14 @@ async loadAnalyticsData() {
    * Calcula las métricas financieras clave
    */
   calculateMetrics() {
-    // Calcular valor del tiempo de vida (LTV)
     this.calculateLTV();
     
-    // Calcular tasa de conversión
     this.calculateConversionRate();
     
-    // Calcular tasa de retención
     this.calculateRetentionRate();
     
-    // Calcular tasa de cancelación
     this.calculateChurnRate();
     
-    // Calcular MRR (ingresos mensuales recurrentes)
     this.calculateMRR();
   }
   
@@ -340,7 +312,6 @@ async loadAnalyticsData() {
    * Calcula el valor del tiempo de vida del cliente (LTV)
    */
   calculateLTV() {
-    // Para calcular un LTV realista:
     // LTV = ARPU (Ingreso Promedio por Usuario) / Tasa de Cancelación
     
     // Agrupar usuarios con transacciones
@@ -350,17 +321,14 @@ async loadAnalyticsData() {
       return userTransactions.length > 0;
     });
     
-    // Calcular ingresos totales en EUR
     const totalRevenue = this.transactionsData.reduce((sum, t) => {
       return sum + this.normalizeAmount(t, 'amount');
     }, 0);
     
-    // Calcular ARPU (promedio de ingresos por usuario)
     const arpu = usersWithTransactions.length > 0 
       ? totalRevenue / usersWithTransactions.length 
       : 0;
     
-    // Calcular churn mensual (simplificado)
     const monthlyChurnRate = this.calculateMonthlyChurnRate();
     
     // Evitar división por cero
@@ -379,25 +347,20 @@ async loadAnalyticsData() {
    * @returns {number} Tasa de cancelación mensual (0-1)
    */
   calculateMonthlyChurnRate() {
-    // Obtener suscripciones canceladas en el último mes
     const now = new Date();
     const oneMonthAgo = new Date(now);
     oneMonthAgo.setMonth(now.getMonth() - 1);
     
-    // Contar suscripciones canceladas o expiradas en el último mes
     const canceledLastMonth = this.subscriptionsData.filter(s => {
       if (!this.isSubscriptionCancelled(s)) return false;
       
-      // Verificar fecha de cancelación
       const cancelDate = new Date(s.updated_at);
       return cancelDate >= oneMonthAgo;
     }).length;
     
-    // Contar suscripciones activas hace un mes
     const activeSubscriptions = this.subscriptionsData.filter(s => s.status === 'active').length;
     const totalSubscriptionsLastMonth = activeSubscriptions + canceledLastMonth;
     
-    // Calcular tasa de cancelación
     if (totalSubscriptionsLastMonth === 0) return 0;
     
     return canceledLastMonth / totalSubscriptionsLastMonth;
@@ -454,22 +417,18 @@ async loadAnalyticsData() {
    * Calcula MRR (ingresos mensuales recurrentes)
    */
   calculateMRR() {
-    // Calcular MRR basado en suscripciones activas
     const activeSubs = this.subscriptionsData.filter(s => s.status === 'active');
     
     let totalMRR = 0;
     
     activeSubs.forEach(sub => {
-      // Para cada suscripción activa, buscar su última transacción
       const subTransactions = this.transactionsData.filter(t => 
         t.product_id === sub.product_id && t.id_user == sub.id_user
       ).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
       
-      // Obtener importe mensual en EUR
       let monthlyAmount = 0;
       
       if (subTransactions.length > 0) {
-        // Usar el importe EUR de la última transacción
         monthlyAmount = this.normalizeAmount(subTransactions[0], 'amount');
       } else if (sub.amount) {
         // Si la suscripción tiene un importe directo
@@ -496,7 +455,6 @@ async loadAnalyticsData() {
    * Calcula series temporales de MRR
    */
   calculateMRRSeries() {
-    // Crear objeto para almacenar MRR por mes
     const mrrByMonth = {};
     
     // Últimos 12 meses
@@ -512,7 +470,6 @@ async loadAnalyticsData() {
       // Etiqueta legible
       const label = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
       
-      // Inicializar datos para este mes
       mrrByMonth[key] = {
         key,
         label,
@@ -525,7 +482,6 @@ async loadAnalyticsData() {
       };
     }
     
-    // Registrar la primera fecha de transacción por cada suscripción
     // Esto nos permitirá identificar nuevas suscripciones
     const firstTransactionBySubscription = {};
     
@@ -533,18 +489,15 @@ async loadAnalyticsData() {
     this.transactionsData.forEach(transaction => {
       if (!transaction.updated_at || !transaction.product_id || !transaction.id_user) return;
       
-      // Crear clave única para la suscripción
       const subscriptionKey = `${transaction.id_user}_${transaction.product_id}`;
       const transDate = new Date(transaction.updated_at);
       
-      // Guardar la fecha de transacción más antigua para cada suscripción
       if (!firstTransactionBySubscription[subscriptionKey] || 
           transDate < new Date(firstTransactionBySubscription[subscriptionKey].updated_at)) {
         firstTransactionBySubscription[subscriptionKey] = transaction;
       }
     });
     
-    // Calcular MRR para cada mes basado en transacciones
     this.transactionsData.forEach(transaction => {
       // Fecha de la transacción
       if (!transaction.updated_at || !transaction.product_id || !transaction.id_user) return;
@@ -555,14 +508,12 @@ async loadAnalyticsData() {
       // Si el mes está fuera del rango de análisis, ignorar
       if (!mrrByMonth[transKey]) return;
       
-      // Obtener importe en EUR
       const amountEur = this.normalizeAmount(transaction, 'amount');
       
       // Si es una transacción de suscripción, sumar al MRR
       if (transaction.interval === 'month') {
         mrrByMonth[transKey].mrr += amountEur;
         
-        // Determinar si es una suscripción nueva:
         // Método 1: Usar event_type si existe
         let isNewSubscription = transaction.event_type && 
                                 transaction.event_type.includes('subscription.created');
@@ -590,11 +541,9 @@ async loadAnalyticsData() {
           console.log(`Nueva suscripción identificada: ${transaction.id || 'ID no disponible'} - ${amountEur}€`);
         }
       } else if (transaction.interval === 'year') {
-        // Para suscripciones anuales, dividimos entre 12
         const monthlyEquivalent = amountEur / 12;
         mrrByMonth[transKey].mrr += monthlyEquivalent;
         
-        // Usar los mismos métodos para identificar suscripciones nuevas
         let isNewSubscription = transaction.event_type && 
                               transaction.event_type.includes('subscription.created');
                               
@@ -620,7 +569,6 @@ async loadAnalyticsData() {
       }
     });
     
-    // Para MRR cancelado, usar datos de suscripciones (resto del código igual)
     this.subscriptionsData.forEach(sub => {
       // Solo procesar suscripciones canceladas o expiradas
       if (!this.isSubscriptionCancelled(sub) || !sub.updated_at) return;
@@ -632,7 +580,6 @@ async loadAnalyticsData() {
       // Si el mes está fuera del rango, ignorar
       if (!mrrByMonth[cancelKey]) return;
       
-      // Buscar la última transacción asociada para obtener el importe
       const lastTransaction = this.transactionsData.find(t => 
         t.product_id === sub.product_id && t.id_user == sub.id_user
       );
@@ -655,22 +602,17 @@ async loadAnalyticsData() {
         }
       }
       
-      // Sumar al MRR cancelado de ese mes
       mrrByMonth[cancelKey].churnedMrr += monthlyAmount;
     });
     
-    // Calcular MRR neto y cambio porcentual
     let prevMrr = 0;
     
-    // Convertir a array y ordenar por fecha
     this.mrrSeries = Object.values(mrrByMonth)
       .sort((a, b) => a.key.localeCompare(b.key))
       .map((month, index) => {
-        // Calcular MRR neto
         month.netMrr = month.newMrr - month.churnedMrr + 
                       month.expansionMrr - month.contractionMrr;
         
-        // Calcular cambio porcentual
         if (index > 0 && prevMrr > 0) {
           month.percentChange = (month.mrr - prevMrr) / prevMrr;
         } else {
@@ -681,7 +623,6 @@ async loadAnalyticsData() {
         return month;
       });
     
-    // Calcular crecimiento promedio del MRR
     if (this.mrrSeries.length >= 2) {
       const first = this.mrrSeries[0].mrr;
       const last = this.mrrSeries[this.mrrSeries.length - 1].mrr;
@@ -708,7 +649,6 @@ async loadAnalyticsData() {
     // Proyectar 12 meses hacia el futuro
     const forecast = [];
     
-    // Calcular fecha de inicio (último mes con datos)
     let startDate = new Date();
     if (this.mrrSeries.length > 0) {
       const lastMrr = this.mrrSeries[this.mrrSeries.length - 1];
@@ -716,24 +656,19 @@ async loadAnalyticsData() {
       startDate = new Date(year, month - 1, 1);
     }
     
-    // Obtener MRR actual
     let currentMrr = this.metrics.mrr;
     if (currentMrr === 0 && this.mrrSeries.length > 0) {
       currentMrr = this.mrrSeries[this.mrrSeries.length - 1].mrr;
     }
     
-    // Usar tasa de crecimiento actual o valor por defecto
     const growthRate = this.metrics.mrrGrowth || 0.1; // 10% por defecto
     
-    // Generar proyección
     for (let i = 1; i <= 12; i++) {
       const forecastDate = new Date(startDate);
       forecastDate.setMonth(forecastDate.getMonth() + i);
       
-      // Calcular MRR proyectado con crecimiento compuesto
       const projectedMrr = currentMrr * Math.pow(1 + growthRate, i);
       
-      // Añadir a la proyección
       forecast.push({
         key: `${forecastDate.getFullYear()}-${String(forecastDate.getMonth() + 1).padStart(2, '0')}`,
         label: forecastDate.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }),
@@ -753,14 +688,12 @@ async loadAnalyticsData() {
     // Agrupar usuarios por mes de registro
     const cohorts = {};
     
-    // Obtener fechas de suscripción
     const subscriptionDates = new Map();
     
     // Primero recopilamos todas las suscripciones por usuario
     this.subscriptionsData.forEach(sub => {
       if (!sub.created_at || !sub.id_user) return;
       
-      // Guardar la primera fecha de suscripción para cada usuario
       const userId = sub.id_user;
       const subDate = new Date(sub.created_at);
       
@@ -774,17 +707,14 @@ async loadAnalyticsData() {
       // Solo procesar usuarios con suscripciones conocidas
       if (!subscriptionDates.has(user.id_user)) return;
       
-      // Usar la fecha de primera suscripción
       const registerDate = subscriptionDates.get(user.id_user);
       
-      // Obtener año y mes de registro
       const registerYear = registerDate.getFullYear();
       const registerMonth = registerDate.getMonth();
       
       // Clave para la cohorte (YYYY-MM)
       const cohortKey = `${registerYear}-${String(registerMonth + 1).padStart(2, '0')}`;
       
-      // Inicializar cohorte si no existe
       if (!cohorts[cohortKey]) {
         cohorts[cohortKey] = {
           key: cohortKey,
@@ -794,21 +724,15 @@ async loadAnalyticsData() {
         };
       }
       
-      // Incrementar contador de usuarios iniciales
       cohorts[cohortKey].initialCount++;
       
-      // Calcular retención basada en suscripciones activas en cada mes
       // Recorremos los 12 meses desde la fecha de suscripción
       for (let monthOffset = 0; monthOffset < 12; monthOffset++) {
-        // Calcular fecha para este offset (último día del mes para mejor precisión)
         const targetMonth = new Date(registerYear, registerMonth + monthOffset, 1);
         const lastDayOfMonth = new Date(registerYear, registerMonth + monthOffset + 1, 0);
         
-        // Para el primer mes (monthOffset=0), usamos la fecha real de registro
-        // para no contar días antes de que el usuario se suscribiera
         const targetDate = monthOffset === 0 ? registerDate : targetMonth;
         
-        // Verificar si el usuario tenía una suscripción activa en ese mes
         const activeInMonth = this.subscriptionsData.some(sub => {
           if (sub.id_user != user.id_user) return false;
           
@@ -835,20 +759,17 @@ async loadAnalyticsData() {
         // Si estaba activo en ese mes, contabilizarlo para la retención
         if (activeInMonth) {
           cohorts[cohortKey].retention[monthOffset]++;
-          // Añadir logging para depuración
           console.log(`Usuario ${user.id_user} activo en mes ${monthOffset+1} de cohorte ${cohorts[cohortKey].label}`);
         }
       }
     });
     
-    // Convertir recuentos a porcentajes
     Object.values(cohorts).forEach(cohort => {
       if (cohort.initialCount > 0) {
         cohort.retention = cohort.retention.map(count => count / cohort.initialCount);
       }
     });
     
-    // Convertir a array y ordenar por fecha
     this.cohortData = Object.values(cohorts)
       .sort((a, b) => a.key.localeCompare(b.key))
       .filter(cohort => cohort.initialCount > 0); // Filtrar cohortes vacías
@@ -863,12 +784,10 @@ async loadAnalyticsData() {
     // Agrupar datos por producto
     const productStats = {};
     
-    // Procesar transacciones por producto
     this.transactionsData.forEach(transaction => {
       const productId = transaction.product_id;
       if (!productId) return;
       
-      // Inicializar estadísticas del producto si no existen
       if (!productStats[productId]) {
         productStats[productId] = {
           id: productId,
@@ -888,14 +807,12 @@ async loadAnalyticsData() {
         };
       }
       
-      // Añadir monto de transacción usando valores EUR para agregaciones
       const amountOriginal = this.normalizeAmount({ amount: transaction.amount });
       const amountEur = this.normalizeAmount(transaction, 'amount');
       const taxAmountEur = this.normalizeAmount(transaction, 'tax_amount');
       const feeAmountEur = this.normalizeAmount(transaction, 'fee_amount');
       const earningsEur = this.normalizeAmount(transaction, 'earnings');
       
-      // Actualizar estadísticas
       productStats[productId].revenueTotal += amountOriginal;
       productStats[productId].revenueTotalEur += amountEur;
       productStats[productId].transactions++;
@@ -903,7 +820,6 @@ async loadAnalyticsData() {
       productStats[productId].feeAmountEur += feeAmountEur;
       productStats[productId].earningsEur += earningsEur;
       
-      // Agregar por moneda
       const currency = transaction.currency_code || 'EUR';
       if (!productStats[productId].transactionsByCurrency[currency]) {
         productStats[productId].transactionsByCurrency[currency] = {
@@ -918,27 +834,23 @@ async loadAnalyticsData() {
       productStats[productId].transactionsByCurrency[currency].totalEur += amountEur;
     });
     
-    // Añadir datos de suscripciones
     this.subscriptionsData.forEach(subscription => {
       const productId = subscription.product_id;
       if (!productId || !productStats[productId]) return;
       
       productStats[productId].subscriptionCount++;
       
-      // Contar cancelaciones (incluir expiradas)
       if (this.isSubscriptionCancelled(subscription)) {
         productStats[productId].cancelledCount++;
       }
     });
     
-    // Calcular métricas adicionales
     Object.values(productStats).forEach(product => {
       // Tasa de crecimiento (simplificada: basada en transacciones recientes vs todas)
       const now = new Date();
       const threeMonthsAgo = new Date(now);
       threeMonthsAgo.setMonth(now.getMonth() - 3);
       
-      // Contar transacciones recientes
       const recentTransactions = this.transactionsData.filter(t => {
         if (t.product_id !== product.id) return false;
         
@@ -967,7 +879,6 @@ async loadAnalyticsData() {
         : 0;
     });
     
-    // Convertir a array y ordenar por ingresos (EUR)
     this.productAnalysis = Object.values(productStats)
       .sort((a, b) => b.revenueTotalEur - a.revenueTotalEur);
     
@@ -981,11 +892,9 @@ async loadAnalyticsData() {
     // Agrupar por país
     const geoStats = {};
     
-    // Procesar transacciones por país
     this.transactionsData.forEach(transaction => {
       const countryCode = transaction.country_code || 'UNKNOWN';
       
-      // Inicializar estadísticas del país si no existen
       if (!geoStats[countryCode]) {
         geoStats[countryCode] = {
           code: countryCode,
@@ -1000,18 +909,15 @@ async loadAnalyticsData() {
         };
       }
       
-      // Añadir valores de la transacción
       const amountEur = this.normalizeAmount(transaction, 'amount');
       const taxAmountEur = this.normalizeAmount(transaction, 'tax_amount');
       const currency = transaction.currency_code || 'EUR';
       const taxRate = transaction.tax_rate ? parseFloat(transaction.tax_rate) : 0;
       
-      // Actualizar estadísticas del país
       geoStats[countryCode].transactions++;
       geoStats[countryCode].totalEur += amountEur;
       geoStats[countryCode].taxAmount += taxAmountEur;
       
-      // Agregar por moneda
       if (!geoStats[countryCode].currencies[currency]) {
         geoStats[countryCode].currencies[currency] = {
           count: 0,
@@ -1020,7 +926,6 @@ async loadAnalyticsData() {
         };
       }
       
-      // Usar el monto original para la moneda específica
       const amountOriginal = parseFloat(transaction.amount || 0);
       geoStats[countryCode].currencies[currency].count++;
       geoStats[countryCode].currencies[currency].total += amountOriginal;
@@ -1033,20 +938,17 @@ async loadAnalyticsData() {
       }
     });
     
-    // Calcular tasa de impuesto promedio
     Object.values(geoStats).forEach(country => {
       if (country.taxIncluded > 0) {
         country.taxRate = country.taxRate / country.taxIncluded;
       }
       
-      // Calcular porcentaje de impuesto sobre total
       if (country.totalEur > 0) {
         country.taxPercentage = country.taxAmount / country.totalEur;
       } else {
         country.taxPercentage = 0;
       }
       
-      // Ordenar monedas por volumen
       country.topCurrencies = Object.entries(country.currencies)
         .map(([code, stats]) => ({
           code,
@@ -1055,11 +957,9 @@ async loadAnalyticsData() {
         .sort((a, b) => b.totalEur - a.totalEur);
     });
     
-    // Convertir a array y ordenar por ingresos
     this.geoDistribution = Object.values(geoStats)
       .sort((a, b) => b.totalEur - a.totalEur);
     
-    // Calcular grupos geográficos (España, Resto UE, Latinoamérica, Otros)
     const euCountryCodes = [
       'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 
       'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 
@@ -1121,14 +1021,12 @@ async loadAnalyticsData() {
         groupKey = 'OTHER';
       }
       
-      // Actualizar estadísticas del grupo
       geoGroups[groupKey].transactions += country.transactions;
       geoGroups[groupKey].totalEur += country.totalEur;
       geoGroups[groupKey].taxAmount += country.taxAmount;
       geoGroups[groupKey].countries.push(country);
     });
     
-    // Guardar grupos geográficos
     this.geoGroups = Object.values(geoGroups)
       .filter(group => group.transactions > 0)
       .sort((a, b) => b.totalEur - a.totalEur);
@@ -1140,7 +1038,6 @@ async loadAnalyticsData() {
    * Analiza comisiones de Paddle
    */
   analyzeCommissions() {
-    // Calcular comisiones totales y por moneda
     let totalRevenue = 0;
     let totalFees = 0;
     const feesByCurrency = {};
@@ -1168,14 +1065,12 @@ async loadAnalyticsData() {
       feesByCurrency[currency].count++;
     });
     
-    // Calcular tasa promedio de comisión
     this.commissionAnalysis = {
       total: totalFees,
       by_currency: {},
       percentage: totalRevenue > 0 ? (totalFees / totalRevenue * 100) : 0
     };
     
-    // Calcular porcentajes por moneda
     Object.keys(feesByCurrency).forEach(currency => {
       const data = feesByCurrency[currency];
       
@@ -1185,7 +1080,6 @@ async loadAnalyticsData() {
       };
     });
     
-    // Guardar tasa promedio de comisión en métricas
     this.metrics.avgCommissionRate = this.commissionAnalysis.percentage / 100;
     
     console.log('Análisis de comisiones:', this.commissionAnalysis);
@@ -1195,16 +1089,13 @@ async loadAnalyticsData() {
    * Actualiza la UI con las métricas calculadas
    */
   updateMetricsUI() {
-    // Actualizar KPIs
     this.ui.updateElement('customer-ltv', formatCurrency(this.metrics.ltv));
     this.ui.updateElement('conversion-rate', formatPercentage(this.metrics.conversionRate));
     this.ui.updateElement('retention-rate', formatPercentage(this.metrics.retentionRate));
     this.ui.updateElement('churn-rate', formatPercentage(this.metrics.churnRate));
     
-    // Actualizar tabla de análisis de productos
     this.updateProductAnalysisTable();
     
-    // Actualizar tabla de cohortes
     this.updateCohortTable();
   }
   
@@ -1232,7 +1123,6 @@ async loadAnalyticsData() {
     // Limitamos a las últimas 6 cohortes para la tabla
     const recentCohorts = this.cohortData.slice(-6);
     
-    // Actualizar filas de la tabla
     const cohortTableBody = document.getElementById('cohort-table').querySelector('tbody');
     if (!cohortTableBody) return;
     
@@ -1252,7 +1142,6 @@ async loadAnalyticsData() {
         if (cohort.retention[i] !== undefined) {
           cell.textContent = formatPercentage(cohort.retention[i]);
           
-          // Añadir clase de color según valor
           if (cohort.retention[i] >= 0.8) {
             cell.classList.add('text-success');
           } else if (cohort.retention[i] >= 0.5) {
@@ -1288,16 +1177,12 @@ initCharts() {
   }
   
   try {
-    // Inicializar gráfico de MRR
     this.initMRRChart();
     
-    // Inicializar gráfico de proyección
     this.initForecastChart();
     
-    // Inicializar gráfico de comisiones
     this.initCommissionsChart();
     
-    // Inicializar gráfico de distribución geográfica
     this.initGeoDistributionChart();
   } catch (error) {
     console.error('Error al inicializar gráficos de análisis:', error);
@@ -1314,7 +1199,6 @@ initCharts() {
     return;
   }
   
-  // Verificar si ya existe un gráfico en este canvas y destruirlo
   const existingChart = Chart.getChart(ctx);
   if (existingChart) {
     console.log('Destruyendo gráfico mrr-chart existente');
@@ -1326,7 +1210,6 @@ initCharts() {
     }
   }
   
-  // Verificar que el canvas sigue existiendo (podría haber cambiado de sección)
   if (!document.body.contains(ctx)) {
     console.log('El canvas ya no está en el DOM, cancelando creación de gráfico');
     return;
@@ -1353,13 +1236,11 @@ initCharts() {
       return;
     }
     
-    // Preparar datos para el gráfico
     const labels = this.mrrSeries.map(m => m.label);
     const mrrData = this.mrrSeries.map(m => m.mrr);
     const newMrrData = this.mrrSeries.map(m => m.newMrr);
     const churnedMrrData = this.mrrSeries.map(m => -m.churnedMrr); // Negativo para visualización
     
-    // Crear configuración
     const config = {
       type: 'bar',
       data: {
@@ -1453,7 +1334,6 @@ initCharts() {
       }
     };
     
-    // Crear gráfico
     this.charts.mrr = new Chart(ctx, config);
   } catch (error) {
     console.error('Error al crear gráfico MRR:', error);
@@ -1467,19 +1347,16 @@ initForecastChart() {
   const ctx = document.getElementById('revenue-forecast-chart');
   if (!ctx) return;
   
-  // Verificar si ya existe un gráfico y destruirlo
   const existingChart = Chart.getChart(ctx);
   if (existingChart) {
     console.log('Destruyendo gráfico de proyección existente');
     existingChart.destroy();
     
-    // Limpiar también nuestra referencia interna
     if (this.charts.forecast) {
       this.charts.forecast = null;
     }
   }
 
-  // Verificar que el canvas sigue existiendo
   if (!document.body.contains(ctx)) {
     console.log('El canvas ya no está en el DOM, cancelando creación de gráfico');
     return;
@@ -1506,10 +1383,8 @@ initForecastChart() {
       return;
     }
     
-    // Usar últimos 6 meses de datos históricos
     const historicalData = this.mrrSeries.slice(-6);
     
-    // Combinar datos históricos y proyección
     const combinedLabels = [
       ...historicalData.map(m => m.label),
       ...this.forecastData.map(m => m.label)
@@ -1529,10 +1404,8 @@ initForecastChart() {
       ...forecastValues
     ];
     
-    // Guardar referencias locales para usar en los callbacks
     const forecastData = this.forecastData;
     
-    // Crear configuración
     const config = {
       type: 'line',
       data: {
@@ -1595,7 +1468,6 @@ initForecastChart() {
                 if (context.parsed.y !== null) {
                   label += formatCurrency(context.parsed.y, 'EUR', 'es-ES');
                   
-                  // Añadir información de crecimiento para proyección
                   if (context.datasetIndex === 1 && context.parsed.y !== null) {
                     const monthIndex = context.dataIndex - historicalValues.length;
                     if (monthIndex >= 0 && monthIndex < forecastValues.length && forecastData[monthIndex]) {
@@ -1612,7 +1484,6 @@ initForecastChart() {
       }
     };
     
-    // Crear gráfico
     this.charts.forecast = new Chart(ctx, config);
   } catch (error) {
     console.error('Error al crear gráfico de proyección:', error);
@@ -1626,25 +1497,21 @@ initForecastChart() {
     const ctx = document.getElementById('canvas-id-aquí');
     if (!ctx) return;
 
-    // Verificar si ya existe un gráfico y destruirlo
     const existingChart = Chart.getChart(ctx);
     if (existingChart) {
       console.log('Destruyendo gráfico existente');
       existingChart.destroy();
       
-      // Limpiar también nuestra referencia interna
       if (this.charts.nombreDelGrafico) {
         this.charts.nombreDelGrafico = null;
       }
     }
 
-    // Verificar que el canvas sigue existiendo
     if (!document.body.contains(ctx)) {
       console.log('El canvas ya no está en el DOM, cancelando creación de gráfico');
       return;
     }
     
-    // Preparar datos para el gráfico
     const commissionsByMonth = {};
     
     // Agrupar comisiones por mes
@@ -1664,12 +1531,10 @@ initForecastChart() {
         };
       }
       
-      // Usar valores en EUR
       commissionsByMonth[monthKey].revenue += this.normalizeAmount(transaction, 'amount');
       commissionsByMonth[monthKey].fees += this.normalizeAmount(transaction, 'fee_amount');
     });
     
-    // Convertir a array y ordenar por fecha
     const commissionData = Object.values(commissionsByMonth)
       .sort((a, b) => a.date - b.date)
       .slice(-6); // Últimos 6 meses
@@ -1694,13 +1559,11 @@ initForecastChart() {
       return;
     }
     
-    // Preparar datos para el gráfico
     const labels = commissionData.map(m => m.label);
     const revenueData = commissionData.map(m => m.revenue);
     const feesData = commissionData.map(m => m.fees);
     const percentageData = commissionData.map(m => m.revenue > 0 ? (m.fees / m.revenue * 100) : 0);
     
-    // Crear configuración
     const config = {
       type: 'bar',
       data: {
@@ -1793,7 +1656,6 @@ initForecastChart() {
       }
     };
     
-    // Crear gráfico
     this.charts.commissions = new Chart(ctx, config);
   }
   
@@ -1804,19 +1666,16 @@ initForecastChart() {
     const ctx = document.getElementById('canvas-id-aquí');
     if (!ctx) return;
 
-    // Verificar si ya existe un gráfico y destruirlo
     const existingChart = Chart.getChart(ctx);
     if (existingChart) {
       console.log('Destruyendo gráfico existente');
       existingChart.destroy();
       
-      // Limpiar también nuestra referencia interna
       if (this.charts.nombreDelGrafico) {
         this.charts.nombreDelGrafico = null;
       }
     }
 
-    // Verificar que el canvas sigue existiendo
     if (!document.body.contains(ctx)) {
       console.log('El canvas ya no está en el DOM, cancelando creación de gráfico');
       return;
@@ -1841,7 +1700,6 @@ initForecastChart() {
       return;
     }
     
-    // Preparar datos para el gráfico
     const labels = this.geoGroups.map(g => g.name);
     const values = this.geoGroups.map(g => g.totalEur);
     
@@ -1855,7 +1713,6 @@ initForecastChart() {
     
     const backgroundColors = this.geoGroups.map(g => colors[g.code] || '#6c757d');
     
-    // Crear configuración
     const config = {
       type: 'pie',
       data: {
@@ -1885,9 +1742,7 @@ initForecastChart() {
                   `Transacciones: ${group.transactions}`
                 ];
                 
-                // Añadir los países más importantes si es un grupo
                 if (group.code !== 'ES' && group.countries && group.countries.length > 0) {
-                  // Mostrar los 3 principales países
                   const topCountries = group.countries
                     .sort((a, b) => b.totalEur - a.totalEur)
                     .slice(0, 3)
@@ -1906,7 +1761,6 @@ initForecastChart() {
       }
     };
     
-    // Crear gráfico
     this.charts.geoDistribution = new Chart(ctx, config);
   }
   
@@ -1935,10 +1789,8 @@ initForecastChart() {
       
       console.log('Refrescando datos de análisis financiero...');
       
-      // Limpiar caché para obtener datos frescos
       this.api.clearCache();
       
-      // Mostrar indicador de carga
       this.ui.showLoading('Actualizando análisis financiero...');
       
       // Destruir gráficos existentes
@@ -1947,18 +1799,14 @@ initForecastChart() {
       // Recargar datos
       await this.loadAnalyticsData();
       
-      // Ocultar indicador de carga
       this.ui.hideLoading();
       
-      // Notificar actualización
       this.ui.showSuccessMessage('Análisis financiero actualizado correctamente');
     } catch (error) {
       console.error('Error al refrescar datos de análisis:', error);
       
-      // Ocultar indicador de carga
       this.ui.hideLoading();
       
-      // Mostrar mensaje de error
       this.ui.showErrorMessage('Error al actualizar análisis', 'No se pudieron obtener los datos actualizados');
     }
   }
@@ -1982,7 +1830,6 @@ destroyCharts() {
       }
     });
     
-    // Limpiar también nuestras referencias internas
     Object.keys(this.charts).forEach(key => {
       this.charts[key] = null;
     });

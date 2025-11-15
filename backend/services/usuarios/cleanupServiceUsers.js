@@ -1,4 +1,3 @@
-// backend/services/usuarios/cleanupService.js
 
 import schedule from 'node-schedule';
 import { UserService } from "./userService.js";
@@ -44,10 +43,8 @@ class CleanupServiceUsers {
    */
   async runCleanup() {
     try {
-      // Ejecutar la limpieza
       const deletedUsers = await UserService.cleanupUnverifiedUsers();
       
-      // Registrar evento de seguridad
       if (deletedUsers.length > 0) {
         logSecurityEvent('UNVERIFIED_USERS_CLEANUP', 'Eliminación automática de usuarios no verificados', {
           usersCount: deletedUsers.length,
@@ -64,7 +61,6 @@ class CleanupServiceUsers {
     } catch (error) {
       console.error("❌ Error en limpieza automática:", error);
       
-      // Registrar evento de error
       logSecurityEvent('CLEANUP_ERROR', 'Error en limpieza automática de usuarios', {
         error: error.message
       }, 'high');
@@ -95,5 +91,4 @@ class CleanupServiceUsers {
   }
 }
 
-// Exportar una instancia única del servicio
 export const cleanupServiceUsers = new CleanupServiceUsers();

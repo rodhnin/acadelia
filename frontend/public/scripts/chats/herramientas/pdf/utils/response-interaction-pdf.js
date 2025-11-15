@@ -3,7 +3,6 @@
  * Versión optimizada SOLO para flujo multimodal - mantiene toda la lógica existente
  */
 
-// Importar funciones necesarias de los módulos existentes
 import { copyToClipboard } from './clipboard-pdf.js';
 import { getState } from '../core/state-pdf.js';
 import { checkAuthentication } from '../api/auth-pdf.js';
@@ -30,10 +29,8 @@ class ResponseInteractionManager {
       errorCleanup: 'response-interaction-error-cleanup'
     };
 
-    // Inicializar el sistema
     this.init();
 
-    // Iniciar limpieza periódica
     this.startErrorMessagesCleanup();
   }
 
@@ -330,7 +327,6 @@ class ResponseInteractionManager {
     // ⭐ OPTIMIZADO: Verificar si la respuesta de AI asociada está cancelada O procesando
     const nextAiMessage = this.getNextAiMessage(messageElement);
     if (nextAiMessage) {
-      // Verificar si está cancelada/con error (lógica existente)
       if (nextAiMessage.classList.contains('cancelled') ||
         nextAiMessage.classList.contains('just-cancelled') ||
         nextAiMessage.dataset.cancelled === "true" ||
@@ -360,7 +356,6 @@ class ResponseInteractionManager {
 
     const actionsContainer = createElement('div', { className: 'user-response-actions' });
 
-    // ✅ CREAR BOTÓN DESHABILITADO INICIALMENTE
     const editBtn = createElement('button', {
       className: 'response-action-btn edit-btn',
       dataset: { tooltip: 'Sincronizando... (5s)' }
@@ -371,7 +366,6 @@ class ResponseInteractionManager {
 
     actionsContainer.appendChild(editBtn);
 
-    // ✅ HABILITAR DESPUÉS DE 5 SEGUNDOS
     setTimeout(() => {
       editBtn.disabled = false;
       editBtn.style.opacity = '1';
@@ -404,14 +398,12 @@ class ResponseInteractionManager {
       return;
     }
 
-    // Verificar si ya tiene botones de interacción
     const existingActions = lastUserMessage.querySelector('.user-response-actions');
     if (existingActions) {
       console.log('✅ Último mensaje ya tiene botones de interacción');
       return;
     }
 
-    // Verificar que la respuesta asociada no esté procesando, cancelada o con error
     const nextAiMessage = this.getNextAiMessage(lastUserMessage);
     if (nextAiMessage) {
       if (nextAiMessage.classList.contains('processing') ||
@@ -426,7 +418,6 @@ class ResponseInteractionManager {
       }
     }
 
-    // Agregar botones de interacción al último mensaje
     console.log('✅ Agregando botones de interacción a último mensaje de usuario');
     this.addUserInteractionButtons(lastUserMessage);
   }
@@ -437,7 +428,6 @@ class ResponseInteractionManager {
   refreshInteractionButtons() {
     console.log('🔄 Refrescando estado de botones de interacción');
 
-    // Verificar si hay procesamiento activo
     const isProcessing = document.querySelector('.ai-message.processing') !== null ||
       getState('isProcessing') === true;
 
@@ -452,7 +442,6 @@ class ResponseInteractionManager {
       const hasActions = userMessage.querySelector('.user-response-actions');
       const nextAiMessage = this.getNextAiMessage(userMessage);
 
-      // Verificar si debería tener botones
       const shouldHaveButtons = !nextAiMessage || (
         !nextAiMessage.classList.contains('cancelled') &&
         !nextAiMessage.classList.contains('just-cancelled') &&
@@ -480,7 +469,6 @@ class ResponseInteractionManager {
    */
   async isMultimodalMessage(userMessage) {
     try {
-      // ✅ PASO 1: FILTRO DOM PRIMERO (Evita llamadas innecesarias)
       const hasMultimodalMarker = userMessage.getAttribute('data-multimodal') === 'true' ||
         userMessage.querySelector('.multimodal-container') !== null;
 
@@ -488,7 +476,6 @@ class ResponseInteractionManager {
         return { isMultimodal: false }; // ⚡ SALIDA TEMPRANA
       }
 
-      // ✅ PASO 2: SOLO si hay marcadores DOM, verificar BD
       const userMessageId = this.extractServerMessageId(userMessage);
       const stateModule = await import('../core/state-pdf.js');
       const currentChatId = stateModule.getState('currentChatId');
@@ -516,7 +503,6 @@ class ResponseInteractionManager {
         return { isMultimodal: false };
       }
 
-      // ✅ PASO 3: BD ES LA FUENTE DE VERDAD FINAL
       const messageData = data.messageData;
       if (!messageData.hasImage && !messageData.hasDocuments) {
         return { isMultimodal: false };
@@ -540,7 +526,6 @@ class ResponseInteractionManager {
     if (!userContentElement) return;
 
     try {
-      // ✅ DETECTAR SI ES MENSAJE MULTIMODAL
       const isMultimodal = messageElement.getAttribute('data-multimodal') === 'true' ||
         messageElement.querySelector('.multimodal-container') !== null ||
         messageElement.querySelector('.unified-attachments') !== null;
@@ -548,21 +533,17 @@ class ResponseInteractionManager {
       console.log(`🔧 [UPDATE CONTENT] Actualizando mensaje: multimodal=${isMultimodal}, texto="${editedText}"`);
 
       if (isMultimodal) {
-        // ✅ FLUJO MULTIMODAL: PRESERVAR CONTENEDOR Y ARCHIVOS
         console.log('📦 [UPDATE CONTENT] Flujo multimodal - preservando estructura');
 
         const multimodalContainer = userContentElement.querySelector('.multimodal-container');
 
         if (multimodalContainer) {
-          // ✅ CASO 1: YA EXISTE CONTENEDOR MULTIMODAL
           let multimodalTextElement = multimodalContainer.querySelector('.multimodal-text');
 
           if (editedText && editedText.trim()) {
-            // ✅ HAY TEXTO: Actualizar o crear elemento de texto
             let processedText;
 
             try {
-              // Intentar usar parseMarkdownToHTML si está disponible
               const markdownModule = await import('./markdown-pdf.js');
               if (markdownModule && markdownModule.parseMarkdownToHTML) {
                 processedText = markdownModule.parseMarkdownToHTML(editedText);
@@ -575,38 +556,30 @@ class ResponseInteractionManager {
             }
 
             if (multimodalTextElement) {
-              // ✅ ACTUALIZAR ELEMENTO EXISTENTE
               console.log('🔄 [UPDATE CONTENT] Actualizando .multimodal-text existente');
               multimodalTextElement.innerHTML = processedText;
             } else {
-              // ✅ CREAR NUEVO ELEMENTO DE TEXTO
               console.log('➕ [UPDATE CONTENT] Creando nuevo .multimodal-text');
               multimodalTextElement = createElement('div', { className: 'multimodal-text' });
               multimodalTextElement.innerHTML = processedText;
 
-              // Insertar al principio del contenedor multimodal
               multimodalContainer.insertBefore(multimodalTextElement, multimodalContainer.firstChild);
             }
 
-            // ✅ GUARDAR data-original-text en el elemento de texto
             multimodalTextElement.dataset.originalText = encodeURIComponent(editedText);
 
           } else {
-            // ✅ NO HAY TEXTO: Remover elemento de texto si existe
             if (multimodalTextElement) {
               console.log('🗑️ [UPDATE CONTENT] Removiendo .multimodal-text vacío');
               multimodalTextElement.remove();
             }
           }
 
-          // ✅ PRESERVAR: Los elementos .unified-attachments se mantienen intactos
           console.log('✅ [UPDATE CONTENT] Contenedor multimodal actualizado correctamente');
 
         } else {
-          // ✅ CASO 2: NO HAY CONTENEDOR MULTIMODAL (crear estructura)
           console.log('🆕 [UPDATE CONTENT] Creando estructura multimodal desde cero');
 
-          // Crear contenedor multimodal
           const newMultimodalContainer = createElement('div', { className: 'multimodal-container' });
 
           if (editedText && editedText.trim()) {
@@ -630,24 +603,20 @@ class ResponseInteractionManager {
             newMultimodalContainer.appendChild(multimodalTextElement);
           }
 
-          // Buscar elementos de archivos existentes y moverlos
           const existingAttachments = userContentElement.querySelector('.unified-attachments');
           if (existingAttachments) {
             newMultimodalContainer.appendChild(existingAttachments);
           }
 
-          // Reemplazar contenido con nueva estructura
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
           userContentElement.appendChild(newMultimodalContainer);
 
-          // Marcar como multimodal
           messageElement.setAttribute('data-multimodal', 'true');
         }
 
       } else {
-        // ✅ FLUJO NORMAL: COMPORTAMIENTO ORIGINAL
         console.log('📝 [UPDATE CONTENT] Flujo normal - reemplazando contenido');
 
         let parseMarkdownFunction = null;
@@ -670,7 +639,6 @@ class ResponseInteractionManager {
           });
           messageTextDiv.innerHTML = markdownFormatted;
 
-          // Limpiar contenido anterior
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
@@ -685,7 +653,6 @@ class ResponseInteractionManager {
           });
           messageTextDiv.innerHTML = formattedWithBr;
 
-          // Limpiar contenido anterior
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
@@ -702,7 +669,6 @@ class ResponseInteractionManager {
     } catch (error) {
       console.error('❌ [UPDATE CONTENT] Error al actualizar contenido del mensaje:', error);
 
-      // Fallback seguro
       const formattedText = this.sanitizeAndFormatText(editedText).replace(/\n/g, '<br>');
       const messageTextDiv = createElement('div', { className: 'message-text' });
       messageTextDiv.innerHTML = formattedText;
@@ -723,7 +689,6 @@ class ResponseInteractionManager {
     const abortController = new AbortController();
 
     try {
-      // Configurar estado UI
       import('../ui/ui-manager-pdf.js').then(module => {
         if (typeof module.toggleUIState === 'function') {
           module.toggleUIState(true);
@@ -759,7 +724,6 @@ class ResponseInteractionManager {
         return;
       }
 
-      // ✅ DETECCIÓN MULTIMODAL Y DELEGACIÓN
       const multimodalInfo = await this.isMultimodalMessage(messageElement);
 
       if (multimodalInfo.isMultimodal) {
@@ -786,7 +750,6 @@ class ResponseInteractionManager {
     } catch (error) {
       console.error('❌ [EDIT ACADEL] Error general en submitEditedMessage:', error);
 
-      // ✅ MANEJO ESPECÍFICO DE ERRORES DE TOKENS
       if (this.isTokenError(error)) {
         console.log('🚫 EDIT: Error de tokens detectado');
         const aiMessage = this.getNextAiMessage(messageElement);
@@ -943,7 +906,6 @@ class ResponseInteractionManager {
     const charCounter = editPanel.querySelector('.acadel-character-counter');
     const progressBar = editPanel.querySelector('.acadel-edit-progress');
 
-    // Ocultar barra de progreso después de la animación inicial
     setTimeout(() => {
       addClass(progressBar, 'hidden');
     }, 400);
@@ -959,7 +921,6 @@ class ResponseInteractionManager {
       textarea.style.height = `${newHeight}px`;
     };
 
-    // Configurar altura inicial
     adjustTextareaHeight();
 
     // Evento de entrada en textarea
@@ -967,10 +928,8 @@ class ResponseInteractionManager {
       const currentLength = textarea.value.length;
       const percentage = (currentLength / 3000) * 100;
 
-      // Actualizar contador
       charCounter.innerHTML = `<i class="bx bx-text"></i> ${this.formatCharacterCount(currentLength)}`;
 
-      // Cambiar estado visual del contador
       removeClass(charCounter, 'warning');
       removeClass(charCounter, 'danger');
       if (percentage >= 90) {
@@ -982,7 +941,6 @@ class ResponseInteractionManager {
       // Ajustar altura
       adjustTextareaHeight();
 
-      // Habilitar/deshabilitar botón confirmar
       const hasChanges = textarea.value.trim() !== originalText.trim();
       const isValid = currentLength <= 3000;
 
@@ -995,7 +953,6 @@ class ResponseInteractionManager {
       }
     });
 
-    // Configurar altura inicial del textarea
     addEvent(textarea, 'keydown', adjustTextareaHeight);
     addEvent(textarea, 'paste', () => {
       setTimeout(adjustTextareaHeight, 10);
@@ -1007,7 +964,6 @@ class ResponseInteractionManager {
       textarea.setSelectionRange(textarea.value.length, textarea.value.length);
     }, 200);
 
-    // *** FUNCIÓN PARA TRANSICIÓN LIMPIA DE SALIDA ***
     const cleanupEditState = (fast = false) => {
       const duration = fast ? 150 : 300;
 
@@ -1017,15 +973,12 @@ class ResponseInteractionManager {
       editPanel.style.transform = 'translateY(-10px) scale(0.98)';
 
       setTimeout(() => {
-        // Quitar clase de modo edición
         removeClass(messageElement, 'acadel-editing-mode');
 
-        // Remover panel
         if (editPanel.parentNode) {
           editPanel.parentNode.removeChild(editPanel);
         }
 
-        // Desbloquear scroll
         setManagedTimeout(() => {
           scrollManager.unlockScroll();
         }, 100, 'acadel-edit-cleanup-scroll-unlock');
@@ -1033,19 +986,16 @@ class ResponseInteractionManager {
       }, duration);
     };
 
-    // *** EVENTO CANCELAR - MÁS LIMPIO ***
     addEvent(cancelBtn, 'click', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // Limpiar inmediatamente sin animaciones de estado
       messageElement.removeAttribute('data-response-interaction-processing');
 
       // Transición de salida rápida y limpia
       cleanupEditState(true);
     });
 
-    // *** EVENTO CONFIRMAR - TRANSICIÓN SUAVE ***
     addEvent(confirmBtn, 'click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1054,7 +1004,6 @@ class ResponseInteractionManager {
       const isValid = editedText.length <= 3000;
 
       if (!isValid) {
-        // Mostrar error visual sutil
         addClass(editPanel, 'error');
 
         setTimeout(() => {
@@ -1064,7 +1013,6 @@ class ResponseInteractionManager {
         return;
       }
 
-      // Deshabilitar controles inmediatamente
       confirmBtn.disabled = true;
       cancelBtn.disabled = true;
       textarea.disabled = true;
@@ -1072,10 +1020,8 @@ class ResponseInteractionManager {
       // Transición de salida limpia
       cleanupEditState();
 
-      // Bloquear scroll para la operación principal
       scrollManager.lockScroll();
 
-      // Enviar para procesamiento con delay mínimo
       setTimeout(() => {
         this.submitEditedMessage(messageElement, editedText, originalText);
       }, 350);
@@ -1091,7 +1037,6 @@ class ResponseInteractionManager {
     const abortController = new AbortController();
 
     try {
-      // Configurar estado UI igual que antes
       import('../ui/ui-manager-pdf.js').then(module => {
         if (typeof module.toggleUIState === 'function') {
           module.toggleUIState(true);
@@ -1127,7 +1072,6 @@ class ResponseInteractionManager {
         return;
       }
 
-      // Verificar si es multimodal
       const multimodalInfo = await this.isMultimodalMessage(messageElement);
 
       if (multimodalInfo.isMultimodal) {
@@ -1165,7 +1109,6 @@ class ResponseInteractionManager {
       clearManagedTimeouts(this.timeoutKeys.safetyTimeout);
     }, 90000, this.timeoutKeys.safetyTimeout);
 
-    // ✅ GUARDAR CONTENIDO ORIGINAL ANTES DE CUALQUIER MODIFICACIÓN
     const profileElement = aiMessage.querySelector('.ai-profile');
     const profileHTML = profileElement ? profileElement.outerHTML : '';
     const aiContentElement = aiMessage.querySelector('.message-content');
@@ -1174,7 +1117,6 @@ class ResponseInteractionManager {
     try {
       console.log('📝 [EDIT STANDARD] Procesando edición estándar');
 
-      // Actualizar contenido del mensaje del usuario
       await this.updateUserMessageContent(messageElement, editedText);
 
       // Retirar valoración si existe
@@ -1185,7 +1127,6 @@ class ResponseInteractionManager {
       const userMessageId = this.extractServerMessageId(messageElement);
       const aiMessageId = this.extractServerMessageId(aiMessage);
 
-      // *** MOSTRAR ESTADO DE CARGA IGUAL QUE RETRY ***
       addClass(aiMessage, 'processing');
       messageElement.setAttribute('data-response-interaction-processing', 'true');
       if (profileElement) addClass(profileElement, 'thinking');
@@ -1205,7 +1146,6 @@ class ResponseInteractionManager {
       const stateModule = await import('../core/state-pdf.js');
       const currentChatId = stateModule.getState('currentChatId');
 
-      // *** VERIFICAR CANCELLATION IGUAL QUE RETRY ***
       const checkCancellation = () => {
         if (abortController.signal.aborted) {
           removeClass(aiMessage, 'processing');
@@ -1239,7 +1179,6 @@ class ResponseInteractionManager {
 
       if (checkCancellation()) return;
 
-      // *** PROCESAR RESPUESTA IGUAL QUE RETRY ***
       const rendererModule = await import('../ui/message-renderer-pdf.js');
       const processedResponse = this.processResponseData(response);
 
@@ -1249,7 +1188,6 @@ class ResponseInteractionManager {
         aiMessage.insertAdjacentHTML('afterbegin', profileHTML);
       }
 
-      // Preparar texto para la BD
       let aiResponseText;
       if (processedResponse.type === 'exam') {
         aiResponseText = JSON.stringify({
@@ -1266,7 +1204,6 @@ class ResponseInteractionManager {
       restoreUI();
       console.log('💾 [EDIT STANDARD] Actualizando BD');
 
-      // *** ACTUALIZAR BD ***
       if (checkCancellation()) return;
 
       const result = await messagesModule.replaceInteraction(
@@ -1286,23 +1223,19 @@ class ResponseInteractionManager {
         }
       }
 
-      // *** LIMPIAR ESTADO SOLO AL FINAL - IGUAL QUE RETRY ***
       ensureScrollUnlock();
       clearManagedTimeouts(this.timeoutKeys.safetyTimeout);
 
     } catch (error) {
       console.error('❌ [EDIT STANDARD] Error:', error);
 
-      // ✅ RESTAURAR CONTENIDO ORIGINAL SIEMPRE
       if (aiContentElement && originalAiContent) {
         aiContentElement.innerHTML = originalAiContent;
       }
 
-      // ✅ LIMPIAR ESTADO SIEMPRE
       removeClass(aiMessage, 'processing');
       if (profileElement) removeClass(profileElement, 'thinking');
 
-      // ✅ MANEJO DE ERRORES ESPECÍFICOS
       if (this.isFreeUserLimitError(error)) {
         console.log('🚫 Error de límite de usuario gratuito - Mostrando aviso específico');
         setTimeout(() => {
@@ -1364,7 +1297,6 @@ class ResponseInteractionManager {
       clearManagedTimeouts(this.timeoutKeys.safetyTimeout);
     }, 50000, this.timeoutKeys.safetyTimeout);
 
-    // ✅ GUARDAR CONTENIDO ORIGINAL ANTES DE CUALQUIER MODIFICACIÓN
     const profileElement = aiMessage.querySelector('.ai-profile');
     const profileHTML = profileElement ? profileElement.outerHTML : '';
     const aiContentElement = aiMessage.querySelector('.message-content');
@@ -1381,7 +1313,6 @@ class ResponseInteractionManager {
       const userMessageId = this.extractServerMessageId(messageElement);
       const aiMessageId = this.extractServerMessageId(aiMessage);
 
-      // *** MOSTRAR ESTADO DE CARGA IGUAL QUE RETRY ***
       addClass(aiMessage, 'processing');
       messageElement.setAttribute('data-response-interaction-processing', 'true');
       if (profileElement) addClass(profileElement, 'thinking');
@@ -1398,7 +1329,6 @@ class ResponseInteractionManager {
     `;
       }
 
-      // *** MODIFICAR SOLO EL CAMPO TEXT DEL JSON ORIGINAL ***
       const modifiedMessageData = {
         ...multimodalInfo.originalMessageData,
         text: editedText.trim() || "",
@@ -1412,7 +1342,6 @@ class ResponseInteractionManager {
         preservedImages: modifiedMessageData.images?.length || 0
       });
 
-      // *** ACTUALIZAR UI DEL MENSAJE DEL USUARIO INMEDIATAMENTE ***
       this.updateMultimodalMessageUI(messageElement, editedText);
 
       const stateModule = await import('../core/state-pdf.js');
@@ -1426,10 +1355,8 @@ class ResponseInteractionManager {
         return;
       }
 
-      // *** PREPARAR ARCHIVOS PARA REENVÍO ***
       const multimodalFiles = [];
 
-      // Recuperar documentos
       if (modifiedMessageData.hasDocuments && modifiedMessageData.documents?.length > 0) {
         console.log(`📄 [EDIT MULTIMODAL] Recuperando ${modifiedMessageData.documents.length} documentos`);
 
@@ -1440,7 +1367,6 @@ class ResponseInteractionManager {
         multimodalFiles.push(...retrievedDocuments);
       }
 
-      // Recuperar imágenes
       if (modifiedMessageData.hasImage && modifiedMessageData.images?.length > 0) {
         console.log(`🖼️ [EDIT MULTIMODAL] Recuperando ${modifiedMessageData.images.length} imágenes`);
 
@@ -1453,7 +1379,6 @@ class ResponseInteractionManager {
         archivos: multimodalFiles.length
       });
 
-      // *** ENVIAR COMO MENSAJE MULTIMODAL SIN GUARDAR ***
       const messagesModule = await import('../api/messages-pdf.js');
 
       const response = await messagesModule.sendMessageWithAttachmentsWithoutSaving(
@@ -1463,7 +1388,6 @@ class ResponseInteractionManager {
         abortController.signal
       );
 
-      // *** PROCESAR RESPUESTA IGUAL QUE RETRY ***
       const rendererModule = await import('../ui/message-renderer-pdf.js');
       const processedResponse = this.processResponseData(response);
 
@@ -1473,7 +1397,6 @@ class ResponseInteractionManager {
         aiMessage.insertAdjacentHTML('afterbegin', profileHTML);
       }
 
-      // *** PREPARAR TEXTO PARA LA BD ***
       let aiResponseText;
       if (processedResponse.type === 'exam') {
         aiResponseText = JSON.stringify({
@@ -1490,7 +1413,6 @@ class ResponseInteractionManager {
       restoreUI();
       console.log('💾 [EDIT MULTIMODAL] Actualizando BD');
 
-      // *** ACTUALIZAR BD ***
       const result = await messagesModule.replaceInteraction(
         currentChatId,
         userMessageId,
@@ -1508,23 +1430,19 @@ class ResponseInteractionManager {
         }
       }
 
-      // *** LIMPIAR ESTADO SOLO AL FINAL - IGUAL QUE RETRY ***
       ensureScrollUnlock();
       clearManagedTimeouts(this.timeoutKeys.safetyTimeout);
 
     } catch (error) {
       console.error('❌ [EDIT MULTIMODAL] Error:', error);
 
-      // ✅ RESTAURAR CONTENIDO ORIGINAL SIEMPRE
       if (aiContentElement && originalAiContent) {
         aiContentElement.innerHTML = originalAiContent;
       }
 
-      // ✅ LIMPIAR ESTADO SIEMPRE
       removeClass(aiMessage, 'processing');
       if (profileElement) removeClass(profileElement, 'thinking');
 
-      // ✅ MANEJO DE ERRORES ESPECÍFICOS
       if (this.isFreeUserLimitError(error)) {
         console.log('🚫 Error de límite de usuario gratuito - Mostrando aviso específico');
         setTimeout(() => {
@@ -1598,7 +1516,6 @@ class ResponseInteractionManager {
     }
 
     try {
-      // *** VERIFICAR SI ES MULTIMODAL ***
       const multimodalInfo = await this.isMultimodalMessage(userMessage);
 
       if (multimodalInfo.isMultimodal) {
@@ -1638,7 +1555,6 @@ class ResponseInteractionManager {
         return;
       }
 
-      // Mostrar estado de carga
       addClass(messageElement, 'processing');
       messageElement.setAttribute('data-response-interaction-processing', 'true');
 
@@ -1658,10 +1574,8 @@ class ResponseInteractionManager {
         </div>
       `;
 
-      // *** PREPARAR ARCHIVOS PARA REENVÍO ***
       const multimodalFiles = [];
 
-      // Recuperar documentos
       if (multimodalInfo.originalMessageData.hasDocuments && multimodalInfo.originalMessageData.documents?.length > 0) {
         console.log(`📄 [RETRY MULTIMODAL] Recuperando ${multimodalInfo.originalMessageData.documents.length} documentos`);
 
@@ -1672,7 +1586,6 @@ class ResponseInteractionManager {
         multimodalFiles.push(...retrievedDocuments);
       }
 
-      // Recuperar imágenes
       if (multimodalInfo.originalMessageData.hasImage && multimodalInfo.originalMessageData.images?.length > 0) {
         console.log(`🖼️ [RETRY MULTIMODAL] Recuperando ${multimodalInfo.originalMessageData.images.length} imágenes`);
 
@@ -1685,7 +1598,6 @@ class ResponseInteractionManager {
         archivos: multimodalFiles.length
       });
 
-      // *** ENVIAR MENSAJE COMPLETO SIN GUARDAR ***
       const messagesModule = await import('../api/messages-pdf.js');
 
       const response = await messagesModule.sendMessageWithAttachmentsWithoutSaving(
@@ -1695,7 +1607,6 @@ class ResponseInteractionManager {
         abortController.signal
       );
 
-      // Procesar respuesta
       const rendererModule = await import('../ui/message-renderer-pdf.js');
       const processedResponse = this.processResponseData(response);
 
@@ -1706,7 +1617,6 @@ class ResponseInteractionManager {
         messageElement.insertAdjacentHTML('afterbegin', profileElement.outerHTML);
       }
 
-      // *** ACTUALIZAR BD REEMPLAZANDO INTERACCIÓN ***
       let aiResponseText;
       if (processedResponse.type === 'exam') {
         aiResponseText = JSON.stringify({
@@ -1746,7 +1656,6 @@ class ResponseInteractionManager {
     } catch (error) {
       console.error('❌ [RETRY MULTIMODAL] Error:', error);
 
-      // ✅ RESTAURAR CONTENIDO ORIGINAL SIEMPRE
       removeClass(messageElement, 'processing');
       const profileElement = messageElement.querySelector('.ai-profile');
       if (profileElement) removeClass(profileElement, 'thinking');
@@ -1756,7 +1665,6 @@ class ResponseInteractionManager {
         contentElement.innerHTML = originalContent;
       }
 
-      // ✅ CORREGIDO: USAR función existente que funciona
       if (this.isFreeUserLimitError(error)) {
         console.log('🚫 Error de límite de usuario gratuito - Mostrando aviso específico');
         setTimeout(() => {
@@ -1768,7 +1676,6 @@ class ResponseInteractionManager {
           this.handleTokenError(error, messageElement, true);
         }, 300);
       } else {
-        // ✅ Solo para errores que NO son de tokens ni de límites de usuario
         acadelError('¡Reintento multimodal complicado! 🎯💥', 'Acadel tuvo problemas reprocesando tu consulta multimodal');
       }
 
@@ -1797,7 +1704,6 @@ class ResponseInteractionManager {
     const userMessageId = this.extractServerMessageId(userMessage);
     const aiMessageId = this.extractServerMessageId(messageElement);
 
-    // ✅ GUARDAR CONTENIDO ORIGINAL ANTES DE CUALQUIER MODIFICACIÓN
     const profileElement = messageElement.querySelector('.ai-profile');
     const profileHTML = profileElement ? profileElement.outerHTML : '';
     const contentElement = messageElement.querySelector('.message-content');
@@ -1867,7 +1773,6 @@ class ResponseInteractionManager {
       restoreUI();
       clearManagedTimeouts(this.timeoutKeys.safetyTimeout);
 
-      // Actualizar BD
       let aiResponseText;
       if (processedResponse.type === 'exam') {
         aiResponseText = JSON.stringify({
@@ -1909,16 +1814,13 @@ class ResponseInteractionManager {
     } catch (error) {
       console.error('❌ [RETRY STANDARD] Error:', error);
 
-      // ✅ RESTAURAR CONTENIDO ORIGINAL SIEMPRE
       if (contentElement && originalContent) {
         contentElement.innerHTML = originalContent;
       }
 
-      // ✅ LIMPIAR ESTADO SIEMPRE
       removeClass(messageElement, 'processing');
       if (profileElement) removeClass(profileElement, 'thinking');
 
-      // ✅ CORREGIDO: USAR messageElement (que aquí SÍ es el mensaje de IA)
       if (this.isFreeUserLimitError(error)) {
         console.log('🚫 Error de límite de usuario gratuito - Mostrando aviso específico');
         setTimeout(() => {
@@ -1930,7 +1832,6 @@ class ResponseInteractionManager {
           this.handleTokenError(error, messageElement, true);
         }, 300);
       } else {
-        // ✅ Solo para errores que NO son de tokens ni de límites de usuario
         acadelError('¡Reintento complicado! 🔄💥', 'Acadel tuvo problemas reprocesando tu consulta');
       }
 
@@ -2025,7 +1926,6 @@ class ResponseInteractionManager {
     }
   }
 
-  // *** MANTENER TODAS LAS DEMÁS FUNCIONES EXISTENTES SIN CAMBIOS ***
 
   getNextAiMessage(userMessage) {
     let currentElement = userMessage.nextElementSibling;
@@ -2055,14 +1955,12 @@ class ResponseInteractionManager {
   extractUserMessageText(userMessage) {
     if (!userMessage) return '';
 
-    // *** DETECTAR SI ES MENSAJE MULTIMODAL ***
     const isMultimodal = userMessage.hasAttribute('data-multimodal') ||
       userMessage.querySelector('.multimodal-container');
 
     if (isMultimodal) {
       console.log('🔍 [EXTRACT] Mensaje multimodal detectado');
 
-      // *** PRIORIDAD 1: Buscar data-original-text en multimodal-text ***
       const multimodalTextElement = userMessage.querySelector('.multimodal-text');
       if (multimodalTextElement && multimodalTextElement.dataset?.originalText) {
         try {
@@ -2074,11 +1972,9 @@ class ResponseInteractionManager {
         }
       }
 
-      // *** PRIORIDAD 2: Para multimodal SIN texto original, buscar solo en multimodal-text ***
       if (multimodalTextElement) {
         const textContent = multimodalTextElement.textContent || multimodalTextElement.innerText || '';
 
-        // *** CRÍTICO: Si no hay texto real en multimodal-text, devolver vacío ***
         if (!textContent.trim() || this.isAttachmentOnlyContent(textContent)) {
           console.log('✅ [EXTRACT] Mensaje multimodal sin texto - devolviendo vacío');
           return ''; // *** ESTO ES LO IMPORTANTE ***
@@ -2088,12 +1984,10 @@ class ResponseInteractionManager {
         return textContent.trim();
       }
 
-      // *** SI NO HAY multimodal-text, es solo archivos adjuntos ***
       console.log('✅ [EXTRACT] Mensaje multimodal solo con archivos - devolviendo vacío');
       return '';
     }
 
-    // *** PARA MENSAJES NORMALES (no multimodales) ***
     const messageTextElement = userMessage.querySelector('.message-text');
     if (messageTextElement && messageTextElement.dataset?.originalText) {
       try {
@@ -2105,7 +1999,6 @@ class ResponseInteractionManager {
       }
     }
 
-    // *** FALLBACK PARA MENSAJES NORMALES ***
     if (messageTextElement) {
       const textContent = messageTextElement.textContent || messageTextElement.innerText || '';
       console.log('✅ [EXTRACT] Texto normal del DOM:', textContent.substring(0, 100) + '...');
@@ -2172,7 +2065,6 @@ class ResponseInteractionManager {
         return null;
       }
 
-      // Extraer solo el texto del JSON multimodal
       if (parsedData && typeof parsedData === 'object') {
         return parsedData.text || parsedData.content || '';
       }
@@ -2194,7 +2086,6 @@ class ResponseInteractionManager {
     if (!userContentElement) return;
 
     try {
-      // ✅ DETECTAR SI ES MENSAJE MULTIMODAL
       const isMultimodal = messageElement.getAttribute('data-multimodal') === 'true' ||
         messageElement.querySelector('.multimodal-container') !== null ||
         messageElement.querySelector('.unified-attachments') !== null;
@@ -2202,21 +2093,17 @@ class ResponseInteractionManager {
       console.log(`🔧 [UPDATE CONTENT] Actualizando mensaje: multimodal=${isMultimodal}, texto="${editedText}"`);
 
       if (isMultimodal) {
-        // ✅ FLUJO MULTIMODAL: PRESERVAR CONTENEDOR Y ARCHIVOS
         console.log('📦 [UPDATE CONTENT] Flujo multimodal - preservando estructura');
 
         const multimodalContainer = userContentElement.querySelector('.multimodal-container');
 
         if (multimodalContainer) {
-          // ✅ CASO 1: YA EXISTE CONTENEDOR MULTIMODAL
           let multimodalTextElement = multimodalContainer.querySelector('.multimodal-text');
 
           if (editedText && editedText.trim()) {
-            // ✅ HAY TEXTO: Actualizar o crear elemento de texto
             let processedText;
 
             try {
-              // Intentar usar parseMarkdownToHTML si está disponible
               const markdownModule = await import('./markdown-pdf.js');
               if (markdownModule && markdownModule.parseMarkdownToHTML) {
                 processedText = markdownModule.parseMarkdownToHTML(editedText);
@@ -2229,38 +2116,30 @@ class ResponseInteractionManager {
             }
 
             if (multimodalTextElement) {
-              // ✅ ACTUALIZAR ELEMENTO EXISTENTE
               console.log('🔄 [UPDATE CONTENT] Actualizando .multimodal-text existente');
               multimodalTextElement.innerHTML = processedText;
             } else {
-              // ✅ CREAR NUEVO ELEMENTO DE TEXTO
               console.log('➕ [UPDATE CONTENT] Creando nuevo .multimodal-text');
               multimodalTextElement = createElement('div', { className: 'multimodal-text' });
               multimodalTextElement.innerHTML = processedText;
 
-              // Insertar al principio del contenedor multimodal
               multimodalContainer.insertBefore(multimodalTextElement, multimodalContainer.firstChild);
             }
 
-            // ✅ GUARDAR data-original-text en el elemento de texto
             multimodalTextElement.dataset.originalText = encodeURIComponent(editedText);
 
           } else {
-            // ✅ NO HAY TEXTO: Remover elemento de texto si existe
             if (multimodalTextElement) {
               console.log('🗑️ [UPDATE CONTENT] Removiendo .multimodal-text vacío');
               multimodalTextElement.remove();
             }
           }
 
-          // ✅ PRESERVAR: Los elementos .unified-attachments se mantienen intactos
           console.log('✅ [UPDATE CONTENT] Contenedor multimodal actualizado correctamente');
 
         } else {
-          // ✅ CASO 2: NO HAY CONTENEDOR MULTIMODAL (crear estructura)
           console.log('🆕 [UPDATE CONTENT] Creando estructura multimodal desde cero');
 
-          // Crear contenedor multimodal
           const newMultimodalContainer = createElement('div', { className: 'multimodal-container' });
 
           if (editedText && editedText.trim()) {
@@ -2284,24 +2163,20 @@ class ResponseInteractionManager {
             newMultimodalContainer.appendChild(multimodalTextElement);
           }
 
-          // Buscar elementos de archivos existentes y moverlos
           const existingAttachments = userContentElement.querySelector('.unified-attachments');
           if (existingAttachments) {
             newMultimodalContainer.appendChild(existingAttachments);
           }
 
-          // Reemplazar contenido con nueva estructura
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
           userContentElement.appendChild(newMultimodalContainer);
 
-          // Marcar como multimodal
           messageElement.setAttribute('data-multimodal', 'true');
         }
 
       } else {
-        // ✅ FLUJO NORMAL: COMPORTAMIENTO ORIGINAL
         console.log('📝 [UPDATE CONTENT] Flujo normal - reemplazando contenido');
 
         let parseMarkdownFunction = null;
@@ -2324,7 +2199,6 @@ class ResponseInteractionManager {
           });
           messageTextDiv.innerHTML = markdownFormatted;
 
-          // Limpiar contenido anterior
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
@@ -2339,7 +2213,6 @@ class ResponseInteractionManager {
           });
           messageTextDiv.innerHTML = formattedWithBr;
 
-          // Limpiar contenido anterior
           while (userContentElement.firstChild) {
             userContentElement.removeChild(userContentElement.firstChild);
           }
@@ -2356,7 +2229,6 @@ class ResponseInteractionManager {
     } catch (error) {
       console.error('❌ [UPDATE CONTENT] Error al actualizar contenido del mensaje:', error);
 
-      // Fallback seguro
       const formattedText = this.sanitizeAndFormatText(editedText).replace(/\n/g, '<br>');
       const messageTextDiv = createElement('div', { className: 'message-text' });
       messageTextDiv.innerHTML = formattedText;
@@ -2375,7 +2247,6 @@ class ResponseInteractionManager {
       return sanitizeText(text);
     }
 
-    // Fallback básico si sanitizeText no está disponible
     return text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -2459,7 +2330,6 @@ class ResponseInteractionManager {
   }
 
   processResponseData(data) {
-    // 🔍 DEBUG LOG - ENTRADA DE FUNCIÓN
     console.log('🔍 [PROCESS RESPONSE] Entrada:', {
       data: data,
       dataType: typeof data,
@@ -2490,17 +2360,14 @@ class ResponseInteractionManager {
       } else if (type === 'exam' && data.data) {
         content = data.data;  // ✅ CAMBIADO: data.data en lugar de data.exam
       }
-      // ✅ FIX ADICIONAL: También manejar data.exam como fallback
       else if (type === 'exam' && data.exam) {
         content = data.exam;  // ✅ FALLBACK: por si viene en data.exam
       } else if (type === 'conversation' || type === 'message') {
-        // ✅ AGREGAR data.data AQUÍ
         content = data.answer || data.content || data.message || data.data || '';
       } else {
         content = data;
       }
     } else {
-      // ✅ AGREGAR data.data AQUÍ TAMBIÉN
       content = data?.answer ||
         data?.content ||
         data?.message ||
@@ -2509,7 +2376,6 @@ class ResponseInteractionManager {
         JSON.stringify(data);
     }
 
-    // 🔍 DEBUG LOG - SALIDA DE FUNCIÓN
     console.log('🔍 [PROCESS RESPONSE] Salida:', {
       type: type,
       content: content,
@@ -2567,7 +2433,6 @@ class ResponseInteractionManager {
     thumbsDownBtn.innerHTML = `<i class='bx bx-dislike'></i>`;
     actionsContainer.appendChild(thumbsDownBtn);
 
-    // *** BOTÓN DE RETRY SIEMPRE PRESENTE ***
     const retryBtn = createElement('button', {
       className: 'response-action-btn retry-btn',
       dataset: { tooltip: 'Reintentar' }
@@ -2580,7 +2445,6 @@ class ResponseInteractionManager {
       this.handleRetryAction(messageElement);
     });
 
-    // ✅ CORRECCIÓN CRÍTICA: Usar currentTarget en lugar del closure
     addEvent(copyBtn, 'click', (e) => {
       e.stopPropagation();
       const currentMessageElement = e.currentTarget.closest('.ai-message');
@@ -2654,11 +2518,9 @@ class ResponseInteractionManager {
   async handleCopyAction(messageElementFromContext) {
     console.log('🎯 [COPY] handleCopyAction llamado');
 
-    // ✅ CRÍTICO: Encontrar el mensaje correcto desde el evento actual
     // NO confiar en messageElementFromContext que puede ser incorrecto
     let actualMessageElement = null;
 
-    // ✅ MÉTODO 1: Buscar desde el botón de copia que fue clickeado
     const copyButton = document.querySelector('.copy-btn:hover') ||
       document.querySelector('.copy-btn:focus') ||
       document.querySelector('.copy-btn:active');
@@ -2668,13 +2530,11 @@ class ResponseInteractionManager {
       console.log('✅ [COPY] Mensaje encontrado desde botón clickeado');
     }
 
-    // ✅ MÉTODO 2: Si no encontramos desde hover, usar el messageElement original como fallback
     if (!actualMessageElement) {
       actualMessageElement = messageElementFromContext;
       console.log('⚠️ [COPY] Usando messageElement del contexto como fallback');
     }
 
-    // ✅ VERIFICACIÓN FINAL: Asegurar que tenemos un mensaje de IA válido
     if (!actualMessageElement || !actualMessageElement.classList.contains('ai-message')) {
       console.error('❌ [COPY] No se pudo encontrar mensaje de IA válido');
       acadelError('¡Mensaje perdido! 🤖', 'No se pudo identificar el mensaje a copiar');
@@ -2690,13 +2550,11 @@ class ResponseInteractionManager {
     const copyBtn = actualMessageElement.querySelector('.copy-btn');
     const copyIcon = copyBtn?.querySelector('i');
 
-    // Deshabilitar botón temporalmente
     if (copyBtn) {
       copyBtn.disabled = true;
       copyBtn.style.pointerEvents = 'none';
     }
 
-    // Mostrar loading
     if (copyIcon) {
       const originalClass = copyIcon.className;
       copyIcon.className = 'bx bx-loader-alt bx-spin';
@@ -2704,7 +2562,6 @@ class ResponseInteractionManager {
     }
 
     try {
-      // ✅ USAR SIEMPRE el método fallback directo (es más confiable que el backend)
       console.log('📋 [COPY] Usando método de extracción directa...');
       await this.fallbackToOriginalCopy(actualMessageElement);
 
@@ -2717,13 +2574,11 @@ class ResponseInteractionManager {
 
       acadelError('¡Copia complicada! 📋', 'Acadel tuvo problemas copiando este mensaje');
     } finally {
-      // RESTAURAR botón
       if (copyBtn) {
         copyBtn.disabled = false;
         copyBtn.style.pointerEvents = 'auto';
       }
 
-      // RESTAURAR ícono después de 2 segundos
       if (copyIcon && copyIcon.dataset.originalClass) {
         setManagedTimeout(() => {
           copyIcon.className = copyIcon.dataset.originalClass;
@@ -2738,7 +2593,6 @@ class ResponseInteractionManager {
    */
   async getCleanContentFromBackend(messageElement) {
     try {
-      // Obtener IDs necesarios
       const messageId = this.extractServerMessageId(messageElement);
       const stateModule = await import('../core/state-pdf.js');
       const currentChatId = stateModule.getState('currentChatId');
@@ -2769,7 +2623,6 @@ class ResponseInteractionManager {
         return null;
       }
 
-      // Retornar contenido filtrado (ya limpio del backend)
       return data.data.filteredContent || data.data.originalContent || null;
 
     } catch (error) {
@@ -2785,7 +2638,6 @@ class ResponseInteractionManager {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
     } else {
-      // Fallback para navegadores antiguos
       throw new Error('Clipboard API no disponible');
     }
   }
@@ -2809,7 +2661,6 @@ class ResponseInteractionManager {
       // Tu método original (simple y funcional)
       const textToCopy = contentElement.innerText || contentElement.textContent;
 
-      // Usar tu función de clipboard existente
       await copyToClipboard(textToCopy);
 
       if (copyIcon) {
@@ -3256,7 +3107,6 @@ class ResponseInteractionManager {
  */
   hideGenericAlerts() {
     try {
-      // Eliminar cualquier alert/toast genérico que pueda estar visible
       const genericAlerts = document.querySelectorAll(
         '.alert, .toast, .notification, .error-toast, .swal2-container, .sweet-alert'
       );
@@ -3268,7 +3118,6 @@ class ResponseInteractionManager {
         }
       });
 
-      // Limpiar overlays y backdrops
       const overlays = document.querySelectorAll(
         '.swal2-backdrop, .sweet-alert-overlay, .alert-overlay'
       );
@@ -3290,12 +3139,10 @@ class ResponseInteractionManager {
   isFreeUserLimitError(error) {
     if (!error) return false;
 
-    // Verificar propiedades específicas
     if (error.isFreeUserLimit || error.isUserLimitExceeded) {
       return true;
     }
 
-    // Verificar código de error
     const errorCode = String(error.code || '');
     if (errorCode.includes('UPGRADE_REQUIRED') ||
       errorCode.includes('FREE_USER_LIMIT') ||
@@ -3303,7 +3150,6 @@ class ResponseInteractionManager {
       return true;
     }
 
-    // Verificar mensaje de error
     const errorMessage = error.message || '';
     const freeUserKeywords = [
       'usuario gratuito',
@@ -3328,10 +3174,8 @@ class ResponseInteractionManager {
     if (this.isFreeUserLimitError(error)) {
       console.log('🚫 Error de límite de usuario gratuito detectado - Mostrando aviso específico');
 
-      // Limpiar alerts genéricos
       this.hideGenericAlerts();
 
-      // Extraer información del error
       const limitType = error.limitType || (error.message?.includes('hora') ? 'hourly' : 'daily');
       const limitInfo = {
         resetTime: error.resetTime || error.nextReset || null,
@@ -3339,7 +3183,6 @@ class ResponseInteractionManager {
         limit: error.limit || 0
       };
 
-      // Mostrar aviso específico en el mensaje de IA
       showFreeUserLimitNotice(messageElement, limitType, limitInfo);
     }
   }
@@ -3350,12 +3193,10 @@ class ResponseInteractionManager {
   isTokenError(error) {
     if (!error) return false;
 
-    // Verificar propiedades específicas
     if (error.isTokenLimit || error.isPreValidationLimit) {
       return true;
     }
 
-    // Verificar mensaje de error
     const errorMessage = error.message || '';
     const tokenKeywords = [
       'TOKEN_LIMITS',
@@ -3383,12 +3224,10 @@ class ResponseInteractionManager {
     if (this.isTokenError(error)) {
       console.log('🚫 Error de tokens detectado - Mostrando aviso');
 
-      // Para retry/edit, limpiar estado previo para permitir mostrar aviso de nuevo
       if (forceShow && typeof window.AcadelChatNotices?.clearTokenWarnings === 'function') {
         window.AcadelChatNotices.clearTokenWarnings();
       }
 
-      // Usar sistema existente
       showTokenLimitNotice(messageElement);
     }
   }

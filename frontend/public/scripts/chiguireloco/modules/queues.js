@@ -24,13 +24,10 @@ const queues = {
     async init() {
         console.log('Inicializando módulo de Monitor de Colas');
         
-        // Configurar listeners de botones
         this.setupEventListeners();
         
-        // Cargar datos iniciales
         await this.updateQueueStats();
         
-        // Configurar actualización periódica cada 3 segundos
         this.state.updateInterval = setInterval(() => this.updateQueueStats(), 3000);
     },
 
@@ -67,16 +64,13 @@ const queues = {
      */
     async updateQueueStats() {
         try {
-            // Obtener estadísticas de colas
             const data = await api.getQueueStats();
             
-            // Resetear contador de errores si tenemos éxito
             this.state.consecutiveErrors = 0;
             
             this.state.queueData = data.stats;
             this.state.lastUpdate = new Date(data.timestamp);
             
-            // Log para depuración
             console.log("RESPUESTA API COLAS:", data);
             
             // Valores reales de trabajos en cola por tipo
@@ -93,22 +87,18 @@ const queues = {
                 console.log("CORRECCIÓN: Forzando OpenAI a 10 trabajos en cola");
             }
             
-            // Procesar datos para cada cola
             Object.entries(this.state.queueData).forEach(([queueName, stats]) => {
                 const shortName = queueName.replace('throttle-', '');
                 
-                // Extraer todos los posibles contadores
                 const active = parseInt(stats.active) || 0;
                 const waitingQueueSize = parseInt(stats.waitingQueueSize) || 0;
                 const waitingCount = parseInt(stats.waitingCount) || 0;
                 const waiting = parseInt(stats.waiting) || 0;
                 
-                // Calcular el valor real de trabajos en cola
                 let realWaiting = Math.max(waitingQueueSize, waitingCount, waiting);
                 
                 // CORRECCIÓN: Ignorar los valores predeterminados "1" para colas sin trabajos reales
                 if (shortName !== 'openai' && realWaiting === 1) {
-                    // Verificar si realmente hay trabajos en espera
                     if (!stats.waitingJobs || stats.waitingJobs.length === 0) {
                         // Si no hay trabajos reales y el contador es 1, es un valor predeterminado, ignorarlo
                         realWaiting = 0;
@@ -120,14 +110,11 @@ const queues = {
                 if (realQueuedByType[shortName] > 0) {
                     realWaiting = realQueuedByType[shortName];
                 } else {
-                    // Guardar el valor calculado (posiblemente corregido)
                     realQueuedByType[shortName] = realWaiting;
                 }
                 
-                // Log detallado para depuración
                 console.log(`Cola ${shortName}: active=${active}, realWaiting=${realWaiting} (original: waiting=${waiting}, waitingCount=${waitingCount}, waitingQueueSize=${waitingQueueSize})`);
                 
-                // Actualizar indicadores de estado
                 const statusEl = document.getElementById(`${shortName}-queue-status`);
                 const workloadEl = document.getElementById(`${shortName}-queue-workload`);
                 
@@ -143,11 +130,9 @@ const queues = {
                 }
                 
                 if (workloadEl) {
-                    // Mostrar el valor real (ignorando valores predeterminados)
                     workloadEl.textContent = `${realWaiting}`;
                 }
                 
-                // Actualizar detalles de la cola
                 const detailsEl = document.getElementById(`${shortName}-queue-details`);
                 if (detailsEl) {
                     detailsEl.innerHTML = `
@@ -163,7 +148,6 @@ const queues = {
                         </div>
                     `;
                     
-                    // Agregar información sobre trabajos activos si existe
                     if (stats.activeJobs && stats.activeJobs.length > 0) {
                         let activeJobsHtml = '<div class="mt-3"><strong>Trabajos en proceso:</strong><div class="jobs-list">';
                         stats.activeJobs.forEach(job => {
@@ -175,7 +159,6 @@ const queues = {
                         detailsEl.innerHTML += activeJobsHtml;
                     }
                     
-                    // Agregar información sobre trabajos en espera
                     if (stats.waitingJobs && stats.waitingJobs.length > 0) {
                         let waitingJobsHtml = '<div class="mt-3"><strong>Trabajos en cola:</strong><div class="jobs-list">';
                         stats.waitingJobs.forEach(job => {
@@ -189,7 +172,6 @@ const queues = {
                 }
             });
             
-            // Calcular el total real de trabajos en cola
             const totalQueued = Object.values(realQueuedByType).reduce((sum, count) => sum + count, 0);
             const totalActive = Object.values(this.state.queueData).reduce((sum, stats) => sum + (parseInt(stats.active) || 0), 0);
             const totalCompleted = Object.values(this.state.queueData).reduce((sum, stats) => sum + (parseInt(stats.completed) || 0), 0);
@@ -198,22 +180,18 @@ const queues = {
             console.log("Totales calculados:", { totalQueued, totalActive, totalCompleted, totalFailed });
             console.log("Desglose por tipo:", realQueuedByType);
             
-            // Actualizar totales en la interfaz
             document.getElementById('total-queue-queued').textContent = totalQueued;
             document.getElementById('total-queue-active').textContent = totalActive;
             document.getElementById('total-queue-completed').textContent = totalCompleted;
             document.getElementById('total-queue-failed').textContent = totalFailed;
             
-            // Actualizar fecha de actualización
             document.getElementById('queue-last-update').textContent = this.state.lastUpdate.toLocaleString();
             
-            // Actualizar gráfico con los valores reales
             this.updateChart(realQueuedByType);
             
         } catch (error) {
             console.error('Error al actualizar estadísticas de colas:', error);
             
-            // Incrementar contador de errores
             this.state.consecutiveErrors++;
             
             // Solo mostrar alerta si hay más de 3 errores consecutivos
@@ -234,13 +212,11 @@ const queues = {
         
         const labels = Object.keys(this.state.queueData).map(name => name.replace('throttle-', ''));
         
-        // Preparar datos para el gráfico usando los valores reales
         const activeData = labels.map(label => parseInt(this.state.queueData[`throttle-${label}`]?.active) || 0);
         const waitingData = labels.map(label => realQueuedByType[label] || 0);
         const completedData = labels.map(label => parseInt(this.state.queueData[`throttle-${label}`]?.completed) || 0);
         const failedData = labels.map(label => parseInt(this.state.queueData[`throttle-${label}`]?.failed) || 0);
         
-        // Log de datos finales para depuración
         console.log("Datos finales para la gráfica:", {
             labels,
             "En proceso": activeData,
@@ -250,7 +226,6 @@ const queues = {
         });
         
         if (this.state.activityChart) {
-            // Actualizar gráfico existente
             this.state.activityChart.data.labels = labels;
             this.state.activityChart.data.datasets[0].data = activeData;
             this.state.activityChart.data.datasets[1].data = waitingData;
@@ -258,7 +233,6 @@ const queues = {
             this.state.activityChart.data.datasets[3].data = failedData;
             this.state.activityChart.update();
         } else if (ctx) {
-            // Crear nuevo gráfico
             this.state.activityChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -350,12 +324,9 @@ const queues = {
      * @param {string} theme - Tema actual
      */
     handleThemeChange(theme) {
-        // Actualizar el gráfico si existe
         if (this.state.activityChart) {
-            // Obtener colores según el tema
             const isDarkMode = theme === 'dark';
             
-            // Aplicar configuración según el tema
             this.state.activityChart.options.scales.x.grid.color = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
             this.state.activityChart.options.scales.x.grid.borderColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
             this.state.activityChart.options.scales.y.grid.color = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -385,7 +356,6 @@ const queues = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Detener intervalo de actualización
         if (this.state.updateInterval) {
             clearInterval(this.state.updateInterval);
             this.state.updateInterval = null;

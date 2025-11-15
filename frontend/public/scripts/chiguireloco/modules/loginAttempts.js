@@ -31,16 +31,12 @@ const loginAttempts = {
      */
     async init() {
         try {
-            // Inicializar gráficos vacíos
             this.initCharts();
             
-            // Cargar datos
             await this.loadLoginAttempts();
             
-            // Cargar datos de verificación
             await this.loadVerificationHistory();
             
-            // Configurar event listeners
             this.setupEventListeners();
         } catch (error) {
             console.error('Error inicializando módulo de intentos de login:', error);
@@ -96,26 +92,19 @@ const loginAttempts = {
      */
     async loadLoginAttempts() {
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Obtener intentos fallidos
             const failedAttempts = await getFailedLoginAttempts();
             
-            // Actualizar estado
             this.state.failedAttempts = failedAttempts;
             
-            // Obtener estadísticas reales de login
             await this.loadLoginStats();
             
-            // Renderizar tabla de intentos
             this.renderLoginAttemptsTable(failedAttempts);
             
-            // Actualizar gráficos
             await this.updateCharts();
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -131,22 +120,18 @@ const loginAttempts = {
      */
     async loadLoginStats() {
         try {
-            // Obtener eventos de tipo LOGIN para calcular estadísticas reales
             const result = await getSecurityEvents({
                 eventType: 'LOGIN_',
                 startDate: this.getDateRange(24)  // últimas 24 horas
             }, 1, 1000);
             
             if (result && result.events) {
-                // Calcular total de intentos
                 const totalAttempts = result.events.length;
                 
-                // Calcular intentos fallidos
                 const failedLoginEvents = result.events.filter(event => 
                     event.eventType === 'LOGIN_FAILURE'
                 );
                 
-                // Calcular intentos de login por IP
                 const ipCounts = {};
                 result.events.forEach(event => {
                     if (event.ipAddress) {
@@ -154,7 +139,6 @@ const loginAttempts = {
                     }
                 });
                 
-                // Calcular usuarios únicos
                 const uniqueUsers = new Set();
                 result.events.forEach(event => {
                     if (event.userId) {
@@ -162,7 +146,6 @@ const loginAttempts = {
                     }
                 });
                 
-                // Actualizar estadísticas
                 const stats = {
                     totalAttempts: totalAttempts,
                     failedAttempts: this.state.failedAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0),
@@ -170,10 +153,8 @@ const loginAttempts = {
                     uniqueUsers: uniqueUsers.size
                 };
                 
-                // Actualizar estado
                 this.state.stats = stats;
                 
-                // Actualizar UI
                 document.getElementById('total-login-attempts').textContent = stats.totalAttempts.toLocaleString();
                 document.getElementById('failed-login-attempts').textContent = stats.failedAttempts.toLocaleString();
                 document.getElementById('unique-login-ips').textContent = stats.uniqueIPs.toLocaleString();
@@ -181,7 +162,6 @@ const loginAttempts = {
             }
         } catch (error) {
             console.error('Error cargando estadísticas de login:', error);
-            // Usar datos de intentos fallidos para mostrar algo
             this.updateStats(this.state.failedAttempts);
         }
     },
@@ -194,11 +174,9 @@ const loginAttempts = {
         const tableBody = document.getElementById('login-attempts-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         if (!attempts || attempts.length === 0) {
-            // Mostrar mensaje si no hay intentos
             const emptyRow = createTableRow([
                 { colspan: 5, className: 'text-center', text: 'No hay intentos de login fallidos recientes' }
             ]);
@@ -206,7 +184,6 @@ const loginAttempts = {
             return;
         }
         
-        // Añadir filas de intentos
         attempts.forEach(attempt => {
             const row = createTableRow([
                 { text: attempt.ip || attempt.ipAddress, className: 'text-nowrap' },
@@ -225,7 +202,6 @@ const loginAttempts = {
             
             tableBody.appendChild(row);
             
-            // Añadir event listener al botón de bloqueo
             const blockBtn = row.querySelector('.block-ip-btn');
             if (blockBtn) {
                 blockBtn.addEventListener('click', () => {
@@ -240,27 +216,21 @@ const loginAttempts = {
      */
     async loadVerificationHistory() {
         try {
-            // Obtener logs de verificación (intentamos usar getSecurityLogs)
             const logsResponse = await getSecurityLogs('security', 100);
             
-            // Filtrar logs relacionados con verificación de login
             let verificationEvents = [];
             
             if (logsResponse && logsResponse.logs) {
-                // Analizar el contenido del log para encontrar eventos de verificación
                 const logLines = logsResponse.logs.content.split('\n');
                 
-                // Filtrar líneas relacionadas con verificación
                 const verificationLogs = logLines.filter(line => 
                     line.includes('LOGIN_VERIFICATION') || 
                     line.includes('SESSION_VERIFICATION') ||
                     line.includes('VERIFICATION_CODE')
                 );
                 
-                // Parsear los logs a objetos
                 verificationEvents = verificationLogs.map(log => {
                     try {
-                        // Intentar extraer JSON del log
                         const jsonStart = log.indexOf('{');
                         if (jsonStart > -1) {
                             const jsonStr = log.substring(jsonStart);
@@ -280,7 +250,6 @@ const loginAttempts = {
                         console.warn('Error parseando log de verificación:', e);
                     }
                     
-                    // Fallback básico si no se puede parsear
                     return {
                         id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
                         timestamp: new Date(),
@@ -317,15 +286,12 @@ const loginAttempts = {
                 verificationEvents = this.getFallbackVerificationEvents();
             }
             
-            // Actualizar estado
             this.state.verificationHistory = verificationEvents;
             
-            // Renderizar timeline
             this.renderVerificationTimeline(verificationEvents);
         } catch (error) {
             console.error('Error cargando historial de verificación:', error);
             
-            // Usar datos simulados como fallback
             const fallbackEvents = this.getFallbackVerificationEvents();
             this.state.verificationHistory = fallbackEvents;
             this.renderVerificationTimeline(fallbackEvents);
@@ -340,7 +306,6 @@ const loginAttempts = {
         const timelineContainer = document.getElementById('login-verification-timeline');
         if (!timelineContainer) return;
         
-        // Limpiar timeline
         timelineContainer.innerHTML = '';
         
         if (!events || events.length === 0) {
@@ -355,9 +320,7 @@ const loginAttempts = {
             return;
         }
         
-        // Crear elementos de la línea de tiempo
         events.forEach(event => {
-            // Determinar color según estado
             let statusColor = 'primary';
             let statusText = 'Pendiente';
             let statusIcon = 'clock';
@@ -385,7 +348,6 @@ const loginAttempts = {
                     break;
             }
             
-            // Crear elemento
             const timelineItem = document.createElement('div');
             timelineItem.className = 'timeline-item';
             timelineItem.innerHTML = `
@@ -411,7 +373,6 @@ const loginAttempts = {
             
             timelineContainer.appendChild(timelineItem);
             
-            // Añadir event listener al botón de detalles
             timelineItem.querySelector('.details-btn')?.addEventListener('click', () => {
                 this.showVerificationDetails(event);
             });
@@ -461,7 +422,6 @@ const loginAttempts = {
             if (data.result === 'expired') return 'expired';
             if (data.result === 'completed') return 'completed';
             
-            // Intentar extraer del mensaje del evento
             if (event.message) {
                 if (event.message.includes('aprobad')) return 'approved';
                 if (event.message.includes('rechazad')) return 'rejected';
@@ -491,7 +451,6 @@ const loginAttempts = {
             if (parsed.location) return parsed.location;
             if (parsed.formattedLocation) return parsed.formattedLocation;
             
-            // Intentar construir a partir de componentes
             if (parsed.city || parsed.region || parsed.country) {
                 const parts = [];
                 if (parsed.city) parts.push(parsed.city);
@@ -513,7 +472,6 @@ const loginAttempts = {
      * @param {Array} failedAttempts - Intentos de login fallidos
      */
     updateStats(failedAttempts) {
-        // Calcular estadísticas básicas si no tenemos datos completos
         const stats = {
             totalAttempts: this.state.stats.totalAttempts || failedAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0) * 2, // Estimar
             failedAttempts: failedAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0),
@@ -521,10 +479,8 @@ const loginAttempts = {
             uniqueUsers: this.state.stats.uniqueUsers || Math.ceil(failedAttempts.length / 2) // Estimar
         };
         
-        // Actualizar estado
         this.state.stats = stats;
         
-        // Actualizar elementos en la interfaz
         document.getElementById('total-login-attempts').textContent = stats.totalAttempts.toLocaleString();
         document.getElementById('failed-login-attempts').textContent = stats.failedAttempts.toLocaleString();
         document.getElementById('unique-login-ips').textContent = stats.uniqueIPs.toLocaleString();
@@ -536,24 +492,20 @@ const loginAttempts = {
      */
     async updateCharts() {
         try {
-            // Obtener datos de login de las últimas 24 horas
             const result = await getSecurityEvents({
                 eventType: 'LOGIN_',
                 startDate: this.getDateRange(24)  // últimas 24 horas
             }, 1, 1000);
             
-            // Generar etiquetas de horas (últimas 24 horas)
             const labels = [];
             const successData = Array(24).fill(0);
             const failureData = Array(24).fill(0);
             
-            // Preparar etiquetas para las últimas 24 horas
             const now = new Date();
             for (let i = 23; i >= 0; i--) {
                 const date = new Date();
                 date.setHours(date.getHours() - i);
                 
-                // Formatear hora (00:00 - 23:00)
                 const hour = date.getHours().toString().padStart(2, '0');
                 labels.push(`${hour}:00`);
             }
@@ -597,7 +549,6 @@ const loginAttempts = {
                 });
             }
             
-            // Actualizar gráfico
             if (this.state.charts.loginAttemptsChart) {
                 this.state.charts.loginAttemptsChart.data.labels = labels;
                 this.state.charts.loginAttemptsChart.data.datasets[0].data = successData;
@@ -616,7 +567,6 @@ const loginAttempts = {
      * @param {string} ip - IP a bloquear
      */
     handleBlockIP(ip) {
-        // Preparar el modal de bloqueo con la IP y razón sugerida
         modals.prepareBlockIp(
             ip,
             `Múltiples intentos de login fallidos desde esta IP`
@@ -656,7 +606,6 @@ const loginAttempts = {
      */
     async exportLoginAttempts() {
         try {
-            // Intentar usar la API de exportación para eventos de login
             const filters = {
                 eventType: 'LOGIN_',
                 startDate: this.getDateRange(72) // últimas 72 horas
@@ -664,14 +613,12 @@ const loginAttempts = {
             
             const blob = await exportSecurityEvents(filters, 'json');
             
-            // Generar nombre de archivo
             const date = new Date().toISOString().split('T')[0];
             const filename = `intentos_login_${date}.json`;
             
             // Descargar archivo
             downloadBlob(blob, filename);
             
-            // Mostrar notificación
             showNotification('Éxito', 'Exportación completada', 'success');
         } catch (error) {
             console.error('Error exportando datos de login:', error);
@@ -685,19 +632,16 @@ const loginAttempts = {
                     verificationHistory: this.state.verificationHistory
                 };
                 
-                // Crear blob
                 const blob = new Blob([JSON.stringify(data, null, 2)], {
                     type: 'application/json;charset=utf-8;'
                 });
                 
-                // Generar nombre de archivo
                 const date = new Date().toISOString().split('T')[0];
                 const filename = `intentos_login_${date}.json`;
                 
                 // Descargar archivo
                 downloadBlob(blob, filename);
                 
-                // Mostrar notificación
                 showNotification('Éxito', 'Exportación completada (modo local)', 'success');
             } catch (fallbackError) {
                 console.error('Error en exportación de respaldo:', fallbackError);
@@ -746,7 +690,6 @@ const loginAttempts = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners
         document.getElementById('refresh-login-attempts')?.removeEventListener('click', () => this.loadLoginAttempts());
         document.getElementById('export-login-attempts')?.removeEventListener('click', () => this.exportLoginAttempts());
     }

@@ -54,7 +54,6 @@ export function showConfirmationModal(message) {
     modalMessage.textContent = message;
     modal.style.display = 'block';
     
-    // Marcar que hay una modal abierta
     isModalOpen = true;
 
     function cleanup() {
@@ -96,17 +95,14 @@ export function showDynamicConfirmModal(title, message) {
   }
 
   return new Promise((resolve) => {
-    // Limpiar modales existentes para evitar duplicados
     document.querySelectorAll('.custom-modal').forEach(existingModal => {
       if (existingModal && existingModal.parentNode) {
         existingModal.parentNode.removeChild(existingModal);
       }
     });
     
-    // Marcar que hay una modal abierta
     isModalOpen = true;
     
-    // Crear elementos del modal
     const modal = document.createElement('div');
     modal.className = 'custom-modal confirmation-modal';
     
@@ -126,23 +122,19 @@ export function showDynamicConfirmModal(title, message) {
       </div>
     `;
     
-    // Añadir al DOM
     document.body.appendChild(modal);
     
     // Forzar reflow para asegurar que se apliquen los estilos
     void modal.offsetHeight;
     
-    // Mostrar con animación
     setTimeout(() => {
       modal.classList.add('show');
     }, 10);
     
-    // Configurar botones
     const closeBtn = modal.querySelector('.close-modal');
     const cancelBtn = modal.querySelector('.cancel-btn');
     const confirmBtn = modal.querySelector('.confirm-btn');
     
-    // Función para cerrar el modal
     const closeModal = () => {
       modal.classList.remove('show');
       // Indicar que ya no hay modal abierta
@@ -171,7 +163,6 @@ export function showDynamicConfirmModal(title, message) {
       resolve(true);
     });
     
-    // Cerrar con Escape
     const escKeyHandler = function(e) {
       if (e.key === 'Escape') {
         closeModal();
@@ -210,14 +201,11 @@ export function showAcadelManualCopyModal(text, options = {}) {
     
     const mensajeElegido = mensajesAcadel[Math.floor(Math.random() * mensajesAcadel.length)];
     
-    // Marcar que hay una modal abierta
     isModalOpen = true;
     
-    // Crear elementos del modal
     const modal = document.createElement('div');
     modal.className = 'custom-modal acadel-copy-modal';
     
-    // Crear un ID único para el textarea
     const textareaId = 'acadel-copy-textarea-' + Date.now();
     
     modal.innerHTML = `
@@ -269,21 +257,17 @@ export function showAcadelManualCopyModal(text, options = {}) {
       </div>
     `;
     
-    // Añadir al DOM
     document.body.appendChild(modal);
     
-    // Mostrar con animación
     setTimeout(() => {
       modal.classList.add('show');
     }, 10);
     
-    // Obtener elementos
     const closeBtn = modal.querySelector('.close-modal');
     const gotItBtn = modal.querySelector('.acadel-copy-got-it');
     const selectAllBtn = modal.querySelector('.acadel-copy-select-all');
     const textarea = modal.querySelector('.acadel-copy-textarea');
     
-    // Función para cerrar el modal
     const closeModal = () => {
       modal.classList.remove('show');
       // Indicar que ya no hay modal abierta
@@ -331,7 +315,6 @@ export function showAcadelManualCopyModal(text, options = {}) {
       }
     });
     
-    // Cerrar con Escape
     const escKeyHandler = function(e) {
       if (e.key === 'Escape') {
         closeModal();
@@ -342,10 +325,8 @@ export function showAcadelManualCopyModal(text, options = {}) {
     
     document.addEventListener('keydown', escKeyHandler);
     
-    // Detectar si el usuario selecciona texto para dar feedback
     textarea.addEventListener('select', () => {
       if (textarea.selectionStart === 0 && textarea.selectionEnd === textarea.value.length) {
-        // Mostrar notificación de que Acadel está contento
         if (window.acadelInfo) {
           window.acadelInfo("🦫✨ ¡Perfecto!", "Acadel ve que seleccionaste todo el texto. ¡Ahora usa Ctrl+C para copiarlo!");
         }
@@ -403,7 +384,6 @@ export function showEmptyChatModal(message = null) {
     return;
   }
   
-  // Marcar que hay una modal abierta
   isModalOpen = true;
   
   // Si se proporciona un mensaje personalizado, actualizarlo
@@ -435,13 +415,11 @@ export function closeEmptyChatModal() {
  * Útil para limpiar el estado en cambios de contexto como cambio de chat.
  */
 export function closeAllModals() {
-  // Cerrar modales estáticas
   const staticModals = document.querySelectorAll('.modal');
   staticModals.forEach(modal => {
     modal.style.display = 'none';
   });
   
-  // Cerrar modales dinámicas
   const dynamicModals = document.querySelectorAll('.custom-modal');
   dynamicModals.forEach(modal => {
     modal.classList.remove('show');
@@ -452,7 +430,6 @@ export function closeAllModals() {
     }, 300, 'close-all-modals');
   });
   
-  // Resetear el estado
   isModalOpen = false;
 }
 
@@ -483,7 +460,6 @@ export function setupModalListeners() {
     });
   }
   
-  // Añadir listener global para tecla ESC que cierre cualquier modal
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isModalOpen) {
       closeAllModals();
@@ -491,7 +467,6 @@ export function setupModalListeners() {
   });
 }
 
-// Exportar todas las funciones
 export default {
   showConfirmationModal,
   showDynamicConfirmModal,

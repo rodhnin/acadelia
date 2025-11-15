@@ -10,12 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const openCookieSettingsBtn = document.getElementById('open-cookie-settings');
     
     if (openCookieSettingsBtn) {
-        // Agregar evento al botón para abrir el panel de cookies
         openCookieSettingsBtn.addEventListener('click', function() {
             // Primero cargar las preferencias actuales de cookies
             loadCurrentCookiePreferences();
             
-            // Mostrar el banner de cookies
             showCookieBanner();
             
             // Asegurarse de que el panel de configuración esté visible
@@ -26,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Función para mostrar el banner de cookies
     function showCookieBanner() {
         const banner = document.getElementById('cookie-consent-banner');
         if (banner) {
@@ -40,13 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.initCookieConsent();
             } else {
                 console.error('Función initCookieConsent no disponible');
-                // Intentar cargar el script inicializador
                 loadCookieConsentScript();
             }
         }
     }
     
-    // Función para ocultar el banner de cookies
     function hideCookieBanner() {
         const banner = document.getElementById('cookie-consent-banner');
         if (banner) {
@@ -62,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Implementación de respaldo para guardar preferencias de cookies
     async function saveCookiePreferences(preferences) {
         try {
             const csrfToken = window.CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -81,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Error al guardar preferencias');
             }
             
-            // Guardar en localStorage para referencia rápida
             localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
             
             return true;
@@ -91,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Cargar el script de inicialización si no está cargado
     function loadCookieConsentScript() {
         if (!document.querySelector('script[src="/scripts/cookie-consent-initializer.js"]')) {
             const script = document.createElement('script');
@@ -108,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-// Función para deshabilitar botón de aceptar todas las cookies (cuenta)
     const disableAcceptAllButtonAccount = () => {
         const acceptButton = document.getElementById('accept-all-cookies');
         
@@ -118,14 +109,12 @@ document.addEventListener('DOMContentLoaded', function() {
             acceptButton.style.opacity = '0.7';
             acceptButton.style.cursor = 'not-allowed';
             
-            // Cambiar el texto y agregar spinner
             const originalText = acceptButton.textContent;
             acceptButton.setAttribute('data-original-text', originalText);
             acceptButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Procesando...';
         }
     };
 
-    // Función para rehabilitar botón de aceptar todas las cookies (cuenta)
     const enableAcceptAllButtonAccount = () => {
         const acceptButton = document.getElementById('accept-all-cookies');
         
@@ -135,13 +124,11 @@ document.addEventListener('DOMContentLoaded', function() {
             acceptButton.style.opacity = '1';
             acceptButton.style.cursor = 'pointer';
             
-            // Restaurar el texto original
             const originalText = acceptButton.getAttribute('data-original-text') || 'Aceptar todas';
             acceptButton.textContent = originalText;
         }
     };
 
-    // Función para deshabilitar botón de guardar preferencias (cuenta)
     const disableSavePreferencesButtonAccount = () => {
         const saveButton = document.getElementById('save-cookie-preferences');
         
@@ -151,14 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
             saveButton.style.opacity = '0.7';
             saveButton.style.cursor = 'not-allowed';
             
-            // Cambiar el texto y agregar spinner
             const originalText = saveButton.textContent;
             saveButton.setAttribute('data-original-text', originalText);
             saveButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Guardando...';
         }
     };
 
-    // Función para rehabilitar botón de guardar preferencias (cuenta)
     const enableSavePreferencesButtonAccount = () => {
         const saveButton = document.getElementById('save-cookie-preferences');
         
@@ -168,19 +153,16 @@ document.addEventListener('DOMContentLoaded', function() {
             saveButton.style.opacity = '1';
             saveButton.style.cursor = 'pointer';
             
-            // Restaurar el texto original
             const originalText = saveButton.getAttribute('data-original-text') || 'Guardar preferencias';
             saveButton.textContent = originalText;
         }
     };
 
 
-    // Función para cargar las preferencias actuales de cookies
     async function loadCurrentCookiePreferences() {
         try {
             const csrfToken = window.CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             
-            // Usar la nueva ruta que siempre devuelve 200
             const response = await window.csrfUtils.fetch('/api/cookie-consent/status', {
                 method: 'GET',
                 headers: {
@@ -193,11 +175,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Ahora response.ok siempre será true
             const data = await response.json();
             
-            // Aplicar preferencias a los toggles
             if (data && data.preferences) {
                 console.log('Preferencias actuales cargadas:', data.preferences);
                 
-                // Aplicar a los toggles
                 const functionalToggle = document.getElementById('functional-cookies-toggle');
                 const analyticsToggle = document.getElementById('analytics-cookies-toggle');
                 const marketingToggle = document.getElementById('marketing-cookies-toggle');
@@ -211,16 +191,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-   // Verificar si ya existen listeners en los botones
     function ensureCookieListeners() {
-        // Verificar si ya tenemos el listener en el botón guardar
         const saveBtn = document.getElementById('save-cookie-preferences');
         if (saveBtn && !saveBtn._hasCustomListener) {
             saveBtn.addEventListener('click', handleSavePreferences);
             saveBtn._hasCustomListener = true;
         }
         
-  // Verificar listeners para los otros botones
     const acceptAllBtn = document.getElementById('accept-all-cookies');
     if (acceptAllBtn && !acceptAllBtn._hasCustomListener) {
         acceptAllBtn.addEventListener('click', async () => {
@@ -229,15 +206,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Deshabilitar botón inmediatamente
             disableAcceptAllButtonAccount();
             
             try {
-                // Usar la función global de aceptar todas las cookies si existe
                 if (typeof window.acceptAllCookies === 'function') {
                     await window.acceptAllCookies();
                 } else {
-                    // Implementación de respaldo
                     const preferences = {
                         essential: true,
                         functional: true,
@@ -247,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     await saveCookiePreferences(preferences);
                 }
                 
-                // Ocultar el banner INMEDIATAMENTE
                 hideCookieBanner();
                 
                 showNotification('Preferencias guardadas', 'Todas las cookies han sido aceptadas.', 'success');
@@ -268,11 +241,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const rejectBtn = document.getElementById('reject-all-cookies');
         if (rejectBtn && !rejectBtn._hasCustomListener) {
             rejectBtn.addEventListener('click', () => {
-                // Usar la función global de rechazar cookies opcionales si existe
                 if (typeof window.rejectOptionalCookies === 'function') {
                     window.rejectOptionalCookies();
                 } else {
-                    // Implementación de respaldo
                     const preferences = {
                         essential: true,
                         functional: false,
@@ -284,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 showNotification('Preferencias guardadas', 'Solo se utilizarán cookies esenciales.', 'success');
                 
-                // Ocultar el banner después de guardar
                 setTimeout(hideCookieBanner, 1000);
             });
             rejectBtn._hasCustomListener = true;
@@ -298,15 +268,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Deshabilitar botón inmediatamente
         disableSavePreferencesButtonAccount();
         
         try {
-            // Usar la función global de guardar preferencias si existe
             if (typeof window.saveCustomCookiePreferences === 'function') {
                 await window.saveCustomCookiePreferences();
             } else {
-                // Implementación de respaldo si la función global no existe
                 const preferences = {
                     essential: true, // Siempre activas
                     functional: document.getElementById('functional-cookies-toggle')?.checked || false,
@@ -317,10 +284,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 await saveCookiePreferences(preferences);
             }
             
-            // Ocultar el banner INMEDIATAMENTE
             hideCookieBanner();
             
-            // Mostrar notificación después de guardar
             showNotification('Preferencias guardadas', 'Tus preferencias de cookies han sido actualizadas.', 'success');
             
         } catch (error) {
@@ -334,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Función para mostrar notificaciones
     function showNotification(title, message, type = 'info') {
         if (window.showCustomAlert) {
             window.showCustomAlert(title, message, type);
@@ -365,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Obtener icono según tipo de notificación
     function getIconForType(type) {
         switch(type) {
             case 'success': return 'bx-check-circle';
@@ -375,16 +338,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Resolver el problema del doble clic en "personalizar"
     // Buscamos el botón de personalizar cookies y arreglamos su comportamiento
     function fixCustomizeButtonBehavior() {
         const customizeButton = document.getElementById('customize-cookies');
         if (customizeButton) {
-            // Eliminar todos los event listeners anteriores
             const newButton = customizeButton.cloneNode(true);
             customizeButton.parentNode.replaceChild(newButton, customizeButton);
             
-            // Agregar un nuevo event listener limpio
             newButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -397,19 +357,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Verificar si está visible usando classList en lugar de style.display
                 const isVisible = settings.classList.contains('active');
                 console.log('Panel visible:', isVisible);
                 
-                // Cambiar visibilidad basado en la clase, ignorando style.display
                 if (isVisible) {
-                    // Ocultar el panel
                     settings.style.display = 'none';
                     settings.classList.remove('active');
                     settings.setAttribute('data-visible', 'false');
                     console.log('Panel ocultado');
                 } else {
-                    // Mostrar el panel
                     settings.style.display = 'block';
                     settings.classList.add('active');
                     settings.setAttribute('data-visible', 'true');
@@ -424,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Observar cambios en el DOM para asegurar que se añadan listeners
     // cuando el banner de cookies se inserte dinámicamente
     const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
@@ -442,12 +397,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Iniciar observación
     observer.observe(document.body, { childList: true, subtree: true });
     
     // También intentar asegurar listeners al cargar
     ensureCookieListeners();
     
-    // Intentar arreglar el botón de personalizar si ya existe
     setTimeout(fixCustomizeButtonBehavior, 500);
 });

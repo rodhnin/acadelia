@@ -81,7 +81,6 @@ const securityCleanupTask = async () => {
   } catch (error) {
     console.error('❌ Error en limpieza de datos de seguridad:', error);
     
-    // Registrar el error
     await logSecurityEvent(
       'SECURITY_CLEANUP_ERROR',
       'Error en limpieza programada de datos de seguridad',
@@ -106,7 +105,6 @@ export const runUsersTasks = async () => {
     
     console.log(`✅ Tareas de usuarios completadas: ${result.tasksExecuted} ejecutadas, ${result.tasksFailed} fallidas`);
     
-    // Registrar la ejecución en el log de seguridad
     await logSecurityEvent(
       'USER_TASKS_EXECUTED',
       'Ejecución de tareas programadas de usuarios',
@@ -122,7 +120,6 @@ export const runUsersTasks = async () => {
   } catch (error) {
     console.error('❌ Error en tareas programadas de usuarios:', error);
     
-    // Registrar el error
     await logSecurityEvent(
       'USER_TASKS_ERROR',
       'Error en tareas programadas de usuarios',
@@ -161,7 +158,6 @@ export const runSecurityCleanup = securityCleanupTask;
 // Opcional: Tarea de resumen diario
 cron.schedule('0 1 * * *', async () => {
   try {
-    // Generar resumen diario de eventos de seguridad
     const dailySummary = await pool.query(`
       SELECT 
         event_type, 
@@ -191,5 +187,4 @@ cron.schedule('0 1 * * *', async () => {
   timezone: 'Europe/Madrid'
 });
 
-// Exportar el objeto cron para que pueda ser usado/referenciado en otras partes de la aplicación
 export default cron;

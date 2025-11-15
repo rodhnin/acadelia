@@ -39,7 +39,6 @@ let mathEditor = null;
 // Flag para evitar inicializaciones múltiples
 let isInitialized = false;
 
-// Registrar los controladores de eventos para limpieza
 const eventHandlers = [];
 
 /**
@@ -56,25 +55,19 @@ export async function initMathSystem() {
     // Primero asegurar que MathJax esté cargado
     await initMathJax();
     
-    // Cargar MathLive si aún no está disponible
     await ensureMathLiveLoaded();
     
-    // Inicializar el editor MathLive
     mathEditor = initMathEditor();
     
     // Proporcionar una referencia del editor a latex-utils
     setMathEditor(mathEditor);
     
-    // Registrar función insertLatex globalmente
     registerGlobalInsertLatex();
     
-    // Configurar la integración con el sistema de chat
     setupMathIntegration();
     
-    // Marcar como inicializado
     isInitialized = true;
     
-    // Notificar que el sistema matemático está listo
     eventBus.emit('mathSystemInitialized', { mathEditor });
     
     return mathEditor;
@@ -95,7 +88,6 @@ async function ensureMathLiveLoaded() {
     return Promise.resolve();
   }
   
-  // Verificar si el script ya está en proceso de carga
   const existingScript = document.querySelector('script[src*="mathlive"]');
   if (existingScript) {
     return new Promise((resolve) => {
@@ -182,10 +174,8 @@ function configureMathLiveFonts() {
  * Configura la integración con el sistema de chat
  */
 function setupMathIntegration() {
-  // Configurar el botón matemático
   setupMathButton();
   
-  // Configurar eventos entre sistemas
   setupEventListeners();
 }
 
@@ -193,7 +183,6 @@ function setupMathIntegration() {
  * Configura el botón matemático para mostrar el editor - optimizado
  */
 function setupMathButton() {
-  // Buscar todas las posibles referencias al botón matemático
   const mathButton = document.querySelector('#math-button') || 
                     document.querySelector('.input-box button:nth-child(3)');
   
@@ -201,11 +190,9 @@ function setupMathButton() {
     return;
   }
   
-  // Eliminar listeners previos usando clonación para evitar memory leaks
   const newMathButton = mathButton.cloneNode(true);
   mathButton.parentNode.replaceChild(newMathButton, mathButton);
   
-  // Manejar el evento de clic
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -215,7 +202,6 @@ function setupMathButton() {
     }
   };
   
-  // Añadir el nuevo listener con gestión centralizada
   addEvent(newMathButton, 'click', handleClick);
   eventHandlers.push({ element: newMathButton, type: 'click', handler: handleClick });
 }
@@ -252,7 +238,6 @@ function setupTextSelectionForEditor() {
   
   if (!textarea) return;
   
-  // Manejar selección de texto
   const handleMouseUp = () => {
     const selectedText = textarea.value.substring(
       textarea.selectionStart, 
@@ -268,21 +253,17 @@ function setupTextSelectionForEditor() {
   addEvent(textarea, 'mouseup', handleMouseUp);
   eventHandlers.push({ element: textarea, type: 'mouseup', handler: handleMouseUp });
   
-  // Manejar apertura del editor
   const mathEditorShownHandler = () => {
     const selectedText = localStorage.getItem('math_selected_text');
     if (selectedText && mathEditor) {
-      // Verificar si es una expresión LaTeX
       if (selectedText.includes('\\') || 
           selectedText.startsWith('$') || 
           selectedText.includes('^') || 
           selectedText.includes('_')) {
         
-        // Limpiar delimitadores usando expresiones regulares precompiladas
         let cleanLatex = selectedText.replace(REGEX.DELIMITERS, '');
         cleanLatex = cleanLatex.replace(REGEX.PARENTHESES, '');
         
-        // Establecer en el editor
         mathEditor.setLatex(cleanLatex);
       }
       
@@ -298,21 +279,17 @@ function setupTextSelectionForEditor() {
  * Limpia todos los recursos creados por el módulo
  */
 export function cleanupMathSystem() {
-  // Limpiar event handlers
   eventHandlers.forEach(({ element, type, handler }) => {
     removeEvent(element, type, handler);
   });
   
-  // Limpiar timeouts
   Object.values(CONFIG.TIMEOUT_KEYS).forEach(key => {
     clearManagedTimeouts(key);
   });
   
-  // Resetear estado
   isInitialized = false;
 }
 
-// Limpiar al descargar la página
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', cleanupMathSystem);
 }

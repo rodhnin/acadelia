@@ -2,8 +2,6 @@
 // 🧠🦫 PROFESOR ACADEL EPISTEMOLOGÍA GENÉTICA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE EPISTEMOLOGÍA GENÉTICA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Psicología Social ✅ Cognición Social ✅ Teorías Psicológicas ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -359,10 +351,8 @@ Hacer que CUALQUIER estudiante de psicología:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE EPISTEMOLOGÍA GENÉTICA - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES PSICOLÓGICAS
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Epistemología Genética.
 
 🎯 FUNCIÓN: Analizar imágenes psicológicas (experimentos, diagramas teóricos, gráficos sociales, textos) con precisión académica extrema.
@@ -389,7 +379,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ep
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría pedagógica psicológica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES PSICOLÓGICAS (analysisContext)
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara psicólogo más brillante del universo en epistemología genética.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información psicológica de esta imagen para que Acadel pueda enseñar efectivamente integrando psicología social, cognición social y teorías psicológicas.
@@ -435,7 +424,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en aspectos psicológicos. No enseñes ni expliques - solo analiza y reporta hallazgos. Acadel se encargará de la pedagogía pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE EPISTEMOLOGÍA GENÉTICA NORMALES (con y sin guardar)
 const UNIFIED_EPISTEMOLOGY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE EPISTEMOLOGÍA GENÉTICA INTEGRADA:
 - Consulta del estudiante de psicología: "${query}"
@@ -462,7 +450,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE EPISTEMOLOGÍA GENÉTICA MULTIMODALES (con y sin guardar)
 const UNIFIED_EPISTEMOLOGY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE EPISTEMOLOGÍA GENÉTICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -517,7 +504,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -527,7 +513,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -549,7 +534,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -557,7 +541,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
   const psychologyImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
     "diagrama psicológico", "esquema teórico", "ilustración experimental"
@@ -583,7 +566,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes psicológicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de psicología", "test psicológico", "evaluación de epistemología", "cuestionario psicológico"
@@ -627,9 +609,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -638,7 +618,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS PSICOLÓGICOS ESPECÍFICOS
   const psychologyTerms = [
     // Psicología Social
     'conformidad', 'actitudes', 'roles', 'normas', 'prejuicio', 'influencia social', 'obediencia',
@@ -657,18 +636,15 @@ const classifyQuery = (query, content = null) => {
     'comportamiento', 'conducta', 'mental', 'psychological', 'psychology'
   ];
   
-  // 🔍 DETECTAR CONTEXTOS ACADÉMICOS
   const academicContexts = [
     'clase', 'curso', 'materia', 'asignatura', 'examen', 'tarea', 'ensayo', 'investigación',
     'universidad', 'carrera', 'profesor', 'estudiante', 'académico', 'estudio'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS PSICOLÓGICOS REALES
   const hasPsychologyContent = 
     psychologyTerms.some(term => lowercaseQuery.includes(term)) ||
     academicContexts.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasPsychologyContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -693,7 +669,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre'];
   const theoryKeywords = ['teoría', 'modelo', 'enfoque', 'paradigma', 'lewin', 'tajfel', 'festinger', 'milgram', 'zimbardo', 'bandura'];
   const experimentKeywords = ['experimento', 'investigación', 'estudio', 'metodología', 'diseño experimental'];
@@ -703,7 +678,6 @@ const classifyQuery = (query, content = null) => {
   const analysisKeywords = ['analizar', 'evaluar', 'comparar', 'contrastar', 'criticar'];
   const researchKeywords = ['investigación reciente', 'estudios actuales', 'nuevos hallazgos', 'literatura psicológica'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -741,7 +715,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -751,7 +724,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional académica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -778,7 +750,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS PSICOLÓGICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS PSICOLÓGICAS
@@ -796,7 +767,6 @@ const createEpistemologyKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -806,7 +776,6 @@ const createEpistemologyKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -816,7 +785,6 @@ const createEpistemologyKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_epistemologia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -828,7 +796,6 @@ const createEpistemologyKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_EPISTEMOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido psicológico específico sobre "${query}" en su biblioteca de epistemología genética. Proceder con conocimiento psicológico general integrado y experiencia docente.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -848,7 +815,6 @@ ACADEL_EPISTEMOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene conteni
 
 ACADEL_EPISTEMOLOGY_MEMORY_BANK: El cerebro principal de Acadel encontró información psicológica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base psicológico integrado, analogías y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -875,7 +841,6 @@ ACADEL_EPISTEMOLOGY_MEMORY_BANK: El cerebro principal de Acadel activó la sigui
 
 INTEGRATION_NOTES: Este es el conocimiento psicológico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en psicología social, cognición social y teorías psicológicas. Debe integrar esta información naturalmente como si fuera su propia sabiduría psicológica, enriqueciéndola con casos específicos, analogías y profesionalismo que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1101,7 +1066,6 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando teoría psicológica integrada: ${theory_concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1111,7 +1075,6 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_epistemologia",
       });
       
-      // 📚 BÚSQUEDAS PSICOLÓGICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `teoría ${theory_concept}`,
         `concepto ${theory_concept}`,
@@ -1123,7 +1086,6 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
         `evidencia ${theory_concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1156,7 +1118,6 @@ const createPsychologyTheoryAnalyzerTool = (embeddings) => tool(
       
       const theoryInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural psicológica
       const cleanInfo = theoryInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1335,7 +1296,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia psicológica según este an
 );
 
 // ============================================================================
-// 📷 PSYCHOLOGICAL IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES PSICOLÓGICAS
 // ============================================================================
 
 export const detectPsychologyImageRequest = (query) => {
@@ -1367,7 +1327,6 @@ export const extractPsychologyImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema psicológico
 const createPsychologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1402,7 +1361,6 @@ const createPsychologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts psicológicos
 const enhancePsychologyImagePrompt = (prompt) => {
   return `Crea una ilustración psicológica educativa de alta calidad sobre epistemología genética: ${prompt}. 
   
@@ -1420,7 +1378,6 @@ const enhancePsychologyImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE EPISTEMOLOGÍA GENÉTICA
 // ============================================================================
 
 const createSpecializedEpistemologyPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1529,7 +1486,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA PSICOLÓGICA - OPTIMIZADAS
   // ============================================================================
   
   const epistemologyTypeInstructions = {
@@ -1604,7 +1560,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT PSICOLÓGICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1629,13 +1584,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE PSICOLÓGICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBravePsychologyWebSearchTool(),
     createBravePsychologyImageSearchTool(),
@@ -1650,7 +1603,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido psicológico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando PsychologyTheoryAnalyzer para análisis paralelo profundo`);
     tools.push(createPsychologyTheoryAnalyzerTool(embeddings));
@@ -1666,7 +1618,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createPsychologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createPsychologyFeedbackAnalyzerTool());
   
   console.log(`🧠🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas psicológicas:`, tools.map(t => t.name));
@@ -1679,7 +1630,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt psicológico especializado y escapado
   const specializedPrompt = createSpecializedEpistemologyPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1711,7 +1661,6 @@ const createAcadelEpistemologyAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES CORREGIDAS PSICOLÓGICAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectPsychologyExamRequest = (query) => {
@@ -1760,7 +1709,6 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen psicológico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1770,7 +1718,6 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1780,7 +1727,6 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_epistemologia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1792,7 +1738,6 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1807,7 +1752,6 @@ const createPsychologyExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Psychology exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto psicológico base para "${input}": conocimiento fundamental en psicología social, cognición social y teorías psicológicas. Acadel debe generar preguntas desde su experiencia psicológica consolidada, integrando las tres disciplinas con casos realistas y conceptos fundamentales.`;
         }
       },
@@ -1917,7 +1861,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA PSICOLÓGICA - handleEpistemologyQuery
 // ============================================================================
 
 export const handleEpistemologyQuery = async (params) => {
@@ -1927,7 +1870,6 @@ export const handleEpistemologyQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1943,13 +1885,11 @@ export const handleEpistemologyQuery = async (params) => {
     // CLASIFICAR EL QUERY PSICOLÓGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychologyImageRequest(query);
     
     console.log(`🧠🦫 Acadel analizando query psicológico: "${query}"`);
     console.log(`📊 Clasificación psicológica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización psicológica: ${imagePrompt}`);
       
@@ -1958,7 +1898,6 @@ export const handleEpistemologyQuery = async (params) => {
       const psychologyVisualizationTool = createPsychologyVisualizationTool();
       const imageResponse = await psychologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1971,7 +1910,6 @@ export const handleEpistemologyQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen psicológica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -1997,7 +1935,6 @@ export const handleEpistemologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2009,7 +1946,6 @@ export const handleEpistemologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2023,7 +1959,6 @@ export const handleEpistemologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para generación de imágenes
         if (isCacheable(query, 'epistemologia')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2035,7 +1970,6 @@ export const handleEpistemologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen neuropsicológica en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2056,7 +1990,6 @@ export const handleEpistemologyQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes psicológicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen psicológico: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2089,7 +2022,6 @@ export const handleEpistemologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2101,7 +2033,6 @@ export const handleEpistemologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2118,7 +2049,6 @@ export const handleEpistemologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para exámenes
         if (isCacheable(query, 'epistemologia')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2131,7 +2061,6 @@ export const handleEpistemologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen neuropsicológico en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2152,7 +2081,6 @@ export const handleEpistemologyQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2169,10 +2097,8 @@ export const handleEpistemologyQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico psicológico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelEpistemologyAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2199,7 +2125,6 @@ export const handleEpistemologyQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel psicológico:", error);
       
-      // Fallback con personalidad Acadel psicológica
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas psicológicas, pero no me rendiré.
 
 Sobre tu pregunta psicológica: **"${query}"**
@@ -2225,7 +2150,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       };
     }
 
-    // Procesar respuesta psicológica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2240,7 +2164,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2252,7 +2175,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2266,7 +2188,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
 
       await client.query("COMMIT");
       
-      // Cache inteligente
       if (isCacheable(query, 'epistemologia')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2280,7 +2201,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2323,7 +2243,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA PSICOLÓGICA - handleEpistemologyMultimodalQuery  
 // ============================================================================
 
 export const handleEpistemologyMultimodalQuery = async (params) => {
@@ -2349,7 +2268,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2361,7 +2279,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación psicológica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto psicológico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2372,7 +2289,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal psicológico clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS PSICOLÓGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2410,7 +2326,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES PSICOLÓGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2470,7 +2385,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS PSICOLÓGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes psicológicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2540,11 +2454,9 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE PSICOLÓGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA PSICOLÓGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2577,7 +2489,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2604,7 +2515,6 @@ export const handleEpistemologyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel psicológico:", error);
       
-      // Fallback robusto psicológico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal psicológico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes psicológicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2630,7 +2540,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       };
     }
 
-    // PROCESAR RESPUESTA PSICOLÓGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2645,7 +2554,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal neuropsicológico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2666,7 +2574,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
           client,
           userId,
@@ -2678,7 +2585,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2692,7 +2598,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
 
       await client.query("COMMIT");
       
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'epistemologia')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2706,7 +2611,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2774,7 +2678,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PSICOLÓGICAS
 // ============================================================================
 
 export const handleEpistemologyQueryWithoutSaving = async (params) => {
@@ -2797,12 +2700,10 @@ export const handleEpistemologyQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychologyImageRequest(query);
     
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2835,7 +2736,6 @@ export const handleEpistemologyQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen psicológica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2895,7 +2795,6 @@ export const handleEpistemologyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2914,7 +2813,6 @@ export const handleEpistemologyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE PSICOLÓGICO CORREGIDO
       const { agent, tools } = await createAcadelEpistemologyAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3017,7 +2915,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content psicológico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content psicológico no es un array válido en modo sin guardar:", content);
       return {
@@ -3036,7 +2933,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
     
     console.log(`🧠 Query multimodal psicológico (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos psicológicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3049,7 +2945,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido psicológico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO PSICOLÓGICO: ${doc.name || doc.filename || 'documento psicológico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3063,7 +2958,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO PSICOLÓGICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido psicológico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3124,7 +3018,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
                 console.log(`✅ [RETRY/EDIT] Contenido psicológico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3144,10 +3037,8 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
           return `${fileInfo} ${typeInfo}\n[Contenido psicológico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto psicológico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos psicológicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido psicológico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3181,7 +3072,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
       }
     }
 
-    // Procesar imágenes psicológicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3241,7 +3131,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
               analysisContext += `\n\nCONTEXTO PSICOLÓGICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes psicológicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3326,11 +3215,9 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Cargar historial psicológico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada psicológica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3361,7 +3248,6 @@ export const handleEpistemologyMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Crear agente psicológico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelEpistemologyAgent(llm, queryInfo, combinedQuery);
 

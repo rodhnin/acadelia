@@ -17,7 +17,6 @@ class EmbeddingAvaProcessingQueue {
    */
   async enqueue(task, metadata = {}) {
     return new Promise((resolve, reject) => {
-      // Crear objeto de tarea
       const taskObject = {
         task,
         metadata,
@@ -26,11 +25,9 @@ class EmbeddingAvaProcessingQueue {
         added: Date.now()
       };
       
-      // Añadir a la cola
       this.queue.push(taskObject);
       console.log(`Tarea añadida a la cola. Cola actual: ${this.queue.length} tareas`);
       
-      // Iniciar procesamiento si no hay nada en ejecución
       if (!this.processing) {
         this.processQueue();
       }
@@ -46,28 +43,23 @@ class EmbeddingAvaProcessingQueue {
       return;
     }
     
-    // Marcar como procesando
     this.processing = true;
     
     try {
-      // Obtener la siguiente tarea
       this.currentTask = this.queue.shift();
       const { task, metadata, resolve, reject } = this.currentTask;
       
       console.log(`Procesando tarea (${metadata.avaId || 'sin AVA'}, ${metadata.filename || 'sin archivo'})`);
       
       try {
-        // Ejecutar la tarea
         const result = await task();
         
-        // Resolver la promesa con el resultado
         resolve(result);
       } catch (error) {
         console.error('Error procesando tarea:', error);
         reject(error);
       }
     } finally {
-      // Marcar como no procesando
       this.processing = false;
       this.currentTask = null;
       
@@ -100,7 +92,6 @@ class EmbeddingAvaProcessingQueue {
   }
 }
 
-// Crear instancia única
 const embeddingAvaProcessingQueue = new EmbeddingAvaProcessingQueue();
 
 export default embeddingAvaProcessingQueue;

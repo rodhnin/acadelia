@@ -1,4 +1,3 @@
-// backend/services/maintenance.js
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,7 +8,6 @@ const flagFilePath = path.join(__dirname, '..', '..', 'maintenance.flag');
 
 export const isMaintenanceMode = () => {
   try {
-    // Verificar si el archivo existe
     if (fs.existsSync(flagFilePath)) {
       const content = fs.readFileSync(flagFilePath, 'utf8').trim();
       return content === 'true';

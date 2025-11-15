@@ -1,4 +1,3 @@
-// backend/routes/admin/queueMonitor.js
 import express from 'express';
 import { getStats, clearStats } from '../../lib/throttleService.js';
 import { getQueue } from '../../lib/queueService.js';
@@ -13,15 +12,12 @@ const router = express.Router();
 // Ruta para obtener estadísticas de todas las colas
 router.get('/stats', authenticateUser, isAdmin, async (req, res) => {
   try {
-    // Obtener estadísticas de uso actual directamente del servicio
     const stats = getStats();
     
-    // Obtener algunas estadísticas adicionales de las colas BullMQ
     for (const queueType of Object.keys(stats)) {
       try {
         const queue = getQueue(queueType);
         
-        // Obtener conteos reales de la cola para complementar
         const [waiting, active] = await Promise.all([
           queue.getWaitingCount(),
           queue.getActiveCount()
@@ -31,10 +27,8 @@ router.get('/stats', authenticateUser, isAdmin, async (req, res) => {
         // Pero dar prioridad a los contadores en memoria
         stats[queueType].waiting = waiting || stats[queueType].waiting || 0;
         
-        // Intentar obtener trabajos activos verdaderos (no de estadísticas)
         const activeJobs = await queue.getActive();
         
-        // Filtrar trabajos que son solo para monitoreo
         const realActiveJobs = activeJobs.filter(job => {
           const data = job.data || {};
           return !data.isMonitoringStat && 
@@ -82,19 +76,15 @@ router.post('/clean/:queueType', authenticateUser, isAdmin, async (req, res) => 
       });
     }
     
-    // Limpiar estadísticas del servicio en memoria
     clearStats(queueType);
     
-    // Limpiar trabajos fallidos en la cola BullMQ
     const queue = getQueue(queueType);
     
-    // Obtener todos los trabajos fallidos y completados
     const [failedJobs, completedJobs] = await Promise.all([
       queue.getFailed(),
       queue.getCompleted()
     ]);
     
-    // Eliminar trabajos fallidos
     for (const job of failedJobs) {
       // Solo eliminar si no es un trabajo de estadísticas
       const data = job.data || {};
@@ -103,7 +93,6 @@ router.post('/clean/:queueType', authenticateUser, isAdmin, async (req, res) => 
       }
     }
     
-    // Eliminar trabajos completados (limpieza)
     const completedToRemove = completedJobs.slice(0, -10); // Dejar los últimos 10
     for (const job of completedToRemove) {
       // Solo eliminar si no es un trabajo de estadísticas
@@ -139,11 +128,9 @@ router.get('/active/:queueType', authenticateUser, isAdmin, async (req, res) => 
       });
     }
     
-    // Obtener trabajos activos de la cola
     const queue = getQueue(queueType);
     const activeJobs = await queue.getActive();
     
-    // Filtrar trabajos que son solo para estadísticas
     const realActiveJobs = activeJobs.filter(job => {
       const data = job.data || {};
       return !data.isMonitoringStat && 

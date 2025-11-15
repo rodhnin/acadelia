@@ -1,22 +1,18 @@
 const errorHandler = (err, req, res, next) => {
-  // Registrar el error en consola solo en desarrollo
   if (process.env.NODE_ENV !== 'production') {
     console.error('[Error Handler]', err.stack);
   }
 
-  // Determinar si es un error conocido (con statusCode) o desconocido
   const statusCode = err.statusCode || 500;
   const message = statusCode === 500 
     ? 'Error interno del servidor' 
     : err.message;
 
-  // Crear objeto de respuesta base
   const response = {
     status: 'error',
     message: message
   };
 
-  // Agregar detalles adicionales en entorno de desarrollo
   if (process.env.NODE_ENV === 'development') {
     response.error = err.message;
     response.stack = err.stack;
@@ -26,7 +22,6 @@ const errorHandler = (err, req, res, next) => {
     }
   }
 
-  // Manejar tipos específicos de errores
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       ...response,
@@ -49,7 +44,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Respuesta genérica
   res.status(statusCode).json(response);
 };
 

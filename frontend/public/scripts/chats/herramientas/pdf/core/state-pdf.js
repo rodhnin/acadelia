@@ -39,7 +39,6 @@ export function getState(property) {
     if (mainProp === 'chats' && state.chats instanceof Map) {
       return state.chats.get(subProp);
     }
-    // Para otras propiedades anidadas en el futuro
     return state[mainProp]?.[subProp];
   }
   

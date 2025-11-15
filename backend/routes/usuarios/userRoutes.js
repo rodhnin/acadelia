@@ -1,4 +1,3 @@
-// backend/routes/usuarios/userRoutes.js
 import express from "express";
 import { 
     createUser, 
@@ -110,10 +109,8 @@ router.post("/resend-verification", resendVerificationEmail);
 // NUEVAS RUTAS PARA ELIMINACIÓN DE CUENTA
 // Ruta para obtener la página de eliminación de cuenta
 router.get('/eliminar-cuenta', authenticateUser, (req, res) => {
-  // Generar nonce para CSP
   const nonce = crypto.randomBytes(16).toString('hex');
   
-  // Generar token CSRF
   const csrfToken = crypto.randomBytes(64).toString('hex');
   res.cookie('csrf-token', csrfToken, { 
     httpOnly: true, 
@@ -121,7 +118,6 @@ router.get('/eliminar-cuenta', authenticateUser, (req, res) => {
     sameSite: 'Strict'
   });
 
-  // Renderizar la página de eliminación de cuenta
   res.sendFile(path.join(__dirname, '../../../frontend/views/cuenta', 'delete-account.html'));
 });
 
@@ -134,7 +130,6 @@ router.post('/cuenta/confirmar-eliminacion', authenticateUser, deleteUserControl
 // Ruta para la limpieza manual de usuarios no verificados
 router.get("/admin/cleanup-unverified", authenticateUser, hasRole(3), async (req, res) => {
     try {
-        // Importar el servicio para poder llamarlo directamente
         const { cleanupService } = await import('../../services/usuarios/cleanupService.js');
         const deletedUsers = await cleanupService.runManualCleanup();
         

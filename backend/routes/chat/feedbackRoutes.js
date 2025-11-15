@@ -18,7 +18,6 @@ router.post('/anonymous', processFeedback);
 // Ruta para procesar feedbacks pendientes (solo admin)
 router.post('/process-pending', authenticateUser, isAdmin, processPendingFeedbacks);
 
-// ✅ NUEVA RUTA: Obtener contenido original de mensaje para copia
 router.get('/message/:chatId/:messageId/original-content', authenticateUser, getMessageOriginalContent);
 
 export default router;

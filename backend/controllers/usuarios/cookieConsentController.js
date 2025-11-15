@@ -1,4 +1,3 @@
-// backend/controllers/usuarios/cookieConsentController.js
 import { cookieConsentService } from "../../services/usuarios/cookieConsentService.js";
 import { cookieAuditService } from "../../services/security/cookieAuditService.js";
 import { getLocationFromIP } from "../../utils/geoLocation.js";
@@ -6,7 +5,6 @@ import { getLocationFromIP } from "../../utils/geoLocation.js";
 // Almacén para controlar solicitudes duplicadas
 const pendingRequests = new Map();
 
-// Obtener preferencias de consentimiento para el usuario/visitante actual
 export const getConsent = async (req, res) => {
   try {
     // MEJORADO: Verificar múltiples fuentes para el token
@@ -27,7 +25,6 @@ export const getConsent = async (req, res) => {
       ipAddress
     });
 
-    // Verificar si el consentimiento encontrado pertenece a otro usuario
     if (consent.exists && consent.userId && userId && consent.userId !== userId) {
       console.log(`Consentimiento encontrado pertenece a otro usuario (${consent.userId} vs ${userId})`);
       consent.shouldShowBanner = true;
@@ -53,7 +50,6 @@ export const getConsent = async (req, res) => {
   }
 };
 
-// Verificar estado de consentimiento (siempre devuelve 200 OK)
 export const checkCookieConsentStatus = async (req, res) => {
   try {
     // MEJORADO: Verificar múltiples fuentes para el token
@@ -171,7 +167,6 @@ export const checkCookieConsentStatus = async (req, res) => {
   }
 };
 
-// Guardar preferencias de consentimiento
 export const saveConsent = async (req, res) => {
   try {
     const { essential, functional, analytics, marketing } = req.body;
@@ -290,10 +285,8 @@ export const saveConsent = async (req, res) => {
   }
 };
 
-// Obtener historial de auditoría de consentimiento de cookies para el usuario actual
 export const getConsentHistory = async (req, res) => {
   try {
-    // Obtener userId directamente del objeto de usuario autenticado
     const userId = req.user?.id_user || null;
 
     // Si no hay usuario autenticado, devolver error
@@ -301,10 +294,8 @@ export const getConsentHistory = async (req, res) => {
       return res.status(401).json({ error: "Usuario no autenticado" });
     }
 
-    // Obtener el límite de registros a recuperar (predeterminado: 10)
     const limit = parseInt(req.query.limit) || 10;
 
-    // Obtener historial de auditoría
     const history = await cookieAuditService.getAuditHistory(userId, limit);
 
     res.status(200).json({ history });
@@ -317,19 +308,15 @@ export const getConsentHistory = async (req, res) => {
 // Revocar el consentimiento actual (rechazar todas las cookies opcionales)
 export const revokeConsent = async (req, res) => {
   try {
-    // Obtener token de consentimiento de la cookie
     const consentToken = req.cookies.consent_token || null;
 
-    // Obtener userId directamente del objeto de usuario autenticado
     const userId = req.user?.id_user || null;
 
     const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
     const userAgent = req.headers['user-agent'] || '';
 
-    // Obtener información de geolocalización
     const geoData = getLocationFromIP(ipAddress);
 
-    // Establecer todas las categorías opcionales en false
     const result = await cookieConsentService.saveConsent({
       consentToken,
       userId,
@@ -343,7 +330,6 @@ export const revokeConsent = async (req, res) => {
       }
     });
 
-    // Registrar la acción de revocación en la auditoría
     await cookieAuditService.logAudit({
       action: 'consent_revoked',
       userId,
@@ -374,10 +360,8 @@ export const revokeConsent = async (req, res) => {
 // Vincular consentimiento anónimo a usuario autenticado
 export const linkAnonymousConsent = async (req, res) => {
   try {
-    // Obtener token de consentimiento de la cookie o del cuerpo de la solicitud
     const consentToken = req.cookies.consent_token || req.body.consentToken || null;
 
-    // Obtener userId directamente del objeto de usuario autenticado
     const userId = req.user?.id_user || null;
 
     // Si no hay usuario autenticado, devolver error
@@ -392,7 +376,6 @@ export const linkAnonymousConsent = async (req, res) => {
 
     console.log(`Intentando vincular token ${consentToken} al usuario ${userId}`);
 
-    // Intentar vincular el consentimiento
     const linked = await cookieConsentService.linkConsentToUser(consentToken, userId);
 
     if (!linked) {
@@ -402,7 +385,6 @@ export const linkAnonymousConsent = async (req, res) => {
       });
     }
 
-    // Obtener las preferencias actualizadas
     const consent = await cookieConsentService.getConsent({ userId });
 
     res.status(200).json({

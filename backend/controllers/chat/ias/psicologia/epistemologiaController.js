@@ -1,4 +1,3 @@
-// backend/controllers/chat/psicologia/epistemologiaController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleEpistemologyQuery, handleEpistemologyMultimodalQuery, handleEpistemologyQueryWithoutSaving, handleEpistemologyMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/psicologia/epistemologiaService.js";
@@ -17,7 +16,6 @@ export const queryEpistemologia = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryEpistemologiaMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryEpistemologiaMultimodalWithoutSaving = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

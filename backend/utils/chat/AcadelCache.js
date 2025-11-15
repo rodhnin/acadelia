@@ -1,17 +1,11 @@
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO - OPTIMIZACIÓN MÁXIMA
 // ============================================================================
-// Sistema de cache multi-nivel para reducir tiempos de respuesta de todos los chats
-// Cache L1: Respuestas completas (TTL: 20 min)
-// Cache L2: Componentes reutilizables (TTL: 30 min) 
-// Cache L3: Búsquedas y análisis (TTL: 15 min)
 // ============================================================================
 
 import crypto from 'crypto';
 import { LRUCache } from 'lru-cache';
 
 // ============================================================================
-// 🎯 CONFIGURACIÓN DE CACHE MULTINIVEL
 // ============================================================================
 
 const CACHE_CONFIG = {
@@ -43,16 +37,12 @@ const CACHE_CONFIG = {
 
 class IntelligentCacheSystem {
   constructor() {
-    // Cache L1: Respuestas completas 
     this.L1_responses = new LRUCache(CACHE_CONFIG.L1_RESPONSES);
     
-    // Cache L2: Componentes reutilizables
     this.L2_components = new LRUCache(CACHE_CONFIG.L2_COMPONENTS);
     
-    // Cache L3: Búsquedas y análisis 
     this.L3_searches = new LRUCache(CACHE_CONFIG.L3_SEARCHES);
     
-    // Cache L4: Memoria de chats
     this.L4_memory = new LRUCache(CACHE_CONFIG.L4_MEMORY);
     
     // Estadísticas para monitoreo
@@ -67,7 +57,6 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🔑 GENERACIÓN DE KEYS INTELIGENTES
   // =========================================================================
   
   generateKey(type, data) {
@@ -90,7 +79,6 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🎯 CACHE L1 - RESPUESTAS COMPLETAS
   // =========================================================================
   
   getResponse(userId, query, chatType = 'general') {
@@ -169,7 +157,6 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🔍 CACHE L3 - BÚSQUEDAS Y ANÁLISIS
   // =========================================================================
   
   getSearch(searchType, query, options = {}) {
@@ -248,10 +235,8 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🎯 CACHE ESPECIALIZADO PARA ACADÉMICOS
   // =========================================================================
   
-  // Cache para análisis de imágenes médicas
   getImageAnalysis(imageHash, context = '') {
     return this.getComponent('image_analysis', { imageHash, context });
   }
@@ -260,7 +245,6 @@ class IntelligentCacheSystem {
     return this.setComponent('image_analysis', { imageHash, context }, analysis, metadata);
   }
   
-  // Cache para análisis de documentos
   getDocumentAnalysis(documentHash, type = 'general') {
     return this.getComponent('document_analysis', { documentHash, type });
   }
@@ -269,7 +253,6 @@ class IntelligentCacheSystem {
     return this.setComponent('document_analysis', { documentHash, type }, analysis, metadata);
   }
   
-  // Cache para búsquedas académicas 
   getBraveSearch(query, type = 'web', options = {}) {
     return this.getSearch('brave_search', query, { type, ...options });
   }
@@ -278,7 +261,6 @@ class IntelligentCacheSystem {
     return this.setSearch('brave_search', query, result, { type, ...options }, metadata);
   }
   
-  // Cache para base de conocimientos médicos
   getKnowledgeBase(query, threshold = 0.7) {
     return this.getComponent('knowledge_base', { query, threshold });
   }
@@ -288,10 +270,8 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🧹 GESTIÓN Y MANTENIMIENTO DE CACHE
   // =========================================================================
   
-  // Limpiar cache específico
   clearCache(level = 'all') {
     const levels = level === 'all' ? ['L1', 'L2', 'L3', 'L4'] : [level];
     
@@ -334,7 +314,6 @@ class IntelligentCacheSystem {
   getStats() {
     const stats = { ...this.stats };
     
-    // Calcular hit rates
     Object.keys(stats).forEach(level => {
       const { hits, misses } = stats[level];
       const total = hits + misses;
@@ -362,7 +341,6 @@ class IntelligentCacheSystem {
     return stats;
   }
   
-  // Log de estadísticas
   logStats() {
     const stats = this.getStats();
     
@@ -379,12 +357,9 @@ class IntelligentCacheSystem {
   }
   
   // =========================================================================
-  // 🔄 HELPER METHODS PARA FLUJOS OPTIMIZADOS
   // =========================================================================
   
-  // Cache inteligente con fallback  
   async getOrSet(cacheMethod, setMethod, keyOrParams, asyncOperation, metadata = {}) {
-    // Intentar obtener del cache
     const cached = typeof cacheMethod === 'function' 
       ? cacheMethod.call(this, ...keyOrParams)
       : this[cacheMethod](...keyOrParams);
@@ -393,7 +368,6 @@ class IntelligentCacheSystem {
       return cached;
     }
     
-    // Ejecutar operación y cachear resultado
     try {
       const result = await asyncOperation();
       
@@ -426,13 +400,11 @@ class IntelligentCacheSystem {
 }
 
 // ============================================================================
-// 🌟 INSTANCIA GLOBAL DEL SISTEMA DE CACHE
 // ============================================================================
 
 export const intelligentCache = new IntelligentCacheSystem();
 
 // ============================================================================
-// 🎯 UTILIDADES ESPECÍFICAS PARA OPTIMIZACIÓN
 // ============================================================================
 
 // Helper para generar hash de contenido
@@ -479,7 +451,6 @@ export const categorizeQuery = (query) => {
   return 'general';
 };
 
-// Función para monitoreo automático de cache
 export const startCacheMonitoring = (intervalMinutes = 30) => {
   setInterval(() => {
     intelligentCache.logStats();
@@ -489,13 +460,11 @@ export const startCacheMonitoring = (intervalMinutes = 30) => {
 };
 
 // ============================================================================
-// 🚀 EXPORT DEFAULT PARA USO DIRECTO
 // ============================================================================
 
 export default intelligentCache;
 
 // ============================================================================
-// 📋 DOCUMENTACIÓN DE USO
 // ============================================================================
 
 /*
@@ -506,28 +475,24 @@ export default intelligentCache;
 ```javascript
 import { intelligentCache } from './intelligentCacheSystem.js';
 
-// Cache L1 - Respuestas completas
 const cached = intelligentCache.getResponse(userId, query, 'pathology');
 if (!cached) {
   const response = await processQuery(query);
   intelligentCache.setResponse(userId, query, response, 'pathology');
 }
 
-// Cache L2 - Componentes 
 const knowledge = intelligentCache.getKnowledgeBase(query);
 if (!knowledge) {
   const result = await searchKnowledgeBase(query);
   intelligentCache.setKnowledgeBase(query, result);
 }
 
-// Cache L3 - Búsquedas
 const search = intelligentCache.getBraveSearch(query, 'web');
 if (!search) {
   const result = await braveSearch(query);
   intelligentCache.setBraveSearch(query, result, 'web');
 }
 
-// Cache L4 - Memoria de chat
 const memory = intelligentCache.getChatMemory(userId, avaId, chatId, query);
 if (!memory) {
   const result = await loadChatMemory(userId, avaId, chatId, query);

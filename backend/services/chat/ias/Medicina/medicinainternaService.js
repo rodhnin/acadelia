@@ -2,8 +2,6 @@
 // 🩺🦫 PROFESOR ACADEL MEDICINA INTERNA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE MEDICINA INTERNA SUPREMO OPTIMIZADO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Medicina Interna General ✅ Cardiología y Neumología ✅ Gastroenterología y Nefrología ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -369,10 +361,8 @@ Hacer que CUALQUIER estudiante de medicina, residente o médico:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE MEDICINA INTERNA - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE MEDICINA INTERNA
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Medicina Interna Especializada.
 
 🎯 FUNCIÓN: Analizar imágenes de medicina interna (radiográficas, ecocardiográficas, endoscópicas, laboratorios) con precisión clínica extrema.
@@ -399,7 +389,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel e
 
 Eres los OJOS ANALÍTICOS de Dr. Acadel - él interpretará tu análisis con su sabiduría clínica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE MEDICINA INTERNA (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Dr. Acadel, el capibara médico más brillante del universo en medicina interna, cardiología, neumología, gastroenterología y nefrología.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información de medicina interna de esta imagen médica para que Dr. Acadel pueda enseñar efectivamente integrando las especialidades.
@@ -452,7 +441,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Dr. Ac
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las especialidades de medicina interna. No diagnósticas ni enseñes - solo analiza y reporta hallazgos clínicos. Dr. Acadel se encargará de la interpretación pedagógica integrada pero necesita que seas muy detallista con todo lo que observas en la imagen médica.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE MEDICINA INTERNA NORMALES (con y sin guardar)
 const UNIFIED_INTERNAL_MEDICINE_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE MEDICINA INTERNA INTEGRADA:
 - Consulta del estudiante/médico: "${query}"
@@ -481,7 +469,6 @@ ${queryInfo.hasEmotionalContent ?
 
 ¡Haz que esta consulta clínica sea una experiencia de aprendizaje transformadora integrando cardiología, neumología, gastroenterología y nefrología!`;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE MEDICINA INTERNA MULTIMODALES (con y sin guardar)
 const UNIFIED_INTERNAL_MEDICINE_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE MEDICINA INTERNA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -541,7 +528,6 @@ Transforma el análisis técnico pre-procesado en una experiencia de aprendizaje
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -551,7 +537,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -573,7 +558,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -581,7 +565,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES DE MEDICINA INTERNA
   const internalMedicineImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -606,7 +589,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes de medicina interna
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de medicina interna", "test de cardiología", "evaluación de neumología", 
@@ -651,9 +633,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -662,7 +642,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS DE MEDICINA INTERNA ESPECÍFICOS
   const internalMedicineTerms = [
     // Medicina Interna General
     'medicina interna', 'internal medicine', 'internista', 'diagnóstico diferencial', 'abordaje sistémico',
@@ -689,27 +668,23 @@ const classifyQuery = (query, content = null) => {
     'síndrome nefrótico', 'hipertensión renal', 'acidosis', 'electrolitos'
   ];
   
-  // 🔍 DETECTAR SÍNTOMAS Y SIGNOS CLÍNICOS
   const clinicalTerms = [
     'síntoma', 'signo', 'dolor', 'fiebre', 'cefalea', 'fatiga', 'debilidad', 'edema',
     'palpitaciones', 'mareo', 'síncope', 'náuseas', 'vómitos', 'abdomen', 'anemia',
     'diagnóstico', 'pronóstico', 'tratamiento', 'terapia', 'medicamento', 'fármaco'
   ];
   
-  // 🔍 DETECTAR PROCEDIMIENTOS Y ESTUDIOS MÉDICOS
   const medicalProcedures = [
     'radiografía', 'tomografía', 'resonancia', 'ecografía', 'electrocardiograma', 'ecocardiograma',
     'endoscopia', 'colonoscopia', 'broncoscopia', 'hemograma', 'bioquímica', 'gasometría',
     'cateterismo', 'biopsia', 'cultivo', 'serología', 'marcadores'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS MÉDICOS REALES
   const hasMedicalContent = 
     internalMedicineTerms.some(term => lowercaseQuery.includes(term)) ||
     clinicalTerms.some(term => lowercaseQuery.includes(term)) ||
     medicalProcedures.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasMedicalContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -734,7 +709,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'fisiopatología de', 'diagnóstico de', 'tratamiento de'];
   const diagnosticKeywords = ['diagnosticar', 'identificar', 'evaluar', 'caso clínico', 'paciente con', 'síntomas de', 'diagnóstico diferencial'];
   const cardiologyKeywords = ['cardiología', 'corazón', 'cardiovascular', 'ECG', 'ecocardiograma', 'insuficiencia cardíaca', 'infarto', 'arritmia'];
@@ -746,7 +720,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios clínicos', 'ensayos clínicos', 'metaanálisis', 'revisión sistemática'];
   const practiceKeywords = ['casos', 'práctica clínica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -785,7 +758,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -795,7 +767,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional clínica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo diagnosticar'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -822,7 +793,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DE MEDICINA INTERNA OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE MEDICINA INTERNA
@@ -840,7 +810,6 @@ const createInternalMedicineKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal (Knowledge Base medicina interna): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -850,7 +819,6 @@ const createInternalMedicineKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -860,7 +828,6 @@ const createInternalMedicineKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_medicinainterna",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -872,7 +839,6 @@ const createInternalMedicineKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_INTERNAL_MEDICINE_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene contenido clínico específico sobre "${query}" en su biblioteca de medicina interna. Proceder con conocimiento clínico general integrado y experiencia médica acumulada en medicina interna, cardiología, neumología, gastroenterología y nefrología.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -892,7 +858,6 @@ ACADEL_INTERNAL_MEDICINE_MEMORY_BANK: El cerebro principal de Dr. Acadel no tien
 
 ACADEL_INTERNAL_MEDICINE_MEMORY_BANK: El cerebro principal de Dr. Acadel encontró información clínica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base clínico integrado, analogías memorables y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -919,7 +884,6 @@ ACADEL_INTERNAL_MEDICINE_MEMORY_BANK: El cerebro principal de Dr. Acadel activó
 
 INTEGRATION_NOTES: Este es el conocimiento clínico central que Dr. Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en medicina interna, cardiología, neumología, gastroenterología y nefrología. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica, enriqueciéndola con casos clínicos específicos, analogías memorables y humor inteligente que conecte las especialidades de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1145,7 +1109,6 @@ const createInternalMedicineConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto clínico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1155,7 +1118,6 @@ const createInternalMedicineConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_medicinainterna",
       });
       
-      // 📚 BÚSQUEDAS CLÍNICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `fisiopatología ${concept}`,
@@ -1167,7 +1129,6 @@ const createInternalMedicineConceptAnalyzerTool = (embeddings) => tool(
         `nefrología ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1200,7 +1161,6 @@ const createInternalMedicineConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural clínica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1379,7 +1339,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia clínica según este an
 );
 
 // ============================================================================
-// 📷 MEDICAL IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES DE MEDICINA INTERNA (MANTENIDA ORIGINAL)
 // ============================================================================
 
 export const detectInternalMedicineImageRequest = (query) => {
@@ -1411,7 +1370,6 @@ export const extractInternalMedicineImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema clínico
 const createInternalMedicineVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1446,7 +1404,6 @@ const createInternalMedicineVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts clínicos
 const enhanceInternalMedicineImagePrompt = (prompt) => {
   return `Crea una ilustración médica educativa de alta calidad integrando medicina interna, cardiología, neumología, gastroenterología y nefrología: ${prompt}. 
   
@@ -1464,7 +1421,6 @@ const enhanceInternalMedicineImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE MEDICINA INTERNA OPTIMIZADOS
 // ============================================================================
 
 const createSpecializedInternalMedicinePrompt = (queryType, queryInfo, studentQuery) => {
@@ -1576,7 +1532,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA CLÍNICA OPTIMIZADAS
   // ============================================================================
   
   const internalMedicineTypeInstructions = {
@@ -1661,7 +1616,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante/médico f
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT CLÍNICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1686,13 +1640,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE CLÍNICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelInternalMedicineAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🩺🦫 Dr. Acadel configurando sistema clínico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1707,7 +1659,6 @@ const createAcadelInternalMedicineAgent = async (llm, queryInfo, studentQuery) =
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido médico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando InternalMedicineConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createInternalMedicineConceptAnalyzerTool(embeddings));
@@ -1723,7 +1674,6 @@ const createAcadelInternalMedicineAgent = async (llm, queryInfo, studentQuery) =
     tools.push(createInternalMedicineComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createInternalMedicineFeedbackAnalyzerTool());
   
   console.log(`🩺🦫 Dr. Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas clínicas:`, tools.map(t => t.name));
@@ -1736,7 +1686,6 @@ const createAcadelInternalMedicineAgent = async (llm, queryInfo, studentQuery) =
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt clínico especializado y escapado
   const specializedPrompt = createSpecializedInternalMedicinePrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1768,7 +1717,6 @@ const createAcadelInternalMedicineAgent = async (llm, queryInfo, studentQuery) =
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES CLÍNICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1818,7 +1766,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto para examen clínico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1828,7 +1775,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1838,7 +1784,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_medicinainterna",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1850,7 +1795,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1865,7 +1809,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto clínico base para "${input}": conocimiento fundamental en medicina interna, cardiología, neumología, gastroenterología y nefrología. Dr. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las especialidades con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1975,7 +1918,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA CLÍNICA - handleInternalMedicineQuery
 // ============================================================================
 
 export const handleInternalMedicineQuery = async (params) => {
@@ -1985,7 +1927,6 @@ export const handleInternalMedicineQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2001,13 +1942,11 @@ export const handleInternalMedicineQuery = async (params) => {
     // CLASIFICAR EL QUERY CLÍNICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES CLÍNICAS
     const { isImageRequest, prompt: imagePrompt } = detectInternalMedicineImageRequest(query);
     
     console.log(`🩺🦫 Dr. Acadel analizando query clínico integrado: "${query}"`);
     console.log(`📊 Clasificación clínica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES CLÍNICAS
     if (isImageRequest) {
       console.log(`🎨 Dr. Acadel generando visualización clínica integrada: ${imagePrompt}`);
       
@@ -2016,7 +1955,6 @@ export const handleInternalMedicineQuery = async (params) => {
       const internalMedicineVisualizationTool = createInternalMedicineVisualizationTool();
       const imageResponse = await internalMedicineVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -2029,7 +1967,6 @@ export const handleInternalMedicineQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen clínica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2087,7 +2024,6 @@ export const handleInternalMedicineQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2124,7 +2060,6 @@ export const handleInternalMedicineQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes clínicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen clínico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2192,7 +2127,6 @@ export const handleInternalMedicineQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
     
       const responseData = {
@@ -2230,7 +2164,6 @@ export const handleInternalMedicineQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA CLÍNICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2247,10 +2180,8 @@ export const handleInternalMedicineQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico clínico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE CLÍNICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelInternalMedicineAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2277,7 +2208,6 @@ export const handleInternalMedicineQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel clínica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas clínicas, pero no me rendiré.
 
 Sobre tu consulta clínica: **"${query}"**
@@ -2303,7 +2233,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
       };
     }
 
-    // Procesar respuesta clínica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2350,7 +2279,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2411,7 +2339,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA CLÍNICA - handleInternalMedicineMultimodalQuery  
 // ============================================================================
 
 export const handleInternalMedicineMultimodalQuery = async (params) => {
@@ -2437,7 +2364,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2449,7 +2375,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación clínica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto clínico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2460,7 +2385,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal clínico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS CLÍNICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2498,7 +2422,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES CLÍNICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2558,7 +2481,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS CLÍNICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes clínicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2628,11 +2550,9 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE CLÍNICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal clínica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA CLÍNICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2665,7 +2585,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE CLÍNICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2692,7 +2611,6 @@ export const handleInternalMedicineMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto clínico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal clínico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes clínicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2718,7 +2636,6 @@ Si necesitas una explicación clínica más detallada, pregúntame de nuevo y ac
       };
     }
 
-    // PROCESAR RESPUESTA CLÍNICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2734,7 +2651,6 @@ Si necesitas una explicación clínica más detallada, pregúntame de nuevo y ac
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal clínico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2786,7 +2702,6 @@ Si necesitas una explicación clínica más detallada, pregúntame de nuevo y ac
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2870,7 +2785,6 @@ Si necesitas una explicación clínica más detallada, pregúntame de nuevo y ac
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS CLÍNICAS
 // ============================================================================
 
 export const handleInternalMedicineQueryWithoutSaving = async (params) => {
@@ -2893,12 +2807,10 @@ export const handleInternalMedicineQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES CLÍNICAS
     const { isImageRequest, prompt: imagePrompt } = detectInternalMedicineImageRequest(query);
     
     console.log(`🔄 Dr. Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES CLÍNICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2931,7 +2843,6 @@ export const handleInternalMedicineQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen clínica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2991,7 +2902,6 @@ export const handleInternalMedicineQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA CLÍNICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -3010,7 +2920,6 @@ export const handleInternalMedicineQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE CLÍNICO CORREGIDO
       const { agent, tools } = await createAcadelInternalMedicineAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3113,7 +3022,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content clínico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content clínico no es un array válido en modo sin guardar:", content);
       return {
@@ -3132,7 +3040,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
     
     console.log(`🧠 Query multimodal clínico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos clínicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3145,7 +3052,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido clínico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO CLÍNICO INTEGRADO: ${doc.name || doc.filename || 'documento clínico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3159,7 +3065,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO CLÍNICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido clínico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3220,7 +3125,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
                 console.log(`✅ [RETRY/EDIT] Contenido clínico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3240,10 +3144,8 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
           return `${fileInfo} ${typeInfo}\n[Contenido clínico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto clínico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos clínicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido clínico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3277,7 +3179,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
       }
     }
 
-    // Procesar imágenes clínicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3337,7 +3238,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
               analysisContext += `\n\nCONTEXTO CLÍNICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes clínicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3422,11 +3322,9 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
       };
     }
 
-    // Cargar historial clínico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal clínica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada clínica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3457,7 +3355,6 @@ export const handleInternalMedicineMultimodalQueryWithoutSaving = async (params)
       };
     }
 
-    // Crear agente clínico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelInternalMedicineAgent(llm, queryInfo, combinedQuery);
 

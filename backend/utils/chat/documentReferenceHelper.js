@@ -1,4 +1,3 @@
-// backend/utils/chat/documentReferenceHelper.js
 
 /**
  * Genera una referencia JSON para documentos que se guarda en chat_history

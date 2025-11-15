@@ -27,11 +27,9 @@ import {
   initializeMermaidDiagram,
   initMermaidSystem
 } from '../../shared/mermaid-utils.js';
-// Importar contentProcessing desde el nuevo archivo
 import contentProcessing, { detectMultimodalContent, cleanMultimodalExistingContent } from './content-processing-teorico.js';
 
 // ==========================================
-// ✅ NUEVA IMPORTACIÓN: PROCESADOR DE IMÁGENES OPTIMIZADO DEL PDF
 // ==========================================
 import {
   processImagesOptimized,
@@ -79,7 +77,6 @@ let mermaidObserverInitialized = false;
 export function initializeMessageRenderers() {
   if (renderersInitialized) return;
 
-  // Registrar todos los renderizadores básicos
   renderersMap[MESSAGE_TYPES.MESSAGE] = renderTextMessage;
   renderersMap[MESSAGE_TYPES.EXAM] = renderExamMessage;
   renderersMap[MESSAGE_TYPES.ERROR] = renderErrorMessage;
@@ -91,18 +88,14 @@ export function initializeMessageRenderers() {
   renderersMap[MESSAGE_TYPES.IMAGE] = renderImageMessage;
   renderersMap[MESSAGE_TYPES.MERMAID] = renderMermaidMessage;
 
-  // ✅ CARGA EL CACHE DEL SISTEMA EXTERNO
   imageUrlCache.loadFromStorage();
 
-  // Inicializar el procesador de contenido multimodal
   contentProcessing.initialize({
     initializeFileAttachmentHandlers: initializeFileAttachmentHandlers
   });
 
-  // Inicializar limpieza para mensajes existentes
   initializeCleanupForExistingMessages();
   
-  // Inicializar observador para Mermaid
   initializeMermaidObserver();
 
   renderersInitialized = true;
@@ -120,10 +113,8 @@ function initializeCleanupForExistingMessages() {
     }
   };
 
-  // Ejecutar limpieza inmediatamente
   scheduleCleanup(0, 'initial-cleanup');
 
-  // Ejecutar después del DOM completamente cargado
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     scheduleCleanup(500, 'delayed-cleanup');
   } else {
@@ -132,7 +123,6 @@ function initializeCleanupForExistingMessages() {
     });
   }
 
-  // Ejecutar cuando se cambia de chat
   window.addEventListener('popstate', () => {
     scheduleCleanup(500, 'popstate-cleanup');
   });
@@ -151,7 +141,6 @@ function initializeFileAttachmentHandlers(container) {
     // Evitar duplicar eventos
     if (fileElement.getAttribute('data-handler-attached')) return;
     
-    // Obtener datos del archivo
     const fileName = fileElement.getAttribute('data-file-name') || '';
     const fileType = fileElement.getAttribute('data-file-type') || 'document';
     const language = fileElement.getAttribute('data-language') || '';
@@ -162,7 +151,6 @@ function initializeFileAttachmentHandlers(container) {
     fileElement.style.color = 'var(--primary-color)';
     fileElement.style.textDecoration = 'underline';
     
-    // Agregar evento de clic
     fileElement.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -170,11 +158,9 @@ function initializeFileAttachmentHandlers(container) {
       handleFilePreview(fileType, fileName, language, originalMessage);
     });
     
-    // Marcar como inicializado para evitar duplicar eventos
     fileElement.setAttribute('data-handler-attached', 'true');
   });
   
-  // Verificar si ya existe un botón de expansión para evitar duplicados
   if (container.querySelector('.expand-content-btn')) {
     return;
   }
@@ -187,7 +173,6 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
   // Si existe window.showFilePreview, usarla directamente
   if (typeof window.showFilePreview === 'function') {
     try {
-      // Crear un ID único para este archivo
       const tempId = `temp-file-${Date.now()}`;
       window.showFilePreview(tempId, fileType);
       return;
@@ -198,17 +183,14 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
   
   // Alternativa: usar el panel de vista previa directamente
   try {
-    // Importar el módulo de vista previa
     import('../components/preview-panel-pdf.js')
       .then(module => {
         if (typeof module.showPreviewPanel === 'function') {
-          // Preparar datos según el tipo de archivo
           let previewData = {};
           
           if (fileType === 'document') {
             let textContent = extractDocumentContent(originalMessage, fileName);
             
-            // Mejorar presentación
             previewData = {
               codeContent: `<pre style="white-space: pre-wrap; word-wrap: break-word; padding: 15px; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.6;">${textContent}</pre>`,
               title: fileName,
@@ -216,7 +198,6 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
               isDocument: true
             };
           } else if (fileType === 'code') {
-            // Extraer código específico para este archivo
             let code = extractCodeContent(originalMessage, fileName);
             
             previewData = {
@@ -226,10 +207,8 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
             };
           }
           
-          // Definir el tipo correcto para la vista previa
           const previewType = fileType === 'document' ? 'code' : fileType;
           
-          // Mostrar panel con datos del archivo
           module.showPreviewPanel(previewData, previewType);
         }
       })
@@ -277,7 +256,6 @@ function extractDocumentContent(originalMessage, fileName) {
       .replace(/%3Cem%3E/gi, '%20')       // Eliminar <em>
       .replace(/%3C%2Fem%3E/gi, '%20');   // Eliminar </em>
       
-    // Decodificar el mensaje limpio
     const decodedMessage = decodeURIComponent(cleanedMessage);
     
     // PASO 3: Búsqueda del documento específico
@@ -335,7 +313,6 @@ function extractDocumentContent(originalMessage, fileName) {
     if (endPos !== -1) {
       textContent = contentAfterMarker.substring(0, endPos).trim();
     } else {
-      // Si no se encontró un patrón claro, buscar múltiples saltos de línea como separador
       const nlMatch = contentAfterMarker.match(/\n\s*\n\s*\n+/);
       if (nlMatch && nlMatch.index) {
         textContent = contentAfterMarker.substring(0, nlMatch.index).trim();
@@ -402,7 +379,6 @@ function extractCodeContent(originalMessage, fileName) {
       .replace(/%3Cem%3E/gi, '%20')       // Eliminar <em>
       .replace(/%3C%2Fem%3E/gi, '%20');   // Eliminar </em>
     
-    // Decodificar el mensaje sanitizado
     const decodedMessage = decodeURIComponent(cleanedMessage);
     
     // PASO 3: Normalizar el nombre del archivo eliminando comillas si las tiene
@@ -411,12 +387,10 @@ function extractCodeContent(originalMessage, fileName) {
     // PASO 4: Construir un patrón para buscar el bloque de código específico para este archivo
     const codeBlockPattern = new RegExp(`Código de ["']?${normalizedFileName}["']?[^\\n]*:\\s*\`\`\`[\\w]*\\s*([\\s\\S]*?)(?=\`\`\`|$)`, 'i');
     
-    // Buscar el bloque específico
     const codeMatch = decodedMessage.match(codeBlockPattern);
     
     // Si encontramos el bloque, devolver su contenido
     if (codeMatch && codeMatch[1]) {
-      // Sanitizar cualquier HTML restante
       return codeMatch[1].trim()
         .replace(/<a\s+[^>]*>/gi, '')
         .replace(/<\/a>/gi, '')
@@ -428,7 +402,6 @@ function extractCodeContent(originalMessage, fileName) {
     // Si no encontramos el bloque específico, buscar cualquier bloque como fallback
     const genericMatch = decodedMessage.match(/```[\w]*\s*([\s\S]*?)```/);
     if (genericMatch && genericMatch[1]) {
-      // Sanitizar cualquier HTML restante
       return genericMatch[1].trim()
         .replace(/<a\s+[^>]*>/gi, '')
         .replace(/<\/a>/gi, '')
@@ -449,7 +422,6 @@ function extractCodeContent(originalMessage, fileName) {
 }
 
 // ==========================================
-// ✅ PROCESAMIENTO DE IMÁGENES OPTIMIZADO - INTEGRADO DEL PDF
 // ==========================================
 
 /**
@@ -469,7 +441,6 @@ async function processExternalImagesRealTime(container, externalImages) {
 
   console.log(`🖼️ [REALTIME] Procesando ${externalImages.length} imágenes INMEDIATAMENTE`);
   
-  // ✅ USAR EL SISTEMA OPTIMIZADO DEL PDF
   const result = await processImagesOptimized(container, externalImages);
   
   console.log(`🎉 [REALTIME] Procesamiento completado: ${result.successful}/${result.total} imágenes`);
@@ -482,7 +453,6 @@ async function processExternalImagesRealTime(container, externalImages) {
  * @param {HTMLElement} container - Contenedor con imágenes
  */
 function initializeImagePreviewHandlersOptimized(container) {
-  // ✅ DELEGAR AL SISTEMA OPTIMIZADO DEL PDF
   return initializeImagePreviewHandlers(container);
 }
 
@@ -493,7 +463,6 @@ function initializeImagePreviewHandlersOptimized(container) {
  * @param {Object} options - Opciones adicionales
  */
 function handleImageErrorOptimized(img, mode = 'inline', options = {}) {
-  // ✅ DELEGAR AL SISTEMA NUEVO DEL PDF
   return handleImageError(img, mode, {
     isMultimodal: options.isMultimodal || false,
     imageCount: options.imageCount || 1,
@@ -512,7 +481,6 @@ function initializeMermaidObserver() {
   
   console.log("🦫 Acadel: Inicializando observador de Mermaid");
   
-  // Delegar completamente al sistema centralizado en mermaid-utils.js
   initMermaidSystem()
     .then(() => {
       console.log("🦫 Acadel: Sistema Mermaid inicializado correctamente");
@@ -545,7 +513,6 @@ function performInitialCleanup() {
     }
   });
 
-  // Configurar observer para nuevos mensajes
   setupCleanupObserver();
 }
 
@@ -557,20 +524,17 @@ function setupCleanupObserver() {
   let pendingElements = [];
   let processingScheduled = false;
   
-  // Función para procesar elementos acumulados
   const processPendingElements = () => {
     const elementsToProcess = [...pendingElements];
     pendingElements = [];
     processingScheduled = false;
     
-    // Procesar todos los elementos en un solo batch
     const uniqueElements = new Set(elementsToProcess);
     uniqueElements.forEach(element => {
       if (element && element.isConnected) {
         cleanMultimodalExistingContent(element);
         processMermaidDiagrams(element);
         
-        // ✅ PROCESAMIENTO DE IMÁGENES OPTIMIZADO INTEGRADO
         const externalImages = element.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
         if (externalImages.length > 0) {
           processExternalImagesRealTime(element, externalImages);
@@ -579,18 +543,15 @@ function setupCleanupObserver() {
     });
   };
   
-  // Crear un observador optimizado que acumule cambios
   const observer = new MutationObserver(mutations => {
     let hasNewContent = false;
     
-    // Procesar todas las mutaciones para identificar elementos
     for (const mutation of mutations) {
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
         hasNewContent = true;
         
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === 1) { // Solo nodos de elemento
-            // Verificar si es un mensaje o contiene mensajes
             const messages = node.classList?.contains('message') 
               ? [node]
               : Array.from(node.querySelectorAll('.message'));
@@ -609,14 +570,12 @@ function setupCleanupObserver() {
     // Si hay nuevos contenidos y no hay procesamiento programado, programar uno
     if (hasNewContent && !processingScheduled) {
       processingScheduled = true;
-      // Usar requestAnimationFrame para optimizar rendimiento
       requestAnimationFrame(() => {
         setManagedTimeout(processPendingElements, 100, 'cleanup-observer');
       });
     }
   });
 
-  // Observar cambios en el contenedor de mensajes
   const chatMessages = document.querySelector('.chat-messages');
   if (chatMessages) {
     observer.observe(chatMessages, {
@@ -631,7 +590,6 @@ function setupCleanupObserver() {
  * @param {HTMLElement} element - Elemento contenedor
  */
 function processMermaidDiagrams(element) {
-  // Verificar si hay diagramas Mermaid no procesados
   const mermaidDiagrams = element.querySelectorAll('.mermaid-diagram:not([data-processed="true"])');
   if (mermaidDiagrams.length > 0) {
     mermaidDiagrams.forEach(diagram => {
@@ -656,14 +614,12 @@ function containsMermaidDiagram(text) {
   // Array para almacenar todas las coincidencias de diagramas
   let mermaidMatches = [];
   
-  // Verificar bloques explícitos de mermaid
   const explicitMatches = [...text.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
   if (explicitMatches.length > 0) {
     mermaidMatches.push(...explicitMatches);
     return mermaidMatches;
   }
   
-  // Verificar bloques de código sin lenguaje pero con contenido Mermaid
   const codeBlockMatches = [...text.matchAll(/```\s*\n([\s\S]*?)```/g)];
   if (codeBlockMatches) {
     for (const match of codeBlockMatches) {
@@ -689,10 +645,8 @@ function containsMermaidDiagram(text) {
 function extractMermaidCodes(text) {
   const results = [];
   
-  // Buscar bloques de código Mermaid explícitos
   const mermaidBlockMatches = [...text.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
   for (const match of mermaidBlockMatches) {
-    // Limpiar y normalizar el código extraído
     const rawCode = match[1].trim();
     const cleanedCode = normalizeMermaidSyntax(rawCode);
     
@@ -709,14 +663,11 @@ function extractMermaidCodes(text) {
     return results;
   }
   
-  // Buscar bloques de código sin lenguaje pero con contenido Mermaid
   const codeBlockMatches = [...text.matchAll(/```\s*\n([\s\S]*?)```/g)];
   
   for (const match of codeBlockMatches) {
     const rawCode = match[1].trim();
-    // Verificar si es código Mermaid
     if (MERMAID_TYPE_PATTERN.test(rawCode)) {
-      // Normalizar el código
       const cleanedCode = normalizeMermaidSyntax(rawCode);
       
       results.push({
@@ -749,23 +700,19 @@ function normalizeMermaidSyntax(code) {
   // 2. Normalizar el código según el tipo de diagrama
   let normalizedCode = code;
   
-  // Eliminar puntos y coma después del tipo de diagrama
   normalizedCode = normalizedCode.replace(new RegExp(`^(${diagramType}(?:-v2)?);`, 'm'), '$1\n');
   
   // 3. Caso especial para diagramas de clase
   if (diagramType.toLowerCase().includes('classdiagram')) {
-    // Normalizar caracteres especiales/acentuados en clases
     const accentMap = {
       'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
       'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
       'ñ': 'n', 'Ñ': 'N'
     };
     
-    // Procesar línea por línea para mayor control
     const lines = normalizedCode.split('\n');
     const processedLines = [];
     
-    // Reemplazar acentos en todo el código primero
     if (/[áéíóúÁÉÍÓÚñÑ]/.test(normalizedCode)) {
       for (let i = 0; i < lines.length; i++) {
         lines[i] = lines[i].replace(/[áéíóúÁÉÍÓÚñÑ]/g, match => accentMap[match] || match);
@@ -775,14 +722,11 @@ function normalizeMermaidSyntax(code) {
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i].trim();
       
-      // Eliminar punto y coma al principio del diagrama
       if (line.startsWith('classDiagram;')) {
         line = 'classDiagram';
       }
       
-      // Manejar relaciones de herencia (<|--)
       if (line.includes('<|--')) {
-        // Quitar punto y coma al final
         if (line.endsWith(';')) {
           line = line.substring(0, line.length - 1);
         }
@@ -794,9 +738,7 @@ function normalizeMermaidSyntax(code) {
         
         processedLines.push(line);
       }
-      // Manejar relaciones de asociación (-->)
       else if (line.includes('-->')) {
-        // Quitar punto y coma al final
         if (line.endsWith(';')) {
           line = line.substring(0, line.length - 1);
         }
@@ -808,9 +750,7 @@ function normalizeMermaidSyntax(code) {
         
         processedLines.push(line);
       }
-      // Manejar múltiples relaciones en la misma línea
       else if (line.includes(';') && (line.includes('-->') || line.includes('<|--'))) {
-        // Separar por punto y coma y procesar cada relación
         const relations = line.split(';');
         for (let relation of relations) {
           relation = relation.trim();
@@ -826,7 +766,6 @@ function normalizeMermaidSyntax(code) {
     
     normalizedCode = processedLines.join('\n');
     
-    // Arreglar cualquier línea de class que tenga problemas
     normalizedCode = normalizedCode.replace(/^(\s*)class\s+/gm, '$1class ');
     
     // Asegurar salto de línea después de la declaración de tipo
@@ -913,7 +852,6 @@ function ensureRenderersInitialized() {
  * @returns {Object} Objeto con tipo y contenido procesado
  */
 export function determineMessageType(content) {
-  // Validación básica
   if (!content) {
     return { type: MESSAGE_TYPES.MESSAGE, content: '' };
   }
@@ -925,7 +863,6 @@ export function determineMessageType(content) {
       return processExplicitTypeObject(content);
     }
 
-    // Detectar por estructura
     return detectTypeByStructure(content);
   }
 
@@ -993,7 +930,6 @@ function processExplicitTypeObject(content) {
  * @returns {Object} Objeto procesado
  */
 function detectTypeByStructure(content) {
-  // Detectar imagen por propiedades
   if (content.url && (content.caption || content.prompt)) {
     return {
       type: MESSAGE_TYPES.IMAGE,
@@ -1001,7 +937,6 @@ function detectTypeByStructure(content) {
     };
   }
 
-  // Verificar si es código por estructura
   if (content.code && (content.language || typeof content.code === 'string')) {
     return {
       type: MESSAGE_TYPES.CODE,
@@ -1025,12 +960,10 @@ function detectTypeByStructure(content) {
  * @returns {Object} Objeto procesado
  */
 function processStringContent(content) {
-  // Verificar si es JSON
   if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
     try {
       const parsed = JSON.parse(content);
 
-      // Verificar si el objeto parseado es una imagen
       if (parsed.type === MESSAGE_TYPES.IMAGE || (parsed.url && (parsed.caption || parsed.prompt))) {
         return {
           type: MESSAGE_TYPES.IMAGE,
@@ -1074,10 +1007,8 @@ function extractTextAroundSpecificMermaid(text, diagramInfo, before) {
  */
 function renderMermaidMessage(container, content) {
   try {
-    // Crear contenedor principal para el mensaje
     const messageWithDiagrams = createElement('div', { className: 'message-with-diagrams' });
     
-    // Extraer todos los diagramas Mermaid
     const mermaidDiagrams = extractMermaidCodes(typeof content === 'string' ? content : (content.code || ''));
     
     if (mermaidDiagrams.length === 0) {
@@ -1102,7 +1033,6 @@ function renderMermaidMessage(container, content) {
       }
     }
     
-    // Procesar cada diagrama
     mermaidDiagrams.forEach((diagram, index) => {
       // Contenedor del diagrama
       const diagramContainer = createElement('div', { 
@@ -1144,12 +1074,10 @@ function renderMermaidMessage(container, content) {
         title: 'Ver diagrama completo'
       }, [expandIcon, ' Ver diagrama completo']);
       
-      // Agregar evento para expandir
       addEvent(expandButton, 'click', () => {
         if (typeof window.showMermaidPreview === 'function') {
           window.showMermaidPreview(expandButton);
         } else {
-          // Fallback
           import('../components/preview-panel-pdf.js')
             .then(module => {
               if (typeof module.showPreviewPanel === 'function') {
@@ -1191,14 +1119,11 @@ function renderMermaidMessage(container, content) {
       }
     }
     
-    // Agregar al contenedor
     container.appendChild(messageWithDiagrams);
     
-    // Renderizar todos los diagramas con un ligero retraso entre ellos
     mermaidDiagrams.forEach((diagram, index) => {
       const uniqueId = container.querySelector(`.mermaid-diagram[data-diagram-index="${index}"]`)?.id;
       if (uniqueId) {
-        // Usar función centralizada en mermaid-utils
         initializeMermaidDiagram(uniqueId, diagram.code);
       }
     });
@@ -1231,7 +1156,6 @@ function renderTextMessage(container, content, role = '') {
     if (processedContent !== content && typeof processedContent === 'string') {
       container.innerHTML = processedContent;
       
-      // Inicializar manejadores para archivos adjuntos
       if (processedContent.includes('file-name-clickable')) {
         initializeFileAttachmentHandlers(container);
       }
@@ -1240,10 +1164,8 @@ function renderTextMessage(container, content, role = '') {
     }
   }
 
-  // Continuar con el comportamiento normal para contenido no multimodal o mensajes de IA
   const safeContent = typeof content === 'string' ? content : String(content);
 
-  // Verificar si contiene un diagrama Mermaid
   if (containsMermaidDiagram(safeContent)) {
     renderMermaidMessage(container, safeContent);
     return;
@@ -1277,10 +1199,8 @@ function renderTextMessage(container, content, role = '') {
     if (codeResult.success) {
       container.innerHTML = codeResult.html;
 
-      // Configurar botones de copia
       setupCodeBlocksInteractivity(container);
 
-      // Agregar botón para expandir el código SOLO si no hay diagramas Mermaid
       setManagedTimeout(() => {
         // Evitar añadir botón si ya existe o si hay diagramas Mermaid
         if (!container.querySelector('.expand-content-btn') && !container.querySelector('.mermaid-diagram')) {
@@ -1295,23 +1215,18 @@ function renderTextMessage(container, content, role = '') {
     }
   }
 
-  // Detectar si hay imágenes en el contenido
   const hasImages = safeContent.includes('![') || safeContent.includes('<img');
 
-  // Para contenido simple, renderizar markdown directamente
   container.innerHTML = parseMarkdownToHTML(safeContent);
   
   if (hasImages) {
     // ⭐ SOLO procesar si NO es contenido multimodal del usuario
     if (!container.querySelector('.multimodal-container .chat-image-item')) {
-      // ✅ USAR SISTEMA OPTIMIZADO DEL PDF
       initializeImagePreviewHandlersOptimized(container);
     }
   } else {
-    // Verificar explícitamente imágenes que necesitan procesamiento
     const externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
     if (externalImages.length > 0 && !container.querySelector('.multimodal-container .chat-image-item')) {
-      // ✅ USAR SISTEMA OPTIMIZADO DEL PDF
       initializeImagePreviewHandlersOptimized(container);
     }
   }
@@ -1322,7 +1237,6 @@ function renderTextMessage(container, content, role = '') {
  * @param {HTMLElement} container - Contenedor con bloques de código
  */
 function setupCodeBlocksInteractivity(container) {
-  // Aplicar highlight.js
   if (window.hljs) {
     container.querySelectorAll('pre code').forEach(block => {
       try {
@@ -1333,7 +1247,6 @@ function setupCodeBlocksInteractivity(container) {
     });
   }
 
-  // Configurar botones de copia utilizando clipboard.js
   container.querySelectorAll('.copy-button').forEach(button => {
     addEvent(button, 'click', () => {
       const blockId = button.getAttribute('data-target');
@@ -1347,10 +1260,8 @@ function setupCodeBlocksInteractivity(container) {
     });
   });
 
-  // Verificar si el contenedor tiene un diagrama Mermaid
   const hasMermaidDiagram = container.querySelector('.mermaid-diagram') !== null;
   
-  // Agregar botón para expandir el código solo si no hay diagramas Mermaid
   if (!container.querySelector('.expand-content-btn') && !hasMermaidDiagram) {
     addExpandButton(container, {
       content: container.innerHTML,
@@ -1377,7 +1288,6 @@ function addExpandButton(container, data, explicitType) {
     return;
   }
 
-  // Determinar el tipo de contenido (del parámetro explícito o del objeto data)
   // Esto permite compatibilidad con ambos formatos de llamada
   const type = explicitType || data.type || 'unknown';
 
@@ -1391,7 +1301,6 @@ function addExpandButton(container, data, explicitType) {
 
   const config = buttonConfig[type] || { text: 'Ver completo', class: '' };
 
-  // Crear el botón
   const expandButton = createElement('button', {
     className: `expand-content-btn ${config.class}`,
     style: {
@@ -1404,7 +1313,6 @@ function addExpandButton(container, data, explicitType) {
   expandButton.appendChild(icon);
   expandButton.appendChild(document.createTextNode(` ${config.text}`));
 
-  // Preparar datos para la vista previa
   const dataKey = type === 'table' ? 'tableContent' :
     type === 'code' ? 'codeContent' : 'content';
 
@@ -1413,9 +1321,7 @@ function addExpandButton(container, data, explicitType) {
     title: data.title || config.text
   };
 
-  // Configurar el evento de clic
   addEvent(expandButton, 'click', () => {
-    // Verificar si el panel está abierto
     const isPanelOpen = document.querySelector('#preview-panel')?.classList.contains('open');
 
     if (isPanelOpen) {
@@ -1423,7 +1329,6 @@ function addExpandButton(container, data, explicitType) {
       if (typeof window.closePreviewPanel === 'function') {
         window.closePreviewPanel();
       } else {
-        // Importar dinámicamente
         import('../components/preview-panel-pdf.js')
           .then(module => {
             if (typeof module.closePreviewPanel === 'function') {
@@ -1439,7 +1344,6 @@ function addExpandButton(container, data, explicitType) {
       if (typeof window.showPreviewPanel === 'function') {
         window.showPreviewPanel(previewData, type);
       } else {
-        // Importar dinámicamente
         import('../components/preview-panel-pdf.js')
           .then(module => {
             if (typeof module.showPreviewPanel === 'function') {
@@ -1453,7 +1357,6 @@ function addExpandButton(container, data, explicitType) {
     }
   });
 
-  // Añadir al contenedor
   container.appendChild(expandButton);
 }
 
@@ -1463,7 +1366,6 @@ function addExpandButton(container, data, explicitType) {
  * @param {Object} content - Datos del examen
  */
 function renderExamMessage(container, content) {
-  // Preparar el contenedor
   clearElement(container);
   const examContainer = createElement('div', { className: 'exam-container' });
   container.appendChild(examContainer);
@@ -1489,7 +1391,6 @@ function renderExamMessage(container, content) {
  * @returns {string|null} - Contenido textual o null
  */
 function extractTextContent(data) {
-  // Priorizar campos específicos para texto
   const textProps = ['answer', 'content', 'message', 'text', 'response'];
 
   for (const prop of textProps) {
@@ -1498,7 +1399,6 @@ function extractTextContent(data) {
     }
   }
 
-  // Buscar en propiedades anidadas
   const nestedProps = ['data', 'result', 'output'];
 
   for (const prop of nestedProps) {
@@ -1517,7 +1417,6 @@ function extractTextContent(data) {
     }
   }
 
-  // Intentar convertir objetos como último recurso
   if (typeof data === 'object' && data !== null) {
     try {
       if (data.answer && typeof data.answer === 'object') {
@@ -1542,22 +1441,17 @@ function extractTextContent(data) {
  */
 function renderCodeMessage(container, content) {
   try {
-    // Normalizar el contenido
     const codeData = normalizeCodeContent(content);
 
-    // Validar código
     if (!codeData.code.trim()) {
       renderErrorContent(container, 'No se proporcionó código para renderizar');
       return;
     }
 
-    // Usar createCodeBlockHTML de markdown.js para generar el HTML
     container.innerHTML = createCodeBlockHTML(codeData.code, codeData.language);
 
-    // Aplicar highlight.js y configurar botón de copia
     setupCodeBlockHighlighting(container);
 
-    // Configurar botón de copia utilizando clipboard.js
     const copyBtn = container.querySelector('.copy-button');
     if (copyBtn) {
       addEvent(copyBtn, 'click', () => {
@@ -1565,7 +1459,6 @@ function renderCodeMessage(container, content) {
       });
     }
 
-    // Añadir botón de expansión
     addExpandButton(container, {
       content: codeData,
       title: `Código ${codeData.language}`,
@@ -1606,7 +1499,6 @@ function normalizeCodeContent(content) {
     }
   }
 
-  // Procesar bloques markdown
   if (code.startsWith('```') && code.endsWith('```')) {
     try {
       const firstLineEnd = code.indexOf('\n');
@@ -1645,14 +1537,11 @@ function setupCodeBlockHighlighting(container) {
  */
 function renderTableMessage(container, content) {
   try {
-    // Procesar diferentes formatos de datos de tabla
     const tableData = processTableData(content);
 
     if (tableData) {
-      // Renderizar la tabla
       container.innerHTML = tableData.html;
 
-      // Añadir botón de expansión
       setManagedTimeout(() => {
         addExpandButton(container, {
           content: tableData.html,
@@ -1694,7 +1583,6 @@ function processTableData(content) {
 
   // Caso 2: Objeto con datos anidados
   if (typeof content === 'object' && content !== null) {
-    // Buscar en data
     if (content.data && typeof content.data === 'object' &&
       Array.isArray(content.data.headers) && Array.isArray(content.data.rows)) {
       return {
@@ -1703,7 +1591,6 @@ function processTableData(content) {
       };
     }
 
-    // Buscar en table
     if (content.table && typeof content.table === 'object' &&
       Array.isArray(content.table.headers) && Array.isArray(content.table.rows)) {
       return {
@@ -1726,14 +1613,12 @@ function processTableData(content) {
 
   // Caso 3: String (markdown o JSON)
   if (typeof content === 'string') {
-    // Intentar parsear como JSON
     try {
       if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
         const parsed = JSON.parse(content);
         return processTableData(parsed); // Llamada recursiva
       }
     } catch (e) {
-      // Verificar si es tabla markdown
       const tableResult = detectTableInText(content);
       if (tableResult.success) {
         return {
@@ -1756,7 +1641,6 @@ function renderImageMessage(container, content) {
   try {
     console.log('🖼️ [DEBUG] Renderizando imagen, content recibido:', content);
     
-    // Normalizar estructura de contenido con mejor manejo de anidamiento
     let imageData;
     
     if (typeof content === 'string') {
@@ -1777,7 +1661,6 @@ function renderImageMessage(container, content) {
 
     console.log('🖼️ [DEBUG] ImageData procesado:', imageData);
 
-    // Extraer URL de imagen con múltiples fallbacks
     let imageUrl = '';
     
     // Método 1: URL directa
@@ -1826,14 +1709,12 @@ function renderImageMessage(container, content) {
 
     console.log('🖼️ [DEBUG] URL final extraída:', imageUrl);
 
-    // Verificar si hay URL válida
     if (!imageUrl || imageUrl.trim() === '') {
       console.error('❌ [DEBUG] No se encontró URL de imagen en:', imageData);
       renderErrorContent(container, 'No se pudo extraer la URL de la imagen generada');
       return;
     }
 
-    // Extraer otras propiedades con fallbacks mejorados
     const altText = imageData.caption || imageData.data?.caption || imageData.prompt || imageData.data?.prompt || 'Imagen generada por Dr. Acadel';
     const originalUrl = imageData.originalUrl || imageData.data?.originalUrl || imageUrl;
     const isLocallyStored = imageData.locallyStored || imageData.data?.locallyStored || imageUrl.includes('/uploads');
@@ -1844,11 +1725,9 @@ function renderImageMessage(container, content) {
       isLocallyStored
     });
 
-    // Sanitizar URLs
     const safeImageUrl = sanitizeText(imageUrl);
     const safeOriginalUrl = originalUrl ? sanitizeText(originalUrl) : '';
 
-    // Crear estructura multimodal para la imagen
     const html = `
       <div class="multimodal-container">
         <div class="multimodal-attachments">
@@ -1875,7 +1754,6 @@ function renderImageMessage(container, content) {
 
     container.innerHTML = html;
 
-    // Configurar manejadores de eventos
     const imgContainer = container.querySelector('.image-preview');
     const imgElement = container.querySelector('.markdown-image');
     
@@ -1897,7 +1775,6 @@ function renderImageMessage(container, content) {
         console.log('✅ [DEBUG] Imagen cargada exitosamente');
       });
 
-      // Mejorar manejo de errores de carga
       addEvent(imgElement, 'error', () => {
         console.error('❌ [DEBUG] Error cargando imagen:', safeImageUrl);
         
@@ -1909,7 +1786,6 @@ function renderImageMessage(container, content) {
           return;
         }
 
-        // Mostrar placeholder cuando todo falla
         imgElement.style.display = 'none';
         const placeholder = imgContainer.querySelector('.image-placeholder');
         if (placeholder) placeholder.style.display = 'flex';
@@ -1921,7 +1797,6 @@ function renderImageMessage(container, content) {
       });
     }
 
-    // ✅ INICIALIZAR MANEJADORES OPTIMIZADOS PARA PROCESAMIENTO DE IMÁGENES
     initializeImagePreviewHandlersOptimized(container);
 
     console.log('✅ [DEBUG] Imagen renderizada exitosamente');
@@ -1973,7 +1848,6 @@ function renderErrorMessage(container, content) {
     
     // 🦫 ESTRUCTURA EXACTA CON INLINE STYLES COMO EN cancelCurrentRequest()
     const errorContainer = createElement('div', { className: 'cancelled-message' });
-    // Aplicar inline styles exactos de la función que funciona
     errorContainer.style.display = 'flex';
     errorContainer.style.alignItems = 'center';
     errorContainer.style.gap = '8px';
@@ -2133,7 +2007,6 @@ function renderActionMessage(container, content) {
       dataset: { action: action.id }
     }, `🎯 ${sanitizeText(action.label)}`);
 
-    // Agregar eventos a los botones
     addEvent(button, 'click', (e) => {
       // 🦫 CAMBIO: Notificación al hacer clic en acción
       acadelInfo(
@@ -2190,7 +2063,6 @@ export function renderChatMessages(messages) {
     return;
   }
 
-  // Crear una copia para no modificar el array original y agregar metadatos
   const messagesWithMetadata = [...messages].map((msg, index) => {
     return {
       originalIndex: index,
@@ -2200,9 +2072,7 @@ export function renderChatMessages(messages) {
     };
   });
 
-  // Ordenar los mensajes por timestamp con mejor manejo de casos especiales
   const sortedMessages = messagesWithMetadata.sort((a, b) => {
-    // Comparar timestamps si ambos existen
     if (a.timestamp && b.timestamp) {
       const timeDiff = a.timestamp - b.timestamp;
       // Si la diferencia es muy pequeña (menos de 1 segundo),
@@ -2228,44 +2098,35 @@ export function renderChatMessages(messages) {
   // Variable para trackear el último mensaje renderizado
   let lastMessageElement = null;
 
-  // Renderizar los mensajes ordenados
   sortedMessages.forEach(item => {
     try {
       const msg = item.message;
       const role = msg.role?.toLowerCase();
       const isAI = role === 'assistant' || role === 'ai';
 
-      // Intentar detectar si este es un mensaje multimodal basado en su contenido
       let contentToRender = msg.content || msg.message || '';
       let typeToUse = MESSAGE_TYPES.MESSAGE;
 
-      // Lógica para detectar contenido multimodal y determinar el tipo
       if (typeof contentToRender === 'string' &&
         (contentToRender.includes('hasImage') || contentToRender.includes('imageCount') || 
          contentToRender.includes('Contenido del documento') || contentToRender.includes('Código de'))) {
-        // Intentar procesarlo como multimodal si muestra indicios de serlo
         const processedContent = detectMultimodalContent(contentToRender, isAI);
         if (processedContent !== contentToRender) {
           contentToRender = processedContent;
         } else {
-          // Si no se procesó como multimodal, determinar tipo normal
           const { type, content } = determineMessageType(contentToRender);
           typeToUse = type;
           contentToRender = content;
         }
       } else {
-        // Lógica normal para mensajes no multimodales
         const { type, content } = determineMessageType(contentToRender);
         typeToUse = type;
         contentToRender = content;
       }
 
-      // Renderizar el mensaje con el tipo y contenido determinados
       lastMessageElement = addMessageToChat(isAI ? 'ai' : 'user', contentToRender, typeToUse);
 
-      // Almacenar el ID del servidor en el elemento del mensaje
       if (lastMessageElement && msg.id) {
-        // Guardar el ID del servidor para futuras operaciones
         lastMessageElement.dataset.serverId = msg.id;
 
         // Mantener también un ID en formato frontend para compatibilidad
@@ -2282,9 +2143,7 @@ export function renderChatMessages(messages) {
   // Asegurar que los feedback (likes/dislikes) se mantengan
   ensureFeedbackPersistence(true);
 
-  // Limpiar espacios excesivos en los mensajes multimodales existentes
   setManagedTimeout(() => {
-    // Limpiar cualquier contenido multimodal problemático
     document.querySelectorAll('.message-content').forEach(messageContent => {
       cleanMultimodalExistingContent(messageContent);
     });
@@ -2305,7 +2164,6 @@ function getMessageTimestamp(msg) {
       try {
         return new Date(msg[field]);
       } catch (e) {
-        // Continuar con el siguiente campo
       }
     }
   }
@@ -2326,13 +2184,11 @@ export function addMessageToChat(role, content, type = MESSAGE_TYPES.MESSAGE) {
 
   ensureRenderersInitialized();
 
-  // Crear el contenedor base del mensaje
   const messageDiv = createElement('div', {
     className: `message ${role === 'ai' ? 'ai-message' : 'user-message'}`
   });
 
   if (role === 'ai') {
-    // Generar un ID único para el mensaje si no existe
     const messageId = `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     messageDiv.dataset.messageId = messageId;
 
@@ -2349,30 +2205,24 @@ export function addMessageToChat(role, content, type = MESSAGE_TYPES.MESSAGE) {
     messageDiv.appendChild(aiProfile);
     messageDiv.appendChild(contentElem);
 
-    // Obtener y llamar al renderizador apropiado
     const renderer = getRenderer(type);
     renderer(contentElem, content, role);
   } else {
     // Mensajes de usuario con soporte para markdown
     const safeContent = typeof content === 'string' ? content : String(content);
 
-    // Crear estructura básica del mensaje
     const contentDiv = createElement('div', { className: 'message-content' });
     const textDiv = createElement('div', { className: 'message-text' });
     contentDiv.appendChild(textDiv);
     messageDiv.appendChild(contentDiv);
 
-    // Aplicar markdown
     if (typeof parseMarkdownToHTML === 'function') {
       textDiv.innerHTML = parseMarkdownToHTML(safeContent);
     } else {
-      // Fallback temporal: solo convertir saltos de línea
       textDiv.innerHTML = sanitizeText(safeContent).replace(/\n/g, '<br data-nl="true">');
 
-      // Intentar cargar dinámicamente el módulo markdown
       import('../utils/markdown-teorico.js').then(module => {
         if (module && module.parseMarkdownToHTML) {
-          // Actualizar con markdown completo cuando esté disponible
           textDiv.innerHTML = module.parseMarkdownToHTML(safeContent);
         }
       }).catch(() => {
@@ -2429,7 +2279,6 @@ export function replaceLoadingMessage(loader, content, type = MESSAGE_TYPES.MESS
 
   ensureRenderersInitialized();
 
-  // Restaurar la imagen de perfil al estado normal
   const profileElement = loader.querySelector('.ai-profile');
   if (profileElement) {
     profileElement.classList.remove('thinking');
@@ -2442,11 +2291,9 @@ export function replaceLoadingMessage(loader, content, type = MESSAGE_TYPES.MESS
 
   clearElement(contentElem);
 
-  // Renderizar según el tipo
   const renderer = getRenderer(type);
   renderer(contentElem, content, 'ai');
 
-  // Aplicar highlight.js después de la inserción en DOM
   requestAnimationFrame(() => {
     if (window.hljs) {
       contentElem.querySelectorAll('pre code').forEach(block => {
@@ -2462,7 +2309,6 @@ export function replaceLoadingMessage(loader, content, type = MESSAGE_TYPES.MESS
     loader.classList.add('rendered');
     setManagedTimeout(() => loader.classList.remove('rendered'), 50, 'remove-rendered-class');
 
-    // Inicializar botones de interacción y hacer scroll
     initializeInteractionAndScroll(loader);
   });
 }
@@ -2472,7 +2318,6 @@ export function replaceLoadingMessage(loader, content, type = MESSAGE_TYPES.MESS
  * @param {HTMLElement} messageElement - Elemento del mensaje
  */
 function initializeInteractionAndScroll(messageElement) {
-  // Agregar botones de interacción una vez que el mensaje esté completamente renderizado
   setManagedTimeout(() => {
     import('../utils/response-interaction-teorico.js').then(module => {
       if (typeof module.initResponseInteraction === 'function') {
@@ -2534,20 +2379,16 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         "💪 Los mejores estudiantes son aquellos que nunca dejan de preguntarse 'por qué'"
     ];
     
-    // Eliminar atributo de carga
     loadingMessage.removeAttribute('data-is-loading');
     
-    // Eliminar clase de carga y añadir clases del CSS existente
     loadingMessage.classList.remove('processing');
     loadingMessage.classList.add('error-message');
     
-    // Restaurar la imagen de perfil al estado normal
     const aiProfile = loadingMessage.querySelector('.ai-profile');
     if (aiProfile) {
         aiProfile.classList.remove('thinking');
     }
     
-    // Buscar el contenedor de contenido o crear uno si no existe
     let messageContent = loadingMessage.querySelector('.message-content');
     if (!messageContent) {
         messageContent = document.createElement('div');
@@ -2555,7 +2396,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         loadingMessage.appendChild(messageContent);
     }
     
-    // Limpiar cualquier contenido existente primero
     messageContent.innerHTML = '';
     
     const contextualMessage = getContextualErrorMessage(errorMessage);
@@ -2574,10 +2414,8 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         </div>
     `;
     
-    // Actualizar el contenido
     messageContent.innerHTML = errorContent;
     
-    // Agregar marcadores para prevenir limpieza automatizada
     loadingMessage.setAttribute('data-error-rendered', 'true');
     messageContent.setAttribute('data-error-content', 'true');
     
@@ -2591,7 +2429,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         if (typeof scrollToBottom === 'function') {
             scrollToBottom();
         } else {
-            // Fallback básico para scroll
             const chatMessages = document.querySelector('.chat-messages');
             if (chatMessages) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -2612,7 +2449,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
     
     // 🦫 Cerrar loading y mostrar mensaje amigable
     if (window.acadelCerrar && window.acadelInfo) {
-        // Cerrar cualquier loading activo
         document.querySelectorAll('.notificacion-acadel.loading').forEach(notification => {
             const id = notification.dataset.id;
             if (id) window.acadelCerrar(parseInt(id));
@@ -2632,12 +2468,10 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
  * @returns {Object} Objeto con tipo y contenido procesado
  */
 export function processServerResponse(data) {
-  // Validación básica
   if (!data) {
     return { type: MESSAGE_TYPES.MESSAGE, content: 'Acadel no pudo procesar la respuesta del servidor' };
   }
 
-  // Verificar tipos específicos
   if (data.type === MESSAGE_TYPES.IMAGE) {
     if (data.data) {
       return {
@@ -2662,10 +2496,8 @@ export function processServerResponse(data) {
   }
 
   if (data.type === MESSAGE_TYPES.EXAM) {
-    // Normalizar la estructura de datos
     let examData = null;
 
-    // Buscar datos del examen en diferentes lugares
     if (data.exam && typeof data.exam === 'object') {
       examData = data.exam;
     }
@@ -2703,15 +2535,12 @@ export function processServerResponse(data) {
     };
   }
 
-  // Procesar contenido textual
   const answer = data.answer || data.content || data.message || '';
 
-  // Intentar detectar JSON en el texto
   if (typeof answer === 'string' && answer.trim().startsWith('{') && answer.trim().endsWith('}')) {
     try {
       const parsedAnswer = JSON.parse(answer);
 
-      // Para otros tipos especiales
       if (parsedAnswer.type) {
         return {
           type: parsedAnswer.type,
@@ -2737,10 +2566,8 @@ export function processServerResponse(data) {
  * @returns {boolean} true si se ha renderizado con éxito
  */
 export function processAndRenderResponse(data, loadingMessage) {
-  // Validación básica
   if (!loadingMessage || !data) return false;
 
-  // Detectar si es un examen de forma directa
   if (data.type === 'exam' && data.exam) {
     replaceLoadingMessage(loadingMessage, data.exam, MESSAGE_TYPES.EXAM);
     return true;
@@ -2749,19 +2576,16 @@ export function processAndRenderResponse(data, loadingMessage) {
   const contentElem = loadingMessage.querySelector('.message-content');
   if (!contentElem) return false;
 
-  // Restaurar la imagen de perfil al estado normal
   const profileElement = loadingMessage.querySelector('.ai-profile');
   if (profileElement) {
     profileElement.classList.remove('thinking');
   }
 
-  // Verificar si ya se procesó
   if (contentElem.getAttribute('data-processed')) {
     return true;
   }
   contentElem.setAttribute('data-processed', 'true');
 
-  // Extraer contenido textual
   let textContent = extractTextContent(data);
 
   if (textContent) {
@@ -2771,7 +2595,6 @@ export function processAndRenderResponse(data, loadingMessage) {
       renderMermaidMessage(contentElem, textContent);
       loadingMessage.classList.remove('processing');
       
-      // Inicializar botones de interacción
       setTimeout(() => {
         initializeInteractionAndScroll(loadingMessage);
       }, 50);
@@ -2779,17 +2602,13 @@ export function processAndRenderResponse(data, loadingMessage) {
       return true;
     }
     
-    // Detectar tablas markdown
     const tableResult = detectTableInText(textContent);
 
-    // Detectar bloques de código
     const codeResult = detectAndProcessCode(textContent);
 
-    // Procesar según el contenido detectado
     if (tableResult.success && !codeResult.success) {
       contentElem.innerHTML = tableResult.html;
 
-      // Agregar botón de expandir tabla
       addExpandButton(contentElem, {
         content: tableResult.html,
         title: 'Tabla de datos',
@@ -2803,7 +2622,6 @@ export function processAndRenderResponse(data, loadingMessage) {
     if (codeResult.success) {
       contentElem.innerHTML = codeResult.html;
 
-      // Configurar interactividad
       setupCodeBlocksInteractivity(contentElem);
 
       loadingMessage.classList.remove('processing');
@@ -2824,7 +2642,6 @@ export function processAndRenderResponse(data, loadingMessage) {
     return true;
   }
 
-  // Verificar objetos para tipos especiales
   if (detectAndRenderStructuredContent(data, contentElem)) {
     loadingMessage.classList.remove('processing');
     return true;
@@ -2844,7 +2661,6 @@ export function processAndRenderResponse(data, loadingMessage) {
  * @returns {boolean} - true si se ha renderizado con éxito
  */
 function detectAndRenderStructuredContent(data, contentElem) {
-  // Verificar tipos específicos en el objeto raíz
   if (data.type === MESSAGE_TYPES.CODE && data.code) {
     renderCodeMessage(contentElem, {
       code: data.code,
@@ -2863,7 +2679,6 @@ function detectAndRenderStructuredContent(data, contentElem) {
     return true;
   }
 
-  // Verificar en propiedades anidadas comunes
   const checkProps = ['content', 'data', 'answer', 'result'];
 
   for (const prop of checkProps) {
@@ -2927,7 +2742,6 @@ export function ensureFeedbackPersistence(force = false) {
   });
 }
 
-// Mostrar vista previa de Mermaid
 window.showMermaidPreview = function(button) {
   const code = button.getAttribute('data-code');
   const diagramId = button.getAttribute('data-diagram-id');
@@ -2939,7 +2753,6 @@ window.showMermaidPreview = function(button) {
       title: title
     }, 'mermaid');
   } else {
-    // Fallback - cargar dinámicamente
     import('../components/preview-panel-teorico.js')
       .then(module => {
         if (typeof module.showPreviewPanel === 'function') {
@@ -2967,13 +2780,11 @@ window.showFullImage = function(imagePath) {
   
   window._showingFullImage = true;
   
-  // Verificar si la imagen existe
   const img = new Image();
   
   img.onload = function() {
     // La imagen existe, mostrar modal
     try {
-      // Crear contenedor para la imagen
       const imgContainer = document.createElement('div');
       Object.assign(imgContainer.style, {
         maxWidth: '90%',
@@ -2983,7 +2794,6 @@ window.showFullImage = function(imagePath) {
         alignItems: 'center'
       });
       
-      // Crear la imagen
       const imageElement = document.createElement('img');
       imageElement.src = imagePath;
       imageElement.alt = 'Vista ampliada por Acadel';
@@ -3009,7 +2819,6 @@ window.showFullImage = function(imagePath) {
         position: 'absolute'
       });
       
-      // Añadir la animación para el spinner si no existe
       if (!document.getElementById('spin-animation')) {
         const style = document.createElement('style');
         style.id = 'spin-animation';
@@ -3022,7 +2831,6 @@ window.showFullImage = function(imagePath) {
         document.head.appendChild(style);
       }
       
-      // Crear el modal con la imagen y el spinner
       const modal = createModal({
         className: 'image-fullscreen-modal',
         content: [spinner, imgContainer],
@@ -3031,18 +2839,15 @@ window.showFullImage = function(imagePath) {
         }
       });
       
-      // Ocultar spinner cuando la imagen cargue
       imageElement.onload = function() {
         spinner.style.display = 'none';
       };
       
-      // Manejar error de carga
       imageElement.onerror = function() {
         // Si hay error en la imagen dentro del modal, mostrar error
         spinner.style.display = 'none';
         showErrorModal();
         
-        // Cerrar el modal actual si existe
         if (document.body.contains(modal)) {
           document.body.removeChild(modal);
         }
@@ -3080,7 +2885,6 @@ function createModal(options = {}) {
     onClose
   } = options;
   
-  // Eliminar modales existentes del mismo tipo
   const existingModals = document.querySelectorAll(`.${className}`);
   existingModals.forEach(modal => {
     if (modal && modal.parentNode) {
@@ -3088,7 +2892,6 @@ function createModal(options = {}) {
     }
   });
   
-  // Crear el modal
   const modal = document.createElement('div');
   modal.className = className;
   modal.setAttribute('role', role);
@@ -3136,7 +2939,6 @@ function createModal(options = {}) {
     } else if (content instanceof HTMLElement) {
       modal.appendChild(content);
     } else if (Array.isArray(content)) {
-      // Manejar array de elementos
       content.forEach(item => {
         if (typeof item === 'string') {
           modal.innerHTML += item;
@@ -3147,10 +2949,8 @@ function createModal(options = {}) {
     }
   }
   
-  // Agregar al DOM
   document.body.appendChild(modal);
   
-  // Configurar eventos de cierre
   const closeModal = () => {
     if (document.body.contains(modal)) {
       document.body.removeChild(modal);
@@ -3173,7 +2973,6 @@ function createModal(options = {}) {
     });
   }
   
-  // Configurar escape para cerrar
   const escHandler = (e) => {
     if (e.key === 'Escape') {
       closeModal();
@@ -3190,7 +2989,6 @@ function createModal(options = {}) {
  * Muestra un modal de error cuando una imagen no se puede cargar
  */
 function showErrorModal() {
-  // Crear contenedor de error
   const errorContainer = document.createElement('div');
   Object.assign(errorContainer.style, {
     display: 'flex',
@@ -3223,7 +3021,6 @@ function showErrorModal() {
   errorContainer.appendChild(icon);
   errorContainer.appendChild(message);
   
-  // Crear modal con el mensaje de error
   createModal({
     className: 'image-fullscreen-modal',
     content: errorContainer,
@@ -3253,9 +3050,7 @@ function setupImagePreviewSystem() {
     return;
   }
   
-  // Usar delegación de eventos para capturar clics en cualquier imagen o contenedor de imagen
   chatMessagesContainer.addEventListener('click', function(e) {
-    // Buscar si el clic fue en una imagen o en un contenedor de imagen
     const imgTarget = e.target.closest('.image-preview img') || 
                       e.target.closest('.markdown-image') ||
                       e.target.closest('.multimodal-container img') ||
@@ -3299,14 +3094,10 @@ function setupImagePreviewSystem() {
   console.log('🦫 Acadel: Sistema de vista previa de imágenes configurado correctamente');
 }
 
-// Inicializar al cargar el DOM
 document.addEventListener('DOMContentLoaded', setupImagePreviewSystem);
-// Backup para asegurar que se aplica incluso si el DOM ya está cargado
 setTimeout(setupImagePreviewSystem, 1000);
 
-// ✅ ESCUCHAR CAMBIOS EN EL HISTORIAL CON PROCESAMIENTO OPTIMIZADO
 window.addEventListener('popstate', () => {
-  // Usar el sistema optimizado del PDF para procesar imágenes después de cambio de URL
   if (typeof setManagedTimeout === 'function') {
     setManagedTimeout(() => {
       try {
@@ -3327,13 +3118,11 @@ window.addEventListener('popstate', () => {
 // También exposición global controlada para admitir acceso directo
 if (typeof window !== 'undefined') {
   window.initializeFileAttachmentHandlers = initializeFileAttachmentHandlers;
-  // ✅ USAR EL CACHE DEL SISTEMA OPTIMIZADO
   window.imageUrlCache = imageUrlCache;
 }
 
 // Mantener compatibilidad con exports existentes
 export {
-  // ✅ NUEVAS EXPORTACIONES DEL SISTEMA OPTIMIZADO
   processExternalImagesRealTime,
   initializeImagePreviewHandlersOptimized,
   handleImageErrorOptimized

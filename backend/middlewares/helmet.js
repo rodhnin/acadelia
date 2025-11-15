@@ -7,7 +7,6 @@ import helmet from 'helmet';
 export const configureHelmet = (app) => {
   app.use(
     helmet({
-      // Desactivar CSP integrado (ya tienes tu propio middleware)
       contentSecurityPolicy: false,
       
       // Prevenir clickjacking
@@ -33,7 +32,6 @@ export const configureHelmet = (app) => {
         policy: 'strict-origin-when-cross-origin'
       },
       
-      // Desactivar COEP (Cross-Origin Embedder Policy) para permitir scripts como Paddle
       crossOriginEmbedderPolicy: false,
       
       // Ajustar para permitir interacción con Paddle

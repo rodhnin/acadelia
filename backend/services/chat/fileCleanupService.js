@@ -1,4 +1,3 @@
-// backend/services/chat/fileCleanupService.js
 import fs from 'fs';
 import path from 'path';
 import schedule from 'node-schedule';
@@ -18,7 +17,6 @@ class FileCleanupService {
     this.initialized = false;
   }
 
-  // Iniciar limpieza programada automática
   startScheduledCleanup() {
     // Evitar inicialización duplicada
     if (this.initialized) {
@@ -26,12 +24,10 @@ class FileCleanupService {
       return;
     }
     
-    // Ejecutar limpieza cada domingo a las 3am
     this.scheduledJob = schedule.scheduleJob('0 3 * * 0', async () => {
       console.log('🧹 Iniciando limpieza automática programada de archivos (imágenes y documentos)...');
       
       try {
-        // Ejecutar limpieza de imágenes (lógica existente)
         const orphanedImagesResult = await this.cleanupOrphanedImages();
         const oldImagesResult = await this.cleanupOldImages();
         
@@ -69,7 +65,6 @@ class FileCleanupService {
 
   // ========== LIMPIEZA DE IMÁGENES (lógica existente) ==========
 
-  // Limpiar imágenes huérfanas (chats eliminados)
   async cleanupOrphanedImages() {
     let result = {
       success: false,
@@ -78,7 +73,6 @@ class FileCleanupService {
     };
     
     try {
-      // Obtener chats activos
       const chatsResult = await pool.query(`
         SELECT id_chat FROM chat WHERE is_deleted = false
       `);
@@ -86,7 +80,6 @@ class FileCleanupService {
       const activeChatIds = new Set(chatsResult.rows.map(row => row.id_chat));
       console.log(`🖼️ Encontrados ${activeChatIds.size} chats activos para verificar imágenes`);
       
-      // Verificar directorios de imágenes
       if (fs.existsSync(this.chatImagesDir)) {
         const dirs = fs.readdirSync(this.chatImagesDir);
         console.log(`🖼️ Encontrados ${dirs.length} directorios de imágenes para revisar`);
@@ -124,7 +117,6 @@ class FileCleanupService {
     }
   }
 
-  // Limpiar imágenes antiguas de chats activos
   async cleanupOldImages() {
     let result = {
       success: false,
@@ -133,19 +125,16 @@ class FileCleanupService {
     };
     
     try {
-      // Calcular la fecha límite (hace maxAgeInDays días)
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.maxAgeInDays);
       console.log(`🖼️ Limpiando imágenes anteriores a ${cutoffDate.toISOString()}`);
       
-      // Obtener chats activos con su última fecha de mensaje
       const chatsResult = await pool.query(`
         SELECT id_chat, last_message_date 
         FROM chat 
         WHERE is_deleted = false
       `);
       
-      // Verificar directorios de imágenes
       if (fs.existsSync(this.chatImagesDir)) {
         const dirs = fs.readdirSync(this.chatImagesDir);
         
@@ -155,7 +144,6 @@ class FileCleanupService {
           // Ignorar si no es directorio
           if (!fs.statSync(chatDir).isDirectory()) continue;
           
-          // Buscar el chat correspondiente
           const chatInfo = chatsResult.rows.find(row => row.id_chat === dir);
           
           // Si el chat existe y está activo pero no se ha usado en mucho tiempo
@@ -190,7 +178,6 @@ class FileCleanupService {
 
   // ========== 🆕 NUEVA LIMPIEZA DE DOCUMENTOS ==========
 
-  // Limpiar documentos huérfanos (chats eliminados)
   async cleanupOrphanedDocuments() {
     let result = {
       success: false,
@@ -199,7 +186,6 @@ class FileCleanupService {
     };
     
     try {
-      // Obtener chats activos
       const chatsResult = await pool.query(`
         SELECT id_chat FROM chat WHERE is_deleted = false
       `);
@@ -207,7 +193,6 @@ class FileCleanupService {
       const activeChatIds = new Set(chatsResult.rows.map(row => row.id_chat));
       console.log(`📄 Encontrados ${activeChatIds.size} chats activos para verificar documentos`);
       
-      // Verificar directorios de documentos
       if (fs.existsSync(this.chatDocumentsDir)) {
         const dirs = fs.readdirSync(this.chatDocumentsDir);
         console.log(`📄 Encontrados ${dirs.length} directorios de documentos para revisar`);
@@ -245,7 +230,6 @@ class FileCleanupService {
     }
   }
 
-  // Limpiar documentos antiguos de chats activos
   async cleanupOldDocuments() {
     let result = {
       success: false,
@@ -254,19 +238,16 @@ class FileCleanupService {
     };
     
     try {
-      // Calcular la fecha límite (hace maxAgeInDays días)
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.maxAgeInDays);
       console.log(`📄 Limpiando documentos anteriores a ${cutoffDate.toISOString()}`);
       
-      // Obtener chats activos con su última fecha de mensaje
       const chatsResult = await pool.query(`
         SELECT id_chat, last_message_date 
         FROM chat 
         WHERE is_deleted = false
       `);
       
-      // Verificar directorios de documentos
       if (fs.existsSync(this.chatDocumentsDir)) {
         const dirs = fs.readdirSync(this.chatDocumentsDir);
         
@@ -276,7 +257,6 @@ class FileCleanupService {
           // Ignorar si no es directorio
           if (!fs.statSync(chatDir).isDirectory()) continue;
           
-          // Buscar el chat correspondiente
           const chatInfo = chatsResult.rows.find(row => row.id_chat === dir);
           
           // Si el chat existe y está activo pero no se ha usado en mucho tiempo
@@ -320,7 +300,6 @@ class FileCleanupService {
     try {
       console.log(`📄 Limpiando registros huérfanos de documentos en base de datos...`);
       
-      // Eliminar registros de file_attachments donde el chat ya no existe o está eliminado
       const deleteQuery = `
         DELETE FROM file_attachments 
         WHERE chat_id NOT IN (
@@ -377,7 +356,6 @@ class FileCleanupService {
 
   // ========== UTILIDADES COMPARTIDAS ==========
 
-  // Eliminar directorio recursivamente (lógica existente)
   deleteFolderRecursive(dir) {
     if (fs.existsSync(dir)) {
       fs.readdirSync(dir).forEach(file => {
@@ -395,9 +373,7 @@ class FileCleanupService {
   }
 }
 
-// Exportar instancia singleton
 export const fileCleanupService = new FileCleanupService();
 
 // NO iniciar automáticamente aquí - la inicialización debe hacerse solo en server.js
-// para evitar inicializaciones duplicadas
 console.log('🎉 FileCleanupService automático (Imágenes + Documentos) cargado y listo');

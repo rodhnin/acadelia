@@ -1,4 +1,3 @@
-// backend/routes/chat/videoTranscriptionRoutes.js
 import express from 'express';
 import { 
   checkChatHasTranscription,
@@ -37,7 +36,6 @@ router.get('/chat/:chatId/audio-timestamps', authenticateUser, getAudioTimestamp
 router.get('/chat/:chatId/audio-processing-status', authenticateUser, checkAudioProcessingStatus);
 router.get('/chat/:chatId/youtube-progress', authenticateUser, getYouTubeProcessingProgress);
 
-// Para mantener compatibilidad con el código existente
 router.get('/chat/:chatId/timestamps', authenticateUser, getVideoTimestamps); // Mantener para compatibilidad
 router.get('/chat/:chatId/processing-status', authenticateUser, checkYouTubeProcessingStatus); // Mantener para compatibilidad
 

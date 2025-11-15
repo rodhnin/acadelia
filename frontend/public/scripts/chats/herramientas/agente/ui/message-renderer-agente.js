@@ -45,7 +45,6 @@ import {
 } from '../utils/markdown-image-processor.js';
 
 // ==========================================
-// SISTEMA DE CACHÉ DE IMÁGENES - AHORA DELEGADO AL MÓDULO COMPARTIDO
 // ==========================================
 // NOTA: El sistema de caché ahora se importa del módulo compartido
 // y se adapta automáticamente para el contexto del agente
@@ -54,7 +53,6 @@ import {
 // INICIALIZACIÓN Y REGISTRO DE RENDERIZADORES
 // ==========================================
 
-// AGREGAR al inicio después de las importaciones:
 const acadelConfetti = window.acadelConfetti || ((title, msg) => console.log(`CONFETTI: ${title} - ${msg}`));
 const acadelExito = window.acadelExito || ((title, msg) => console.log(`ÉXITO: ${title} - ${msg}`));
 const acadelInfo = window.acadelInfo || ((title, msg) => console.log(`INFO: ${title} - ${msg}`));
@@ -64,7 +62,6 @@ const acadelError = window.acadelError || ((title, msg) => console.log(`ERROR: $
 // Patrón para detectar tipos de diagramas Mermaid
 const MERMAID_TYPE_PATTERN = /^(graph |flowchart |sequenceDiagram|classDiagram|classDiagram-v2|gitGraph|pie title|gantt|stateDiagram|stateDiagram-v2|mindmap|timeline|journey|erDiagram|requirementDiagram)/m;
 
-// Sistema de renderizadores
 const renderersMap = {};
 let renderersInitialized = false;
 let mermaidObserverInitialized = false;
@@ -99,7 +96,6 @@ function initializeMathJaxInContent(container, options = {}) {
     return Promise.resolve();
   }
   
-  // Buscar elementos que puedan contener matemáticas
   const mathSelectors = [
     '.math-content', 
     '[data-has-math="true"]',
@@ -132,7 +128,6 @@ function initializeMathJaxInContent(container, options = {}) {
     return Promise.resolve();
   }
   
-  // Filtrar elementos que ya han sido procesados
   const unprocessedElements = mathElements.filter(el => 
     !el.hasAttribute('data-mathjax-processed')
   );
@@ -147,7 +142,6 @@ function initializeMathJaxInContent(container, options = {}) {
   try {
     console.log('✅ AGENTE DEBUG: Usando renderMath del sistema agente');
     
-    // Usar renderMath del sistema agente
     return renderMath(unprocessedElements, {
       useCache: true,
       cacheKey: options.cacheKey || `math-agente-${Date.now()}`,
@@ -155,7 +149,6 @@ function initializeMathJaxInContent(container, options = {}) {
       ...options
     }).then(() => {
       console.log('🎯 AGENTE DEBUG: MathJax renderizado exitosamente');
-      // Marcar elementos como procesados
       unprocessedElements.forEach(el => {
         el.setAttribute('data-mathjax-processed', 'true');
       });
@@ -181,7 +174,6 @@ export function ensureRendererInitialized(type) {
     renderersInitialized = true;
   }
 
-  // Cargar renderizador bajo demanda si es necesario
   if (type && !renderersMap[type] && rendererInitializers[type]) {
     renderersMap[type] = rendererInitializers[type]();
     rendererUsageCounts[type] = (rendererUsageCounts[type] || 0) + 1;
@@ -225,17 +217,14 @@ export function initializeMessageRenderers() {
  * Inicializa la limpieza para mensajes existentes
  */
 export function initializeCleanupForExistingMessages() {
-  // Ejecutar limpieza inmediatamente
   setTimeout(performInitialCleanup, 0);
 
-  // Ejecutar después del DOM completamente cargado
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     setTimeout(performInitialCleanup, 500);
   } else {
     document.addEventListener('DOMContentLoaded', () => setTimeout(performInitialCleanup, 500));
   }
 
-  // Ejecutar cuando se cambia de chat
   window.addEventListener('popstate', () => {
     setTimeout(performInitialCleanup, 500);
   });
@@ -268,7 +257,6 @@ function performInitialCleanup() {
     }
   });
 
-  // Configurar observer unificado
   setupUnifiedObserver();
   setTimeout(processExistingAudioMessages, 600);
 }
@@ -308,17 +296,14 @@ function setupUnifiedObserver() {
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType === 1) {
-            // Detectar nuevos mensajes
             if (node.classList?.contains('message') || node.querySelector?.('.message')) {
               newMessagesAdded = true;
               
-              // ✅ AGREGAR a set para evitar duplicados
               const messageElement = node.classList?.contains('message') ? node : node.querySelector('.message');
               if (messageElement) {
                 messagesToProcess.add(messageElement);
               }
               
-              // Agregar a pendientes para limpieza
               const contentElement = node.querySelector('.message-content') || 
                                    (node.classList?.contains('message') ? node.querySelector('.message-content') : null);
               if (contentElement) {
@@ -327,7 +312,6 @@ function setupUnifiedObserver() {
               }
             }
 
-            // Detectar nuevas imágenes
             const hasImages = node.querySelector('img') ||
               node.querySelector('.image-preview') ||
               node.querySelector('.multimodal-container');
@@ -339,13 +323,11 @@ function setupUnifiedObserver() {
       }
     });
 
-    // ✅ PROCESAR mensajes nuevos SIN DUPLICADOS
     if (newMessagesAdded && messagesToProcess.size > 0) {
       setTimeout(() => {
         console.log(`🔍 [OBSERVER] ${messagesToProcess.size} mensajes únicos detectados`);
         
         messagesToProcess.forEach(message => {
-          // ✅ VERIFICAR si ya fue procesado
           if (message.hasAttribute('data-images-processed')) {
             console.log('📦 [OBSERVER] Mensaje ya procesado, saltando');
             return;
@@ -357,7 +339,6 @@ function setupUnifiedObserver() {
             if (externalImages.length > 0) {
               const containerKey = container.dataset.containerId || container.outerHTML.slice(0, 100);
               
-              // ✅ THROTTLING: Solo procesar si no se procesó recientemente
               const lastProcessed = imageProcessingThrottle.get(containerKey);
               const now = Date.now();
               
@@ -366,7 +347,6 @@ function setupUnifiedObserver() {
                 imageProcessingThrottle.set(containerKey, now);
                 processImagesOptimized(container);
                 
-                // Limpiar throttle después de un tiempo
                 setTimeout(() => {
                   imageProcessingThrottle.delete(containerKey);
                 }, 10000); // 10 segundos
@@ -376,19 +356,16 @@ function setupUnifiedObserver() {
             }
           }
           
-          // ✅ MARCAR como procesado para evitar reprocesamiento
           message.setAttribute('data-images-processed', 'true');
         });
         
       }, 150); // Reducido de 300ms a 150ms
     }
 
-    // Procesar imágenes con errores
     if (hasNewImages) {
       setTimeout(handleNewImages, 200);
     }
 
-    // Procesar contenido para limpieza
     if (hasNewContent && !processingScheduled) {
       processingScheduled = true;
       requestAnimationFrame(() => {
@@ -445,7 +422,6 @@ function handleNewImages() {
   });
 }
 
-// AGREGAR esta nueva función:
 function processExistingAudioMessages() {
   console.log('Procesando mensajes de audio existentes...');
 
@@ -461,7 +437,6 @@ function processExistingAudioMessages() {
       
       console.log('Encontrado mensaje de audio, mejorando renderizado...');
       
-      // Extraer información del contenido
       const audioData = extractAudioInfoFromText(content);
       
       // Re-renderizar con el formato mejorado
@@ -473,7 +448,6 @@ function processExistingAudioMessages() {
     }
   });
 
-  // Mejorar indicadores de audio simples
   document.querySelectorAll('.attachment-indicator.audio').forEach(audioElement => {
     if (!audioElement.hasAttribute('data-enhanced')) {
       enhanceSimpleAudioIndicator(audioElement);
@@ -493,32 +467,27 @@ function extractAudioInfoFromText(content) {
     audioInfo.fileName = fileMatch[1].trim();
   }
   
-  // Extraer duración
   const durationMatch = content.match(/\*\*Duración:\*\*\s*([^\n]+)/);
   if (durationMatch) {
     audioInfo.duration = durationMatch[1].trim();
   }
   
-  // Extraer tamaño
   const sizeMatch = content.match(/\*\*Tamaño:\*\*\s*([^\n]+)/);
   if (sizeMatch) {
     audioInfo.size = sizeMatch[1].trim();
   }
   
-  // Extraer formato
   const formatMatch = content.match(/\*\*Formato:\*\*\s*([^\n]+)/);
   if (formatMatch) {
     audioInfo.format = formatMatch[1].trim();
   }
   
-  // Determinar fuente y formato por defecto
   if (content.includes('grabado')) {
     audioInfo.source = 'grabación directa';
   } else if (content.includes('subido') || content.includes('Subió')) {
     audioInfo.source = 'archivo subido';
   }
   
-  // Si no se pudo extraer formato, intentar desde el nombre del archivo
   if (!audioInfo.format && audioInfo.fileName) {
     const extension = audioInfo.fileName.split('.').pop().toUpperCase();
     if (extension) {
@@ -529,7 +498,6 @@ function extractAudioInfoFromText(content) {
   return audioInfo;
 }
 
-// Función auxiliar para escapar HTML (si no existe ya)
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
@@ -541,7 +509,6 @@ function enhanceSimpleAudioIndicator(audioElement) {
   const textContent = audioElement.textContent || '';
   const fileName = textContent.replace('Archivo de audio:', '').trim() || 'Audio';
   
-  // Truncar nombre si es muy largo
   const truncatedName = fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
   
   const enhancedHTML = `
@@ -578,7 +545,6 @@ function initializeMermaidObserver() {
 
   console.log("Inicializando observador de Mermaid");
 
-  // Delegar completamente al sistema centralizado en mermaid-utils.js
   initMermaidSystem()
     .then(() => {
       console.log("Sistema Mermaid inicializado correctamente");
@@ -602,7 +568,6 @@ function initializeFileAttachmentHandlers(container) {
     // Evitar duplicar eventos
     if (fileElement.getAttribute('data-handler-attached')) return;
 
-    // Obtener datos del archivo
     const fileName = fileElement.getAttribute('data-file-name') || '';
     const fileType = fileElement.getAttribute('data-file-type') || 'document';
     const language = fileElement.getAttribute('data-language') || '';
@@ -613,7 +578,6 @@ function initializeFileAttachmentHandlers(container) {
     fileElement.style.color = 'var(--primary-color)';
     fileElement.style.textDecoration = 'underline';
 
-    // Agregar evento de clic
     fileElement.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -621,11 +585,9 @@ function initializeFileAttachmentHandlers(container) {
       handleFilePreview(fileType, fileName, language, originalMessage);
     });
 
-    // Marcar como inicializado para evitar duplicar eventos
     fileElement.setAttribute('data-handler-attached', 'true');
   });
 
-  // Verificar si ya existe un botón de expansión para evitar duplicados
   if (container.querySelector('.expand-content-btn')) {
     return;
   }
@@ -638,7 +600,6 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
   // Si existe window.showFilePreview, usarla directamente
   if (typeof window.showFilePreview === 'function') {
     try {
-      // Crear un ID único para este archivo
       const tempId = `temp-file-${Date.now()}`;
       window.showFilePreview(tempId, fileType);
       return;
@@ -649,17 +610,14 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
 
   // Alternativa: usar el panel de vista previa directamente
   try {
-    // Importar el módulo de vista previa
     import('../components/preview-panel-agente.js')
       .then(module => {
         if (typeof module.showPreviewPanel === 'function') {
-          // Preparar datos según el tipo de archivo
           let previewData = {};
 
           if (fileType === 'document') {
             let textContent = extractDocumentContent(originalMessage, fileName);
 
-            // Mejorar presentación
             previewData = {
               codeContent: `<pre style="white-space: pre-wrap; word-wrap: break-word; padding: 15px; font-family: 'Consolas', monospace; font-size: 14px; line-height: 1.6;">${textContent}</pre>`,
               title: fileName,
@@ -667,7 +625,6 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
               isDocument: true
             };
           } else if (fileType === 'code') {
-            // Extraer código específico para este archivo
             let code = extractCodeContent(originalMessage, fileName);
 
             previewData = {
@@ -677,10 +634,8 @@ function handleFilePreview(fileType, fileName, language, originalMessage) {
             };
           }
 
-          // Definir el tipo correcto para la vista previa
           const previewType = fileType === 'document' ? 'code' : fileType;
 
-          // Mostrar panel con datos del archivo
           module.showPreviewPanel(previewData, previewType);
         }
       })
@@ -728,7 +683,6 @@ function extractDocumentContent(originalMessage, fileName) {
       .replace(/%3Cem%3E/gi, '%20')       // Eliminar <em>
       .replace(/%3C%2Fem%3E/gi, '%20');   // Eliminar </em>
 
-    // Decodificar el mensaje limpio
     const decodedMessage = decodeURIComponent(cleanedMessage);
 
     // PASO 3: Búsqueda del documento específico
@@ -786,7 +740,6 @@ function extractDocumentContent(originalMessage, fileName) {
     if (endPos !== -1) {
       textContent = contentAfterMarker.substring(0, endPos).trim();
     } else {
-      // Si no se encontró un patrón claro, buscar múltiples saltos de línea como separador
       const nlMatch = contentAfterMarker.match(/\n\s*\n\s*\n+/);
       if (nlMatch && nlMatch.index) {
         textContent = contentAfterMarker.substring(0, nlMatch.index).trim();
@@ -863,7 +816,6 @@ function extractCodeContent(originalMessage, fileName) {
 
     // MEJORA: Sanitización diferenciada por tipo de archivo
     if (fileName.toLowerCase().endsWith('.html')) {
-      // Para HTML, ser más cuidadoso con caracteres de control
       cleanedMessage = originalMessage
         .replace(/%3Ca%20href%3D[^%]*%3E/gi, '') // Solo <a href=...>
         .replace(/%3C%2Fa%3E/gi, '')           // </a>
@@ -872,13 +824,11 @@ function extractCodeContent(originalMessage, fileName) {
         .replace(/%0D/g, '')                  // Eliminar retornos de carro encodificados
         .replace(/%09/g, '');                 // Eliminar tabs encodificados
     } else if (fileName.toLowerCase().endsWith('.css')) {
-      // Para CSS, eliminar etiquetas <em> pero preservar operadores
       cleanedMessage = originalMessage
         .replace(/%3Cem%3E/gi, '')            // <em>
         .replace(/%3C%2Fem%3E/gi, '')         // </em>
       // No reemplazar otros tags que pueden ser parte de comentarios CSS
     } else {
-      // Para otros archivos (PHP, JS, etc.)
       cleanedMessage = originalMessage
         .replace(/%3Ca%20href%3D[^%]*%3E/gi, '') // Solo <a href=...>
         .replace(/%3C%2Fa%3E/gi, '')           // </a>
@@ -887,7 +837,6 @@ function extractCodeContent(originalMessage, fileName) {
       // NO reemplazar %3E o %3C genéricos ya que pueden ser operadores
     }
 
-    // Decodificar el mensaje sanitizado
     let decodedMessage;
     try {
       decodedMessage = decodeURIComponent(cleanedMessage);
@@ -906,7 +855,6 @@ function extractCodeContent(originalMessage, fileName) {
       'i'
     );
 
-    // Buscar el bloque específico
     const codeMatch = decodedMessage.match(codeBlockPattern);
 
     // Si encontramos el bloque, devolver su contenido con sanitización específica
@@ -915,7 +863,6 @@ function extractCodeContent(originalMessage, fileName) {
 
       // Sanitización específica por tipo de archivo
       if (fileName.toLowerCase().endsWith('.css')) {
-        // Eliminar específicamente etiquetas <em> para CSS
         code = code.replace(/<em>/g, '')
           .replace(/<\/em>/g, '');
       } else {
@@ -992,7 +939,6 @@ function extractCodeContent(originalMessage, fileName) {
   }
 }
 
-// Inicializar contentProcessing con la función de manejadores de archivos
 contentProcessing.initialize({
   initializeFileAttachmentHandlers: initializeFileAttachmentHandlers
 });
@@ -1012,14 +958,12 @@ function containsMermaidDiagram(text) {
   // Array para almacenar todas las coincidencias de diagramas
   let mermaidMatches = [];
 
-  // Verificar bloques explícitos de mermaid
   const explicitMatches = [...text.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
   if (explicitMatches.length > 0) {
     mermaidMatches.push(...explicitMatches);
     return mermaidMatches;
   }
 
-  // Verificar bloques de código sin lenguaje pero con contenido Mermaid
   const codeBlockMatches = [...text.matchAll(/```\s*\n([\s\S]*?)```/g)];
   if (codeBlockMatches) {
     for (const match of codeBlockMatches) {
@@ -1045,10 +989,8 @@ function containsMermaidDiagram(text) {
 function extractMermaidCodes(text) {
   const results = [];
 
-  // Buscar bloques de código Mermaid explícitos
   const mermaidBlockMatches = [...text.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
   for (const match of mermaidBlockMatches) {
-    // Limpiar y normalizar el código extraído
     const rawCode = match[1].trim();
     const cleanedCode = normalizeMermaidSyntax(rawCode);
 
@@ -1065,14 +1007,11 @@ function extractMermaidCodes(text) {
     return results;
   }
 
-  // Buscar bloques de código sin lenguaje pero con contenido Mermaid
   const codeBlockMatches = [...text.matchAll(/```\s*\n([\s\S]*?)```/g)];
 
   for (const match of codeBlockMatches) {
     const rawCode = match[1].trim();
-    // Verificar si es código Mermaid
     if (MERMAID_TYPE_PATTERN.test(rawCode)) {
-      // Normalizar el código
       const cleanedCode = normalizeMermaidSyntax(rawCode);
 
       results.push({
@@ -1105,23 +1044,19 @@ function normalizeMermaidSyntax(code) {
   // 2. Normalizar el código según el tipo de diagrama
   let normalizedCode = code;
 
-  // Eliminar puntos y coma después del tipo de diagrama
   normalizedCode = normalizedCode.replace(new RegExp(`^(${diagramType}(?:-v2)?);`, 'm'), '$1\n');
 
   // 3. Caso especial para diagramas de clase
   if (diagramType.toLowerCase().includes('classdiagram')) {
-    // Normalizar caracteres especiales/acentuados en clases
     const accentMap = {
       'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
       'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
       'ñ': 'n', 'Ñ': 'N'
     };
 
-    // Procesar línea por línea para mayor control
     const lines = normalizedCode.split('\n');
     const processedLines = [];
 
-    // Reemplazar acentos en todo el código primero
     if (/[áéíóúÁÉÍÓÚñÑ]/.test(normalizedCode)) {
       for (let i = 0; i < lines.length; i++) {
         lines[i] = lines[i].replace(/[áéíóúÁÉÍÓÚñÑ]/g, match => accentMap[match] || match);
@@ -1131,14 +1066,11 @@ function normalizeMermaidSyntax(code) {
     for (let i = 0; i < lines.length; i++) {
       let line = lines[i].trim();
 
-      // Eliminar punto y coma al principio del diagrama
       if (line.startsWith('classDiagram;')) {
         line = 'classDiagram';
       }
 
-      // Manejar relaciones de herencia (<|--)
       if (line.includes('<|--')) {
-        // Quitar punto y coma al final
         if (line.endsWith(';')) {
           line = line.substring(0, line.length - 1);
         }
@@ -1150,9 +1082,7 @@ function normalizeMermaidSyntax(code) {
 
         processedLines.push(line);
       }
-      // Manejar relaciones de asociación (-->)
       else if (line.includes('-->')) {
-        // Quitar punto y coma al final
         if (line.endsWith(';')) {
           line = line.substring(0, line.length - 1);
         }
@@ -1164,9 +1094,7 @@ function normalizeMermaidSyntax(code) {
 
         processedLines.push(line);
       }
-      // Manejar múltiples relaciones en la misma línea
       else if (line.includes(';') && (line.includes('-->') || line.includes('<|--'))) {
-        // Separar por punto y coma y procesar cada relación
         const relations = line.split(';');
         for (let relation of relations) {
           relation = relation.trim();
@@ -1182,7 +1110,6 @@ function normalizeMermaidSyntax(code) {
 
     normalizedCode = processedLines.join('\n');
 
-    // Arreglar cualquier línea de class que tenga problemas
     normalizedCode = normalizedCode.replace(/^(\s*)class\s+/gm, '$1class ');
 
     // Asegurar salto de línea después de la declaración de tipo
@@ -1235,7 +1162,6 @@ export function renderTextMessage(container, content, role = '') {
   const safeContent = typeof content === 'string' ? content : String(content);
   const isAIMessage = role === 'ai';
 
-  // Detectar tipos de adjuntos - PATRÓN ACTUALIZADO PARA AUDIO
   const hasDocumentIndicator = safeContent.includes('Contenido del documento') ||
     safeContent.includes('Contexto adicional de documentos adjuntos:');
   const hasCodeIndicator = safeContent.includes('Código de ');
@@ -1248,7 +1174,6 @@ export function renderTextMessage(container, content, role = '') {
     safeContent.includes('Archivo de audio grabado:') ||
     safeContent.match(/Subió (?:un )?archivo de audio/) !== null;
 
-  // Verificar si hay múltiples tipos de adjuntos
   const hasMultipleTypes =
     (hasDocumentIndicator && hasCodeIndicator) ||
     (hasDocumentIndicator && hasImageIndicator) ||
@@ -1258,7 +1183,6 @@ export function renderTextMessage(container, content, role = '') {
     (hasImageIndicator && hasAudioIndicator) ||
     safeContent.match(/Contenido del documento/g)?.length > 1;
 
-  // Verificar si es un diagrama Mermaid
   if (containsMermaidDiagram(safeContent)) {
     renderMermaidMessage(container, safeContent);
     return;
@@ -1281,7 +1205,6 @@ export function renderTextMessage(container, content, role = '') {
   // CASO 3: Audio adjunto para mensajes de usuario - ESTO DEBERÍA FUNCIONAR AHORA
   if (!isAIMessage && hasAudioIndicator) {
     console.log('🎵 Detectado audio en renderTextMessage:', safeContent.substring(0, 100));
-    // Llamar directamente a renderAudioMessage en lugar de contentProcessing
     renderAudioMessage(container, safeContent);
     return;
   }
@@ -1291,7 +1214,6 @@ export function renderTextMessage(container, content, role = '') {
 
   if (processedContent !== safeContent && typeof processedContent === 'string') {
     container.innerHTML = processedContent;
-    // Inicializar eventos para archivos adjuntos si hay archivos
     const hasNonAudioAttachments = processedContent.includes('file-name-clickable') ||
       (processedContent.includes('attachment-indicator') &&
         !processedContent.includes('attachment-indicator audio'));
@@ -1315,7 +1237,6 @@ export function renderTextMessage(container, content, role = '') {
     applyHighlighting(container);
     attachCopyButtonEvents(container);
 
-    // ✅ USAR PROCESADOR COMPARTIDO
     const hasImages = container.querySelectorAll('.markdown-image').length > 0;
     if (hasImages) {
       initializeImagePreviewHandlers(container);
@@ -1326,16 +1247,13 @@ export function renderTextMessage(container, content, role = '') {
       }
     }
 
-    // Agregar botones de expandir
     if (typeof addExpandButton === 'function') {
-      // Para código
       addExpandButton(container, {
         content: container.innerHTML,
         title: 'Código',
         language: 'code'
       }, 'code');
 
-      // Para tablas
       if (container.querySelector('table')) {
         try {
           addExpandButton(container, {
@@ -1357,7 +1275,6 @@ export function renderTextMessage(container, content, role = '') {
     const tablesProcessed = detectAndRenderMarkdownTables(safeContent, container, true);
 
     if (tablesProcessed) {
-      // ✅ USAR PROCESADOR COMPARTIDO
       const hasImages = container.querySelectorAll('.markdown-image').length > 0;
       if (hasImages) {
         initializeImagePreviewHandlers(container);
@@ -1411,7 +1328,6 @@ export function renderTextMessage(container, content, role = '') {
     applyHighlighting(container);
     attachCopyButtonEvents(container);
 
-    // ✅ USAR PROCESADOR COMPARTIDO
     const hasImages = container.querySelectorAll('.markdown-image').length > 0;
     if (hasImages) {
       initializeImagePreviewHandlers(container);
@@ -1422,7 +1338,6 @@ export function renderTextMessage(container, content, role = '') {
       }
     }
 
-    // Agregar botón de expandir para código
     if (typeof addExpandButton === 'function') {
       addExpandButton(container, {
         content: container.innerHTML,
@@ -1452,7 +1367,6 @@ export function renderTextMessage(container, content, role = '') {
     }
   }
 
-  // ✅ USAR PROCESADOR DE IMÁGENES COMPARTIDO
   const hasImages = container.querySelectorAll('.markdown-image').length > 0;
   if (hasImages) {
     initializeImagePreviewHandlers(container);
@@ -1463,11 +1377,9 @@ export function renderTextMessage(container, content, role = '') {
       processImagesOptimized(container);
     }
 
-    // Configurar mantenimiento de posición de scroll si hay imágenes
     if (window.scrollManager) {
       window.scrollManager.setupImagePositionMaintenance(container);
 
-      // Marcar el mensaje que contiene imágenes
       const messageElement = container.closest('.message');
       if (messageElement) {
         messageElement.setAttribute('data-contains-images', 'true');
@@ -1475,12 +1387,10 @@ export function renderTextMessage(container, content, role = '') {
     }
   }
 
-  // Renderizar matemáticas si es necesario
   if (containsMathExpressions(safeContent)) {
     renderMathWithRetry(container);
   }
   
-  // Verificar si hay archivos adjuntos e inicializar handlers
   const hasFileAttachments = container.querySelector('.attachment-indicator') ||
     container.querySelector('.file-name-clickable');
   if (hasFileAttachments) {
@@ -1495,10 +1405,8 @@ export function renderTextMessage(container, content, role = '') {
  */
 function renderMermaidMessage(container, content) {
   try {
-    // Crear contenedor principal para el mensaje
     const messageWithDiagrams = createElement('div', { className: 'message-with-diagrams' });
 
-    // Extraer todos los diagramas Mermaid
     const mermaidDiagrams = extractMermaidCodes(typeof content === 'string' ? content : (content.code || ''));
 
     if (mermaidDiagrams.length === 0) {
@@ -1518,7 +1426,6 @@ function renderMermaidMessage(container, content) {
       }
     }
 
-    // Procesar cada diagrama
     mermaidDiagrams.forEach((diagram, index) => {
       // Contenedor del diagrama
       const diagramContainer = createElement('div', {
@@ -1560,12 +1467,10 @@ function renderMermaidMessage(container, content) {
         title: 'Ver diagrama completo'
       }, [expandIcon, ' Ver diagrama completo']);
 
-      // Agregar evento para expandir
       addEvent(expandButton, 'click', () => {
         if (typeof window.showMermaidPreview === 'function') {
           window.showMermaidPreview(expandButton);
         } else {
-          // Fallback
           import('../components/preview-panel-agente.js')
             .then(module => {
               if (typeof module.showPreviewPanel === 'function') {
@@ -1607,14 +1512,11 @@ function renderMermaidMessage(container, content) {
       }
     }
 
-    // Agregar al contenedor
     container.appendChild(messageWithDiagrams);
 
-    // Renderizar todos los diagramas con un ligero retraso entre ellos
     mermaidDiagrams.forEach((diagram, index) => {
       const uniqueId = container.querySelector(`.mermaid-diagram[data-diagram-index="${index}"]`)?.id;
       if (uniqueId) {
-        // Usar función centralizada en mermaid-utils
         initializeMermaidDiagram(uniqueId, diagram.code);
       }
     });
@@ -1636,7 +1538,6 @@ function renderMermaidMessage(container, content) {
  */
 function renderCodeMessage(container, content) {
   try {
-    // Normalizar el contenido
     let code = '';
     let language = 'javascript';
 
@@ -1647,7 +1548,6 @@ function renderCodeMessage(container, content) {
       code = content;
     }
 
-        // Verificar si hay LaTeX en comentarios de código
 if (containsMathExpressions(code)) {
         renderMathWithRetry(container);
     }
@@ -1657,20 +1557,16 @@ if (containsMathExpressions(code)) {
 return;
     }
 
-    // Construir el HTML del bloque de código
     const codeHTML = buildCodeBlockHTML(code, language);
     container.innerHTML = codeHTML;
 
-    // Aplicar highlight.js
     applyHighlighting(container);
 
     // Adjuntar eventos a botones de copia
     attachCopyButtonEvents(container);
 
-    // Agregar botón para expandir el código
     addExpandButton(container, { code, language }, 'code');
 
-    // Verificar si hay fórmulas matemáticas en el código
     if (containsMathExpressions(code)) {
       renderMathWithRetry(container);
     }
@@ -1698,7 +1594,6 @@ function renderTableMessage(container, content) {
 
     // Caso 2: Estructura anidada (content.data o content.table)
     else if (content && typeof content === 'object') {
-      // Buscar en propiedades anidadas
       if (content.data && typeof content.data === 'object') {
         const data = content.data;
         if (Array.isArray(data.headers) && Array.isArray(data.rows)) {
@@ -1753,7 +1648,6 @@ function renderTableMessage(container, content) {
       return;
     }
 
-    // Si no se pudo procesar
     acadelWarning("📊 Datos de tabla confusos", "Acadel no pudo organizar estos datos en tabla. ¿Podrías formatearlos mejor?");
 return;
   } catch (error) {
@@ -1767,10 +1661,8 @@ return;
  * @param {HTMLElement} container - Contenedor de la tabla
  */
 function renderMathInTable(container) {
-  // Marcar contenedor con atributo data-has-math
   container.setAttribute('data-has-math', 'true');
 
-  // Marcar celdas individuales con posible contenido matemático
   container.querySelectorAll('th, td').forEach(cell => {
     if (cell.textContent.includes('$') ||
       cell.textContent.includes('\\') ||
@@ -1781,7 +1673,6 @@ function renderMathInTable(container) {
     }
   });
 
-  // Renderizar matemáticas
   renderMathWithRetry(container);
 }
 
@@ -1792,7 +1683,6 @@ function renderMathInTable(container) {
  * @param {number} maxAttempts - Número máximo de intentos
  */
 function renderMathWithRetry(container, attempt = 1, maxAttempts = 3) {
-  // Generar un identificador único para este mensaje
   const messageId = container.closest('.message')?.dataset?.messageId || Date.now();
   const timeoutKey = `math-render-${messageId}-${attempt}`;
 
@@ -1804,7 +1694,6 @@ function renderMathWithRetry(container, attempt = 1, maxAttempts = 3) {
       // Cálculo de retraso exponencial (300ms, 600ms, 1200ms...)
       const delay = Math.min(300 * Math.pow(2, attempt - 1), 2000);
 
-      // Usar timeout gestionado para evitar fugas de memoria
       setManagedTimeout(() => {
         renderMathWithRetry(container, attempt + 1, maxAttempts);
       }, delay, timeoutKey);
@@ -1820,7 +1709,6 @@ function renderMathWithRetry(container, attempt = 1, maxAttempts = 3) {
  * @param {Object} content - Datos del examen
  */
 function renderExamMessage(container, content) {
-  // Preparar el contenedor
   container.innerHTML = '<div class="exam-container"></div>';
   container.setAttribute('data-contains-exam', 'true');
 
@@ -1850,22 +1738,17 @@ function renderExamMessage(container, content) {
         });
       }
 
-      // Renderizar el examen
       renderExam(content, examContainer);
 
-      // Agregar botón de expandir
       addExpandButton(container, content, 'exam', true);
 
-      // Marcar contenedor para procesamiento matemático
       container.setAttribute('data-has-math', 'true');
       examContainer.setAttribute('data-has-math', 'true');
 
-      // Renderizar matemáticas
 
       
       renderMathWithRetry(container);
 
-      // Marcar el examen como completamente renderizado
       setTimeout(() => {
         examContainer.setAttribute('data-exam-rendered', 'true');
 
@@ -1900,20 +1783,16 @@ function renderAudioMessage(container, content) {
       quality: 'estándar'
     };
 
-    // Normalizar contenido
     if (typeof content === 'object' && content !== null) {
       audioData = { ...audioData, ...content };
     } else if (typeof content === 'string') {
-      // Extraer información del texto si es posible
       const extractedData = extractAudioInfoFromText(content);
       audioData = { ...audioData, ...extractedData };
     }
 
-    // Truncar nombre para mostrar pero mantener el completo para tooltip
     const truncatedName = audioData.fileName.length > 25 ? 
       audioData.fileName.substring(0, 22) + '...' : audioData.fileName;
 
-    // Crear contenedor multimodal con estilos mejorados
     const audioHTML = `
       <div class="multimodal-container">
         <div class="multimodal-attachments enhanced-audio-container">
@@ -2015,7 +1894,6 @@ function renderAudioMessage(container, content) {
     container.innerHTML = audioHTML;
   } catch (error) {
     console.error('Error al renderizar audio mejorado:', error);
-    // Fallback al sistema anterior
     container.innerHTML = `
       <div class="audio-error">
         <i class='bx bx-error'></i>
@@ -2071,7 +1949,6 @@ function renderErrorMessage(container, content) {
     
     const randomResponse = studyAgentErrorMessages[Math.floor(Math.random() * studyAgentErrorMessages.length)];
     
-    // Limpiar el contenedor de forma segura
     clearElement(container);
     
     // 🦫 ESTRUCTURA CON INLINE STYLES (como las funciones que funcionan)
@@ -2175,37 +2052,28 @@ function renderAlertMessage(container, content) {
 
   const alertInfo = alertTypes[type] || alertTypes.info;
 
-  // Limpiar el contenedor
   clearElement(container);
 
-  // Crear estructura de alerta
   const alertDiv = createElement('div', {
     className: `alert-message ${alertInfo.class}`
   });
 
-  // Crear contenedor de icono
   const iconDiv = createElement('div', { className: 'alert-icon' });
   iconDiv.appendChild(createElement('i', { className: `bx ${alertInfo.icon}` }));
   alertDiv.appendChild(iconDiv);
 
-  // Crear contenedor de contenido
   const contentDiv = createElement('div', { className: 'alert-content' });
 
-  // Agregar título si existe
   if (title) {
     contentDiv.appendChild(createElement('h4', { className: 'alert-title' }, title));
   }
 
-  // Agregar mensaje
   contentDiv.appendChild(createElement('p', {}, message));
 
-  // Agregar contenido a la alerta
   alertDiv.appendChild(contentDiv);
 
-  // Agregar alerta al contenedor
   container.appendChild(alertDiv);
 
-  // Verificar si hay fórmulas matemáticas en el mensaje
   if (containsMathExpressions(message)) {
     renderMathWithRetry(container);
   }
@@ -2232,7 +2100,6 @@ function renderActionMessage(container, content) {
     </div>
   `;
 
-  // Agregar eventos a los botones
   container.querySelectorAll('.action-button').forEach(button => {
     button.addEventListener('click', (e) => {
       const actionId = e.target.dataset.action;
@@ -2250,7 +2117,6 @@ function renderActionMessage(container, content) {
     });
   });
 
-  // Verificar si hay fórmulas matemáticas en el mensaje
   if (containsMathExpressions(message)) {
     renderMathWithRetry(container);
   }
@@ -2290,12 +2156,10 @@ export function applyHighlighting(container) {
  */
 function attachCopyButtonEvents(container) {
   container.querySelectorAll('.copy-button').forEach(button => {
-    // Registrar en el DOM el contenido original del botón para restaurarlo
     if (!button.hasAttribute('data-original-content')) {
       button.setAttribute('data-original-content', '<i class="bx bx-copy"></i> Copiar');
     }
 
-    // Usar addEvent para registrar para limpieza futura
     addEvent(button, 'click', () => {
       const blockId = getAttribute(button, 'data-target');
       const codeBlock = blockId ? document.getElementById(blockId) : button.closest('.code-block');
@@ -2329,7 +2193,6 @@ function attachCopyButtonEvents(container) {
  * @param {string} type - Tipo de contenido ('table', 'code', etc.)
  */
 function addExpandButton(container, data, type = 'table') {
-  // Verificar si ya existe el botón
   if (container.querySelector('.expand-content-btn')) return;
 
   // Texto personalizado según el tipo de contenido
@@ -2354,7 +2217,6 @@ function addExpandButton(container, data, type = 'table') {
   expandButton.className = buttonClass;
   expandButton.innerHTML = `<i class="bx bx-expand-alt"></i> ${buttonText}`;
 
-  // Preparar los datos adecuadamente para cada tipo de contenido
   let previewData = {};
 
   if (type === 'table') {
@@ -2377,11 +2239,8 @@ function addExpandButton(container, data, type = 'table') {
     previewData = data;
   }
 
-  // Configurar el evento de clic como toggle
   expandButton.addEventListener('click', () => {
-    // Importar el módulo si es necesario
     import('../components/preview-panel-agente.js').then(module => {
-      // Comprobar directamente en el DOM si el panel está abierto
       const previewPanel = document.querySelector('#preview-panel');
       const isPanelOpen = previewPanel && previewPanel.classList.contains('open');
 
@@ -2413,7 +2272,6 @@ export function renderChatMessages(messages) {
   const chatMessages = getElement('chatMessages');
   if (!chatMessages) return;
 
-  // Limpiar el contenedor de mensajes de forma segura
   clearElement(chatMessages);
 
   // Verificación rápida para conjunto vacío
@@ -2443,7 +2301,6 @@ export function renderChatMessages(messages) {
     return;
   }
 
-  // Crear array con solo la información necesaria para ordenación
   const messagesWithMetadata = messages.map((msg, i) => ({
     originalIndex: i,
     message: msg,
@@ -2451,9 +2308,7 @@ export function renderChatMessages(messages) {
     role: (msg.role || '').toLowerCase()
   }));
 
-  // Ordenar mensajes
   messagesWithMetadata.sort((a, b) => {
-    // Comparar timestamps
     if (a.timestamp !== b.timestamp) {
       return a.timestamp - b.timestamp;
     }
@@ -2472,16 +2327,12 @@ export function renderChatMessages(messages) {
   // Optimización: fragmento de documento para inserción por lotes
   const fragment = document.createDocumentFragment();
 
-  // Renderizar los mensajes ordenados
   messagesWithMetadata.forEach(item => {
     renderMessageItem(item, fragment);
   });
 
-  // Insertar todos los mensajes de una vez
   chatMessages.appendChild(fragment);
 
-  // Limpiar espacios excesivos en los mensajes multimodales existentes
-  // Diferir esta operación para permitir que la UI se renderice primero
   setManagedTimeout(() => {
     chatMessages.querySelectorAll('.ai-message, .user-message').forEach(messageElement => {
       const contentElement = messageElement.querySelector('.message-content');
@@ -2505,12 +2356,10 @@ function _createMessageElement(options) {
 
   const isAI = role === 'ai' || role === 'assistant';
 
-  // Crear el elemento del mensaje
   const messageDiv = document.createElement('div');
   const messageType = isAI ? 'ai-message' : 'user-message';
   messageDiv.className = `message ${messageType}`;
 
-  // Configurar IDs
   if (messageId) {
     messageDiv.dataset.messageId = messageId;
   } else if (isAI) {
@@ -2522,7 +2371,6 @@ function _createMessageElement(options) {
     messageDiv.dataset.serverId = serverId;
   }
 
-  // Configurar el mensaje según el rol
   if (isAI) {
     messageDiv.innerHTML = `
       <div class="ai-profile">
@@ -2535,30 +2383,24 @@ function _createMessageElement(options) {
     const renderer = getRenderer(type);
     renderer(contentElem, content, role);
   } else {
-    // Codificar el texto original para preservarlo en el atributo data
     const safeContent = typeof content === 'string' ? content : String(content);
     const encodedOriginalText = encodeURIComponent(safeContent);
 
-    // Crear estructura del mensaje
     const contentDiv = createElement('div', { className: 'message-content' });
     const textDiv = createElement('div', {
       className: 'message-text',
       dataset: { originalText: encodedOriginalText }
     });
 
-    // Aplicar markdown con mecanismo de respaldo
     if (typeof parseMarkdownToHTML === 'function') {
       textDiv.innerHTML = parseMarkdownToHTML(safeContent);
     } else {
-      // Fallback temporal: convertir explícitamente saltos de línea
       textDiv.innerHTML = typeof sanitizeText === 'function' ?
         sanitizeText(safeContent).replace(/\n/g, '<br data-nl="true">') :
         safeContent.replace(/\n/g, '<br data-nl="true">');
 
-      // Intentar cargar dinámicamente el módulo markdown
       import('../utils/markdown-agente.js').then(module => {
         if (module && module.parseMarkdownToHTML) {
-          // Actualizar con markdown completo cuando esté disponible
           textDiv.innerHTML = module.parseMarkdownToHTML(safeContent);
         }
       }).catch(() => {
@@ -2584,15 +2426,12 @@ function renderSingleMessage(msg, container) {
     const role = msg.role?.toLowerCase();
     const isAI = role === 'assistant' || role === 'ai';
 
-    // Procesar el mensaje
     const { type, content } = messageProcessing.extractMessageContent(msg);
 
-    // Crear ID para el mensaje
     const prefix = isAI ? 'ai-msg' : 'user-msg';
     const timestamp = new Date().getTime();
     const messageId = `${prefix}-${timestamp}-${msg.id || ''}`;
 
-    // Crear el elemento de mensaje
     const messageElement = _createMessageElement({
       role: isAI ? 'ai' : 'user',
       content,
@@ -2621,7 +2460,6 @@ function renderMessagesInOrder(messages, container) {
     const msg = messages[i];
     const messageElement = renderSingleMessage(msg, fragment);
 
-    // Verificar si hay contenido matemático
     if (messageElement) {
       const contentElem = messageElement.querySelector('.message-content');
       if (contentElem && typeof contentElem.textContent === 'string' &&
@@ -2653,17 +2491,14 @@ function renderMessageItem(item, container) {
       (msg.content.startsWith('{') && msg.content.endsWith('}') && msg.content.includes('text'))
     );
 
-    // Usar método especializado para detectar contenido multimodal
     const { type, content } = isRawMultimodal ?
       { type: 'message', content: contentProcessing.detectMultimodalContent(msg.content, isAI) } :
       messageProcessing.extractMessageContent(msg);
 
-    // Crear ID para el mensaje
     const prefix = isAI ? 'ai-msg' : 'user-msg';
     const timestamp = new Date().getTime();
     const messageId = `${prefix}-${timestamp}-${msg.id || ''}`;
 
-    // Crear el elemento de mensaje
     const messageElement = _createMessageElement({
       role: isAI ? 'ai' : 'user',
       content,
@@ -2716,11 +2551,9 @@ export function addMessageToChat(role, content, type = 'message') {
   // Asegurar que el renderizador esté inicializado
   ensureRendererInitialized(type);
 
-  // Crear ID para el mensaje
   const timestamp = new Date().getTime();
   const messageId = `msg-${timestamp}-${Math.floor(Math.random() * 1000)}`;
 
-  // Crear el elemento de mensaje
   const messageElement = _createMessageElement({
     role,
     content,
@@ -2779,42 +2612,33 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
 
   ensureRendererInitialized(type);
 
-  // ✅ AGREGAR ESTA LÍNEA - LIMPIAR ATRIBUTO DE LOADING
   loader.removeAttribute('data-is-loading');
   
-  // Restaurar la imagen de perfil al estado normal
   const profileElement = loader.querySelector('.ai-profile');
   if (profileElement) {
     profileElement.classList.remove('thinking');
   }
 
-  // Remover clase de procesamiento
   loader.classList.remove('processing');
 
-  // Obtener el contenedor del contenido
   const contentElem = loader.querySelector('.message-content');
   if (!contentElem) return;
 
-  // Limpiar el contenedor
   contentElem.innerHTML = '';
 
-  // Renderizar utilizando la función apropiada
   const renderer = getRenderer(type);
   renderer(contentElem, content, 'ai');
 
-  // Aplicar highlight.js a bloques de código
   if (window.hljs && contentElem) {
     contentElem.querySelectorAll('pre code').forEach(block => {
        window.hljs.highlightElement(block);
     });
   }
 
-  // Inicializar botones de interacción 
   setTimeout(() => {
     initializeInteractions(loader);
   }, 50);
 
-  // ✅ USAR PROCESADOR DE IMÁGENES COMPARTIDO después de renderizar
   setTimeout(() => {
     console.log('🖼️ [AUTO-PROCESS] Iniciando procesamiento automático después de renderizar IA');
     
@@ -2907,20 +2731,16 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         "💡 ¿Qué tal si pruebas con un enfoque diferente para tu consulta de estudio?"
     ];
     
-    // CRÍTICO: Primero eliminar el atributo 'data-is-loading' para evitar que sea eliminado por limpieza
     loadingMessage.removeAttribute('data-is-loading');
     
-    // Eliminar clase de carga y añadir clase de error
     loadingMessage.classList.remove('processing');
     loadingMessage.classList.add('error-message');
     
-    // Guardar el contenido de la imagen de perfil
     const aiProfile = loadingMessage.querySelector('.ai-profile');
     if (aiProfile) {
         aiProfile.classList.remove('thinking');
     }
     
-    // Buscar el contenedor de contenido o crear uno si no existe
     let messageContent = loadingMessage.querySelector('.message-content');
     if (!messageContent) {
         messageContent = document.createElement('div');
@@ -2928,7 +2748,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         loadingMessage.appendChild(messageContent);
     }
     
-    // Limpiar cualquier contenido existente primero
     messageContent.innerHTML = '';
     
     const contextualMessage = getStudyAgentErrorMessage(errorMessage);
@@ -2947,10 +2766,8 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         </div>
     `;
     
-    // Actualizar el contenido
     messageContent.innerHTML = errorContent;
     
-    // Agregar marcadores para prevenir limpieza automatizada
     loadingMessage.setAttribute('data-error-rendered', 'true');
     messageContent.setAttribute('data-error-content', 'true');
     
@@ -2964,7 +2781,6 @@ export function replaceWithError(loadingMessage, errorMessage, originalQuery = '
         if (typeof scrollToBottom === 'function') {
             scrollToBottom();
         } else {
-            // Fallback básico para scroll
             const chatMessages = document.querySelector('.chat-messages');
             if (chatMessages) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -3010,12 +2826,10 @@ function initializeInteractions(specificMessage = null) {
       const interaction = module.initResponseInteraction();
 
       if (specificMessage) {
-        // Inicializar un mensaje específico
         if (!specificMessage.querySelector('.response-actions')) {
           interaction.addInteractionButtons(specificMessage);
         }
       } else {
-        // Inicializar todos los mensajes
         if (interaction && typeof interaction.processExistingMessages === 'function') {
           interaction.processExistingMessages(true);
         }
@@ -3039,7 +2853,6 @@ const messageProcessing = {
     let contentToRender = message.content || message.message || '';
     let type = 'message';
 
-    // Procesar contenido si es un string con formato JSON
     if (typeof contentToRender === 'string') {
       // 1. Primera prioridad: Detectar si es multimodal
       const isAIMessage = message.role === 'assistant' || message.role === 'ai';
@@ -3060,7 +2873,6 @@ const messageProcessing = {
           if (parsed && typeof parsed === 'object' && parsed.type) {
             type = parsed.type;
 
-            // Extraer contenido según el tipo
             if (type === 'exam') {
               contentToRender = parsed.exam || parsed.data;
             } else if (type === 'code') {
@@ -3220,7 +3032,6 @@ const messageProcessing = {
         }
       }
 
-      // Verificar si es una tabla markdown
       if (content.includes('|') && content.includes('\n')) {
         const tableLines = content.split('\n').filter(line =>
           line.trim().startsWith('|') && line.trim().endsWith('|')
@@ -3234,7 +3045,6 @@ const messageProcessing = {
         }
       }
 
-      // Verificar si es audio
       if (content.includes('Subió archivo de audio:') || content.match(/Subió (?:un )?archivo de audio/)) {
         return {
           type: 'audio',
@@ -3248,7 +3058,6 @@ const messageProcessing = {
 
     // Si el contenido ya es un objeto
     if (typeof content === 'object' && content !== null) {
-      // Verificar si tiene estructura de código
       if (content.code && (content.language || typeof content.code === 'string')) {
         return {
           type: 'code',
@@ -3259,7 +3068,6 @@ const messageProcessing = {
         };
       }
 
-      // Verificar si tiene estructura de tabla
       if (Array.isArray(content.headers) && Array.isArray(content.rows)) {
         return {
           type: 'table',
@@ -3267,7 +3075,6 @@ const messageProcessing = {
         };
       }
 
-      // Verificar si es audio
       if (content.type === 'audio' || content.audioUrl) {
         return {
           type: 'audio',
@@ -3306,7 +3113,6 @@ function processAllExistingImages() {
 
   console.log(`🖼️ [BATCH] Procesando proactivamente imágenes en ${messages.length} mensajes con sistema de locks...`);
 
-  // ✅ OPTIMIZACIÓN: Procesar solo mensajes con imágenes externas reales
   const messagesWithExternalImages = [];
   
   messages.forEach(message => {
@@ -3326,7 +3132,6 @@ function processAllExistingImages() {
 
   console.log(`📦 [BATCH] ${messagesWithExternalImages.length} mensajes contienen imágenes externas`);
 
-  // ✅ PROCESAMIENTO OPTIMIZADO: Solo donde realmente se necesita
   messagesWithExternalImages.forEach(({ container, count }, index) => {
     setTimeout(() => {
       console.log(`📦 [BATCH] Procesando mensaje ${index + 1}/${messagesWithExternalImages.length} (${count} imágenes)`);
@@ -3689,7 +3494,6 @@ function containsMath(text) {
 // INICIALIZACIÓN DE EVENTOS PARA SCROLL E IMÁGENES - SIMPLIFICADO
 // ==========================================
 
-// Procesar imágenes en scroll (simplificado)
 let processingScrollThrottled = false;
 window.addEventListener('scroll', () => {
   if (processingScrollThrottled) return;
@@ -3724,7 +3528,6 @@ window.addEventListener('scroll', () => {
   }, 150);
 });
 
-// Escuchar cambios en el historial (cambio de chat)
 window.addEventListener('popstate', () => {
   setTimeout(() => {
     try {
@@ -3737,7 +3540,6 @@ window.addEventListener('popstate', () => {
   }, 800);
 });
 
-// Inicializar los sistemas de previsualización de imágenes
 document.addEventListener('DOMContentLoaded', () => {
   setupImagePreviewSystem();
 

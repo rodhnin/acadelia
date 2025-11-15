@@ -1,5 +1,4 @@
 // ========================================
-// 📁 userController.js - CONTROLLER COMPLETO LIMPIO
 // ========================================
 
 import { UserService } from "../../services/usuarios/userService.js";
@@ -25,7 +24,6 @@ export const createUser = async (req, res) => {
             return res.status(400).json(validationError);
         }
 
-        // Delegar al servicio
         const result = await UserService.createUserWithProfile({
             correo,
             contraseña,
@@ -36,7 +34,6 @@ export const createUser = async (req, res) => {
             }
         });
 
-        // Manejar respuesta
         if (!result.success) {
             const statusCode = getHttpStatusFromError(result.errorCode);
             return res.status(statusCode).json({
@@ -203,7 +200,6 @@ export const resendVerificationEmail = async (req, res) => {
             });
         }
 
-        // Enviar nuevo correo
         try {
             const { emailService } = await import('../../services/email/emailService.js');
             await emailService.sendWelcomeVerificationEmail(correo, result.user.verification_token);
@@ -330,7 +326,6 @@ export const updateUser = async (req, res) => {
                     });
                 }
 
-                // Verificar contraseña actual
                 try {
                     const isValidPassword = await UserService.verifyUserPassword(
                         req.user.correo, 
@@ -365,7 +360,6 @@ export const updateUser = async (req, res) => {
             }
         }
 
-        // 🔧 CONTINUAR: Usar método refactorizado que devuelve correo actual
         const result = await UserService.updateUserWithEmail(parseInt(id), correo, contraseña);
 
         if (!result.success) {
@@ -707,7 +701,6 @@ function getHttpStatusFromError(errorCode) {
  * Manejar cambio de contraseña (sesiones y notificaciones)
  */
 async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, isPasswordSetup = false) {
-    // Log específico de cambio/establecimiento de contraseña
     logSecurityEvent(
         isPasswordSetup ? 'PASSWORD_SETUP' : 'PASSWORD_CHANGE', 
         isPasswordSetup ? 'Usuario estableció contraseña' : 'Usuario cambió su contraseña', 
@@ -721,7 +714,6 @@ async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, i
         'high'
     );
 
-    // Enviar correo de confirmación
     if (userEmail) {
         try {
             const { emailService } = await import('../../services/email/emailService.js');

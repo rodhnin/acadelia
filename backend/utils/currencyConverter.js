@@ -54,7 +54,6 @@ export async function getExchangeRate(from, to) {
   const cacheKey = `${from}_${to}`;
   const now = Date.now();
   
-  // Verificar caché primero
   if (exchangeRateCache[cacheKey]) {
     const cachedData = exchangeRateCache[cacheKey];
     
@@ -66,7 +65,6 @@ export async function getExchangeRate(from, to) {
   }
   
   try {
-    // Construir URL para Frankfurter API
     const url = `${API_BASE}/latest?from=${from}&symbols=${to}`;
     console.log(`Consultando Frankfurter API: ${url}`);
     
@@ -79,11 +77,9 @@ export async function getExchangeRate(from, to) {
     
     const data = await response.json();
     
-    // Verificar que tenemos la tasa para la moneda solicitada
     if (data && data.rates && data.rates[to]) {
       const rate = data.rates[to];
       
-      // Guardar en caché
       exchangeRateCache[cacheKey] = {
         rate,
         timestamp: now
@@ -97,7 +93,6 @@ export async function getExchangeRate(from, to) {
   } catch (error) {
     console.warn(`Error obteniendo tasa de cambio de Frankfurter API: ${error.message}`);
     
-    // Intentar usar el mecanismo de respaldo
     return getFallbackExchangeRate(from, to);
   }
 }
@@ -121,7 +116,6 @@ function getFallbackExchangeRate(from, to) {
     return 1 / FALLBACK_EUR_RATES[to];
   }
   
-  // Para otras combinaciones, calculamos a través de EUR
   if (FALLBACK_EUR_RATES[from] && FALLBACK_EUR_RATES[to]) {
     const fromEurRate = FALLBACK_EUR_RATES[from];
     const toEurRate = FALLBACK_EUR_RATES[to];
@@ -145,13 +139,11 @@ export async function convertCurrency(amount, from, to) {
   if (from === to) return amount;
   
   try {
-    // Obtener tasa de cambio
     const rate = await getExchangeRate(from, to);
     
     // Realizar la conversión
     const converted = amount * rate;
     
-    // Redondear a 2 decimales para evitar imprecisiones
     return parseFloat(converted.toFixed(2));
   } catch (error) {
     console.error(`Error al convertir ${amount} ${from} a ${to}: ${error.message}`);
@@ -175,7 +167,6 @@ export async function getAvailableCurrencies() {
   } catch (error) {
     console.warn(`Error obteniendo monedas disponibles: ${error.message}`);
     
-    // Devolver un conjunto básico de monedas como respaldo
     return {
       EUR: "Euro",
       USD: "US Dollar",
@@ -198,7 +189,6 @@ export function clearExchangeRateCache() {
   console.log("Caché de tasas de cambio limpiada");
 }
 
-// Para debug: exponer información del estado de la caché
 export function getExchangeRateCacheInfo() {
   return {
     cacheSize: Object.keys(exchangeRateCache).length,

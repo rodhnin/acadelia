@@ -1,7 +1,5 @@
-// backend/middlewares/frontendAuthenticationMIddleware.js - REFACTORIZADO
 import pool from "../lib/dbPool.js";
 import { logSecurityEvent } from '../utils/securityLogger.js';
-// 🔑 IMPORTAR EL SISTEMA PRINCIPAL DE AUTH CON RENOVACIÓN
 import { authenticateUser, optionalAuthenticateUser } from './authMiddleware.js';
 
 /**
@@ -62,11 +60,9 @@ export const requireAuthentication = (options = {}) => {
       console.log(`🔐 requireAuthentication ejecutándose para: ${req.path}`);
       console.log(`📋 Opciones: requireAdmin=${requireAdmin}, category=${category}`);
 
-      // 🔍 VERIFICAR PRIMERO SI ES SOLICITUD HTML
       const isHtmlRequest = isHtmlPageRequest(req);
       console.log(`🌐 Es solicitud HTML: ${isHtmlRequest}`);
 
-      // 🔑 INTERCEPTAR RESPUESTAS DE authenticateUser PARA MANEJAR REDIRECCIONES
       let authenticationComplete = false;
       let originalJson = res.json;
       let originalSend = res.send;
@@ -94,9 +90,7 @@ export const requireAuthentication = (options = {}) => {
         };
       }
 
-      // 🔑 USAR AUTHMIDDLEWARE COMO BASE
       return authenticateUser(req, res, async (authError) => {
-        // Restaurar métodos originales
         res.json = originalJson;
         res.send = originalSend;
         res.status = originalStatus;
@@ -126,7 +120,6 @@ export const requireAuthentication = (options = {}) => {
           }
         }
 
-        // ✅ AUTENTICACIÓN EXITOSA - req.user ya está establecido por authMiddleware
         console.log(`✅ Usuario autenticado: ${req.user.id_user} (${req.user.correo || 'sin email'})`);
         
         // Si se renovó el token, loggear
@@ -246,7 +239,6 @@ export const optionalAuthentication = (options = {}) => {
     try {
       console.log(`🔍 optionalAuthentication REFACTORIZADO ejecutándose para: ${req.path}`);
 
-      // 🔑 USAR optionalAuthenticateUser que SÍ maneja renovaciones
       return optionalAuthenticateUser(req, res, (authError) => {
         // optionalAuthenticateUser nunca debería fallar, pero por si acaso
         if (authError) {
@@ -254,7 +246,6 @@ export const optionalAuthentication = (options = {}) => {
           req.user = null; // Asegurar que no hay usuario parcial
         }
 
-        // Loggear resultado
         if (req.user) {
           console.log(`✅ Usuario opcional autenticado: ${req.user.id_user}${req.tokenWasRenewed ? ' (token renovado)' : ''}`);
           
@@ -369,7 +360,6 @@ export const redirectIfAuthenticated = (options = {}) => {
 
       console.log(`🔍 redirectIfAuthenticated verificando: ${currentView}`);
 
-      // Usar optionalAuthenticateUser para verificar sin forzar login
       return optionalAuthenticateUser(req, res, (authError) => {
         // Si hay error de autenticación, continuar normalmente (mostrar login)
         if (authError) {
@@ -381,7 +371,6 @@ export const redirectIfAuthenticated = (options = {}) => {
         if (req.user && req.user.id_user) {
           console.log(`🔄 Usuario ${req.user.id_user} ya autenticado, redirigiendo desde ${currentView} a ${redirectTo}`);
           
-          // Log de seguridad
           logSecurityEvent('AUTH_REDIRECT', 'Usuario autenticado redirigido desde página de auth', {
             userId: req.user.id_user,
             fromPath: req.path,

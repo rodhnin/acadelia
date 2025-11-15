@@ -5,21 +5,16 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar si ya está inicializado
     if (window.authCookieIntegrationInitialized) {
       return;
     }
     
-    // Marcar como inicializado para evitar múltiples inicializaciones
     window.authCookieIntegrationInitialized = true;
     
-    // Función para obtener el ID de usuario actual del sistema de autenticación
     async function getCurrentUserId() {
       try {
-        // Intentar usar csrfUtils si está disponible
         const fetcher = window.csrfUtils?.fetch || window.fetch;
         
-        // Verificar estado de autenticación
         const response = await fetcher('/api/usuarios/auth-status', {
           method: 'GET',
           credentials: 'include'
@@ -48,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Observador para cuando el usuario inicia sesión o cierra sesión
     function setupAuthObserver() {
-      // Verificar si ya existe un userId en el sistema
       let currentStoredUserId = null;
       
       try {
@@ -61,27 +55,22 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error leyendo metadata de cookies:', e);
       }
       
-      // Función para verificar cambios de autenticación
       async function checkAuthStatus() {
         const userId = await getCurrentUserId();
         
         if (userId !== window.currentUserId) {
           console.log(`Cambio de usuario detectado: ${window.currentUserId || 'anónimo'} -> ${userId || 'anónimo'}`);
           
-          // Notificar cambio de usuario al sistema de cookies
           if (window.cookieHelpers && typeof window.cookieHelpers.notifyUserChange === 'function') {
             window.cookieHelpers.notifyUserChange(userId);
           }
           
-          // Actualizar la variable global
           window.currentUserId = userId;
         }
       }
       
-      // Verificar estado inicial
       checkAuthStatus();
       
-      // Observar cambios en URL para detectar login/logout
       let lastUrl = window.location.href;
       
       // Observador de cambios en la URL
@@ -95,26 +84,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }, 1000);
       
-      // Observar login/logout tradicional
-      // Buscar botones de login y logout para agregar listeners
       const loginForm = document.querySelector('form[action*="login"]');
       const logoutBtn = document.querySelector('a[href*="logout"], button[id*="logout"]');
       
       if (loginForm) {
         loginForm.addEventListener('submit', () => {
-          // Verificar después de un tiempo prudencial para permitir que se complete el login
           setTimeout(checkAuthStatus, 2000);
         });
       }
       
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-          // Verificar después de un tiempo prudencial para permitir que se complete el logout
           setTimeout(checkAuthStatus, 2000);
         });
       }
       
-      // Agregar listener para eventos AJAX de autenticación (si el sistema los emite)
       document.addEventListener('userAuthenticated', () => {
         setTimeout(checkAuthStatus, 500);
       });
@@ -124,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
-    // Iniciar observación de estado de autenticación
     setupAuthObserver();
     
     console.log('Integración autenticación-cookies inicializada');

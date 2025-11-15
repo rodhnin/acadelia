@@ -4,7 +4,6 @@ import { getState } from '../core/state-agente.js';
 import { validateUUID } from '../../../shared/validators.js';
 import { createElement, sanitizeText } from '../../../shared/dom-helpers.js';
 
-// 🤖 IMPORTAR FUNCIONES DEL SISTEMA UNIFICADO DE ARCHIVOS
 import { 
   initWelcomeFileAttachments,
   getWelcomeAttachedFiles,
@@ -14,7 +13,6 @@ import {
   cleanupWelcomeAttachments 
 } from '../utils/file-attachments-agente.js';
 
-// 🤖 IMPORTAR FUNCIONES DE VALIDACIÓN DESDE SHARED
 import {
   validateFile,
   validateContentLimits,
@@ -88,7 +86,6 @@ export function clearDomCache(selectors) {
 }
 
 export async function showWelcomeMessage() {
-  // Importar el panel de audio
   const { audioPanel } = await import('../components/audio-panel.js');
 
   // INMEDIATAMENTE oculta el textarea original para evitar flasheo
@@ -104,12 +101,10 @@ export async function showWelcomeMessage() {
     void fixedSpace.offsetHeight;
   }
 
-  // Verificar si estamos en una ruta con ID de chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[2];
 
   if (chatId && validateUUID(chatId)) {
-    // Restaurar visibilidad del textarea original ya que no mostraremos bienvenida
     if (fixedSpace) {
       applyStyles(fixedSpace, {
         opacity: null,
@@ -121,10 +116,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Obtener nombre del usuario
   const userName = await getUserName();
 
-  // Obtener referencias a elementos existentes
   const chatMessages = document.querySelector('.chat-messages');
 
   if (!chatMessages) {
@@ -136,10 +129,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Limpiar cualquier mensaje de bienvenida previo
   chatMessages.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container').forEach(el => el.remove());
 
-  // Crear mensaje de bienvenida
   const welcomeDiv = createElement('div', { className: 'welcome-message' });
   const welcomeContainer = createElement('div', { className: 'welcome-container' });
   const welcomeIcon = createElement('div', { className: 'welcome-icon' });
@@ -156,7 +147,6 @@ export async function showWelcomeMessage() {
   welcomeContainer.appendChild(welcomeContent);
   welcomeDiv.appendChild(welcomeContainer);
 
-  // Crear contenedor de input para nuevo chat
   const welcomeInputContainer = document.createElement('div');
   welcomeInputContainer.className = 'centered-input-container welcome-input-container';
   welcomeInputContainer.innerHTML = `
@@ -228,7 +218,6 @@ export async function showWelcomeMessage() {
     </div>
   `;
 
-  // Crear contenedor de sugerencias
   const suggestionsDiv = document.createElement('div');
   suggestionsDiv.className = 'suggestions-container';
 
@@ -253,7 +242,6 @@ export async function showWelcomeMessage() {
         welcomeTextarea.value = suggestion.text;
         welcomeTextarea.focus();
 
-        // Disparar evento input para que se ajuste el tamaño
         welcomeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
@@ -261,24 +249,19 @@ export async function showWelcomeMessage() {
     suggestionsDiv.appendChild(suggestionBtn);
   });
 
-  // Añadir elementos al DOM
   chatMessages.appendChild(welcomeDiv);
   chatMessages.appendChild(welcomeInputContainer);
   chatMessages.appendChild(suggestionsDiv);
 
-  // 🤖 INICIALIZAR SISTEMA UNIFICADO DE ARCHIVOS PARA WELCOME
   console.log('🤖 Inicializando sistema de archivos unificado para Welcome...');
   
-  // Limpiar sistema anterior si existe
   if (window.welcomeFiles) {
     window.welcomeFiles.clear();
     delete window.welcomeFiles;
   }
   
-  // Inicializar el sistema unificado
   await initWelcomeFileAttachments();
 
-  // Inicializar límite de caracteres para el textarea de bienvenida
   const welcomeTextareaInit = document.getElementById('welcome-message-input');
   if (welcomeTextareaInit) {
     try {
@@ -291,14 +274,12 @@ export async function showWelcomeMessage() {
     }
   }
 
-  // Configurar funcionalidades inmediatamente (sin setTimeout)
   try {
     // 1. Configurar el botón de adjuntos
     const welcomeAttachBtn = document.getElementById('welcome-attach-btn');
     const attachmentOptions = document.getElementById('welcome-attachment-options');
 
     if (welcomeAttachBtn && attachmentOptions) {
-      // Configurar de manera directa para evitar problemas de event bubbling
       welcomeAttachBtn.onclick = function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -307,7 +288,6 @@ export async function showWelcomeMessage() {
         attachmentOptions.classList.toggle('show');
       };
 
-      // Cerrar al hacer clic fuera
       document.addEventListener('click', function (event) {
         if (attachmentOptions.classList.contains('show') &&
           !welcomeAttachBtn.contains(event.target) &&
@@ -317,12 +297,10 @@ export async function showWelcomeMessage() {
       });
     }
 
-    // 🤖 CONFIGURAR DRAG & DROP ESPECÍFICO PARA WELCOME (PARA COMPATIBILIDAD)
     const welcomeFileUploadContainer = document.getElementById('welcome-file-upload-container');
     const welcomeDragDropArea = document.getElementById('welcome-drag-drop-area');
 
     if (welcomeFileUploadContainer && welcomeDragDropArea) {
-      // Función específica para manejar archivos en welcome con validación previa
       const handleWelcomeDroppedFiles = async (files) => {
         console.log('🏠 handleWelcomeDroppedFiles - Procesando en bienvenida:', files.length, 'archivos');
 
@@ -332,7 +310,6 @@ export async function showWelcomeMessage() {
           let processedCount = 0;
           let errorCount = 0;
 
-          // Validar límite total de archivos
           const currentFiles = document.querySelectorAll('#welcome-file-preview-container .file-preview[data-file-id]').length;
           const totalFiles = currentFiles + files.length;
           
@@ -340,10 +317,8 @@ export async function showWelcomeMessage() {
             return;
           }
 
-          // Procesar cada archivo con validación previa
           for (const file of files) {
             try {
-              // Validación de tipo usando el sistema unificado
               const typeValidation = validateFileType(file);
               if (!typeValidation.valid) {
                 acadelError(
@@ -354,7 +329,6 @@ export async function showWelcomeMessage() {
                 continue;
               }
 
-              // *** VALIDACIÓN DE CONTENIDO ESPECÍFICA PARA WELCOME ***
               if (typeValidation.detectedType === 'document' || typeValidation.detectedType === 'code') {
                 let contentToValidate = '';
 
@@ -364,7 +338,6 @@ export async function showWelcomeMessage() {
                     const { extractTextFromFile } = await import('../../../shared/file-handler.js');
                     contentToValidate = await extractTextFromFile(file);
                   } else {
-                    // Para TXT, leer directamente
                     contentToValidate = await new Promise((resolve, reject) => {
                       const reader = new FileReader();
                       reader.onload = (e) => resolve(e.target.result);
@@ -382,7 +355,6 @@ export async function showWelcomeMessage() {
                   });
                 }
 
-                // Validar límites de contenido
                 console.log('🔍 Validando contenido en welcome');
                 const validation = validateContentLimits(contentToValidate, file.name);
 
@@ -398,7 +370,6 @@ export async function showWelcomeMessage() {
               }
 
               // Si llegamos aquí, el archivo pasó todas las validaciones específicas
-              // Crear un objeto File (puede ser el mismo) y enviarlo al sistema unificado
               const validFile = file;
               
               // El sistema unificado se encargará del resto del procesamiento
@@ -419,7 +390,6 @@ export async function showWelcomeMessage() {
           // Los archivos válidos se procesarán por el sistema unificado
           // Solo llamamos al sistema unificado si hay archivos válidos
           if (processedCount > 0) {
-            // Filtrar solo archivos válidos para enviar al sistema unificado
             const validFiles = [];
             let validIndex = 0;
             
@@ -436,13 +406,11 @@ export async function showWelcomeMessage() {
               }
             }
 
-            // Llamar al sistema unificado con archivos ya validados
             if (window.handleDroppedFiles && validFiles.length > 0) {
               await window.handleDroppedFiles(validFiles);
             }
           }
 
-          // Mostrar resultado final
           if (processedCount > 0 && errorCount === 0) {
             console.log(`🎉 Welcome procesó ${processedCount} archivos exitosamente`);
           } else if (processedCount > 0 && errorCount > 0) {
@@ -459,13 +427,10 @@ export async function showWelcomeMessage() {
             "Acadel tuvo un problema técnico procesando los archivos. ¿Podrías intentar de nuevo?"
           );
         } finally {
-          // Limpiar estados visuales
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
         }
       };
 
-      // Configurar eventos de drag & drop específicos para welcome
-      // Mostrar al iniciar arrastre
       document.addEventListener('dragenter', (e) => {
         e.preventDefault();
         // Solo si hay archivos y estamos en bienvenida
@@ -498,14 +463,12 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Ocultar contenedor al finalizar el arrastre
       document.addEventListener('dragend', () => {
         if (document.querySelector('.welcome-message')) {
           welcomeFileUploadContainer.classList.remove('active', 'dragging');
         }
       });
 
-      // Detectar cuando el arrastre abandona completamente el documento
       document.addEventListener('dragleave', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
@@ -516,7 +479,6 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Detectar cuando se presiona la tecla Escape
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.querySelector('.welcome-message') &&
           welcomeFileUploadContainer.classList.contains('active')) {
@@ -524,7 +486,6 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Detectar clics fuera del área de drop para ocultar el contenedor
       document.addEventListener('click', (e) => {
         if (!document.querySelector('.welcome-message')) return;
 
@@ -534,7 +495,6 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Fallback: temporizador para abandonar arrastre
       let welcomeDragTimer;
       document.addEventListener('dragenter', () => {
         if (!document.querySelector('.welcome-message')) return;
@@ -551,7 +511,6 @@ export async function showWelcomeMessage() {
         }, 2000); // 2 segundos sin eventos de arrastre = abandonado
       });
 
-      // 🤖 PROCESAR ARCHIVOS SOLTADOS CON LÓGICA ESPECÍFICA DE WELCOME
       welcomeFileUploadContainer.addEventListener('drop', async (e) => {
         e.preventDefault();
         console.log('🏠 Welcome drop detectado con', e.dataTransfer.files.length, 'archivos');
@@ -566,13 +525,11 @@ export async function showWelcomeMessage() {
     const welcomeTextarea = document.getElementById('welcome-message-input');
     if (welcomeTextarea) {
       function autoResizeTextarea() {
-        // Guardar la posición de scroll actual y la posición del cursor
         const scrollPos = window.scrollY;
 
         welcomeTextarea.style.height = 'auto';
         welcomeTextarea.style.height = (welcomeTextarea.scrollHeight) + 'px';
 
-        // Restaurar la posición de scroll para evitar saltos
         window.scrollTo(0, scrollPos);
       }
 
@@ -584,14 +541,12 @@ export async function showWelcomeMessage() {
     // 3. Configurar botón de calculadora/matemáticas - VERSIÓN FINAL CORREGIDA
     const welcomeMathButton = document.getElementById('welcome-math-button');
     if (welcomeMathButton) {
-      // Eliminar paneles existentes si los hay (para evitar duplicados)
       const existingPanel = document.getElementById('welcome-mathPanel');
       if (existingPanel) existingPanel.remove();
 
       const existingEditorContainer = document.getElementById('welcome-math-editor-container');
       if (existingEditorContainer) existingEditorContainer.remove();
 
-      // Crear el editor de ecuaciones MathLive (estructura que coincide con el CSS)
       const welcomeMathEditorContainer = document.createElement('div');
       welcomeMathEditorContainer.id = 'welcome-math-editor-container';
       welcomeMathEditorContainer.className = 'welcome-math-editor-container';
@@ -613,14 +568,12 @@ export async function showWelcomeMessage() {
             </div>
           `;
 
-      // Crear panel matemático con la estructura completa
       const welcomeMathPanel = document.createElement('div');
       welcomeMathPanel.id = 'welcome-mathPanel';
       welcomeMathPanel.className = 'welcome-math-panel';
       welcomeMathPanel.setAttribute('data-has-math', 'true');
       welcomeMathPanel.style.display = 'none'; // Inicialmente oculto
 
-      // Clonar la estructura completa del panel matemático con los prefijos correctos
       welcomeMathPanel.innerHTML = `
           <div class="welcome-math-grid">
             <!-- Cálculo -->
@@ -889,11 +842,9 @@ export async function showWelcomeMessage() {
           </div>
           `;
 
-      // Añadir los elementos al DOM
       document.body.appendChild(welcomeMathPanel);
       document.body.appendChild(welcomeMathEditorContainer);
 
-      // Versión mejorada del protector global
       const globalKeyboardProtector = function (e) {
         // Solo intervenir si el editor está abierto
         if (welcomeMathEditorContainer.style.display === 'flex' ||
@@ -903,7 +854,6 @@ export async function showWelcomeMessage() {
           // Esto permite que todas las teclas funcionen dentro del editor
           if (e.target.tagName === 'MATH-FIELD' ||
             e.target.closest('#welcome-mathfield-container')) {
-            // Permitir que todos los eventos funcionen normalmente en el mathfield
             return;
           }
 
@@ -911,10 +861,8 @@ export async function showWelcomeMessage() {
           if (e.target.closest('ml-keyboard') ||
             e.target.closest('.ML__keyboard')) {
 
-            // Bloquear propagación para eventos del teclado virtual
             e.stopPropagation();
 
-            // Permitir Escape para cerrar intencionalmente
             if (e.key === 'Escape') {
               welcomeMathEditorContainer.style.display = 'none';
               welcomeMathPanel.style.display = 'none';
@@ -926,7 +874,6 @@ export async function showWelcomeMessage() {
         }
       };
 
-      // Añadir el listener en fase de captura
       document.addEventListener('keydown', globalKeyboardProtector, true);
 
       // Variable para almacenar referencia al mathfield
@@ -938,7 +885,6 @@ export async function showWelcomeMessage() {
         if (!mathfieldElement) return null;
 
         try {
-          // Verificar si MathLive está disponible
           if (!window.MathLive) {
             console.warn('MathLive no está disponible');
             return null;
@@ -982,12 +928,10 @@ export async function showWelcomeMessage() {
           }
         }
 
-        // Formatear LaTeX con delimitadores si no los tiene
         if (!latex.startsWith('$') && !latex.startsWith('\\(')) {
           latex = '$' + latex + '$';
         }
 
-        // Insertar en el textarea
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
         const value = textarea.value;
@@ -996,16 +940,13 @@ export async function showWelcomeMessage() {
         textarea.selectionStart = textarea.selectionEnd = start + latex.length;
         textarea.focus();
 
-        // Disparar evento input para activar autoexpand
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
-        // Ocultar panel después de insertar
         welcomeMathPanel.style.display = 'none';
         welcomeMathEditorContainer.style.display = 'none';
         welcomeMathButton.classList.remove('active');
       };
 
-      // Configurar eventos de toggle para secciones
       function setupSectionToggles(container) {
         const toggleButtons = container.querySelectorAll('.welcome-toggle-btn');
 
@@ -1024,11 +965,9 @@ export async function showWelcomeMessage() {
             const isCollapsed = content.classList.contains('collapsed');
             content.classList.toggle('collapsed', !isCollapsed);
 
-            // Actualizar ícono
             this.textContent = isCollapsed ? '▼' : '▶';
             this.classList.toggle('collapsed', !isCollapsed);
 
-            // Renderizar matemáticas si se expande
             if (isCollapsed) {
               setTimeout(() => renderWelcomeMathInSection(content), 50);
             }
@@ -1036,7 +975,6 @@ export async function showWelcomeMessage() {
         });
       }
 
-      // Función para renderizar matemáticas en una sección
       function renderWelcomeMathInSection(section) {
         if (!window.MathJax) return;
 
@@ -1063,7 +1001,6 @@ export async function showWelcomeMessage() {
             const latex = this.getAttribute('data-latex');
             if (!latex) return;
 
-            // Usar la función global de inserción
             window.welcomeInsertLatex(latex);
 
             // NUEVO: Re-enfocar el campo para mantener el teclado activo
@@ -1071,7 +1008,6 @@ export async function showWelcomeMessage() {
               setTimeout(() => {
                 welcomeMathField.focus();
 
-                // Verificar y proteger el teclado de nuevo
                 const keyboard = document.querySelector('ml-keyboard');
                 if (keyboard) protectVirtualKeyboard(keyboard);
               }, 20);
@@ -1119,15 +1055,12 @@ export async function showWelcomeMessage() {
         });
       }
 
-      // Configurar eventos para el editor
       const setupEditor = () => {
-        // Inicializar MathField si aún no está inicializado
         if (!welcomeMathField) {
           welcomeMathField = initWelcomeMathField();
 
           // NUEVO: Configurar manejo específico del teclado virtual
           if (welcomeMathField) {
-            // Manejar eventos específicos para evitar cierre accidental
             welcomeMathField.addEventListener('focus', () => {
               // Al obtener el foco, verificar si aparece el teclado virtual
               setTimeout(() => {
@@ -1142,7 +1075,6 @@ export async function showWelcomeMessage() {
             const originalToggleVirtualKeyboard = welcomeMathField.toggleVirtualKeyboard;
             if (typeof originalToggleVirtualKeyboard === 'function') {
               welcomeMathField.toggleVirtualKeyboard = function () {
-                // Llamar al método original
                 const result = originalToggleVirtualKeyboard.apply(this, arguments);
 
                 // Proteger el teclado después de que aparezca
@@ -1159,23 +1091,19 @@ export async function showWelcomeMessage() {
           }
         }
 
-        // Configurar el botón de enviar en el editor
         const editorSendButton = welcomeMathEditorContainer.querySelector('.welcome-send-button');
         if (editorSendButton) {
           editorSendButton.addEventListener('click', () => {
             if (!welcomeMathField) return;
 
-            // Obtener contenido LaTeX
             const latex = welcomeMathField.value.trim();
             if (!latex) return;
 
-            // Formatear e insertar en textarea
             let formattedLatex = latex;
             if (!formattedLatex.startsWith('$') && !formattedLatex.startsWith('\\(')) {
               formattedLatex = '$' + formattedLatex + '$';
             }
 
-            // Insertar en textarea
             const textarea = document.getElementById('welcome-message-input');
             if (textarea) {
               const start = textarea.selectionStart;
@@ -1186,7 +1114,6 @@ export async function showWelcomeMessage() {
               textarea.focus();
               textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
-              // Limpiar y ocultar editor
               welcomeMathField.value = '';
               welcomeMathEditorContainer.style.display = 'none';
               welcomeMathButton.classList.remove('active');
@@ -1194,13 +1121,11 @@ export async function showWelcomeMessage() {
           });
         }
 
-        // Clonar el contenido del panel para el panel de símbolos
         const symbolsContainer = welcomeMathEditorContainer.querySelector('.welcome-symbols-container');
         if (symbolsContainer && !symbolsContainer.hasChildNodes()) {
           const mathGridClone = welcomeMathPanel.querySelector('.welcome-math-grid').cloneNode(true);
           symbolsContainer.appendChild(mathGridClone);
 
-          // Configurar eventos para los símbolos
           setupSectionToggles(symbolsContainer);
           setupFormulaButtons(symbolsContainer);
 
@@ -1216,20 +1141,17 @@ export async function showWelcomeMessage() {
         }
       };
 
-      // Configurar botón de enviar en el panel matemático
       const panelSendButton = welcomeMathPanel.querySelector('.welcome-send-button');
       if (panelSendButton) {
         panelSendButton.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
 
-          // Cerrar el panel sin insertar nada
           welcomeMathPanel.style.display = 'none';
           welcomeMathButton.classList.remove('active');
         });
       }
 
-      // Configurar botón de cierre en el panel matemático
       const closeButton = welcomeMathPanel.querySelector('.welcome-math-close-btn');
       if (closeButton) {
         closeButton.addEventListener('click', function (e) {
@@ -1243,13 +1165,10 @@ export async function showWelcomeMessage() {
       let keydownHandler = null;
       let clickOutsideHandler = null;
 
-      // Crear un overlay invisible para capturar todos los eventos
       function createMathEditorOverlay() {
-        // Eliminar si ya existe
         const existingOverlay = document.getElementById('math-editor-event-blocker');
         if (existingOverlay) existingOverlay.remove();
 
-        // Crear nuevo overlay
         const overlay = document.createElement('div');
         overlay.id = 'math-editor-event-blocker';
         overlay.style.position = 'fixed';
@@ -1263,29 +1182,22 @@ export async function showWelcomeMessage() {
 
         // Capturar todos los eventos de teclado en el overlay directamente
         overlay.addEventListener('keydown', (e) => {
-          // Permitir Escape para cerrar el panel
           if (e.key === 'Escape') return;
 
-          // Bloquear propagación para todos los demás eventos
           e.stopPropagation();
           e.stopImmediatePropagation();
         }, true);
 
-        // Devolver el overlay para adjuntarlo cuando se necesite
         return overlay;
       }
 
-      // Configurar evento de clic para el botón principal
-      // Configurar evento de clic para el botón principal
       welcomeMathButton.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        // Detectar si alguno de los paneles está visible
         const isPanelVisible = welcomeMathPanel.style.display === 'block';
         const isEditorVisible = welcomeMathEditorContainer.style.display === 'flex';
 
-        // LIMPIAR HANDLERS ANTERIORES
         if (keydownHandler) {
           document.removeEventListener('keydown', keydownHandler, true);
           keydownHandler = null;
@@ -1295,23 +1207,19 @@ export async function showWelcomeMessage() {
           clickOutsideHandler = null;
         }
 
-        // Eliminar overlay si existe
         const existingOverlay = document.getElementById('math-editor-event-blocker');
         if (existingOverlay) existingOverlay.remove();
 
         if (isPanelVisible || isEditorVisible) {
-          // Cerrar ambos paneles
           welcomeMathPanel.style.display = 'none';
           welcomeMathEditorContainer.style.display = 'none';
           welcomeMathButton.classList.remove('active');
 
-          // Eliminar cualquier teclado virtual que pueda existir
           const keyboard = document.querySelector('ml-keyboard');
           if (keyboard && keyboard.parentNode) {
             keyboard.parentNode.removeChild(keyboard);
           }
         } else {
-          // Mostrar el editor en lugar del panel
           welcomeMathEditorContainer.style.display = 'flex';
           welcomeMathButton.classList.add('active');
 
@@ -1337,7 +1245,6 @@ export async function showWelcomeMessage() {
           overlay.style.pointerEvents = 'all';
           document.body.appendChild(overlay);
 
-          // Configurar el editor
           setupEditor();
 
           // NUEVO: Detector especializado para el teclado virtual
@@ -1345,7 +1252,6 @@ export async function showWelcomeMessage() {
             const keyboard = document.querySelector('ml-keyboard');
             if (keyboard && !keyboard._protected) {
 
-              // Marcar como protegido
               keyboard._protected = true;
 
               // CLAVE: Forzar posición y z-index para el teclado
@@ -1370,27 +1276,22 @@ export async function showWelcomeMessage() {
             }
           });
 
-          // Observar cambios para detectar aparición del teclado
           keyboardObserver.observe(document.body, {
             childList: true,
             subtree: true
           });
 
-          // Manejar clic fuera solo para la mitad superior
           overlay.addEventListener('click', (event) => {
             if (!welcomeMathEditorContainer.contains(event.target) &&
               event.target !== welcomeMathButton) {
 
-              // Cerrar editor y limpiar
               welcomeMathEditorContainer.style.display = 'none';
               welcomeMathButton.classList.remove('active');
               overlay.remove();
 
-              // Desconectar observer
               keyboardObserver.disconnect();
 
               // IMPORTANTE: No cerramos el teclado virtual automáticamente
-              // para evitar interferir con el mathfield
             }
           });
 
@@ -1403,12 +1304,9 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Limpiar recursos al cerrar
       function cleanupMathEditorEvents() {
-        // Eliminar protector global
         document.removeEventListener('keydown', globalKeyboardProtector, true);
 
-        // Eliminar overlay
         const overlay = document.getElementById('math-editor-event-blocker');
         if (overlay) overlay.remove();
 
@@ -1428,7 +1326,6 @@ export async function showWelcomeMessage() {
           welcomeMathPanel.style.zIndex = '';
         }
 
-        // Limpiar handlers
         if (keydownHandler) {
           document.removeEventListener('keydown', keydownHandler, true);
           keydownHandler = null;
@@ -1477,17 +1374,14 @@ export async function showWelcomeMessage() {
         }
       });
 
-      // Observar cambios en el DOM para detectar eliminación de elementos
       welcomeObserver.observe(document.body, {
         childList: true,
         subtree: true
       });
     }
 
-    // 4. 🤖 CONFIGURAR BOTÓN DE ENVÍO CON SISTEMA UNIFICADO
     const welcomeSendBtn = document.getElementById('welcome-send-btn');
     if (welcomeSendBtn && welcomeTextarea) {
-      // Función principal para transferir y enviar mensaje - VERSIÓN SIMPLIFICADA CON SISTEMA UNIFICADO
       const transferAndSendMessage = async () => {
         // PRIMERO: cerrar panel matemático si está abierto
         if (document.getElementById('welcome-mathPanel')) {
@@ -1496,7 +1390,6 @@ export async function showWelcomeMessage() {
         if (document.getElementById('welcome-math-editor-container')) {
           document.getElementById('welcome-math-editor-container').style.display = 'none';
         }
-        // Desactivar botón matemático
         const mathButton = document.getElementById('welcome-math-button');
         if (mathButton) {
           mathButton.classList.remove('active');
@@ -1504,7 +1397,6 @@ export async function showWelcomeMessage() {
 
         const messageText = welcomeTextarea.value.trim();
 
-        // Verificar límite de caracteres
         let exceedsCharLimit = false;
         try {
           const charLimitModule = await import('../../../shared/character-limit.js');
@@ -1521,10 +1413,8 @@ export async function showWelcomeMessage() {
         // Si excede el límite, detener ejecución
         if (exceedsCharLimit) return;
 
-        // 🤖 USAR SISTEMA UNIFICADO PARA VALIDAR ARCHIVOS
         const hasFiles = hasWelcomeAttachedFiles();
         
-        // Validación original
         if (!messageText && !hasFiles) return;
 
         // 1. Transferir mensaje al textarea principal
@@ -1532,7 +1422,6 @@ export async function showWelcomeMessage() {
         if (mainTextarea) {
           mainTextarea.value = messageText;
 
-          // 2. 🤖 TRANSFERIR ARCHIVOS USANDO SISTEMA UNIFICADO
           if (hasFiles) {
             try {
               console.log('🚀 Transfiriendo archivos usando sistema unificado...');
@@ -1546,7 +1435,6 @@ export async function showWelcomeMessage() {
           // MODIFICACIÓN CLAVE: Restaurar visibilidad del textarea original
           const fixedSpace = document.querySelector('.fixed-space');
           if (fixedSpace) {
-            // Restaurar completamente todas las propiedades CSS
             fixedSpace.style.removeProperty('opacity');
             fixedSpace.style.removeProperty('display');
             fixedSpace.style.removeProperty('pointer-events');
@@ -1557,20 +1445,17 @@ export async function showWelcomeMessage() {
             void fixedSpace.offsetHeight;
           }
 
-          // Restaurar visibilidad de botones
           const sendButton = document.querySelector('.input-box button:nth-child(2)');
           const mathButton = document.querySelector('#math-button');
           if (sendButton) sendButton.style.pointerEvents = 'auto';
           if (mathButton) mathButton.style.pointerEvents = 'auto';
 
-          // Esperar un instante para que la UI se actualice
           setTimeout(() => {
             // 4. Eliminar elementos de bienvenida
             if (welcomeDiv && welcomeDiv.parentNode) welcomeDiv.remove();
             if (welcomeInputContainer && welcomeInputContainer.parentNode) welcomeInputContainer.remove();
             if (suggestionsDiv && suggestionsDiv.parentNode) suggestionsDiv.remove();
 
-            // 🤖 LIMPIAR SISTEMA UNIFICADO DE WELCOME
             cleanupWelcomeAttachments();
 
               acadelExito("🚀 ¡Mensaje enviado!", "Acadel transfirió tu consulta al chat principal");
@@ -1587,7 +1472,6 @@ export async function showWelcomeMessage() {
         }
       };
 
-      // Configurar eventos con funciones explícitas (no usar referencias directas)
       welcomeSendBtn.addEventListener('click', function (e) {
         e.preventDefault();
         transferAndSendMessage();
@@ -1605,7 +1489,6 @@ export async function showWelcomeMessage() {
     console.error('Error al inicializar funcionalidades del mensaje de bienvenida:', error);
   }
 
-  // Mostrar el botón de audio cuando se muestra el mensaje de bienvenida
   try {
     // NUEVO: Ocultar primero cualquier botón de YouTube que pueda estar visible
     import('../components/youtube-panel.js').then(module => {
@@ -1637,7 +1520,6 @@ export async function showWelcomeMessage() {
     console.error('Error al gestionar botones en mensaje de bienvenida:', error);
   }
 
-  // Ocultar cualquier alerta de límite que pueda estar visible
   try {
     const { hideLimitAlert } = await import('../../../shared/character-limit.js');
     if (typeof hideLimitAlert === 'function') {
@@ -1654,16 +1536,13 @@ export async function showWelcomeMessage() {
  */
 async function getUserName() {
   try {
-    // Obtener userId del estado global
     const userId = getState('userId');
 
     if (!userId) {
       return 'usuario';
     }
 
-    // Intentar obtener el perfil del usuario usando fetchUserProfile
     try {
-      // Importar dinámicamente el módulo auth para acceder a fetchUserProfile
       const authModule = await import('../api/auth-agente.js');
       const profile = await authModule.fetchUserProfile(userId);
 
@@ -1677,13 +1556,11 @@ async function getUserName() {
       }
     } catch (profileError) {
       console.warn('Error al obtener perfil para nombre:', profileError);
-      // Continuar con el método de respaldo si falla obtener el perfil
     }
 
     // Respaldo: Si falla obtener el perfil o no tiene nombre, formatear el userId
     // Respaldo: Si falla obtener el perfil o no tiene nombre, formatear el userId
     if (typeof userId === 'string' && userId.includes('@')) {
-      // Permitir solo caracteres alfanuméricos para máxima seguridad
       const namePart = userId.split('@')[0].replace(/[^a-z0-9._-]/gi, '');
       return namePart
         .replace(/[._-]/g, ' ')
@@ -1705,13 +1582,11 @@ async function getUserName() {
 export function sanitizeBase64(base64) {
   if (!base64 || typeof base64 !== 'string') return '';
 
-  // Verificar si es un data URL válido
   if (base64.startsWith('data:')) {
     const validPattern = /^data:(image\/[a-z]+);base64,[a-zA-Z0-9+/=]+$/;
     return validPattern.test(base64) ? base64 : '';
   }
 
-  // Verificar si es base64 crudo
   const validBase64 = /^[a-zA-Z0-9+/=]+$/;
   return validBase64.test(base64) ? base64 : '';
 }

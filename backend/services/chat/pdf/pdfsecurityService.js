@@ -46,15 +46,12 @@ export const pdfSecurityService = {
    */
   async scanFile(filePath) {
     try {
-      // Crear copia temporal en /tmp
       const tempFileName = `scan_${Date.now()}_${path.basename(filePath)}`;
       const tempFilePath = `/tmp/${tempFileName}`;
       
-      // Copiar archivo a escanear
       await fs.promises.copyFile(filePath, tempFilePath);
       console.log(`Archivo copiado a ${tempFilePath} para escaneo`);
       
-      // Inicializar resultados del escaneo
       const scanResult = {
         threatScore: 0,
         findings: [],
@@ -73,11 +70,9 @@ export const pdfSecurityService = {
       const analysisContent = fileContent.slice(0, Math.min(fileSize, MAX_ANALYSIS_SIZE));
       scanResult.isTruncated = fileSize > MAX_ANALYSIS_SIZE;
       
-      // Convertir a string para búsquedas
       const fileString = analysisContent.toString('utf8', 0, analysisContent.length);
       const fileHex = analysisContent.toString('hex', 0, Math.min(analysisContent.length, 20000));
       
-      // Verificar tipo de archivo - asegurar que es un PDF
       if (!this.isPDF(fileContent)) {
         this.addFinding(scanResult, "NO_PDF", 100, "El archivo no es un PDF válido");
         await this.cleanupTempFile(tempFilePath);
@@ -113,10 +108,8 @@ export const pdfSecurityService = {
         );
       }
       
-      // Limpiar archivo temporal
       await this.cleanupTempFile(tempFilePath);
       
-      // Finalizar y devolver resultado
       return this.finalizeResult(scanResult);
     } catch (error) {
       console.error("Error en escaneo de seguridad:", error);
@@ -135,7 +128,6 @@ export const pdfSecurityService = {
    */
   isPDF(buffer) {
     try {
-      // Verificar la firma de PDF
       const signature = buffer.toString('utf8', 0, 8);
       return /^%PDF-1\.[0-9]/.test(signature);
     } catch (e) {
@@ -180,7 +172,6 @@ export const pdfSecurityService = {
       }
     ];
     
-    // Verificar primeros bytes (encabezados) - alta confianza
     const headerHex = fileHex.substring(0, 1000);
     for (const {pattern, name, type, context} of executablePatterns) {
       if (context === "primeros_bytes" && headerHex.includes(pattern.toLowerCase())) {
@@ -194,14 +185,12 @@ export const pdfSecurityService = {
       }
     }
     
-    // Buscar patrones en el contenido de streams (no en el PDF completo)
     // Esto reduce falsos positivos al ignorar texto normal que podría coincidir
     const streamMatches = this.extractPDFStreams(fileContent);
     if (streamMatches && streamMatches.length > 0) {
       const streamContent = Buffer.concat(streamMatches);
       const streamHex = streamContent.toString('hex');
       
-      // Verificar patrones en streams (contenido embebido)
       for (const {pattern, name, type, context} of executablePatterns) {
         if (context === "contenido_stream" && streamHex.includes(pattern.toLowerCase())) {
           this.addFinding(
@@ -225,7 +214,6 @@ export const pdfSecurityService = {
       const pdfString = pdfBuffer.toString('utf8');
       const streams = [];
       
-      // Buscar patrones de inicio y fin de stream en formato PDF
       const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
       let match;
       
@@ -252,18 +240,15 @@ export const pdfSecurityService = {
     console.log("Analizando estructura del PDF...");
     
     try {
-      // Cargar el PDF con pdf-lib para análisis estructural
       const pdfDoc = await PDFDocument.load(fileContent, { 
         ignoreEncryption: true,
         updateMetadata: false
       });
       
-      // Analizar contenido potencialmente malicioso a nivel estructural
       await this.analyzePDFObjects(scanResult, fileString);
       
     } catch (error) {
       console.warn("Error en análisis estructural del PDF:", error);
-      // Añadir como hallazgo sospechoso pero no definitivo
       this.addFinding(
         scanResult, 
         "CORRUPT_STRUCTURE", 
@@ -331,10 +316,8 @@ export const pdfSecurityService = {
       }
     ];
     
-    // Buscar patrones de JavaScript malicioso en contexto adecuado
     for (const {regex, name, type} of jsPatterns) {
       if (regex.test(fileString)) {
-        // Verificar si está en lista blanca antes de marcar como amenaza
         if (!this.isInJavaScriptWhitelist(fileString, regex)) {
           this.addFinding(
             scanResult, 
@@ -346,7 +329,6 @@ export const pdfSecurityService = {
       }
     }
     
-    // Buscar acciones automáticas con JavaScript (más peligrosas)
     const autoActionJsRegex = /\/OpenAction\s*<<[\s\S]*?\/S\s*\/JavaScript/i;
     const documentAAJsRegex = /\/AA\s*<<[\s\S]*?\/S\s*\/JavaScript/i;
     
@@ -359,7 +341,6 @@ export const pdfSecurityService = {
       );
     }
     
-    // Buscar acciones de lanzamiento (muy peligrosas)
     const launchActionRegex = /\/Launch\s*<<[\s\S]*?\/[FW][\s\S]*?\(/i;
     if (launchActionRegex.test(fileString)) {
       this.addFinding(
@@ -370,17 +351,14 @@ export const pdfSecurityService = {
       );
     }
     
-    // Buscar archivos embebidos
     const embeddedFileRegex = /\/EmbeddedFiles[\s\S]*?\/Names/i;
     if (embeddedFileRegex.test(fileString)) {
-      // Verificar extensiones peligrosas
       const fileSpecRegex = /\/Type\s*\/Filespec[\s\S]*?\/F\s*\((.*?)\)/g;
       let match;
       let foundDangerous = false;
       
       while ((match = fileSpecRegex.exec(fileString)) !== null) {
         const filename = match[1] || "";
-        // Verificar extensiones peligrosas
         if (/\.(exe|dll|bat|vbs|ps1|sh|cmd|msi|scr)$/i.test(filename)) {
           this.addFinding(
             scanResult, 
@@ -403,7 +381,6 @@ export const pdfSecurityService = {
       }
     }
     
-    // Buscar patrones de SQL Injection - solo en contexto adecuado
     // Esto reduce falsos positivos cuando el PDF es sobre SQL legítimo
     const sqlInjectionPatterns = [
       { 
@@ -425,7 +402,6 @@ export const pdfSecurityService = {
     ];
     
     // Solo verificar SQL Injection en contextos específicos (como formularios, JavaScript o streams)
-    // para evitar falsos positivos en textos educativos sobre SQL
     const jsContexts = [
       /\/JavaScript\s*\(([\s\S]*?)\)/gi,
       /\/JS\s*\(([\s\S]*?)\)/gi,
@@ -458,16 +434,13 @@ export const pdfSecurityService = {
    * @returns {boolean} - true si está en la lista blanca
    */
   isInJavaScriptWhitelist(content, suspiciousPattern) {
-    // Extraer el contexto alrededor del patrón sospechoso
     const match = suspiciousPattern.exec(content);
     if (!match) return false;
     
-    // Obtener 100 caracteres antes y después para contexto
     const startIndex = Math.max(0, match.index - 100);
     const endIndex = Math.min(content.length, match.index + match[0].length + 100);
     const context = content.substring(startIndex, endIndex);
     
-    // Verificar si coincide con algún patrón de la lista blanca
     for (const whitelistPattern of this.JS_WHITELIST) {
       if (whitelistPattern.test(context)) {
         console.log(`Patrón en lista blanca encontrado: ${whitelistPattern}`);
@@ -489,7 +462,6 @@ export const pdfSecurityService = {
       
       console.log("Ejecutando escaneo ClamAV...");
       
-      // Ejecutar ClamAV con timeout para evitar bloqueos
       const clamdscan = spawn('clamdscan', [
         '--fdpass',
         '--stdout',
@@ -595,11 +567,9 @@ export const pdfSecurityService = {
    * @returns {Object} - Resultado final
    */
   finalizeResult(result) {
-    // Determinar si el archivo es malicioso basado en la puntuación total
     if (result.threatScore >= this.THREAT_CONFIG.THRESHOLD) {
       result.clean = false;
       
-      // Obtener los hallazgos más significativos para el mensaje
       const topFindings = result.findings
         .sort((a, b) => b.score - a.score)
         .slice(0, 2)
@@ -628,18 +598,15 @@ export const pdfSecurityService = {
    */
   async cleanPDFMetadata(pdfBuffer) {
     try {
-      // Verificar si es un PDF válido
       if (!this.isPDF(pdfBuffer)) {
         console.warn("El archivo no parece ser un PDF válido");
         return pdfBuffer;
       }
       
-      // Cargar el PDF con pdf-lib
       const pdfDoc = await PDFDocument.load(pdfBuffer, { 
         ignoreEncryption: true 
       });
       
-      // Registrar metadatos originales (para logs)
       const originalMetadata = {
         title: pdfDoc.getTitle(),
         author: pdfDoc.getAuthor(),
@@ -651,7 +618,6 @@ export const pdfSecurityService = {
       
       console.log("Limpiando metadatos de PDF:", originalMetadata);
       
-      // Eliminar todos los metadatos
       pdfDoc.setTitle('');
       pdfDoc.setAuthor('');
       pdfDoc.setSubject('');
@@ -659,7 +625,6 @@ export const pdfSecurityService = {
       pdfDoc.setCreator('PDF System');
       pdfDoc.setProducer('PDF System');
       
-      // Guardar PDF con metadatos limpios
       const cleanPdfBytes = await pdfDoc.save();
       return Buffer.from(cleanPdfBytes);
     } catch (error) {
@@ -676,11 +641,9 @@ export const pdfSecurityService = {
    */
   async sanitizePDF(inputPath, outputPath) {
     return new Promise((resolve, reject) => {
-      // Verificar que qpdf está instalado
       this.checkQPDFAvailability().then(qpdfAvailable => {
         if (!qpdfAvailable) {
           console.warn("qpdf no está disponible. Omitiendo sanitización.");
-          // Copiar el archivo en lugar de sanitizarlo
           fs.copyFile(inputPath, outputPath, err => {
             if (err) {
               reject(new Error(`Error copiando archivo: ${err.message}`));
@@ -691,7 +654,6 @@ export const pdfSecurityService = {
           return;
         }
         
-        // Usar qpdf para sanitizar el PDF
         const qpdf = spawn('qpdf', [
           '--linearize',                 // Optimiza y repara estructura
           '--decrypt',                   // Elimina encriptación

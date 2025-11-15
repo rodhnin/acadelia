@@ -57,7 +57,6 @@
             updatePricesDisplay();
             setupArgentinaSelector();
             
-            // ✅ NUEVO: Verificar suscripciones en procesamiento al cargar
             setTimeout(() => {
                 checkProcessingSubscriptions();
             }, 2000); // Esperar 2 segundos después de cargar
@@ -270,13 +269,11 @@
             return;
         }
         
-        // ✅ VERIFICAR SI YA TIENE ESTA CARRERA EN PROCESAMIENTO
         checkCarreraProcessingStatus(carreraId, carreraNombre);
     }
 
 async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
     try {
-        // ✅ CORREGIDO: Usar /api/compra en lugar de /api/user-data
         const response = await fetch(`/api/compra/carrera/status/${CONFIG.userId}`, {
             credentials: 'include'
         });
@@ -285,7 +282,6 @@ async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
         
         const data = await response.json();
         
-        // Verificar si la carrera específica está en procesamiento
         const isProcessing = data.data.processing.carreras.some(c => c.id_carrera == carreraId);
         
         if (isProcessing) {
@@ -363,7 +359,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         </div>
     `;
     
-    // ✅ CORRECCIÓN CSP: Usar addEventListener en lugar de onclick
     const closeBtn = modal.querySelector('.close-btn');
     const closePrimaryBtn = modal.querySelector('.close-modal-btn');
     const contactSupportBtn = modal.querySelector('.contact-support-btn-alt');
@@ -381,7 +376,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
     closeBtn?.addEventListener('click', closeModal);
     closePrimaryBtn?.addEventListener('click', closeModal);
     
-    // ✅ NUEVO: Event listener para contactar soporte
     contactSupportBtn?.addEventListener('click', () => {
         window.location.href = '/contact';
     });
@@ -567,7 +561,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
                 e.stopPropagation();
                 console.log('🇦🇷 Click en transferencia bancaria - CORREGIDO');
                 
-                // Cerrar el modal actual y abrir el de transferencia
                 console.log('🇦🇷 Cerrando modal actual...');
                 closePaymentModal();
                 
@@ -587,7 +580,6 @@ async function checkProcessingSubscriptions() {
     try {
         if (!CONFIG.userId) return;
         
-        // ✅ CORREGIDO: Usar /api/compra en lugar de /api/user-data
         const response = await fetch(`/api/compra/carrera/processing/${CONFIG.userId}`, {
             credentials: 'include'
         });
@@ -689,7 +681,6 @@ async function checkProcessingSubscriptions() {
             </div>
         `;
         
-        // ✅ CORRECCIÓN CSP: Usar addEventListener en lugar de onclick
         const closeBtn = modal.querySelector('.close-btn');
         const closePrimaryBtn = modal.querySelector('.close-processing-modal');
         const contactSupportBtn = modal.querySelector('.contact-support-btn');
@@ -707,7 +698,6 @@ async function checkProcessingSubscriptions() {
         closeBtn?.addEventListener('click', closeModal);
         closePrimaryBtn?.addEventListener('click', closeModal);
         
-        // ✅ NUEVO: Event listener para contactar soporte
         contactSupportBtn?.addEventListener('click', () => {
             window.location.href = '/contact';
         });
@@ -894,12 +884,10 @@ async function checkProcessingSubscriptions() {
         
         console.log('🇦🇷 Modal agregado al DOM, configurando eventos...');
         
-        // Configurar eventos
         setupTransferModalEvents(modal);
         
         console.log('🇦🇷 Eventos configurados, configurando elementos internos...');
         
-        // Configurar fecha actual y file input - con más tiempo
         setTimeout(() => {
             const transferDateInput = modal.querySelector('#transferDate');
             if (transferDateInput) {
@@ -932,7 +920,6 @@ async function checkProcessingSubscriptions() {
             }
         }, 300); // Aumentamos el tiempo
         
-        // Mostrar modal - con más tiempo para asegurar que todo está listo
         setTimeout(() => {
             console.log('🇦🇷 Mostrando modal de transferencia...');
             modal.classList.add('show');
@@ -1081,7 +1068,6 @@ async function checkProcessingSubscriptions() {
     function setupFileInput(fileInput) {
         console.log('🇦🇷 Iniciando setupFileInput CORREGIDO...', fileInput);
         
-        // Buscar elementos por el contenedor padre
         const container = fileInput.closest('.form-group');
         if (!container) {
             console.error('🇦🇷 No se encontró el contenedor del file input');
@@ -1101,7 +1087,6 @@ async function checkProcessingSubscriptions() {
             return;
         }
         
-        // Crear overlay de loading DENTRO del label para evitar reposicionamiento
         let loadingOverlay = label.querySelector('.file-loading-overlay');
         if (!loadingOverlay) {
             loadingOverlay = document.createElement('div');
@@ -1117,7 +1102,6 @@ async function checkProcessingSubscriptions() {
         
         console.log('🇦🇷 Configurando eventos de drag and drop...');
         
-        // Mejorar drag and drop con animaciones y contador de eventos
         let dragCounter = 0;
         
         label.addEventListener('dragenter', (e) => {
@@ -1200,20 +1184,17 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => {
             uploadedFile = file;
             
-            // Actualizar preview
             const fileName = preview.querySelector('.file-preview-name');
             const fileSize = preview.querySelector('.file-preview-size');
             
             if (fileName) fileName.textContent = file.name;
             if (fileSize) fileSize.textContent = formatFileSize(file.size);
             
-            // Quitar loading y mostrar preview
             label.classList.remove('uploading');
             label.classList.add('has-file');
             loadingOverlay.classList.remove('show');
             preview.classList.add('show');
             
-            // Actualizar texto del label MANTENIENDO LA ESTRUCTURA
             const labelText = label.querySelector('.file-input-text');
             if (labelText) {
                 labelText.innerHTML = `
@@ -1290,12 +1271,10 @@ async function checkProcessingSubscriptions() {
         uploadedFile = null;
         fileInput.value = '';
         
-        // Remover clases y resetear estado
         preview.classList.remove('show');
         label.classList.remove('has-file', 'uploading');
         loadingOverlay.classList.remove('show');
         
-        // Restaurar texto original
         const labelText = label.querySelector('.file-input-text');
         if (labelText) {
             labelText.innerHTML = `

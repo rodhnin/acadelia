@@ -65,7 +65,6 @@ export class ExportManager {
       headerBg: 'e2ddd6'    // Fondo de encabezados
     };
     
-    // Inicializar listener para cambios en configuración
     this.initSettingsListener();
   }
   
@@ -82,18 +81,13 @@ export class ExportManager {
         return false;
       }
       
-      // Combinar opciones con valores por defecto
       const exportOptions = { ...this.defaultOptions, ...options };
       
-      // Generar nombre de archivo con timestamp si se solicita
       const fileName = this.generateFileName(exportOptions);
       
-      // Comprobar si usar el formato avanzado con ExcelJS
       if (exportOptions.useAdvancedFormat && typeof window.ExcelJS !== 'undefined') {
-        // Usar ExcelJS para formato avanzado
         return await this.exportToExcelAdvanced(data, exportOptions);
       } else {
-        // Usar el método tradicional con XLSX
         return this.exportToExcelLegacy(data, exportOptions);
       }
     } catch (error) {
@@ -106,15 +100,12 @@ export class ExportManager {
    * Inicializa el listener para cambios en configuración
    */
   initSettingsListener() {
-    // Verificar si el evento está disponible
     if (window.addEventListener && window.financeAdmin && window.financeAdmin.eventBus) {
-      // Escuchar cambios específicos en configuración de exportación
       window.financeAdmin.eventBus.on('exportSettingsChanged', (exportSettings) => {
         console.log('ExportManager: Recibida actualización de configuración de exportación', exportSettings);
         this.updateExportSettings(exportSettings);
       });
       
-      // Escuchar cambios generales en configuración
       window.financeAdmin.eventBus.on('settingsChanged', (settings) => {
         if (settings && settings.export) {
           console.log('ExportManager: Recibida actualización de configuración general');
@@ -151,13 +142,11 @@ export class ExportManager {
   updateExportSettings(exportSettings) {
     if (!exportSettings) return;
     
-    // Actualizar opciones relevantes
     if (exportSettings.csvDelimiter) {
       // Si recibimos un valor descriptivo, actualizamos ambos
       const delimiterValue = exportSettings.csvDelimiter;
       console.log(`ExportManager: Actualizando separador CSV a: "${delimiterValue}" (valor descriptivo)`);
       
-      // Guardar el valor descriptivo
       this.defaultOptions.csvDelimiterValue = delimiterValue;
       
       // Traducir al carácter real
@@ -193,7 +182,6 @@ export class ExportManager {
    */
   getPreferredFormat(defaultFormat = 'excel') {
     try {
-      // Intentar leer configuración desde localStorage
       const savedSettings = JSON.parse(localStorage.getItem('financeAdmin_settings') || '{}');
       
       // Si hay configuración guardada, usarla
@@ -216,7 +204,6 @@ export class ExportManager {
    */
   getPreferredCsvDelimiter() {
     try {
-      // Intentar leer configuración desde localStorage
       const savedSettings = JSON.parse(localStorage.getItem('financeAdmin_settings') || '{}');
       
       // Si hay configuración guardada para el separador CSV, traducirla a carácter real
@@ -245,16 +232,13 @@ export class ExportManager {
    */
   exportToExcelLegacy(data, options) {
     try {
-      // Crear libro y hoja
       const wb = XLSX.utils.book_new();
       
-      // Convertir datos a formato de hoja
       const ws = XLSX.utils.json_to_sheet(data, {
         header: this.extractHeaders(data, options),
         skipHeader: !options.includeHeaders
       });
       
-      // Añadir hoja al libro
       XLSX.utils.book_append_sheet(wb, ws, options.sheetName);
       
       // Descargar archivo
@@ -279,55 +263,43 @@ async exportToExcelAdvanced(data, options) {
     const Excel = window.ExcelJS;
     const workbook = new Excel.Workbook();
     
-    // Generar nombre de archivo con timestamp si se solicita
     const fileName = this.generateFileName(options);
     
-    // Configurar propiedades del documento
     workbook.creator = options.companyName;
     workbook.lastModifiedBy = options.companyName;
     workbook.created = new Date();
     workbook.modified = new Date();
     
-    // Crear hoja
     const worksheet = workbook.addWorksheet(options.sheetName, {
       views: [{showGridLines: true}],
       properties: {tabColor: {argb: this.brandColors.secondary}}
     });
     
-    // Añadir encabezado corporativo si está habilitado
     if (options.includeCompanyHeader) {
       this.addCorporateHeader(worksheet, workbook, options);
     }
     
-    // Extraer encabezados de columnas
     const headers = this.extractHeaders(data, options);
     
-    // Detectar columnas numéricas y monetarias para sumatorias
     const numericColumns = this.detectNumericColumns(data, headers);
     const currencyColumns = this.detectCurrencyColumns(headers);
     
-    // Obtener formatos específicos de moneda si se proporcionan
     const currencyFormats = options.currencyFormats || {};
 
 
 // NUEVO: Obtener formatos enteros si se proporcionan
 const integerFormats = options.integerFormats || {};
     
-    // Añadir fila de encabezados con estilo
     const headerRow = worksheet.addRow(headers);
     // Guardamos la fila de los encabezados para los filtros
     const headerRowNum = worksheet.rowCount;
     
-    // Aplicar estilo a los encabezados
     this.styleHeaderRow(headerRow, worksheet);
     
-    // Añadir datos
     data.forEach((item, index) => {
-      // Extraer valores de este elemento en el mismo orden que los encabezados
       const rowValues = headers.map(header => {
         let value = item[header];
         
-        // Formatear fechas si el campo contiene fechas
         if (value instanceof Date) {
           return value; // ExcelJS manejará el formateo de fechas
         }
@@ -339,13 +311,11 @@ const integerFormats = options.integerFormats || {};
           return parseFloat(value);
         }
         
-        // Devolver el valor tal cual para que Excel lo maneje
         return value;
       });
       
       const row = worksheet.addRow(rowValues);
       
-      // Aplicar formato a celdas específicas de moneda
       if (currencyFormats) {
         headers.forEach((header, idx) => {
           if (currencyFormats[header]) {
@@ -365,7 +335,6 @@ if (integerFormats) {
   });
 }
       
-      // Aplicar estilos alternados para facilitar lectura
       if (index % 2 !== 0) {
         this.styleAlternateRow(row);
       }
@@ -376,14 +345,12 @@ if (integerFormats) {
         const deductibleValue = item['Deducible'];
         
         if (deductibleValue === 'Sí') {
-          // Aplicar estilo de resaltado a toda la fila
           row.eachCell((cell) => {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
               fgColor: { argb: options.deductibleColor || 'e6fffa' }
             };
-            // Añadir borde más visible
             cell.border = {
               top: { style: 'thin', color: { argb: 'c3e6cb' } },
               left: { style: 'thin', color: { argb: 'c3e6cb' } },
@@ -392,14 +359,12 @@ if (integerFormats) {
             };
           });
         } else if (deductibleValue === 'No') {
-          // Aplicar estilo de resaltado rojizo a toda la fila para no deducibles
           row.eachCell((cell) => {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
               fgColor: { argb: options.nonDeductibleColor || 'ffebee' } // Color rojizo claro
             };
-            // Añadir borde más visible
             cell.border = {
               top: { style: 'thin', color: { argb: 'ffcdd2' } },
               left: { style: 'thin', color: { argb: 'ffcdd2' } },
@@ -415,7 +380,6 @@ if (integerFormats) {
         const statusValue = item['Estado'];
         
         if (statusValue && options.statusColors[statusValue]) {
-          // Aplicar estilo de resaltado a toda la fila
           row.eachCell((cell) => {
             cell.fill = {
               type: 'pattern',
@@ -433,7 +397,6 @@ if (integerFormats) {
               default: borderColor = 'e0e0e0';
             }
             
-            // Añadir borde visible
             cell.border = {
               top: { style: 'thin', color: { argb: borderColor } },
               left: { style: 'thin', color: { argb: borderColor } },
@@ -454,14 +417,12 @@ if (integerFormats) {
         
         // Si el usuario tenía suscripciones pero ya no tiene activas
         if (totalSubs > 0 && activeSubs === 0) {
-          // Aplicar estilo de resaltado a toda la fila
           row.eachCell((cell) => {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
               fgColor: { argb: options.inactiveUserColor || 'ffebee' }
             };
-            // Añadir borde más visible
             cell.border = {
               top: { style: 'thin', color: { argb: 'ffcdd2' } },
               left: { style: 'thin', color: { argb: 'ffcdd2' } },
@@ -478,20 +439,16 @@ if (integerFormats) {
       column.width = Math.max(15, this.getMaxLength(column.values) + 2);
     });
     
-    // Añadir sumatorias si está habilitado
     if (options.includeTotals && 
         (numericColumns.length > 0 || (options.columnsWithTotals && options.columnsWithTotals.length > 0))) {
       this.addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options);
     }
     
-// Añadir sección de totales deducibles si está habilitado (específico para egresos)
 if (options.deductibleSummary && 
     (options.deductibleSummary.ivaDeducible !== undefined || 
      options.deductibleSummary.gastoDeducible !== undefined)) {
-  // Añadir espacio entre los totales normales y la sección de deducibles
   worksheet.addRow([]);
   
-  // Añadir título para la sección de deducibles
   const deductibleTitle = worksheet.addRow(['RESUMEN DE GASTOS DEDUCIBLES']);
   deductibleTitle.font = {
     name: 'Poppins',
@@ -506,11 +463,9 @@ if (options.deductibleSummary &&
     fgColor: { argb: 'c3e6cb' } // Verde claro
   };
   
-  // Añadir IVA deducible
   if (options.deductibleSummary.ivaDeducible !== undefined) {
     const ivaDeducibleRow = worksheet.addRow(['IVA DEDUCIBLE:', options.deductibleSummary.ivaDeducible]);
     
-    // Aplicar formato de moneda
     const ivaCell = ivaDeducibleRow.getCell(2);
     ivaCell.numFmt = '€#,##0.00';
     
@@ -525,11 +480,9 @@ if (options.deductibleSummary &&
     };
   }
   
-  // Añadir GASTO deducible
   if (options.deductibleSummary.gastoDeducible !== undefined) {
     const gastoDeducibleRow = worksheet.addRow(['GASTO DEDUCIBLE:', options.deductibleSummary.gastoDeducible]);
     
-    // Aplicar formato de moneda
     const gastoCell = gastoDeducibleRow.getCell(2);
     gastoCell.numFmt = '€#,##0.00';
     
@@ -548,7 +501,6 @@ if (options.deductibleSummary &&
   if (options.deductibleSummary.totalDeducible !== undefined) {
     const totalDeducibleRow = worksheet.addRow(['TOTAL DEDUCIBLE:', options.deductibleSummary.totalDeducible]);
     
-    // Aplicar formato de moneda
     const totalCell = totalDeducibleRow.getCell(2);
     totalCell.numFmt = '€#,##0.00';
     
@@ -568,19 +520,15 @@ if (options.deductibleSummary &&
       color: { argb: '006400' } // Verde oscuro para el valor
     };
     
-    // Agregar borde inferior para separar visualmente
     totalDeducibleRow.border = {
       bottom: { style: 'thin', color: { argb: '006400' } }
     };
   }
 }
     
-    // Añadir sección de resumen de estados (para suscripciones)
     if (options.statusSummary) {
-      // Añadir espacio entre secciones
       worksheet.addRow([]);
       
-      // Añadir título para la sección de resumen
       const summaryTitle = worksheet.addRow(['RESUMEN DE SUSCRIPCIONES POR ESTADO']);
       summaryTitle.font = {
         name: 'Poppins',
@@ -595,11 +543,9 @@ if (options.deductibleSummary &&
         fgColor: { argb: 'e0e0e0' } // Gris claro
       };
       
-      // Añadir conteo por cada estado
       for (const [status, count] of Object.entries(options.statusSummary)) {
         const statusRow = worksheet.addRow([`${status}:`, count]);
         
-        // Aplicar formato de número entero sin decimales
         const countCell = statusRow.getCell(2);
         countCell.numFmt = '#,##0';
         
@@ -625,11 +571,9 @@ if (options.deductibleSummary &&
         };
       }
       
-      // Añadir total
       const totalCount = Object.values(options.statusSummary).reduce((a, b) => a + b, 0);
       const totalRow = worksheet.addRow(['TOTAL:', totalCount]);
       
-      // Aplicar formato de número entero sin decimales
       const totalCell = totalRow.getCell(2);
       totalCell.numFmt = '#,##0';
       
@@ -644,12 +588,9 @@ if (options.deductibleSummary &&
       };
     }
     
-    // Añadir sección de resumen de usuarios inactivos
     if (options.inactiveUserSummary) {
-      // Añadir espacio entre secciones
       worksheet.addRow([]);
       
-      // Añadir título para la sección de resumen
       const summaryTitle = worksheet.addRow(['ANÁLISIS DE RETENCIÓN DE USUARIOS']);
       summaryTitle.font = {
         name: 'Poppins',
@@ -664,10 +605,8 @@ if (options.deductibleSummary &&
         fgColor: { argb: 'f5f5f5' } // Gris claro
       };
       
-      // Añadir contador de usuarios inactivos
       const inactiveCount = worksheet.addRow(['Usuarios que han dejado de usar la plataforma:', options.inactiveUserSummary.count]);
       
-      // Aplicar formato de número entero sin decimales
       const countCell = inactiveCount.getCell(2);
       countCell.numFmt = '#,##0';
       
@@ -680,19 +619,15 @@ if (options.deductibleSummary &&
         fgColor: { argb: 'ffebee' } // Rojizo claro
       };
       
-      // Añadir porcentaje de usuarios inactivos
       const inactivePercentage = worksheet.addRow(['Porcentaje de abandono:', `${options.inactiveUserSummary.percentage}%`]);
       inactivePercentage.font = {
         bold: true
       };
     }
 
-// Añadir sección de análisis de productos si está habilitado
 if (options.productAnalysis) {
-  // Añadir espacio entre secciones
   worksheet.addRow([]);
   
-  // Añadir título para la sección de análisis
   const analysisTitleRow = worksheet.addRow(['ANÁLISIS DE PRODUCTOS']);
   analysisTitleRow.font = {
     name: 'Poppins',
@@ -716,7 +651,6 @@ if (options.productAnalysis) {
   revenueRow.getCell(2).numFmt = '€#,##0.00';
   revenueRow.font = { bold: true };
   
-  // Añadir distribución de planes
   worksheet.addRow(['']);
   const plansTitleRow = worksheet.addRow(['DISTRIBUCIÓN DE PLANES']);
   plansTitleRow.font = {
@@ -736,7 +670,6 @@ if (options.productAnalysis) {
   const plansHeaderRow = worksheet.addRow(['Tipo de Plan', 'Suscripciones', '%']);
   plansHeaderRow.font = { bold: true };
   
-  // Calcular totales primero para porcentajes correctos
   const totalPlans = (options.productAnalysis.planDistribution['Mensual'] || 0) + 
                      (options.productAnalysis.planDistribution['Anual'] || 0);
   
@@ -757,7 +690,6 @@ if (options.productAnalysis) {
   yearlyRow.getCell(2).numFmt = '#,##0'; // CORRECCIÓN: Formato entero sin decimales
   yearlyRow.getCell(3).numFmt = '0.0%';  // Formato de porcentaje
   
-  // Añadir TOP productos
   worksheet.addRow(['']);
   const productsTitleRow = worksheet.addRow(['LISTA DE PRODUCTOS POR INGRESOS']);
   productsTitleRow.font = {
@@ -807,10 +739,8 @@ if (options.productAnalysis) {
     
     // NUEVO: Añadir sección de análisis de transacciones
     if (options.transactionAnalysis) {
-      // Añadir espacio entre secciones
       worksheet.addRow([]);
       
-      // Añadir título para la sección de análisis
       const analysisTitleRow = worksheet.addRow(['ANÁLISIS DE TRANSACCIONES']);
       analysisTitleRow.font = {
         name: 'Poppins',
@@ -832,7 +762,6 @@ if (options.productAnalysis) {
         bold: true
       };
       
-      // Añadir análisis de métodos de pago
       worksheet.addRow(['']);
       const methodsTitleRow = worksheet.addRow(['TOP 5 MÉTODOS DE PAGO']);
       methodsTitleRow.font = {
@@ -883,7 +812,6 @@ if (options.productAnalysis) {
         methodIndex++;
       });
       
-      // Añadir análisis de países
       worksheet.addRow(['']);
       const countriesTitleRow = worksheet.addRow(['TOP 5 PAÍSES']);
       countriesTitleRow.font = {
@@ -935,16 +863,13 @@ if (options.productAnalysis) {
       });
     }
     
-    // Añadir filtros si está habilitado
     if (options.includeFilters) {
-      // Calcular el rango donde aplicar los filtros (excluyendo el encabezado corporativo)
       worksheet.autoFilter = {
         from: { row: headerRowNum, column: 1 },
         to: { row: headerRowNum, column: headers.length }
       };
     }
     
-    // Configurar propiedades de impresión
     worksheet.pageSetup = {
       fitToPage: true,
       fitToWidth: 1,
@@ -967,10 +892,8 @@ worksheet.views = [
   { state: 'frozen', xSplit: 0, ySplit: freezeRow, activeCell: 'A1' }
 ];
     
-    // Generar archivo Excel
     const buffer = await workbook.xlsx.writeBuffer();
     
-    // Crear blob y descargar
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     this.downloadBlob(blob, `${fileName}.xlsx`);
     
@@ -991,7 +914,6 @@ worksheet.views = [
  * @param {Object} options - Opciones de exportación
  */
 addCorporateHeader(worksheet, workbook, options) {
-  // Añadir título del informe directamente en la primera fila visible
   const reportTitle = options.title || `Informe de ${options.sheetName}`;
   const titleRow = worksheet.addRow([reportTitle]);
   
@@ -1009,7 +931,6 @@ addCorporateHeader(worksheet, workbook, options) {
   // Fusionar celdas para el título
   worksheet.mergeCells(`B1:${this.getColumnLetter(this.extractHeaders([], options).length)}1`);
   
-  // Añadir subtítulo con fecha (sin fila en blanco en medio)
   const today = new Date();
   const formattedDate = formatDate(today, 'long');
   const subtitleRow = worksheet.addRow([`Generado el ${formattedDate}`]);
@@ -1027,13 +948,11 @@ addCorporateHeader(worksheet, workbook, options) {
   // Fusionar celdas para el subtítulo
   worksheet.mergeCells(`A2:${this.getColumnLetter(this.extractHeaders([], options).length)}2`);
   
-  // Añadir borde inferior para separar el encabezado corporativo (sin filas en blanco)
   const borderRow = worksheet.addRow([]);
   borderRow.border = {
     bottom: { style: 'medium', color: { argb: this.brandColors.primary } }
   };
   
-  // Intentar añadir imagen si está habilitado
   if (options.includeLogo !== false && options.logoUrl) {
     try {
       // Uso de imagen base64 para entorno de navegador
@@ -1052,23 +971,19 @@ addCorporateHeader(worksheet, workbook, options) {
  */
 async addLogoToWorkbook(workbook, worksheet, logoUrl) {
   try {
-    // Intentar cargar la imagen usando fetch (funciona en navegador)
     const response = await fetch(logoUrl);
     const blob = await response.blob();
     
-    // Convertir blob a base64
     const reader = new FileReader();
     reader.onload = () => {
       try {
         const base64 = reader.result.split(',')[1];
         
-        // Añadir imagen usando base64
         const imageId = workbook.addImage({
           base64: base64,
           extension: 'png',
         });
         
-        // Añadir a la hoja en posición A1
         worksheet.addImage(imageId, {
           tl: { col: 0, row: 0 },
           br: { col: 1, row: 2 },
@@ -1117,7 +1032,6 @@ async addLogoToWorkbook(workbook, worksheet, logoUrl) {
       };
     });
     
-    // Establecer altura de la fila de encabezados
     headerRow.height = 25;
   }
   
@@ -1148,16 +1062,12 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
   // Esta será exactamente la última fila de datos
   const lastDataRow = worksheet.rowCount;
   
-  // Crear la fila de totales
   const totalsRowData = Array(headers.length).fill('');
   
-  // Añadir etiqueta "TOTAL" en la primera columna
   totalsRowData[0] = 'TOTAL';
   
-  // Verificar si hay columnas específicas para totalizar
   const specificColumnsToTotal = options.columnsWithTotals || [];
   
-  // Obtener formatos específicos de moneda y enteros si se proporcionan
   const currencyFormats = options.currencyFormats || {};
   const integerFormats = options.integerFormats || {}; // NUEVO: Obtener formatos enteros
   
@@ -1173,7 +1083,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       if (specificColumnsToTotal.includes(header)) {
         const colLetter = this.getColumnLetter(colIndex + 1);
         
-        // Crear fórmula de suma con rango preciso
         totalsRowData[colIndex] = {
           formula: `SUM(${colLetter}${startRow}:${colLetter}${endRow})`,
           result: 0 // Valor por defecto
@@ -1185,7 +1094,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
     numericColumns.forEach(colIndex => {
       const colLetter = this.getColumnLetter(colIndex + 1);
       
-      // Crear fórmula de suma con rango preciso
       totalsRowData[colIndex] = {
         formula: `SUM(${colLetter}${startRow}:${colLetter}${endRow})`,
         result: 0 // Valor por defecto
@@ -1193,12 +1101,10 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
     });
   }
   
-  // Añadir fila de totales
   const totalsRow = worksheet.addRow(totalsRowData);
   
   // Estilizar fila de totales
   totalsRow.eachCell((cell, colNumber) => {
-    // Aplicar estilo base a todas las celdas
     cell.fill = {
       type: 'pattern',
       pattern: 'solid',
@@ -1218,12 +1124,10 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       right: { style: 'thin', color: { argb: this.brandColors.secondary } }
     };
     
-    // Obtener el nombre del encabezado para esta columna
     const headerName = headers[colNumber - 1];
     
     // CORRECCIÓN: Priorizar los formatos explícitos de enteros sobre otros formatos
     if (integerFormats && integerFormats[headerName]) {
-      // Aplicar formato entero específico (esto tiene la mayor prioridad)
       cell.numFmt = integerFormats[headerName];
     }
     // Si no hay formato entero específico, verificar si es un formato de moneda
@@ -1259,7 +1163,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
     headers.forEach((header, index) => {
       const value = firstItem[header];
       
-      // Verificar si el valor parece numérico
       if (
         (typeof value === 'number' && !isNaN(value)) ||
         (typeof value === 'string' && !isNaN(parseFloat(value)) && value.trim() !== '')
@@ -1284,7 +1187,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
     
     return headers.map((header, index) => {
       const headerLower = header.toLowerCase();
-      // Verificar si el encabezado contiene alguna palabra clave monetaria
       const isCurrency = currencyFields.some(field => 
         headerLower.includes(field.toLowerCase())
       );
@@ -1341,16 +1243,12 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
         return false;
       }
       
-      // Combinar opciones con valores por defecto
       const exportOptions = { ...this.defaultOptions, ...options };
       
-      // Generar nombre de archivo con timestamp si se solicita
       const fileName = this.generateFileName(exportOptions);
       
-      // Obtener separador de la configuración o usar el pasado en opciones
       let delimiter = exportOptions.csvDelimiter;
       
-      // Validar que el separador sea válido (como carácter real, no valor descriptivo)
       if (delimiter !== ',' && delimiter !== ';' && delimiter !== '\t') {
         console.warn(`ExportManager: Separador CSV inválido: "${delimiter}", usando por defecto: ";"`);
         delimiter = ';';
@@ -1358,23 +1256,18 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       
       console.log(`ExportManager: Exportando CSV con separador: "${delimiter}"`);
       
-      // Extraer encabezados
       const headers = this.extractHeaders(data, exportOptions);
       
-      // Crear contenido CSV
       let csvContent = '';
       
-      // Añadir encabezados si se solicita
       if (exportOptions.includeHeaders) {
         csvContent += headers.join(delimiter) + '\n';
       }
       
-      // Añadir filas de datos
       data.forEach(row => {
         const rowValues = headers.map(header => {
           const value = row[header];
           
-          // Formatear según tipo
           if (value === null || value === undefined) {
             return '';
           } else if (typeof value === 'string') {
@@ -1393,7 +1286,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
         csvContent += rowValues.join(delimiter) + '\n';
       });
       
-      // Crear Blob y descargar
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       this.downloadBlob(blob, `${fileName}.csv`);
       
@@ -1418,13 +1310,10 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
         return false;
       }
       
-      // Combinar opciones con valores por defecto
       const exportOptions = { ...this.defaultOptions, ...options };
       
-      // Generar nombre de archivo con timestamp si se solicita
       const fileName = this.generateFileName(exportOptions);
       
-      // Crear objeto JSON con metadatos
       const jsonData = {
         exportDate: new Date().toISOString(),
         reportName: exportOptions.title || `Informe de ${exportOptions.sheetName}`,
@@ -1432,10 +1321,8 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
         data: data
       };
       
-      // Convertir a string
       const jsonString = JSON.stringify(jsonData, null, 2);
       
-      // Crear Blob y descargar
       const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
       this.downloadBlob(blob, `${fileName}.json`);
       
@@ -1454,26 +1341,21 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
    * @returns {boolean} Éxito de la exportación
    */
   exportData(data, options = {}) {
-    // Combinar opciones con valores por defecto
     const exportOptions = { ...this.defaultOptions, ...options };
     
-    // Actualizar con preferencias del usuario si no se especifica
     if (!options.format) {
       exportOptions.format = this.getPreferredFormat();
     }
     
-    // Actualizar con preferencias del usuario para CSV si corresponde
     if (exportOptions.format === 'csv' && !options.csvDelimiter) {
       exportOptions.csvDelimiter = this.getPreferredCsvDelimiter();
     }
     
-    // Log para depuración
     console.log(`ExportManager: Exportando en formato ${exportOptions.format} con separador CSV: "${exportOptions.csvDelimiter}"`);
     
     // Preprocesar datos si es necesario
     const processedData = this.processDataForExport(data, exportOptions);
     
-    // Exportar según formato
     switch (exportOptions.format.toLowerCase()) {
       case 'excel':
       case 'xlsx':
@@ -1508,7 +1390,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       return [];
     }
     
-    // Extraer encabezados del primer elemento
     const firstItem = data[0];
     return Object.keys(firstItem);
   }
@@ -1521,7 +1402,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
   generateFileName(options) {
     let fileName = options.fileName || this.defaultOptions.fileName;
     
-    // Añadir timestamp si se solicita
     if (options.includeTimestamp) {
       const now = new Date();
       const timestamp = now.toISOString()
@@ -1541,15 +1421,12 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
    * @param {string} fileName - Nombre del archivo
    */
   downloadBlob(blob, fileName) {
-    // Crear URL para el Blob
     const url = window.URL.createObjectURL(blob);
     
-    // Crear enlace de descarga
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
     
-    // Añadir al documento, simular clic y eliminar
     document.body.appendChild(link);
     link.click();
     setTimeout(() => {
@@ -1580,14 +1457,10 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       ...options.processing
     };
     
-    // Procesar cada elemento
     return data.map(item => {
-      // Crear objeto procesado
       const processedItem = {};
       
-      // Procesar cada campo
       Object.keys(item).forEach(key => {
-        // Verificar si se debe incluir o excluir
         if (
           (processingOptions.includeFields && !processingOptions.includeFields.includes(key)) ||
           (processingOptions.excludeFields && processingOptions.excludeFields.includes(key))
@@ -1595,18 +1468,14 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
           return;
         }
         
-        // Obtener valor
         let value = item[key];
         
-        // Eliminar null/undefined si se solicita
         if (processingOptions.removeNulls && (value === null || value === undefined)) {
           value = '';
         }
         
-        // Determinar nombre de campo (original o renombrado)
         const fieldName = processingOptions.renameFields[key] || key;
         
-        // Asignar al objeto procesado
         processedItem[fieldName] = value;
       });
       
@@ -1729,10 +1598,8 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
    * @returns {boolean} Éxito de la exportación
    */
   exportWithTemplate(data, reportType, customOptions = {}) {
-    // Obtener configuración de plantilla
     const templateConfig = this.getTemplateConfig(reportType);
     
-    // Combinar opciones de plantilla con opciones personalizadas
     const exportOptions = {
       ...this.defaultOptions,
       ...templateConfig,
@@ -1756,7 +1623,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       });
     }
     
-    // Exportar datos
     return this.exportData(processedData, exportOptions);
   }
   
@@ -1771,7 +1637,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       'importe', 'precio', 'costo', 'valor', 'iva'
     ];
     
-    // Comprobar si el nombre del campo contiene alguna de las palabras clave
     return currencyFields.some(cf => 
       fieldName.toLowerCase().includes(cf.toLowerCase())
     );
@@ -1788,7 +1653,6 @@ addTotalsRow(worksheet, headers, numericColumns, currencyColumns, options = {}) 
       'fecha', 'hora', 'creado', 'actualizado', 'inicio', 'fin', 'expiracion', 'next', 'last'
     ];
     
-    // Comprobar si el nombre del campo contiene alguna de las palabras clave
     return dateFields.some(df => 
       fieldName.toLowerCase().includes(df.toLowerCase())
     );
@@ -1809,61 +1673,47 @@ async exportToPDF(data, options = {}) {
     
     console.log('Iniciando exportación a PDF...');
     
-    // Combinar opciones con valores por defecto
     const exportOptions = { ...this.defaultOptions, ...options };
     
-    // Extraer encabezados para análisis
     const headers = this.extractHeaders(data, exportOptions);
     console.log(`Exportando tabla con ${headers.length} columnas a PDF`);
     
-    // Analizar si la tabla es ancha y necesita optimizaciones
     const optimizationConfig = this.getPDFOptimizationConfig(exportOptions, headers);
     console.log('Configuración de optimización PDF:', optimizationConfig);
     
-    // Modificar opciones según optimización
     exportOptions._pdfOptimization = optimizationConfig;
     
-    // Generar nombre de archivo con timestamp si se solicita
     const fileName = this.generateFileName(exportOptions);
     
-    // Cargar la biblioteca pdfmake si no está ya cargada
     if (typeof pdfMake === 'undefined') {
       await this.loadPDFMakeLibrary();
     }
     
-    // Crear definición del documento PDF
     const docDefinition = await this.createPDFDocDefinition(data, exportOptions);
     
-    // Detectar si el usuario está usando Internet Explorer (que tiene problemas con PDF grandes)
     const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || 
                 window.navigator.userAgent.indexOf('Trident/') > -1;
     
-    // Añadir información de progreso
     let progressMsg = `Generando PDF para ${data.length} filas...`;
     if (options.sheetName) {
       progressMsg = `Generando ${options.sheetName} en PDF...`;
     }
     
-    // Mostrar mensaje si hay alguna función UI disponible
     if (typeof window.showGeneratingMessage === 'function') {
       window.showGeneratingMessage(progressMsg);
     } else {
       console.log(progressMsg);
     }
     
-    // Log para depuración
     console.log('Configuración final para PDF:', {
       pageSize: docDefinition.pageSize,
       pageOrientation: docDefinition.pageOrientation,
       userRequestedOrientation: exportOptions.pdf?.orientation || 'default'
     });
     
-    // Generar y descargar el PDF
     if (isIE) {
-      // Para IE, abrimos en nueva ventana
       pdfMake.createPdf(docDefinition).open();
     } else {
-      // Para navegadores modernos, descarga directa
       pdfMake.createPdf(docDefinition).download(`${fileName}.pdf`);
     }
     
@@ -1881,7 +1731,6 @@ async exportToPDF(data, options = {}) {
  */
 loadPDFMakeLibrary() {
   return new Promise((resolve, reject) => {
-    // Verificar si ya está cargada
     if (typeof pdfMake !== 'undefined') {
       resolve();
       return;
@@ -1889,17 +1738,14 @@ loadPDFMakeLibrary() {
     
     console.log('Cargando biblioteca pdfmake para exportaciones a PDF...');
     
-    // Cargar pdfmake
     const scriptPdfMake = document.createElement('script');
     scriptPdfMake.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js';
     scriptPdfMake.async = true;
     
-    // Cargar vfs_fonts para las fuentes
     const scriptVfsFonts = document.createElement('script');
     scriptVfsFonts.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js';
     scriptVfsFonts.async = true;
     
-    // Manejar eventos de carga
     scriptPdfMake.onload = () => {
       console.log('pdfmake cargado correctamente');
       document.body.appendChild(scriptVfsFonts);
@@ -1907,7 +1753,6 @@ loadPDFMakeLibrary() {
     
     scriptVfsFonts.onload = () => {
       console.log('vfs_fonts cargado correctamente');
-      // Registrar fuente Poppins si es posible
       try {
         this.registerPDFFonts();
       } catch (e) {
@@ -1926,7 +1771,6 @@ loadPDFMakeLibrary() {
       reject(new Error('Error al cargar vfs_fonts'));
     };
     
-    // Añadir scripts al documento
     document.body.appendChild(scriptPdfMake);
   });
 }
@@ -1938,7 +1782,6 @@ registerPDFFonts() {
   // Solo si pdfMake está disponible
   if (typeof pdfMake === 'undefined') return;
   
-  // Definir fuentes
   const fontDefinitions = {
     Poppins: {
       normal: 'https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2',
@@ -1948,7 +1791,6 @@ registerPDFFonts() {
     }
   };
   
-  // Registrar fuentes (esto podría no funcionar dependiendo de la configuración de pdfmake)
   // En caso de error, se usarán las fuentes por defecto
   try {
     pdfMake.fonts = {
@@ -1977,10 +1819,8 @@ getPDFOptimizationConfig(options, headers) {
     margins: [40, 40, 40, 60]
   };
   
-  // Obtener opciones específicas de PDF
   const pdfOptions = options.pdf || {};
   
-  // Determinar si es una tabla ancha
   const tableWidth = headers.length;
   let isWideTable = tableWidth > 7;
   
@@ -1993,14 +1833,12 @@ getPDFOptimizationConfig(options, headers) {
   
   config.isWideTable = isWideTable;
   
-  // Determinar tamaño de página (siempre A3 para tablas con 10+ columnas)
   if (pdfOptions.pageSize && pdfOptions.pageSize !== 'auto') {
     config.pageSize = pdfOptions.pageSize;
   } else if (isWideTable && tableWidth >= 10) {
     config.pageSize = 'A3';
   }
   
-  // Determinar tamaños de fuente
   if (pdfOptions.fontSizeReduction === 'none') {
     // No reducir tamaño de fuente
     config.fontSize = 10;
@@ -2035,12 +1873,9 @@ getPDFOptimizationConfig(options, headers) {
     }
   }
   
-  // Determinar márgenes basados en la orientación
   const orientation = pdfOptions.orientation || 'landscape';
   
-  // Aplicar márgenes según orientación y ancho de tabla
   if (orientation === 'portrait') {
-    // Para portrait, ajustar márgenes para aprovechar el espacio vertical
     if (isWideTable && tableWidth >= 10) {
       config.margins = [5, 10, 5, 15]; // Márgenes muy pequeños para tablas muy anchas
     } else if (isWideTable) {
@@ -2049,7 +1884,6 @@ getPDFOptimizationConfig(options, headers) {
       config.margins = [15, 20, 15, 25]; // Márgenes normales para tablas estándar
     }
   } else {
-    // Para landscape (horizontal), usar los márgenes originales
     if (isWideTable && tableWidth >= 10) {
       config.margins = [5, 10, 5, 20]; // Márgenes muy pequeños para tablas muy anchas
     } else if (isWideTable) {
@@ -2075,10 +1909,8 @@ getPDFOptimizationConfig(options, headers) {
  * @returns {Object} Definición del documento PDF
  */
 async createPDFDocDefinition(data, options) {
-  // Extraer encabezados
   const headers = this.extractHeaders(data, options);
   
-  // Obtener configuración de optimización
   const optimization = options._pdfOptimization || this.getPDFOptimizationConfig(options, headers);
   const isWideTable = optimization.isWideTable;
   const fontSize = optimization.fontSize;
@@ -2088,13 +1920,10 @@ async createPDFDocDefinition(data, options) {
   const margins = optimization.margins;
   
   // CLAVE: Forzar el ajuste de anchos al tamaño de la página
-  // Usar el nuevo método en lugar del cálculo normal de anchos
   const columnWidths = this.calculateForcedFitColumnWidths(headers, options);
   
-  // Convertir datos a formato de tabla para PDF
   const pdfTableBody = [];
   
-  // Añadir fila de encabezados
   const headerRow = headers.map(header => ({
     text: header,
     style: 'tableHeader',
@@ -2105,21 +1934,17 @@ async createPDFDocDefinition(data, options) {
   }));
   pdfTableBody.push(headerRow);
   
-  // Añadir filas de datos
   data.forEach((item, index) => {
     const row = headers.map(header => {
       let value = item[header];
       
-      // Formatear según tipo
       if (value === null || value === undefined) {
         return '';
       } else if (typeof value === 'string') {
-        // Usar método de truncamiento inteligente
         return this.truncateTextForPDF(value, header, options, isWideTable);
       } else if (value instanceof Date) {
         return formatDate(value, options.dateFormat || 'DD/MM/YYYY');
       } else if (typeof value === 'number') {
-        // Verificar si es un campo de moneda
         if (options.currencyFormats && options.currencyFormats[header]) {
           // Es un campo de moneda, formatear como tal
           if (options.currencyFormats[header].includes('€')) {
@@ -2141,12 +1966,10 @@ async createPDFDocDefinition(data, options) {
       const rowWithStyle = row.map(cell => ({
         text: cell,
         fontSize: fontSize - 1,  // Reducir aún más para garantizar ajuste
-        // Aplicar colores de fondo alternados
         fillColor: index % 2 !== 0 ? `#${this.brandColors.background}` : null
       }));
       pdfTableBody.push(rowWithStyle);
     } else {
-      // Aplicar colores de fondo alternados para tablas normales
       if (index % 2 !== 0) {
         pdfTableBody.push(row.map(cell => ({
           text: cell,
@@ -2164,10 +1987,8 @@ async createPDFDocDefinition(data, options) {
     pdfTableBody.push(totalsRow);
   }
   
-  // Crear contenido del documento
   const content = [];
   
-  // Añadir título
   const title = options.title || `Informe de ${options.sheetName || 'Datos'}`;
   content.push({
     text: title,
@@ -2176,7 +1997,6 @@ async createPDFDocDefinition(data, options) {
     margin: [0, 0, 0, 5]  // Reducir margen inferior
   });
   
-  // Añadir fecha de generación (con margen reducido)
   const today = new Date();
   const formattedDate = formatDate ? formatDate(today, 'long') : today.toLocaleDateString();
   content.push({
@@ -2224,11 +2044,9 @@ async createPDFDocDefinition(data, options) {
     },
     // CLAVE: Forzar que la tabla ocupe el 100% del ancho disponible
     width: '100%',
-    // Eliminar márgenes horizontales para maximizar el ancho utilizado
     margin: [0, 2, 0, 5]
   });
   
-  // Añadir análisis si están disponibles
   if (options.transactionAnalysis) {
     content.push(this.createPDFTransactionAnalysis(options.transactionAnalysis, isWideTable));
   }
@@ -2265,7 +2083,6 @@ async createPDFDocDefinition(data, options) {
   
   console.log(`Orientación final seleccionada: ${pageOrientation}`);
   
-  // Crear definición del documento con configuración optimizada
   const docDefinition = {
     content: content,
     styles: {
@@ -2303,7 +2120,6 @@ async createPDFDocDefinition(data, options) {
       fontSize: isWideTable ? fontSize - 1 : fontSize,
       color: `#${this.brandColors.text}`
     },
-    // Aplicar orientación según lo determinado anteriormente
     pageOrientation: pageOrientation,
     // Configuración de página específica para tablas
     pageSize: pageSize,
@@ -2319,7 +2135,6 @@ async createPDFDocDefinition(data, options) {
     }
   };
   
-  // Añadir logo si está disponible
   if (options.includeLogo && options.logoUrl) {
     try {
       // En PDF no podemos usar directamente la URL, necesitamos convertirla a dataURL
@@ -2328,7 +2143,6 @@ async createPDFDocDefinition(data, options) {
       // Ajustar tamaño del logo para tablas anchas
       const logoWidth = isWideTable ? 80 : 100;
       
-      // Añadir logo al inicio del contenido
       docDefinition.content.unshift({
         image: logoDataUrl,
         width: logoWidth,
@@ -2361,7 +2175,6 @@ calculateForcedFitColumnWidths(headers, options) {
     'letter': { 'portrait': 550, 'landscape': 720 }
   };
   
-  // Obtener ancho disponible (con margen mínimo de seguridad)
   const availableWidth = (pageSizes[pageSize]?.[orientation] || 780) - 20; // 20 puntos de margen de seguridad
   
   console.log(`Ancho disponible para tabla: ${availableWidth} puntos`);
@@ -2397,7 +2210,6 @@ calculateForcedFitColumnWidths(headers, options) {
     }
     
     // Si es una de las últimas columnas, aumentar ligeramente su prioridad
-    // para garantizar que tengan suficiente espacio
     const columnIndex = headers.indexOf(header);
     if (columnIndex >= headers.length - 3) {
       priority *= 1.2; // Aumentar un 20% la prioridad de las últimas columnas
@@ -2435,7 +2247,6 @@ calculateForcedFitColumnWidths(headers, options) {
   const columnWidths = [];
   
   if (hasExplicitWidths && totalExplicitWidth > 0) {
-    // Usar anchos explícitos como guía pero ajustar para asegurar que se ajuste
     const scaleFactor = availableWidth / totalExplicitWidth;
     
     headers.forEach(header => {
@@ -2444,7 +2255,6 @@ calculateForcedFitColumnWidths(headers, options) {
         // Escalar anchos explícitos proporcionalmente
         width = Math.max(20, Math.floor(explicitWidths[header] * scaleFactor));
       } else {
-        // Para columnas sin ancho explícito, usar la prioridad
         const priorityRatio = columnPriorities[header] / totalPriority;
         width = Math.max(20, Math.floor(availableWidth * priorityRatio));
       }
@@ -2474,11 +2284,9 @@ calculateForcedFitColumnWidths(headers, options) {
   const finalTotalWidth = columnWidths.reduce((sum, width) => sum + width, 0);
   
   if (finalTotalWidth < availableWidth) {
-    // Calcular el espacio adicional disponible
     const extraSpace = availableWidth - finalTotalWidth;
     console.log(`Espacio extra disponible: ${extraSpace} puntos`);
     
-    // Crear un array de prioridades para distribuir el espacio extra
     const priorities = headers.map(header => columnPriorities[header]);
     
     // Distribuir el espacio extra según prioridades
@@ -2501,18 +2309,14 @@ distributeExtraSpace(widths, priorities, extraSpace) {
   // Total de prioridades
   const totalPriority = priorities.reduce((sum, p) => sum + p, 0);
   
-  // Calcular incrementos iniciales basados en prioridad
   const increments = priorities.map(p => Math.floor((p / totalPriority) * extraSpace));
   
-  // Verificar si hay espacio no distribuido por redondeo
   const distributedSpace = increments.reduce((sum, i) => sum + i, 0);
   const remaining = extraSpace - distributedSpace;
   
   // Distribuir el espacio restante a las columnas con mayor prioridad
   if (remaining > 0) {
-    // Crear pares de [índice, prioridad] para ordenar
     const pairs = priorities.map((p, i) => [i, p]);
-    // Ordenar por prioridad (descendente)
     pairs.sort((a, b) => b[1] - a[1]);
     
     // Distribuir el espacio restante entre las columnas con mayor prioridad
@@ -2522,7 +2326,6 @@ distributeExtraSpace(widths, priorities, extraSpace) {
     }
   }
   
-  // Aplicar los incrementos
   for (let i = 0; i < widths.length; i++) {
     widths[i] += increments[i];
   }
@@ -2539,10 +2342,8 @@ distributeExtraSpace(widths, priorities, extraSpace) {
 truncateTextForPDF(text, column, options, isWideTable) {
   if (!text) return '';
   
-  // Convertir a string si no lo es
   const textStr = String(text);
   
-  // Verificar si hay configuración específica para esta columna
   if (options.truncateText && options.truncateText[column]) {
     const maxLength = options.truncateText[column];
     // Si el texto es más largo que el máximo permitido, truncarlo
@@ -2551,17 +2352,14 @@ truncateTextForPDF(text, column, options, isWideTable) {
     }
   }
   // Si no hay configuración específica pero la tabla es ancha,
-  // aplicar truncamiento por defecto basado en tipo de columna
   else if (isWideTable) {
     const columnLower = column.toLowerCase();
     
     // Correos electrónicos (truncar más agresivamente)
     if (columnLower.includes('correo') || columnLower.includes('email')) {
       if (textStr.length > 20) {
-        // Intentar preservar el dominio
         const parts = textStr.split('@');
         if (parts.length === 2) {
-          // Truncar solo la parte del usuario, manteniendo el dominio
           const username = parts[0];
           const domain = parts[1];
           if (username.length > 10) {
@@ -2597,7 +2395,6 @@ truncateTextForPDF(text, column, options, isWideTable) {
     }
   }
   
-  // Si no se requiere truncamiento, devolver el texto original
   return textStr;
 }
 
@@ -2609,7 +2406,6 @@ truncateTextForPDF(text, column, options, isWideTable) {
  * @returns {Array} Anchos óptimos para cada columna
  */
 calculateOptimalColumnWidths(headers, data, isWideTable) {
-  // Verificar si hay anchos de columna predefinidos
   if (this.defaultOptions && this.defaultOptions.columnWidths) {
     const predefinedWidths = [];
     headers.forEach(header => {
@@ -2625,12 +2421,10 @@ calculateOptimalColumnWidths(headers, data, isWideTable) {
   
   // Si la tabla es muy ancha, usar un enfoque más agresivo
   if (isWideTable) {
-    // Determinar el tamaño de página para calcular el ancho disponible
     const pageWidth = headers.length > 12 ? 1100 :   // A3
                       headers.length > 8 ? 800 :     // A4 landscape
                       750;                           // A4 landscape con márgenes normales
     
-    // Restar algunos puntos para márgenes y espaciado
     const availableWidth = pageWidth - 40; // 20px a cada lado para márgenes
     
     // Si tenemos más de 10 columnas, necesitamos ser muy agresivos
@@ -2683,14 +2477,11 @@ calculateOptimalColumnWidths(headers, data, isWideTable) {
       });
     } 
     else {
-      // Para tablas anchas pero manejables (8-10 columnas)
-      // Calcular ancho base pero dar más espacio a columnas importantes
       const baseWidth = Math.max(20, Math.floor(availableWidth / headers.length));
       
       return headers.map(header => {
         const headerLower = header.toLowerCase();
         
-        // Asignar anchos según tipo de columna
         if (headerLower.includes('correo') || headerLower.includes('email')) {
           return baseWidth * 1.5; // Dar más espacio a correos
         } else if (headerLower.includes('nombre') || headerLower.includes('apellido')) {
@@ -2704,7 +2495,6 @@ calculateOptimalColumnWidths(headers, data, isWideTable) {
     }
   } 
   else {
-    // Para tablas normales, mantener el comportamiento actual
     const columnWidths = [];
     
     headers.forEach((header) => {
@@ -2718,7 +2508,6 @@ calculateOptimalColumnWidths(headers, data, isWideTable) {
         maxLength = Math.max(maxLength, Math.min(value.length, 40)); // Limitar a 40 caracteres
       }
       
-      // Calcular ancho en puntos (aproximación basada en fuente)
       let width = Math.min(maxLength * 5 + 8, 180); // Limitado a 180 puntos
       
       // Asegurar un mínimo razonable
@@ -2804,7 +2593,6 @@ createPDFInactiveUserAnalysis(inactiveUserSummary, isWideTable = false) {
     ]
   ];
   
-  // Añadir filas con métricas importantes
   analysisTableBody.push([
     { text: 'Usuarios que han dejado de usar la plataforma', fontSize: fontSize },
     { text: inactiveUserSummary.count.toString(), fontSize: fontSize }
@@ -2815,7 +2603,6 @@ createPDFInactiveUserAnalysis(inactiveUserSummary, isWideTable = false) {
     { text: `${inactiveUserSummary.percentage}%`, fontSize: fontSize, fillColor: '#f3f9fe' }
   ]);
   
-  // Añadir métricas adicionales si están disponibles
   if (inactiveUserSummary.totalSpend !== undefined) {
     analysisTableBody.push([
       { text: 'Gasto total de usuarios inactivos', fontSize: fontSize },
@@ -2837,7 +2624,6 @@ createPDFInactiveUserAnalysis(inactiveUserSummary, isWideTable = false) {
     ]);
   }
   
-  // Añadir tabla con el análisis
   content.push({
     table: {
       headerRows: 1,
@@ -2901,11 +2687,9 @@ createPDFTotalsRow(headers, data, options, isWideTable = false) {
       };
     }
     
-    // Verificar si esta columna debe tener total
     const needsTotal = options.columnsWithTotals && options.columnsWithTotals.includes(header);
     
     if (needsTotal) {
-      // Calcular total para esta columna
       let total = 0;
       data.forEach(item => {
         const value = item[header];
@@ -2916,7 +2700,6 @@ createPDFTotalsRow(headers, data, options, isWideTable = false) {
         }
       });
       
-      // Formatear según tipo (moneda, etc.)
       let formattedTotal = total.toString();
       if (options.currencyFormats && options.currencyFormats[header]) {
         if (options.currencyFormats[header].includes('€')) {
@@ -2999,7 +2782,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
     ]
   ];
   
-  // Añadir filas de métodos
   let methodIndex = 0;
   Object.entries(transactionAnalysis.paymentMethods).forEach(([method, data]) => {
     const row = [
@@ -3009,7 +2791,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       data.count.toString()
     ];
     
-    // Aplicar estilo alternado
     if (methodIndex % 2 !== 0) {
       methodsTableBody.push(row.map(cell => ({
         text: cell,
@@ -3026,7 +2807,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
     methodIndex++;
   });
   
-  // Añadir tabla de métodos con optimizaciones
   content.push({
     table: {
       headerRows: 1,
@@ -3057,7 +2837,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       ]
     ];
     
-    // Añadir filas de países
     let countryIndex = 0;
     Object.entries(transactionAnalysis.countries).forEach(([country, data]) => {
       const row = [
@@ -3067,7 +2846,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
         data.count.toString()
       ];
       
-      // Aplicar estilo alternado
       if (countryIndex % 2 !== 0) {
         countriesTableBody.push(row.map(cell => ({
           text: cell,
@@ -3084,7 +2862,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       countryIndex++;
     });
     
-    // Añadir tabla de países
     content.push({
       table: {
         headerRows: 1,
@@ -3094,7 +2871,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       margin: [0, 3, 0, 5]
     });
   } else {
-    // Versión normal (dos columnas) para tablas estándar
     content.push({
       text: 'TOP 5 PAÍSES',
       style: 'sectionHeader',
@@ -3112,7 +2888,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       ]
     ];
     
-    // Añadir filas de países
     let countryIndex = 0;
     Object.entries(transactionAnalysis.countries).forEach(([country, data]) => {
       const row = [
@@ -3122,7 +2897,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
         data.count.toString()
       ];
       
-      // Aplicar estilo alternado
       if (countryIndex % 2 !== 0) {
         countriesTableBody.push(row.map(cell => ({
           text: cell,
@@ -3135,7 +2909,6 @@ createPDFTransactionAnalysis(transactionAnalysis, isWideTable = false) {
       countryIndex++;
     });
     
-    // Añadir tabla de países
     content.push({
       table: {
         headerRows: 1,
@@ -3198,11 +2971,9 @@ createPDFProductAnalysis(productAnalysis) {
     ]
   ];
   
-  // Calcular totales para porcentajes correctos
   const totalPlans = (productAnalysis.planDistribution['Mensual'] || 0) + 
                     (productAnalysis.planDistribution['Anual'] || 0);
   
-  // Añadir filas de planes
   const monthlyCount = productAnalysis.planDistribution['Mensual'] || 0;
   const monthlyPercentage = totalPlans > 0 ? (monthlyCount / totalPlans) * 100 : 0;
   
@@ -3216,7 +2987,6 @@ createPDFProductAnalysis(productAnalysis) {
     { text: `${yearlyPercentage.toFixed(1)}%`, fillColor: '#f3f9fe' }
   ]);
   
-  // Añadir tabla de planes
   content.push({
     table: {
       headerRows: 1,
@@ -3243,7 +3013,6 @@ createPDFProductAnalysis(productAnalysis) {
     ]
   ];
   
-  // Añadir filas de productos
   let productIndex = 0;
   Object.entries(productAnalysis.topProducts).forEach(([product, data]) => {
     const row = [
@@ -3252,7 +3021,6 @@ createPDFProductAnalysis(productAnalysis) {
       `${data.percentage.toFixed(1)}%`
     ];
     
-    // Aplicar estilo alternado
     if (productIndex % 2 !== 0) {
       productsTableBody.push(row.map(cell => ({
         text: cell,
@@ -3265,7 +3033,6 @@ createPDFProductAnalysis(productAnalysis) {
     productIndex++;
   });
   
-  // Añadir tabla de productos
   content.push({
     table: {
       headerRows: 1,
@@ -3305,7 +3072,6 @@ createPDFStatusSummary(statusSummary) {
     ]
   ];
   
-  // Añadir filas de estados
   Object.entries(statusSummary).forEach(([status, count], index) => {
     // Color de fondo según estado
     let bgColor;
@@ -3323,16 +3089,13 @@ createPDFStatusSummary(statusSummary) {
     ]);
   });
   
-  // Calcular total
   const totalCount = Object.values(statusSummary).reduce((a, b) => a + b, 0);
   
-  // Añadir fila de total
   statusTableBody.push([
     { text: 'TOTAL', bold: true, fillColor: '#e0e0e0' },
     { text: totalCount.toString(), bold: true, fillColor: '#e0e0e0' }
   ]);
   
-  // Añadir tabla de estados
   content.push({
     table: {
       headerRows: 1,
@@ -3372,7 +3135,6 @@ createPDFDeductibleSummary(deductibleSummary) {
     ]
   ];
   
-  // Añadir IVA deducible si existe
   if (deductibleSummary.ivaDeducible !== undefined) {
     deductibleTableBody.push([
       { text: 'IVA DEDUCIBLE', bold: true, fillColor: '#e8f4ea' },
@@ -3380,7 +3142,6 @@ createPDFDeductibleSummary(deductibleSummary) {
     ]);
   }
   
-  // Añadir GASTO deducible si existe
   if (deductibleSummary.gastoDeducible !== undefined) {
     deductibleTableBody.push([
       { text: 'GASTO DEDUCIBLE', bold: true, fillColor: '#e8f4ea' },
@@ -3388,7 +3149,6 @@ createPDFDeductibleSummary(deductibleSummary) {
     ]);
   }
   
-  // Añadir TOTAL DEDUCIBLE si existe
   if (deductibleSummary.totalDeducible !== undefined) {
     deductibleTableBody.push([
       { text: 'TOTAL DEDUCIBLE', bold: true, fillColor: '#c3e6cb' },
@@ -3424,7 +3184,6 @@ createPDFDeductibleSummary(deductibleSummary) {
     },
     // Asegurar que todo el contenedor ocupa todo el ancho
     width: '100%',
-    // Eliminar márgenes horizontales para maximizar el ancho utilizado
     margin: [0, 5, 0, 10]
   });
   
@@ -3442,47 +3201,36 @@ async exportTaxReportToPDF(fileName, sections, options = {}) {
   try {
     console.log('Iniciando exportación de informe de impuestos a PDF...');
     
-    // Combinar opciones con valores por defecto
     const exportOptions = { ...this.defaultOptions, ...options };
     
-    // Configurar opciones de PDF para formato A4 vertical
     if (!exportOptions.pdf) {
       exportOptions.pdf = {};
     }
     
-    // Usar las opciones pasadas o establecer valores predeterminados para A4 portrait
     exportOptions.pdf.fitToPage = true;
     exportOptions.pdf.pageSize = exportOptions.pdf.pageSize || 'A4';
     exportOptions.pdf.orientation = exportOptions.pdf.orientation || 'portrait';
     
-    // Cargar la biblioteca pdfmake si no está ya cargada
     if (typeof pdfMake === 'undefined') {
       await this.loadPDFMakeLibrary();
     }
     
-    // Crear definición del documento PDF
     const docDefinition = await this.createTaxReportPDFDefinition(sections, exportOptions);
     
-    // Detectar si el usuario está usando Internet Explorer (que tiene problemas con PDF grandes)
     const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || 
                 window.navigator.userAgent.indexOf('Trident/') > -1;
     
-    // Añadir información de progreso
     let progressMsg = `Generando informe de impuestos en PDF...`;
     
-    // Mostrar mensaje si hay alguna función UI disponible
     if (typeof window.showGeneratingMessage === 'function') {
       window.showGeneratingMessage(progressMsg);
     } else {
       console.log(progressMsg);
     }
     
-    // Generar y descargar el PDF
     if (isIE) {
-      // Para IE, abrimos en nueva ventana
       pdfMake.createPdf(docDefinition).open();
     } else {
-      // Para navegadores modernos, descarga directa
       pdfMake.createPdf(docDefinition).download(`${fileName}.pdf`);
     }
     
@@ -3502,24 +3250,18 @@ async exportTaxReportToPDF(fileName, sections, options = {}) {
  */
 async createTaxReportPDFDefinition(sections, options) {
   try {
-    // Obtener configuración de optimización
     const optimization = options.pdf || {};
-    // Reducir tamaño de fuente para que quepa mejor en una página
     const fontSize = 8; // Ligeramente aumentado para A4
     const headerFontSize = 10;
     const titleFontSize = 14;
     const margins = [10, 10, 10, 10]; // Márgenes ajustados para A4 portrait
     
-    // Definir el contenido del documento
     const content = [];
     
-    // Añadir logo si está disponible (tamaño reducido)
     if (options.includeLogo && options.logoUrl) {
       try {
-        // Convertir logo a dataURL
         const logoDataUrl = await this.getImageAsDataURL(options.logoUrl);
         
-        // Añadir logo al inicio del contenido
         content.push({
           image: logoDataUrl,
           width: 80, // Aumentado ligeramente para A4
@@ -3531,13 +3273,11 @@ async createTaxReportPDFDefinition(sections, options) {
       }
     }
     
-    // Procesar cada sección - TODO EN UNA SOLA PÁGINA
     for (let i = 0; i < sections.length; i++) {
       const section = sections[i];
       
       switch (section.type) {
         case 'header':
-          // Añadir título principal
           content.push({
             text: section.title,
             style: 'mainHeader',
@@ -3545,7 +3285,6 @@ async createTaxReportPDFDefinition(sections, options) {
             margin: [0, 0, 0, 3]
           });
           
-          // Añadir subtítulo si existe
           if (section.subtitle) {
             content.push({
               text: section.subtitle,
@@ -3555,7 +3294,6 @@ async createTaxReportPDFDefinition(sections, options) {
             });
           }
           
-          // Añadir fecha de generación
           content.push({
             text: `Generado el ${new Date().toLocaleDateString('es-ES')}`,
             style: 'subHeader',
@@ -3565,12 +3303,10 @@ async createTaxReportPDFDefinition(sections, options) {
           break;
           
         case 'table':
-          // Añadir espacio mínimo entre secciones
           if (i > 0) {
             content.push({ text: '', margin: [0, 5, 0, 0] });
           }
           
-          // Añadir encabezado de sección
           content.push({
             text: section.title,
             style: 'sectionHeader',
@@ -3587,13 +3323,10 @@ async createTaxReportPDFDefinition(sections, options) {
             continue;
           }
           
-          // Extraer encabezados
           const headers = Object.keys(section.data[0]);
           
-          // Crear cuerpo de la tabla
           const tableBody = [];
           
-          // Añadir fila de encabezados
           tableBody.push(
             headers.map(header => ({
               text: header,
@@ -3605,13 +3338,11 @@ async createTaxReportPDFDefinition(sections, options) {
             }))
           );
           
-          // Añadir filas de datos
           section.data.forEach((row, rowIndex) => {
             const cells = headers.map(header => {
               let value = row[header];
               let cellContent = { text: '', fontSize: fontSize };
               
-              // Formatear según tipo
               if (value === null || value === undefined || value === '') {
                 cellContent.text = '';
               }
@@ -3628,7 +3359,6 @@ async createTaxReportPDFDefinition(sections, options) {
               else if (section.currencyFormats && section.currencyFormats[header]) {
                 const numValue = typeof value === 'number' ? value : parseFloat(value);
                 if (!isNaN(numValue)) {
-                  // Determinar símbolo de moneda según formato
                   const format = section.currencyFormats[header];
                   let symbol = '';
                   if (format.includes('€')) symbol = '€';
@@ -3654,7 +3384,6 @@ async createTaxReportPDFDefinition(sections, options) {
                 cellContent.fillColor = `#${this.brandColors.background}`;
               }
               
-              // Aplicar truncamiento para textos muy largos
               if (typeof cellContent.text === 'string' && cellContent.text.length > 30) {
                 cellContent.text = cellContent.text.substring(0, 27) + '...';
               }
@@ -3665,7 +3394,6 @@ async createTaxReportPDFDefinition(sections, options) {
             tableBody.push(cells);
           });
           
-          // Calcular anchos de columna
           let columnWidths;
           
           // Si se proporcionan anchos específicos
@@ -3684,9 +3412,7 @@ async createTaxReportPDFDefinition(sections, options) {
               return '*';
             });
           }
-          // Calcular automáticamente para ocupar todo el ancho
           else {
-            // Usar ponderación según tipo de columna
             columnWidths = headers.map(header => {
               const headerLower = header.toLowerCase();
               
@@ -3711,7 +3437,6 @@ async createTaxReportPDFDefinition(sections, options) {
             });
           }
           
-          // Añadir tabla al contenido
           content.push({
             table: {
               headerRows: 1,
@@ -3751,7 +3476,6 @@ async createTaxReportPDFDefinition(sections, options) {
       }
     }
     
-    // Crear definición del documento
     const docDefinition = {
       content: content,
       defaultStyle: {
@@ -3805,5 +3529,4 @@ async createTaxReportPDFDefinition(sections, options) {
 }
 }
 
-// Exportar instancia única
 export default new ExportManager();

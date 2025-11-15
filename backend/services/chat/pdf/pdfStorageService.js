@@ -22,23 +22,19 @@ export const PDFStorageService = {
     }
 
     try {
-      // Función para sanitizar cada elemento individual con compatibilidad para la nueva estructura
       const sanitizeElement = (element, type) => {
         if (!element) return null;
 
-        // Crear un objeto base con las propiedades comunes
         const sanitized = {
           type: element.type || type,
           pageNum: element.page || element.pageNum || 1
         };
 
-        // Añadir propiedades específicas según el tipo
         if (type === 'image') {
           // Propiedades para imágenes
           sanitized.reference = element.reference || `image_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           sanitized.source = element.source || 'mistral_ocr';
 
-          // Para evitar almacenar imágenes base64 pesadas en la BD
           if (element.data && element.data.length > 1000) {
             sanitized.hasImageData = true;
           } else {
@@ -85,7 +81,6 @@ export const PDFStorageService = {
         return sanitized;
       };
 
-      // Procesar cada tipo de elemento
       const sanitized = {
         images: Array.isArray(specialElements.images)
           ? specialElements.images.map(img => sanitizeElement(img, 'image')).filter(Boolean)
@@ -158,7 +153,6 @@ export const PDFStorageService = {
       for (let i = 0; i < documents.length; i += batchSize) {
         const batch = documents.slice(i, i + batchSize);
 
-        // Generar embeddings para el lote actual
         const embedPromises = batch.map(doc =>
           generateEmbeddingFn(doc.pageContent).catch(err => {
             console.error(`Error embedding chunk ${i}:`, err.message);
@@ -199,7 +193,6 @@ export const PDFStorageService = {
             // 3. Sanitizar elementos especiales de forma segura
             const sanitizedSpecialElements = this.sanitizeSpecialElementsForDB(docSpecialElements);
 
-            // Log para depuración
             const elementCount =
               sanitizedSpecialElements.images.length +
               sanitizedSpecialElements.formulas.length +
@@ -212,7 +205,6 @@ export const PDFStorageService = {
                 `Tablas: ${sanitizedSpecialElements.tables.length}`);
             }
 
-            // Añadir metadata para diagnóstico
             const completeMetadata = {
               ...cleanMetadata,
               chatId: chatId,
@@ -227,13 +219,11 @@ export const PDFStorageService = {
             RETURNING id
           `;
 
-            // Convertir a JSON de forma segura
             let specialElementsJson;
             try {
               specialElementsJson = JSON.stringify(sanitizedSpecialElements);
             } catch (jsonError) {
               console.error('Error serializando specialElements:', jsonError);
-              // Fallback a un objeto vacío
               specialElementsJson = JSON.stringify({
                 images: [],
                 formulas: [],
@@ -306,7 +296,6 @@ export const PDFStorageService = {
       let params;
 
       if (pdfId) {
-        // 🔧 CORRECCIÓN: Eliminar cualquier LIMIT implícito
         query = `
           SELECT id, content, metadata, special_elements
           FROM pdfs
@@ -323,7 +312,6 @@ export const PDFStorageService = {
         params = [chatId, userId, pdfId, `%${pdfId}%`, `%${pdfId.split('_').slice(2).join('_')}%`, `%${pdfId}%`];
         console.log(`Ejecutando búsqueda por pdfId=${pdfId}`);
       } else {
-        // 🔧 CORRECCIÓN CRÍTICA: SIEMPRE obtener TODOS los documentos
         query = `
           SELECT id, content, metadata, special_elements
           FROM pdfs
@@ -339,7 +327,6 @@ export const PDFStorageService = {
 
       console.log(`findPDFDocumentsByChat: chatId=${chatId}, userId=${userId}, pdfId=${pdfId || 'null'}, encontrados=${result.rows.length} documentos`);
 
-      // 🔧 CORRECCIÓN: Solo usar fallback si realmente no hay documentos
       if (result.rows.length === 0 && parseInt(diagResult.rows[0].count) > 0) {
         console.log(`⚠️ No se encontraron documentos con filtros. Ejecutando consulta de recuperación...`);
 
@@ -382,7 +369,6 @@ export const PDFStorageService = {
       let params;
 
       if (pdfId) {
-        // Eliminar documentos específicos para un PDF
         query = `
           DELETE FROM pdfs
           WHERE id_chat = $1 AND id_user = $2
@@ -396,7 +382,6 @@ export const PDFStorageService = {
         `;
         params = [chatId, userId, pdfId, `%${pdfId}%`];
       } else {
-        // Eliminar todos los documentos del chat
         query = `
           DELETE FROM pdfs
           WHERE id_chat = $1 AND id_user = $2
@@ -435,17 +420,13 @@ export const PDFStorageService = {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
 
-      // Construir el directorio base de uploads
       const uploadsDir = path.join(__dirname, '../../../../uploads');
 
-      // Crear directorio específico para el usuario
       const userDir = path.join(uploadsDir, `user_${userId}`);
 
-      // Crear directorios si no existen
       await fs.promises.mkdir(uploadsDir, { recursive: true });
       await fs.promises.mkdir(userDir, { recursive: true });
 
-      // Generar nombre seguro del archivo
       const safeFilename = this.getSafeFilename(originalFilename);
       const timestamp = Date.now();
       const finalFilename = `${chatId}_${timestamp}_${safeFilename}`;
@@ -453,7 +434,6 @@ export const PDFStorageService = {
       // Ruta completa del archivo
       const filePath = path.join(userDir, finalFilename);
 
-      // Guardar el archivo
       await fs.promises.writeFile(filePath, fileBuffer);
 
       // Información de retorno
@@ -485,11 +465,9 @@ export const PDFStorageService = {
       const __filename = fileURLToPath(import.meta.url);
       const __dirname = path.dirname(__filename);
 
-      // Obtener directorio de uploads
       const userDir = path.join(__dirname, '../../../../uploads', `user_${userId}`);
       console.log(`Buscando PDFs en: ${userDir} para chatId: ${chatId}`);
 
-      // Verificar si existe el directorio
       if (!fs.existsSync(userDir)) {
         console.log(`Directorio no encontrado: ${userDir}`);
         return {
@@ -503,7 +481,6 @@ export const PDFStorageService = {
       const files = await fs.promises.readdir(userDir);
       console.log(`Archivos encontrados en ${userDir}: ${files.length}`);
 
-      // Filtrar archivos para este chatId, con filtrado más flexible
       let pdfFiles = [];
 
       // Primero intentar una coincidencia exacta
@@ -517,7 +494,6 @@ export const PDFStorageService = {
         console.log(`Encontradas ${pdfFiles.length} coincidencias exactas para chatId ${chatId}`);
       } else {
         // Si no hay coincidencias exactas, buscar coincidencias parciales
-        // Usar los primeros 8 caracteres del UUID para mayor flexibilidad
         const chatIdPrefix = chatId.substring(0, 8);
         const partialMatches = files.filter(file =>
           file.includes(chatIdPrefix) &&
@@ -543,7 +519,6 @@ export const PDFStorageService = {
         };
       }
 
-      // Ordenar por más reciente
       pdfFiles.sort((a, b) => {
         const timestampA = a.split('_')[1];
         const timestampB = b.split('_')[1];
@@ -556,7 +531,6 @@ export const PDFStorageService = {
       if (pdfId) {
         console.log(`Buscando PDF específico: ${pdfId}`);
 
-        // Buscar coincidencia exacta primero
         let specificFile = pdfFiles.find(file => file === pdfId);
 
         // Si no hay coincidencia exacta, buscar coincidencia parcial
@@ -582,11 +556,9 @@ export const PDFStorageService = {
         console.log(`Usando el PDF más reciente: ${pdfFiles[0]}`);
       }
 
-      // Crear URLs para vistas previas y procesamiento
       const createFileInfoWithPreview = async (file) => {
         const filePath = path.join(userDir, file);
 
-        // Verificar que el archivo existe físicamente
         if (!fs.existsSync(filePath)) {
           console.error(`Error: El archivo físico no existe: ${filePath}`);
           return null;
@@ -594,7 +566,6 @@ export const PDFStorageService = {
 
         const stats = await fs.promises.stat(filePath);
 
-        // Extraer el nombre original
         const parts = file.split('_');
         const originalName = parts.slice(2).join('_');
 
@@ -603,7 +574,6 @@ export const PDFStorageService = {
         let actualTotalPages = 0; // 🎯 NUEVO: Diferencia entre páginas procesadas y total real
 
         try {
-          // 🔧 MÉTODO 1: Contar documentos únicos por página en la BD
           const documentsQuery = `
     SELECT COUNT(DISTINCT (metadata->>'page')::int) as unique_pages,
            MAX((metadata->>'page')::int) as max_page_number,
@@ -625,7 +595,6 @@ export const PDFStorageService = {
             const maxPageNumber = parseInt(countResult.rows[0].max_page_number) || 0;
             const totalDocuments = parseInt(countResult.rows[0].total_documents) || 0;
 
-            // 🎯 MÉTODO 2: Intentar obtener el total real desde metadata
             const totalPagesQuery = `
       SELECT DISTINCT (metadata->'fileInfo'->>'totalPages')::int as real_total_pages
       FROM pdfs 
@@ -642,7 +611,6 @@ export const PDFStorageService = {
 
             console.log(`📄 ${file}: ${pageCount} páginas procesadas de ${actualTotalPages} totales (${totalDocuments} documentos en BD)`);
 
-            // 🎯 CORRECCIÓN: Si actualTotalPages es 0, usar el máximo número de página
             if (actualTotalPages === 0) {
               actualTotalPages = maxPageNumber || pageCount || 1;
             }
@@ -656,10 +624,8 @@ export const PDFStorageService = {
           actualTotalPages = 1; // Fallback seguro
         }
 
-        // Crear URLs para vistas previas y acceso
         const relativePath = `/uploads/user_${userId}/${file}`;
 
-        // Calcular URLs para vistas previas y otros endpoints
         const endpoints = {
           // URL para acceder directamente al PDF
           directUrl: relativePath,
@@ -684,7 +650,6 @@ export const PDFStorageService = {
           lastModified: stats.mtime,
           pdfId: file,
 
-          // 🎯 INFORMACIÓN DE PÁGINAS MEJORADA
           pageCount: pageCount,                    // ✅ Páginas actualmente procesadas
           totalPages: actualTotalPages,            // ✅ Total real de páginas
           pagesProcessed: pageCount,               // ✅ Alias para claridad
@@ -692,7 +657,6 @@ export const PDFStorageService = {
           isFullyProcessed: pageCount >= actualTotalPages, // ✅ NUEVO: Estado de procesamiento
           processingProgress: actualTotalPages > 0 ? Math.round((pageCount / actualTotalPages) * 100) : 100, // ✅ NUEVO: Porcentaje
 
-          // 🎯 INFORMACIÓN ADICIONAL PARA DEBUGGING
           debugInfo: {
             pagesInDB: pageCount,
             totalPagesFromMetadata: actualTotalPages,
@@ -705,9 +669,7 @@ export const PDFStorageService = {
         };
       };
 
-      // Procesar archivos
       const processedFiles = await Promise.all(pdfFiles.map(createFileInfoWithPreview));
-      // Filtrar archivos nulos (si alguno no existe físicamente)
       const validFiles = processedFiles.filter(Boolean);
 
       if (validFiles.length === 0) {
@@ -775,7 +737,6 @@ export const PDFStorageService = {
 
       console.log(`🗑️ Eliminando archivo PDF: ${fileInfo.path}`);
 
-      // Verificar que el archivo existe antes de intentar eliminarlo
       if (!fs.existsSync(fileInfo.path)) {
         console.log(`ℹ️ El archivo ya no existe físicamente: ${fileInfo.path}`);
         return {
@@ -785,7 +746,6 @@ export const PDFStorageService = {
         };
       }
 
-      // Eliminar el archivo con manejo de errores
       try {
         await fs.promises.unlink(fileInfo.path);
       } catch (unlinkError) {
@@ -809,7 +769,6 @@ export const PDFStorageService = {
         };
       }
 
-      // Verificar que el archivo se eliminó correctamente
       const fileStillExists = fs.existsSync(fileInfo.path);
       if (fileStillExists) {
         console.warn(`⚠️ El archivo ${fileInfo.path} todavía existe después de intentar eliminarlo`);
@@ -822,7 +781,6 @@ export const PDFStorageService = {
 
       console.log(`✅ Archivo eliminado correctamente: ${fileInfo.savedName}`);
 
-      // Limpiar la caché asociada con manejo de errores mejorado
       try {
         // Primero verificar que la función existe
         let cacheCleared = false;
@@ -870,7 +828,6 @@ export const PDFStorageService = {
    * @returns {string} - Nombre seguro
    */
   getSafeFilename(filename) {
-    // Eliminar caracteres especiales y espacios
     let safeName = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
 
     // Asegurarse de que tenga extensión .pdf

@@ -37,10 +37,8 @@ export class TransactionsModule {
   async init() {
     console.log('Inicializando módulo de transacciones');
     
-    // Configurar event listeners
     this.setupEventListeners();
     
-    // Suscribirse a cambios de fecha
     this.eventBus.on('dateRangeChanged', (range) => {
       this.dateRange = range;
       this.filterSettings.startDate = range.start;
@@ -48,7 +46,6 @@ export class TransactionsModule {
       this.refreshTransactions();
     });
     
-    // Suscribirse a eventos de filtrado por usuario/producto
     this.eventBus.on('dateRangeChanged', (range) => {
     this.dateRange = range;
     this.filterSettings.startDate = range.start;
@@ -63,10 +60,8 @@ export class TransactionsModule {
     }
   });
     
-    // Cargar datos iniciales
     await this.loadTransactionData();
     
-    // Cargar productos para filtros
     await this.loadProducts();
     
     return true;
@@ -84,7 +79,6 @@ export class TransactionsModule {
       });
     }
 
-    // Añadir botón de reinicio de filtros
 this.resetButton = this.ui.addResetFiltersButton(
   'transactions-section', 
   'reset-transaction-filters',
@@ -94,7 +88,6 @@ this.resetButton = this.ui.addResetFiltersButton(
 
 // También puedes escuchar eventos para aplicar filtros
 document.getElementById('apply-transaction-filters').addEventListener('click', () => {
-  // Actualizar estado del botón al aplicar filtros
   setTimeout(() => {
     this.updateResetButtonVisibility();
   }, 100);
@@ -180,12 +173,10 @@ onSectionActivated() {
       this.loadProducts();
     }
     
-    // Crear gráficos con datos existentes
     this.initCharts();
     return;
   }
   
-  // Cargar datos si no se han cargado aún
   console.log('Cargando datos de transacciones por primera vez');
   this.loadTransactionData();
 }
@@ -213,16 +204,13 @@ resetFilters() {
   if (productFilter) productFilter.value = '';
   if (countryFilter) countryFilter.value = '';
   
-  // Resetear paginación
   this.currentPage = 1;
   
-  // Notificar al usuario
   this.ui.showSuccessMessage('Filtros reiniciados');
   
   // Recargar datos
   this.applyFilters();
   
-  // Actualizar estado del botón
   this.updateResetButtonVisibility();
 }
 
@@ -253,16 +241,12 @@ updateResetButtonVisibility() {
 filterDataByDateRange(transactions, dateRange) {
   console.log(`Transacciones: Filtrando datos por rango: ${dateRange.start} a ${dateRange.end}`);
   
-  // Convertir fechas de string a objetos Date
   const startDate = new Date(dateRange.start);
   const endDate = new Date(dateRange.end);
   
-  // Establecer endDate al final del día
   endDate.setHours(23, 59, 59, 999);
   
-  // Filtrar transacciones
   const filteredTransactions = transactions.filter(transaction => {
-    // Usar updated_at o created_at como campo de fecha
     const transactionDate = new Date(transaction.updated_at || transaction.created_at);
     return transactionDate >= startDate && transactionDate <= endDate;
   });
@@ -284,16 +268,13 @@ refreshTransactionsWithLocalData() {
     return;
   }
   
-  // Filtrar datos según el rango de fechas
   const filteredTransactions = this.filterDataByDateRange(
     this.allTransactions, 
     this.dateRange
   );
   
-  // Actualizar this.transactions con los datos filtrados
   this.transactions = filteredTransactions;
   
-  // Aplicar filtros adicionales (producto, país, búsqueda)
   this.applyFilters();
   
   // IMPORTANTE: Forzar actualización de gráficos incluso si no hay datos
@@ -312,31 +293,22 @@ refreshTransactionsWithLocalData() {
  */
 async loadTransactionData() {
   try {
-    // Mostrar indicador de carga
     this.ui.updateTable('transactions-table', [], null, 'Cargando transacciones...');
     
-    // Obtener transacciones
     const transactions = await this.api.getTransactions();
     
-    // Guardar copia completa para filtrado local
     this.allTransactions = transactions;
     
-    // Asignar a this.transactions (mantener compatibilidad con código existente)
     this.transactions = transactions;
     
-    // Extraer países únicos para filtros
     this.extractCountries();
     
-    // Inicializar el objeto de mapeo de productos (será poblado en loadProducts)
     this.productIdMapping = {};
     
-    // Cargar productos para crear el mapeo
     await this.loadProducts();
     
-    // Aplicar filtros iniciales
     this.applyFilters();
     
-    // Inicializar gráficos
     this.initCharts();
     
     return true;
@@ -361,7 +333,6 @@ async loadTransactionData() {
     
     this.countries = Array.from(uniqueCountries).sort();
     
-    // Actualizar selector de países
     const countrySelector = document.getElementById('transaction-country-filter');
     if (countrySelector) {
       // Mantener opciones por defecto
@@ -370,28 +341,23 @@ async loadTransactionData() {
       
       countrySelector.innerHTML = '';
       
-      // Restaurar opciones por defecto
       defaultOptions.forEach(option => {
         countrySelector.appendChild(option);
       });
       
-      // Añadir países hispanos primero (ordenados)
       const hispanicCountries = [
         'ES', 'MX', 'AR', 'CO', 'PE', 'CL', 'EC', 'VE', 'BO', 'DO', 
         'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'PR', 'GT'
       ];
       
-      // Filtrar países hispanos que estén en nuestros datos
       const availableHispanicCountries = this.countries.filter(code => 
         hispanicCountries.includes(code)
       );
       
-      // Ordenarlos según la lista de prioridad
       availableHispanicCountries.sort((a, b) => {
         return hispanicCountries.indexOf(a) - hispanicCountries.indexOf(b);
       });
       
-      // Añadir países hispanos primero
       availableHispanicCountries.forEach(code => {
         const option = document.createElement('option');
         option.value = code;
@@ -399,7 +365,6 @@ async loadTransactionData() {
         countrySelector.appendChild(option);
       });
       
-      // Añadir otros países que no sean hispanos
       this.countries
         .filter(code => !hispanicCountries.includes(code) && code !== 'ES')
         .forEach(code => {
@@ -415,19 +380,14 @@ async loadTransactionData() {
  * Actualiza la tabla de transacciones con los datos filtrados
  */
 updateTransactionsTable() {
-  // Calcular índices de paginación
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
   const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredTransactions.length);
   
-  // Obtener datos de la página actual
   const pageData = this.filteredTransactions.slice(startIndex, endIndex);
   
-  // Renderizar tabla
   this.ui.updateTable('transactions-table', pageData, (transaction) => {
-    // Determinar si mostrar montos originales o en EUR
     const showInEur = transaction.currency_code !== 'EUR';
     
-    // Extraer montos para mostrar
     const amount = this.normalizeAmount(transaction.amount);
     const amountEur = this.normalizeAmount(transaction.amount_eur);
     
@@ -435,28 +395,23 @@ updateTransactionsTable() {
     const taxAmount = transaction.tax_amount || 0;
     const taxAmountEur = transaction.tax_amount_eur || 0;
     
-    // Determinar formato de moneda
     const originalCurrencyDisplay = formatCurrency(amount, transaction.currency_code);
     const eurCurrencyDisplay = formatCurrency(amountEur, 'EUR');
     
-    // Generar celda con información del monto considerando moneda original vs EUR
     const amountCell = showInEur ? 
       `${originalCurrencyDisplay}<br><small class="text-muted">(${eurCurrencyDisplay})</small>` : 
       originalCurrencyDisplay;
     
-    // Generar celda con información del impuesto considerando moneda original vs EUR
     const taxAmountOriginal = formatCurrency(taxAmount, transaction.currency_code);
     const taxAmountEurDisplay = formatCurrency(taxAmountEur, 'EUR');
     const taxCell = showInEur ? 
       `${taxAmountOriginal}<br><small class="text-muted">(${taxAmountEurDisplay})</small>` : 
       taxAmountOriginal;
     
-    // Formatear país
     const countryDisplay = transaction.country_code ? 
       `<span class="badge badge-info country-badge">${formatCountryName(transaction.country_code)}</span>` : 
       '<span class="badge badge-secondary country-badge">Desconocido</span>';
     
-    // Verificar si tiene factura disponible
     const hasInvoice = transaction.invoice_url ? true : false;
     const invoiceButtonClass = hasInvoice ? 'btn-success' : 'btn-outline-info';
     const invoiceButtonIcon = hasInvoice ? 'bi-file-earmark-check' : 'bi-file-earmark-text';
@@ -483,13 +438,10 @@ updateTransactionsTable() {
     `;
   });
   
-  // Configurar botones de acción
   this.setupActionButtons();
   
-  // Actualizar paginación
   this.ui.updatePagination('transaction', startIndex + 1, endIndex, this.filteredTransactions.length);
   
-  // Actualizar estado de botones de paginación
   const prevButton = document.getElementById('transaction-prev-page');
   const nextButton = document.getElementById('transaction-next-page');
   
@@ -534,7 +486,6 @@ updateTransactionsTable() {
         const action = button.getAttribute('data-action');
         const transactionId = button.getAttribute('data-id');
         
-        // Manejar acciones
         switch (action) {
           case 'view':
             this.viewTransactionDetails(transactionId);
@@ -560,7 +511,6 @@ updateTransactionsTable() {
       return;
     }
     
-    // Preparar información para mostrar
     const amount = this.normalizeAmount(transaction.amount);
     const amountEur = this.normalizeAmount(transaction.amount_eur);
     const taxAmount = transaction.tax_amount || 0;
@@ -570,10 +520,8 @@ updateTransactionsTable() {
     const earnings = transaction.earnings || 0;
     const earningsEur = transaction.earnings_eur || 0;
     
-    // Determinar si mostrar información de conversión
     const showConversion = transaction.currency_code !== 'EUR';
     
-    // Construir detalles HTML para mostrar en modal
     let detailsHTML = `
       <div class="transaction-details">
         <div class="row mb-3">
@@ -638,7 +586,6 @@ updateTransactionsTable() {
         </div>
     `;
     
-    // Agregar sección de conversión si es una moneda diferente al euro
     if (showConversion) {
       detailsHTML += `
         <div class="row">
@@ -673,10 +620,8 @@ updateTransactionsTable() {
     
     detailsHTML += '</div>';
     
-    // Verificar si existe un modal de detalles de transacción o crearlo si no existe
     this.createOrUpdateTransactionModal(detailsHTML);
     
-    // Mostrar el modal
     this.ui.showModal('transactionDetailsModal');
   }
 
@@ -685,11 +630,9 @@ updateTransactionsTable() {
  * @param {string} content - Contenido HTML a mostrar en el modal
  */
 createOrUpdateTransactionModal(content) {
-  // Verificar si ya existe el modal
   let modalElement = document.getElementById('transactionDetailsModal');
   
   if (!modalElement) {
-    // Crear nuevo modal en el DOM si no existe
     const modalHTML = `
       <div class="modal fade" id="transactionDetailsModal" tabindex="-1" aria-labelledby="transactionDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -709,10 +652,8 @@ createOrUpdateTransactionModal(content) {
       </div>
     `;
     
-    // Añadir el modal al final del body
     document.body.insertAdjacentHTML('beforeend', modalHTML);
     
-    // Crear la instancia de Modal de Bootstrap
     modalElement = document.getElementById('transactionDetailsModal');
     this.ui.modals.transactionDetailsModal = new bootstrap.Modal(modalElement);
   } else {
@@ -730,26 +671,20 @@ createOrUpdateTransactionModal(content) {
  */
 async getInvoice(transactionId) {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Obteniendo factura...');
     
     console.log(`Solicitando factura para transacción: ${transactionId}`);
     
-    // Usar el endpoint optimizado que hemos creado
     const invoiceData = await this.api.getInvoiceUrl(transactionId);
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
     if (invoiceData && invoiceData.success && invoiceData.data && invoiceData.data.url) {
-      // Determinar el origen de la factura
       const source = invoiceData.data.source === 'google_drive' ? 'Google Drive' : 'Paddle';
       console.log(`URL de factura obtenida correctamente desde ${source}: ${invoiceData.data.url}`);
       
-      // Mostrar mensaje de éxito con el origen
       this.ui.showSuccessMessage(`Factura obtenida correctamente desde ${source}`);
       
-      // Abrir factura en nueva pestaña
       window.open(invoiceData.data.url, '_blank');
     } else {
       console.warn('Respuesta de factura inválida:', invoiceData);
@@ -758,10 +693,8 @@ async getInvoice(transactionId) {
   } catch (error) {
     console.error('Error al obtener factura:', error);
     
-    // Ocultar indicador de carga en caso de error
     this.ui.hideLoading();
     
-    // Mostrar mensaje de error más detallado
     if (error.message && (error.message.includes('403') || error.message.includes('permisos'))) {
       this.ui.showErrorMessage('Error de permisos', 'No tienes acceso a esta factura. Contacta con el soporte técnico si necesitas ayuda.');
     } else if (error.message && error.message.includes('404')) {
@@ -780,10 +713,8 @@ async getInvoice(transactionId) {
       console.log('Cargando productos para el filtro de transacciones...');
       this.products = await this.api.getProducts();
       
-      // Crear un mapeo entre IDs numéricos y IDs de transacciones
       this.productIdMapping = {};
       
-      // Extraer IDs únicos de las transacciones
       const transactionProductIds = [...new Set(
         this.transactions
           .filter(t => t.product_id)
@@ -792,17 +723,14 @@ async getInvoice(transactionId) {
       
       console.log('IDs de productos en transacciones:', transactionProductIds);
       
-      // Mapear los IDs de productos con los IDs de transacciones basados en el nombre
       this.products.forEach(product => {
         const productName = product.nombre;
         
-        // Buscar transacciones con este nombre de producto
         const matchingTransactions = this.transactions.filter(t => 
           t.product_name && t.product_name.trim().toLowerCase() === productName.trim().toLowerCase()
         );
         
         if (matchingTransactions.length > 0) {
-          // Guardar el mapeo: ID numérico -> ID en formato pro_XXX
           this.productIdMapping[product.id_carrera] = matchingTransactions[0].product_id;
           console.log(`Mapeo creado: ID ${product.id_carrera} (${productName}) -> ${matchingTransactions[0].product_id}`);
         }
@@ -810,7 +738,6 @@ async getInvoice(transactionId) {
       
       console.log('Mapeo de IDs de productos creado:', this.productIdMapping);
       
-      // Actualizar selector de productos
       const productSelector = document.getElementById('transaction-product-filter');
       if (productSelector) {
         // Mantener opción por defecto
@@ -827,7 +754,6 @@ async getInvoice(transactionId) {
           productSelector.appendChild(option);
         }
         
-        // Añadir productos
         this.products.forEach(product => {
           const option = document.createElement('option');
           option.value = String(product.id_carrera);
@@ -871,7 +797,6 @@ debugTransactionStructure() {
     });
   });
   
-  // Extraer IDs de producto únicos para verificar coincidencia con el selector
   const uniqueProductIds = [...new Set(
     this.transactions
       .filter(t => t.product_id !== undefined && t.product_id !== null)
@@ -880,7 +805,6 @@ debugTransactionStructure() {
   
   console.log(`IDs de producto únicos en transacciones (${uniqueProductIds.length}):`, uniqueProductIds);
   
-  // Verificar IDs de productos en el selector
   const productSelector = document.getElementById('transaction-product-filter');
   if (productSelector) {
     const optionValues = Array.from(productSelector.options)
@@ -889,7 +813,6 @@ debugTransactionStructure() {
     
     console.log(`IDs de producto en selector (${optionValues.length}):`, optionValues);
     
-    // Verificar coincidencias
     const matchingIds = uniqueProductIds.filter(id => optionValues.includes(id));
     console.log(`IDs coincidentes entre transacciones y selector: ${matchingIds.length} de ${uniqueProductIds.length}`);
     
@@ -910,7 +833,6 @@ debugTransactionStructure() {
    */
   applyFilters(skipControls = false) {
     if (!skipControls) {
-      // Obtener valores de filtros desde UI
       const productFilter = document.getElementById('transaction-product-filter')?.value;
       const countryFilter = document.getElementById('transaction-country-filter')?.value;
       const searchFilter = document.getElementById('transaction-search')?.value;
@@ -921,7 +843,6 @@ debugTransactionStructure() {
         search: searchFilter
       });
       
-      // Actualizar configuración de filtros
       this.filterSettings = {
         ...this.filterSettings,
         product_id: productFilter,
@@ -930,7 +851,6 @@ debugTransactionStructure() {
       };
     }
     
-    // Resetear paginación
     this.currentPage = 1;
     
     // Si no hay transacciones, salir
@@ -941,11 +861,9 @@ debugTransactionStructure() {
       return;
     }
     
-    // Aplicar filtros
     this.filteredTransactions = this.transactions.filter(transaction => {
       // Filtro por producto - usar el mapeo de IDs
       if (this.filterSettings.product_id) {
-        // Obtener el ID en formato pro_XXX correspondiente al ID numérico seleccionado
         const mappedProductId = this.productIdMapping[this.filterSettings.product_id];
         
         if (mappedProductId) {
@@ -1010,17 +928,14 @@ debugTransactionStructure() {
       return true;
     });
     
-    // Ordenar por fecha (más recientes primero)
     this.filteredTransactions.sort((a, b) => {
       const dateA = new Date(a.updated_at || a.created_at || 0);
       const dateB = new Date(b.updated_at || b.created_at || 0);
       return dateB - dateA;
     });
     
-    // Actualizar tabla
     this.updateTransactionsTable();
     
-    // Actualizar gráficos
     this.updateCharts();
     this.updateResetButtonVisibility();
   }
@@ -1034,7 +949,6 @@ debugTransactionStructure() {
     // Destruir gráficos existentes antes de crear nuevos
     this.destroyCharts();
     
-    // Verificar que los contenedores de gráficos existen
     const paymentMethodsEl = document.getElementById('payment-methods-chart');
     const currencyChartEl = document.getElementById('currency-chart');
     
@@ -1043,10 +957,8 @@ debugTransactionStructure() {
       return;
     }
     
-    // Inicializar gráfico de métodos de pago
     this.initPaymentMethodsChart();
     
-    // Inicializar gráfico de divisas
     this.initCurrencyChart();
   }
 
@@ -1101,7 +1013,6 @@ initPaymentMethodsChart() {
   
   // NUEVO: Verificar si hay datos para mostrar
   if (!this.filteredTransactions || this.filteredTransactions.length === 0) {
-    // Crear gráfico con mensaje "Sin datos"
     this.charts.paymentMethods = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -1138,20 +1049,16 @@ initPaymentMethodsChart() {
     return;
   }
     
-    // Obtener datos para el gráfico usando amount_eur para consistencia
     const paymentMethodTotals = {};
     const paymentMethodTransactions = {};
     const methodCurrencies = {}; // Para tracking de monedas por método
     
-    // Usar transactions filtradas en lugar de todas las transacciones
     this.filteredTransactions.forEach(transaction => {
       const method = transaction.payment_method || 'unknown';
       
-      // Usar amount_eur para consistencia entre divisas
       const amount = parseFloat(transaction.amount_eur || 0);
       const currency = transaction.currency_code || 'EUR';
       
-      // Inicializar contadores si es necesario
       if (!paymentMethodTotals[method]) {
         paymentMethodTotals[method] = 0;
         paymentMethodTransactions[method] = 0;
@@ -1171,7 +1078,6 @@ initPaymentMethodsChart() {
     
     console.log('Datos para gráfico de métodos de pago (totales en EUR):', paymentMethodTotals);
     
-    // Ordenar métodos por monto total (de mayor a menor)
     const sortedMethods = Object.keys(paymentMethodTotals).sort((a, b) => 
       paymentMethodTotals[b] - paymentMethodTotals[a]
     );
@@ -1186,7 +1092,6 @@ initPaymentMethodsChart() {
       'unknown': 'Desconocido'
     };
     
-    // Preparar datos para el gráfico
     const data = {
       labels: sortedMethods.map(method => {
         const count = paymentMethodTransactions[method];
@@ -1230,7 +1135,6 @@ initPaymentMethodsChart() {
           tooltip: {
             callbacks: {
               title: function(context) {
-                // Extraer método de pago del label (quitar el contador)
                 const methodWithCount = context[0].label;
                 const method = methodWithCount.split(' (')[0];
                 return method;
@@ -1243,18 +1147,15 @@ initPaymentMethodsChart() {
                 );
                 const percentage = (value * 100 / total).toFixed(1);
                 
-                // Mostrar monto en euros y porcentaje
                 return `Total: ${formatCurrency(value, 'EUR')} (${percentage}%)`;
               },
               afterLabel: function(context) {
                 const method = sortedMethods[context.dataIndex];
                 const currencies = methodCurrencies[method];
                 
-                // Crear un desglose por monedas si hay más de una
                 if (currencies && Object.keys(currencies).length > 0) {
                   const lines = [];
                   
-                  // Mostrar número de transacciones por moneda
                   for (const [currency, count] of Object.entries(currencies)) {
                     lines.push(`${currency}: ${count} transacciones`);
                   }
@@ -1280,7 +1181,6 @@ initPaymentMethodsChart() {
       },
     };
     
-    // Crear gráfico
     this.charts.paymentMethods = new Chart(ctx, config);
   }
   
@@ -1300,7 +1200,6 @@ initCurrencyChart() {
   
   // NUEVO: Verificar si hay datos para mostrar
   if (!this.filteredTransactions || this.filteredTransactions.length === 0) {
-    // Crear gráfico con mensaje "Sin datos"
     this.charts.currency = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -1324,13 +1223,11 @@ initCurrencyChart() {
     return;
   }
   
-  // Obtener datos para el gráfico usando amount_eur para consistencia
   const currencyTotals = {};
   const currencyTransactions = {};
   const currencyOriginalTotals = {}; // Montos originales (sin conversión)
   const currencyRates = {}; // Tasas promedio por moneda
   
-  // Usar transactions filtradas en lugar de todas las transacciones
   this.filteredTransactions.forEach(transaction => {
     const currency = transaction.currency_code || 'EUR';
     
@@ -1340,7 +1237,6 @@ initCurrencyChart() {
     const amountOriginal = parseFloat(transaction.amount || 0);
     const exchangeRate = parseFloat(transaction.exchange_rate || 1);
     
-    // Inicializar acumuladores si es necesario
     if (!currencyTotals[currency]) {
       currencyTotals[currency] = 0;
       currencyTransactions[currency] = 0;
@@ -1357,7 +1253,6 @@ initCurrencyChart() {
   
   console.log('Datos para gráfico de divisas (totales en EUR):', currencyTotals);
   
-  // Calcular tasas promedio para cada moneda
   const averageRates = {};
   for (const [currency, rates] of Object.entries(currencyRates)) {
     if (rates.length > 0) {
@@ -1368,7 +1263,6 @@ initCurrencyChart() {
     }
   }
   
-  // Ordenar divisas por monto total (de mayor a menor)
   const sortedCurrencies = Object.keys(currencyTotals).sort((a, b) => 
     currencyTotals[b] - currencyTotals[a]
   );
@@ -1394,7 +1288,6 @@ initCurrencyChart() {
     'DOP': 'Peso DO'
   };
   
-  // Preparar datos para el gráfico
   const data = {
     labels: sortedCurrencies.map(currency => {
       const count = currencyTransactions[currency];
@@ -1448,7 +1341,6 @@ initCurrencyChart() {
               const totalEur = context.dataset.data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
               const percentage = (valueEur * 100 / totalEur).toFixed(1);
               
-              // Mostrar total en EUR (principal)
               return `Total EUR: ${formatCurrency(valueEur, 'EUR')} (${percentage}%)`;
             },
             afterLabel: function(context) {
@@ -1475,7 +1367,6 @@ initCurrencyChart() {
     },
   };
   
-  // Crear gráfico
   this.charts.currency = new Chart(ctx, config);
 }
   
@@ -1519,7 +1410,6 @@ updateCharts() {
  * @param {boolean} forceReload - Si se debe forzar la recarga desde API
  */
 async refreshTransactions(forceReload = false) {
-  // Si no se fuerza recarga y tenemos datos y rango de fechas, usar filtrado local
   if (!forceReload && this.allTransactions.length > 0 && this.dateRange) {
     console.log('Transacciones: Usando filtrado local en lugar de recarga completa');
     this.refreshTransactionsWithLocalData();
@@ -1529,7 +1419,6 @@ async refreshTransactions(forceReload = false) {
   // En caso contrario, hacer petición a API
   console.log('Transacciones: Recargando datos desde API');
   
-  // Limpiar caché para obtener datos frescos
   this.api.clearCache('transactions');
   
   // Recargar datos
@@ -1541,9 +1430,7 @@ async refreshTransactions(forceReload = false) {
  */
 exportTransactions() {
   try {
-    // Obtener formato seleccionado en el selector o usar formato preferido del usuario
     const selectedFormat = document.getElementById('export-format')?.value;
-    // Usar exportManager.getPreferredFormat como fallback si no hay formato seleccionado
     const format = selectedFormat || exportManager.getPreferredFormat('excel');
     
     console.log(`Exportando en formato: ${format}`);
@@ -1576,7 +1463,6 @@ exportTransactions() {
       };
     });
     
-    // Crear título con rango de fechas si están disponibles
     let title = 'Reporte de Transacciones';
     let dateRangeInfo = '';
     
@@ -1622,12 +1508,10 @@ exportTransactions() {
       countriesAmount[country] = (countriesAmount[country] || 0) + Number(transaction['Importe EUR']);
     });
     
-    // Ordenar métodos de pago por monto
     const sortedPaymentMethods = Object.keys(paymentMethodsAmount)
       .sort((a, b) => paymentMethodsAmount[b] - paymentMethodsAmount[a])
       .slice(0, 5); // Top 5
     
-    // Ordenar países por monto
     const sortedCountries = Object.keys(countriesAmount)
       .sort((a, b) => countriesAmount[b] - countriesAmount[a])
       .slice(0, 5); // Top 5
@@ -1635,7 +1519,6 @@ exportTransactions() {
     // Total general
     const totalAmount = data.reduce((sum, transaction) => sum + Number(transaction['Importe EUR']), 0);
     
-    // Crear resumen para métodos de pago
     const paymentMethodsSummary = {};
     sortedPaymentMethods.forEach(method => {
       const amount = paymentMethodsAmount[method];
@@ -1648,7 +1531,6 @@ exportTransactions() {
       };
     });
     
-    // Crear resumen para países
     const countriesSummary = {};
     sortedCountries.forEach(country => {
       const amount = countriesAmount[country];
@@ -1664,14 +1546,10 @@ exportTransactions() {
     // Opciones específicas para formato PDF
     const pdfOptions = {
       pdf: {
-        // Usar A4 para PDF para más espacio horizontal
         pageSize: 'A4',
         orientation: 'landscape',
-        // Activar la optimización para tablas anchas
         optimizeForWideTables: true,
-        // Usar reducción agresiva de fuente
         fontSizeReduction: 'large',
-        // Activar compresión
         compressImages: true,
         // CLAVE: Forzar ajuste a página
         fitToPage: true,
@@ -1680,7 +1558,6 @@ exportTransactions() {
       }
     };
     
-    // Definir anchos explícitos para el cálculo de ajuste forzado
     // Estos valores serán usados como guía pero el algoritmo se asegurará
     // de que todo quepa en la página
     const columnWidths = {
@@ -1711,7 +1588,6 @@ exportTransactions() {
       }
     } : {};
     
-    // Exportar con formato avanzado y configuración personalizada
     exportManager.exportData(data, {
       fileName,
       format,
@@ -1724,13 +1600,11 @@ exportTransactions() {
       title: title,
       columnsWithTotals: columnsWithTotals,
       currencyFormats: currencyFormats,
-      // Definir anchos de columna como guía
       columnWidths: columnWidths,
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
       // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {}),
-      // Añadir resúmenes de análisis
       transactionAnalysis: {
         totalAmount,
         paymentMethods: paymentMethodsSummary,

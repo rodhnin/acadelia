@@ -1,33 +1,25 @@
 // themeManager.js - ACTUALIZADO PARA SISTEMA UNIFICADO DE MERMAID
-// Versión simplificada que delega Mermaid al sistema unificado
 
 // Variable para prevenir múltiples ejecuciones simultáneas
 let isChangingTheme = false;
 let themeChangeTimeout = null;
 
-// Inicializar gestor de temas
 export function initThemeManager() {
-  // Obtener tema guardado en localStorage o usar preferencia del sistema
   const savedTheme = localStorage.getItem('theme');
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
-  // Aplicar tema inicial
   if (savedTheme) {
     setTheme(savedTheme, true); // true = inicial, no manejar Mermaid
   } else {
     setTheme(prefersDarkMode ? 'dark' : 'light', true);
   }
   
-  // Mostrar documento una vez que se ha aplicado el tema
   document.body.style.visibility = 'visible';
   
-  // Configurar botón de cambio de tema
   setupThemeToggle();
   
-  // Configurar botón de tema del sidebar
   setupSidebarThemeToggle();
   
-  // Escuchar cambios en preferencia del sistema
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     // Solo cambiar automáticamente si no hay un tema guardado
     if (!localStorage.getItem('theme')) {
@@ -43,7 +35,6 @@ export function initThemeManager() {
   console.log('🎨 ThemeManager inicializado con integración al Sistema Unificado de Mermaid');
 }
 
-// Configurar botón de toggle en el header
 function setupThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) {
@@ -53,7 +44,6 @@ function setupThemeToggle() {
   }
 }
 
-// Configurar botón de cambio de tema en el sidebar
 function setupSidebarThemeToggle() {
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
   if (themeToggleBtn) {
@@ -63,7 +53,6 @@ function setupSidebarThemeToggle() {
   }
 }
 
-// Cambiar entre temas claro y oscuro
 export function toggleTheme() {
   // Prevenir múltiples cambios simultáneos
   if (isChangingTheme) {
@@ -76,13 +65,11 @@ export function toggleTheme() {
   
   setTheme(newTheme);
   
-  // Notificar cambio si existe la función
   if (window.showNotification) {
     window.showNotification(`Tema ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`, 'info');
   }
 }
 
-// Establecer un tema específico
 export function setTheme(theme, isInitial = false) {
   // Si ya estamos cambiando el tema, cancelar
   if (isChangingTheme && !isInitial) {
@@ -90,11 +77,9 @@ export function setTheme(theme, isInitial = false) {
     return;
   }
   
-  // Marcar que estamos cambiando el tema
   if (!isInitial) {
     isChangingTheme = true;
     
-    // Cancelar cualquier timeout previo
     if (themeChangeTimeout) {
       clearTimeout(themeChangeTimeout);
     }
@@ -102,19 +87,14 @@ export function setTheme(theme, isInitial = false) {
   
   console.log(`🎨 Aplicando tema: ${theme} ${isInitial ? '(inicial)' : ''}`);
   
-  // Aplicar tema al body
   document.body.setAttribute('data-theme', theme);
   
-  // Guardar en localStorage
   localStorage.setItem('theme', theme);
   
-  // Actualizar iconos en botones de tema
   updateThemeIcons(theme);
   
-  // Configurar tema para highlight.js
   updateCodeTheme(theme);
   
-  // Actualizar gifs de thinking si existen
   updateThinkingGifs(theme);
   
   // ✨ DELEGACIÓN AL SISTEMA UNIFICADO DE MERMAID
@@ -123,7 +103,6 @@ export function setTheme(theme, isInitial = false) {
     // No necesitamos hacer nada aquí, se actualiza automáticamente
     console.log('🎨 Tema aplicado - MermaidManager manejará los diagramas automáticamente');
     
-    // Resetear flag después de un tiempo razonable
     themeChangeTimeout = setTimeout(() => {
       isChangingTheme = false;
       console.log('✅ Cambio de tema completado');
@@ -131,7 +110,6 @@ export function setTheme(theme, isInitial = false) {
   }
 }
 
-// FUNCIÓN: Actualizar gifs de thinking según el tema
 function updateThinkingGifs(theme = null) {
   if (!theme) {
     theme = document.body.getAttribute('data-theme') || 'light';
@@ -145,7 +123,6 @@ function updateThinkingGifs(theme = null) {
   });
 }
 
-// FUNCIÓN: Actualizar un gif de thinking específico
 function updateThinkingGif(aiProfileElement, theme = null) {
   if (!aiProfileElement || !aiProfileElement.classList.contains('thinking')) {
     return;
@@ -155,10 +132,8 @@ function updateThinkingGif(aiProfileElement, theme = null) {
     theme = document.body.getAttribute('data-theme') || 'light';
   }
   
-  // Limpiar estilos de background existentes
   aiProfileElement.style.backgroundImage = '';
   
-  // Aplicar el gif correcto según el tema
   if (theme === 'dark') {
     aiProfileElement.style.backgroundImage = 'var(--avatar-loading-path-dark)';
   } else {
@@ -171,7 +146,6 @@ function updateThinkingGif(aiProfileElement, theme = null) {
   aiProfileElement.style.backgroundRepeat = 'no-repeat';
 }
 
-// Actualizar iconos en botones de tema
 function updateThemeIcons(theme) {
   // Botón principal en header
   const themeToggle = document.getElementById('themeToggle');
@@ -181,24 +155,19 @@ function updateThemeIcons(theme) {
       : '<i class="bx bxs-moon"></i>';
   }
   
-  // Actualizar icono del toggle switch en sidebar
   const themeIcon = document.querySelector('.theme-toggle-slider .theme-icon');
   if (themeIcon) {
-    // Añadir clase de animación
     themeIcon.classList.add('changing');
     
-    // Cambiar icono
     themeIcon.className = theme === 'dark' 
       ? 'theme-icon bx bx-sun changing' 
       : 'theme-icon bx bxs-moon changing';
     
-    // Remover clase de animación después de la transición
     setTimeout(() => {
       themeIcon.classList.remove('changing');
     }, 300);
   }
   
-  // Actualizar el slider del switch según el tema - FORZADO
   const themeSlider = document.querySelector('.theme-toggle-slider');
   if (themeSlider) {
     // Forzar actualización inmediata del estado visual
@@ -214,7 +183,6 @@ function updateThemeIcons(theme) {
   }
 }
 
-// Actualizar tema para highlight.js
 function updateCodeTheme(theme) {
   const codeTheme = document.getElementById('code-theme');
   if (codeTheme) {
@@ -238,7 +206,6 @@ function updateCodeTheme(theme) {
         }
       });
     } catch (error) {
-      // Fallback para navegadores que no soportan :has() (Safari más antiguo)
       document.querySelectorAll('pre code').forEach(block => {
         // Solo resaltar si no tiene elementos hijos
         if (block.children.length === 0) {
@@ -271,13 +238,11 @@ function handleMermaidThemeChange(theme) {
   }
 }
 
-// FUNCIÓN: Crear observador para detectar nuevos avatares thinking
 function createThinkingObserver() {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
-          // Buscar avatares thinking en el nodo añadido
           const thinkingAvatars = node.querySelectorAll ? 
             node.querySelectorAll('.ai-profile.thinking') : [];
           
@@ -287,7 +252,6 @@ function createThinkingObserver() {
             updateThinkingGif(node);
           }
           
-          // Actualizar avatares thinking encontrados
           thinkingAvatars.forEach(avatar => {
             updateThinkingGif(avatar);
           });
@@ -296,7 +260,6 @@ function createThinkingObserver() {
     });
   });
   
-  // Iniciar observación
   observer.observe(document.body, {
     childList: true,
     subtree: true
@@ -305,7 +268,6 @@ function createThinkingObserver() {
   return observer;
 }
 
-// FUNCIÓN: Establecer estado thinking
 export function setThinkingState(messageElement, isThinking = true) {
   if (!messageElement) return;
   
@@ -315,11 +277,9 @@ export function setThinkingState(messageElement, isThinking = true) {
   if (aiProfile) {
     if (isThinking) {
       aiProfile.classList.add('thinking');
-      // Aplicar el gif correcto inmediatamente
       updateThinkingGif(aiProfile);
     } else {
       aiProfile.classList.remove('thinking');
-      // Restaurar imagen normal
       aiProfile.style.backgroundImage = '';
     }
   }
@@ -332,7 +292,6 @@ export function setThinkingState(messageElement, isThinking = true) {
     }
   }
   
-  // Manejar clase de procesamiento del mensaje completo
   if (isThinking) {
     messageElement.classList.add('processing');
   } else {
@@ -340,10 +299,8 @@ export function setThinkingState(messageElement, isThinking = true) {
   }
 }
 
-// Inicializar observer cuando se carga el script
 let thinkingObserver = null;
 
-// Función para inicializar el observer (se llama desde app.js)
 export function initThinkingObserver() {
   if (!thinkingObserver) {
     thinkingObserver = createThinkingObserver();
@@ -378,7 +335,6 @@ function reInitializeMermaidZoom() {
   // El MermaidManager maneja esto automáticamente
 }
 
-// Función para anunciar cambios de tema (accesibilidad)
 function announceThemeChange() {
   const currentTheme = document.body.getAttribute('data-theme') || 'light';
   const announcement = document.createElement('div');

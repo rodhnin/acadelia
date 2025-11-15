@@ -2,13 +2,11 @@
  * Estado de suscripción - Integrando con el sistema centralizado de notificaciones
  */
 
-// Sistema de Pantalla de Carga Global
 const LoadingOverlay = {
     overlay: null,
     count: 0,
     
     init() {
-        // Crear el overlay si aún no existe
         if (!this.overlay) {
             this.overlay = document.createElement('div');
             this.overlay.className = 'loading-overlay';
@@ -83,13 +81,11 @@ const LoadingOverlay = {
         this.init();
         this.count++;
         
-        // Actualizar el mensaje
         const textElement = this.overlay.querySelector('.spinner-text');
         if (textElement) {
             textElement.textContent = message;
         }
         
-        // Mostrar el overlay
         this.overlay.classList.add('active');
         document.body.classList.add('modal-open');
     },
@@ -193,13 +189,10 @@ class SubscriptionManager {
     }
     
     async init() {
-        // Obtener el ID del usuario
         await this.obtenerUsuarioId();
         
-        // Cargar suscripciones si tenemos un usuario
         if (this.userId) this.loadSubscriptions();
         
-        // Agregar manejador de evento para clics global (delegación de eventos)
         document.addEventListener('click', this.handleGlobalClick.bind(this));
     }
     
@@ -207,7 +200,6 @@ class SubscriptionManager {
     handleGlobalClick(event) {
         const target = event.target;
         
-        // Buscar el botón más cercano que fue clicado (o un elemento dentro del botón)
         const portalButton = target.closest('.portal-button');
         const actionButton = target.closest('.action-button');
         const retryButton = target.closest('.retry-button');
@@ -343,10 +335,8 @@ class SubscriptionManager {
     async handlePortalAccess(subscriptionId, priceId, productId) {
         return await LoadingOverlay.withLoading(async () => {
             try {
-                // Mostrar notificación de inicio
                 this.showAlert('Accediendo al portal de pagos...', 'info');
                 
-                // Cargar transacciones relacionadas con la suscripción
                 const response = await fetch(`/api/payment/user/transactions/${this.userId}`, {
                     credentials: 'include'
                 });
@@ -362,7 +352,6 @@ class SubscriptionManager {
                     return;
                 }
                 
-                // Filtrar las transacciones para la suscripción actual
                 const relatedTransactions = data.filter(tx => 
                     tx.price_id === priceId && 
                     tx.product_id === productId
@@ -373,16 +362,13 @@ class SubscriptionManager {
                     return;
                 }
                 
-                // Usar la transacción más reciente
                 const latestTransaction = relatedTransactions[0];
                 
-                // Verificar que tenemos un ID de transacción
                 if (!latestTransaction.transaction_id) {
                     this.showAlert('ID de transacción no disponible', 'error');
                     return;
                 }
                 
-                // Solicitar portal para esta transacción
                 const portalResponse = await fetch(`/api/paddle/portal/${latestTransaction.transaction_id}`, {
                     credentials: 'include'
                 });
@@ -572,7 +558,6 @@ class SubscriptionManager {
                 const data = await response.json();
                 
                 if (data.success && data.data.portalUrl) {
-                    // Abrir el portal en una nueva ventana
                     window.open(data.data.portalUrl, '_blank');
                     return true;
                 } else {
@@ -589,7 +574,6 @@ class SubscriptionManager {
     async loadSubscriptions() {
         if (!this.userId) return;
         
-        // Limpiar contenedores existentes
         const existingContainers = document.querySelectorAll('.content-box.premium-status');
         existingContainers.forEach(container => container.remove());
         
@@ -600,7 +584,6 @@ class SubscriptionManager {
                 
                 const { data } = await response.json();
                 
-                // Filtrar para eliminar suscripciones con estado "expired" o "canceled"
                 const filteredData = data.filter(subscription => 
                     !['expired', 'canceled'].includes(subscription.status.toLowerCase())
                 );
@@ -612,7 +595,6 @@ class SubscriptionManager {
                         return acc;
                     }, {});
                     
-                    // Crear un contenedor separado para cada producto
                     Object.entries(grouped).forEach(([product, subs]) => {
                         const container = this.createNewContainer();
                         this.showSkeleton(container);
@@ -717,7 +699,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inyectar estilos
     injectStyles();
     
-    // Inicializar gestor de suscripciones
     window.subscriptionManager = new SubscriptionManager();
 });
 

@@ -12,7 +12,6 @@ let filteredTrendsData = [];
 let currentView = 'grid';
 let chartsInstances = {};
 
-// Inicializar la modal de tendencias
 export function initTrendsModal() {
   console.log('🎯 Inicializando modal de tendencias...');
   
@@ -37,7 +36,6 @@ export function initTrendsModal() {
   console.log('✅ Modal de tendencias inicializada correctamente');
 }
 
-// Cargar el dashboard completo de tendencias
 async function loadTrendsDashboard() {
   const modalBody = document.querySelector('#trendsModal .modal-body');
   if (!modalBody) return;
@@ -64,7 +62,6 @@ async function loadTrendsDashboard() {
   }
 }
 
-// Cargar datos de tendencias desde la API
 async function loadTrendsData() {
   try {
     console.log('📊 Cargando datos de tendencias desde API...');
@@ -84,13 +81,11 @@ async function loadTrendsData() {
     
   } catch (error) {
     console.error('❌ Error cargando datos de tendencias:', error);
-    // Usar datos de fallback para demostración
     trendsData = generateFallbackTrendsData();
     filteredTrendsData = [...trendsData];
   }
 }
 
-// Procesar datos de tendencia individuales
 function processTrendData(trend) {
   let metadata = {};
   
@@ -127,7 +122,6 @@ function processTrendData(trend) {
   return processedTrend;
 }
 
-// Extraer canales del metadata
 function extractChannels(metadata) {
   const channels = [];
   
@@ -148,7 +142,6 @@ function extractChannels(metadata) {
   return [...new Set(channels.map(c => c.trim()).filter(c => c))];
 }
 
-// Extraer información adicional del metadata
 function extractAdditionalInfo(metadata) {
   const additionalInfo = {};
   
@@ -171,7 +164,6 @@ function extractAdditionalInfo(metadata) {
   return additionalInfo;
 }
 
-// Extraer categorías del metadata
 function extractCategories(metadata) {
   const categories = [];
   
@@ -187,7 +179,6 @@ function extractCategories(metadata) {
   return [...new Set(categories.filter(c => c))];
 }
 
-// Renderizar el dashboard completo
 function renderTrendsDashboard() {
   const modalBody = document.querySelector('#trendsModal .modal-body');
   if (!modalBody) return;
@@ -388,7 +379,6 @@ function renderTrendsDashboard() {
   `;
 }
 
-// Generar estadísticas de popularidad
 function generatePopularityStats() {
   const ranges = [
     { label: 'Muy Alta (>0.8)', min: 0.8, max: 1, color: '#d32f2f' },
@@ -409,7 +399,6 @@ function generatePopularityStats() {
   }).join('');
 }
 
-// Generar distribución de canales
 function generateChannelDistribution() {
   const channelCounts = {};
   
@@ -440,7 +429,6 @@ function generateChannelDistribution() {
   `).join('');
 }
 
-// Renderizar contenido de tendencias
 function renderTrendsContent() {
   if (filteredTrendsData.length === 0) {
     return `
@@ -477,7 +465,6 @@ function renderTrendsContent() {
   }
 }
 
-// Renderizar tarjeta de tendencia 🆕 CON BOTÓN DE ELIMINAR
 function renderTrendCard(trend) {
   const popularityPercentage = trend.popularity * 100;
   
@@ -522,7 +509,6 @@ function renderTrendCard(trend) {
   `;
 }
 
-// Renderizar fila de tabla 🆕 CON BOTÓN DE ELIMINAR
 function renderTrendRow(trend) {
   return `
     <tr class="trend-row" data-trend-id="${trend.id}">
@@ -548,7 +534,6 @@ function renderTrendRow(trend) {
   `;
 }
 
-// Configurar eventos de la modal
 function setupTrendsEvents() {
   const modalBody = document.querySelector('#trendsModal .modal-body');
   if (!modalBody) return;
@@ -619,7 +604,6 @@ function setupTrendsEvents() {
   setupModalHierarchy();
 }
 
-// Manejar búsqueda
 function handleTrendsSearch(e) {
   const searchTerm = e.target.value.toLowerCase();
   
@@ -637,7 +621,6 @@ function handleTrendsSearch(e) {
   updateSummaryCards();
 }
 
-// Manejar filtros
 function handleTrendsFilter(e) {
   const filterValue = e.target.value;
   const searchTerm = document.querySelector('.trends-search-input').value.toLowerCase();
@@ -675,7 +658,6 @@ function handleTrendsFilter(e) {
   updateSummaryCards();
 }
 
-// Manejar ordenamiento
 function handleTrendsSort(e) {
   const sortValue = e.target.value;
   
@@ -697,7 +679,6 @@ function handleTrendsSort(e) {
   updateTrendsContent();
 }
 
-// Cambiar vista
 function handleViewChange(view) {
   currentView = view;
   
@@ -709,7 +690,6 @@ function handleViewChange(view) {
   updateTrendsContent();
 }
 
-// Actualizar contenido de tendencias
 function updateTrendsContent() {
   const trendsContent = document.querySelector('.trends-content');
   const listHeader = document.querySelector('.trends-list-header h2');
@@ -723,7 +703,6 @@ function updateTrendsContent() {
   }
 }
 
-// Actualizar las tarjetas de resumen
 function updateSummaryCards() {
   const summaryCards = document.querySelectorAll('.trends-summary-card');
   
@@ -802,7 +781,6 @@ function showDeleteTrendModal(trend) {
   
   console.log('✅ Modal encontrada, configurando contenido...');
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = deleteModal.querySelector('.trend-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -828,7 +806,6 @@ function showDeleteTrendModal(trend) {
     </div>
   `;
   
-  // ✅ LIMPIAR EVENT LISTENERS ANTERIORES
   if (deleteModal._handlers) {
     const { closeHandler, confirmHandler, handleDeleteEsc } = deleteModal._handlers;
     const closeBtn = deleteModal.querySelector('.trend-delete-close');
@@ -900,7 +877,6 @@ function showDeleteTrendModal(trend) {
 function closeDeleteTrendModal(deleteModal) {
   console.log('🚪 Cerrando modal de eliminar tendencia...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = deleteModal.querySelector('.trend-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -936,14 +912,12 @@ async function confirmDeleteTrend(trendId, deleteModal) {
   
   const confirmBtn = deleteModal.querySelector('.trend-delete-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -959,7 +933,6 @@ async function confirmDeleteTrend(trendId, deleteModal) {
     if (response && response.success) {
       console.log('✅ Eliminación exitosa, cerrando modal...');
       
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -986,7 +959,6 @@ async function confirmDeleteTrend(trendId, deleteModal) {
   } catch (error) {
     console.error('❌ Error eliminando tendencia:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1010,7 +982,6 @@ function showDeleteAllTrendsModal() {
     return;
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = deleteAllModal.querySelector('.trends-delete-all-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todas';
@@ -1019,7 +990,6 @@ function showDeleteAllTrendsModal() {
     confirmBtn.style.cursor = 'pointer';
   }
   
-  // ✅ LIMPIAR EVENT LISTENERS ANTERIORES
   if (deleteAllModal._handlers) {
     const { closeHandler, confirmHandler, handleDeleteAllEsc } = deleteAllModal._handlers;
     const closeBtn = deleteAllModal.querySelector('.trends-delete-all-close');
@@ -1078,7 +1048,6 @@ function showDeleteAllTrendsModal() {
 function closeDeleteAllTrendsModal(deleteAllModal) {
   console.log('🚪 Cerrando modal de eliminar todas las tendencias...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = deleteAllModal.querySelector('.trends-delete-all-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todas';
@@ -1111,7 +1080,6 @@ function closeDeleteAllTrendsModal(deleteAllModal) {
 function resetAllTrendsDeleteModals() {
   console.log('🔄 Reseteando todas las modales de eliminación de tendencias...');
   
-  // Modal de eliminación individual
   const deleteModal = document.querySelector('#trendDeleteModal');
   if (deleteModal) {
     const confirmBtn = deleteModal.querySelector('.trend-delete-confirm');
@@ -1141,7 +1109,6 @@ function resetAllTrendsDeleteModals() {
     }
   }
   
-  // Modal de eliminación masiva
   const deleteAllModal = document.querySelector('#trendsDeleteAllModal');
   if (deleteAllModal) {
     const confirmBtn = deleteAllModal.querySelector('.trends-delete-all-confirm');
@@ -1180,14 +1147,12 @@ async function handleDeleteAllTrends(deleteAllModal) {
   
   const confirmBtn = deleteAllModal.querySelector('.trends-delete-all-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar todas',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -1198,7 +1163,6 @@ async function handleDeleteAllTrends(deleteAllModal) {
     const response = await deleteAllTrends();
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -1225,7 +1189,6 @@ async function handleDeleteAllTrends(deleteAllModal) {
   } catch (error) {
     console.error('❌ Error eliminando todas las tendencias:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1239,7 +1202,6 @@ async function handleDeleteAllTrends(deleteAllModal) {
   }
 }
 
-// Mostrar detalles de tendencia
 function showTrendDetails(trendId) {
   const trend = trendsData.find(t => t.id === trendId);
   if (!trend) return;
@@ -1471,7 +1433,6 @@ function showTrendDetails(trendId) {
   detailModal.classList.add('active');
 }
 
-// Configurar eventos de la modal de detalles con jerarquía correcta
 function setupTrendDetailEvents(detailModal) {
   const closeBtn = detailModal.querySelector('.trend-detail-close');
   if (closeBtn) {
@@ -1509,7 +1470,6 @@ function setupTrendDetailEvents(detailModal) {
   detailModal._escHandler = handleDetailEsc;
 }
 
-// Cerrar modal de detalles con limpieza correcta
 function closeTrendDetailModal(detailModal) {
   if (!detailModal) {
     console.warn('⚠️ Intentando cerrar modal de detalles null/undefined');
@@ -1529,7 +1489,6 @@ function closeTrendDetailModal(detailModal) {
   console.log('✅ Modal de detalles cerrada correctamente');
 }
 
-// Inicializar gráficos
 function initializeTrendsCharts() {
   initPopularityChart();
 }
@@ -1590,7 +1549,6 @@ function initPopularityChart() {
   });
 }
 
-// Configurar jerarquía de modales para ESC
 function setupModalHierarchy() {
   if (window._trendsMainEscHandler) {
     document.removeEventListener('keydown', window._trendsMainEscHandler, true);
@@ -1632,7 +1590,6 @@ function setupModalHierarchy() {
   console.log('🔧 Jerarquía de modales configurada para tendencias');
 }
 
-// Limpiar jerarquía de modales
 function cleanupModalHierarchy() {
   if (window._trendsMainEscHandler) {
     document.removeEventListener('keydown', window._trendsMainEscHandler, true);
@@ -1857,7 +1814,6 @@ function generateFallbackTrendsData() {
   ];
 }
 
-// Mostrar error
 function showTrendsError(message) {
   const modalBody = document.querySelector('#trendsModal .modal-body');
   if (!modalBody) return;
@@ -1874,7 +1830,6 @@ function showTrendsError(message) {
 function resetTrendsModalState() {
   console.log('🔄 Reiniciando estado de trends modal...');
   
-  // Limpiar variables globales del módulo
   if (typeof trendsData !== 'undefined') {
     trendsData = [];
   }
@@ -1899,7 +1854,6 @@ function resetTrendsModalState() {
     chartsInstances = {};
   }
   
-  // ✅ NUEVO: Resetear modales de eliminación
   resetAllTrendsDeleteModals();
   
   console.log('✅ Estado de trends modal reiniciado completamente');
@@ -1913,10 +1867,8 @@ if (typeof window !== 'undefined') {
   window.showDeleteTrendModal = showDeleteTrendModal; // Si no existe
   window.showDeleteAllTrendsModal = showDeleteAllTrendsModal; // Si no existe
   
-  // ✅ NUEVO: Exportar función de reseteo de modales
   window.resetAllTrendsDeleteModals = resetAllTrendsDeleteModals;
   
-  // Actualizar objeto trendsModal
   if (!window.trendsModal) {
     window.trendsModal = {};
   }

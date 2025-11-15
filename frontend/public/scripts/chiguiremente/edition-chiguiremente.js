@@ -17,26 +17,20 @@ const state = {
 export function initEditionModule() {
     console.log('Inicializando módulo de edición...');
     
-    // Inicializar estado
     initState();
     
-    // Configurar navegación de tabs
     setupTabNavigation();
     
-    // Configurar cerrado de formularios modales
     setupFormClosing();
     
-    // Configurar visualización de imágenes con preview
     setupImagePreviews();
     
-    // Escuchar activación de vista
     document.addEventListener('viewActivated', (event) => {
         if (event.detail.view === 'edition') {
             handleViewActivation(event.detail);
         }
     });
     
-    // Cargar datos iniciales si estamos en la vista de edición
     if (window.location.hash === '#edition') {
         loadAllData();
     }
@@ -52,16 +46,12 @@ export function initEditionModule() {
  * @param {Object} detail - Detalles del evento
  */
 function handleViewActivation(detail) {
-    // Cargar datos cuando se active la vista
     loadAllData();
     
-    // Configurar previews de nuevo (por si DOM se refresca)
     setupImagePreviews();
     
-    // Obtener el estado de navegación enviado con el evento
     const navigationState = detail.navigationState;
     
-    // Verificar si hay un ID de carrera para editar desde el dashboard
     const editCarreraId = sessionStorage.getItem('editCarreraId');
     
     if (editCarreraId) {
@@ -80,16 +70,13 @@ function handleViewActivation(detail) {
  * @param {string} editCarreraId - ID de la carrera a editar
  */
 function handleEditCarreraFromDashboard(editCarreraId) {
-    // Limpiar el storage para no volver a editar automáticamente
     sessionStorage.removeItem('editCarreraId');
     
-    // Cambiar a la pestaña de carreras
     const carreraTab = document.querySelector('[data-tab="edit-carrera-tab"]');
     if (carreraTab) {
         carreraTab.click();
     }
     
-    // Buscar la carrera y abrir formulario de edición
     loadItemForEdit('carrera', editCarreraId);
 }
 
@@ -100,10 +87,8 @@ function handleEditCarreraFromDashboard(editCarreraId) {
 function handleNavigationState(navigationState) {
     console.log('Activando tab específica:', navigationState.targetTab);
     
-    // Limpiar el storage ahora que ya hemos usado la información
     localStorage.removeItem('navigationState');
     
-    // Activar la pestaña solicitada
     const tabButton = document.querySelector(`[data-tab="${navigationState.targetTab}"]`);
     if (tabButton) {
         tabButton.click();
@@ -121,14 +106,11 @@ function handleNavigationState(navigationState) {
  * @param {string} carreraName - Nombre de la carrera
  */
 function handleCarreraFilter(carreraId, carreraName) {
-    // Esperar a que se carguen los datos y se renderice la interfaz
     setTimeout(() => {
         let categoryFound = false;
         
-        // Buscar todas las categorías de AVA
         const categories = document.querySelectorAll('.ava-category');
         categories.forEach(category => {
-            // Verificar si esta categoría corresponde a la carrera que buscamos
             if (category.dataset.carreraId == carreraId || 
                 category.querySelector('.ava-category-title')?.textContent.includes(carreraName)) {
                 
@@ -203,20 +185,16 @@ function setupImagePreviews() {
         
         console.log(`Configurando vista previa para: ${config.id}`);
         
-        // Remover listener anterior si existe
         const existingHandler = state.eventListeners.get(config.id);
         if (existingHandler) {
             fileInput.removeEventListener('change', existingHandler);
         }
         
-        // Crear nuevo handler
         const handler = (event) => handleFileChange(event, config);
         state.eventListeners.set(config.id, handler);
         
-        // Agregar nuevo listener
         fileInput.addEventListener('change', handler);
         
-        // Crear contenedor de preview si no existe
         ensurePreviewContainer(config.id, fileInput);
     });
 }
@@ -240,7 +218,6 @@ function ensurePreviewContainer(inputId, fileInput) {
             previewContainer.className = 'image-preview-container';
             previewContainer.style.display = 'none';
             
-            // Insertar en la posición correcta
             const fileNameContainer = document.getElementById(`${inputId.split('-')[0]}-${inputId.split('-')[1]}-file-name`);
             if (fileNameContainer) {
                 fileNameContainer.parentNode.insertBefore(previewContainer, fileNameContainer.nextSibling);
@@ -259,11 +236,9 @@ function resetToWelcomeTab() {
     const tabPanes = document.querySelectorAll('#edition-view .tab-pane');
     const welcomeTab = document.getElementById('edit-welcome-tab');
     
-    // Desactivar todos los botones y tabs
     tabButtons.forEach(btn => btn.classList.remove('active'));
     tabPanes.forEach(pane => pane.classList.remove('active'));
     
-    // Activar la pestaña de bienvenida
     if (welcomeTab) {
         welcomeTab.classList.add('active');
         state.activeTab = 'edit-welcome-tab';
@@ -281,12 +256,10 @@ function handleFileChange(event, config) {
     
     console.log(`Cambio detectado en: ${config.id}`);
     
-    // Obtener elementos relacionados
     const nameSpan = document.getElementById(config.nameId);
     const previewContainerId = `${config.id}-preview-container`;
     let previewContainer = document.getElementById(previewContainerId);
     
-    // Crear contenedor si no existe
     if (!previewContainer) {
         previewContainer = createPreviewContainer(config.id, fileInput);
     }
@@ -323,7 +296,6 @@ function createPreviewContainer(inputId, fileInput) {
     previewContainer.className = 'image-preview-container';
     previewContainer.style.display = 'none';
     
-    // Insertar después del elemento que muestra el nombre del archivo
     const nameSpan = document.getElementById(`${inputId.split('-')[0]}-${inputId.split('-')[1]}-file-name`);
     if (nameSpan) {
         nameSpan.parentNode.insertBefore(previewContainer, nameSpan.nextSibling);
@@ -365,13 +337,10 @@ function hidePreview(previewContainer) {
 function showImagePreview(file, previewContainer, fileInput, nameSpan) {
     console.log(`Procesando vista previa para: ${file.name}`);
     
-    // Limpiar contenedor
     previewContainer.innerHTML = '';
     
-    // Crear elementos
     const elements = createPreviewElements(file.name);
     
-    // Configurar botón de eliminar
     setupRemoveButton(elements.removeButton, fileInput, nameSpan, previewContainer);
     
     // Ensamblar estructura
@@ -385,7 +354,6 @@ function showImagePreview(file, previewContainer, fileInput, nameSpan) {
     previewContainer.appendChild(elements.imageWrapper);
     previewContainer.style.display = 'block';
     
-    // Cargar imagen
     loadImagePreview(file, elements.image, elements.loading);
 }
 
@@ -600,16 +568,13 @@ function setupTabNavigation() {
  * @param {HTMLElement} welcomeTab - Pestaña de bienvenida
  */
 function handleTabNavigation(button, tabButtons, tabPanes, welcomeTab) {
-    // Ocultar pantalla de bienvenida
     if (welcomeTab) {
         welcomeTab.classList.remove('active');
     }
     
-    // Desactivar todos los botones y tabs
     tabButtons.forEach(btn => btn.classList.remove('active'));
     tabPanes.forEach(pane => pane.classList.remove('active'));
     
-    // Activar el botón y tab seleccionados
     button.classList.add('active');
     const tabId = button.dataset.tab;
     const targetTab = document.getElementById(tabId);
@@ -617,7 +582,6 @@ function handleTabNavigation(button, tabButtons, tabPanes, welcomeTab) {
         targetTab.classList.add('active');
     }
     
-    // Actualizar estado
     state.activeTab = tabId;
 }
 
@@ -631,7 +595,6 @@ function setupFormClosing() {
         button.addEventListener('click', closeAllForms);
     });
     
-    // Cerrar al hacer clic en overlay
     if (state.formOverlay) {
         state.formOverlay.addEventListener('click', closeAllForms);
     }
@@ -650,7 +613,6 @@ function setupFormClosing() {
 function closeAllForms() {
     if (!state.formOverlay) return;
     
-    // Remover clases activas para la animación de salida
     state.formOverlay.classList.remove('active');
     
     Object.values(state.sections).forEach(section => {
@@ -659,7 +621,6 @@ function closeAllForms() {
         }
     });
     
-    // Esperar a que termine la animación antes de ocultar completamente
     setTimeout(() => {
         Object.values(state.sections).forEach(section => {
             if (section.editForm) {
@@ -678,7 +639,6 @@ function closeAllForms() {
  */
 async function loadAllData() {
     try {
-        // Cargar carreras primero
         const carreras = await fetchWithCSRF('/api/carrera/carrera', {
             method: 'GET'
         });
@@ -687,7 +647,6 @@ async function loadAllData() {
             state.carreras = carreras;
         }
         
-        // Cargar el resto de los datos
         loadList('carrera');
         loadList('ava');
         loadList('herramienta');
@@ -719,7 +678,6 @@ async function loadList(sectionName) {
     
     if (!container || !spinner) return;
     
-    // Mostrar spinner
     spinner.style.display = 'block';
     container.innerHTML = '';
     
@@ -728,7 +686,6 @@ async function loadList(sectionName) {
             method: 'GET'
         });
         
-        // Ocultar spinner
         spinner.style.display = 'none';
         
         if (sectionName === 'ava') {
@@ -819,7 +776,6 @@ function createItemCard(sectionName, item, nameField, idField) {
     const card = document.createElement('div');
     card.className = 'item-card';
     
-    // Crear estructura de la tarjeta
     const imageDiv = createItemImageDiv(item, nameField);
     const contentDiv = createItemContentDiv(item, nameField, sectionName);
     const actionsDiv = createItemActionsDiv(item, idField, sectionName);
@@ -845,7 +801,6 @@ function createItemImageDiv(item, nameField) {
     img.src = item.imagen || '/images/placeholder.jpg';
     img.alt = item[nameField];
     
-    // Configurar fallback de imagen (CSP safe)
     setupImageFallback(img, '/images/placeholder.jpg');
     
     imageDiv.appendChild(img);
@@ -954,7 +909,6 @@ function createItemActionsDiv(item, idField, sectionName) {
     editButton.appendChild(icon);
     editButton.appendChild(text);
     
-    // Agregar evento de edición
     editButton.addEventListener('click', () => {
         openEditForm(sectionName, item);
     });
@@ -981,7 +935,6 @@ async function renderAvasTable(avas) {
         // Agrupar AVAs por carrera
         const avasByCarrera = groupAvasByCarrera(avas);
         
-        // Crear tablas por carrera
         Object.values(avasByCarrera).forEach(carreraGroup => {
             const categoryContainer = createAvaCategoryContainer(carreraGroup);
             list.appendChild(categoryContainer);
@@ -1034,13 +987,10 @@ function createAvaCategoryContainer(carreraGroup) {
     categoryContainer.className = 'ava-category';
     categoryContainer.setAttribute('data-carrera-id', carreraGroup.id);
     
-    // Crear cabecera de categoría
     const categoryHeader = createAvaCategoryHeader(carreraGroup);
     
-    // Crear contenido de categoría
     const categoryContent = createAvaCategoryContent(carreraGroup);
     
-    // Agregar evento para expandir/colapsar
     categoryHeader.addEventListener('click', () => {
         categoryHeader.classList.toggle('expanded');
         categoryContent.classList.toggle('expanded');
@@ -1110,10 +1060,8 @@ function createAvaTable(avas) {
     const table = document.createElement('table');
     table.className = 'ava-table';
     
-    // Crear cabecera
     const thead = createAvaTableHeader();
     
-    // Crear cuerpo
     const tbody = createAvaTableBody(avas);
     
     table.appendChild(thead);
@@ -1310,7 +1258,6 @@ function createAvaActionsCell(ava) {
     editButton.appendChild(icon);
     editButton.appendChild(text);
     
-    // Agregar evento de edición
     editButton.addEventListener('click', () => {
         openEditForm('ava', ava);
     });
@@ -1331,7 +1278,6 @@ function setupSearch(sectionName, data) {
     
     if (!searchInput) return;
     
-    // Limpiar eventos previos
     const newSearchInput = searchInput.cloneNode(true);
     searchInput.parentNode.replaceChild(newSearchInput, searchInput);
     state.sections[sectionName].searchInput = newSearchInput;
@@ -1411,13 +1357,11 @@ function checkAvaRowVisibility(row, searchTerm) {
  * @param {string} searchTerm - Término de búsqueda
  */
 function updateCategoryVisibility(category, visibleItems, searchTerm) {
-    // Actualizar contador en la categoría
     const badge = category.querySelector('.ava-category-badge');
     if (badge) {
         badge.textContent = visibleItems;
     }
     
-    // Mostrar/ocultar toda la categoría
     category.style.display = visibleItems > 0 ? 'block' : 'none';
     
     // Expandir automáticamente si hay resultados
@@ -1499,19 +1443,14 @@ function openEditForm(sectionName, item) {
     
     if (!editForm || !form) return;
     
-    // Mostrar overlay
     showFormOverlay();
     
-    // Mejorar estructura del modal
     enhanceModalStructure(editForm, sectionName);
     
-    // Mejorar modal con sidebar
     enhanceModalWithSidebar(editForm, sectionName, item);
     
-    // Mostrar formulario
     showEditForm(editForm);
     
-    // Configurar formulario
     setupEditForm(sectionName, item, form);
 }
 
@@ -1547,21 +1486,17 @@ function showEditForm(editForm) {
  * @param {HTMLElement} form - Formulario
  */
 function setupEditForm(sectionName, item, form) {
-    // Limpiar eventos previos (clonar formulario)
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     state.sections[sectionName].form = newForm;
     
-    // Restaurar eventos de file input
     setupImagePreviews();
     
     // Llenar campos del formulario
     fillFormFields(newForm, item);
     
-    // Mostrar imagen actual si existe
     displayCurrentImage(sectionName, item);
     
-    // Configurar eventos del formulario
     setupFormEvents(sectionName, item, newForm);
 }
 
@@ -1586,7 +1521,6 @@ function fillFormFields(form, item) {
  * @param {HTMLElement} form - Formulario
  */
 function setupFormEvents(sectionName, item, form) {
-    // Configurar botón de cancelar
     const cancelButton = form.querySelector('.secondary-button');
     if (cancelButton) {
         cancelButton.addEventListener('click', closeAllForms);
@@ -1598,10 +1532,8 @@ function setupFormEvents(sectionName, item, form) {
         setupAvaSpecificFields(form, item);
     }
     
-    // Configurar envío del formulario
     setupFormSubmission(sectionName, item, form);
     
-    // Configurar botón de eliminación
     setupDeleteButton(sectionName, item, form);
 }
 
@@ -1617,7 +1549,6 @@ function setupAvaSpecificFields(form, item) {
         embeddingTableField.setAttribute('disabled', 'disabled');
         embeddingTableField.classList.add('disabled-input');
         
-        // Añadir mensaje de advertencia si no existe
         let warningMessage = embeddingTableField.parentNode.querySelector('.warning-message');
         if (!warningMessage) {
             warningMessage = createWarningMessage();
@@ -1668,7 +1599,6 @@ function setupFormSubmission(sectionName, item, form) {
 async function handleFormSubmission(sectionName, item, form) {
     const formData = new FormData(form);
     
-    // Verificar si el input de imagen está vacío y eliminarlo del FormData
     const fileInput = form.querySelector('input[type="file"]');
     if (fileInput && fileInput.files.length === 0) {
         formData.delete(fileInput.name);
@@ -1677,27 +1607,22 @@ async function handleFormSubmission(sectionName, item, form) {
     try {
         const { apiEndpoint, idField } = state.sections[sectionName];
         
-        // Mostrar indicador de procesamiento
         const submitButton = form.querySelector('button[type="submit"]');
         const originalContent = showProcessingState(submitButton);
         
-        // Enviar datos al servidor
         await fetchWithCSRF(`${apiEndpoint}/${item[idField]}`, {
             method: 'PUT',
             body: formData
         });
         
-        // Restaurar botón
         restoreButtonState(submitButton, originalContent);
         
-        // Mostrar notificación de éxito
         showNotification({
             title: 'Cambios Guardados',
             message: 'Los cambios han sido guardados exitosamente.',
             type: 'success'
         });
         
-        // Cerrar formulario y recargar
         closeAllForms();
         reloadCurrentTab();
         
@@ -1779,23 +1704,19 @@ function setupDeleteButton(sectionName, item, form) {
  * @param {string} sectionName - Nombre de la sección
  */
 function enhanceModalStructure(modalElement, sectionName) {
-    // Verificar si ya existe la estructura mejorada
     if (modalElement.querySelector('.modal-container')) {
         return;
     }
     
-    // Guardar el contenido original
     const originalForm = modalElement.querySelector('form');
     if (!originalForm) return;
     
-    // Crear nueva estructura
     const modalContainer = createModalContainer(sectionName, originalForm);
     
     // Vaciar y reconstruir modal
     modalElement.innerHTML = '';
     modalElement.appendChild(modalContainer);
     
-    // Configurar cierre del modal
     const closeButton = modalElement.querySelector('.close-form');
     if (closeButton) {
         closeButton.addEventListener('click', closeAllForms);
@@ -1812,18 +1733,14 @@ function createModalContainer(sectionName, originalForm) {
     const modalContainer = document.createElement('div');
     modalContainer.className = 'modal-container';
     
-    // Crear sidebar
     const modalSidebar = document.createElement('div');
     modalSidebar.className = 'modal-sidebar';
     
-    // Crear contenido principal
     const modalMainContent = document.createElement('div');
     modalMainContent.className = 'modal-main-content';
     
-    // Crear header
     const header = createModalHeader(sectionName);
     
-    // Crear contenedor de scroll
     const scrollContainer = document.createElement('div');
     scrollContainer.className = 'form-scroll-container';
     scrollContainer.appendChild(originalForm);
@@ -2112,7 +2029,6 @@ function displayCurrentImage(sectionName, item) {
     const previewContainerId = `${fileInputId}-preview-container`;
     let previewContainer = document.getElementById(previewContainerId);
     
-    // Crear contenedor si no existe
     if (!previewContainer) {
         const fileInput = document.getElementById(fileInputId);
         if (!fileInput) return;
@@ -2121,7 +2037,6 @@ function displayCurrentImage(sectionName, item) {
         if (!previewContainer) return;
     }
     
-    // Crear elementos para la visualización
     const elements = createCurrentImageElements(item.imagen);
     
     previewContainer.appendChild(elements.header);
@@ -2286,7 +2201,6 @@ async function loadCarrerasDropdown(form, selectedCarreraId) {
     try {
         carreraSelect.disabled = true;
         
-        // Limpiar y mostrar carga
         carreraSelect.innerHTML = '';
         const loadingOption = document.createElement('option');
         loadingOption.value = '';
@@ -2297,7 +2211,6 @@ async function loadCarrerasDropdown(form, selectedCarreraId) {
             method: 'GET'
         });
         
-        // Limpiar opciones
         carreraSelect.innerHTML = '';
         
         // Opción por defecto
@@ -2306,7 +2219,6 @@ async function loadCarrerasDropdown(form, selectedCarreraId) {
         defaultOption.textContent = 'Selecciona una carrera';
         carreraSelect.appendChild(defaultOption);
         
-        // Agregar opciones de carrera
         if (carreras && Array.isArray(carreras)) {
             carreras.forEach(carrera => {
                 const option = document.createElement('option');

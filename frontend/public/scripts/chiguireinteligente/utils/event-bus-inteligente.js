@@ -14,15 +14,12 @@ export class EventBus {
      * @returns {Function} Función para cancelar la suscripción
      */
     on(eventName, callback) {
-      // Crear array de callbacks para este evento si no existe
       if (!this.events[eventName]) {
         this.events[eventName] = [];
       }
       
-      // Añadir callback al array
       this.events[eventName].push(callback);
       
-      // Devolver función para cancelar suscripción
       return () => {
         this.off(eventName, callback);
       };
@@ -37,7 +34,6 @@ export class EventBus {
       // Si no hay callbacks para este evento, salir
       if (!this.events[eventName]) return;
       
-      // Filtrar para eliminar el callback específico
       this.events[eventName] = this.events[eventName].filter(
         cb => cb !== callback
       );
@@ -57,8 +53,6 @@ export class EventBus {
       // Si no hay callbacks para este evento, salir
       if (!this.events[eventName]) return;
       
-      // Ejecutar todos los callbacks registrados
-      // Usar Promise.all para capturar errores sin interrumpir otros callbacks
       Promise.all(
         this.events[eventName].map(callback => {
           return new Promise(resolve => {
@@ -82,13 +76,11 @@ export class EventBus {
      * @returns {Function} Función para cancelar la suscripción
      */
     once(eventName, callback) {
-      // Crear una función wrapper que se elimina después de ejecutarse
       const wrapper = (data) => {
         this.off(eventName, wrapper);
         callback(data);
       };
       
-      // Suscribir el wrapper
       return this.on(eventName, wrapper);
     }
     
@@ -103,27 +95,22 @@ export class EventBus {
       // Si no hay callbacks para este evento, devolver array vacío
       if (!this.events[eventName]) return [];
       
-      // Crear promesas para cada callback
       const promises = this.events[eventName].map(callback => {
         return new Promise((resolve, reject) => {
           try {
-            // Resolver con el resultado del callback
             resolve(callback(data));
           } catch (error) {
-            // Rechazar con el error
             reject(error);
           }
         });
       });
       
-      // Crear promesa con timeout
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
           reject(new Error(`Timeout de ${timeout}ms para evento ${eventName}`));
         }, timeout);
       });
       
-      // Esperar todas las promesas o timeout
       return Promise.race([
         Promise.all(promises),
         timeoutPromise
@@ -136,10 +123,8 @@ export class EventBus {
      */
     clear(eventName) {
       if (eventName) {
-        // Eliminar solo los listeners del evento especificado
         delete this.events[eventName];
       } else {
-        // Eliminar todos los listeners
         this.events = {};
       }
     }

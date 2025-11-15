@@ -38,7 +38,6 @@ const CONFIG = {
   }
 };
 
-// Controlar si ya se ha inicializado
 let editorInstance = null;
 
 // 🆕 REGISTRO GLOBAL de instancias para limpieza completa
@@ -70,12 +69,10 @@ const GLOBAL_REGISTRY = {
   },
   
   cleanupAll() {
-    // Limpiar todos los event listeners
     for (const [key] of this.eventListeners) {
       this.removeEventListener(key);
     }
     
-    // Limpiar todas las instancias
     for (const instance of this.instances) {
       if (instance && typeof instance.cleanup === 'function') {
         try {
@@ -87,7 +84,6 @@ const GLOBAL_REGISTRY = {
     }
     this.instances.clear();
     
-    // Limpiar timeouts
     Object.values(CONFIG.TIMEOUT_KEYS).forEach(key => {
       clearManagedTimeouts(key);
     });
@@ -118,7 +114,6 @@ class MathLiveEditor {
     // 🆕 Estado de inicialización para prevenir doble inicialización
     this.initializationPromise = null;
     
-    // Inicializar
     this.init();
   }
   
@@ -147,14 +142,12 @@ class MathLiveEditor {
       this.setupEventListeners();
       this.injectSymbolsPanel();
       
-      // Renderizar fórmulas en botones después de inyectar panel
       setManagedTimeout(() => {
         this.renderMathButtonsPreview();
       }, CONFIG.RENDER_DELAY, CONFIG.TIMEOUT_KEYS.INITIAL_RENDER);
       
       this.isInitialized = true;
       
-      // Notificar inicialización completada
       eventBus.emit('mathEditorInitialized', { editor: this });
       
       console.log('✅ MathEditor: Inicialización completada');
@@ -206,16 +199,13 @@ class MathLiveEditor {
     const toolbar = this.editorContainer.querySelector('.editor-toolbar');
     if (!toolbar) return;
     
-    // Limpiar contenido existente
     toolbar.innerHTML = '';
     
-    // Crear título para la barra
     const title = createElement('div', {
       className: 'editor-title'
     }, 'Editor de Ecuaciones');
     toolbar.appendChild(title);
     
-    // Crear botón de enviar con nuevo nombre
     const sendButton = createElement('button', {
       className: 'toolbar-btn send-button'
     }, 'Enviar al Chat');
@@ -228,7 +218,6 @@ class MathLiveEditor {
     
     const listenerId = this.addEventListenerWithCleanup(sendButton, 'click', sendHandler);
     
-    // Agregar estilos para la barra simplificada
     toolbar.style.display = 'flex';
     toolbar.style.justifyContent = 'space-between';
     toolbar.style.alignItems = 'center';
@@ -250,23 +239,19 @@ class MathLiveEditor {
    * Crea la estructura DOM del editor
    */
   createEditorDOM() {
-    // Verificar si ya existe
     this.editorContainer = document.getElementById('math-editor-container');
     
     if (this.editorContainer) {
-      // Limpiar contenido anterior
       const toolbar = this.editorContainer.querySelector('.editor-toolbar');
       const symbolsPanel = this.editorContainer.querySelector('.math-symbols-panel');
       
       // Si no existe el contenedor del mathfield, crearlo
       let mathfieldContainer = this.editorContainer.querySelector('.mathfield-container');
       if (!mathfieldContainer) {
-        // Reemplazar la estructura existente manteniendo la barra de herramientas y panel de símbolos
         const editorArea = this.editorContainer.querySelector('.editor-area');
         if (editorArea) {
           // Vaciar contenido existente
           editorArea.innerHTML = '';
-          // Crear contenedor para MathLive
           mathfieldContainer = createElement('div', {
             id: 'mathfield-container',
             className: 'mathfield-container'
@@ -300,42 +285,34 @@ class MathLiveEditor {
       return;
     }
     
-    // Limpiar contenido previo
     this.mathfieldContainer.innerHTML = '';
     
-    // Crear el elemento MathField
     this.mathfieldElement = createElement('math-field', {
       id: 'mathfield'
     });
     
-    // Aplicar estilo para que se ajuste al diseño existente
     this.mathfieldElement.style.width = '100%';
     this.mathfieldElement.style.minHeight = '100px';
     this.mathfieldElement.style.padding = '8px';
     this.mathfieldElement.style.fontSize = '16px';
     this.mathfieldElement.style.borderRadius = 'var(--border-radius-sm, 4px)';
     
-    // Configurar opciones de MathLive usando propiedades directas según la nueva API
     this.mathfieldElement.setAttribute('math-virtual-keyboard-policy', 'off');
     this.mathfieldElement.smartFence = true;
     this.mathfieldElement.smartMode = true;
     this.mathfieldElement.keypressVibration = false;
     
-    // Insertar en el contenedor
     this.mathfieldContainer.appendChild(this.mathfieldElement);
     
-    // Obtener la referencia al objeto MathField
     this.mathfield = this.mathfieldElement;
     
     // Personalizar el comportamiento del espacio directamente
     if (window.MathLive && this.mathfield) {
       try {
-        // Establecer macros si es necesario
         this.mathfield.macros = {}; 
         
         // 🆕 Manejar eventos de teclado de forma moderna con registro
         const keystrokeHandler = (ev) => {
-          // Manejar espacio de forma personalizada
           if (ev.detail.keystroke === 'Spacebar') {
             this.mathfield.insert(' ');
             ev.preventDefault(); // Prevenir comportamiento predeterminado
@@ -382,7 +359,6 @@ class MathLiveEditor {
   setupEventListeners() {
     if (!this.editorContainer) return;
     
-    // Escuchar eventos de teclado para cerrar con Escape
     const keydownHandler = (e) => {
       if (e.key === 'Escape') {
         this.hide();
@@ -403,7 +379,6 @@ class MathLiveEditor {
     // MathLive events
     if (this.mathfield) {
       const inputHandler = (e) => {
-        // Notificar cambio de contenido
         eventBus.emit('mathEditorContentChanged', { 
           latex: this.mathfield.value 
         });
@@ -419,7 +394,6 @@ class MathLiveEditor {
   sendLatexToTextarea() {
     if (!this.mathfield) return;
     
-    // CRÍTICO: Obtener siempre una referencia fresca al textarea
     this.textarea = document.querySelector(DOM_SELECTORS.textarea) || 
                     document.querySelector('.input-box textarea');
     
@@ -431,7 +405,6 @@ class MathLiveEditor {
     const latexContent = this.mathfield.value.trim();
     if (!latexContent) return;
     
-    // Procesar el LaTeX
     let processedContent = improveLatexFormatting(preprocessComplexFormula(latexContent));
     
     // Asegurar que el contenido tiene delimitadores LaTeX
@@ -443,21 +416,18 @@ class MathLiveEditor {
       processedContent = processedContent + '\\)';
     }
     
-    // Insertar en la posición del cursor
     const cursorPos = this.textarea.selectionStart;
     const textBefore = this.textarea.value.substring(0, cursorPos);
     const textAfter = this.textarea.value.substring(cursorPos);
     
     this.textarea.value = textBefore + processedContent + textAfter;
     
-    // Actualizar la posición del cursor
     const newCursorPos = cursorPos + processedContent.length;
     this.textarea.selectionStart = this.textarea.selectionEnd = newCursorPos;
     
     // Enfocar el textarea para continuar escribiendo
     this.textarea.focus();
     
-    // Notificar la inserción
     this.textarea.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
     eventBus.emit('latexInserted');
     eventBus.emit('mathEditorContentSent', { content: processedContent });
@@ -473,7 +443,6 @@ class MathLiveEditor {
       return;
     }
     
-    // Verificar si ya tiene contenido adecuado 
     if (this.symbolsContainer.querySelector('.math-btn')) {
       this.setupExistingSymbolButtons();
       return;
@@ -500,12 +469,10 @@ class MathLiveEditor {
     const sectionContents = this.symbolsContainer.querySelectorAll('.section-content');
     const toggleButtons = this.symbolsContainer.querySelectorAll('.toggle-btn');
     
-    // Establecer todas las secciones como colapsadas
     sectionContents.forEach(section => {
       addClass(section, 'collapsed');
     });
     
-    // Establecer todos los botones de toggle al estado correcto (▶)
     toggleButtons.forEach(button => {
       button.textContent = '▶';
       addClass(button, 'collapsed');
@@ -549,20 +516,16 @@ class MathLiveEditor {
         
         console.log(`🔧 MathEditor: Insertando símbolo: ${code}`);
         
-        // Insertar en el campo MathLive
         if (this.mathfield) {
           try {
-            // Usar MathLive API para insertar el código
             this.mathfield.executeCommand(['insert', code]);
             this.mathfield.focus();
           } catch (error) {
             console.warn('Error al insertar en MathLive:', error);
-            // Fallback: insertar directamente
             this.mathfield.insert(code);
           }
         }
         
-        // Notificar la inserción
         eventBus.emit('mathButtonClicked', { symbol: code });
       };
       
@@ -570,7 +533,6 @@ class MathLiveEditor {
       this.addEventListenerWithCleanup(button, 'click', clickHandler);
     });
     
-    // Configurar los botones de toggle para secciones
     this.setupSectionToggles();
     
     // Asegurar que las fórmulas en los botones se rendericen correctamente
@@ -594,7 +556,6 @@ class MathLiveEditor {
     });
     
     toggleButtons.forEach(button => {
-      // Establecer el estado inicial visual
       button.textContent = '▶';
       addClass(button, 'collapsed');
       
@@ -648,7 +609,6 @@ class MathLiveEditor {
   renderSectionMath(section) {
     if (!section) return;
     
-    // Usar MathJax para renderizar la sección
     if (window.MathJax) {
       if (window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([section])
@@ -674,11 +634,9 @@ class MathLiveEditor {
       return;
     }
     
-    // Preparar cada elemento para el renderizado
     mathPreviews.forEach(preview => {
       if (preview.querySelector('.MathJax')) return; // Ya está renderizado
       
-      // Verificar el contenido
       let content = preview.innerHTML;
       
       // Si ya tiene delimitadores, dejarlo así
@@ -690,13 +648,11 @@ class MathLiveEditor {
       }
     });
     
-    // Usar MathJax para renderizar
     if (window.MathJax) {
       if (window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([this.symbolsContainer])
           .then(() => {})
           .catch(err => {
-            // Intentar método alternativo
             this.forceRenderMathPreviews();
           });
       } else if (window.MathJax.Hub) {
@@ -709,30 +665,24 @@ class MathLiveEditor {
    * Método alternativo para forzar el renderizado en caso de problemas
    */
   forceRenderMathPreviews() {
-    // Intentar renderizar cada botón individualmente
     const mathButtons = this.symbolsContainer.querySelectorAll('.math-btn');
     
     mathButtons.forEach(button => {
       const preview = button.querySelector('.math-preview');
       if (!preview) return;
       
-      // Reemplazar el contenido con un formato más explícito
       let latex = button.getAttribute('data-latex') || '';
       if (latex && !preview.querySelector('.MathJax')) {
-        // Crear un nuevo elemento para asegurar renderizado limpio
         const newPreview = createElement('span', {
           className: 'math-preview'
         });
         
-        // Usar formato explícito para MathJax
         newPreview.innerHTML = `\\(${latex}\\)`;
         
-        // Reemplazar el preview existente
         preview.parentNode.replaceChild(newPreview, preview);
       }
     });
     
-    // Intentar renderizar nuevamente
     setManagedTimeout(() => {
       if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([this.symbolsContainer])
@@ -747,11 +697,9 @@ class MathLiveEditor {
   show() {
     if (!this.editorContainer) return;
     
-    // Mostrar el editor
     addClass(this.editorContainer, 'show');
     this.isVisible = true;
     
-    // Ocultar panel matemático si está visible
     const mathPanel = document.getElementById('mathPanel');
     if (mathPanel && hasClass(mathPanel, 'show')) {
       removeClass(mathPanel, 'show');
@@ -764,12 +712,10 @@ class MathLiveEditor {
       }, CONFIG.FOCUS_DELAY, CONFIG.TIMEOUT_KEYS.FOCUS);
     }
     
-    // Renderizar botones después de mostrar el editor
     setManagedTimeout(() => {
       this.renderMathButtonsPreview();
     }, CONFIG.RENDER_AFTER_SHOW_DELAY, CONFIG.TIMEOUT_KEYS.SHOW_RENDER);
     
-    // Notificar que se ha mostrado
     eventBus.emit('mathEditorShown');
   }
   
@@ -779,11 +725,9 @@ class MathLiveEditor {
   hide() {
     if (!this.editorContainer) return;
     
-    // Ocultar editor
     removeClass(this.editorContainer, 'show');
     this.isVisible = false;
     
-    // Notificar que se ha ocultado
     eventBus.emit('mathEditorHidden');
   }
   
@@ -797,7 +741,6 @@ class MathLiveEditor {
       this.show();
     }
     
-    // Notificar cambio
     eventBus.emit('mathEditorToggled', { visible: this.isVisible });
     
     return this.isVisible;
@@ -810,13 +753,11 @@ class MathLiveEditor {
   insertLatexSymbol(latex) {
     if (!this.mathfield || !latex) return;
     
-    // Insertar en la posición actual
     this.mathfield.executeCommand(['insert', latex]);
     
     // Mantener el foco
     this.mathfield.focus();
     
-    // Notificar la inserción
     eventBus.emit('mathEditorSymbolInserted', { symbol: latex });
   }
   
@@ -826,10 +767,8 @@ class MathLiveEditor {
   setLatex(latex) {
     if (!this.mathfield || !latex) return;
     
-    // Establecer el valor completo
     this.mathfield.value = latex;
     
-    // Notificar el cambio
     eventBus.emit('mathEditorContentChanged', { latex });
   }
   
@@ -848,7 +787,6 @@ class MathLiveEditor {
     console.log('🧹 MathEditor: Iniciando limpieza de instancia...');
     
     try {
-      // Limpiar event listeners registrados en esta instancia
       for (const [listenerId, listener] of this.eventListeners) {
         try {
           removeEvent(listener.element, listener.type, listener.handler);
@@ -859,12 +797,10 @@ class MathLiveEditor {
       }
       this.eventListeners.clear();
       
-      // Limpiar timeouts específicos de esta instancia
       Object.values(CONFIG.TIMEOUT_KEYS).forEach(key => {
         clearManagedTimeouts(key);
       });
       
-      // Limpiar referencias DOM
       if (this.mathfield) {
         try {
           removeAllEvents(this.mathfield);
@@ -878,7 +814,6 @@ class MathLiveEditor {
       this.symbolsContainer = null;
       this.textarea = null;
       
-      // Resetear estado
       this.isVisible = false;
       this.isInitialized = false;
       this.initializationPromise = null;
@@ -940,13 +875,11 @@ export async function reinitMathEditor() {
 export function cleanupMathEditor() {
   console.log('🧹 MathEditor: Solicitada limpieza completa...');
   
-  // Limpiar instancia específica
   if (editorInstance) {
     editorInstance.cleanup();
     editorInstance = null;
   }
   
-  // Limpiar registro global
   GLOBAL_REGISTRY.cleanupAll();
   
   console.log('✅ MathEditor: Limpieza completa finalizada');
@@ -966,7 +899,6 @@ export function isMathEditorReady() {
   return editorInstance && editorInstance.isInitialized;
 }
 
-// Limpiar recursos al descargar la página
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', cleanupMathEditor);
   

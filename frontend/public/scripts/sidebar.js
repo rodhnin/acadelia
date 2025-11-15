@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
 
-    // Función para cerrar el sidebar
     function closeSidebar() {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
@@ -16,13 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.add('active');
     });
 
-    // Cerrar con botón X
     closeButton.addEventListener('click', closeSidebar);
     
-    // Cerrar con overlay
     overlay.addEventListener('click', closeSidebar);
 
-    // Cerrar al hacer clic en cualquier enlace
     document.querySelectorAll('.sidebar-menu a').forEach(link => {
         link.addEventListener('click', closeSidebar);
     });

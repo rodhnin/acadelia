@@ -1,4 +1,3 @@
-// backend/utils/shared/errorCodes.js (CON CÓDIGOS ESPECÍFICOS POR HERRAMIENTA)
 
 /**
  * Códigos de error estandarizados para el sistema de control de acceso

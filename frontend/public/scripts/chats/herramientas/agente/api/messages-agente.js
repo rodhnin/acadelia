@@ -232,7 +232,6 @@ async function processDocumentAndCodeFiles(documentFiles, codeFiles) {
 
   console.log(`📄 [PDF OPTIMIZED] Procesando ${documentFiles.length} documentos y ${codeFiles.length} archivos de código`);
 
-  // Procesar documentos
   for (const docFile of documentFiles) {
     try {
       const dataUrl = await fileToBase64(docFile.file);
@@ -251,7 +250,6 @@ async function processDocumentAndCodeFiles(documentFiles, codeFiles) {
     }
   }
 
-  // Procesar archivos de código
   for (const codeFile of codeFiles) {
     try {
       const dataUrl = await fileToBase64(codeFile.file);
@@ -283,7 +281,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
 
     console.log('📦 [MULTIMODAL PDF] Procesando archivos:', files.length);
 
-    // *** SEPARAR ARCHIVOS RECUPERADOS Y NUEVOS ***
     const filesFromBackend = files.filter(f => f._retrievedFromBackend);
     const regularFiles = files.filter(f => !f._retrievedFromBackend);
 
@@ -291,13 +288,10 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       console.log(`📋 [MULTIMODAL PDF] ${filesFromBackend.length} archivos recuperados del backend`);
     }
 
-    // Sanitizar el mensaje
     const safeMessage = message ? sanitizeText(message) : '';
 
-    // Preparar contenido
     const content = [];
 
-    // Agregar texto
     if (safeMessage && safeMessage.trim()) {
       content.push({
         type: "text",
@@ -305,7 +299,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       });
     }
 
-    // *** PROCESAR ARCHIVOS RECUPERADOS DEL BACKEND ***
     for (const fileFromBackend of filesFromBackend) {
       console.log(`📄 [MULTIMODAL PDF] Procesando archivo recuperado:`, {
         type: fileFromBackend.type,
@@ -314,7 +307,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
         hasDataUrl: !!fileFromBackend.data_url
       });
 
-      // *** CASO 1: IMAGEN RECUPERADA ***
       if (fileFromBackend.type === 'image_url' && fileFromBackend.image_url) {
         console.log(`🖼️ [MULTIMODAL PDF] Añadiendo imagen recuperada`);
 
@@ -326,7 +318,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
           }
         });
       }
-      // *** CASO 2: DOCUMENTO RECUPERADO ***
       else if (['file', 'document'].includes(fileFromBackend.type) && fileFromBackend.data_url) {
         console.log(`📄 [MULTIMODAL PDF] Añadiendo documento recuperado: ${fileFromBackend.name}`);
 
@@ -336,19 +327,16 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
           filename: fileFromBackend.name,
           name: fileFromBackend.name,
           mime_type: fileFromBackend.mime_type,
-          // *** AGREGAR CONTENIDO EXTRAÍDO SI ESTÁ DISPONIBLE ***
           extractedContent: fileFromBackend.extractedContent,
           attachment_type: fileFromBackend.attachment_type,
           language: fileFromBackend.language
         });
       }
-      // *** CASO 3: FORMATO INESPERADO ***
       else {
         console.warn(`⚠️ [MULTIMODAL PDF] Archivo recuperado con formato inesperado:`, fileFromBackend);
       }
     }
 
-    // *** PROCESAR ARCHIVOS REGULARES (NUEVOS) ***
     const imageFiles = regularFiles.filter(f => f.type === 'image');
     const documentFiles = regularFiles.filter(f => f.type === 'document');
     const codeFiles = regularFiles.filter(f => f.type === 'code');
@@ -371,7 +359,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       throw new Error('Error al procesar archivos: ' + processingError.message);
     }
 
-    // Verificar contenido
     if (content.length === 0) {
       throw new Error('No hay contenido para enviar');
     }
@@ -382,7 +369,6 @@ export async function sendMessageWithAttachments(message, chatId, files, signal 
       texto: content.find(c => c.type === 'text')?.text?.substring(0, 50) + '...'
     });
 
-    // Enviar
     const payload = { userId, herramientaId, chatId, content }; // ← herramientaId para PDF
     const options = createFetchOptions(payload, signal);
     const response = await fetch(API_ROUTES.multimodal, options);
@@ -402,7 +388,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
 
     console.log('🔄 [MULTIMODAL PDF RETRY/EDIT] Procesando archivos SIN GUARDAR:', files.length);
 
-    // *** SEPARAR ARCHIVOS RECUPERADOS Y NUEVOS ***
     const filesFromBackend = files.filter(f => f._retrievedFromBackend);
     const regularFiles = files.filter(f => !f._retrievedFromBackend);
 
@@ -410,13 +395,10 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       console.log(`📋 [MULTIMODAL PDF RETRY/EDIT] ${filesFromBackend.length} archivos recuperados para reintento`);
     }
 
-    // Sanitizar el mensaje
     const safeMessage = message ? sanitizeText(message) : '';
 
-    // Preparar contenido
     const content = [];
 
-    // Agregar texto
     if (safeMessage && safeMessage.trim()) {
       content.push({
         type: "text",
@@ -424,7 +406,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       });
     }
 
-    // *** PROCESAR ARCHIVOS RECUPERADOS DEL BACKEND ***
     for (const fileFromBackend of filesFromBackend) {
       console.log(`📄 [MULTIMODAL PDF RETRY/EDIT] Procesando archivo recuperado:`, {
         type: fileFromBackend.type,
@@ -433,7 +414,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
         hasDataUrl: !!fileFromBackend.data_url
       });
 
-      // *** CASO 1: IMAGEN RECUPERADA ***
       if (fileFromBackend.type === 'image_url' && fileFromBackend.image_url) {
         console.log(`🖼️ [MULTIMODAL PDF RETRY/EDIT] Añadiendo imagen recuperada`);
 
@@ -445,7 +425,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
           }
         });
       }
-      // *** CASO 2: DOCUMENTO RECUPERADO ***
       else if (['file', 'document'].includes(fileFromBackend.type) && fileFromBackend.data_url) {
         console.log(`📄 [MULTIMODAL PDF RETRY/EDIT] Añadiendo documento recuperado: ${fileFromBackend.name}`);
 
@@ -455,19 +434,16 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
           filename: fileFromBackend.name,
           name: fileFromBackend.name,
           mime_type: fileFromBackend.mime_type,
-          // *** MANTENER CONTENIDO EXTRAÍDO ***
           extractedContent: fileFromBackend.extractedContent,
           attachment_type: fileFromBackend.attachment_type,
           language: fileFromBackend.language
         });
       }
-      // *** CASO 3: FORMATO INESPERADO ***
       else {
         console.warn(`⚠️ [MULTIMODAL PDF RETRY/EDIT] Archivo recuperado con formato inesperado:`, fileFromBackend);
       }
     }
 
-    // *** PROCESAR ARCHIVOS REGULARES (SI LOS HAY) ***
     const imageFiles = regularFiles.filter(f => f.type === 'image');
     const documentFiles = regularFiles.filter(f => f.type === 'document');
     const codeFiles = regularFiles.filter(f => f.type === 'code');
@@ -490,7 +466,6 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       throw new Error('Error al procesar archivos: ' + processingError.message);
     }
 
-    // Verificar contenido
     if (content.length === 0) {
       throw new Error('No hay contenido para enviar');
     }
@@ -501,11 +476,9 @@ export async function sendMessageWithAttachmentsWithoutSaving(message, chatId, f
       texto: content.find(c => c.type === 'text')?.text?.substring(0, 50) + '...'
     });
 
-    // *** ENVIAR A ENDPOINT SIN GUARDAR ***
     const payload = { userId, herramientaId, chatId, content }; // ← herramientaId para PDF
     const options = createFetchOptions(payload, signal);
 
-    // *** USAR RUTA ESPECÍFICA PARA PDF SIN GUARDAR ***
     const response = await fetch(API_ROUTES.multimodalWithoutSaving, options);
     return await handleResponse(response);
   };
@@ -531,43 +504,36 @@ async function retryRequest(fn, signal = null, retries = 3, delay = 1000) {
       retriesLeft: retries
     });
 
-    // 🚫 NO RETRY: Cancelación del usuario
     if (error.name === 'AbortError' || (signal && signal.aborted)) {
       console.log('🚫 [RETRY] No retry for abort errors');
       throw error;
     }
 
-    // 🚫 NO RETRY: Bad Request
     if (error.message && error.message.includes('400')) {
       console.log('🚫 [RETRY] No retry for 400 errors');
       throw error;
     }
 
-    // 🚫 NO RETRY: Error de usuario gratuito en AVA
     if (error.isFreeUserAvaError || error.noRetry) {
       console.log('🚫 [RETRY] No retry para error AVA 402');
       throw error;
     }
 
-    // 🚫 NO RETRY: Límites de tokens
     if (error.isTokenLimit || error.isPreValidationLimit) {
       console.log('🚫 [RETRY] No retry for token limits');
       throw error;
     }
 
-    // 🚫 NO RETRY: Límites de herramientas (NUEVO)
     if (error.isToolLimitError) {
       console.log('🚫 [RETRY] No retry for tool limits');
       throw error;
     }
 
-    // 🚫 NO RETRY: Status 429 (Rate Limit / Límites alcanzados)
     if (error.status === 429) {
       console.log('🚫 [RETRY] No retry for 429 rate limits');
       throw error;
     }
 
-    // 🚫 NO RETRY: Error codes específicos de límites de herramientas
     if (error.errorCode && (
       error.errorCode.includes('TOOL_') && error.errorCode.includes('_LIMIT_REACHED') ||
       error.errorCode.includes('DAILY_LIMIT_REACHED') ||
@@ -579,7 +545,6 @@ async function retryRequest(fn, signal = null, retries = 3, delay = 1000) {
       throw error;
     }
 
-    // 🚫 NO RETRY: Mensajes de error que indican límites
     if (error.message && (
       error.message.includes('límite diario') ||
       error.message.includes('límite por hora') ||
@@ -594,7 +559,6 @@ async function retryRequest(fn, signal = null, retries = 3, delay = 1000) {
       throw error;
     }
 
-    // ✅ VERIFICACIONES FINALES antes de retry
     if (retries === 0) {
       console.log('🚫 [RETRY] No more retries left');
       throw error;
@@ -650,34 +614,27 @@ export async function replaceInteraction(chatId, userMessageId, aiMessageId, use
       hasHTMLEscapes: userContent?.includes('&quot;')
     });
 
-    // *** OPTIMIZADO: Manejo inteligente del contenido del usuario ***
     let safeUserContent;
     try {
-      // *** VERIFICAR SI ES JSON MULTIMODAL ***
       if (typeof userContent === 'string' && userContent.trim().startsWith('{')) {
-        // *** INTENTAR PARSEAR PARA VERIFICAR QUE ES JSON VÁLIDO ***
         JSON.parse(userContent);
         safeUserContent = userContent; // *** NO SANITIZAR JSON ***
         console.log('✅ [REPLACE PDF] JSON multimodal detectado, preservando estructura');
       } else {
-        // *** ES TEXTO NORMAL, SANITIZAR ***
         safeUserContent = sanitizeText(userContent);
         console.log('✅ [REPLACE PDF] Texto normal detectado, sanitizando');
       }
     } catch (jsonError) {
-      // *** SI NO ES JSON VÁLIDO, SANITIZAR COMO TEXTO ***
       safeUserContent = sanitizeText(userContent);
       console.log('✅ [REPLACE PDF] JSON inválido, sanitizando como texto');
     }
 
-    // Preparar payload básico
     const payload = {
       userId: userId,
       userContent: safeUserContent,
       aiContent: aiContent
     };
 
-    // Extraer IDs numéricos si es posible
     const userIdNum = extractNumericId(userMessageId);
     const aiIdNum = extractNumericId(aiMessageId);
 
@@ -775,7 +732,6 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 🚨 MANEJO DE ERRORES (100% BACKEND CODES)
   // ===============================================
 
   if (!response.ok) {
@@ -784,7 +740,6 @@ export async function handleResponse(response, responseText = null) {
     console.log('Response Data:', data);
     console.groupEnd();
 
-    // ✅ PARSEAR data.error (puede ser string o object)
     let parsedError = null;
     if (typeof data.error === 'string') {
       try {
@@ -797,13 +752,11 @@ export async function handleResponse(response, responseText = null) {
     }
 
     // ===============================================
-    // 🚨 ERROR 429: LÍMITES DE USUARIOS GRATUITOS
     // ===============================================
     if (response.status === 429) {
 
       console.log(`🚨 [429 ERROR] Respuesta completa del backend:`, data);
 
-      // 🎯 VERIFICAR si es error de herramienta
       const isToolError = !!(
         data.toolSlug ||
         data.toolInfo ||
@@ -818,28 +771,22 @@ export async function handleResponse(response, responseText = null) {
 
         // ⭐ EXTRAER **ABSOLUTAMENTE TODO** lo que viene del backend
         const backendToolData = {
-          // 📊 INFORMACIÓN DE HERRAMIENTA (directo del TokenManager.buildToolInfo)
           toolSlug: data.toolSlug || data.toolInfo?.slug || data.accessInfo?.toolSlug || 'Agente',
           toolName: data.toolInfo?.name || data.toolInfo?.nombre || null,
           toolId: data.toolInfo?.id || data.toolId || null,
 
-          // 📊 LÍMITES ESPECÍFICOS (directo del TokenManager.buildDynamicToolLimits)
           limits: data.limits || {},
           toolLimits: data.toolLimits || {},
 
-          // 📊 INFORMACIÓN DE ACCESO (directo del AccessValidationService)
           accessInfo: data.accessInfo || {},
 
-          // 📊 INFORMACIÓN DE ERROR
           error: data.error || {},
 
-          // 📊 TODO LO DEMÁS que venga del backend
           timestamp: data.timestamp,
           method: data.method,
           exactCalculation: data.exactCalculation,
           upgradeInfo: data.upgradeInfo || {},
 
-          // 📊 DATOS RAW COMPLETOS
           rawBackendData: data
         };
 
@@ -859,16 +806,13 @@ export async function handleResponse(response, responseText = null) {
           status: 429,
           message: data.error?.message || 'Límite de herramienta alcanzado',
 
-          // 📊 USAR EXACTAMENTE lo que viene del backend
           ...backendToolData,
 
-          // 📊 PROCESAR LÍMITE ACTIVO según backend
           activeLimitType: backendToolData.limits?.daily?.exceeded ? 'daily' : 'hourly',
           activeLimitData: backendToolData.limits?.daily?.exceeded ?
             backendToolData.limits.daily :
             backendToolData.limits.hourly,
 
-          // 📊 METADATOS
           extractedAt: new Date().toISOString(),
           source: 'backend_complete_extraction'
         };
@@ -877,7 +821,6 @@ export async function handleResponse(response, responseText = null) {
         throw toolLimitError;
       }
 
-      // 🎯 Si no es tool error, es token error
       const tokenLimitError = {
         isTokenLimit: true,
         status: 429,
@@ -889,12 +832,10 @@ export async function handleResponse(response, responseText = null) {
     }
 
     // ===============================================
-    // 🚨 ERROR 400: PRE-VALIDACIÓN Y TOKENS
     // ===============================================
     if (response.status === 400) {
       const errorCode = data.error?.code || parsedError?.code;
 
-      // 🎯 PRE-VALIDACIÓN DE TOKENS (del AccessValidationService)
       if (data.isPreValidationLimit === true ||
         errorCode === 'TOKEN_LIMITS.ESTIMATED_LIMIT_EXCEEDED') {
 
@@ -903,7 +844,6 @@ export async function handleResponse(response, responseText = null) {
           status: 400,
           message: data.error?.message || parsedError?.message || 'La respuesta estimada excedería el límite de tokens',
 
-          // 📊 INFORMACIÓN DE TOKENS (directo del backend - SIN FALLBACKS)
           tokenInfo: data.tokenInfo || {
             current: parsedError?.currentTokens,
             estimated: parsedError?.estimatedTokens,
@@ -917,7 +857,6 @@ export async function handleResponse(response, responseText = null) {
         throw preValidationError;
       }
 
-      // 🎯 LÍMITE DE TOKENS EXCEDIDO (del AccessValidationService)
       if (errorCode === 'TOKEN_LIMITS.CHAT_LIMIT_EXCEEDED') {
         const tokenLimitError = {
           isTokenLimit: true,
@@ -930,7 +869,6 @@ export async function handleResponse(response, responseText = null) {
         throw tokenLimitError;
       }
 
-      // 🎯 LÍMITES ESPECÍFICOS DE HERRAMIENTAS (del middleware)
       if (errorCode === 'TOOL_ACCESS.DAILY_LIMIT_REACHED' ||
         errorCode === 'TOOL_ACCESS.HOURLY_LIMIT_REACHED') {
 
@@ -951,7 +889,6 @@ export async function handleResponse(response, responseText = null) {
     }
 
     // ===============================================
-    // 🚨 ERROR GENÉRICO
     // ===============================================
     let errorMessage = '';
     if (parsedError?.message) {
@@ -968,7 +905,6 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // ✅ VERIFICAR SUCCESS DEL BACKEND
   // ===============================================
   if (!data.success) {
     let errorMessage = '';
@@ -983,7 +919,6 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // ✅ PROCESAMIENTO DE RESPUESTA EXITOSA
   // ===============================================
   console.group('🔍 [BACKEND] Procesando respuesta exitosa del backend');
   console.log('📊 Datos del backend:', {
@@ -1002,7 +937,6 @@ export async function handleResponse(response, responseText = null) {
   });
 
   // ===============================================
-  // 👑 BYPASS ADMIN (igual que backend)
   // ===============================================
   if (data.accessInfo?.isAdmin || data.tokenInfo?.isAdmin) {
     console.log('👑 [BACKEND] Admin detectado - Sin procesamiento de warnings');
@@ -1011,7 +945,6 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 💎 BYPASS PREMIUM ILIMITADO (igual que backend)
   // ===============================================
   if (data.tokenInfo?.max === 'unlimited' || data.accessInfo?.isPremium === true) {
     console.log('💎 [BACKEND] Usuario premium con acceso ilimitado');
@@ -1020,7 +953,6 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 📊 PROCESAMIENTO DE TOKEN INFO - SIN HARDCODEO
   // ===============================================
   if (data.tokenInfo && typeof data.tokenInfo.current === 'number' &&
     (typeof data.tokenInfo.max === 'number' || data.tokenInfo.max === 'unlimited') &&
@@ -1031,7 +963,6 @@ export async function handleResponse(response, responseText = null) {
 
     console.log(`📊 [BACKEND] TokenInfo: ${current}/${max} (${percentage}%)`);
 
-    // 🎯 DETECTAR WARNINGS SEGÚN LÓGICA DEL BACKEND - SIN THRESHOLDS HARDCODEADOS
     let hasTokenWarning = false;
     let warningSource = '';
 
@@ -1067,7 +998,6 @@ export async function handleResponse(response, responseText = null) {
     if (hasTokenWarning) {
       console.log(`⚠️ [BACKEND] Token warning detectado: ${warningSource}`);
 
-      // 📊 CREAR/ACTUALIZAR tokenWarning con datos del backend
       if (!data.tokenWarning) {
         data.tokenWarning = {
           current,
@@ -1081,7 +1011,6 @@ export async function handleResponse(response, responseText = null) {
         };
       }
 
-      // 📊 AGREGAR FLAGS si no están
       data._hasTokenWarning = true;
       data._shouldShowTokenWarning = true;
       data._warningPercentage = Math.round(percentage);
@@ -1090,12 +1019,10 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 📊 PROCESAMIENTO DE WARNINGS ARRAY
   // ===============================================
   if (data.warnings && Array.isArray(data.warnings) && data.warnings.length > 0) {
     console.log(`📊 [BACKEND] Procesando ${data.warnings.length} warnings del backend`);
 
-    // 🎯 BUSCAR WARNINGS DE TOKENS
     const tokenWarnings = data.warnings.filter(w =>
       w.type && (
         w.type.includes('token') ||
@@ -1109,7 +1036,6 @@ export async function handleResponse(response, responseText = null) {
       const firstTokenWarning = tokenWarnings[0];
       console.log(`⚠️ [BACKEND] Token warning desde array: ${firstTokenWarning.type}`);
 
-      // 📊 APLICAR WARNING DEL ARRAY
       if (!data._hasTokenWarning) {
         data._hasTokenWarning = true;
         data._shouldShowTokenWarning = true;
@@ -1126,12 +1052,10 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 📊 PROCESAMIENTO DE TOOL LIMITS - SIN HARDCODEO
   // ===============================================
   if (data.toolLimits) {
     console.log(`📊 [BACKEND] ToolLimits del backend:`, data.toolLimits);
 
-    // 🎯 PROCESAR SEGÚN TIPO DEL BACKEND
     const { toolSlug, type, userType, isUnlimited, warningThresholds } = data.toolLimits;
 
     if (type === 'admin_unlimited') {
@@ -1160,7 +1084,6 @@ export async function handleResponse(response, responseText = null) {
         hasExceeded: data.toolLimits.hasExceeded
       };
 
-      // ✅ VALIDAR que tenemos límites completos del backend
       const hasValidLimits = (
         (daily?.limit && typeof daily.limit === 'number') ||
         (hourly?.limit && typeof hourly.limit === 'number')
@@ -1172,12 +1095,10 @@ export async function handleResponse(response, responseText = null) {
       } else {
         data._toolLimitsValid = true;
 
-        // 🎯 WARNING usando THRESHOLDS DINÁMICOS DEL BACKEND - SIN HARDCODEO
         let shouldWarn = false;
         let warningSource = '';
 
         if (warningThresholds) {
-          // ✅ USAR warningThresholds DEL BACKEND (dinámicos)
           if (daily && warningThresholds.daily && typeof warningThresholds.daily === 'number' && daily.used >= warningThresholds.daily) {
             shouldWarn = true;
             warningSource = `daily_threshold_${warningThresholds.daily}_from_backend`;
@@ -1188,7 +1109,6 @@ export async function handleResponse(response, responseText = null) {
             warningSource = `hourly_threshold_${warningThresholds.hourly}_from_backend`;
           }
         } else {
-          // ✅ FALLBACK CALCULADO DINÁMICAMENTE (80% de los límites reales del backend)
           const dailyThreshold = daily?.limit && typeof daily.limit === 'number' ? Math.round(daily.limit * 0.8) : null;
           const hourlyThreshold = hourly?.limit && typeof hourly.limit === 'number' ? Math.round(hourly.limit * 0.8) : null;
 
@@ -1220,10 +1140,8 @@ export async function handleResponse(response, responseText = null) {
   }
 
   // ===============================================
-  // 📊 MARCADORES FINALES PARA EL FRONTEND
   // ===============================================
 
-  // 🎯 RESUMEN DE WARNINGS DETECTADOS
   const warningsSummary = {
     hasTokenWarning: !!data._hasTokenWarning,
     hasToolLimitWarning: !!data._hasToolLimitWarning,
@@ -1242,7 +1160,6 @@ export async function handleResponse(response, responseText = null) {
   console.log(`✅ [BACKEND] Procesamiento completado:`, warningsSummary);
   console.groupEnd();
 
-  // 🎯 AGREGAR RESUMEN AL DATA
   data._backendProcessing = {
     completed: true,
     timestamp: new Date().toISOString(),
@@ -1269,7 +1186,6 @@ export async function saveMarkdownImage(imageUrl, chatId) {
 
     const response = await fetch('/api/chats/save-markdown-image', options);
 
-    // ✅ MANEJO SILENCIOSO - sin logs
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Error HTTP ${response.status}: ${errorText}`);
@@ -1283,17 +1199,14 @@ export async function saveMarkdownImage(imageUrl, chatId) {
       throw new Error('Respuesta del servidor no válida');
     }
 
-    // ✅ VERIFICACIÓN SILENCIOSA - sin logs
     if (!data.success) {
       const errorMsg = data.error || data.message || 'Error desconocido al guardar imagen';
       throw new Error(errorMsg);
     }
 
-    // ✅ RETORNO SILENCIOSO - sin logs de éxito
     return data;
 
   } catch (error) {
-    // ✅ SILENCIOSO: No throw, no console.error
     return {
       success: false,
       error: error.message,

@@ -214,7 +214,6 @@ router.post("/multimodal-Psicopatologia-without-saving",
   queryPsicopatologiaMultimodalWithoutSaving
 );
 
-// ===== 📊 ESTADÍSTICA Y MÉTODOS CUANTITATIVOS EN PSICOLOGÍA =====
 /**
  * POST /api/openai/query-Psicoestadistica
  * Consultas de texto al AVA de Estadística y Métodos Cuantitativos en Psicología
@@ -510,7 +509,6 @@ router.post("/multimodal-Fisica-without-saving",
   queryFisicaMultimodalWithoutSaving
 );
 
-// ===== 📊 CÁLCULO ECONÓMICO =====
 /**
  * POST /api/openai/query-CalculoEconomico
  * Consultas de texto al AVA de Cálculo Económico
@@ -543,7 +541,6 @@ router.post("/multimodal-CalculoEconomico-without-saving",
   queryCalculoEconomicoMultimodalWithoutSaving
 );
 
-// ===== 🏛️ ECONOMÍA DEL SECTOR PÚBLICO =====
 /**
  * POST /api/openai/query-SectorPublico
  * Consultas de texto al AVA de Economía del Sector Público
@@ -576,7 +573,6 @@ router.post("/multimodal-SectorPublico-without-saving",
   queryPublicSectorMultimodalWithoutSaving
 );
 
-// ===== 👷 ECONOMÍA LABORAL =====
 /**
  * POST /api/openai/query-EconomiaLaboral
  * Consultas de texto al AVA de Economía Laboral
@@ -609,7 +605,6 @@ router.post("/multimodal-EconomiaLaboral-without-saving",
   queryEconomiaLaboralMultimodalWithoutSaving
 );
 
-// ===== 🌍 ECONOMÍA INTERNACIONAL =====
 /**
  * POST /api/openai/query-EconomiaInternacional
  * Consultas de texto al AVA de Economía Internacional
@@ -642,7 +637,6 @@ router.post("/multimodal-EconomiaInternacional-without-saving",
   queryEconomiaInternacionalMultimodalWithoutSaving
 );
 
-// ===== 📈 MACROECONOMÍA =====
 /**
  * POST /api/openai/query-Macroeconomia
  * Consultas de texto al AVA de Macroeconomía
@@ -675,7 +669,6 @@ router.post("/multimodal-Macroeconomia-without-saving",
   queryMacroeconomiaMultimodalWithoutSaving
 );
 
-// ===== 🌍 DESARROLLO ECONÓMICO =====
 /**
  * POST /api/openai/query-DesarrolloEconomico
  * Consultas de texto al AVA de Desarrollo Económico
@@ -708,7 +701,6 @@ router.post("/multimodal-DesarrolloEconomico-without-saving",
   queryDesarrolloEconomicoMultimodalWithoutSaving
 );
 
-// ===== 💰 MICROECONOMÍA =====
 /**
  * POST /api/openai/query-Microeconomia
  * Consultas de texto al AVA de Microeconomía
@@ -741,7 +733,6 @@ router.post("/multimodal-Microeconomia-without-saving",
   queryMicroeconomiaMultimodalWithoutSaving
 );
 
-// ===== 💰 FINANZAS Y ECONOMÍA MONETARIA =====
 /**
  * POST /api/openai/query-Finanzas
  * Consultas de texto al AVA de Finanzas y Economía Monetaria
@@ -774,7 +765,6 @@ router.post("/multimodal-Finanzas-without-saving",
   queryFinanzasMultimodalWithoutSaving
 );
 
-// ===== 📊 ECONOMETRÍA =====
 /**
  * POST /api/openai/query-Econometria
  * Consultas de texto al AVA de Econometría
@@ -807,7 +797,6 @@ router.post("/multimodal-Econometria-without-saving",
   queryEconometriaMultimodalWithoutSaving
 );
 
-// ===== 📚 HISTORIA ECONÓMICA =====
 /**
  * POST /api/openai/query-HistoriaEconomica
  * Consultas de texto al AVA de Historia Económica
@@ -840,7 +829,6 @@ router.post("/multimodal-HistoriaEconomica-without-saving",
   queryHistoriaEconomicaMultimodalWithoutSaving
 );
 
-// ===== 🔒 REDES Y SEGURIDAD INFORMÁTICA =====
 /**
  * POST /api/openai/query-RedesSeguridad
  * Consultas de texto al AVA de Redes y Seguridad Informática
@@ -873,7 +861,6 @@ router.post("/multimodal-RedesSeguridad-without-saving",
   queryRedesSeguridadMultimodalWithoutSaving
 );
 
-// ===== 💻 COMPUTACIÓN Y SISTEMAS (NUEVA ESPECIALIDAD) =====
 /**
  * POST /api/openai/query-ComputacionSistemas
  * Consultas de texto al AVA de Computación y Sistemas
@@ -1063,7 +1050,6 @@ router.post("/multimodal-CienciasAplicadas-without-saving",
   queryCienciasAplicadasMultimodalWithoutSaving
 );
 
-// ===== 📊 MATEMÁTICAS Y MÉTODOS CUANTITATIVOS EN MEDICINA =====
 /**
  * POST /api/openai/query-MatematicaMedica
  * Consultas de texto al AVA de Matemáticas y Métodos Cuantitativos en Medicina
@@ -1128,7 +1114,6 @@ router.post("/multimodal-ResistenciaMateriales-without-saving",
   queryResistenciaMaterialesMultimodalWithoutSaving
 );
 
-// ===== 📊 EPIDEMIOLOGÍA Y SALUD PÚBLICA =====
 /**
  * POST /api/openai/query-Epidemiologia
  * Consultas de texto al AVA de Epidemiología y Salud Pública
@@ -1161,7 +1146,6 @@ router.post("/multimodal-Epidemiologia-without-saving",
   queryEpidemiologiaMultimodalWithoutSaving
 );
 
-// ===== 🏥 ESPECIALIDADES MÉDICAS I =====
 /**
  * POST /api/openai/query-EspecialidadesMed1
  * Consultas de texto al AVA de Especialidades Médicas I
@@ -1254,7 +1238,6 @@ router.post("/multimodal-Semiologia-without-saving",
   querySemiologiaMultimodalWithoutSaving
 );
 
-// ===== 🏥 CIRUGÍA Y URGENCIAS =====
 /**
  * POST /api/openai/query-CirugiaYUrgencias
  * Consultas de texto al AVA de Cirugía y Urgencias
@@ -1409,7 +1392,6 @@ router.post("/multimodal-Estadistica-without-saving",
   queryEstadisticaMultimodalWithoutSaving
 );
 
-// ===== 📐 MATEMÁTICAS AVANZADAS =====
 /**
  * POST /api/openai/query-MatematicaAvz
  * Consultas de texto al AVA de Matemáticas Avanzadas

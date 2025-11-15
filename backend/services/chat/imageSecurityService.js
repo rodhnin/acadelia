@@ -14,11 +14,9 @@ export const ImageSecurityService = {
    */
   async scanFile(filePath) {
     try {
-      // Crear copia temporal en /tmp para escaneo seguro
       const tempFileName = `img_scan_${Date.now()}_${path.basename(filePath)}`;
       const tempFilePath = `/tmp/${tempFileName}`;
       
-      // Copiar archivo a escanear a /tmp
       await fs.promises.copyFile(filePath, tempFilePath);
       console.log(`Imagen copiada a ${tempFilePath} para escaneo antivirus`);
       
@@ -26,7 +24,6 @@ export const ImageSecurityService = {
       console.log("Iniciando escaneo antivirus de imagen con clamdscan...");
       const clamResult = await this.scanWithClamdscanCommand(tempFilePath);
       
-      // Limpiar archivo temporal
       try {
         fs.unlinkSync(tempFilePath);
         console.log(`Archivo temporal de imagen eliminado: ${tempFilePath}`);
@@ -51,7 +48,6 @@ export const ImageSecurityService = {
       // Variable para rastrear si el proceso ha terminado
       let processCompleted = false;
       
-      // Usar opciones avanzadas para mejorar la detección
       const clamdscan = spawn('clamdscan', [
         '--fdpass',           // hereda permisos del usuario que ejecuta
         '--stdout',           // vuelca el reporte por stdout
@@ -136,7 +132,6 @@ export const ImageSecurityService = {
         resolve(false);
       });
       
-      // Establecer un timeout para evitar bloqueos
       setTimeout(() => resolve(false), 1000);
     });
   },
@@ -155,7 +150,6 @@ export const ImageSecurityService = {
       'gif': [[0x47, 0x49, 0x46, 0x38]]
     };
     
-    // Verificar cada firma
     for (const [format, signatureList] of Object.entries(signatures)) {
       for (const signature of signatureList) {
         let matches = true;

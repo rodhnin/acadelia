@@ -1,9 +1,7 @@
-// backend/controllers/pagos/argentinaAdminController.js - ✅ VERSION QUE SÍ FUNCIONA
 import pool from '../../lib/dbPool.js';
 import { argentinaEmailService } from '../../services/email/argentinaEmailService.js';
 import { argentinaSubscriptionJob } from '../../services/pagos/argentinaSubscriptionJob.js';
 
-// ✅ OBTENER TODOS LOS PAGOS (ADMIN) - ESTRUCTURA REAL DE BD
 export const getAllPayments = async (req, res) => {
   try {
     const { 
@@ -137,7 +135,6 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
-// ✅ OBTENER TODAS LAS SUSCRIPCIONES (ADMIN)
 export const getAllSubscriptions = async (req, res) => {
   try {
     const { 
@@ -242,7 +239,6 @@ export const getAllSubscriptions = async (req, res) => {
   }
 };
 
-// ✅ APROBAR/ACTIVAR TRANSFERENCIA BANCARIA - VERSION CORREGIDA SIN SERVICIO
 export const approveTransfer = async (req, res) => {
   const client = await pool.connect();
   
@@ -255,7 +251,6 @@ export const approveTransfer = async (req, res) => {
 
     console.log(`👨‍💼 Admin ${adminId} aprobando transferencia ${paymentId}`);
 
-    // Verificar que sea transferencia bancaria y esté en revisión
     const paymentCheck = await client.query(
       `SELECT payment_method, payment_status, user_id, carrera_id, billing_cycle 
        FROM payments_arg 
@@ -289,7 +284,6 @@ export const approveTransfer = async (req, res) => {
       });
     }
 
-    // ✅ BUSCAR LA SUSCRIPCIÓN EXISTENTE CON ESTADO "PROCESANDO"
     const existingSubCheck = await client.query(
       `SELECT id FROM subscriptions_arg 
        WHERE user_id = $1 AND carrera_id = $2 AND status = 'procesando' AND payment_id = $3`,
@@ -307,7 +301,6 @@ export const approveTransfer = async (req, res) => {
     const existingSubscriptionId = existingSubCheck.rows[0].id;
     console.log(`✅ Suscripción en procesamiento encontrada: ${existingSubscriptionId}`);
 
-    // Obtener rol actual del usuario desde perfil
     const userCheck = await client.query(
       'SELECT id_rol FROM perfil WHERE id_usuario = $1',
       [payment.user_id]
@@ -341,7 +334,6 @@ export const approveTransfer = async (req, res) => {
       endDate.setFullYear(endDate.getFullYear() + 1);
     }
 
-    // ✅ 3. ACTUALIZAR LA SUSCRIPCIÓN EXISTENTE DE "PROCESANDO" A "ACTIVO"
     const updateResult = await client.query(
       `UPDATE subscriptions_arg 
        SET status = 'activo',
@@ -391,7 +383,6 @@ export const approveTransfer = async (req, res) => {
 
     console.log(`✅ Transferencia ${paymentId} aprobada por admin ${adminId}`);
 
-    // ✅ ENVIAR EMAIL DE NUEVA SUSCRIPCIÓN ACTIVA
     try {
       await argentinaEmailService.sendNewSubscriptionFromId(existingSubscriptionId);
       console.log(`📧 Email de nueva suscripción enviado para suscripción ${existingSubscriptionId}`);
@@ -426,7 +417,6 @@ export const approveTransfer = async (req, res) => {
   }
 };
 
-// ✅ RECHAZAR TRANSFERENCIA BANCARIA
 export const rejectTransfer = async (req, res) => {
   const client = await pool.connect();
   
@@ -447,7 +437,6 @@ export const rejectTransfer = async (req, res) => {
 
     console.log(`👨‍💼 Admin ${adminId} rechazando transferencia ${paymentId}`);
 
-    // Verificar que sea transferencia bancaria y esté en revisión
     const paymentCheck = await client.query(
       `SELECT payment_method, payment_status, user_id, carrera_id 
        FROM payments_arg 
@@ -481,7 +470,6 @@ export const rejectTransfer = async (req, res) => {
       });
     }
 
-    // ✅ BUSCAR Y ELIMINAR LA SUSCRIPCIÓN EN PROCESAMIENTO
     const existingSubCheck = await client.query(
       `SELECT id FROM subscriptions_arg 
        WHERE user_id = $1 AND carrera_id = $2 AND status = 'procesando' AND payment_id = $3`,
@@ -491,7 +479,6 @@ export const rejectTransfer = async (req, res) => {
     if (existingSubCheck.rows.length > 0) {
       const subscriptionId = existingSubCheck.rows[0].id;
       
-      // Eliminar la suscripción en procesamiento ya que fue rechazada
       await client.query(
         'DELETE FROM subscriptions_arg WHERE id = $1',
         [subscriptionId]
@@ -502,7 +489,6 @@ export const rejectTransfer = async (req, res) => {
       console.log(`⚠️ No se encontró suscripción en procesamiento para pago ${paymentId}`);
     }
 
-    // Actualizar pago a rechazado
     const noteText = `Rechazado por admin ${adminId} - ${new Date().toLocaleString('es-AR')} - Razón: ${reason.trim()}`;
     
     await client.query(
@@ -554,7 +540,6 @@ export const rejectTransfer = async (req, res) => {
   }
 };
 
-// ✅ OBTENER ESTADÍSTICAS DE PAGOS
 export const getPaymentStats = async (req, res) => {
   try {
     const { period = '30' } = req.query;
@@ -594,7 +579,6 @@ export const getPaymentStats = async (req, res) => {
       LIMIT 30
     `;
 
-    // ✅ NUEVO: Query para estadísticas generales del sistema
     const generalStatsQuery = `
       SELECT 
         (SELECT COUNT(*) FROM usuario) as total_users,
@@ -609,7 +593,6 @@ export const getPaymentStats = async (req, res) => {
       pool.query(generalStatsQuery)
     ]);
 
-    // ✅ COMBINAR estadísticas del período con estadísticas generales
     const summary = {
       ...recentResult.rows[0],
       ...generalResult.rows[0]
@@ -635,7 +618,6 @@ export const getPaymentStats = async (req, res) => {
   }
 };
 
-// ✅ OBTENER DETALLES DE UN PAGO ESPECÍFICO
 export const getPaymentDetails = async (req, res) => {
   try {
     const { paymentId } = req.params;
@@ -668,7 +650,6 @@ export const getPaymentDetails = async (req, res) => {
       });
     }
 
-    // Obtener suscripción relacionada si existe
     const subscriptionQuery = `
       SELECT * FROM subscriptions_arg 
       WHERE payment_id = $1
@@ -693,7 +674,6 @@ export const getPaymentDetails = async (req, res) => {
   }
 };
 
-// ✅ BÚSQUEDA DE USUARIOS
 export const searchUsers = async (req, res) => {
   try {
     const { 
@@ -809,7 +789,6 @@ export const searchUsers = async (req, res) => {
   }
 };
 
-// ✅ OBTENER DETALLES DE UN USUARIO ESPECÍFICO
 export const getUserDetails = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -882,7 +861,6 @@ export const getUserDetails = async (req, res) => {
     const subscriptions = subscriptionsResult.rows;
     const payments = paymentsResult.rows;
 
-    // Calcular estadísticas
     const stats = {
       total_subscriptions: subscriptions.length,
       active_subscriptions: subscriptions.filter(s => s.status === 'activo').length,
@@ -912,7 +890,6 @@ export const getUserDetails = async (req, res) => {
   }
 };
 
-// ✅ GESTIÓN DE SUSCRIPCIONES - PAUSAR/REACTIVAR
 export const updateSubscriptionStatus = async (req, res) => {
   try {
     const { subscriptionId } = req.params;
@@ -934,7 +911,6 @@ export const updateSubscriptionStatus = async (req, res) => {
       });
     }
 
-    // Verificar que la suscripción existe
     const subscriptionCheck = await pool.query(
       'SELECT * FROM subscriptions_arg WHERE id = $1',
       [subscriptionId]
@@ -949,7 +925,6 @@ export const updateSubscriptionStatus = async (req, res) => {
 
     const currentSubscription = subscriptionCheck.rows[0];
 
-    // Actualizar suscripción
     await pool.query(
       `UPDATE subscriptions_arg 
        SET status = $1, updated_at = NOW()
@@ -959,7 +934,6 @@ export const updateSubscriptionStatus = async (req, res) => {
 
     // Si se cancela o pausa, verificar si hay que cambiar el rol del usuario
     if (status === 'cancelado' || status === 'pausado') {
-      // Verificar si el usuario tiene otras suscripciones activas
       const otherActiveSubscriptions = await pool.query(
         `SELECT COUNT(*) as count 
          FROM subscriptions_arg 
@@ -1007,13 +981,11 @@ export const updateSubscriptionStatus = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN - Agregar esta función al final de argentinaAdminController.js
 export const actualizarSuscripcionesVencidas = async (req, res) => {
   try {
     const adminId = req.user.id_user;
     console.log(`👨‍💼 Admin ${adminId} ejecutando actualización manual de suscripciones vencidas`);
 
-    // Ejecutar job manualmente
     const result = await argentinaSubscriptionJob.executeManually();
 
     res.json({
@@ -1037,7 +1009,6 @@ export const actualizarSuscripcionesVencidas = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN - Obtener estadísticas de suscripciones (nombres en español)
 export const obtenerEstadisticasSuscripciones = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM obtener_estadisticas_suscripciones()');
@@ -1051,7 +1022,6 @@ export const obtenerEstadisticasSuscripciones = async (req, res) => {
 
     const estadisticas = result.rows[0];
 
-    // Obtener información del job de pg_cron (ahora con nombre en español)
     let infoCron = null;
     try {
       const cronResult = await pool.query(`
@@ -1069,7 +1039,6 @@ export const obtenerEstadisticasSuscripciones = async (req, res) => {
       if (cronResult.rows.length > 0) {
         infoCron = cronResult.rows[0];
         
-        // Obtener últimas ejecuciones
         const historialResult = await pool.query(`
           SELECT 
             start_time as hora_inicio,
@@ -1085,7 +1054,6 @@ export const obtenerEstadisticasSuscripciones = async (req, res) => {
         
         infoCron.ejecuciones_recientes = historialResult.rows;
         
-        // Calcular próxima ejecución aproximada
         const ahora = new Date();
         const horasHastaSiguiente = 6 - (ahora.getHours() % 6);
         const proximaEjecucion = new Date(ahora);
@@ -1101,7 +1069,6 @@ export const obtenerEstadisticasSuscripciones = async (req, res) => {
       };
     }
 
-    // Obtener suscripciones que vencen pronto
     let proximasVencer = [];
     try {
       const proximasResult = await pool.query(`
@@ -1167,7 +1134,6 @@ export const obtenerEstadisticasSuscripciones = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN - Verificar estado de pg_cron
 export const verificarEstadoPgCron = async (req, res) => {
   try {
     const verificaciones = {
@@ -1265,7 +1231,6 @@ export const verificarEstadoPgCron = async (req, res) => {
       detalles.push('❌ Error verificando configuración PostgreSQL');
     }
 
-    // Calcular estado general
     const totalVerificaciones = Object.keys(verificaciones).length;
     const verificacionesExitosas = Object.values(verificaciones).filter(Boolean).length;
     const estadoGeneral = verificacionesExitosas === totalVerificaciones ? 'perfecto' :
@@ -1301,7 +1266,6 @@ export const notificarProximasExpiraciones = async (req, res) => {
     
     console.log(`👨‍💼 Admin ${adminId} consultando suscripciones que vencen en ${daysAhead} días`);
 
-    // Obtener suscripciones que vencen pronto
     const upcomingExpirations = await argentinaEmailService.getUpcomingExpirations(daysAhead);
     
     if (upcomingExpirations.length === 0) {
@@ -1338,7 +1302,6 @@ export const notificarProximasExpiraciones = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN: Obtener estado del job
 export const obtenerEstadoJob = async (req, res) => {
   try {
     const adminId = req.user.id_user;
@@ -1369,7 +1332,6 @@ export const obtenerEstadoJob = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN: Detener job (emergencia)
 export const detenerJob = async (req, res) => {
   try {
     const adminId = req.user.id_user;
@@ -1396,16 +1358,13 @@ export const detenerJob = async (req, res) => {
   }
 };
 
-// ✅ NUEVA FUNCIÓN: Reiniciar job
 export const reiniciarJob = async (req, res) => {
   try {
     const adminId = req.user.id_user;
     console.log(`👨‍💼 Admin ${adminId} reiniciando job`);
 
-    // Detener si está ejecutándose
     argentinaSubscriptionJob.stop();
     
-    // Esperar un momento
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Reiniciar

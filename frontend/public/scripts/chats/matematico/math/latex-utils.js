@@ -56,7 +56,6 @@ const REGEX = {
   }
 };
 
-// Cache centralizada para fórmulas procesadas
 const processedFormulaCache = new Map();
 
 // Referencia al editor matemático
@@ -94,7 +93,6 @@ export function clearFormulaCache(key = null) {
  */
 export function setMathEditor(editor) {
   mathEditor = editor;
-  // Log eliminado para producción
 }
 
 /**
@@ -102,7 +100,6 @@ export function setMathEditor(editor) {
  * @param {string} latex - Expresión LaTeX a insertar
  */
 export function insertLatex(latex) {
-  // Log eliminado para producción
   
   // Si el editor interactivo está visible, utilizar su función de inserción
   if (mathEditor && mathEditor.isVisible) {
@@ -124,10 +121,8 @@ function insertLatexToTextarea(latex, textareaSelector) {
   if (!textarea) return;
   
   try {
-    // Procesar el LaTeX
     const processedLatex = improveLatexFormatting(preprocessComplexFormula(latex));
     
-    // Obtener posiciones del cursor
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     
@@ -136,26 +131,22 @@ function insertLatexToTextarea(latex, textareaSelector) {
     if (start !== end) {
       const selectedText = textarea.value.substring(start, end);
       finalLatex = processedLatex.replace('$1', selectedText);
-      // Eliminar otros placeholders
       finalLatex = finalLatex.replace(REGEX.PLACEHOLDERS, '');
     }
     
     // Asegurar delimitadores
     finalLatex = ensureLatexDelimiters(finalLatex);
     
-    // Insertar el texto
     const before = textarea.value.substring(0, start);
     const after = textarea.value.substring(end);
     textarea.value = before + finalLatex + after;
     
-    // Manejar la posición del cursor
     if (start === end) {
       const cursorOffset = finalLatex.indexOf('$1');
       const finalPos = cursorOffset >= 0 ? start + cursorOffset : start + finalLatex.length;
       textarea.selectionStart = finalPos;
       textarea.selectionEnd = finalPos;
       
-      // Limpiar marcadores solo si no hay texto seleccionado
       textarea.value = textarea.value.replace(REGEX.PLACEHOLDERS, '');
     } else {
       // Si había texto seleccionado, colocar el cursor al final
@@ -167,7 +158,6 @@ function insertLatexToTextarea(latex, textareaSelector) {
     // Enfocar el textarea
     textarea.focus();
     
-    // Notificar cambios
     textarea.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
     eventBus.emit('latexInserted', { source: 'textarea' });
   } catch (error) {
@@ -213,33 +203,26 @@ function ensureLatexDelimiters(latex) {
 export function improveLatexFormatting(latex) {
   if (!latex) return '';
   
-  // Usar caché si existe
   const cacheKey = latex.trim();
   if (processedFormulaCache.has(cacheKey)) {
     return processedFormulaCache.get(cacheKey);
   }
 
   const improved = latex
-    // Mejorar fracciones largas
     .replace(REGEX.FRAC, (_, num, den) => {
       return num.length > 10 || den.length > 10 ? 
         `\\dfrac{${num}}{${den}}` : 
         `\\frac{${num}}{${den}}`;
     })
-    // Mejorar legibilidad de matrices
     .replace(REGEX.MATRIX_BEGIN, '\\begin{$1}\n')
     .replace(REGEX.MATRIX_END, '\n\\end{$1}')
     .replace(/&/g, ' & ')
-    // Mejorar espaciado en operadores
     .replace(REGEX.OPERATORS, ' $1 ')
-    // Mejorar integrales múltiples
     .replace(REGEX.INTS.DOUBLE, '\\iint')
     .replace(REGEX.INTS.TRIPLE, '\\iiint')
     .trim();
 
-  // Guardar en caché
   processedFormulaCache.set(cacheKey, improved);
-  // Controlar tamaño de caché
   trimCache();
   
   return improved;
@@ -254,16 +237,13 @@ export function preprocessComplexFormula(formula) {
   if (!formula) return '';
   
   return formula
-    // Mejorar fracciones anidadas
     .replace(REGEX.COMPLEX_FRAC, (_, num, den) => {
       const processedNum = preprocessComplexFormula(num);
       const processedDen = preprocessComplexFormula(den);
       return `\\dfrac{${processedNum}}{${processedDen}}`;
     })
-    // Manejar casos especiales
     .replace(REGEX.CASES_BEGIN, '\\begin{cases}\n')
     .replace(REGEX.CASES_END, '\n\\end{cases}')
-    // Mejorar matrices
     .replace(REGEX.MATRIX_CONVERT_BEGIN, '\\begin{pmatrix}')
     .replace(REGEX.MATRIX_CONVERT_END, '\\end{pmatrix}');
 }
@@ -311,7 +291,6 @@ export function wrapWithDelimiters(text, forceInline = true) {
 export function formatLatexExpression(latex) {
   if (!latex) return '';
   
-  // Delegar al método centralizado
   return ensureLatexDelimiters(latex.trim());
 }
 
@@ -323,7 +302,6 @@ export function formatLatexExpression(latex) {
 export function validateLatex(latex) {
   if (!latex) return false;
   
-  // Verificar balance de delimitadores
   const dollarPairs = (latex.match(REGEX.DOLLARS) || []).length;
   if (dollarPairs % 2 !== 0) return false;
   
@@ -338,7 +316,6 @@ export function validateLatex(latex) {
   const parenClose = (latex.match(REGEX.PAREN_CLOSE) || []).length;
   if (parenOpen !== parenClose) return false;
   
-  // Verificar balance de llaves
   const braceOpen = (latex.match(REGEX.BRACE_OPEN) || []).length;
   const braceClose = (latex.match(REGEX.BRACE_CLOSE) || []).length;
   if (braceOpen !== braceClose) return false;
@@ -355,7 +332,6 @@ export function processTrigFunctions(text) {
   if (!text) return '';
   
   return text
-    // Mejorar funciones trigonométricas - añadir espacio después del nombre de la función
     .replace(REGEX.TRIG.COS, '\\cos $1')
     .replace(REGEX.TRIG.SIN, '\\sin $1') 
     .replace(REGEX.TRIG.TAN, '\\tan $1')
@@ -378,14 +354,12 @@ export function processTrigFunctions(text) {
 export function registerGlobalInsertLatex() {
   // Evitar registros múltiples
   if (isInsertLatexRegistered) {
-    // Log eliminado para producción
     return;
   }
   
   // Si ya existe una función insertLatex, guardarla como referencia
   const originalInsertLatex = window.insertLatex;
   
-  // Implementación de debounce para prevenir llamadas duplicadas
   let lastLatexInsertTime = 0;
   
   // Redefinir la función insertLatex para manejar todos los casos
@@ -393,12 +367,10 @@ export function registerGlobalInsertLatex() {
     // Prevención de llamadas duplicadas mediante debounce
     const now = Date.now();
     if (now - lastLatexInsertTime < CONFIG.DEBOUNCE_TIME) {
-      // Log eliminado para producción
       return;
     }
     lastLatexInsertTime = now;
     
-    // Log eliminado para producción
     
     // Detección de contexto mejorada
     const mathEditorContainer = document.querySelector(DOM_SELECTORS.mathEditorContainer);
@@ -409,7 +381,6 @@ export function registerGlobalInsertLatex() {
     const isPanelVisible = mathPanel && 
                           hasClass(mathPanel, 'show');
     
-    // Lógica de decisión centralizada
     if (isEditorVisible && mathEditor) {
       mathEditor.insertLatexSymbol(latex);
     } else if (isPanelVisible) {
@@ -418,9 +389,7 @@ export function registerGlobalInsertLatex() {
       try {
         insertLatexToTextarea(latex);
       } catch (error) {
-        // Log eliminado para producción
         
-        // Usar función original como último recurso
         if (typeof originalInsertLatex === 'function') {
           originalInsertLatex(latex);
         }
@@ -429,7 +398,6 @@ export function registerGlobalInsertLatex() {
   };
   
   isInsertLatexRegistered = true;
-  // Log eliminado para producción
   
   eventBus.emit('latexUtilsReady');
 }
@@ -440,7 +408,6 @@ export function registerGlobalInsertLatex() {
 export function unregisterGlobalInsertLatex() {
   if (!isInsertLatexRegistered) return;
   
-  // Restaurar la función original o eliminar
   if (window.insertLatex) {
     delete window.insertLatex;
   }
@@ -448,7 +415,6 @@ export function unregisterGlobalInsertLatex() {
   isInsertLatexRegistered = false;
 }
 
-// Exportar todas las funciones
 export default {
   setMathEditor,
   insertLatex,

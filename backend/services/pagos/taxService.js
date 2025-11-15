@@ -46,7 +46,6 @@ export class TaxService {
             
             const transactions = await pool.query(transactionsQuery, queryParams);
             
-            // Calcular impuestos para cada divisa
             const taxSummary = transactions.rows.map(row => {
                 const taxRate = parseFloat(row.avg_tax_rate) || 0;
                 const totalAmount = parseFloat(row.total_amount) || 0;
@@ -71,7 +70,6 @@ export class TaxService {
                 };
             });
             
-            // Calcular totales (todo en EUR como divisa principal)
             let totalTaxableEUR = 0;
             let totalTaxEUR = 0;
             let totalAmountEUR = 0;
@@ -82,7 +80,6 @@ export class TaxService {
                 totalAmountEUR += item.total_amount_eur;
             });
             
-            // Guardar análisis de impuestos para referencias futuras
             if (filters.date_from && filters.date_to) {
                 await this.saveOrUpdateTaxAnalysis(
                     filters.date_from, 
@@ -151,7 +148,6 @@ export class TaxService {
             
             const taxesByCountryResult = await pool.query(taxesByCountryQuery, queryParams);
             
-            // Transformar resultados
             const taxesByCountry = taxesByCountryResult.rows.map(row => {
                 const totalAmount = parseFloat(row.total_amount) || 0;
                 const taxAmount = parseFloat(row.tax_amount) || 0;
@@ -204,7 +200,6 @@ export class TaxService {
             const othersData = spainVsOthersResult.rows.find(row => row.region === 'Others') || 
                 { transactions: 0, total_amount_eur: 0, tax_amount_eur: 0 };
             
-            // Calcular totales
             const totalTaxEur = parseFloat(spainData.tax_amount_eur) + parseFloat(othersData.tax_amount_eur);
             
             // Resumen de España vs otros
@@ -225,7 +220,6 @@ export class TaxService {
                 }
             };
             
-            // Obtener los mismos totales que en getTaxSummary
             const totalsQuery = `
                 SELECT 
                     SUM(amount_eur) as total_amount_eur,
@@ -264,18 +258,15 @@ export class TaxService {
      */
     async generateTaxReport(params) {
         try {
-            // Verificar parámetros requeridos
             if (!params.date_from || !params.date_to) {
                 throw new Error('Se requiere período (date_from y date_to)');
             }
             
-            // Obtener datos para el informe
             const taxData = await this.getTaxesByCountry({
                 date_from: params.date_from,
                 date_to: params.date_to
             });
             
-            // Formatear datos para el informe
             const reportData = {
                 period: {
                     from: params.date_from,
@@ -292,7 +283,6 @@ export class TaxService {
                 }
             };
             
-            // Guardar el informe en base de datos
             const query = `
                 INSERT INTO informes (
                     name, type, format, parameters, created_by
@@ -344,7 +334,6 @@ export class TaxService {
      */
     async saveOrUpdateTaxAnalysis(periodStart, periodEnd, taxData) {
         try {
-            // Verificar si ya existe un análisis para este período
             const checkQuery = `
                 SELECT id FROM analisis_impuestos
                 WHERE period_start = $1 AND period_end = $2
@@ -365,9 +354,7 @@ export class TaxService {
                 await pool.query(deleteQuery, [periodStart, periodEnd]);
             }
             
-            // Insertar nuevos registros
             for (const item of taxData) {
-                // Mapear divisas a códigos de país
                 const currencyToCountry = {
                     'EUR': 'ES',
                     'USD': 'US',

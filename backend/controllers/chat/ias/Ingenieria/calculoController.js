@@ -1,4 +1,3 @@
-// backend/controllers/chat/calculoController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 50%) =====
 import { handleCalculusQuery, handleCalculusMultimodalQuery, handleCalculusQueryWithoutSaving, handleCalculusMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/ingenieria/calculoService.js";
@@ -18,7 +17,6 @@ export const queryCalculo = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 120+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -46,7 +44,6 @@ export const queryCalculoMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 170+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -136,7 +133,6 @@ export const queryCalculoMultimodalWithoutSaving = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 140+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

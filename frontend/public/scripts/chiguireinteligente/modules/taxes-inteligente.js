@@ -96,7 +96,6 @@ export class TaxesModule {
       }
     };
     
-    // Para comparaciones con valores en EUR
     this.referenceValues = {
       totalTaxEur: 0,
       totalAmountEur: 0
@@ -109,11 +108,9 @@ export class TaxesModule {
 async init() {
   console.log('Inicializando módulo de impuestos');
   
-  // Inicializar variables para datos completos
   this.allTransactions = [];
   this.lastApiResponse = null;
   
-  // Configurar event listeners
   this.setupEventListeners();
   
   // NUEVO: Configurar barra de Base Imponible
@@ -124,7 +121,6 @@ async init() {
     this.dateRange = range;
     console.log('Impuestos: Rango de fechas cambiado (debounced):', range);
     
-    // Comprobar si tenemos datos locales para filtrar
     if (this.allTransactions.length > 0) {
       console.log('Usando filtrado local para cambio de fecha en módulo de impuestos');
       this.refreshWithLocalData();
@@ -134,10 +130,8 @@ async init() {
     }
   }, 300); // 300ms de debounce
   
-  // Suscribirse a cambios de fecha con el método debounced
   this.eventBus.on('dateRangeChanged', debouncedRefresh);
   
-  // Cargar datos iniciales
   await this.loadTaxData();
   
   return true;
@@ -161,7 +155,6 @@ async init() {
       // Solo activar la sección si es la que se está mostrando
       this.onSectionActivated();
     } else if (e.detail.prevSection === 'taxes') {
-      // Desactivar cuando salimos de la sección
       this.onSectionDeactivated();
     }
   });
@@ -170,7 +163,6 @@ async init() {
   // Esto nos permite sincronizar nuestro estado interno
   this.eventBus.on('globalDateRangeChanged', (range) => {
     console.log('Módulo de impuestos: Detectado cambio global de rango de fechas', range);
-    // Actualizar rango de fechas interno, pero sin recargar datos
     // Los datos se recargarán cuando se active la sección
     this.dateRange = range;
   });
@@ -195,7 +187,6 @@ debounce(func, wait) {
 onSectionActivated() {
   console.log('Sección de impuestos activada');
   
-  // Verificar que los contenedores de gráficos existan
   const countryChartElement = document.getElementById('tax-country-chart');
   const historyChartElement = document.getElementById('tax-history-chart');
   
@@ -213,10 +204,8 @@ onSectionActivated() {
     // Asegurar que la barra de Base Imponible esté configurada
     this.setupTaxableAmountBar();
     
-    // Actualizar UI con los datos existentes (sin recargar)
     this.updateTaxUI();
     
-    // Inicializar gráficos con los datos existentes
     this.initCharts();
     return;
   }
@@ -235,7 +224,6 @@ onSectionActivated() {
       this.loadTaxData();
     }
   } else {
-    // Cargar datos con configuración por defecto
     console.log('Cargando datos fiscales con configuración por defecto');
     this.loadTaxData();
   }
@@ -265,7 +253,6 @@ async loadTaxData() {
   try {
     this.ui.showLoading('Cargando datos fiscales...');
     
-    // Preparar filtros de fecha para las solicitudes a la API
     const filters = {};
     if (this.dateRange) {
       filters.date_from = this.dateRange.start;
@@ -297,7 +284,6 @@ async loadTaxData() {
     try {
       const transactionsResponse = await this.api.getTransactions(filters);
       
-      // Guardar respuesta completa para referencia
       this.lastApiResponse = transactionsResponse;
       
       if (Array.isArray(transactionsResponse)) {
@@ -308,7 +294,6 @@ async loadTaxData() {
         throw new Error('No se pudieron obtener transacciones');
       }
       
-      // Verificar que tengamos datos
       if (!this.transactions || this.transactions.length === 0) {
         console.warn('No se obtuvieron transacciones para el período seleccionado');
         this.ui.showErrorMessage('Sin datos', 'No hay transacciones disponibles para el período seleccionado');
@@ -331,7 +316,6 @@ async loadTaxData() {
       // Análisis para depuración
       this.debugTransactionData();
       
-      // Calcular datos de impuestos a partir de las transacciones
       this.calculateTaxesFromTransactions(this.transactions);
       
     } catch (error) {
@@ -341,10 +325,8 @@ async loadTaxData() {
       return false;
     }
     
-    // Actualizar UI con los datos
     this.updateTaxUI();
     
-    // Inicializar gráficos
     this.initCharts();
     
     this.ui.hideLoading();
@@ -385,14 +367,12 @@ async loadTaxData() {
         exchange_rate: transaction.exchange_rate
       });
       
-      // Verificar especialmente la tasa de cambio
       if (transaction.currency_code !== 'EUR' && 
           (!transaction.exchange_rate || transaction.exchange_rate === 1)) {
         console.warn(`⚠️ Posible problema: Transacción en ${transaction.currency_code} con tasa de cambio ${transaction.exchange_rate}`);
       }
     });
     
-    // Analizar si hay transacciones MXN para el caso específico mencionado
     const mxnTransactions = this.transactions.filter(t => t.currency_code === 'MXN');
     if (mxnTransactions.length > 0) {
       console.log(`Analizando específicamente ${mxnTransactions.length} transacciones MXN:`);
@@ -421,14 +401,12 @@ filterDataByDateRange(transactions, dateRange) {
   
   console.log(`Filtrando ${transactions.length} transacciones para impuestos por rango: ${dateRange.start} a ${dateRange.end}`);
   
-  // Convertir fechas de string a objetos Date
   const startDate = new Date(dateRange.start);
   const endDate = new Date(dateRange.end);
   // Ajustar endDate para incluir todo el día
   endDate.setHours(23, 59, 59, 999);
   
   return transactions.filter(transaction => {
-    // Usar updated_at como campo principal para filtrar por fecha
     const transactionDate = transaction.updated_at ? new Date(transaction.updated_at) : 
                             (transaction.created_at ? new Date(transaction.created_at) : null);
     
@@ -440,7 +418,6 @@ filterDataByDateRange(transactions, dateRange) {
  * Refresca los datos de impuestos usando el filtrado local - VERSIÓN CORREGIDA
  */
 refreshWithLocalData() {
-  // Verificar que tenemos datos locales
   if (!this.allTransactions || this.allTransactions.length === 0) {
     console.warn('No hay datos locales de impuestos para filtrar, usando API');
     this.refreshTaxData();
@@ -452,14 +429,12 @@ refreshWithLocalData() {
   try {
     this.ui.showLoading('Actualizando datos fiscales...');
     
-    // Definir rango de fechas para filtrar
     if (!this.dateRange) {
       console.warn('No hay rango de fechas definido para filtrado local de impuestos');
       this.ui.hideLoading();
       return;
     }
     
-    // Filtrar datos localmente
     const filteredTransactions = this.filterDataByDateRange(this.allTransactions, this.dateRange);
     console.log(`Filtro local de impuestos: ${filteredTransactions.length} de ${this.allTransactions.length} transacciones`);
     
@@ -484,22 +459,18 @@ refreshWithLocalData() {
       return;
     }
     
-    // Actualizar transacciones actuales con las filtradas
     this.transactions = filteredTransactions;
     
     // Recalcular datos de impuestos con las transacciones filtradas
     this.calculateTaxesFromTransactions(filteredTransactions);
     
-    // Actualizar UI con los nuevos datos
     this.updateTaxUI();
     
-    // Actualizar gráficos si ya están inicializados
     this.destroyCharts();
     this.initCharts();
     
     this.ui.hideLoading();
     
-    // Mostrar notificación pequeña
     this.ui.showSuccessMessage('Datos fiscales filtrados por fecha');
   } catch (error) {
     console.error('Error al aplicar filtro local de impuestos:', error);
@@ -547,10 +518,8 @@ updateEmptyTaxBreakdown() {
   const breakdownContainer = document.getElementById('tax-country-breakdown');
   if (!breakdownContainer) return;
   
-  // Limpiar contenedor
   breakdownContainer.innerHTML = '';
   
-  // Añadir mensaje de sin datos
   breakdownContainer.innerHTML = `
     <div class="tax-item">
       <div class="tax-country">No hay datos de impuestos para el período seleccionado</div>
@@ -573,12 +542,9 @@ updateEmptyTaxBreakdown() {
     let spainTaxEur = 0;
     let otherTaxEur = 0;
     
-    // Agrupación por país para el desglose
     const countryTaxes = {};
     
-    // Procesar cada transacción
     transactions.forEach(transaction => {
-      // Extraer datos clave de la transacción
       const amountEur = parseFloat(transaction.amount_eur || 0);
       const taxAmountEur = parseFloat(transaction.tax_amount_eur || 0);
       const countryCode = transaction.country_code || 'UNKNOWN';
@@ -596,14 +562,12 @@ updateEmptyTaxBreakdown() {
       totalAmountEur += amountEur;
       totalTaxEur += taxAmountEur;
       
-      // Separar España del resto
       if (countryCode === 'ES') {
         spainTaxEur += taxAmountEur;
       } else {
         otherTaxEur += taxAmountEur;
       }
       
-      // Agregar al desglose por país
       if (!countryTaxes[countryCode]) {
         countryTaxes[countryCode] = {
           code: countryCode,
@@ -627,17 +591,14 @@ updateEmptyTaxBreakdown() {
       countryTaxes[countryCode].taxBase_original += (amount - taxAmount);
       countryTaxes[countryCode].count++;
       
-      // Guardar tasa de cambio para calcular promedio
       if (currencyCode !== 'EUR') {
         // IMPORTANTE: Guardar la tasa de cambio exacta de cada transacción
         countryTaxes[countryCode].exchange_rates.push(exchangeRate);
       }
     });
     
-    // Calcular tasas de cambio promedio
     Object.values(countryTaxes).forEach(country => {
       if (country.exchange_rates.length > 0) {
-        // Calcular promedio de tasas de cambio para cada país
         const validRates = country.exchange_rates.filter(rate => rate !== 1 && !isNaN(rate));
         
         if (validRates.length > 0) {
@@ -660,7 +621,6 @@ updateEmptyTaxBreakdown() {
       console.log(`País ${country.code} (${country.currency_code}): tasa de cambio = ${country.exchange_rate}`);
     });
     
-    // Crear resumen de impuestos
     this.taxSummary = {
       totalAmount: totalAmountEur,
       totalTax: totalTaxEur,
@@ -672,11 +632,9 @@ updateEmptyTaxBreakdown() {
       taxRatio: totalAmountEur > 0 ? totalTaxEur / totalAmountEur : 0
     };
     
-    // Guardar valores de referencia
     this.referenceValues.totalTaxEur = totalTaxEur;
     this.referenceValues.totalAmountEur = totalAmountEur;
     
-    // Crear desglose por país
     this.taxBreakdown = Object.values(countryTaxes).sort((a, b) => b.total - a.total);
     
     console.log('Resumen de impuestos calculado desde transacciones:', this.taxSummary);
@@ -713,13 +671,10 @@ updateEmptyTaxBreakdown() {
  * Actualiza la interfaz de usuario con los datos de impuestos - VERSIÓN MEJORADA
  */
 updateTaxUI() {
-  // Verificar si tenemos datos válidos, si no, mostrar ceros
   const hasTaxData = this.taxSummary && this.taxSummary.totalTax > 0;
   
-  // Actualizar KPIs de impuestos
   console.log('Actualizando UI con datos de impuestos:', this.taxSummary || 'Sin datos');
   
-  // Verificar que los elementos existan para evitar errores
   const totalVatElement = document.getElementById('total-vat');
   const spainVatElement = document.getElementById('spain-vat');
   const euVatElement = document.getElementById('eu-vat');
@@ -741,12 +696,10 @@ updateTaxUI() {
   let euTax = 0;
   let nonEuTax = 0;
   
-  // Calcular UE y no-UE a partir del desglose solo si hay datos
   if (hasTaxData && this.taxBreakdown && this.taxBreakdown.length > 0) {
     // La UE incluye todos los países UE excepto España
     const euCountryCodes = this.regions.EU.codes.filter(code => code !== 'ES');
     
-    // Calcular impuestos por región
     this.taxBreakdown.forEach(country => {
       if (euCountryCodes.includes(country.code)) {
         euTax += country.total;
@@ -757,7 +710,6 @@ updateTaxUI() {
     });
   }
   
-  // Actualizar KPIs calculados
   if (euVatElement) {
     euVatElement.textContent = formatCurrency(euTax);
   }
@@ -766,17 +718,14 @@ updateTaxUI() {
     nonEuVatElement.textContent = formatCurrency(nonEuTax);
   }
   
-  // Actualizar barra de progreso del ratio de impuestos
   const taxRatioBar = document.getElementById('tax-ratio-bar');
   if (taxRatioBar) {
     const ratioPercentage = hasTaxData ? this.taxSummary.taxRatio * 100 : 0;
     taxRatioBar.style.width = `${ratioPercentage}%`;
   }
   
-  // Actualizar barra de progreso de Base Imponible
   const taxableAmountBar = document.getElementById('taxable-amount-bar');
   if (taxableAmountBar) {
-    // Calcular porcentaje para Base Imponible (base imponible / monto total)
     let basePercentage = 0;
     if (hasTaxData && this.taxSummary.totalAmount > 0) {
       basePercentage = (this.taxSummary.taxableAmount / this.taxSummary.totalAmount) * 100;
@@ -785,11 +734,9 @@ updateTaxUI() {
     console.log(`Actualizando barra de Base Imponible: ${basePercentage.toFixed(2)}%`);
   }
   
-  // Actualizar porcentajes y base imponible
   this.ui.updateElement('tax-ratio-percentage', formatPercentage(hasTaxData ? this.taxSummary.taxRatio : 0));
   this.ui.updateElement('taxable-amount', formatCurrency(hasTaxData ? this.taxSummary.taxableAmount : 0));
   
-  // Actualizar porcentaje de Base Imponible como texto
   const taxableAmountPercentageEl = document.getElementById('taxable-amount-percentage');
   if (taxableAmountPercentageEl) {
     let basePercentage = 0;
@@ -799,7 +746,6 @@ updateTaxUI() {
     taxableAmountPercentageEl.textContent = formatPercentage(basePercentage / 100);
   }
   
-  // Actualizar desglose por país
   if (hasTaxData) {
     this.updateTaxBreakdown();
   } else {
@@ -812,7 +758,6 @@ updateTaxUI() {
  * Esta función debe ejecutarse durante la inicialización
  */
 setupTaxableAmountBar() {
-  // Buscar el div que contiene la información sobre Base Imponible
   const taxInfoDiv = document.querySelector('.d-flex.justify-content-between');
   
   if (!taxInfoDiv) {
@@ -820,7 +765,6 @@ setupTaxableAmountBar() {
     return;
   }
   
-  // Verificar si ya existe una barra de progreso
   if (document.getElementById('taxable-amount-bar')) {
     console.log('La barra de Base Imponible ya existe');
     return;
@@ -828,30 +772,24 @@ setupTaxableAmountBar() {
   
   console.log('Añadiendo barra de progreso para Base Imponible');
   
-  // Crear elemento para el porcentaje
   const percentageSpan = document.createElement('span');
   percentageSpan.id = 'taxable-amount-percentage';
   percentageSpan.textContent = '0%';
   
-  // Buscar el elemento que muestra el valor de Base Imponible
   const taxableAmount = document.getElementById('taxable-amount');
   if (taxableAmount && taxableAmount.parentNode) {
-    // Añadir el porcentaje después del valor
     taxableAmount.parentNode.innerHTML = `Base Imponible: <span id="taxable-amount">€0.00</span> (<span id="taxable-amount-percentage">0%</span>)`;
   }
   
-  // Obtener el div que contiene la barra de progreso actual
   const progressContainer = document.querySelector('.progress');
   
   if (progressContainer) {
-    // Añadir una nueva barra al mismo contenedor
     const taxableAmountBar = document.createElement('div');
     taxableAmountBar.id = 'taxable-amount-bar';
     taxableAmountBar.className = 'progress-bar';
     taxableAmountBar.style.width = '0%';
     taxableAmountBar.style.backgroundColor = '#4e79a7'; // Color diferente a la barra de IVA
     
-    // Añadir la barra al contenedor
     progressContainer.appendChild(taxableAmountBar);
   } else {
     console.warn('No se encontró el contenedor de la barra de progreso');
@@ -865,10 +803,8 @@ setupTaxableAmountBar() {
     const breakdownContainer = document.getElementById('tax-country-breakdown');
     if (!breakdownContainer || !this.taxBreakdown) return;
     
-    // Limpiar contenedor
     breakdownContainer.innerHTML = '';
     
-    // Verificar si hay datos
     if (this.taxBreakdown.length === 0) {
       breakdownContainer.innerHTML = `
         <div class="tax-item">
@@ -880,20 +816,16 @@ setupTaxableAmountBar() {
       return;
     }
     
-    // Renderizar cada país
     this.taxBreakdown.forEach(country => {
-      // Crear elemento de país
       const countryEl = document.createElement('div');
       countryEl.className = 'tax-item';
       
-      // Determinar si hay que mostrar valor original (si es distinto a EUR)
       let originalValueHtml = '';
       
       if (country.currency_code && country.currency_code !== 'EUR' && country.total_original > 0) {
         // CORREGIDO: Utilizar la tasa de cambio exacta de este país
         const exchangeRate = country.exchange_rate || 0.05;
         
-        // Mostrar valor original y tasa de cambio usada
         originalValueHtml = `
           <div class="tax-original-value">
             ${formatCurrency(country.total_original, country.currency_code)}
@@ -912,7 +844,6 @@ setupTaxableAmountBar() {
         <div class="tax-note">Tasa: ${formatPercentage(country.rate)} • ${country.count} transacciones</div>
       `;
       
-      // Añadir al contenedor
       breakdownContainer.appendChild(countryEl);
     });
   }
@@ -921,16 +852,13 @@ setupTaxableAmountBar() {
    * Inicializa los gráficos del módulo
    */
   initCharts() {
-    // Verificar que tenemos datos
     if (!this.taxBreakdown || this.taxBreakdown.length === 0) return;
     
     // Primero destruir gráficos existentes para evitar duplicados
     this.destroyCharts();
     
-    // Inicializar gráfico de países
     this.initTaxCountryChart();
     
-    // Inicializar gráfico de historial
     this.initTaxHistoryChart();
   }
   
@@ -977,12 +905,10 @@ destroyCharts() {
     const ctx = document.getElementById('tax-country-chart');
     if (!ctx) return;
     
-    // Verificar si ya existe un gráfico en este canvas
     if (Chart.getChart(ctx)) {
       Chart.getChart(ctx).destroy();
     }
     
-    // Preparar datos para el gráfico (top 8 países + "Otros")
     const topCountries = this.taxBreakdown.slice(0, 8);
     const otherCountries = this.taxBreakdown.slice(8);
     
@@ -1002,22 +928,18 @@ destroyCharts() {
       });
     }
     
-    // Determinar valores para el gráfico
     const labels = chartData.map(country => country.name);
     const taxValues = chartData.map(country => country.total);
     const taxRates = chartData.map(country => {
-      // Para el grupo "Otros países" no mostrar tasa
       if (country.code === 'OTHERS') return null;
       return country.rate * 100; // Convertir a porcentaje para visualización
     });
     
-    // Generar colores para cada país según su región
     const backgroundColors = chartData.map(country => {
       const regionKey = this.getRegionForCountry(country.code);
       return this.regions[regionKey]?.color || this.regions.OTHER.color;
     });
     
-    // Configurar el gráfico usando las config del chart-manager
     const config = {
       type: 'bar',
       data: {
@@ -1055,20 +977,17 @@ destroyCharts() {
                 const index = context.dataIndex;
                 const value = context.parsed.y;
                 
-                // Para el dataset de barras (IVA recaudado)
                 if (dataset.yAxisID === undefined) {
                   const total = taxValues.reduce((a, b) => a + b, 0);
                   const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
                   
                   return `IVA: ${formatCurrency(value, 'EUR')} (${percentage}% del total)`;
                 } 
-                // Para el dataset de línea (Tasa de IVA)
                 else if (value !== null) {
                   return `Tasa de IVA: ${value.toFixed(1)}%`;
                 }
                 return null;
               },
-              // Añadir información adicional
               afterLabel: function(context) {
                 // Solo para el dataset principal (barras)
                 if (context.dataset.yAxisID === undefined) {
@@ -1131,7 +1050,6 @@ destroyCharts() {
       }
     };
     
-    // Crear gráfico
     this.charts.taxCountry = new Chart(ctx, config);
   }
   
@@ -1148,18 +1066,14 @@ destroyCharts() {
   // IMPORTANTE: Asegurar que no existe ningún gráfico antes de crear uno nuevo
   this.ensureCanvasIsClean('tax-history-chart');
   
-  // Obtener historial de impuestos
   this.getTaxHistory().then(monthlyTax => {
-    // Verificar que el canvas sigue existiendo
     if (!document.body.contains(ctx)) {
       console.log('El canvas ya no está en el DOM, cancelando creación de gráfico');
       return;
     }
     
-    // Verificar nuevamente que el canvas está limpio antes de crear el gráfico
     this.ensureCanvasIsClean('tax-history-chart');
     
-    // Verificar si tenemos datos
     if (!monthlyTax || monthlyTax.length === 0) {
       console.warn('No hay datos históricos de impuestos disponibles');
       return;
@@ -1226,7 +1140,6 @@ destroyCharts() {
                   const value = context.parsed.y;
                   return `${label}: ${formatCurrency(value, 'EUR')}`;
                 },
-                // Mostrar total
                 footer: function(tooltipItems) {
                   let total = 0;
                   tooltipItems.forEach(tooltipItem => {
@@ -1260,7 +1173,6 @@ destroyCharts() {
       };
       
       try {
-      // Crear gráfico con try/catch para capturar errores
       this.charts.taxHistory = new Chart(ctx, config);
       console.log('Gráfico tax-history-chart creado correctamente');
     } catch (error) {
@@ -1277,7 +1189,6 @@ destroyCharts() {
    */
   async getTaxHistory() {
     try {
-      // Definir filtros para obtener datos del último año
       const startDate = new Date();
       startDate.setFullYear(startDate.getFullYear() - 1);
       
@@ -1305,7 +1216,6 @@ destroyCharts() {
         }
       }
       
-      // Calcular historial desde transacciones
       return this.calculateHistoryFromTransactions(this.transactions);
     } catch (error) {
       console.error('Error al obtener historial de impuestos:', error);
@@ -1348,7 +1258,6 @@ ensureCanvasIsClean(chartId) {
     // Agrupar datos por mes
     const monthlyData = {};
     
-    // Inicializar los últimos 12 meses
     for (let i = 0; i < 12; i++) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
@@ -1362,7 +1271,6 @@ ensureCanvasIsClean(chartId) {
       // Etiqueta legible
       const label = date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
       
-      // Inicializar datos para este mes
       monthlyData[key] = {
         key,
         label,
@@ -1375,13 +1283,10 @@ ensureCanvasIsClean(chartId) {
       };
     }
     
-    // Procesar transacciones
     transactions.forEach(transaction => {
       try {
-        // Obtener fecha de la transacción
         const txDate = new Date(transaction.updated_at || transaction.created_at);
         
-        // Verificar que la fecha sea válida
         if (isNaN(txDate.getTime())) {
           console.warn('Fecha de transacción no válida:', transaction.updated_at || transaction.created_at);
           return;
@@ -1389,9 +1294,7 @@ ensureCanvasIsClean(chartId) {
         
         const txKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}`;
         
-        // Verificar si tenemos este mes en nuestros datos
         if (monthlyData[txKey]) {
-          // Extraer datos relevantes (usar tax_amount_eur para consistencia)
           const taxAmountEur = parseFloat(transaction.tax_amount_eur || 0);
           const countryCode = transaction.country_code || 'UNKNOWN';
           
@@ -1413,14 +1316,12 @@ ensureCanvasIsClean(chartId) {
               break;
           }
           
-          // Actualizar total
           monthlyData[txKey].totalTax = 
             monthlyData[txKey].spainTax + 
             monthlyData[txKey].latamTax + 
             monthlyData[txKey].euTax + 
             monthlyData[txKey].otherTax;
           
-          // Guardar transacción
           monthlyData[txKey].transactions.push(transaction);
         }
       } catch (err) {
@@ -1428,7 +1329,6 @@ ensureCanvasIsClean(chartId) {
       }
     });
     
-    // Convertir a array y ordenar por fecha
     return Object.values(monthlyData).sort((a, b) => a.key.localeCompare(b.key));
   }
   
@@ -1460,10 +1360,8 @@ async refreshTaxData(forceApi = false) {
     }
     
     // Si llegamos aquí, es porque necesitamos datos frescos de la API
-    // Mostrar indicador de carga
     this.ui.showLoading('Actualizando datos fiscales...');
     
-    // Limpiar caché para obtener datos frescos
     this.api.clearCache('transactions');
     
     // Destruir gráficos existentes
@@ -1475,11 +1373,9 @@ async refreshTaxData(forceApi = false) {
     // Recargar datos
     const success = await this.loadTaxData();
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
     if (success) {
-      // Notificar actualización
       this.ui.showSuccessMessage('Datos de impuestos actualizados correctamente');
     }
   } catch (error) {
@@ -1499,7 +1395,6 @@ async exportTaxReport() {
       return;
     }
     
-    // Determinar período del informe
     let periodLabel = 'Personalizado';
     let dateRangeText = '';
     
@@ -1522,7 +1417,6 @@ async exportTaxReport() {
     // Nombre del archivo
     const fileName = `Informe_IVA_${periodLabel.replace(/\s/g, '_')}`;
     
-    // Determinar formato de exportación
     const format = document.getElementById('export-format')?.value || exportManager.getPreferredFormat('excel');
     
     console.log(`Exportando informe de IVA en formato: ${format}`);
@@ -1553,7 +1447,6 @@ async exportTaxReport() {
  */
 async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
   try {
-    // Definir colores (mismos que en ExportManager)
     const brandColors = {
       primary: '656d4a',    // Verde principal
       secondary: 'a4ac86',  // Verde claro
@@ -1587,10 +1480,8 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
     ];
     
     // 1.2 Tabla de desglose por país - VERSIÓN COMPACTA
-    // Ordenar: primero países importantes, luego el resto
     const importantCountries = ['ES', 'MX', 'CO', 'AR', 'CL', 'PE', 'US'];
     
-    // Filtrar solo los países importantes y los 3 siguientes más relevantes
     const topCountries = [...this.taxBreakdown]
       .sort((a, b) => {
         const aImportant = importantCountries.includes(a.code);
@@ -1606,7 +1497,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
       .slice(0, 10); // Solo mostrar los 10 primeros países
 
     const desgloseData = topCountries.map(country => {
-      // Versión simplificada para ahorrar espacio
       return {
         'País': country.name,
         'Código': country.code,
@@ -1617,7 +1507,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
       };
     });
     
-    // Añadir fila de totales
     desgloseData.push({
       'País': 'TOTALES',
       'Código': '',
@@ -1647,7 +1536,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
     
     const regionData = [];
     
-    // Añadir datos de cada región (ordenados por importancia)
     ['SPAIN', 'LATAM', 'EU', 'USA', 'OTHER'].forEach(regionKey => {
       const region = regionTotals[regionKey];
       const percentage = totalTax > 0 ? (region.total / totalTax) * 100 : 0;
@@ -1661,7 +1549,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
       });
     });
     
-    // Añadir fila de total
     regionData.push({
       'Región': 'TOTAL',
       'IVA (EUR)': totalTax,
@@ -1671,7 +1558,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
     });
     
     // 1.4 Datos para países hispanohablantes - VERSIÓN COMPACTA Y SIMPLIFICADA
-    // Filtrar solo países hispanohablantes más importantes
     const hispanicCountries = this.taxBreakdown
       .filter(country => 
         this.regions.SPAIN.codes.includes(country.code) || 
@@ -1680,7 +1566,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
       .sort((a, b) => b.total - a.total)
       .slice(0, 6); // Solo los 6 más importantes
     
-    // Calcular total hispano
     const totalHispanic = hispanicCountries.reduce((sum, country) => sum + country.total, 0);
     
     const hispanicData = [];
@@ -1792,7 +1677,6 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
       }
     ];
     
-    // Crear documento usando exportManager
     exportManager.exportTaxReportToPDF(fileName, pdfSections, {
       ...pdfOptions,
       title: `Informe de IVA - ${periodLabel}`,
@@ -1817,17 +1701,14 @@ async exportTaxReportToPDF(fileName, dateRangeText, periodLabel) {
  */
 async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
   try {
-    // Iniciar ExcelJS
     const Excel = window.ExcelJS;
     const workbook = new Excel.Workbook();
     
-    // Configurar propiedades del documento
     workbook.creator = 'Acadelia';
     workbook.lastModifiedBy = 'Acadelia';
     workbook.created = new Date();
     workbook.modified = new Date();
     
-    // Definir colores (mismos que en ExportManager)
     const brandColors = {
       primary: '656d4a',    // Verde principal
       secondary: 'a4ac86',  // Verde claro
@@ -1847,7 +1728,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       properties: {tabColor: {argb: brandColors.secondary}}
     });
     
-    // Añadir título
     const titleRow = resumenSheet.addRow(['INFORME DE IVA']);
     titleRow.font = {
       name: 'Arial',
@@ -2034,7 +1914,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       properties: {tabColor: {argb: brandColors.secondary}}
     });
     
-    // Añadir título
     const desgloseTitleRow = desgloseSheet.addRow(['DESGLOSE DE IMPUESTOS POR PAÍS']);
     desgloseTitleRow.font = {
       name: 'Arial',
@@ -2089,7 +1968,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     // Destacar países importantes primero
     const importantCountries = ['ES', 'MX', 'CO', 'AR', 'CL', 'PE', 'US', 'DE', 'FR', 'GB', 'IT'];
     
-    // Ordenar el desglose: primero países importantes, luego el resto
     let sortedBreakdown = [...this.taxBreakdown];
     sortedBreakdown.sort((a, b) => {
       const aImportant = importantCountries.includes(a.code);
@@ -2104,7 +1982,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     });
     
     sortedBreakdown.forEach(country => {
-      // Formatear valores especiales
       let tasaDeCambio = country.exchange_rate === 1 ? 
         'N/A' : country.exchange_rate.toFixed(4);
       
@@ -2129,15 +2006,12 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
         country.count
       ]);
       
-      // Aplicar formato numérico
       row.getCell(5).numFmt = '0.0"%"';
       row.getCell(6).numFmt = '€#,##0.00';
       
       // CORREGIDO: Formato para valores en moneda original
       if (ivaOriginal !== null) {
-        // Usar formato simple numérico en lugar de formato de moneda personalizado
         row.getCell(7).numFmt = '#,##0.00';
-        // Añadir el símbolo de moneda como prefijo para claridad
         row.getCell(7).value = ivaOriginal;
       }
       
@@ -2145,15 +2019,12 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       
       // CORREGIDO: Formato para base imponible original
       if (baseOriginal !== null) {
-        // Usar formato simple numérico
         row.getCell(9).numFmt = '#,##0.00';
-        // Añadir el símbolo de moneda como prefijo para claridad
         row.getCell(9).value = baseOriginal;
       }
       
       row.getCell(10).numFmt = '#,##0';
       
-      // Aplicar estilos destacados para países importantes
       if (importantCountries.includes(country.code)) {
         let bgColor;
         
@@ -2185,7 +2056,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
           };
         });
       }
-      // Aplicar estilos alternados para facilitar lectura en países no destacados
       else if (rowIndex % 2 !== 0) {
         row.eachCell((cell) => {
           cell.fill = {
@@ -2199,7 +2069,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       rowIndex++;
     });
     
-    // Añadir fila de totales
     const totalRow = desgloseSheet.addRow([
       'TOTALES',
       '',
@@ -2234,7 +2103,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     }
     desgloseSheet.getColumn(1).width = 25; // País
     
-    // Añadir filtros
     desgloseSheet.autoFilter = {
       from: { row: 4, column: 1 },
       to: { row: 4, column: 10 }
@@ -2253,7 +2121,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       properties: {tabColor: {argb: brandColors.secondary}}
     });
     
-    // Añadir título
     const regionTitleRow = regionSheet.addRow(['ANÁLISIS DE IMPUESTOS POR REGIÓN']);
     regionTitleRow.font = {
       name: 'Arial',
@@ -2328,7 +2195,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       'OTHER': 'f5f5f5'  // Gris claro
     };
     
-    // Añadir datos de cada región (ordenados por importancia)
     ['SPAIN', 'LATAM', 'EU', 'USA', 'OTHER'].forEach(regionKey => {
       const region = regionTotals[regionKey];
       const percentage = totalTax > 0 ? (region.total / totalTax) * 100 : 0;
@@ -2392,7 +2258,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       properties: {tabColor: {argb: brandColors.secondary}}
     });
     
-    // Añadir título
     const hispanicTitleRow = hispanicSheet.addRow(['ANÁLISIS DE PAÍSES HISPANOHABLANTES']);
     hispanicTitleRow.font = {
       name: 'Arial',
@@ -2440,16 +2305,13 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     });
     hispanicHeaderRow.height = 25;
     
-    // Filtrar solo países hispanohablantes
     const hispanicCountries = this.taxBreakdown.filter(country => 
       this.regions.SPAIN.codes.includes(country.code) || 
       this.regions.LATAM.codes.includes(country.code)
     );
     
-    // Ordenar por total de impuestos
     hispanicCountries.sort((a, b) => b.total - a.total);
     
-    // Calcular total hispano
     const totalHispanic = hispanicCountries.reduce((sum, country) => sum + country.total, 0);
     
     // Datos de países hispanos
@@ -2519,7 +2381,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
     }
     hispanicSheet.getColumn(1).width = 25; // País
     
-    // Añadir filtros
     hispanicSheet.autoFilter = {
       from: { row: 4, column: 1 },
       to: { row: 4, column: 7 }
@@ -2530,7 +2391,6 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       { state: 'frozen', xSplit: 0, ySplit: 4, activeCell: 'A1' }
     ];
     
-    // Establecer propiedades de impresión para todas las hojas
     const pageSetup = {
       fitToPage: true,
       fitToWidth: 1,
@@ -2551,19 +2411,15 @@ async exportTaxReportToExcel(fileName, dateRangeText, periodLabel) {
       sheet.pageSetup = pageSetup;
     });
     
-    // Generar archivo Excel
     const buffer = await workbook.xlsx.writeBuffer();
     
-    // Crear blob y descargar
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     
-    // Crear enlace de descarga
     const link = document.createElement('a');
     link.href = url;
     link.download = `${fileName}.xlsx`;
     
-    // Añadir al documento, simular clic y eliminar
     document.body.appendChild(link);
     link.click();
     setTimeout(() => {

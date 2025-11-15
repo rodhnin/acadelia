@@ -2,7 +2,6 @@
 // 🦫 PROFESOR ACADEL UNIVERSAL - SISTEMA ACADÉMICO REVOLUCIONARIO COMPLETO V3.0
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MULTIDISCIPLINARIO SUPREMO
-// Sistema completo con Cache Inteligente, Background Save y Brave Search
 // ============================================================================
 
 import { WolframAlphaTool } from "@langchain/community/tools/wolframalpha";
@@ -29,12 +28,10 @@ import { cleanDocumentContextForPrompt } from '../../../../utils/chat/contentCle
 import { loadHybridChatMemory, formatHybridMemoryForPrompt } from "../../../../utils/chat/hybridChatMemory.js";
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO UNIVERSAL
 // ============================================================================
 
 class BraveSearchOrchestratorUniversal {
@@ -101,7 +98,6 @@ class BraveSearchOrchestratorUniversal {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -175,7 +171,6 @@ class BraveSearchOrchestratorUniversal {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -196,7 +191,6 @@ class BraveSearchOrchestratorUniversal {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -265,7 +259,6 @@ class BraveSearchOrchestratorUniversal {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -377,10 +370,8 @@ Hacer que CUALQUIER estudiante en CUALQUIER disciplina:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS UNIVERSALES - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES UNIVERSAL
 const UNIVERSAL_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel Universal.
 
 🎯 FUNCIÓN: Analizar imágenes académicas/educativas con precisión extrema en CUALQUIER disciplina.
@@ -407,7 +398,6 @@ const UNIVERSAL_IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Pr
 
 Eres los OJOS ANALÍTICOS de Profesor Acadel Universal - él interpretará tu análisis con su sabiduría pedagógica interdisciplinaria.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES UNIVERSAL
 const UNIVERSAL_IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel Universal, el capibara académico más brillante del universo en TODAS las disciplinas.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información de esta imagen académica/educativa para que Profesor Acadel pueda enseñar efectivamente en CUALQUIER área.
@@ -461,7 +451,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Profes
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta. Profesor Acadel se encargará de la pedagogía interdisciplinaria pero necesita tu análisis técnico exhaustivo.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS NORMALES UNIVERSALES
 const UNIFIED_UNIVERSAL_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA UNIVERSAL:
 - Consulta del estudiante: "${query}"
@@ -494,7 +483,6 @@ ${queryInfo.hasEmotionalContent ?
 
 ¡Haz que esta consulta académica sea una experiencia de aprendizaje transformadora interdisciplinaria!`;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS MULTIMODALES UNIVERSALES
 const UNIFIED_UNIVERSAL_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN PRE-PROCESADA POR TU SISTEMA ANALÍTICO UNIVERSAL:
 
@@ -557,7 +545,6 @@ Transforma el análisis técnico pre-procesado en una experiencia de aprendizaje
 const classifyUniversalQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -567,7 +554,6 @@ const classifyUniversalQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // Detectar disciplina académica
   const disciplineKeywords = {
     mathematics: ['matemáticas', 'cálculo', 'álgebra', 'geometría', 'estadística', 'probabilidad', 'ecuación', 'integral', 'derivada'],
     physics: ['física', 'mecánica', 'termodinámica', 'óptica', 'cuántica', 'relatividad', 'fuerza', 'energía', 'velocidad'],
@@ -594,7 +580,6 @@ const classifyUniversalQuery = (query, content = null) => {
     }
   }
 
-  // Detectar exámenes (mantener funcionalidad existente)
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -633,7 +618,6 @@ const classifyUniversalQuery = (query, content = null) => {
       complexity: 'medium'
     };
 
-    // ✅ CACHE SET CORRECTO
     intelligentCache.setComponent('classification', { query: lowercaseQuery, hasContent: !!content }, result, {
       hash: cacheKey,
       timestamp: Date.now()
@@ -696,14 +680,12 @@ const classifyUniversalQuery = (query, content = null) => {
     needsAcademicSearch = true;
   }
 
-  // Detectar nivel de matemáticas/ciencias
   const mathScienceKeywords = ['ecuación', 'fórmula', 'integral', 'derivada', 'matriz', 'vector', 'cálculo', 'gráfico'];
   if (mathScienceKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   const linkKeywords = ['enlaces', 'links', 'fuentes', 'referencias', 'papers', 'artículos', 'estudios', 'investigaciones', 'bibliografía', 'recursos'];
   if (researchKeywords.some(k => lowercaseQuery.includes(k)) ||
     linkKeywords.some(k => lowercaseQuery.includes(k))) {
@@ -716,7 +698,6 @@ const classifyUniversalQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -735,7 +716,6 @@ const classifyUniversalQuery = (query, content = null) => {
     hasMultimedia: content && Array.isArray(content) && content.length > 0
   };
 
-  // ✅ CACHE SET CORRECTO
   intelligentCache.setComponent('classification', { query: lowercaseQuery, hasContent: !!content }, result, {
     hash: cacheKey,
     timestamp: Date.now()
@@ -747,7 +727,6 @@ const classifyUniversalQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS ACADÉMICAS UNIVERSALES SINCRONIZADAS CON ACADEL
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS UNIVERSALES
@@ -774,7 +753,6 @@ const createStudyKnowledgeBase = (embeddings, userId, chatId) => tool(
 
       console.log(`🦫 Acadel accediendo a tu contenido personal: "${query.substring(0, 50)}..."`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, userId, chatId, table: 'agentetube' };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -792,7 +770,6 @@ const createStudyKnowledgeBase = (embeddings, userId, chatId) => tool(
 
 ACADEL_PERSONAL_CONTENT: No encontré contenido específico sobre "${query}" en tus transcripciones y materiales compartidos. Proceder con conocimiento académico general y expertise universal.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, 0.7, {
           hash: cacheKey,
           docsFound: 0,
@@ -817,7 +794,6 @@ ACADEL_PERSONAL_CONTENT: ${cleanContent}
 
 INTEGRATION_NOTES: Este es el contenido personal que has compartido (transcripciones de videos, audios, documentos). Acadel debe usar esto como su conocimiento más valioso sobre lo que has estado estudiando, conectándolo con su expertise universal. Usar frases como "veo en tu contenido que...", "según lo que me has compartido...", "tu material transcrito indica..."`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, 0.7, {
         hash: cacheKey,
         docsFound: results.length,
@@ -1374,7 +1350,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia universal según este anál
 );
 
 // ============================================================================
-// 🎯 CLASE CUSTOMSUPABASEHYBRIDSEARCH UNIVERSAL (MANTENER EXACTA)
 // ============================================================================
 
 class CustomSupabaseHybridSearch extends SupabaseHybridSearch {
@@ -1429,7 +1404,6 @@ class CustomSupabaseHybridSearch extends SupabaseHybridSearch {
 }
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE UNIVERSAL CORREGIDO Y ESTABILIZADO
 // ============================================================================
 
 const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, chatId) => {
@@ -1445,7 +1419,6 @@ const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, 
   // La herramienta especial de transcripciones (SIEMPRE incluida)
   tools.push(createStudyKnowledgeBase(embeddings, userId, chatId));
 
-  // Agregar herramientas especializadas según necesidades
   if (queryInfo.needsAcademicSearch) {
     // Nota: Mantenemos las herramientas de búsqueda académica existentes
     // ya que están funcionando correctamente
@@ -1464,7 +1437,6 @@ const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, 
 
   console.log(`🦫 Acadel Universal configurando ${tools.length} herramientas:`, tools.map(t => t.name));
 
-  // Crear prompt especializado universal
   const specializedPrompt = createUniversalSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // Escapar llaves correctamente
@@ -1496,7 +1468,6 @@ const createUniversalAcadelAgent = async (llm, queryInfo, studentQuery, userId, 
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES UNIVERSALES
 // ============================================================================
 
 const createUniversalSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1638,7 +1609,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA UNIVERSAL
   // ============================================================================
 
   const typeSpecificInstructions = {
@@ -1699,7 +1669,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT FINAL OPTIMIZADO UNIVERSAL
   // ============================================================================
 
   return `${basePersonality}
@@ -1722,10 +1691,8 @@ ${queryInfo.hasEmotionalContent ? '- **Estado emocional:** Estudiante frustrado 
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES UNIVERSALES (MANTENER COMPATIBILIDAD)
 // ============================================================================
 
-// Detectar exámenes (mantener exacto)
 export const detectExamRequest = (query) => {
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
@@ -1765,7 +1732,6 @@ export const extractExamTopic = (query) => {
     .trim();
 };
 
-// Extraer URL de YouTube (mantener exacto)
 export const extractYouTubeURL = (text) => {
   const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[^\s\]<>"']*)?/g;
   const matches = text.match(youtubeRegex);
@@ -1804,12 +1770,10 @@ const hasDocuments = (content) => {
   );
 };
 
-// Crear cadena de exámenes universal
 const createUniversalExamChain = (llm, format, topic, questionCount = 5, discipline = 'general') => {
   return RunnableSequence.from([
     {
       context: async (input) => {
-        // ✅ CACHE CHECK CORRECTO usando generateContentHash
         const contextKey = { topic: input, operation: 'exam_context', discipline };
         const cacheKey = generateContentHash(contextKey);
 
@@ -1830,7 +1794,6 @@ const createUniversalExamChain = (llm, format, topic, questionCount = 5, discipl
           const context = docs.length > 0 ? docs.map(doc => doc.pageContent).join("\n\n") :
             "Usar conocimiento académico general";
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input, discipline }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1843,7 +1806,6 @@ const createUniversalExamChain = (llm, format, topic, questionCount = 5, discipl
         } catch (error) {
           const fallbackContext = "Usar conocimiento académico general";
 
-          // ✅ CACHE SET CORRECTO para fallback
           intelligentCache.setComponent('exam_context', { topic: input, discipline }, fallbackContext, {
             hash: cacheKey,
             docsFound: 0,
@@ -1906,7 +1868,6 @@ const createUniversalExamChain = (llm, format, topic, questionCount = 5, discipl
   ]);
 };
 
-// Validar respuesta de examen (mantener exacto)
 const validateExamResponse = (exam) => {
   if (!exam || typeof exam !== 'object') {
     throw new Error('Formato de examen inválido: no es un objeto JSON');
@@ -2004,7 +1965,6 @@ const checkExistingAudioFile = async (userId, chatId) => {
   }
 };
 
-// Formatear duración (mantener exacto)
 function formatDuration(seconds) {
   if (!seconds || isNaN(seconds)) return 'Desconocida';
 
@@ -2021,12 +1981,10 @@ function formatDuration(seconds) {
 }
 
 // ============================================================================
-// 🎬 FUNCIONES DE PROCESAMIENTO MULTIMEDIA (MANTENER EXACTAS)
 // ============================================================================
 
 const processYouTubeQuery = async ({ userId, query, avaId, herramientaId, chatId, client }) => {
   try {
-    // ✅ VERIFICAR VIDEO EXISTENTE
     const { exists: videoExists, videoInfo } = await checkExistingYouTubeVideo(userId, chatId);
 
     if (videoExists) {
@@ -2075,7 +2033,6 @@ Si quieres que analice otro video, inicia una nueva conversación conmigo. Mient
       };
     }
 
-    // ✅ LIMPIAR FLAGS INMEDIATAMENTE ANTES DE PROCESAR
     console.log(`🔄 Limpiando flags de cancelación antes de procesar YouTube para chat ${chatId}`);
     try {
       const { forceCleanCancellationFlags } = await import('../../chatServices.js');
@@ -2083,10 +2040,8 @@ Si quieres que analice otro video, inicia una nueva conversación conmigo. Mient
       console.log(`✅ Flags limpiadas exitosamente para chat ${chatId}`);
     } catch (cleanError) {
       console.warn('⚠️ Error limpiando flags:', cleanError.message);
-      // Continuar sin flags limpiadas
     }
 
-    // ✅ GUARDAR MENSAJE DE USUARIO INMEDIATAMENTE
     await client.query("BEGIN");
 
     const queryEmbedding = await embeddings.embedQuery(query);
@@ -2103,7 +2058,6 @@ Si quieres que analice otro video, inicia una nueva conversación conmigo. Mient
 
     await client.query("COMMIT");
 
-    // ✅ PROCESAR VIDEO (UN SOLO INTENTO)
     console.log(`🎬 Procesando URL de YouTube: ${query}`);
     
     let result;
@@ -2120,7 +2074,6 @@ Si quieres que analice otro video, inicia una nueva conversación conmigo. Mient
     } catch (youtubeError) {
       console.error(`❌ Error en YouTubeAudioService:`, youtubeError);
       
-      // ✅ MANEJO DIRECTO DE ERROR SIN REINTENTOS
       const errorMessage = `¡Ups! Mi sistema de procesamiento tuvo un momento existencial como estudiante de filosofía en crisis 😅
 
 Error más misterioso que la mecánica cuántica: ${youtubeError.message}
@@ -2156,7 +2109,6 @@ Mi sabiduría interdisciplinaria no depende de YouTube. ¡Puedo enseñarte desde
         console.error("Error guardando mensaje de error:", saveError);
       }
 
-      // ✅ RETORNAR ERROR SIN REINTENTO
       return {
         success: false,
         answer: errorMessage,
@@ -2166,7 +2118,6 @@ Mi sabiduría interdisciplinaria no depende de YouTube. ¡Puedo enseñarte desde
       };
     }
 
-    // ✅ MANEJO DE RESULTADO DE CANCELACIÓN
     if (result.cancelled || result.status === 'cancelled') {
       console.log(`🚫 YouTube cancelado para chat ${chatId}, guardando mensaje de cancelación`);
 
@@ -2215,7 +2166,6 @@ Para procesar videos, simplemente comparte cualquier enlace de YouTube conmigo. 
       }
     }
 
-    // ✅ MANEJO DE RESULTADO DE ÉXITO
     if (result.success || result.status === 'success') {
       const client2 = await pool.connect();
 
@@ -2273,7 +2223,6 @@ Soy como Wikipedia pero con personalidad y sin errores de edición random. ¡Pre
       }
     }
 
-    // ✅ FALLBACK: Si no es éxito ni cancelación
     console.warn(`⚠️ Resultado inesperado de YouTube:`, result);
     throw new Error('Resultado inesperado del procesamiento de YouTube');
 
@@ -2282,7 +2231,6 @@ Soy como Wikipedia pero con personalidad y sin errores de edición random. ¡Pre
       await client.query("ROLLBACK");
     }
 
-    // ✅ MANEJO FINAL DE ERRORES (SIN REINTENTOS)
     console.error('❌ Error en processYouTubeQuery:', error);
 
     const errorMessage = `¡Ups! Mi sistema de procesamiento tuvo un momento existencial como estudiante de filosofía en crisis 😅
@@ -2329,7 +2277,6 @@ Mi sabiduría interdisciplinaria no depende de YouTube. ¡Puedo enseñarte desde
     };
   }
 };
-// Procesar consulta de audio (mantener flujo exacto)
 export const processAudioQuery = async ({ userId, fileInfo, avaId, herramientaId, chatId, client }) => {
   try {
     const { exists: audioExists, audioInfo } = await checkExistingAudioFile(userId, chatId);
@@ -2388,7 +2335,6 @@ Si quieres que analice otro contenido, inicia una nueva conversación conmigo. M
       };
     }
 
-    // Procesar nuevo audio
     await client.query("BEGIN");
 
     const actionMessage = fileInfo.fileName
@@ -2409,7 +2355,6 @@ Si quieres que analice otro contenido, inicia una nueva conversación conmigo. M
 
     await client.query("COMMIT");
 
-    // Procesar audio directamente
     const result = await AudioTranscriptionService.processAudioFile(
       fileInfo.path,
       parseInt(userId),
@@ -2612,7 +2557,6 @@ Mi cerebro universal sigue funcionando al 100%. ¡Puedo enseñarte desde acústi
 };
 
 // ============================================================================
-// 🚀 FUNCIONES PRINCIPALES UNIVERSALES - handleStudyQuery CON CACHE Y BACKGROUND SAVE
 // ============================================================================
 
 export const handleStudyQuery = async (params) => {
@@ -2644,13 +2588,11 @@ Mi sabiduría interdisciplinaria no se ve afectada. ¿En qué puedo ayudarte aho
       };
     }
 
-    // ✅ PROCESAMIENTO DE YOUTUBE CON RETORNO DIRECTO
     const youtubeURL = extractYouTubeURL(query);
 
     if (youtubeURL) {
       console.log(`🎬 URL de YouTube detectada: ${youtubeURL}`);
 
-      // Verificar si ya hay transcripción (video O audio)
       try {
         const transcriptionQuery = `
           SELECT COUNT(*) as count
@@ -2753,7 +2695,6 @@ Puedo analizar este contenido desde cualquier perspectiva: física cuántica, ps
         };
       }
 
-      // ✅ PROCESAR URL DE YOUTUBE Y DEVOLVER RESULTADO DIRECTAMENTE
       console.log(`🎬 Procesando YouTube para chat ${chatId}`);
       const youtubeResult = await processYouTubeQuery({
         userId,
@@ -2764,14 +2705,11 @@ Puedo analizar este contenido desde cualquier perspectiva: física cuántica, ps
         client
       });
 
-      // ✅ NUEVO: VERIFICAR SI HAY ERROR DE YOUTUBE Y GENERAR RESPUESTA ACADEL
       if (youtubeResult.success === false && youtubeResult.youtube === true) {
         console.log(`🚫 Error de YouTube detectado, generando respuesta de Acadel para chat ${chatId}`);
 
-        // ✅ CRÍTICO: VERIFICAR SI ES CHAT NUEVO PARA MANEJAR ELIMINACIÓN
         const isNewChat = !validateUUID(getState('currentChatId')) || getState('currentChatId') !== chatId;
 
-        // Generar respuesta con personalidad de Acadel para errores de YouTube
         const chiguireErrorMessage = `¡Auch! YouTube me está haciendo la vida más complicada que capibara tratando de resolver ecuaciones diferenciales 🦫😵‍💫
 
 **El problema:** YouTube está más protegido que fortaleza medieval y me está pidiendo que demuestre que no soy un bot. ¡Ironía total considerando que soy un capibara académico digital!
@@ -2789,13 +2727,11 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
 
 **¿En qué área del conocimiento puedo ayudarte mientras tanto?** 🦫🧠⚡`;
 
-        // ✅ SI ES CHAT NUEVO: NO GUARDAR Y DEVOLVER ERROR PARA ELIMINACIÓN
         if (isNewChat) {
           console.log(`🚫 Error de YouTube en chat nuevo ${chatId} - marcando para eliminación y redirección`);
 
           await clearCancellationFlag(chatId);
 
-          // ✅ DEVOLVER COMO ERROR PARA QUE handleSendMessageCatch MANEJE LA ELIMINACIÓN
           return {
             success: false, // ← CAMBIO CRÍTICO: Marcar como error para eliminar chat nuevo
             error: {
@@ -2810,10 +2746,8 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
           };
         }
 
-        // ✅ SI ES CHAT EXISTENTE: GUARDAR RESPUESTA NORMALMENTE
         console.log(`⚠️ Error de YouTube en chat existente ${chatId} - guardando respuesta explicativa`);
 
-        // Guardar intercambio en BD con background save (solo para chats existentes)
         setTimeout(async () => {
           try {
             const queryEmbedding = await embeddings.embedQuery(query);
@@ -2864,7 +2798,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
         };
       }
 
-      // ✅ DEVOLVER RESULTADO DE YOUTUBE SIN MODIFICAR (casos de éxito y cancelación)
       console.log(`📤 Devolviendo resultado de YouTube para chat ${chatId}:`, {
         success: youtubeResult.success,
         cancelled: youtubeResult.cancelled,
@@ -2892,7 +2825,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
     console.log(`🦫 Acadel Universal analizando: "${query}"`);
     console.log(`📊 Clasificación: tipo=${queryInfo.type}, disciplina=${queryInfo.discipline}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes universales
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen universal: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}, disciplina=${queryInfo.discipline}`);
 
@@ -2914,7 +2846,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES UNIVERSALES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2963,7 +2894,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
 
       } catch (saveError) {
         console.error('❌ Error guardando examen universal en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -3002,7 +2932,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA UNIVERSAL
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query, herramientaId),
     ]);
@@ -3021,7 +2950,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
 
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE UNIVERSAL ESPECIALIZADO
     const { agent, tools } = await createUniversalAcadelAgent(model, queryInfo, query, userId, chatId);
 
     const agentExecutor = new AgentExecutor({
@@ -3084,11 +3012,9 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
       };
     }
 
-    // Procesar respuesta con mejoras de LaTeX
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN UNIVERSAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -3134,7 +3060,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
 
     } catch (saveError) {
       console.error('❌ Error guardando conversación universal en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -3196,7 +3121,6 @@ Soy como biblioteca universal que nunca se queda sin libros. YouTube puede estar
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL UNIVERSAL CON CACHE Y BACKGROUND SAVE
 // ============================================================================
 
 export const handleStudyMultimodalQuery = async (params) => {
@@ -3233,7 +3157,6 @@ export const handleStudyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto y clasificar universalmente
     const extractedText = extractTextFromMultimodal(content);
     console.log("📝 Texto extraído universal:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
 
@@ -3242,7 +3165,6 @@ export const handleStudyMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal universal clasificado: tipo=${queryInfo.type}, disciplina=${queryInfo.discipline}`);
 
-    // PROCESAR DOCUMENTOS UNIVERSALES
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3280,7 +3202,6 @@ export const handleStudyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES UNIVERSALES
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3340,7 +3261,6 @@ export const handleStudyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes seguras
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -3410,11 +3330,9 @@ export const handleStudyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL UNIVERSAL
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal universal", herramientaId);
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA UNIVERSAL
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3447,7 +3365,6 @@ export const handleStudyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE UNIVERSAL ESPECIALIZADO
     queryInfo.needsStudyKnowledgeBase = true; // Siempre incluir base personal
     queryInfo.needsComprehensionCheck = true;
 
@@ -3474,7 +3391,6 @@ export const handleStudyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal universal:", error);
 
-      // Fallback robusto universal
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal, pero no me rendiré con mi sabiduría universal. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -3500,11 +3416,9 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
       };
     }
 
-    // PROCESAR RESPUESTA Y GUARDAR UNIVERSAL
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL UNIVERSAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -3517,7 +3431,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal universal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -3571,7 +3484,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
 
     } catch (saveError) {
       console.error('❌ Error guardando multimodal universal en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -3646,7 +3558,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
         const bgClient = await pool.connect();
         await bgClient.query("BEGIN");
 
-        // Preparar mensaje multimodal universal con referencias
         const userMessageToSave = createMultimodalMessageReference({
           extractedText: extractedText || "",
           processedImages: savedImages || [],
@@ -3701,7 +3612,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
         await bgClient.query("COMMIT");
         bgClient.release();
 
-        // Cache para consultas multimodales solo texto
         if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'universal')) {
           const categoryType = categorizeQuery(extractedText);
           intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -3743,7 +3653,6 @@ Como profesor universal, puedo abordar esto desde ${queryInfo.discipline || 'mú
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR UNIVERSALES
 // ============================================================================
 
 export const handleStudyQueryWithoutSaving = async (params) => {
@@ -3764,7 +3673,6 @@ export const handleStudyQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Verificar URL de YouTube
     if (isYouTubeURL(query)) {
       const { exists: videoExists, videoInfo } = await checkExistingYouTubeVideo(userId, chatId);
 
@@ -3827,7 +3735,6 @@ export const handleStudyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query, herramientaId),
       ]);
@@ -3846,7 +3753,6 @@ export const handleStudyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE UNIVERSAL
       const { agent, tools } = await createUniversalAcadelAgent(model, queryInfo, query, userId, chatId);
 
       const agentExecutor = new AgentExecutor({
@@ -3977,7 +3883,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal universal (sin guardar) clasificado: tipo=${queryInfo.type}, disciplina=${queryInfo.discipline}`);
 
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3990,7 +3895,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // Recuperar contenido de BD para documentos sin contenido
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -4004,7 +3908,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // Recuperar contenido de BD
           console.log(`🔍 [RETRY/EDIT UNIVERSAL] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
 
           // Por fileId si existe
@@ -4116,7 +4019,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes en modo retry/edit universal
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -4176,7 +4078,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -4261,11 +4162,9 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial relevante universal
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal universal", herramientaId);
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada universal
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -4296,7 +4195,6 @@ export const handleStudyMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente universal especializado
     queryInfo.needsStudyKnowledgeBase = true;
     const { agent, tools } = await createUniversalAcadelAgent(model, queryInfo, combinedQuery, userId, chatId);
 

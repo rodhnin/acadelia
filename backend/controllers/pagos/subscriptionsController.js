@@ -10,7 +10,6 @@ export const SubscriptionsController = {
      */
     async getAllSubscriptions(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 status: req.query.status,
                 id_user: req.query.id_user,
@@ -22,13 +21,11 @@ export const SubscriptionsController = {
                 sort_direction: req.query.sort_direction
             };
             
-            // Extraer datos de paginación
             const pagination = {
                 page: parseInt(req.query.page) || 1,
                 limit: parseInt(req.query.limit) || 50
             };
             
-            // Log de acceso
             logSecurityEvent('SUBSCRIPTION_LIST_ACCESS', 'Acceso a lista de suscripciones', {
                 userId: req.user?.id_user,
                 filters,
@@ -67,7 +64,6 @@ export const SubscriptionsController = {
         try {
             const { userId } = req.params;
             
-            // Verificar si el usuario tiene permisos para acceder a estas suscripciones
             const isOwnRequest = req.user.id_user == userId;
             const isAdmin = req.user.id_rol === 3; // Asumiendo que 3 es el ID del rol de administrador
             
@@ -84,7 +80,6 @@ export const SubscriptionsController = {
                 });
             }
             
-            // Log de acceso autorizado
             logSecurityEvent('USER_SUBSCRIPTION_ACCESS', 'Acceso a suscripciones de usuario', {
                 requestUserId: req.user.id_user,
                 targetUserId: userId,
@@ -126,7 +121,6 @@ export const SubscriptionsController = {
             
             const subscription = await subscriptionsService.getSubscriptionById(id);
             
-            // Verificar si el usuario tiene permisos para acceder a esta suscripción
             const isOwnSubscription = req.user.id_user == subscription.id_user;
             const isAdmin = req.user.id_rol === 3; // Asumiendo que 3 es el ID del rol de administrador
             
@@ -144,7 +138,6 @@ export const SubscriptionsController = {
                 });
             }
             
-            // Log de acceso autorizado
             logSecurityEvent('SUBSCRIPTION_DETAIL_ACCESS', 'Acceso a detalle de suscripción', {
                 requestUserId: req.user.id_user,
                 subscriptionId: id,
@@ -198,7 +191,6 @@ export const SubscriptionsController = {
                 });
             }
             
-            // Verificar que el usuario tenga permisos de administrador
             if (req.user.id_rol !== 3) {
                 logSecurityEvent('UNAUTHORIZED_ACCESS', 'Intento de actualización de suscripción sin permisos', {
                     userId: req.user.id_user,
@@ -212,7 +204,6 @@ export const SubscriptionsController = {
                 });
             }
             
-            // Log de intento de actualización
             logSecurityEvent('ADMIN_SUBSCRIPTION_UPDATE_ATTEMPT', 'Intento de actualización de suscripción por admin', {
                 adminId: req.user.id_user,
                 subscriptionId: id,
@@ -271,7 +262,6 @@ export const SubscriptionsController = {
  */
 async getSubscriptionStats(req, res) {
     try {
-        // Extraer TODOS los filtros relevantes de query params (mismo que getAllSubscriptions)
         const filters = {
             status: req.query.status,
             id_user: req.query.id_user,
@@ -282,7 +272,6 @@ async getSubscriptionStats(req, res) {
             // No incluimos sort_by y sort_direction porque no aplican para estadísticas
         };
         
-        // Log de acceso con todos los filtros
         logSecurityEvent('SUBSCRIPTION_STATS_ACCESS', 'Acceso a estadísticas de suscripciones', {
             userId: req.user?.id_user,
             filters,
@@ -303,7 +292,6 @@ async getSubscriptionStats(req, res) {
             if (serviceError.message && serviceError.message.includes("permiso") && req.user.id_rol === 3) {
                 console.log("Error de permisos ignorado para administrador (ID 3)");
                 
-                // Intentar obtener estadísticas sin filtrar por usuario pero manteniendo otros filtros
                 const adminFilters = {...filters};
                 // No forzar filtro de usuario para admin
                 delete adminFilters.id_user;

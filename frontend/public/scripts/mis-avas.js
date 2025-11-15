@@ -183,7 +183,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         nextBtn.style.display = currentIndex < maxIndex ? 'flex' : 'none';
     }
 
-    // Función para ocultar inmediatamente los botones de navegación
     function ocultarBotonesNavegacion() {
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
@@ -227,7 +226,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
-    // Función para obtener herramientas
     async function obtenerHerramientas() {
         try {
             if (herramientasCache) return herramientasCache;
@@ -348,7 +346,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         `;
     }
 
-    // Función para determinar cuántos items mostrar
     function getItemsToShow() {
         const width = window.innerWidth;
         if (width <= 576) return 1;
@@ -380,7 +377,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         avaGrid.innerHTML = skeletonHTML;
         
-        // Ocultar la navegación del carousel mientras se muestran los skeletons
         ocultarBotonesNavegacion();
     }
 
@@ -493,7 +489,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const avaCards = avaGrid.querySelectorAll('.ava-card');
         if (avaCards.length === 0) return;
         
-        // Añadir efecto hover individual a cada tarjeta
         avaCards.forEach(card => {
             card.addEventListener('mouseenter', function() {
                 card.classList.add('hover-active');
@@ -529,7 +524,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         const searchTermLower = searchTerm.toLowerCase();
         
-        // Buscar en todos los tipos
         const filteredCarreras = carreras.filter(carrera => 
             carrera.nombre.toLowerCase().includes(searchTermLower)
         );
@@ -557,14 +551,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     
             div.addEventListener("click", async function() {
                 if (isAVA) {
-                    // Buscar la carrera padre
                     const carreraPadre = carreras.find(c => c.id_carrera === item.id_carrera);
                     if (carreraPadre) {
                         await mostrarAVAs(carreraPadre.id_carrera);
                         filterItems(item.nom_ava);
                     }
                 } else if (isHerramienta) {
-                    // Mostrar la lista de herramientas
                     await mostrarHerramientas();
                     filterItems(item.nombre);
                 } else {
@@ -593,7 +585,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
             const description = card.querySelector('p')?.textContent?.toLowerCase() || '';
             
-            // Buscar en título y descripción
             const matchesTitle = title.includes(searchTerm);
             const matchesDescription = description.includes(searchTerm);
             const matches = matchesTitle || matchesDescription || !searchTerm;
@@ -605,7 +596,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
         
-        // Mostrar un mensaje si no hay resultados
         const noResultsMsg = avaGrid.querySelector('.no-results-message');
         if (!anyVisible && searchTerm) {
             if (!noResultsMsg) {
@@ -633,20 +623,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             const carreras = carrerasCache || await obtenerCarrerasActivas();
             
-            // Generar HTML de carreras
             const carrerasHTML = carreras.map(generarCarreraCard).join('');
             
-            // Agregar el contenedor de herramientas al principio
             const herramientasHTML = generarHerramientasCard();
             
-            // Combinar el HTML para mostrar herramientas + carreras
             const contenidoCompleto = herramientasHTML + carrerasHTML;
             
             if (!originalContent) {
                 originalContent = contenidoCompleto;
             }
             
-            // Mostrar con transición suave
             avaGrid.style.opacity = '0';
             await new Promise(resolve => setTimeout(resolve, 150));
             
@@ -697,7 +683,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             isDetailView = true;
             currentView = 'avas';
             
-            // Mostrar skeleton mientras cargamos
             showSkeleton();
             
             const avas = await obtenerAVAsPorCarrera(carreraId);
@@ -709,14 +694,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             avaGrid.innerHTML = nuevoContenido;
             
-            // Configurar el botón de regreso
             mostrarBotonRegreso();
             
             // Reiniciar el carrusel
             currentIndex = 0;
             configurarEventos();
             
-            // Actualizar con animación
             requestAnimationFrame(() => {
                 avaGrid.style.opacity = '1';
                 avaGrid.style.transition = 'none';
@@ -738,7 +721,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             isDetailView = true;
             currentView = 'herramientas';
             
-            // Mostrar skeleton mientras cargamos
             showSkeleton();
             
             const herramientas = herramientasCache || await obtenerHerramientas();
@@ -750,14 +732,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             avaGrid.innerHTML = herramientasContent;
             
-            // Configurar el botón de regreso
             mostrarBotonRegreso();
             
             // Reiniciar el carrusel
             currentIndex = 0;
             configurarEventos();
             
-            // Actualizar con animación
             requestAnimationFrame(() => {
                 avaGrid.style.opacity = '1';
                 avaGrid.style.transition = 'none';
@@ -774,13 +754,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function mostrarBotonRegreso() {
-        // Verificar que existe el botón
         if (!regresarBtn) {
             console.error("No se encontró el botón de regreso");
             return;
         }
         
-        // Actualizar el texto y mostrar el botón (ahora usando clase)
         regresarBtn.innerHTML = `<i class='bx bx-left-arrow-alt'></i> Volver`;
         regresarBtn.classList.add('visible');
     }
@@ -791,19 +769,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         if (!originalContent) return;
         
-        // Cambiar estado
         isDetailView = false;
         
-        // Ocultar botón mediante clase en lugar de display
         regresarBtn.classList.remove('visible');
         
-        // Limpiar búsqueda
         if (searchInput) {
             searchInput.value = '';
             if (suggestionsBox) suggestionsBox.style.display = 'none';
         }
         
-        // Mostrar carreras
         mostrarCarreras();
     }
 
@@ -869,7 +843,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Configurar búsqueda en tiempo real
     if (searchInput) {
         let searchTimeout;
         searchInput.addEventListener("input", function() {
@@ -883,14 +856,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             }, 300);
         });
 
-        // Cerrar sugerencias al hacer clic fuera
         document.addEventListener("click", function(e) {
             if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
                 suggestionsBox.style.display = "none";
             }
         });
         
-        // Limpiar búsqueda con Escape
         searchInput.addEventListener("keydown", function(e) {
             if (e.key === "Escape") {
                 this.value = "";
@@ -915,14 +886,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Precargar herramientas
             obtenerHerramientas();
             
-            // Mostrar carreras y content box de herramientas
             await mostrarCarreras();
             
             // Eventos de navegación
             if (prevBtn) prevBtn.addEventListener('click', () => moveSlide(-1));
             if (nextBtn) nextBtn.addEventListener('click', () => moveSlide(1));
             
-            // Configurar el evento para el botón de volver
             if (regresarBtn) {
                 regresarBtn.addEventListener('click', handleRegresarClick);
             }
@@ -933,7 +902,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 updateCarousel(false);
             });
 
-            // Actualizar carrusel después de que el contenido esté disponible
             const observer = new MutationObserver((mutations) => {
                 for (const mutation of mutations) {
                     if (mutation.type === 'childList' && avaGrid.children.length > 0 && !isLoading) {

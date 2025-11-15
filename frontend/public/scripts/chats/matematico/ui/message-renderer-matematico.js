@@ -211,17 +211,14 @@ function setupUnifiedObserver() {
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType === 1) {
-            // Detectar nuevos mensajes
             if (node.classList?.contains('message') || node.querySelector?.('.message')) {
               newMessagesAdded = true;
 
-              // ✅ AGREGAR a set para evitar duplicados
               const messageElement = node.classList?.contains('message') ? node : node.querySelector('.message');
               if (messageElement) {
                 messagesToProcess.add(messageElement);
               }
 
-              // Agregar a pendientes para limpieza
               const contentElement = node.querySelector('.message-content') ||
                 (node.classList?.contains('message') ? node.querySelector('.message-content') : null);
               if (contentElement) {
@@ -230,7 +227,6 @@ function setupUnifiedObserver() {
               }
             }
 
-            // Detectar nuevas imágenes
             const hasImages = node.querySelector('img') ||
               node.querySelector('.image-preview') ||
               node.querySelector('.multimodal-container');
@@ -242,13 +238,11 @@ function setupUnifiedObserver() {
       }
     });
 
-    // ✅ PROCESAR mensajes nuevos SIN DUPLICADOS
     if (newMessagesAdded && messagesToProcess.size > 0) {
       setTimeout(() => {
         console.log(`🔍 [OBSERVER] ${messagesToProcess.size} mensajes únicos detectados`);
 
         messagesToProcess.forEach(message => {
-          // ✅ VERIFICAR si ya fue procesado
           if (message.hasAttribute('data-images-processed')) {
             console.log('📦 [OBSERVER] Mensaje ya procesado, saltando');
             return;
@@ -260,7 +254,6 @@ function setupUnifiedObserver() {
             if (externalImages.length > 0) {
               const containerKey = container.dataset.containerId || container.outerHTML.slice(0, 100);
 
-              // ✅ THROTTLING: Solo procesar si no se procesó recientemente
               const lastProcessed = imageProcessingThrottle.get(containerKey);
               const now = Date.now();
 
@@ -269,7 +262,6 @@ function setupUnifiedObserver() {
                 imageProcessingThrottle.set(containerKey, now);
                 processImagesOptimized(container);
 
-                // Limpiar throttle después de un tiempo
                 setTimeout(() => {
                   imageProcessingThrottle.delete(containerKey);
                 }, 10000); // 10 segundos
@@ -279,19 +271,16 @@ function setupUnifiedObserver() {
             }
           }
 
-          // ✅ MARCAR como procesado para evitar reprocesamiento
           message.setAttribute('data-images-processed', 'true');
         });
 
       }, 150); // Reducido de 300ms a 150ms
     }
 
-    // Procesar imágenes con errores
     if (hasNewImages) {
       setTimeout(handleNewImages, 200);
     }
 
-    // Procesar contenido para limpieza
     if (hasNewContent && !processingScheduled) {
       processingScheduled = true;
       requestAnimationFrame(() => {
@@ -679,7 +668,6 @@ function extractCodeContent(originalMessage, fileName) {
   }
 }
 
-// Inicializar contentProcessing con la función de manejadores de archivos
 contentProcessing.initialize({
   initializeFileAttachmentHandlers: initializeFileAttachmentHandlers
 });
@@ -903,7 +891,6 @@ export function renderTextMessage(container, content, role = '') {
 
     container.innerHTML = parseMarkdownToHTML(safeContent);
 
-    // ✅ OPTIMIZACIÓN: Verificar si realmente hay imágenes externas antes de procesar
     const externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
     const hasImages = container.querySelectorAll('.markdown-image').length > 0;
 
@@ -1327,7 +1314,6 @@ function renderTableMessage(container, content) {
  * ✅ UNIFICADO - Renderiza matemáticas con sistema de backoff exponencial
  */
 function renderMathWithRetry(container, attempt = 1, maxAttempts = 3) {
-  // Marcar contenedor y celdas con contenido matemático
   container.setAttribute('data-has-math', 'true');
 
   container.querySelectorAll('th, td').forEach(cell => {
@@ -1951,7 +1937,6 @@ function getMessageTimestamp(msg) {
       try {
         return new Date(msg[field]);
       } catch (e) {
-        // Continuar con el siguiente campo
       }
     }
   }
@@ -2013,10 +1998,8 @@ export function createLoadingMessage() {
     </div>
   `;
 
-  // 🔥 ESTABLECER REFERENCIA GLOBAL INMEDIATAMENTE
   window._currentLoadingMessage = loader;
 
-  // 🔥 AÑADIR TIMESTAMP PARA VALIDACIÓN
   const timestamp = Date.now();
   loader.dataset.messageId = `msg-${timestamp}-loading`;
   loader.dataset.createdAt = timestamp.toString();
@@ -2059,7 +2042,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
     initializeInteractions(loader);
   }, 50);
 
-  // ✅ DESPUÉS:
   setTimeout(() => {
     console.log('🖼️ [AUTO-PROCESS] Iniciando procesamiento automático después de renderizar IA');
 
@@ -2095,7 +2077,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
     }, 30);
   });
 
-  // 🔥 LIMPIAR REFERENCIA GLOBAL AL REEMPLAZAR
   if (window._currentLoadingMessage === loader) {
     window._currentLoadingMessage = null;
     console.log('🧹 [LOADING] Referencia global limpiada después de reemplazar');
@@ -2109,7 +2090,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
 export function replaceWithError(loadingMessage, errorMessage, originalQuery = '') {
   if (!loadingMessage) return;
 
-  // 🔥 LIMPIAR REFERENCIA GLOBAL EN ERRORES
   if (window._currentLoadingMessage === loadingMessage) {
     window._currentLoadingMessage = null;
     console.log('🧹 [ERROR] Referencia global limpiada después de error');
@@ -2480,7 +2460,6 @@ function processAllExistingImages() {
 
   console.log(`🖼️ [BATCH] Procesando proactivamente imágenes en ${messages.length} mensajes con sistema de locks...`);
 
-  // ✅ OPTIMIZACIÓN: Procesar solo mensajes con imágenes externas reales
   const messagesWithExternalImages = [];
 
   messages.forEach(message => {
@@ -2500,7 +2479,6 @@ function processAllExistingImages() {
 
   console.log(`📦 [BATCH] ${messagesWithExternalImages.length} mensajes contienen imágenes externas`);
 
-  // ✅ PROCESAMIENTO OPTIMIZADO: Solo donde realmente se necesita
   messagesWithExternalImages.forEach(({ container, count }, index) => {
     setTimeout(() => {
       console.log(`📦 [BATCH] Procesando mensaje ${index + 1}/${messagesWithExternalImages.length} (${count} imágenes)`);

@@ -1,9 +1,6 @@
 // ============================================================================
-// 👷🦫 PROFESOR ACADEL ECONOMÍA LABORAL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO LABORAL - PROFESOR DE ECONOMÍA LABORAL SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Mercados de Trabajo ✅ Capital Humano ✅ Economía de la Educación ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +24,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +94,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -173,7 +167,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +187,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -263,7 +255,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -326,7 +317,6 @@ class BraveSearchOrchestrator {
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
 // ============================================================================
-// 👷🦫 PROFESOR ACADEL ECONOMÍA LABORAL DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
 // ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
@@ -368,10 +358,8 @@ Hacer que CUALQUIER estudiante de economía:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS LABORALES - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES LABORALES
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA LABORAL de Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes laborales (gráficas, modelos, datos) con precisión económica extrema.
@@ -398,7 +386,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA LABORAL de Acad
 
 Eres los OJOS ANALÍTICOS LABORALES de Acadel - él interpretará tu análisis con su sabiduría económica pedagógica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES LABORALES (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA LABORAL de Acadel, el capibara economista laboral más brillante del universo en mercados, capital humano y educación.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información laboral de esta imagen económica para que Acadel pueda enseñar efectivamente integrando las tres disciplinas.
@@ -444,7 +431,6 @@ Proporciona un análisis laboral estructurado, preciso y exhaustivo que permita 
 
 **IMPORTANTE:** Sé OBSERVADOR LABORAL, PRECISO y DETALLADO en las tres disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos laborales. Acadel se encargará de la pedagogía laboral integrada pero necesita que seas muy detallista con todo lo que observas laboralmente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS LABORALES NORMALES (con y sin guardar)
 const UNIFIED_LABOR_ECONOMICS_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA LABORAL INTEGRADA:
 - Consulta del estudiante de economía laboral: "${query}"
@@ -471,7 +457,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS LABORALES MULTIMODALES (con y sin guardar)
 const UNIFIED_LABOR_ECONOMICS_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN LABORAL PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -526,7 +511,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -536,7 +520,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -558,7 +541,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -566,7 +548,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // DETECTAR GENERACIÓN DE IMÁGENES LABORALES
   const laborEconomicsImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -591,7 +572,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar exámenes laborales
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de economía laboral", "test de mercados", "evaluación de capital humano", "cuestionario educativo"
@@ -635,9 +615,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -646,7 +624,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS LABORALES ESPECÍFICOS
   const laborEconomicsTerms = [
     // Mercados de Trabajo
     'mercado laboral', 'labor market', 'empleo', 'employment', 'desempleo', 'unemployment',
@@ -671,7 +648,6 @@ const classifyQuery = (query, content = null) => {
     'políticas empleo', 'employment policies', 'subsidios empleo', 'employment subsidies'
   ];
 
-  // 🔍 DETECTAR CONCEPTOS ESPECÍFICOS LABORALES
   const specificLaborConcepts = [
     'curva phillips', 'phillips curve', 'tasa natural desempleo', 'natural rate unemployment',
     'salario mínimo', 'minimum wage', 'salario eficiencia', 'efficiency wage',
@@ -679,12 +655,10 @@ const classifyQuery = (query, content = null) => {
     'job creation', 'job destruction', 'flujos laborales', 'labor flows'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS LABORALES REALES
   const hasLaborContent =
     laborEconomicsTerms.some(term => lowercaseQuery.includes(term)) ||
     specificLaborConcepts.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasLaborContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -709,7 +683,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'modelo de', 'teoría de'];
   const diagnosticKeywords = ['analizar', 'evaluar', 'interpretar', 'caso laboral', 'situación', 'problema'];
   const marketKeywords = ['mercado laboral', 'labor market', 'empleo', 'desempleo', 'oferta laboral', 'demanda laboral', 'salarios'];
@@ -719,7 +692,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'papers laborales', 'avances economía laboral', 'nuevos hallazgos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos', 'aplicaciones'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -752,7 +724,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -762,7 +733,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional laboral
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -789,7 +759,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS LABORALES OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS LABORALES
@@ -807,7 +776,6 @@ const createLaborEconomicsKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal laboral (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -817,7 +785,6 @@ const createLaborEconomicsKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -827,7 +794,6 @@ const createLaborEconomicsKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_economialaboral",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -839,7 +805,6 @@ const createLaborEconomicsKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_LABOR_ECONOMICS_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido laboral específico sobre "${query}" en su biblioteca económica. Proceder con conocimiento laboral general integrado y experiencia docente acumulada en mercados, capital humano y educación.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -859,7 +824,6 @@ ACADEL_LABOR_ECONOMICS_MEMORY_BANK: El cerebro principal de Acadel no tiene cont
 
 ACADEL_LABOR_ECONOMICS_MEMORY_BANK: El cerebro principal de Acadel encontró información laboral sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base laboral integrado, analogías económicas y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -886,7 +850,6 @@ ACADEL_LABOR_ECONOMICS_MEMORY_BANK: El cerebro principal de Acadel activó la si
 
 INTEGRATION_NOTES: Este es el conocimiento laboral central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en mercados, capital humano y educación. Debe integrar esta información naturalmente como si fuera su propia sabiduría económica, enriqueciéndola con casos laborales específicos, analogías y rigor técnico que conecte las tres disciplinas de manera pedagógica magistral.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1112,7 +1075,6 @@ const createLaborEconomicsConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto laboral integrado: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1122,7 +1084,6 @@ const createLaborEconomicsConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_economialaboral",
       });
 
-      // 📚 BÚSQUEDAS LABORALES ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `mercados laborales ${concept}`,
@@ -1132,7 +1093,6 @@ const createLaborEconomicsConceptAnalyzerTool = (embeddings) => tool(
         `análisis económico ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1165,7 +1125,6 @@ const createLaborEconomicsConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural laboral
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/👷|✅|⚠️|📊|🎯|💡/g, '')
@@ -1344,7 +1303,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia laboral según este anális
 );
 
 // ============================================================================
-// 📷 LABOR IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES (MANTENIDA ORIGINAL)
 // ============================================================================
 
 export const detectLaborEconomicsImageRequest = (query) => {
@@ -1377,7 +1335,6 @@ export const extractLaborEconomicsImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema laboral
 const createLaborEconomicsVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1412,7 +1369,6 @@ const createLaborEconomicsVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts laborales
 const enhanceLaborEconomicsImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración de economía laboral educativa de alta calidad integrando mercados, capital humano y educación: ${prompt}. 
@@ -1431,7 +1387,6 @@ const enhanceLaborEconomicsImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS LABORALES
 // ============================================================================
 
 const createSpecializedLaborEconomicsPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1541,7 +1496,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA LABORAL - OPTIMIZADAS
   // ============================================================================
 
   const laborEconomicsTypeInstructions = {
@@ -1624,7 +1578,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT LABORAL FINAL ULTRA-OPTIMIZADO
   // ============================================================================
 
   return `${basePersonality}
@@ -1649,13 +1602,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE LABORAL ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelLaborEconomicsAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`👷🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveLaborEconomicsWebSearchTool(),
     createBraveLaborEconomicsImageSearchTool(),
@@ -1670,7 +1621,6 @@ const createAcadelLaborEconomicsAgent = async (llm, queryInfo, studentQuery) => 
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido laboral`);
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsLaborSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando LaborEconomicsConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createLaborEconomicsConceptAnalyzerTool(embeddings));
@@ -1686,7 +1636,6 @@ const createAcadelLaborEconomicsAgent = async (llm, queryInfo, studentQuery) => 
     tools.push(createLaborEconomicsComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createLaborEconomicsFeedbackAnalyzerTool());
 
   console.log(`👷🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas laborales:`, tools.map(t => t.name));
@@ -1699,7 +1648,6 @@ const createAcadelLaborEconomicsAgent = async (llm, queryInfo, studentQuery) => 
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt laboral especializado y escapado
   const specializedPrompt = createSpecializedLaborEconomicsPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1731,7 +1679,6 @@ const createAcadelLaborEconomicsAgent = async (llm, queryInfo, studentQuery) => 
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES LABORALES OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1780,7 +1727,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen laboral: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1790,7 +1736,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1800,7 +1745,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_economialaboral",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1812,7 +1756,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1827,7 +1770,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes
           return `Contexto laboral base para "${input}": conocimiento fundamental en mercados, capital humano y educación. Acadel debe generar preguntas desde su experiencia económica consolidada, integrando las tres disciplinas laborales con casos económicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1936,7 +1878,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA LABORAL - handleLaborEconomicsQuery
 // ============================================================================
 
 export const handleLaborEconomicsQuery = async (params) => {
@@ -1946,7 +1887,6 @@ export const handleLaborEconomicsQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1962,13 +1902,11 @@ export const handleLaborEconomicsQuery = async (params) => {
     // CLASIFICAR EL QUERY LABORAL INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES LABORALES
     const { isImageRequest, prompt: imagePrompt } = detectLaborEconomicsImageRequest(query);
 
     console.log(`👷🦫 Acadel analizando query laboral integrado: "${query}"`);
     console.log(`📊 Clasificación laboral: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES LABORALES
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización laboral integrada: ${imagePrompt}`);
 
@@ -1977,7 +1915,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       const laborEconomicsVisualizationTool = createLaborEconomicsVisualizationTool();
       const imageResponse = await laborEconomicsVisualizationTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1990,7 +1927,6 @@ export const handleLaborEconomicsQuery = async (params) => {
         };
       }
 
-      // Guardar la imagen laboral localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -2005,7 +1941,6 @@ export const handleLaborEconomicsQuery = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2017,7 +1952,6 @@ export const handleLaborEconomicsQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2029,7 +1963,6 @@ export const handleLaborEconomicsQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2043,7 +1976,6 @@ export const handleLaborEconomicsQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para generación de imágenes
         if (isCacheable(query, 'economialaboral')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2055,7 +1987,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2076,7 +2007,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes laborales
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen laboral integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2098,7 +2028,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2110,7 +2039,6 @@ export const handleLaborEconomicsQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2122,7 +2050,6 @@ export const handleLaborEconomicsQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2139,7 +2066,6 @@ export const handleLaborEconomicsQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para exámenes
         if (isCacheable(query, 'economialaboral')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2152,7 +2078,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2173,7 +2098,6 @@ export const handleLaborEconomicsQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA LABORAL (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2190,10 +2114,8 @@ export const handleLaborEconomicsQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico laboral
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE LABORAL ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelLaborEconomicsAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2220,7 +2142,6 @@ export const handleLaborEconomicsQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
 
-      // Fallback con personalidad Acadel laboral integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas laborales, pero no me rendiré.
 
 Sobre tu pregunta laboral: **"${query}"**
@@ -2246,11 +2167,9 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
       };
     }
 
-    // Procesar respuesta laboral
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2262,7 +2181,6 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2274,7 +2192,6 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2288,7 +2205,6 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
 
       await client.query("COMMIT");
 
-      // Cache inteligente
       if (isCacheable(query, 'economialaboral')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2302,7 +2218,6 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2345,7 +2260,6 @@ Si necesitas más detalles laborales, pregúntame de nuevo y activaré todas mis
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA LABORAL - handleLaborEconomicsMultimodalQuery  
 // ============================================================================
 
 export const handleLaborEconomicsMultimodalQuery = async (params) => {
@@ -2371,7 +2285,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2383,7 +2296,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación laboral
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto laboral extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2394,7 +2306,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal laboral integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS LABORALES CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2432,7 +2343,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES LABORALES CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2492,7 +2402,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS LABORALES ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes laborales seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2562,11 +2471,9 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE LABORAL
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal laboral integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA LABORAL
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2599,7 +2506,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE LABORAL ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2626,7 +2532,6 @@ export const handleLaborEconomicsMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto laboral
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal laboral, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes laborales:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2652,11 +2557,9 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
       };
     }
 
-    // PROCESAR RESPUESTA LABORAL Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO MULTIMODAL INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2668,7 +2571,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal de desarrollo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2689,7 +2591,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
       // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
         client,
         userId,
@@ -2701,7 +2602,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2715,7 +2615,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
 
       await client.query("COMMIT");
 
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'economialaboral')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2729,7 +2628,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2797,7 +2695,6 @@ Si necesitas una explicación laboral más detallada, pregúntame de nuevo y act
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS LABORALES
 // ============================================================================
 
 export const handleLaborEconomicsQueryWithoutSaving = async (params) => {
@@ -2820,12 +2717,10 @@ export const handleLaborEconomicsQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES LABORALES
     const { isImageRequest, prompt: imagePrompt } = detectLaborEconomicsImageRequest(query);
 
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES LABORALES (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2858,7 +2753,6 @@ export const handleLaborEconomicsQueryWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen laboral localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2918,7 +2812,6 @@ export const handleLaborEconomicsQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA LABORAL (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2937,7 +2830,6 @@ export const handleLaborEconomicsQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE LABORAL CORREGIDO
       const { agent, tools } = await createAcadelLaborEconomicsAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3040,7 +2932,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content laboral
     if (!content || !Array.isArray(content)) {
       console.error("Error: content laboral no es un array válido en modo sin guardar:", content);
       return {
@@ -3059,7 +2950,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
 
     console.log(`🧠 Query multimodal laboral integrado (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos laborales en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3072,7 +2962,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido laboral de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO LABORAL INTEGRADO: ${doc.name || doc.filename || 'documento laboral'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3086,7 +2975,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO LABORAL DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido laboral para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3147,7 +3035,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
                 console.log(`✅ [RETRY/EDIT] Contenido laboral recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3167,10 +3054,8 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
           return `${fileInfo} ${typeInfo}\n[Contenido laboral no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto laboral
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos laborales exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido laboral no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3204,7 +3089,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
       }
     }
 
-    // Procesar imágenes laborales en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3264,7 +3148,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
               analysisContext += `\n\nCONTEXTO LABORAL: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes laborales convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3349,11 +3232,9 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Cargar historial laboral relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal laboral integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada laboral
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3384,7 +3265,6 @@ export const handleLaborEconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Crear agente laboral especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelLaborEconomicsAgent(llm, queryInfo, combinedQuery);
 

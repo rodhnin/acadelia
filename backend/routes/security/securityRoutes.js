@@ -28,7 +28,6 @@ const router = express.Router();
 
 router.get('/route-map', async (req, res) => {
   try {
-    // Importar módulos necesarios
     const fs = await import('fs');
     const path = await import('path');
     const { fileURLToPath } = await import('url');
@@ -39,7 +38,6 @@ router.get('/route-map', async (req, res) => {
     // Ruta al archivo del mapa
     const mapPath = path.join(__dirname, '../../utils/routeMap.json');
     
-    // Verificar si existe el archivo
     if (!fs.existsSync(mapPath)) {
       return res.status(404).json({ 
         error: 'Mapa de rutas no encontrado. Ejecuta el proceso de build primero.' 
@@ -49,7 +47,6 @@ router.get('/route-map', async (req, res) => {
     // Leer y parsear el mapa de rutas
     const routeMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
     
-    // Enviar solo el mapa inverso (rutas -> códigos) por seguridad
     const clientMap = {};
     Object.entries(routeMap).forEach(([code, route]) => {
       clientMap[route] = code;
@@ -65,11 +62,9 @@ router.get('/route-map', async (req, res) => {
 // NUEVO: Endpoint para servir el mapa de parámetros (PÚBLICO)
 router.get('/parameter-map', async (req, res) => {
   try {
-    // Intentar obtener mapa desde el middleware
     let parameterMap = getParameterMap();
     
     if (!parameterMap || Object.keys(parameterMap).length === 0) {
-      // Si no se puede obtener del middleware, intentar leerlo del archivo
       const fs = await import('fs');
       const path = await import('path');
       const { fileURLToPath } = await import('url');
@@ -80,7 +75,6 @@ router.get('/parameter-map', async (req, res) => {
       // Ruta al archivo del mapa de parámetros
       const mapPath = path.join(__dirname, '../../utils/parameterMap.json');
       
-      // Verificar si existe el archivo
       if (fs.existsSync(mapPath)) {
         parameterMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
       } else {
@@ -97,7 +91,6 @@ router.get('/parameter-map', async (req, res) => {
       }
     }
     
-    // Enviar el mapa completo al cliente
     res.json(parameterMap);
   } catch (error) {
     console.error('Error al servir mapa de parámetros:', error);

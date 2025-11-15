@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
    
-    // Observar cambios en el contenedor de mensajes
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages) {
       observer.observe(chatMessages, { childList: true, subtree: true });

@@ -60,7 +60,6 @@ export const detectSuspiciousActivity = async (req, res, next) => {
         });
       }
       
-      // Actualizar IP actual
       await redisService.set(userIpKey, clientIp, 86400); // 24 horas
     }
     
@@ -77,11 +76,9 @@ export const detectSuspiciousActivity = async (req, res, next) => {
       
       await redisService.client.expire(navigationKey, 1800); // 30 minutos
       
-      // Verificar secuencia
       // CORREGIDO: lrange en minúsculas
       const recentPaths = await redisService.client.lrange(navigationKey, 0, -1);
       
-      // Usar una versión más permisiva del detector de navegación sospechosa
       if (isHighlySuspiciousNavigation(recentPaths)) {
         logSecurityEvent('SUSPICIOUS_NAVIGATION', 'Patrón de navegación sospechoso', {
           ip: clientIp,
@@ -103,7 +100,6 @@ export const detectSuspiciousActivity = async (req, res, next) => {
  * @private
  */
 function isSensitiveEndpoint(path) {
-  // Reducir los patrones para evitar falsos positivos
   const sensitivePatterns = [
     /\/api\/admin\//i,
     /\/api\/security\/revoke-tokens/i,
@@ -144,7 +140,6 @@ function isHighlySuspiciousNavigation(paths) {
   return false;
 }
 
-// Versión anterior - más sensible
 function isSuspiciousNavigation(paths) {
   // NO USAR - aquí solo para referencia
   const traversalAttempts = paths.filter(p => p.includes('../') || p.includes('/..')).length;

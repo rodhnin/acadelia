@@ -13,7 +13,6 @@ export async function crearHerramienta({ nombre, descripcion, slug, imagen }) {
   if (!nombre) throw new Error("El nombre de la herramienta es obligatorio");
 
   try {
-    // Verificar si ya existe una herramienta con este nombre
     const checkQuery = "SELECT id FROM herramienta WHERE nombre = $1";
     const checkResult = await pool.query(checkQuery, [nombre]);
     
@@ -21,7 +20,6 @@ export async function crearHerramienta({ nombre, descripcion, slug, imagen }) {
       throw new Error("Ya existe una herramienta con este nombre");
     }
 
-    // Obtener el siguiente ID disponible
     const nextIdQuery = "SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM herramienta";
     const nextIdResult = await pool.query(nextIdQuery);
     const nextId = nextIdResult.rows[0].next_id;

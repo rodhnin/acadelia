@@ -1,4 +1,3 @@
-// backend/services/notificationService.js
 // Eliminada la importación no utilizada de Redis
 import { 
     parseUserAgent, 
@@ -33,7 +32,6 @@ class NotificationService {
      * @param {object} res - Objeto response de Express
      */
     registerConnection(userId, res) {
-        // Crear array para el usuario si no existe
         if (!this.activeConnections.has(userId)) {
             this.activeConnections.set(userId, []);
         }
@@ -43,7 +41,6 @@ class NotificationService {
         // Limitar el número de conexiones activas por usuario
         // Si ya hay muchas conexiones, cerrar las más antiguas
         if (connections.length >= this.maxConnectionsPerUser) {
-            // Cerrar la conexión más antigua
             const oldestConnection = connections[0];
             this.cleanupConnection(userId, oldestConnection);
             
@@ -59,10 +56,8 @@ class NotificationService {
             }
         }
         
-        // Agregar la nueva conexión
         connections.push(res);
         
-        // Configurar un timeout para cerrar la conexión si no hay eventos
         const timeoutId = setTimeout(() => {
             this.cleanupConnection(userId, res);
             
@@ -75,12 +70,9 @@ class NotificationService {
             }
         }, this.connectionTimeout);
         
-        // Guardar referencia al timeout para poder cancelarlo si es necesario
         res.timeoutId = timeoutId;
         
-        // Manejar cierre de conexión por parte del cliente
         res.on('close', () => {
-            // Cancelar el timeout si existe
             if (res.timeoutId) {
                 clearTimeout(res.timeoutId);
             }
@@ -153,7 +145,6 @@ class NotificationService {
         connections.forEach(res => {
             if (!res.headersSent) {
                 try {
-                    // Cancelar el timeout si existe
                     if (res.timeoutId) {
                         clearTimeout(res.timeoutId);
                     }
@@ -170,7 +161,6 @@ class NotificationService {
             }
         });
         
-        // Limpiar todas las conexiones después de notificar
         this.activeConnections.delete(userId);
         
         if (this.logLevel >= 1 || notifiedCount > 0) {
@@ -187,7 +177,6 @@ class NotificationService {
      */
     async checkForPendingAttempt(userId) {
         try {
-            // Buscar en la base de datos usando el mismo código que ya tienes
             const query = `
                 SELECT 
                     id, 
@@ -223,7 +212,6 @@ class NotificationService {
                 });
                 const securityInfo = getSecurityAlertInfo(attempt.userAgent);
                 
-                // Agregar información parseada al objeto attempt
                 attempt.userAgentInfo = userAgentInfo;
                 attempt.userAgentDisplay = userAgentDisplay;
                 attempt.securityInfo = securityInfo;
@@ -254,5 +242,4 @@ class NotificationService {
     }
 }
 
-// Exportar una única instancia del servicio
 export const notificationService = new NotificationService();

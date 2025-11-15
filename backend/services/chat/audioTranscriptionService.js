@@ -1,4 +1,3 @@
-// backend/services/chat/audioTranscriptionService.js
 
 import fs from 'fs';
 import path from 'path';
@@ -41,7 +40,6 @@ export const AudioTranscriptionService = {
     ffmpegPath: ffmpegInstaller.path,
     ffprobePath: ffprobeInstaller.path,
 
-    // Agregar nuevas propiedades para todas las rutas
     uploadsDir: UPLOADS_DIR,
     audioUploadsDir: AUDIO_UPLOADS_DIR,
     audioSegmentsDir: AUDIO_SEGMENTS_DIR,
@@ -75,13 +73,10 @@ export const AudioTranscriptionService = {
     try {
       console.log(`Obteniendo metadatos para audio: ${filePath}`);
 
-      // Obtener duración con ffprobe
       const duration = await this.getAudioDuration(filePath);
 
-      // Generar un ID único para el audio
       const audioId = uuidv4();
 
-      // Extraer nombre sin extensión para título
       const title = originalFilename
         ? path.basename(originalFilename, path.extname(originalFilename))
         : `Audio grabado ${new Date().toLocaleString()}`;
@@ -125,7 +120,6 @@ export const AudioTranscriptionService = {
       const outputFilename = `${path.basename(inputFilePath, path.extname(inputFilePath))}_${uuidv4()}.mp3`;
       const outputFilePath = path.join(this.config.tempDir, outputFilename);
 
-      // Verificar si ffmpeg está disponible en el sistema
       let useSystemFfmpeg = false;
       try {
         await execPromise('ffmpeg -version');
@@ -135,7 +129,6 @@ export const AudioTranscriptionService = {
         console.log('ffmpeg no disponible en el sistema, usando versión instalada');
       }
 
-      // Crear el comando apropiado
       let cmd;
       if (useSystemFfmpeg) {
         cmd = `ffmpeg -i "${inputFilePath}" -ab 128k -ac 2 -ar 44100 "${outputFilePath}"`;
@@ -151,12 +144,10 @@ export const AudioTranscriptionService = {
         console.warn('Advertencias de ffmpeg:', stderr);
       }
 
-      // Verificar que el archivo existe
       if (!fs.existsSync(outputFilePath)) {
         throw new Error(`El archivo convertido no fue creado: ${outputFilePath}`);
       }
 
-      // Calcular duraciones
       this.processingMetrics.conversionDuration = Date.now() - conversionStartTime;
       console.log(`Archivo de audio convertido exitosamente en ${outputFilePath}`);
 
@@ -173,7 +164,6 @@ export const AudioTranscriptionService = {
    */
   async getAudioDuration(audioFilePath) {
     try {
-      // Verificar si ffprobe está disponible en el sistema
       let useSystemFfprobe = false;
       try {
         await execPromise('ffprobe -version');
@@ -206,17 +196,14 @@ export const AudioTranscriptionService = {
       console.log('Preparando archivo de audio para transcripción...');
       const transcriptionStartTime = Date.now();
 
-      // ✅ VERIFICACIÓN CRÍTICA: Validar chatId
       if (!chatId) {
         console.warn('⚠️ transcribeAudio: No se proporcionó chatId - las cancelaciones no funcionarán');
       }
 
-      // Verificar que el archivo existe
       if (!fs.existsSync(audioFilePath)) {
         throw new Error(`El archivo de audio no existe en la ruta: ${audioFilePath}`);
       }
 
-      // Obtener estadísticas del archivo
       const stats = fs.statSync(audioFilePath);
       const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
       console.log(`Tamaño del archivo de audio: ${fileSizeMB} MB`);
@@ -229,7 +216,6 @@ export const AudioTranscriptionService = {
         console.log('El archivo excede 24MB, se aplicará compresión...');
         fileToTranscribe = await this.compressAudioFile(audioFilePath);
 
-        // Verificar tamaño después de la compresión
         const compressedStats = fs.statSync(fileToTranscribe);
 
         // Si aún es demasiado grande, dividir en segmentos
@@ -241,17 +227,14 @@ export const AudioTranscriptionService = {
           if (segmentFiles.length > 1) {
             console.log(`Usando ${segmentFiles.length} segmentos para transcripción`);
           } else {
-            // Si no se pudieron crear segmentos, usar el archivo comprimido
             fileToTranscribe = segmentFiles[0];
           }
         }
       }
 
       // #################### PUNTO CRÍTICO 1 ####################
-      // Verificar cancelación JUSTO ANTES de transcribir
       if (chatId) {
         console.log(`PUNTO CRÍTICO: Verificando cancelación para chat ${chatId} antes de transcribir...`);
-        // Verificar si hay una cancelación pendiente
         const isCancelled = await wasRequestCancelled(chatId);
         if (isCancelled) {
           console.log(`CANCELACIÓN DETECTADA justo antes de transcribir para chat ${chatId}`);
@@ -268,7 +251,6 @@ export const AudioTranscriptionService = {
 
         for (let i = 0; i < segmentFiles.length; i++) {
           // #################### PUNTO CRÍTICO 2 ####################
-          // Verificar cancelación ANTES de cada segmento
           if (chatId) {
             const isCancelled = await wasRequestCancelled(chatId);
             if (isCancelled) {
@@ -280,7 +262,6 @@ export const AudioTranscriptionService = {
           const segmentFile = segmentFiles[i];
           console.log(`Transcribiendo segmento ${i + 1}/${segmentFiles.length}: ${path.basename(segmentFile)}`);
 
-          // Obtener duración del segmento anterior si existe para el desplazamiento de tiempo
           if (i > 0) {
             try {
               const duration = await this.getAudioDuration(segmentFiles[i - 1]);
@@ -296,7 +277,6 @@ export const AudioTranscriptionService = {
           // Ajustar las marcas de tiempo con el desplazamiento actual
           const adjustedTranscription = this.adjustTranscriptionTimestamps(segmentTranscription, timeOffset);
 
-          // Añadir a la transcripción completa
           completeTranscription += adjustedTranscription + "\n\n";
         }
 
@@ -319,7 +299,6 @@ export const AudioTranscriptionService = {
    */
   async transcribeSingleFile(audioFilePath, chatId) {
     // #################### PUNTO CRÍTICO 3 ####################
-    // Verificar cancelación ANTES de transcribir archivo individual
     if (chatId) {
       const isCancelled = await wasRequestCancelled(chatId);
       if (isCancelled) {
@@ -328,14 +307,12 @@ export const AudioTranscriptionService = {
       }
     }
 
-    // Verificar tamaño
     const stats = fs.statSync(audioFilePath);
     console.log(`Transcribiendo archivo: ${path.basename(audioFilePath)} (${(stats.size / (1024 * 1024)).toFixed(2)} MB)`);
 
     // Leer el archivo como stream
     const audioFile = fs.createReadStream(audioFilePath);
 
-    // Llamar a la API de Whisper
     const transcriptionResponse = await openai.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
@@ -344,7 +321,6 @@ export const AudioTranscriptionService = {
       timestamp_granularities: ["segment", "word"]
     });
 
-    // Formatear la respuesta
     return this.formatTranscriptionWithTimestamps(transcriptionResponse);
   },
 
@@ -354,13 +330,11 @@ export const AudioTranscriptionService = {
    */
   async compressAudioFile(inputFilePath) {
     try {
-      // Usar ruta absoluta para el archivo comprimido
       const outputFileName = path.basename(inputFilePath, path.extname(inputFilePath)) + '_compressed.mp3';
       const outputFilePath = path.join(this.config.audioCompressedDir, outputFileName);
 
       console.log(`Comprimiendo archivo de audio: ${inputFilePath} -> ${outputFilePath}`);
 
-      // Verificar si ffmpeg está disponible en el sistema
       let useSystemFfmpeg = false;
       try {
         await execPromise('ffmpeg -version');
@@ -386,12 +360,10 @@ export const AudioTranscriptionService = {
         console.warn('Advertencias de ffmpeg:', stderr);
       }
 
-      // Verificar que el archivo comprimido existe
       if (!fs.existsSync(outputFilePath)) {
         throw new Error(`El archivo comprimido no fue creado: ${outputFilePath}`);
       }
 
-      // Mostrar estadísticas
       const originalSize = fs.statSync(inputFilePath).size;
       const compressedSize = fs.statSync(outputFilePath).size;
       const reductionPercent = ((originalSize - compressedSize) / originalSize * 100).toFixed(2);
@@ -413,7 +385,6 @@ export const AudioTranscriptionService = {
    */
   async splitAudioIntoSegments(inputFilePath, segmentDurationSecs = 600) {
     try {
-      // Crear un subdirectorio para este archivo específico dentro del directorio de segmentos
       const fileId = path.basename(inputFilePath, path.extname(inputFilePath));
       const segmentsDir = path.join(this.config.audioSegmentsDir, fileId);
       if (!fs.existsSync(segmentsDir)) {
@@ -424,7 +395,6 @@ export const AudioTranscriptionService = {
       const segmentPattern = path.join(segmentsDir, `${baseFileName}_%03d${path.extname(inputFilePath)}`);
       console.log(`Dividiendo archivo de audio en segmentos de ${segmentDurationSecs} segundos`);
 
-      // Verificar si ffmpeg está disponible en el sistema
       let useSystemFfmpeg = false;
       try {
         await execPromise('ffmpeg -version');
@@ -450,7 +420,6 @@ export const AudioTranscriptionService = {
         console.warn('Advertencias de ffmpeg:', stderr);
       }
 
-      // Buscar todos los segmentos creados
       const segmentFiles = fs.readdirSync(segmentsDir)
         .filter(file => file.startsWith(baseFileName + '_'))
         .map(file => path.join(segmentsDir, file))
@@ -475,17 +444,14 @@ export const AudioTranscriptionService = {
     }
 
     return transcription.replace(/\*\*\[(\d+):(\d+)\s*-\s*(\d+):(\d+)\]\*\*/g, (match, startMin, startSec, endMin, endSec) => {
-      // Convertir a segundos totales
       const startSeconds = parseInt(startMin) * 60 + parseInt(startSec) + offsetSeconds;
       const endSeconds = parseInt(endMin) * 60 + parseInt(endSec) + offsetSeconds;
 
-      // Convertir de nuevo a minutos:segundos
       const newStartMin = Math.floor(startSeconds / 60);
       const newStartSec = Math.floor(startSeconds % 60);
       const newEndMin = Math.floor(endSeconds / 60);
       const newEndSec = Math.floor(endSeconds % 60);
 
-      // Formatear
       return `**[${newStartMin}:${String(newStartSec).padStart(2, '0')} - ${newEndMin}:${String(newEndSec).padStart(2, '0')}]**`;
     });
   },
@@ -501,13 +467,10 @@ export const AudioTranscriptionService = {
       return transcriptionResponse.text || "";
     }
 
-    // Procesar cada segmento
     for (const segment of transcriptionResponse.segments) {
-      // Convertir segundos a formato min:seg
       const startTime = this.formatTimeToMinSec(segment.start);
       const endTime = this.formatTimeToMinSec(segment.end);
 
-      // Añadir marcador de tiempo clickeable y texto del segmento
       formattedText += `**[${startTime} - ${endTime}]**\n${segment.text.trim()}\n\n`;
     }
 
@@ -543,9 +506,7 @@ export const AudioTranscriptionService = {
     // Segmentar el texto
     const textChunks = await splitter.splitText(normalizedTranscription);
 
-    // Procesar cada chunk para asegurar que las marcas de tiempo se mantienen correctamente
     return textChunks.map((chunk, index) => {
-      // Verificar si el chunk comienza con una marca de tiempo, si no, intentar encontrar la primera
       let processedChunk = chunk;
       if (!chunk.startsWith("**[")) {
         const timestampMatch = chunk.match(/\*\*\[\d+:\d+\s*-\s*\d+:\d+\]\*\*/);
@@ -583,13 +544,11 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
   this.processingMetrics = this.initMetrics();
   let filesToCleanup = [];
 
-  // Marcar el archivo original para limpieza si existe
   if (audioFilePath && fs.existsSync(audioFilePath)) {
     filesToCleanup.push(audioFilePath);
   }
 
   try {
-    // ✅ CAMBIO: SOLO verificar cancelación, NO limpiar banderas
     // VERIFICACIÓN #1: Verificar cancelación al inicio del procesamiento
     const isCancelledAtStart = await wasRequestCancelled(chatId);
     if (isCancelledAtStart) {
@@ -597,14 +556,12 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       throw new Error('Procesamiento cancelado por el usuario');
     }
 
-    // Verificar formato de audio
     if (!this.isValidAudioFormat(audioFilePath)) {
       throw new Error('Formato de audio no válido');
     }
 
     console.log(`Procesando archivo de audio: ${audioFilePath}`);
 
-    // Convertir a MP3 si es necesario
     const conversionResult = await this.convertToMp3IfNeeded(audioFilePath, originalFilename);
     const processedAudioPath = conversionResult.filePath;
 
@@ -613,7 +570,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       filesToCleanup.push(processedAudioPath);
     }
 
-    // Obtener metadatos del audio
     const audioMetadata = await this.getAudioMetadata(processedAudioPath, originalFilename);
 
     // VERIFICACIÓN #2: Verificar cancelación antes de guardar archivo para reproducción
@@ -623,7 +579,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       throw new Error('Procesamiento cancelado por el usuario');
     }
 
-    // Generar una URL de reproducción guardando una copia del archivo
     // Esta copia NO se eliminará, es la que queda para reproducción
     const playbackUrl = await this.storeAudioFileForPlayback(
       processedAudioPath,
@@ -631,7 +586,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       audioMetadata.audioId
     );
 
-    // Combinar metadatos
     const combinedMetadata = {
       ...options,
       ...audioMetadata,
@@ -642,7 +596,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
 
     this.processingMetrics.audioLengthSeconds = audioMetadata.duration;
 
-    // Verificar si el audio es demasiado largo
     if (audioMetadata.duration > this.config.maxFileDuration) {
       throw new Error(`La duración del audio (${audioMetadata.duration} segundos) excede el máximo permitido (${this.config.maxFileDuration} segundos)`);
     }
@@ -659,15 +612,12 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
     const transcription = await this.transcribeAudio(processedAudioPath, chatId);
     console.log(`Transcripción completa. Longitud: ${transcription.length} caracteres`);
 
-    // Buscar y marcar para limpieza archivos creados durante la transcripción
     const segmentsDir = path.join(this.config.audioSegmentsDir, path.basename(processedAudioPath, path.extname(processedAudioPath)));
     if (fs.existsSync(segmentsDir)) {
       try {
-        // Obtener todos los archivos en el directorio de segmentos
         const segmentFiles = fs.readdirSync(segmentsDir)
           .map(file => path.join(segmentsDir, file));
 
-        // Añadir los segmentos a la lista de limpieza
         filesToCleanup.push(...segmentFiles);
 
         // También marcar el directorio para eliminación
@@ -677,7 +627,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       }
     }
 
-    // Buscar archivos comprimidos que pudieran haberse creado
     const compressedFilePath = path.join(
       this.config.audioCompressedDir,
       path.basename(processedAudioPath, path.extname(processedAudioPath)) + '_compressed.mp3'
@@ -693,7 +642,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       throw new Error('Procesamiento cancelado por el usuario');
     }
 
-    // Dividir transcripción en chunks para embedding
     console.log("Dividiendo transcripción en chunks...");
     const chunks = await this.splitTranscriptionToChunks(transcription, combinedMetadata);
     this.processingMetrics.totalChunks = chunks.length;
@@ -705,11 +653,9 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
       throw new Error('Procesamiento cancelado por el usuario');
     }
 
-    // Almacenar chunks en la base de datos
     console.log("Almacenando transcripción en base de datos...");
     await this.storeTranscriptionInDB(chunks, userId, chatId, combinedMetadata);
 
-    // ✅ CAMBIO: Solo limpiar banderas al COMPLETAR exitosamente
     try {
       await clearCancellationFlag(chatId);
       console.log(`Banderas de cancelación limpiadas después de procesamiento exitoso para chat ${chatId}`);
@@ -732,7 +678,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
 
     // IMPORTANTE: Verificar si el error es por cancelación
     if (error.message == 'Procesamiento cancelado por el usuario') {
-      // ✅ CAMBIO: Limpiar bandera SOLO después de manejar la cancelación
       try {
         await clearCancellationFlag(chatId);
         console.log(`Banderas de cancelación limpiadas después de cancelación para chat ${chatId}`);
@@ -740,12 +685,10 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
         console.warn(`Error al limpiar bandera de cancelación: ${clearError.message}`);
       }
 
-      // Crear mensaje personalizado para la cancelación
       const fileName = originalFilename || "El archivo de audio";
       const fileInfo = options && options.fileType ?
         ` (${options.fileType})` : "";
 
-      // Obtener información básica segura (evitar undefined)
       const safeMetadata = {
         title: originalFilename || "Audio",
         source: "audio",
@@ -754,7 +697,6 @@ async processAudioFile(audioFilePath, userId, chatId, originalFilename, options 
         ...options
       };
 
-      // Devolver un objeto de respuesta específico para cancelación
       return {
         success: false,
         cancelled: true,
@@ -777,10 +719,8 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
     // Si no es cancelación, pasar el error mejorado
     throw this.enhanceError(error);
   } finally {
-    // Ejecutar limpieza de todos los archivos marcados
     console.log(`Iniciando limpieza de ${filesToCleanup.length} archivos...`);
 
-    // Limpiar archivos (primero los archivos, luego los directorios)
     const directories = [];
 
     for (const filePath of filesToCleanup) {
@@ -789,10 +729,8 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
           const stats = fs.statSync(filePath);
 
           if (stats.isDirectory()) {
-            // Guardar directorios para eliminar después
             directories.push(filePath);
           } else {
-            // Eliminar archivo
             fs.unlinkSync(filePath);
             console.log(`Archivo eliminado: ${filePath}`);
           }
@@ -802,7 +740,6 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
       }
     }
 
-    // Eliminar directorios (después de haber eliminado los archivos)
     for (const dir of directories) {
       try {
         if (fs.existsSync(dir)) {
@@ -826,7 +763,6 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
   async storeAudioFileForPlayback(tempFilePath, chatId, audioId) {
     const extension = path.extname(tempFilePath);
 
-    // Usar el directorio de audio configurado
     const permanentDir = this.config.audioUploadsDir;
 
     // Asegurar que el directorio existe
@@ -834,14 +770,11 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
       fs.mkdirSync(permanentDir, { recursive: true });
     }
 
-    // Generar nombre de archivo seguro
     const safeFileName = `${chatId.replace(/-/g, '')}_${audioId}${extension}`;
     const permanentPath = path.join(permanentDir, safeFileName);
 
-    // Copiar el archivo
     fs.copyFileSync(tempFilePath, permanentPath);
 
-    // Devolver la ruta relativa para servir el archivo
     return `/uploads/audio_playback/${safeFileName}`;
   },
 
@@ -857,7 +790,6 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
       for (let i = 0; i < chunks.length; i += batchSize) {
         const batch = chunks.slice(i, i + batchSize);
 
-        // Generar embeddings para el lote actual
         const embedPromises = batch.map(doc =>
           this.generateEmbedding(doc.pageContent).catch(err => {
             console.error(`Error embedding chunk ${i}:`, err.message);
@@ -876,10 +808,8 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
           }
 
           try {
-            // Extraer información de marcas de tiempo
             const timestampInfo = this.extractTimestampInfo(doc.pageContent);
 
-            // Insertar en la tabla agentetube (misma tabla que los agentetube)
             const query = `
               INSERT INTO agentetube (id_user, id_chat, content, metadata, embedding, special_elements)
               VALUES ($1, $2, $3, $4, $5, $6)
@@ -935,7 +865,6 @@ Si quieres procesar este archivo de audio u otro diferente, solo súbelo cuando 
       const endTime = match[2];
       const content = match[3].trim();
 
-      // Convertir MM:SS a segundos
       const startSeconds = this.timeStringToSeconds(startTime);
       const endSeconds = this.timeStringToSeconds(endTime);
 

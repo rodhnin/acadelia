@@ -11,7 +11,6 @@ export const ReportsController = {
      */
     async generateReport(req, res) {
         try {
-            // Extraer parámetros del cuerpo de la petición
             const { type, name, format, filters, options } = req.body;
             
             if (!type) {
@@ -21,7 +20,6 @@ export const ReportsController = {
                 });
             }
             
-            // Log de acceso
             logSecurityEvent('REPORT_GENERATION', 'Generación de informe', {
                 userId: req.user?.id_user,
                 type,
@@ -66,7 +64,6 @@ export const ReportsController = {
      */
     async getReportsList(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 type: req.query.type,
                 created_by: req.query.created_by,
@@ -75,13 +72,11 @@ export const ReportsController = {
                 search: req.query.search
             };
             
-            // Extraer datos de paginación
             const pagination = {
                 page: parseInt(req.query.page) || 1,
                 limit: parseInt(req.query.limit) || 10
             };
             
-            // Log de acceso
             logSecurityEvent('REPORTS_LIST_ACCESS', 'Acceso a lista de informes', {
                 userId: req.user?.id_user,
                 filters,
@@ -120,7 +115,6 @@ export const ReportsController = {
         try {
             const { id } = req.params;
             
-            // Log de acceso
             logSecurityEvent('REPORT_DETAIL_ACCESS', 'Acceso a detalle de informe', {
                 userId: req.user?.id_user,
                 reportId: id,
@@ -167,7 +161,6 @@ export const ReportsController = {
         try {
             const { id } = req.params;
             
-            // Log de acceso
             logSecurityEvent('REPORT_DOWNLOAD', 'Descarga de informe', {
                 userId: req.user?.id_user,
                 reportId: id,
@@ -183,7 +176,6 @@ export const ReportsController = {
                 });
             }
             
-            // Enviar el archivo
             res.download(report.file_path);
         } catch (error) {
             console.error(`Error descargando informe ${req.params.id}:`, error);
@@ -217,7 +209,6 @@ export const ReportsController = {
  */
 async generateIntegralReport(req, res) {
     try {
-      // Extraer parámetros del cuerpo de la petición
       const { 
         date_from, 
         date_to, 
@@ -226,7 +217,6 @@ async generateIntegralReport(req, res) {
         logoUrl 
       } = req.body;
       
-      // Log de acceso
       logSecurityEvent('INTEGRAL_REPORT_GENERATION', 'Generación de informe integral', {
         userId: req.user?.id_user,
         period: { date_from, date_to },
@@ -270,7 +260,6 @@ async generateIntegralReport(req, res) {
    */
   async configureAutomaticReports(req, res) {
     try {
-      // Extraer parámetros del cuerpo de la petición
       const { 
         cronExpression,
         recipients,
@@ -285,7 +274,6 @@ async generateIntegralReport(req, res) {
         });
       }
       
-      // Log de acceso
       logSecurityEvent('AUTOMATIC_REPORTS_CONFIG', 'Configuración de informes automáticos', {
         userId: req.user?.id_user,
         cronExpression,
@@ -299,7 +287,6 @@ async generateIntegralReport(req, res) {
         // Aquí implementarías la lógica para detener la programación
         // (Esto dependerá de cómo manejes el almacenamiento de los jobs)
         
-        // Actualizar la configuración en la base de datos
         await pool.query(
           'UPDATE config SET value = $1 WHERE key = $2',
           [JSON.stringify({ enabled: false }), 'automatic_reports']
@@ -320,7 +307,6 @@ async generateIntegralReport(req, res) {
         createdBy: 43 // Siempre usar ID 43 independientemente de quién configura
       });
       
-      // Guardar configuración en la base de datos
       const configValue = {
         enabled: true,
         cronExpression,
@@ -330,7 +316,6 @@ async generateIntegralReport(req, res) {
         updatedBy: 43 // ID fijo 43
       };
       
-      // Usar upsert para crear o actualizar
       await pool.query(
         `
         INSERT INTO config (key, value) 
@@ -369,7 +354,6 @@ async generateIntegralReport(req, res) {
    */
   async getAutomaticReportsConfig(req, res) {
     try {
-      // Obtener configuración de la base de datos
       const configResult = await pool.query(
         'SELECT value FROM config WHERE key = $1',
         ['automatic_reports']
@@ -414,14 +398,12 @@ async deleteReport(req, res) {
   try {
     const { id } = req.params;
     
-    // Log de seguridad para la acción
     logSecurityEvent('REPORT_DELETE', 'Eliminación de informe', {
       userId: req.user?.id_user,
       reportId: id,
       ip: req.ip
     }, 'high');
     
-    // Verificar que el informe exista
     const reportExists = await pool.query(
       'SELECT id FROM informes WHERE id = $1',
       [id]
@@ -434,13 +416,11 @@ async deleteReport(req, res) {
       });
     }
     
-    // Obtener la información del informe antes de eliminarlo (para manejar archivos)
     const reportInfo = await pool.query(
       'SELECT file_path, drive_url FROM informes WHERE id = $1',
       [id]
     );
     
-    // Eliminar el informe de la base de datos
     await pool.query(
       'DELETE FROM informes WHERE id = $1',
       [id]

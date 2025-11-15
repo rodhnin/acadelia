@@ -1,6 +1,4 @@
-// frontend/public/scripts/cookie-theme-integration.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Función para aplicar tema a banner de cookies
     const applyCookieTheme = () => {
       const isDarkTheme = document.body.classList.contains('dark-theme') || 
                          document.documentElement.getAttribute('data-theme') === 'dark';
@@ -15,10 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
     
-    // Aplicar tema inicial
     applyCookieTheme();
     
-    // Observar cambios en el tema
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (

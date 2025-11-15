@@ -20,7 +20,6 @@ function toggleCookieSettings() {
     }
 }
 
-// Función para guardar las preferencias de cookies
 async function saveCookiePreferences(preferences) {
     try {
         const csrfToken = window.CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -39,10 +38,8 @@ async function saveCookiePreferences(preferences) {
             throw new Error('Error al guardar preferencias');
         }
         
-        // Guardar en localStorage para referencia rápida
         localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
         
-        // Ocultar el banner
         hideCookieBanner();
         
         return true;
@@ -52,7 +49,6 @@ async function saveCookiePreferences(preferences) {
     }
 }
 
-// Agregar event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Botón para abrir la configuración de cookies desde la página de políticas
     document.getElementById('open-cookie-settings')?.addEventListener('click', function() {
@@ -64,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Verificar si el banner de cookies existe
     if (document.getElementById('cookie-consent-banner')) {
         // Botón para personalizar cookies
         document.getElementById('customize-cookies')?.addEventListener('click', function() {

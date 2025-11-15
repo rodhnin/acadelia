@@ -5,7 +5,6 @@
  * ✅ FLAGS EXACTOS: Coinciden 1:1 con tokenManager.js
  */
 
-// ===== 🚫 SISTEMA SIMPLIFICADO DE CONTROL DE AVISOS =====
 
 class SimpleTokenWarningManager {
   constructor() {
@@ -167,7 +166,6 @@ let state = {
   storageKey: 'acadel_chatNotices',
   currentChatId: null,
   initialized: false,
-  // ✅ 100% DINÁMICO: Todo viene del backend, CERO hardcodeo
   dynamicLimits: {
     maxTokensPerChat: null,
     warningThreshold: null,
@@ -188,46 +186,39 @@ let state = {
 function shouldShowWarning(currentTokens, maxTokens, tokenInfo = null) {
   console.log(`📊 [BACKEND-ALIGNED] shouldShowWarning(${currentTokens}, ${maxTokens})`);
 
-  // 🚫 BYPASS ADMIN
   if (tokenInfo && tokenInfo.isAdmin) {
     console.log(`👑 [BACKEND-ALIGNED] Admin detectado - Sin warnings`);
     return false;
   }
 
-  // 🚫 BYPASS PREMIUM ILIMITADO
   if (tokenInfo && tokenInfo.max === 'unlimited') {
     console.log(`💎 [BACKEND-ALIGNED] Usuario premium con tokens ilimitados - Sin warnings`);
     return false;
   }
 
-  // ✅ VALIDACIÓN inicial básica
   if (typeof currentTokens !== 'number' || typeof maxTokens !== 'number' || maxTokens <= 0) {
     console.warn(`⚠️ [BACKEND-ALIGNED] Datos básicos inválidos para warning`);
     return false;
   }
 
-  // ✅ MÉTODO 1: warningLevel del backend
   if (tokenInfo && tokenInfo.warningLevel) {
     const result = tokenInfo.warningLevel === 'high';
     console.log(`📊 [BACKEND-ALIGNED] Warning por warningLevel=${tokenInfo.warningLevel}: ${result}`);
     return result;
   }
 
-  // ✅ MÉTODO 2: warningThreshold específico del backend
   if (tokenInfo && tokenInfo.warningThreshold && typeof tokenInfo.warningThreshold === 'number') {
     const result = currentTokens >= tokenInfo.warningThreshold;
     console.log(`📊 [BACKEND-ALIGNED] Warning por warningThreshold=${tokenInfo.warningThreshold}: ${result}`);
     return result;
   }
 
-  // ✅ MÉTODO 3: límites dinámicos actualizados
   if (state.dynamicLimits.warningThreshold && typeof state.dynamicLimits.warningThreshold === 'number') {
     const result = currentTokens >= state.dynamicLimits.warningThreshold;
     console.log(`📊 [BACKEND-ALIGNED] Warning por threshold dinámico=${state.dynamicLimits.warningThreshold}: ${result}`);
     return result;
   }
 
-  // ✅ MÉTODO 4: EXACTA LÓGICA DEL BACKEND - 75%
   const warningThreshold = Math.round(maxTokens * 0.75);
   const result = currentTokens >= warningThreshold;
 
@@ -242,32 +233,27 @@ function shouldShowWarning(currentTokens, maxTokens, tokenInfo = null) {
 function shouldShowLimit(currentTokens, maxTokens, tokenInfo = null) {
   console.log(`📊 [BACKEND-ALIGNED] shouldShowLimit(${currentTokens}, ${maxTokens})`);
 
-  // 🚫 BYPASS ADMIN Y PREMIUM - EXACTO como backend
   if (tokenInfo && (tokenInfo.isAdmin || tokenInfo.max === 'unlimited')) {
     return false;
   }
 
-  // ✅ VALIDACIÓN inicial
   if (typeof currentTokens !== 'number' || typeof maxTokens !== 'number' || maxTokens <= 0) {
     console.warn(`⚠️ [BACKEND-ALIGNED] Datos básicos inválidos para limit`);
     return false;
   }
 
-  // ✅ MÉTODO 1: criticalThreshold específico del backend
   if (tokenInfo && tokenInfo.criticalThreshold && typeof tokenInfo.criticalThreshold === 'number') {
     const result = currentTokens >= tokenInfo.criticalThreshold;
     console.log(`📊 [BACKEND-ALIGNED] Limit por criticalThreshold=${tokenInfo.criticalThreshold}: ${result}`);
     return result;
   }
 
-  // ✅ MÉTODO 2: límites dinámicos críticos
   if (state.dynamicLimits.criticalTokens && typeof state.dynamicLimits.criticalTokens === 'number') {
     const result = currentTokens >= state.dynamicLimits.criticalTokens;
     console.log(`📊 [BACKEND-ALIGNED] Limit por threshold crítico dinámico=${state.dynamicLimits.criticalTokens}: ${result}`);
     return result;
   }
 
-  // ✅ MÉTODO 3: EXACTA LÓGICA DEL BACKEND - currentTokens >= maxTokens
   // COPIA EXACTA de AccessValidationService: "if (totalTokens >= maxTokens)"
   const result = currentTokens >= maxTokens;
   console.log(`📊 [BACKEND-ALIGNED] Limit EXACTO como backend: current=${currentTokens} >= max=${maxTokens}: ${result}`);
@@ -328,7 +314,6 @@ export function updateDynamicToolLimits(toolLimitsData) {
 
   console.log(`📊 [TOOL LIMITS] Actualizando límites dinámicos:`, toolLimitsData);
 
-  // ✅ ALMACENAR LÍMITES CON THRESHOLDS DINÁMICOS
   if (!window.dynamicToolLimits) {
     window.dynamicToolLimits = {};
   }
@@ -339,7 +324,6 @@ export function updateDynamicToolLimits(toolLimitsData) {
     type: toolLimitsData.type,
     isUnlimited: toolLimitsData.isUnlimited || false,
 
-    // ✅ THRESHOLDS DINÁMICOS DEL BACKEND
     warningThresholds: toolLimitsData.warningThresholds || {
       daily: toolLimitsData.daily?.limit ? Math.round(toolLimitsData.daily.limit * 0.8) : 0,
       hourly: toolLimitsData.hourly?.limit ? Math.round(toolLimitsData.hourly.limit * 0.8) : 0
@@ -348,12 +332,10 @@ export function updateDynamicToolLimits(toolLimitsData) {
     lastUpdated: new Date().toISOString()
   };
 
-  // ✅ VERIFICAR CON THRESHOLDS DINÁMICOS
   if (toolLimitsData.type === 'free_user_limits' && toolLimitsData.daily && toolLimitsData.daily.limit > 0) {
     const { used, limit } = toolLimitsData.daily;
     const percentage = (used / limit) * 100;
 
-    // ✅ USAR THRESHOLD DINÁMICO, NO HARDCODEADO
     const warningThreshold = toolLimitsData.warningThresholds?.daily || Math.round(limit * 0.8);
     const warningPercentage = (warningThreshold / limit) * 100;
 
@@ -362,7 +344,6 @@ export function updateDynamicToolLimits(toolLimitsData) {
     if (used >= warningThreshold) {
       console.log(`⚠️ [TOOL LIMITS] ${toolLimitsData.toolSlug} alcanzó threshold dinámico`);
 
-      // Mostrar aviso con información exacta del backend
       setTimeout(() => {
         const lastAiMessage = document.querySelector('.chat-messages .ai-message:last-child');
         if (lastAiMessage && typeof showFreeUserLimitNotice === 'function') {
@@ -407,25 +388,21 @@ export function detectAndShowNotices(messageElement, backendResponse) {
 
     console.log('🔍 [BACKEND-ALIGNED] Analizando respuesta EXACTA del backend');
 
-    // 🚫 BYPASS ADMIN - EXACTO como tokenManager.js
     if (responseData.accessInfo?.isAdmin || responseData.tokenInfo?.isAdmin) {
       console.log('👑 [BACKEND-ALIGNED] Admin detectado - Sin avisos');
       return;
     }
 
-    // 🚫 BYPASS PREMIUM ILIMITADO - EXACTO como tokenManager.js
     if (responseData.tokenInfo?.max === 'unlimited') {
       console.log('💎 [BACKEND-ALIGNED] Usuario premium con tokens ilimitados - Sin avisos');
       return;
     }
 
-    // ✅ PRIORIDAD 1: Errores específicos del backend
     if (responseData.error && !responseData.success) {
       handleBackendError(messageElement, responseData);
       return;
     }
 
-    // ✅ PRIORIDAD 2: FLAGS EXACTOS del tokenManager.js
     const backendFlags = {
       hasPreWarning: responseData._hasPreWarning,
       preWarningExact: responseData._preWarningExact,
@@ -456,14 +433,11 @@ export function detectAndShowNotices(messageElement, backendResponse) {
       }
     }
 
-    // ✅ PRIORIDAD NUEVA: Límites específicos por herramienta
     if (responseData.toolLimits && responseData.toolLimits.toolSlug) {
       console.log(`🔧 [BACKEND-ALIGNED] Detectando límites específicos para: ${responseData.toolLimits.toolSlug}`);
 
-      // Actualizar límites dinámicos
       updateDynamicToolLimits(responseData.toolLimits);
 
-      // Verificar si necesita aviso inmediato
       if (responseData.toolLimits.type === 'free_user_limits' && responseData.toolLimits.hasExceeded) {
         console.log(`⚠️ [BACKEND-ALIGNED] Límite excedido para ${responseData.toolLimits.toolSlug}`);
 
@@ -480,13 +454,11 @@ export function detectAndShowNotices(messageElement, backendResponse) {
       }
     }
 
-    // ✅ PRIORIDAD 3: Warnings array EXACTO del tokenManager.js
     if (responseData.warnings && Array.isArray(responseData.warnings)) {
       handleBackendWarningsExact(messageElement, responseData.warnings, responseData);
       return;
     }
 
-    // ✅ PRIORIDAD 4: tokenInfo directo
     if (responseData.tokenInfo && responseData.tokenInfo.current && responseData.tokenInfo.max) {
       const { current, max } = responseData.tokenInfo;
 
@@ -512,7 +484,6 @@ export function detectAndShowNotices(messageElement, backendResponse) {
 function handleBackendWarningsExact(messageElement, warnings, responseData) {
   console.log(`📊 [BACKEND-ALIGNED] Procesando warnings array EXACTO del tokenManager`);
 
-  // Filtrar warnings de tokens EXACTOS del tokenManager.js
   const tokenWarnings = warnings.filter(w =>
     w.type && (
       w.type === 'token_limit_pre' ||           // EXACTO de tokenManager.buildWarnings
@@ -542,7 +513,6 @@ function handleBackendWarningsExact(messageElement, warnings, responseData) {
 function showBackendToolLimitNotice(messageElement, backendData) {
   console.log(`📊 [BACKEND TOOL NOTICE] Datos recibidos del backend:`, backendData);
 
-  // ✅ EXTRAER EXACTAMENTE lo que viene del backend
   const toolSlug = backendData.toolSlug || 'unknown';
   const toolName = backendData.toolName ||
     backendData.toolInfo?.name ||
@@ -564,14 +534,12 @@ function showBackendToolLimitNotice(messageElement, backendData) {
     hasResetTime: !!limitData.resetTime
   });
 
-  // ✅ USAR EXACTAMENTE los números del backend
   const used = limitData.used;
   const limit = limitData.limit;
   const remaining = limitData.remaining;
   const percentage = limitData.percentage;
   const resetTime = limitData.resetTime;
 
-  // ✅ CONSTRUIR MENSAJE CON DATOS REALES
   let message, details;
 
   if (limitType === 'daily') {
@@ -588,7 +556,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
     }
   }
 
-  // ✅ CONSTRUIR DETALLES CON TIEMPO EXACTO DEL BACKEND
   if (resetTime) {
     const resetDate = new Date(resetTime);
     const now = new Date();
@@ -611,7 +578,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
         }
       }
     } else {
-      // Para hourly
       const diffMs = resetDate - now;
       const diffMinutes = Math.ceil(diffMs / (1000 * 60));
 
@@ -628,7 +594,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
       }
     }
 
-    // ✅ AGREGAR INFO ADICIONAL del backend
     if (remaining !== undefined) {
       details += ` Tendrás ${remaining} mensajes adicionales.`;
     }
@@ -636,7 +601,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
       details += ` (${percentage.toFixed(1)}% usado)`;
     }
   } else {
-    // ❌ SOLO si NO hay resetTime (no debería pasar)
     console.warn(`⚠️ [BACKEND ERROR] No se recibió resetTime del backend para ${toolName}`);
     details = `Error: No se pudo obtener tiempo de restablecimiento del backend.`;
   }
@@ -650,7 +614,6 @@ function showBackendToolLimitNotice(messageElement, backendData) {
     source: 'backend_exact_data'
   });
 
-  // ✅ MOSTRAR AVISO con datos EXACTOS del backend
   showNotice(messageElement, {
     type: 'TOOL_LIMIT',
     message,
@@ -682,14 +645,12 @@ function handleBackendError(messageElement, responseData) {
     responseData: responseData
   });
 
-  // ✅ PRIORIDAD 1: Errores específicos de AVA (NUEVO)
   if (errorCode.includes('AVA_ACCESS')) {
     console.log(`🔒 [AVA ACCESS] Mostrando aviso de acceso denegado`);
     
     const avaName = responseData.avaInfo?.nom_ava || 'contenido académico especializado';
     const careerName = responseData.careerInfo?.nombre || 'esta carrera';
     
-    // ✅ MENSAJE ESPECÍFICO PARA USUARIOS GRATUITOS SIN ACCESO
     if (errorCode === 'AVA_ACCESS.CAREER_NOT_PURCHASED') {
       showFreeUserAvaAccessNotice(messageElement, avaName, careerName, responseData.upgradeInfo || {});
       return;
@@ -699,24 +660,20 @@ function handleBackendError(messageElement, responseData) {
     }
   }
 
-  // ✅ PRIORIDAD 2: Errores de límites de herramientas
   if (errorCode.includes('TOOL_') && errorCode.includes('_LIMIT_REACHED')) {
     console.log(`🔧 [TOOL LIMIT] Usando datos COMPLETOS del backend`);
     showBackendToolLimitNotice(messageElement, responseData);
     return;
   }
 
-  // ✅ PRIORIDAD 3: Errores de tokens
   if (errorCode.includes('TOKEN_LIMITS')) {
     showTokenLimitNotice(messageElement, error.maxTokens, responseData.tokenInfo);
     return;
   }
 
-  // ✅ FALLBACK: Error genérico
   console.warn(`⚠️ [BACKEND ERROR] Error no manejado específicamente:`, errorCode);
 }
 
-// 🔧 SOLUCIÓN 4: Para debuggear - agregar a chat-notices.js
 
 export function debugBackendData(backendResponse) {
   console.group('🔍 [DEBUG] Datos completos del backend');
@@ -758,27 +715,22 @@ export function showTokenWarningNotice(messageElement, currentTokens, maxTokens,
     return;
   }
 
-  // CAMBIAR: Agregar verificación de forceShow
   if (shouldBypassNotices(tokenInfo)) {
     return;
   }
 
-  // 🚫 Verificar si ya se mostró
   if (simpleTokenManager.hasShownWarning(messageElement)) {
     console.log(`🚫 [BACKEND-ALIGNED] WARNING ya mostrado para este chat - BLOQUEADO`);
     return;
   }
 
-  // ✅ VERIFICACIÓN usando función backend-aligned
   if (!shouldShowWarning(currentTokens, maxTokens, tokenInfo)) {
     console.log(`🚫 [BACKEND-ALIGNED] No procede warning según backend`);
     return;
   }
 
-  // ✅ ACTUALIZAR límites dinámicos
   updateDynamicLimits({ max: maxTokens, current: currentTokens, ...tokenInfo });
 
-  // 📊 Marcar como mostrado
   simpleTokenManager.markWarningShown(messageElement);
 
   showNotice(messageElement, {
@@ -808,34 +760,28 @@ export function showTokenWarningNotice(messageElement, currentTokens, maxTokens,
  * ✅ FUNCIÓN 100% ALINEADA: showTokenLimitNotice
  */
 export function showTokenLimitNotice(messageElement, maxTokens = null, tokenInfo = null, forceShow = false) {
-  // 🚫 BYPASS ADMIN Y PREMIUM ILIMITADO
   if (shouldBypassNotices(tokenInfo)) {
     return;
   }
 
-  // 🚫 Verificar si ya se mostró (SOLO si no es forzado)
   if (!forceShow && simpleTokenManager.hasShownLimit(messageElement)) {
     console.log(`🚫 [BACKEND-ALIGNED] LIMIT EXCEEDED ya mostrado para este chat - BLOQUEADO`);
     return;
   }
-  // 🚫 BYPASS ADMIN Y PREMIUM ILIMITADO - EXACTO como backend
   if (tokenInfo && (tokenInfo.isAdmin || tokenInfo.max === 'unlimited')) {
     console.log(`🚫 [BACKEND-ALIGNED] Usuario admin/premium ilimitado - Limit bloqueado`);
     return;
   }
 
-  // 🚫 Verificar si ya se mostró
   if (simpleTokenManager.hasShownLimit(messageElement)) {
     console.log(`🚫 [BACKEND-ALIGNED] LIMIT EXCEEDED ya mostrado para este chat - BLOQUEADO`);
     return;
   }
 
-  // ✅ ACTUALIZAR límites dinámicos si es numérico
   if (typeof maxTokens === 'number') {
     updateDynamicLimits({ max: maxTokens, current: maxTokens, ...tokenInfo });
   }
 
-  // 📊 Marcar como mostrado
   simpleTokenManager.markLimitShown(messageElement);
 
   showNotice(messageElement, {
@@ -878,30 +824,25 @@ function shouldBypassNotices(tokenInfo) {
  * ✅ FUNCIÓN 100% ALINEADA: showSmartTokenNotice
  */
 export function showSmartTokenNotice(messageElement, currentTokens, maxTokens, percentage = null, tokenInfo = null) {
-  // 🚫 BYPASS ADMIN Y PREMIUM ILIMITADO - EXACTO como backend
   if (shouldBypassNotices(tokenInfo)) {
     return 'admin_or_premium_unlimited';
   }
 
-  // ✅ VALIDACIÓN usando función backend-aligned
   if (!validateTokenData(currentTokens, maxTokens)) {
     console.warn(`⚠️ [BACKEND-ALIGNED] Datos de tokens inválidos del backend`);
     return 'invalid_tokens';
   }
 
-  // ✅ ACTUALIZAR límites dinámicos
   updateDynamicLimits({ max: maxTokens, current: currentTokens, ...tokenInfo });
 
   console.log(`🤖 [BACKEND-ALIGNED] Evaluando según backend EXACTO sin mostrar cantidades`);
 
-  // 🚨 CASO 1: Límite crítico excedido - usando función backend-aligned
   if (shouldShowLimit(currentTokens, maxTokens, tokenInfo)) {
     console.log(`🚨 [BACKEND-ALIGNED] CRÍTICO según backend`);
     showTokenLimitNotice(messageElement, maxTokens, tokenInfo);
     return 'limit_exceeded';
   }
 
-  // ⚠️ CASO 2: Warning - usando función backend-aligned
   if (shouldShowWarning(currentTokens, maxTokens, tokenInfo)) {
     if (!simpleTokenManager.hasShownWarning(messageElement)) {
       console.log(`⚠️ [BACKEND-ALIGNED] WARNING según backend`);
@@ -913,7 +854,6 @@ export function showSmartTokenNotice(messageElement, currentTokens, maxTokens, p
     }
   }
 
-  // ✅ CASO 3: Sin avisos necesarios aún
   console.log(`✅ [BACKEND-ALIGNED] OK según backend`);
   return 'no_notice_needed';
 }
@@ -1489,7 +1429,6 @@ export function showFreeUserAvaAccessNotice(messageElement, avaName = 'contenido
         setTimeout(() => {
           const upgradeUrl = upgradeInfo.url || `/tienda?career=${encodeURIComponent(careerName)}`;
           
-          // Intentar función de upgrade personalizada primero
           if (typeof window.handleCareerUpgrade === 'function') {
             window.handleCareerUpgrade(careerName, avaName);
             return;
@@ -1499,7 +1438,6 @@ export function showFreeUserAvaAccessNotice(messageElement, avaName = 'contenido
             return;
           }
           
-          // Fallback: abrir tienda
           window.open(upgradeUrl, '_blank');
         }, 500);
       }
@@ -1509,7 +1447,6 @@ export function showFreeUserAvaAccessNotice(messageElement, avaName = 'contenido
   console.log(`✅ [AVA ACCESS] Aviso de usuario gratuito mostrado para ${avaName}`);
 }
 
-// ✅ Exportar funciones principales 100% ALINEADAS CON BACKEND
 export default {
   detectAndShowNotices,
   initChatNotices,

@@ -76,7 +76,6 @@ export function showConfirmationModal(message) {
  */
 export function showDynamicConfirmModal(title, message) {
   return new Promise((resolve) => {
-    // Crear elementos del modal
     const modal = document.createElement('div');
     modal.className = 'custom-modal confirmation-modal';
     
@@ -96,20 +95,16 @@ export function showDynamicConfirmModal(title, message) {
       </div>
     `;
     
-    // Añadir al DOM
     document.body.appendChild(modal);
     
-    // Mostrar con animación
     setTimeout(() => {
       modal.classList.add('show');
     }, 10);
     
-    // Configurar botones
     const closeBtn = modal.querySelector('.close-modal');
     const cancelBtn = modal.querySelector('.cancel-btn');
     const confirmBtn = modal.querySelector('.confirm-btn');
     
-    // Función para cerrar el modal
     const closeModal = () => {
       modal.classList.remove('show');
       setManagedTimeout(() => {
@@ -135,7 +130,6 @@ export function showDynamicConfirmModal(title, message) {
       resolve(true);
     });
     
-    // Cerrar con Escape
     const escKeyHandler = function(e) {
       if (e.key === 'Escape') {
         closeModal();
@@ -146,7 +140,6 @@ export function showDynamicConfirmModal(title, message) {
     
     document.addEventListener('keydown', escKeyHandler);
     
-    // Añadir estilos si no existen
     if (!document.getElementById('confirmation-modal-styles')) {
       const style = document.createElement('style');
       style.id = 'confirmation-modal-styles';
@@ -175,11 +168,9 @@ export function showAcadelManualCopyModal(text, options = {}) {
     
     const mensajeElegido = mensajesAcadel[Math.floor(Math.random() * mensajesAcadel.length)];
     
-    // Crear elementos del modal
     const modal = document.createElement('div');
     modal.className = 'custom-modal acadel-copy-modal';
     
-    // Crear un ID único para el textarea
     const textareaId = 'acadel-copy-textarea-' + Date.now();
     
     modal.innerHTML = `
@@ -231,21 +222,17 @@ export function showAcadelManualCopyModal(text, options = {}) {
       </div>
     `;
     
-    // Añadir al DOM
     document.body.appendChild(modal);
     
-    // Mostrar con animación
     setTimeout(() => {
       modal.classList.add('show');
     }, 10);
     
-    // Obtener elementos
     const closeBtn = modal.querySelector('.close-modal');
     const gotItBtn = modal.querySelector('.acadel-copy-got-it');
     const selectAllBtn = modal.querySelector('.acadel-copy-select-all');
     const textarea = modal.querySelector('.acadel-copy-textarea');
     
-    // Función para cerrar el modal
     const closeModal = () => {
       modal.classList.remove('show');
       setManagedTimeout(() => {
@@ -290,7 +277,6 @@ export function showAcadelManualCopyModal(text, options = {}) {
       }
     });
     
-    // Cerrar con Escape
     const escKeyHandler = function(e) {
       if (e.key === 'Escape') {
         closeModal();
@@ -301,10 +287,8 @@ export function showAcadelManualCopyModal(text, options = {}) {
     
     document.addEventListener('keydown', escKeyHandler);
     
-    // Detectar si el usuario selecciona texto para dar feedback
     textarea.addEventListener('select', () => {
       if (textarea.selectionStart === 0 && textarea.selectionEnd === textarea.value.length) {
-        // Mostrar notificación de que Acadel está contento
         if (window.acadelInfo) {
           window.acadelInfo("🦫✨ ¡Perfecto!", "Acadel ve que seleccionaste todo el texto. ¡Ahora usa Ctrl+C para copiarlo!");
         }
@@ -392,7 +376,6 @@ export function setupModalListeners() {
   }
 }
 
-// Exportar todas las funciones
 export default {
   showConfirmationModal,
   showDynamicConfirmModal,

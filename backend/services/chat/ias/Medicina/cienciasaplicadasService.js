@@ -2,7 +2,6 @@
 // 🧬🦫 PROFESOR ACADEL CIENCIAS BÁSICAS APLICADAS - SISTEMA ACADÉMICO REVOLUCIONARIO V3.1 TÉCNICO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR MULTIDISCIPLINARIO EN CIENCIAS BÁSICAS APLICADAS TÉCNICO
-// Sistema técnico optimizado con Knowledge Base como cerebro principal y ejecución paralela
 // Especializado en Bioquímica, Genética y Microbiología con enfoque técnico riguroso
 // ============================================================================
 
@@ -28,12 +27,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -100,7 +97,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -174,7 +170,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +190,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -264,7 +258,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -367,10 +360,8 @@ Hacer que CUALQUIER estudiante de medicina:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS TÉCNICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES TÉCNICAS DE CIENCIAS APLICADAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Ciencias Básicas Aplicadas.
 
 🎯 FUNCIÓN: Analizar imágenes científicas de BIOQUÍMICA, GENÉTICA Y MICROBIOLOGÍA con precisión técnica extrema.
@@ -397,7 +388,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel e
 
 Eres los OJOS ANALÍTICOS TÉCNICOS de Dr. Acadel - él interpretará tu análisis con su sabiduría pedagógica médica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES TÉCNICAS DE CIENCIAS APLICADAS
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Dr. Acadel, el capibara académico más brillante del universo en bioquímica, genética y microbiología médicas.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información técnica de esta imagen científica/médica para que Dr. Acadel pueda enseñar efectivamente ciencias básicas aplicadas.
@@ -443,7 +433,6 @@ Proporciona un análisis técnico estructurado, preciso y exhaustivo que permita
 
 **IMPORTANTE:** Sé OBSERVADOR TÉCNICO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos científicos médicos. Dr. Acadel se encargará de la pedagogía técnica pero necesita que seas muy detallista con todo lo que observas científicamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS NORMALES (con y sin guardar)
 const UNIFIED_APPLIED_SCIENCES_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE CIENCIAS APLICADAS TÉCNICA:
 - Consulta del estudiante de medicina: "${query}"
@@ -470,7 +459,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_APPLIED_SCIENCES_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE CIENCIAS APLICADAS TÉCNICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -525,7 +513,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -535,7 +522,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -557,7 +543,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -565,7 +550,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // 🔍 DETECTAR TÉRMINOS DE CIENCIAS APLICADAS ESPECÍFICOS
   const appliedScienceTerms = [
     // Bioquímica
     'bioquímica', 'biochemistry', 'enzima', 'enzyme', 'metabolismo', 'metabolism', 'proteína', 'protein',
@@ -585,7 +569,6 @@ const classifyQuery = (query, content = null) => {
     'esterilización', 'desinfección', 'asepsia', 'infección', 'virulencia'
   ];
   
-  // 🔍 DETECTAR TÉCNICAS Y MÉTODOS DE CIENCIAS APLICADAS
   const appliedScienceTechniques = [
     'western blot', 'elisa', 'pcr', 'rt-pcr', 'qpcr', 'electroforesis',
     'cromatografía', 'espectrometría', 'microscopía', 'cultivo celular',
@@ -593,14 +576,12 @@ const classifyQuery = (query, content = null) => {
     'inmunofluorescencia', 'citometría', 'fermentación'
   ];
   
-  // 🔍 DETECTAR CONCEPTOS MÉDICOS INTEGRADOS
   const medicalConcepts = [
     'diagnóstico molecular', 'medicina personalizada', 'farmacogenómica',
     'biomarcadores', 'terapia génica', 'medicina regenerativa',
     'resistencia antimicrobiana', 'epidemiología molecular'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS DE CIENCIAS APLICADAS REALES
   const hasAppliedScienceContent = 
     appliedScienceTerms.some(term => lowercaseQuery.includes(term)) ||
     appliedScienceTechniques.some(term => lowercaseQuery.includes(term)) ||
@@ -608,7 +589,6 @@ const classifyQuery = (query, content = null) => {
     /[ATCG]{3,}/.test(query) || // Detectar secuencias de ADN
     /ph\s*=|ph\s*\d|pka|pkb/i.test(query); // Detectar pH, pKa, etc.
   
-  // Detectar exámenes
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de bioquímica", "test de genética", "evaluación de microbiología", "cuestionario de ciencias aplicadas"
@@ -654,9 +634,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL DE CIENCIAS APLICADAS
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal médico
@@ -666,7 +644,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasAppliedScienceContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal médico
     const result = {
@@ -692,7 +669,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS DE CIENCIAS APLICADAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'principio', 'mecanismo de'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'analizar caso'];
   const theoryKeywords = ['teoría', 'ley', 'principio', 'demostrar', 'derivar', 'fundamento', 'mecanismo molecular'];
@@ -701,7 +677,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos avances', 'nuevos estudios', 'papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
   
-  // ✅ CLASIFICACIÓN DE CIENCIAS APLICADAS CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -738,14 +713,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar nivel de cálculos
   const mathKeywords = ['ecuación', 'fórmula', 'concentración', 'molaridad', 'cinética', 'km', 'vmax', 'ph', 'pka'];
   if (mathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -755,7 +728,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'bioquímica es difícil'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -783,7 +755,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DE CIENCIAS APLICADAS TÉCNICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE CIENCIAS APLICADAS TÉCNICAS
@@ -801,7 +772,6 @@ const createAppliedSciencesKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal de ciencias aplicadas (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -811,7 +781,6 @@ const createAppliedSciencesKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL DE CIENCIAS APLICADAS
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto médico para mejores decisiones
@@ -821,7 +790,6 @@ const createAppliedSciencesKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_cienciasaplicadas",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL DE CIENCIAS APLICADAS
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Applied Sciences Knowledge Base timeout')), 30000)
       );
@@ -833,7 +801,6 @@ const createAppliedSciencesKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_APPLIED_SCIENCES_MEMORY_BANK: El cerebro principal de ciencias aplicadas de Dr. Acadel no tiene contenido técnico específico sobre "${query}" en su biblioteca científica médica. Proceder con conocimiento técnico médico general y experiencia científica acumulada en bioquímica, genética y microbiología.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -853,7 +820,6 @@ ACADEL_APPLIED_SCIENCES_MEMORY_BANK: El cerebro principal de ciencias aplicadas 
 
 ACADEL_APPLIED_SCIENCES_MEMORY_BANK: El cerebro principal de ciencias aplicadas de Dr. Acadel encontró información técnica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base técnico médico, analogías científicas médicas precisas y experiencia docente acumulada integrando bioquímica, genética y microbiología.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -880,7 +846,6 @@ ACADEL_APPLIED_SCIENCES_MEMORY_BANK: El cerebro principal de ciencias aplicadas 
 
 INTEGRATION_NOTES: Este es el conocimiento técnico médico central que Dr. Acadel usará como base neurológica principal para su respuesta integrando bioquímica, genética y microbiología. Representa su comprensión médica profunda acumulada. Debe integrar esta información naturalmente como si fuera su propia sabiduría científica médica, enriqueciéndola con casos técnicos médicos específicos, analogías científicas médicas precisas y metodología pedagógica médica rigurosa.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1173,7 +1138,6 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto de ciencias aplicadas técnico: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN DE CIENCIAS APLICADAS
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos médicos
@@ -1183,7 +1147,6 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_cienciasaplicadas",
       });
       
-      // 📚 BÚSQUEDAS DE CIENCIAS APLICADAS TÉCNICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto técnico médico ${concept}`,
         `principios bioquímicos ${concept}`,
@@ -1194,7 +1157,6 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
         `experimentos técnicos médicos ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA DE CIENCIAS APLICADAS
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1227,7 +1189,6 @@ const createAppliedSciencesConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural de ciencias aplicadas técnica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1421,7 +1382,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia técnica médica según
 );
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE CIENCIAS APLICADAS TÉCNICOS
 // ============================================================================
 
 const createSpecializedAppliedSciencesPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1593,7 +1553,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
 // ============================================================================
-// 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA DE CIENCIAS APLICADAS TÉCNICA - OPTIMIZADAS
 // ============================================================================
 
 const appliedSciencesTechnicalTypeInstructions = {
@@ -1684,7 +1643,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT DE CIENCIAS APLICADAS TÉCNICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1709,13 +1667,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO MÉDICO (Knowl
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE DE CIENCIAS APLICADAS TÉCNICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Dr. Acadel configurando sistema de ciencias aplicadas técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico Médico: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1736,7 +1692,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
     tools.push(createWolframAppliedSciencesTool());
   }
   
-  // ✅ HERRAMIENTAS DE CIENCIAS APLICADAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis de ciencias aplicadas técnico paralelo profundo`);
     tools.push(createAppliedSciencesConceptAnalyzerTool(embeddings));
@@ -1752,7 +1707,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
     tools.push(createAppliedSciencesComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL DE CIENCIAS APLICADAS TÉCNICA SIEMPRE DISPONIBLE
   tools.push(createAppliedSciencesFeedbackAnalyzerTool());
   
   console.log(`🦫 Dr. Acadel SISTEMA DE CIENCIAS APLICADAS TÉCNICO COMPLETO configurado con ${tools.length} herramientas técnicas médicas:`, tools.map(t => t.name));
@@ -1766,7 +1720,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
     inteligenciaEmocionalTecnicaMedica: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt de ciencias aplicadas técnico especializado y escapado
   const specializedPrompt = createSpecializedAppliedSciencesPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1798,7 +1751,6 @@ const createAcadelAppliedSciencesAgent = async (llm, queryInfo, studentQuery) =>
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES DE CIENCIAS APLICADAS TÉCNICAS OPTIMIZADAS
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1847,7 +1799,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto de ciencias aplicadas técnico para examen: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1857,7 +1808,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES DE CIENCIAS APLICADAS
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes médicos necesitamos variedad
@@ -1867,7 +1817,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_cienciasaplicadas",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES DE CIENCIAS APLICADAS
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Applied Sciences exam context timeout')), 30000)
           );
@@ -1879,7 +1828,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1894,7 +1842,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Applied Sciences exam context error: ${error.message}`);
           
-          // Fallback para exámenes de ciencias aplicadas técnicos
           return `Contexto de ciencias aplicadas técnico base para "${input}": conocimiento fundamental en bioquímica, genética y microbiología médicas. Dr. Acadel debe generar preguntas desde su experiencia técnica médica consolidada, con casos prácticos clínicos realistas y conceptos fundamentales técnicos médicos integrados.`;
         }
       },
@@ -2038,7 +1985,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA ACADÉMICA - handleAppliedSciencesQuery
 // ============================================================================
 
 export const handleAppliedSciencesQuery = async (params) => {
@@ -2048,7 +1994,6 @@ export const handleAppliedSciencesQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2067,7 +2012,6 @@ export const handleAppliedSciencesQuery = async (params) => {
     console.log(`🧬🦫 Dr. Acadel analizando query académico integrado: "${query}"`);
     console.log(`📊 Clasificación académica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes académicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen académico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2135,7 +2079,6 @@ export const handleAppliedSciencesQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen  (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2173,7 +2116,6 @@ export const handleAppliedSciencesQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA ACADÉMICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2190,10 +2132,8 @@ export const handleAppliedSciencesQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico académico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelAppliedSciencesAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2220,7 +2160,6 @@ export const handleAppliedSciencesQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel académica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas académicas, pero no me rendiré.
 
 Sobre tu pregunta académica: **"${query}"**
@@ -2246,11 +2185,9 @@ Si necesitas más detalles académicos o cálculos químicos específicos, preg�
       };
     }
 
-    // Procesar respuesta académica
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
     
@@ -2294,7 +2231,6 @@ Si necesitas más detalles académicos o cálculos químicos específicos, preg�
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2354,7 +2290,6 @@ Si necesitas más detalles académicos o cálculos químicos específicos, preg�
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA ACADÉMICA - handleAppliedSciencesMultimodalQuery  
 // ============================================================================
 
 export const handleAppliedSciencesMultimodalQuery = async (params) => {
@@ -2380,7 +2315,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2392,7 +2326,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación académica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto académico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2403,7 +2336,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal académico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS ACADÉMICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2441,7 +2373,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES ACADÉMICAS CON VALIDACIÓN COMPLETA
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2501,7 +2432,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2571,11 +2501,9 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE ACADÉMICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA ACADÉMICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2608,7 +2536,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2635,7 +2562,6 @@ export const handleAppliedSciencesMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto académico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal académico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes académicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2661,11 +2587,9 @@ Si necesitas cálculos químicos específicos o una explicación académica más
       };
     }
 
-    // PROCESAR RESPUESTA ACADÉMICA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
     
@@ -2678,7 +2602,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2730,7 +2653,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2814,7 +2736,6 @@ Si necesitas cálculos químicos específicos o una explicación académica más
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS ACADÉMICAS
 // ============================================================================
 
 export const handleAppliedSciencesQueryWithoutSaving = async (params) => {
@@ -2871,7 +2792,6 @@ export const handleAppliedSciencesQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA ACADÉMICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2890,7 +2810,6 @@ export const handleAppliedSciencesQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE ACADÉMICO CORREGIDO
       const { agent, tools } = await createAcadelAppliedSciencesAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -2992,7 +2911,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content académico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content académico no es un array válido en modo sin guardar:", content);
       return {
@@ -3011,7 +2929,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
     
     console.log(`🧠 Query multimodal académico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos académicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3024,7 +2941,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido académico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO ACADÉMICO INTEGRADO: ${doc.name || doc.filename || 'documento académico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3038,7 +2954,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO ACADÉMICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido académico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3099,7 +3014,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
                 console.log(`✅ [RETRY/EDIT] Contenido académico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3119,10 +3033,8 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
           return `${fileInfo} ${typeInfo}\n[Contenido académico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto académico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos académicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido académico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3156,7 +3068,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
       }
     }
 
-    // ✅ PROCESAR IMÁGENES ACADÉMICAS COMPLETO - MODO RETRY/EDIT
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3216,7 +3127,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3301,11 +3211,9 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Cargar historial académico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada académica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3336,7 +3244,6 @@ export const handleAppliedSciencesMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Crear agente académico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelAppliedSciencesAgent(llm, queryInfo, combinedQuery);
 
@@ -3401,7 +3308,6 @@ Para cálculos químicos específicos o análisis académico más detallado, pre
       chatId,
       timestamp: new Date().toISOString(),
       
-      // ✅ ESTADÍSTICAS CORRECTAS DE ARCHIVOS PROCESADOS
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -3415,7 +3321,6 @@ Para cálculos químicos específicos o análisis académico más detallado, pre
         }
       },
       
-      // ✅ INFORMACIÓN DE SEGURIDAD
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined

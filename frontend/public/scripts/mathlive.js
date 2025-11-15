@@ -7284,7 +7284,6 @@ var MathLive = (() => {
     // The next three arrows are from the mhchem package.
     // In mhchem.sty, min-length is 2.0em. But these arrows might appear in the
     // document as \xrightarrow or \xrightleftharpoons. Those have
-    // min-length = 1.75em, so we set min-length on these next three to match.
     xleftrightarrows: [["baraboveleftarrow", "rightarrowabovebar"], 1.75, 901],
     longleftrightarrows: [["baraboveleftarrow", "rightarrowabovebar"], 1.75, 901],
     xRightleftharpoons: [
@@ -10398,7 +10397,6 @@ M500 241 v40 H399408 v-40z M500 435 v40 H400000 v-40z`
       after: "nothing+digit+function+frac+surd+binop+relop+punct+array+openfence+closefence+space+text",
       value: "\\differentialD t"
     },
-    // Logic
     "AA": "\\forall",
     "EE": "\\exists",
     "!EE": "\\nexists",
@@ -10667,7 +10665,6 @@ M500 241 v40 H399408 v-40z M500 435 v40 H400000 v-40z`
     "harr": "\\leftrightarrow",
     "hArr": "\\Leftrightarrow",
     "aleph": "\\aleph",
-    // Logic
     "and": "\\land",
     "or": "\\lor",
     "not": "\\neg",
@@ -27030,7 +27027,6 @@ Note there are a different set of tooltip rules for the keyboard toggle
       return true;
     }
   };
-  // Maximum number of undo/redo states
   _UndoManager.maximumDepth = 1e3;
   var UndoManager = _UndoManager;
 
@@ -31043,7 +31039,6 @@ data-command='["setEnvironment","pmatrix"]'>
 
   // src/ui/events/longpress.ts
   var LongPress = class {
-    // Maximum distance between the start and end of the gesture, in pixels
   };
   LongPress.DELAY = 300;
   // Amount of time before showing the context menu, in ms
@@ -31324,7 +31319,6 @@ data-command='["setEnvironment","pmatrix"]'>
           O: "\u014C",
           U: "\u016A"
         }[options.args[0]]) != null ? _b3 : "=" + options.args[0] : "="
-        // fallback
       }));
     }
   });
@@ -34945,7 +34939,6 @@ data-command='["setEnvironment","pmatrix"]'>
     "\\ne": "\u2260",
     "\\neq": "\u2260",
     "\u2212": "-",
-    // MINUS SIGN
     "-": "-",
     "\\alpha": "alpha",
     "\\beta": "beta",

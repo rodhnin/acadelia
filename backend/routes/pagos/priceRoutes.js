@@ -1,4 +1,3 @@
-// backend/routes/pagos/priceRoutes.js
 import express from 'express';
 import * as priceController from '../../controllers/pagos/priceController.js';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';

@@ -1,5 +1,4 @@
 // jsonSanitizer.js - Servicio para sanitizar y validar JSON antes de guardarlo
-// ✅ MEJORADO para manejar estructuras complejas y anidadas
 export const jsonSanitizer = {
   /**
    * Sanitiza y valida un JSON antes de guardarlo en la base de datos
@@ -91,18 +90,15 @@ export const jsonSanitizer = {
    * Limpia caracteres problemáticos al inicio y final del JSON
    */
   cleanJsonBoundaries(jsonString) {
-    // Remover BOM y caracteres invisibles al inicio
     jsonString = jsonString.replace(/^\uFEFF/, ''); // BOM
     jsonString = jsonString.replace(/^[\s\u200B-\u200D\uFEFF]/, ''); // Espacios invisibles
     
-    // Buscar el primer { o [
     const startMatch = jsonString.match(/^[^{[]*([{[])/);
     if (startMatch) {
       const startIndex = jsonString.indexOf(startMatch[1]);
       jsonString = jsonString.substring(startIndex);
     }
 
-    // ✅ MEJORADO: Mejor manejo de JSON anidados complejos
     let braceCount = 0;
     let bracketCount = 0;
     let inString = false;
@@ -112,7 +108,6 @@ export const jsonSanitizer = {
       const char = jsonString[i];
       const prevChar = i > 0 ? jsonString[i - 1] : '';
       
-      // Detectar si estamos dentro de una string
       if (char === '"' && prevChar !== '\\') {
         inString = !inString;
       }
@@ -123,7 +118,6 @@ export const jsonSanitizer = {
         else if (char === '[') bracketCount++;
         else if (char === ']') bracketCount--;
 
-        // Verificar si hemos cerrado todas las estructuras
         if (braceCount === 0 && bracketCount === 0 && (char === '}' || char === ']')) {
           lastValidIndex = i;
           break;
@@ -145,11 +139,9 @@ export const jsonSanitizer = {
   escapeSpecialCharacters(jsonString, preserveTemplates = true) {
     let result = jsonString;
 
-    // Función para procesar contenido entre comillas
     result = result.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, (match, content) => {
       let processedContent = content;
       
-      // ✅ MEJORADO: Mejor escape de caracteres especiales
       processedContent = processedContent
         .replace(/\\/g, '\\\\')  // Escapar backslashes primero
         .replace(/"/g, '\\"')    // Escapar comillas dobles
@@ -160,20 +152,17 @@ export const jsonSanitizer = {
         .replace(/\f/g, '\\f')   // Escapar form feeds
         .replace(/\b/g, '\\b');  // Escapar backspaces
 
-      // ✅ MEJORADO: Mejor manejo de plantillas {{}}
       if (preserveTemplates) {
         // Asegurar que las plantillas estén correctamente formateadas
         processedContent = processedContent
           .replace(/\\\{/g, '{')  // Desescapar llaves si fueron escapadas
           .replace(/\\\}/g, '}'); // Desescapar llaves si fueron escapadas
       } else {
-        // Si no se preservan plantillas, escapar las llaves
         processedContent = processedContent
           .replace(/\{/g, '\\{')
           .replace(/\}/g, '\\}');
       }
 
-      // ✅ MEJORADO: Remover caracteres de control peligrosos
       processedContent = processedContent.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
       return `"${processedContent}"`;
@@ -189,13 +178,10 @@ export const jsonSanitizer = {
   validateAndFixStructure(jsonString) {
     let result = jsonString;
 
-    // Corregir comas duplicadas
     result = result.replace(/,\s*,/g, ',');
     
-    // Corregir comas antes de llaves de cierre
     result = result.replace(/,(\s*[}\]])/g, '$1');
     
-    // ✅ MEJORADO: Mejor detección de falta de comas
     result = result.replace(/}(\s*)"([^"]+)"\s*:/g, '},$1"$2":');
     result = result.replace(/](\s*)"([^"]+)"\s*:/g, '],$1"$2":');
     result = result.replace(/"([^"]+)"\s*:([^,}\]]+)(\s*)"([^"]+)"\s*:/g, '"$1":$2,$3"$4":');
@@ -221,7 +207,6 @@ export const jsonSanitizer = {
     // Estrategia 2: Corregir estructura de arrays y objetos
     repaired = this.fixArrayAndObjectStructure(repaired);
 
-    // ✅ NUEVA Estrategia 3: Corregir objetos anidados incompletos
     repaired = this.fixNestedObjects(repaired);
 
     // Estrategia 4: Si todo falla, intentar extraer un objeto válido
@@ -238,7 +223,6 @@ export const jsonSanitizer = {
   fixNestedObjects(jsonString) {
     let result = jsonString;
     
-    // Detectar objetos que no cierran correctamente
     const openObjectPattern = /(\w+)"\s*:\s*\{[^}]*$/gm;
     result = result.replace(openObjectPattern, (match) => {
       if (!match.includes('}')) {
@@ -247,7 +231,6 @@ export const jsonSanitizer = {
       return match;
     });
     
-    // Detectar arrays que no cierran correctamente
     const openArrayPattern = /(\w+)"\s*:\s*\[[^\]]*$/gm;
     result = result.replace(openArrayPattern, (match) => {
       if (!match.includes(']')) {
@@ -290,7 +273,6 @@ export const jsonSanitizer = {
           result += char;
         } else {
           // Terminando un string o comilla dentro del string
-          // Verificar si es una comilla de cierre válida
           const restOfLine = jsonString.substring(i + 1).match(/^\s*[,}\]:]/);
           if (restOfLine || nextChar === undefined) {
             // Es una comilla de cierre válida
@@ -315,18 +297,15 @@ export const jsonSanitizer = {
   fixArrayAndObjectStructure(jsonString) {
     let result = jsonString;
 
-    // Contar llaves y corchetes
     const openBraces = (result.match(/\{/g) || []).length;
     const closeBraces = (result.match(/\}/g) || []).length;
     const openBrackets = (result.match(/\[/g) || []).length;
     const closeBrackets = (result.match(/\]/g) || []).length;
 
-    // Añadir llaves faltantes
     for (let i = 0; i < openBraces - closeBraces; i++) {
       result += '}';
     }
 
-    // Añadir corchetes faltantes
     for (let i = 0; i < openBrackets - closeBrackets; i++) {
       result += ']';
     }
@@ -340,7 +319,6 @@ export const jsonSanitizer = {
   extractValidJsonSubset(jsonString) {
     console.log("🎯 Intentando extraer subconjunto válido del JSON complejo...");
     
-    // Intentar encontrar objetos válidos dentro del string
     const objectMatches = jsonString.match(/\{[^{}]*\}/g);
     if (objectMatches && objectMatches.length > 0) {
       for (const match of objectMatches) {
@@ -350,7 +328,6 @@ export const jsonSanitizer = {
       }
     }
 
-    // ✅ MEJORADO: Crear objeto básico más específico
     return JSON.stringify({
       theme: "Contenido educativo con Capibara Profesor",
       error_recovery: true,
@@ -385,7 +362,6 @@ export const jsonSanitizer = {
       currentDepth = 0
     } = options;
     
-    // ✅ NUEVO: Control de profundidad para evitar recursión infinita
     if (currentDepth >= maxDepth) {
       console.warn(`⚠️ Profundidad máxima alcanzada (${maxDepth}), truncando objeto`);
       return "[Objeto demasiado profundo]";
@@ -404,17 +380,14 @@ export const jsonSanitizer = {
           sanitized = sanitized.substring(0, maxStringLength) + '...';
         }
         
-        // Remover caracteres inválidos si está habilitado
         if (removeInvalidChars) {
           // Preservar caracteres básicos, espacios, saltos de línea y caracteres especiales útiles
           sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
         }
         
-        // ✅ MEJORADO: Manejar plantillas con más cuidado
         if (!preserveTemplates) {
           sanitized = sanitized.replace(/\{\{([^}]+)\}\}/g, '[TEMPLATE:$1]');
         } else {
-          // ✅ NUEVO: Validar que las plantillas estén bien formadas
           const malformedTemplates = sanitized.match(/\{[^{]|\}[^}]|\{$|^\}/g);
           if (malformedTemplates) {
             console.warn(`⚠️ Plantillas malformadas encontradas en "${key}":`, malformedTemplates);
@@ -433,7 +406,6 @@ export const jsonSanitizer = {
       if (typeof value === 'object') {
         const sanitizedObj = {};
         for (const [objKey, objValue] of Object.entries(value)) {
-          // ✅ MEJORADO: Solo sanitizar claves si preservePropertyNames es false
           let sanitizedKey = objKey;
           if (!preservePropertyNames && removeInvalidChars) {
             // Solo cambiar caracteres realmente problemáticos, no letras normales
@@ -465,15 +437,12 @@ export const jsonSanitizer = {
     
     // Solo validar si no se saltan las advertencias
     if (!skipWarnings && sanitizedObject && typeof sanitizedObject === 'object') {
-      // ✅ NUEVO: Verificar estructura específica de marketing
       const marketingValidation = this.validateMarketingStructure(sanitizedObject);
       warnings.push(...marketingValidation.warnings);
       
-      // Verificar plantillas no resueltas
       const templateWarnings = this.checkUnresolvedTemplates(sanitizedObject);
       warnings.push(...templateWarnings);
       
-      // ✅ NUEVO: Verificar profundidad del objeto
       const depth = this.calculateObjectDepth(sanitizedObject);
       if (depth > maxDepth) {
         warnings.push(`Objeto con profundidad ${depth} excede el máximo recomendado de ${maxDepth}`);
@@ -506,12 +475,10 @@ export const jsonSanitizer = {
   validateMarketingStructure(obj) {
     const warnings = [];
     
-    // Verificar si tiene estructura de contenido de marketing específico
     const hasMarketingStructure = obj.theme && 
       (obj.video || obj.meme || obj.email || obj.campaign || obj.post || obj.story);
     
     if (hasMarketingStructure) {
-      // Validar targetAudience
       if (!obj.targetAudience) {
         warnings.push('targetAudience recomendado para contenido de marketing');
       } else if (typeof obj.targetAudience === 'object') {
@@ -520,7 +487,6 @@ export const jsonSanitizer = {
         }
       }
       
-      // Validar estructura específica del tipo
       const contentTypes = ['video', 'meme', 'email', 'campaign', 'post', 'story'];
       const foundTypes = contentTypes.filter(type => obj[type]);
       
@@ -612,9 +578,7 @@ export const jsonSanitizer = {
       _error_recovery: true
     };
     
-    // Intentar extraer algunos datos del input original
     if (typeof originalInput === 'string') {
-      // Buscar patrones comunes de marketing
       const titleMatch = originalInput.match(/"(?:titulo|title|theme)"\s*:\s*"([^"]+)"/i);
       if (titleMatch) {
         fallback.theme = titleMatch[1];
@@ -668,7 +632,6 @@ export function sanitizeAIGeneratedContent(aiResponse, options = {}) {
   
   const result = jsonSanitizer.sanitizeJson(aiResponse, aiSpecificOptions);
   
-  // Logging específico para contenido de IA
   if (result.success) {
     console.log("🤖 Contenido de IA con estructuras complejas sanitizado exitosamente");
     if (result.warnings.length > 0) {
@@ -710,20 +673,17 @@ export function sanitizationMiddleware(options = {}) {
 }
 
 
-// FUNCIÓN UTILITARIA PARA VALIDAR ERROR_RECOVERY
 export function hasErrorRecovery(data) {
   if (!data || typeof data !== 'object') {
     return false;
   }
   
-  // Verificar diferentes variantes del campo
   return !!(data.error_recovery || 
            data._error_recovery || 
            data.errorRecovery ||
            data['error-recovery']);
 }
 
-// FUNCIÓN UTILITARIA PARA VALIDAR CONTENIDO DE RESPALDO
 export function isBackupContent(data) {
   if (!data || typeof data !== 'object') {
     return false;

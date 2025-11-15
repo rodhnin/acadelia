@@ -1,4 +1,3 @@
-// backend/services/usuarios/termsService.js
 import pool from "../../lib/dbPool.js";
 import crypto from 'crypto';
 import { emailService } from "../email/emailService.js";
@@ -105,10 +104,8 @@ export class TermsService {
      */
     static async generateAcceptanceToken(userId, version) {
         try {
-            // Generar token aleatorio
             const token = crypto.randomBytes(32).toString('hex');
             
-            // Guardar en base de datos
             const query = `
                 INSERT INTO terms_acceptance_tokens (
                     user_id,
@@ -185,10 +182,8 @@ export class TermsService {
             
             for (const user of rows) {
                 try {
-                    // Generar token único para este usuario y versión
                     const acceptToken = await this.generateAcceptanceToken(user.id_user, newVersion);
                     
-                    // Enviar correo
                     await emailService.sendTermsUpdateEmail(
                         user.correo,
                         newVersion,
@@ -202,7 +197,6 @@ export class TermsService {
                     failureCount++;
                 }
                 
-                // Esperar un breve tiempo entre envíos para no sobrecargar el servidor de correo
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
             
@@ -231,7 +225,6 @@ export class TermsService {
      */
     static async scheduleAutoAcceptance(version, daysToAccept) {
         try {
-            // Crear registro en la tabla de programación
             const query = `
                 INSERT INTO scheduled_tasks (
                     task_type,

@@ -25,7 +25,6 @@ export const getSubscriptions = async (req, res) => {
             data: subscriptions
         });
     } catch (error) {
-        // Log de error en acceso a suscripciones
         logSecurityEvent('SUBSCRIPTION_ACCESS_ERROR', 'Error accediendo a información de suscripciones', {
             targetUserId: req.params.userId,
             requesterId: req.user?.id_user,

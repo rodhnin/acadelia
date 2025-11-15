@@ -62,17 +62,14 @@ export class AudioPanel {
     
     this.createAudioButton();
     
-    // Verificar si hay audio para el chat actual al iniciarse
     this.checkForAudio();
     
-    // Escuchar cambios de chat
     eventBus.on('chat:changed', () => this.checkForAudio());
     
     // También verificar cuando cambie el chat directamente desde el estado
     const currentChatId = getState('currentChatId');
     this.currentChatId = currentChatId;
     
-    // Verificar nuevamente después de un breve retraso
     setTimeout(() => {
       const updatedChatId = getState('currentChatId');
       if (updatedChatId) {
@@ -93,7 +90,6 @@ export class AudioPanel {
       existingButton.remove();
     }
     
-    // Crear botón principal
     const button = createElement('button', {
       className: 'audio-panel-trigger'
     });
@@ -101,7 +97,6 @@ export class AudioPanel {
     button.setAttribute('title', 'Grabar o subir audio');
     button.style.display = 'none'; // Inicialmente oculto
     
-    // Añadir efecto de clic
     button.addEventListener('mousedown', () => {
       button.style.transform = 'scale(0.95)';
     });
@@ -120,7 +115,6 @@ export class AudioPanel {
     document.body.appendChild(button);
     this.audioButton = button;
     
-    // Crear menú flotante de opciones de audio
     this.createAudioMenu();
   }
 
@@ -144,7 +138,6 @@ prepareUIAfterAudioProcessing() {
     const attachmentsWrapper = document.querySelector('.attachments-wrapper');
     
     if (fixedSpace) {
-      // Restaurar completamente todas las propiedades CSS
       fixedSpace.style.removeProperty('opacity');
       fixedSpace.style.removeProperty('display');
       fixedSpace.style.removeProperty('pointer-events');
@@ -163,29 +156,24 @@ prepareUIAfterAudioProcessing() {
     }
     
     if (textarea) {
-      // CRÍTICO: Eliminar completamente atributos de deshabilitado
       textarea.removeAttribute('disabled');
       textarea.removeAttribute('readonly');
       textarea.removeAttribute('aria-disabled');
       textarea.removeAttribute('tabindex');
       
-      // Restaurar propiedades de estilo CSS
       textarea.style.display = '';
       textarea.style.visibility = 'visible';
       textarea.style.opacity = '1';
       textarea.style.pointerEvents = 'auto';
       
-      // Eliminar clases de deshabilitado
       textarea.classList.remove('textarea-disabled', 'disabled', 'readonly', 'no-interact');
       
-      // Intentar enfocar el textarea después de un breve retraso
       setTimeout(() => {
         try {
           textarea.focus();
           textarea.blur(); // Técnica para "refrescar" el estado del elemento
           textarea.focus();
         } catch (e) {
-          // SILENCIOSO: No notificar errores de enfoque
         }
       }, 500);
     }
@@ -208,7 +196,6 @@ prepareUIAfterAudioProcessing() {
     
     // 4. Restaurar manejadores de eventos
     try {
-      // Importar handleSendMessage y handleKeyPress para volver a configurarlos
       import('../core/chat-controller-agente.js').then(module => {
         if (module && typeof module.handleSendMessage === 'function') {
           const sendBtn = document.querySelector('#sendButton');
@@ -223,10 +210,8 @@ prepareUIAfterAudioProcessing() {
           }
         }
       }).catch(() => {
-        // SILENCIOSO: No notificar errores de restauración de eventos
       });
       
-      // Restaurar autoexpand del textarea
       import('../ui/ui-manager-agente.js').then(module => {
         if (module && typeof module.handleTextareaResize === 'function') {
           if (textarea) {
@@ -238,10 +223,8 @@ prepareUIAfterAudioProcessing() {
           }
         }
       }).catch(() => {
-        // SILENCIOSO: No notificar errores de resize
       });
     } catch (e) {
-      // SILENCIOSO: No notificar errores de restauración de eventos
     }
     
     // 5. Desbloquear UI global si es necesario
@@ -251,10 +234,8 @@ prepareUIAfterAudioProcessing() {
           module.toggleUIState(false);
         }
       }).catch(() => {
-        // SILENCIOSO: No notificar errores de desbloqueo
       });
     } catch (e) {
-      // SILENCIOSO: No notificar errores de UI
     }
 
     // SOLUCIÓN COMPLETA CON LIMPIEZA DE EVENTOS: Restauración de todos los componentes de archivo
@@ -273,7 +254,6 @@ prepareUIAfterAudioProcessing() {
         // Contenedores de previsualización
         document.querySelector('.file-preview-container'),
         
-        // Modal de previsualización
         document.getElementById('preview-modal'),
         document.getElementById('preview-close'),
         
@@ -288,27 +268,22 @@ prepareUIAfterAudioProcessing() {
         document.querySelector('.attachment-options')
       ];
       
-      // Función para limpiar eventos de manera segura
       const safeRemoveEvents = (element) => {
         if (!element) return;
         
-        // Usar removeAllEvents si está disponible
         if (typeof removeAllEvents === 'function') {
           removeAllEvents(element);
         } else {
-          // Fallback: clonar y reemplazar el elemento para eliminar todos los eventos
           try {
             const clone = element.cloneNode(true);
             if (element.parentNode) {
               element.parentNode.replaceChild(clone, element);
             }
           } catch (e) {
-            // SILENCIOSO: No notificar errores de limpieza
           }
         }
       };
       
-      // Limpiar eventos de todos los elementos
       elementsToClean.forEach(safeRemoveEvents);
       
       // 3. Limpiar listeners globales específicos
@@ -337,7 +312,6 @@ prepareUIAfterAudioProcessing() {
       const dragDropArea = document.getElementById('drag-drop-area');
       
       if (fileUploadContainer) {
-        // Restaurar propiedades visuales
         fileUploadContainer.style.removeProperty('display');
         fileUploadContainer.style.removeProperty('opacity');
         fileUploadContainer.style.removeProperty('visibility');
@@ -377,7 +351,6 @@ prepareUIAfterAudioProcessing() {
         attachButton.style.pointerEvents = 'auto';
         attachButton.disabled = false;
         
-        // Configurar evento de click
         attachButton.onclick = function(e) {
           e.preventDefault();
           const attachmentOptions = document.querySelector('.attachment-options');
@@ -390,7 +363,6 @@ prepareUIAfterAudioProcessing() {
       // 1. Primero, cargar el módulo file-attachments.js y guardar la referencia
       import('../utils/file-attachments-agente.js').then(fileAttachmentsModule => {
         
-        // Crear nuevo modal de previsualización SI NO EXISTE
         const existingModal = document.getElementById('preview-modal');
         if (!existingModal) {
           if (typeof fileAttachmentsModule.createPreviewModal === 'function') {
@@ -432,12 +404,10 @@ prepareUIAfterAudioProcessing() {
         const previewClose = document.getElementById('preview-close');
         
         if (previewModal && previewClose) {
-          // Limpiar eventos antiguos si existen
           if (typeof removeAllEvents === 'function') {
             removeAllEvents(previewClose, 'click');
           }
           
-          // Configurar nuevo evento de cierre
           previewClose.addEventListener('click', () => {
             previewModal.classList.remove('show');
           });
@@ -452,22 +422,18 @@ prepareUIAfterAudioProcessing() {
         
         // 2. Configurar eventos para el contenedor de previsualización
         if (filePreviewContainer) {
-          // Limpiar eventos antiguos primero
           if (typeof removeAllEvents === 'function') {
             removeAllEvents(filePreviewContainer, 'click');
           }
           
-          // CRÍTICO: Asignar nuevo evento de click con delegación
           filePreviewContainer.addEventListener('click', (event) => {
             
-            // Para botones de eliminación
             const removeButton = event.target.closest('.file-preview-remove');
             if (removeButton) {
               const fileId = removeButton.dataset.fileId;
               if (fileId && typeof window.removeFile === 'function') {
                 window.removeFile(fileId);
               } else if (fileId && window.attachmentState && window.attachmentState.files) {
-                // Fallback manual
                 window.attachmentState.files.delete(fileId);
                 const fileElement = document.querySelector(`.file-preview[data-file-id="${fileId}"]`);
                 if (fileElement && fileElement.parentNode) {
@@ -477,7 +443,6 @@ prepareUIAfterAudioProcessing() {
               return;
             }
             
-            // Para previsualización de archivos
             const previewElement = event.target.closest('.file-preview');
             if (previewElement && !event.target.closest('.file-preview-remove')) {
               const fileId = previewElement.dataset.fileId;
@@ -503,14 +468,12 @@ prepareUIAfterAudioProcessing() {
           
           input.value = ''; // Limpiar valor
           
-          // Limpiar eventos antiguos
           if (typeof removeAllEvents === 'function') {
             removeAllEvents(input, 'change');
           }
           
           const fileType = inputId.split('-')[0]; // image, document, code
           
-          // Asignar manejador seguro
           input.addEventListener('change', (event) => {
             if (typeof window.handleFileSelection === 'function') {
               window.handleFileSelection(event, fileType);
@@ -520,7 +483,6 @@ prepareUIAfterAudioProcessing() {
               fileAttachmentsModule.default.handleFileSelection(event, fileType);
             }
             
-            // Cerrar el menú después de seleccionar
             const attachmentOptions = document.querySelector('.attachment-options');
             if (attachmentOptions) {
               attachmentOptions.classList.remove('show');
@@ -536,16 +498,13 @@ prepareUIAfterAudioProcessing() {
         }
         
       }).catch(() => {
-        // SILENCIOSO: No notificar errores de reconstrucción
       });
       
     } catch (e) {
-      // SILENCIOSO: No notificar errores de reconstrucción completa
     }
     
     return true;
   } catch (error) {
-    // SILENCIOSO: No notificar errores de preparación de UI
     return false;
   }
 }
@@ -618,7 +577,6 @@ prepareUIAfterAudioProcessing() {
     document.body.appendChild(menu);
     this.audioMenu = menu;
     
-    // Configurar eventos
     const closeButton = menu.querySelector('.audio-menu-close');
     const recordOption = menu.querySelector('.record-audio');
     const uploadOption = menu.querySelector('.upload-audio');
@@ -638,7 +596,6 @@ prepareUIAfterAudioProcessing() {
     addEvent(confirmSendButton, 'click', this.confirmSendRecording);
     addEvent(cancelSendButton, 'click', this.cancelSendRecording);
     
-    // Manejar la subida de archivo cuando se selecciona
     addEvent(fileInput, 'change', (e) => {
       if (e.target.files && e.target.files[0]) {
         this.handleFileUpload(e.target.files[0]);
@@ -662,35 +619,29 @@ prepareUIAfterAudioProcessing() {
       return;
     }
     
-    // Mostrar spinner de procesamiento
     const confirmationDialog = this.audioMenu.querySelector('.audio-confirmation-dialog');
     confirmationDialog.innerHTML = `
       <div class="processing-spinner"></div>
       <span>Procesando grabación...</span>
     `;
     
-    // Guardar referencia al estado actual antes de procesar
     this.lastRecordingState = {
       isProcessing: true,
       chunkCount: this.audioChunks.length,
       recordingTime: this.recordingTime
     };
     
-    // Procesar el audio grabado
     this.processRecordedAudio();
   }
 
   cancelSendRecording() {
-    // Limpiar datos de grabación
     this.audioChunks = [];
     
     // Liberar recursos del micrófono (IMPORTANTE)
     this.releaseMediaResources();
     
-    // Verificar liberación correcta
     this.verifyResourceRelease();
     
-    // Limpiar estado de grabación
     this.lastRecordingState = null;
     
     // Volver al menú principal
@@ -718,29 +669,24 @@ pauseResumeRecording() {
   if (!pauseButton || !recordingStatus) return;
   
   if (!this.isPaused) {
-    // Pausar grabación
     try {
       this.recorder.pause();
       this.isPaused = true;
       
-      // Detener temporizador
       if (this.recordingTimer) {
         clearInterval(this.recordingTimer);
         this.recordingTimer = null;
       }
       
-      // Actualizar botón y estado - LIMPIEZA COMPLETA
       pauseButton.innerHTML = '';
       pauseButton.innerHTML = '<i class="bx bx-play-circle"></i><span>Reanudar</span>';
       
-      // Limpiar y recrear estado de grabación
       recordingStatus.innerHTML = '';
       recordingStatus.innerHTML = `
         <div class="recording-indicator paused"></div>
         <span class="paused-text">Grabación pausada</span>
       `;
       
-      // Limpiar clases del botón principal y aplicar nueva
       removeClass(this.audioButton, 'recording');
       removeClass(this.audioButton, 'paused');
       // Pequeño delay para asegurar limpieza
@@ -749,29 +695,23 @@ pauseResumeRecording() {
       }, 10);
       
     } catch (error) {
-      // SILENCIOSO: No notificar errores técnicos de pausa
     }
   } else {
-    // Reanudar grabación
     try {
       this.recorder.resume();
       this.isPaused = false;
       
-      // Reanudar temporizador
       this.recordingTimer = setInterval(this.updateRecordingTime, 1000);
       
-      // Actualizar botón y estado - LIMPIEZA COMPLETA
       pauseButton.innerHTML = '';
       pauseButton.innerHTML = '<i class="bx bx-pause-circle"></i><span>Pausar</span>';
       
-      // Limpiar y recrear estado de grabación
       recordingStatus.innerHTML = '';
       recordingStatus.innerHTML = `
         <div class="recording-indicator"></div>
         <span>Grabando...</span>
       `;
       
-      // Limpiar clases del botón principal y aplicar nueva
       removeClass(this.audioButton, 'paused');
       removeClass(this.audioButton, 'recording');
       // Pequeño delay para asegurar limpieza
@@ -780,7 +720,6 @@ pauseResumeRecording() {
       }, 10);
       
     } catch (error) {
-      // SILENCIOSO: No notificar errores técnicos de reanudación
     }
   }
   
@@ -795,39 +734,31 @@ cancelRecording() {
     return;
   }
   
-  // Detener grabación si está activa
   try {
     if (this.recorder && (this.recorder.state === 'recording' || this.recorder.state === 'paused')) {
       this.recorder.stop();
     }
   } catch (e) {
-    // SILENCIOSO: No notificar errores técnicos de detención
   }
   
-  // Detener temporizador
   if (this.recordingTimer) {
     clearInterval(this.recordingTimer);
     this.recordingTimer = null;
   }
   
-  // Limpiar datos de grabación
   this.audioChunks = [];
   
-  // Resetear estados de grabación
   this.isRecording = false;
   this.isPaused = false;
   
-  // Limpiar clases del botón principal
   removeClass(this.audioButton, 'recording');
   removeClass(this.audioButton, 'paused');
   
   // Liberar recursos del micrófono (IMPORTANTE)
   this.releaseMediaResources();
   
-  // Verificar liberación de recursos
   this.verifyResourceRelease();
   
-  // Limpiar estado de grabación
   this.lastRecordingState = null;
   
   // Volver al menú principal y resetear estado visual
@@ -839,19 +770,16 @@ cancelRecording() {
   if (recordingUI) recordingUI.style.display = 'none';
   if (confirmationDialog) confirmationDialog.style.display = 'none';
   
-  // Resetear botón de pausa al estado inicial
   const pauseButton = this.audioMenu.querySelector('.pause-recording');
   if (pauseButton) {
     pauseButton.innerHTML = '<i class="bx bx-pause-circle"></i><span>Pausar</span>';
   }
   
-  // Resetear tiempo de grabación mostrado
   const timeDisplay = this.audioMenu.querySelector('.recording-time');
   if (timeDisplay) {
     timeDisplay.textContent = '00:00';
   }
   
-  // Limpiar estado de grabación
   this.recordingTime = 0;
   
   // NOTIFICACIÓN NECESARIA: Informar al usuario que se canceló
@@ -922,7 +850,6 @@ verifyResourceRelease() {
     
     return true;
   } catch (e) {
-    // SILENCIOSO: No notificar errores de verificación
     return false;
   }
 }
@@ -932,12 +859,10 @@ verifyResourceRelease() {
     // 1. Detener y limpiar el grabador si existe
     if (this.recorder) {
       try {
-        // Detener el grabador si está activo
         if (this.recorder.state === 'recording' || this.recorder.state === 'paused') {
           this.recorder.stop();
         }
         
-        // Remover todos los event listeners para evitar callbacks inesperados
         try {
           this.recorder.removeEventListener('dataavailable', null);
           this.recorder.removeEventListener('stop', null);
@@ -961,13 +886,10 @@ verifyResourceRelease() {
           }, 500);
           
         } catch (e) {
-          // SILENCIOSO: No notificar errores de limpieza
         }
         
-        // Establecer a null para permitir la recolección de basura
         this.recorder = null;
       } catch (e) {
-        // SILENCIOSO: No notificar errores del grabador
         this.recorder = null;
       }
     }
@@ -978,7 +900,6 @@ verifyResourceRelease() {
         const tracks = this.audioStream.getTracks();
         
         tracks.forEach(track => {
-          // Verificar si la pista aún está activa antes de detenerla
           if (track.readyState === 'live') {
             track.stop();
           }
@@ -990,10 +911,8 @@ verifyResourceRelease() {
           track.onunmute = null;
         });
         
-        // Establecer a null para permitir la recolección de basura
         this.audioStream = null;
       } catch (e) {
-        // SILENCIOSO: No notificar errores de liberación
         this.audioStream = null;
       }
     }
@@ -1036,17 +955,14 @@ toggleAudioMenu() {
     this.audioMenu.style.bottom = (window.innerHeight - buttonRect.top + 10) + 'px';
     this.audioMenu.style.right = (window.innerWidth - buttonRect.right + buttonRect.width/2) + 'px';
     
-    // Mostrar el menú con animación
     this.audioMenu.style.display = 'block';
     this.audioMenu.style.opacity = '0';
     this.audioMenu.style.transform = 'translateY(20px) scale(0.95)';
     
-    // Determinar qué UI mostrar basado en el estado actual
     const menuContent = this.audioMenu.querySelector('.audio-menu-content');
     const recordingUI = this.audioMenu.querySelector('.audio-recording-ui');
     const confirmationDialog = this.audioMenu.querySelector('.audio-confirmation-dialog');
     
-    // Limpiar display de todos los elementos primero
     if (menuContent) menuContent.style.display = 'none';
     if (recordingUI) recordingUI.style.display = 'none';
     if (confirmationDialog) confirmationDialog.style.display = 'none';
@@ -1057,7 +973,6 @@ toggleAudioMenu() {
         // Hay una grabación activa o pausada, mostrar UI de grabación
         if (recordingUI) recordingUI.style.display = 'block';
         
-        // Restaurar el estado visual correcto del botón de pausa
         const pauseButton = this.audioMenu.querySelector('.pause-recording');
         const recordingStatus = this.audioMenu.querySelector('.recording-status');
         
@@ -1075,7 +990,6 @@ toggleAudioMenu() {
           `;
         }
         
-        // Actualizar el tiempo de grabación mostrado
         const timeDisplay = this.audioMenu.querySelector('.recording-time');
         if (timeDisplay) {
           const minutes = Math.floor(this.recordingTime / 60);
@@ -1091,7 +1005,6 @@ toggleAudioMenu() {
         // Estado normal, mostrar menú principal
         if (menuContent) menuContent.style.display = 'block';
         
-        // Limpiar cualquier estado previo si no hay grabación
         if (this.lastRecordingState && !this.lastRecordingState.isProcessing) {
           this.releaseMediaResources();
           this.lastRecordingState = null;
@@ -1099,7 +1012,6 @@ toggleAudioMenu() {
       }
     }, 10);
     
-    // Animar entrada
     setTimeout(() => {
       this.audioMenu.style.opacity = '1';
       this.audioMenu.style.transform = 'translateY(0) scale(1)';
@@ -1127,23 +1039,19 @@ closeAudioMenu() {
     return;
   }
   
-  // Animar salida
   this.audioMenu.style.opacity = '0';
   this.audioMenu.style.transform = 'translateY(20px) scale(0.95)';
   
-  // Ocultar después de la animación
   setTimeout(() => {
     this.audioMenu.style.display = 'none';
     
     // LIMPIEZA AGRESIVA de elementos visuales
     this.cleanupMenuVisualState();
     
-    // Limpiar estado si no hay grabación activa
     if (!this.isRecording && !this.isPaused) {
       this.releaseMediaResources();
       this.verifyResourceRelease();
       
-      // Limpiar estado visual del botón principal
       removeClass(this.audioButton, 'recording');
       removeClass(this.audioButton, 'paused');
     }
@@ -1157,7 +1065,6 @@ cleanupMenuVisualState() {
   if (!this.audioMenu) return;
   
   try {
-    // Limpiar completamente todos los elementos interactivos
     const elementsToClean = [
       '.pause-recording',
       '.recording-status', 
@@ -1172,10 +1079,8 @@ cleanupMenuVisualState() {
       const elements = this.audioMenu.querySelectorAll(selector);
       elements.forEach(element => {
         if (element) {
-          // Remover todas las clases dinámicas
           element.classList.remove('paused', 'active', 'recording', 'visible', 'show');
           
-          // Limpiar estilos inline que puedan causar problemas
           element.style.removeProperty('display');
           element.style.removeProperty('opacity');
           element.style.removeProperty('transform');
@@ -1184,7 +1089,6 @@ cleanupMenuVisualState() {
       });
     });
     
-    // Resetear contenido específico problemático
     const pauseButton = this.audioMenu.querySelector('.pause-recording');
     if (pauseButton) {
       pauseButton.innerHTML = '<i class="bx bx-pause-circle"></i><span>Pausar</span>';
@@ -1207,7 +1111,6 @@ cleanupMenuVisualState() {
     void this.audioMenu.offsetHeight;
     
   } catch (error) {
-    // SILENCIOSO: No notificar errores de limpieza
   }
 }
   /**
@@ -1276,7 +1179,6 @@ cleanupMenuVisualState() {
           recorderCreated = true;
           break;
         } catch (err) {
-          // SILENCIOSO: No notificar cada formato no soportado
         }
       }
       
@@ -1359,7 +1261,6 @@ cleanupMenuVisualState() {
     const minutes = Math.floor(this.recordingTime / 60);
     const seconds = this.recordingTime % 60;
     
-    // Actualizar el texto del temporizador
     const timeDisplay = this.audioMenu.querySelector('.recording-time');
     if (timeDisplay) {
       timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -1384,7 +1285,6 @@ cleanupMenuVisualState() {
   stopRecording() {
     if (!this.isRecording || !this.recorder) return;
     
-    // Guardar el estado actual de grabación antes de detenerla
     this.lastRecordingState = {
       isRecording: this.isRecording,
       isPaused: this.isPaused,
@@ -1392,26 +1292,21 @@ cleanupMenuVisualState() {
       hasChunks: this.audioChunks.length > 0
     };
     
-    // Detener grabación
     try {
       this.recorder.stop();
     } catch (error) {
-      // SILENCIOSO: No notificar errores de detención
     }
     
     this.isRecording = false;
     this.isPaused = false;
     
-    // Detener temporizador
     clearInterval(this.recordingTimer);
     
-    // Eliminar clases de estado del botón principal
     removeClass(this.audioButton, 'recording');
     removeClass(this.audioButton, 'paused');
     
     // No liberar los recursos todavía, ya que podríamos necesitar los datos para enviar
     
-    // Mostrar diálogo de confirmación
     const recordingUI = this.audioMenu.querySelector('.audio-recording-ui');
     const confirmationDialog = this.audioMenu.querySelector('.audio-confirmation-dialog');
     
@@ -1493,10 +1388,8 @@ cleanupMenuVisualState() {
         // Liberar recursos de grabación ANTES de cerrar el menú
         this.releaseMediaResources();
         
-        // Cerrar el menú
         this.closeAudioMenu();
 
-        // Preparar UI para interacción
         this.prepareUIAfterAudioProcessing();
         
         try {
@@ -1512,7 +1405,6 @@ cleanupMenuVisualState() {
           const { renderChatHistory } = await import('../ui/sidebar-agente.js');
           const { clearChatMessages } = await import('../ui/ui-manager-agente.js');
           
-          // Crear nuevo chat si es necesario
           if (!chatId) {
             try {
               isNewChat = true;
@@ -1532,14 +1424,12 @@ cleanupMenuVisualState() {
             }
           }
           
-          // Eliminar elementos de bienvenida si existen
           document.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container').forEach(el => {
             if (el && el.parentNode) {
               el.remove();
             }
           });
           
-          // Restaurar visibilidad del textarea y componentes de entrada
           const fixedSpace = document.querySelector('.fixed-space');
           const inputBox = document.querySelector('.input-box');
           const textarea = document.querySelector('#messageInput');
@@ -1568,17 +1458,14 @@ cleanupMenuVisualState() {
               const updatedChats = await loadChatHistory();
               renderChatHistory(updatedChats);
             } catch (error) {
-              // SILENCIOSO: Error cargando historial
             }
           } else {
             try {
               updateChatPosition(chatId);
             } catch (error) {
-              // SILENCIOSO: Error actualizando posición
             }
           }
           
-          // Añadir mensaje visual al chat ANTES de enviar
           const chatMessages = document.querySelector('.chat-messages');
           if (chatMessages) {
             const { addMessageWithAttachments } = await import('../core/chat-controller-agente.js');
@@ -1600,7 +1487,6 @@ cleanupMenuVisualState() {
               }
             }];
 
-            // Crear mensaje más descriptivo
             const audioMessage = `El audio será procesado y transcrito por el profesor Acadel...`;
 
             addMessageWithAttachments('user', audioMessage, audioFileObj);
@@ -1617,8 +1503,6 @@ cleanupMenuVisualState() {
             return;
           }
           
-          // MOSTRAR LOADER MIENTRAS PROCESA
-          // Mostrar loader de procesamiento
           const { showMediaProcessingLoader, hideMediaProcessingLoader } = await import('../ui/ui-manager-agente.js');
           const loaderId = await showMediaProcessingLoader(chatId, null, true);
           
@@ -1648,17 +1532,13 @@ cleanupMenuVisualState() {
               throw new Error(result.error || 'Error procesando el audio');
             }
             
-            // OCULTAR LOADER INMEDIATAMENTE AL RECIBIR RESPUESTA
             if (loaderId) {
               hideMediaProcessingLoader('audio', loaderId);
             }
             
-            // MANEJAR RESPUESTA INMEDIATA como YouTube
             if (result.answer) {
-              // Añadir mensaje de respuesta del servidor directamente
               const { addMessageWithAttachments } = await import('../core/chat-controller-agente.js');
               
-              // Crear mensaje de IA
               const aiMessageDiv = document.createElement('div');
               aiMessageDiv.className = 'message ai-message';
               
@@ -1672,7 +1552,6 @@ cleanupMenuVisualState() {
               const contentElem = document.createElement('div');
               contentElem.className = 'message-content';
               
-              // Parsear markdown
               const { parseMarkdownToHTML } = await import('../utils/markdown-agente.js');
               contentElem.innerHTML = parseMarkdownToHTML(result.answer);
               
@@ -1695,17 +1574,14 @@ cleanupMenuVisualState() {
               }
             }
             
-            // Ocultar el botón de audio ya que se procesó
             this.audioButton.style.display = 'none';
             
-            // Disparar evento para actualizar la interfaz
             import('../core/event-bus-agente.js').then(module => {
               if (module.default && typeof module.default.emit === 'function') {
                 module.default.emit('audio:processed', { chatId });
               }
             });
             
-            // Verificar si debe mostrar panel de YouTube/audio
             import('../components/youtube-panel.js').then(module => {
               if (module.youtubePanel && typeof module.youtubePanel.checkForVideo === 'function') {
                 module.youtubePanel.checkForVideo();
@@ -1713,7 +1589,6 @@ cleanupMenuVisualState() {
             });
             
           } catch (error) {
-            // OCULTAR LOADER EN CASO DE ERROR
             if (loaderId) {
               hideMediaProcessingLoader('audio', loaderId);
             }
@@ -1726,7 +1601,6 @@ cleanupMenuVisualState() {
               );
             }
             
-            // Restaurar botón de audio para permitir retry
             this.audioButton.style.display = 'flex';
           }
         } catch (error) {
@@ -1755,7 +1629,6 @@ cleanupMenuVisualState() {
  * Método para detectar el MIME type más compatible
  */
 detectOptimalMimeType() {
-  // Intentar usar un MIME type conocido en caso que el grabador no lo proporcione
   const safeTypes = [
     'audio/mp3',
     'audio/mpeg',
@@ -1800,7 +1673,6 @@ getFileExtensionFromMimeType(mimeType) {
     'audio/flac': '.flac'
   };
   
-  // Buscar coincidencia exacta primero
   if (mimeMap[mimeType]) {
     return mimeMap[mimeType];
   }
@@ -1871,7 +1743,6 @@ async handleFileUpload(file) {
     const { renderChatHistory } = await import('../ui/sidebar-agente.js');
     const { clearChatMessages } = await import('../ui/ui-manager-agente.js');
     
-    // Crear nuevo chat si es necesario
     if (!chatId) {
       try {
         isNewChat = true;
@@ -1891,10 +1762,8 @@ async handleFileUpload(file) {
       }
     }
     
-    // Preparar UI
     this.prepareUIAfterAudioProcessing();
     
-    // Restaurar visibilidad del textarea y componentes
     const fixedSpace = document.querySelector('.fixed-space');
     const inputBox = document.querySelector('.input-box');
     const textarea = document.querySelector('#messageInput');
@@ -1923,17 +1792,14 @@ async handleFileUpload(file) {
         const updatedChats = await loadChatHistory();
         renderChatHistory(updatedChats);
       } catch (error) {
-        // SILENCIOSO: Error cargando historial
       }
     } else {
       try {
         updateChatPosition(chatId);
       } catch (error) {
-        // SILENCIOSO: Error actualizando posición
       }
     }
     
-    // Añadir mensaje visual al chat ANTES de enviar
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages) {
       const { addMessageWithAttachments } = await import('../core/chat-controller-agente.js');
@@ -1954,7 +1820,6 @@ async handleFileUpload(file) {
         }
       }];
 
-      // Determinar duración si es posible
       let durationText = 'No disponible';
       try {
         const audioElement = document.createElement('audio');
@@ -1974,7 +1839,6 @@ async handleFileUpload(file) {
           });
         });
       } catch (e) {
-        // SILENCIOSO: No se pudo obtener duración
       }
 
       const audioMessage = `El audio será procesado y transcrito por el profesor Acadel...`;
@@ -1982,14 +1846,12 @@ async handleFileUpload(file) {
       addMessageWithAttachments('user', audioMessage, audioFileObj);
     }
     
-    // MOSTRAR LOADER MIENTRAS PROCESA ARCHIVO
     const formData = new FormData();
     formData.append('audioFile', file);
     formData.append('chatId', chatId);
     formData.append('userId', parseInt(userId));
     formData.append('herramientaId', parseInt(herramientaId));
     
-    // Mostrar loader de procesamiento
     const { showMediaProcessingLoader, hideMediaProcessingLoader } = await import('../ui/ui-manager-agente.js');
     const loaderId = await showMediaProcessingLoader(chatId, null, true);
     
@@ -2010,14 +1872,11 @@ async handleFileUpload(file) {
         throw new Error(result.error || 'Error procesando el archivo de audio');
       }
       
-      // OCULTAR LOADER INMEDIATAMENTE AL RECIBIR RESPUESTA
       if (loaderId) {
         hideMediaProcessingLoader('audio', loaderId);
       }
       
-      // MANEJAR RESPUESTA INMEDIATA
       if (result.answer) {
-        // Crear mensaje de IA directamente
         const aiMessageDiv = document.createElement('div');
         aiMessageDiv.className = 'message ai-message';
         
@@ -2031,7 +1890,6 @@ async handleFileUpload(file) {
         const contentElem = document.createElement('div');
         contentElem.className = 'message-content';
         
-        // Parsear markdown
         const { parseMarkdownToHTML } = await import('../utils/markdown-agente.js');
         contentElem.innerHTML = parseMarkdownToHTML(result.answer);
         
@@ -2054,17 +1912,14 @@ async handleFileUpload(file) {
         }
       }
       
-      // Ocultar botón de audio
       this.audioButton.style.display = 'none';
       
-      // Disparar evento para actualizar la interfaz
       import('../core/event-bus-agente.js').then(module => {
         if (module.default && typeof module.default.emit === 'function') {
           module.default.emit('audio:processed', { chatId });
         }
       });
       
-      // Verificar si debe mostrar panel de YouTube/audio
       import('../components/youtube-panel.js').then(module => {
         if (module.youtubePanel && typeof module.youtubePanel.checkForVideo === 'function') {
           module.youtubePanel.checkForVideo();
@@ -2072,7 +1927,6 @@ async handleFileUpload(file) {
       });
       
     } catch (error) {
-      // OCULTAR LOADER EN CASO DE ERROR
       if (loaderId) {
         hideMediaProcessingLoader('audio', loaderId);
       }
@@ -2085,7 +1939,6 @@ async handleFileUpload(file) {
         );
       }
       
-      // Restaurar botón de audio para permitir retry
       this.audioButton.style.display = 'flex';
     }
   } catch (error) {
@@ -2109,13 +1962,11 @@ async handleFileUpload(file) {
     this.currentChatId = chatId;
     
     try {
-      // Verificar si buttonUpdater está disponible y usarlo (mejor enfoque)
       if (typeof window.buttonUpdater !== 'undefined' && window.buttonUpdater) {
         window.buttonUpdater.updateButtons();
         return;
       }
       
-      // Fallback: implementación antigua mejorada
       
       // Primero verificar si hay un video de YouTube (prioridad sobre audio)
       const videoResponse = await fetch(`/api/video-transcription/chat/${chatId}/has-video`);
@@ -2129,7 +1980,6 @@ async handleFileUpload(file) {
         return;
       }
       
-      // Verificar si hay alguna transcripción de audio
       const transcriptionResponse = await fetch(`/api/video-transcription/chat/${chatId}/has-transcription`);
       const transcriptionData = await transcriptionResponse.json();
       
@@ -2147,7 +1997,6 @@ async handleFileUpload(file) {
         }
       }
       
-      // Verificar si hay un procesamiento de audio en curso
       const audioProcessingChat = localStorage.getItem('audioProcessingChat');
       if (audioProcessingChat === chatId) {
         // Hay procesamiento de audio, ocultar botón de audio
@@ -2162,7 +2011,6 @@ async handleFileUpload(file) {
         this.audioButton.style.display = 'flex';
       }
     } catch (error) {
-      // SILENCIOSO: En caso de error en la verificación, mostrar el botón de audio (más seguro)
       if (this.audioButton) {
         this.audioButton.style.display = 'flex';
       }
@@ -2201,7 +2049,6 @@ async handleFileUpload(file) {
       // Solo mostrarlo si no hay transcripciones existentes
       const chatId = getState('currentChatId');
       if (chatId) {
-        // Delegar a buttonUpdater si está disponible
         if (window.buttonUpdater && typeof window.buttonUpdater.updateButtons === 'function') {
           window.buttonUpdater.updateButtons(true);
         } else {
@@ -2228,11 +2075,9 @@ async handleFileUpload(file) {
    * Recrea el menú flotante para asegurar que esté limpio de eventos antiguos
    */
   recreateAudioMenu() {
-    // Guardar referencia al menú actual para comprobar si estaba visible
     const oldMenu = this.audioMenu;
     const wasVisible = oldMenu && oldMenu.style.display !== 'none';
     
-    // Crear un nuevo menú flotante (reutilizando código de createAudioMenu)
     this.createAudioMenu();
     
     // Si el menú estaba visible, asegurarse de que siga oculto
@@ -2245,7 +2090,6 @@ async handleFileUpload(file) {
    * Permite actualizar explícitamente el estado del botón desde fuera
    */
   updateButtonState() {
-    // Usar buttonUpdater si está disponible
     if (typeof window.buttonUpdater !== 'undefined' && window.buttonUpdater) {
       window.buttonUpdater.updateButtons(true);
     } else {
@@ -2269,8 +2113,6 @@ async handleFileUpload(file) {
   }
 }
 
-// Crear y exportar una instancia única
 export const audioPanel = new AudioPanel();
 
-// Exportar por defecto
 export default audioPanel;

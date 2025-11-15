@@ -1,4 +1,3 @@
-// backend/services/ualaPaymentCleanup.js - ✅ CORREGIDO
 import pool from '../../lib/dbPool.js';
 import cron from 'node-cron';
 
@@ -9,11 +8,9 @@ class UalaPaymentCleanup {
     this.paymentTimeoutHours = 6;      // Expirar pagos Ualá después de 1 hora
   }
 
-  // ✅ INICIALIZAR LIMPIEZA AUTOMÁTICA
   initialize() {
     console.log('🧹 Inicializando limpieza de pagos Ualá abandonados...');
     
-    // Ejecutar limpieza inicial al arrancar (después de 2 minutos)
     setTimeout(() => {
       this.expireAbandonedUalaPayments().catch(error => {
         console.error('❌ Error en limpieza inicial Ualá:', error);
@@ -31,7 +28,6 @@ class UalaPaymentCleanup {
     console.log(`⏰ Timeout pagos Ualá: ${this.paymentTimeoutHours} hora(s)`);
   }
 
-  // ✅ EXPIRAR SOLO PAGOS UALÁ ABANDONADOS
   async expireAbandonedUalaPayments() {
     if (this.isRunning) {
       console.log('⏳ Limpieza Ualá ya en progreso...');
@@ -43,7 +39,6 @@ class UalaPaymentCleanup {
     try {
       console.log(`🔍 Buscando pagos Ualá "procesando" de más de ${this.paymentTimeoutHours} hora(s)...`);
 
-      // ✅ SOLO BUSCAR PAGOS UALÁ BIS EN ESTADO PROCESANDO
       const abandonedPayments = await pool.query(`
         SELECT 
           id, 
@@ -66,12 +61,10 @@ class UalaPaymentCleanup {
 
       console.log(`⏰ Encontrados ${abandonedPayments.rows.length} pagos Ualá abandonados:`);
       abandonedPayments.rows.forEach(payment => {
-        // ✅ CORREGIDO: Convertir a número antes de usar toFixed
         const hoursElapsed = parseFloat(payment.hours_elapsed) || 0;
         console.log(`   💳 Payment ID: ${payment.id}, Usuario: ${payment.user_id}, Tiempo: ${hoursElapsed.toFixed(1)}h, Orden: ${payment.external_payment_id}`);
       });
 
-      // ✅ ACTUALIZAR SOLO PAGOS UALÁ A "EXPIRADO"
       const updateResult = await pool.query(`
         UPDATE payments_arg 
         SET 
@@ -100,7 +93,6 @@ class UalaPaymentCleanup {
           console.log(`   ⌛ Expirado: ID ${payment.id} | Usuario ${payment.user_id} | $${payment.amount} ARS | Orden ${payment.external_payment_id}`);
         });
 
-        // ✅ LOG PARA AUDITORÍA
         await this.logCleanupActivity(updateResult.rows);
       }
 
@@ -114,7 +106,6 @@ class UalaPaymentCleanup {
     }
   }
 
-  // ✅ LOG DE AUDITORÍA
   async logCleanupActivity(expiredPayments) {
     try {
       const logEntry = {
@@ -136,13 +127,11 @@ class UalaPaymentCleanup {
     }
   }
 
-  // ✅ EJECUTAR LIMPIEZA MANUAL
   async executeManualCleanup() {
     console.log('🔧 Ejecutando limpieza manual de pagos Ualá...');
     return await this.expireAbandonedUalaPayments();
   }
 
-  // ✅ OBTENER ESTADÍSTICAS
   async getCleanupStats() {
     try {
       const stats = await pool.query(`
@@ -182,7 +171,6 @@ class UalaPaymentCleanup {
         };
       }
 
-      // Calcular cuántos están pendientes de expirar
       const pendingResult = await pool.query(`
         SELECT COUNT(*) as pending_count
         FROM payments_arg 
@@ -201,7 +189,6 @@ class UalaPaymentCleanup {
     }
   }
 
-  // ✅ ESTADO DEL SERVICIO
   getServiceStatus() {
     return {
       isRunning: this.isRunning,

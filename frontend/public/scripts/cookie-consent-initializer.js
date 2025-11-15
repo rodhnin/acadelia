@@ -1,4 +1,3 @@
-// frontend/public/scripts/cookie-consent-initializer.js
 document.addEventListener('DOMContentLoaded', function() {
     const bannerInitialized = document.body.getAttribute('data-cookie-init') === 'true';
     
@@ -8,12 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    // Marcar que hemos inicializado
     document.body.setAttribute('data-cookie-init', 'true');
     
-    // Verificar si el banner de consentimiento ya existe
     if (!document.getElementById('cookie-consent-banner')) {
-      // Crear link a CSS si no está ya incluido
       if (!document.querySelector('link[href="/css/cookie-consent.css"]')) {
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
@@ -21,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(cssLink);
       }
       
-      // Insertar el HTML del banner directamente
       const bannerHTML = `
         <div id="cookie-consent-banner">
           <div class="cookie-container">
@@ -123,13 +118,11 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       `;
       
-      // Insertar el HTML del banner al final del body
       document.body.insertAdjacentHTML('beforeend', bannerHTML);
       
       // Evitar guardar múltiples veces
       let isProcessing = false;
       
-      // Agregar directamente listeners a los botones para asegurar funcionamiento
 
       document.getElementById('customize-cookies')?.addEventListener('click', function(e) {
         e.preventDefault();
@@ -143,20 +136,17 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
         
-        // Usar un atributo data para rastrear el estado en lugar de la clase
         const isVisible = settings.getAttribute('data-visible') === 'true';
         
         console.log('Estado actual:', isVisible ? 'visible' : 'oculto');
         
         // Invertir el estado
         if (isVisible) {
-          // Ocultar el panel
           settings.style.display = 'none';
           settings.classList.remove('active');
           settings.setAttribute('data-visible', 'false');
           console.log('Panel ocultado');
         } else {
-          // Mostrar el panel
           settings.style.display = 'block';
           settings.classList.add('active');
           settings.setAttribute('data-visible', 'true');
@@ -175,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
           window.acceptAllCookies();
         }
         
-        // Resetear después de 2 segundos para permitir nuevo intento si falla
         setTimeout(() => {
           isProcessing = false;
         }, 2000);
@@ -192,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
           window.rejectOptionalCookies();
         }
         
-        // Resetear después de 2 segundos para permitir nuevo intento si falla
         setTimeout(() => {
           isProcessing = false;
         }, 2000);
@@ -209,13 +197,11 @@ document.addEventListener('DOMContentLoaded', function() {
           window.saveCustomCookiePreferences();
         }
         
-        // Resetear después de 2 segundos para permitir nuevo intento si falla
         setTimeout(() => {
           isProcessing = false;
         }, 2000);
       });
       
-      // Cargar el script principal de consentimiento si no se ha cargado aún
       if (typeof initCookieConsent !== 'function') {
         const script = document.createElement('script');
         script.src = '/scripts/cookie-consent.js';

@@ -30,10 +30,8 @@ const WHITELIST_IPS = [
  */
 export const securityMonitor = async (req, res, next) => {
   try {
-    // Añadir ID único a la solicitud para seguimiento
     req.id = req.id || Date.now().toString(36) + Math.random().toString(36).substr(2);
     
-    // Extraer información de la solicitud
     const clientIp = req.ip || req.connection.remoteAddress;
     const userId = req.user?.id_user || 'anonymous';
     const method = req.method;
@@ -47,10 +45,8 @@ export const securityMonitor = async (req, res, next) => {
       return next();
     }
     
-    // Registrar solicitud para análisis de patrones
     await trackRequest(clientIp, userId, method, path);
     
-    // Analizar posibles amenazas en la solicitud
     const threats = analyzeRequest(req);
     
     // Si hay amenazas, registrarlas y posiblemente bloquear
@@ -63,7 +59,6 @@ export const securityMonitor = async (req, res, next) => {
         threats
       });
       
-      // Incrementar contador de actividades sospechosas
       await redisService.set(`security:suspicious:${clientIp}`, 
         (parseInt(await redisService.get(`security:suspicious:${clientIp}`) || '0') + 1), 
         3600
@@ -78,7 +73,6 @@ export const securityMonitor = async (req, res, next) => {
       }
     }
     
-    // Verificar si el IP está en lista negra
     const isBlacklisted = await checkBlacklist(clientIp);
     if (isBlacklisted) {
       logSecurityEvent('BLOCKED_IP', 'Solicitud de IP bloqueada', { ip: clientIp });
@@ -99,7 +93,6 @@ export const securityMonitor = async (req, res, next) => {
       });
     }
     
-    // Verificar umbral de actividades sospechosas
     const suspiciousCount = parseInt(await redisService.get(`security:suspicious:${clientIp}`) || '0');
     if (suspiciousCount >= THRESHOLDS.suspiciousActivities) {
       logSecurityEvent('SUSPICIOUS_ACTIVITY', 'Umbral de actividades sospechosas excedido', {
@@ -107,7 +100,6 @@ export const securityMonitor = async (req, res, next) => {
         count: suspiciousCount
       });
       
-      // Añadir a lista negra temporal SOLO EN PRODUCCIÓN
       if (process.env.NODE_ENV === 'production') {
         await redisService.set(`security:blacklist:${clientIp}`, 'blocked', 3600); // 1 hora
         
@@ -117,14 +109,12 @@ export const securityMonitor = async (req, res, next) => {
       }
     }
     
-    // Registrar tiempo de inicio para medir duración
     req.securityStartTime = Date.now();
     
     // Capturar finalización de la respuesta
     res.on('finish', () => {
       const duration = Date.now() - req.securityStartTime;
       
-      // Registrar respuestas lentas (posible DoS)
       if (duration > 5000) {
         logSecurityEvent('SLOW_RESPONSE', 'Respuesta lenta detectada', {
           ip: clientIp,
@@ -136,7 +126,6 @@ export const securityMonitor = async (req, res, next) => {
         });
       }
       
-      // Registrar errores 4xx y 5xx
       if (res.statusCode >= 400) {
         const eventType = res.statusCode >= 500 ? 'SERVER_ERROR' : 'CLIENT_ERROR';
         
@@ -165,7 +154,6 @@ export const securityMonitor = async (req, res, next) => {
 function analyzeRequest(req) {
   const threats = [];
   
-  // Analizar URL
   const url = req.originalUrl || req.url;
   for (const [type, pattern] of Object.entries(ATTACK_PATTERNS)) {
     if (pattern.test(url)) {
@@ -177,7 +165,6 @@ function analyzeRequest(req) {
     }
   }
   
-  // Analizar query params
   if (req.query) {
     for (const [param, value] of Object.entries(req.query)) {
       if (typeof value === 'string') {
@@ -194,12 +181,10 @@ function analyzeRequest(req) {
     }
   }
   
-  // Analizar body
   if (req.body && typeof req.body === 'object') {
     analyzeObject(req.body, threats);
   }
   
-  // Analizar headers
   for (const [header, value] of Object.entries(req.headers)) {
     if (typeof value === 'string') {
       for (const [type, pattern] of Object.entries(ATTACK_PATTERNS)) {
@@ -247,7 +232,6 @@ function analyzeObject(obj, threats, path = '') {
  */
 async function trackRequest(ip, userId, method, path) {
   try {
-    // Almacenar en Redis para análisis
     const key = `security:requests:${ip}`;
     const data = JSON.stringify({
       userId,
@@ -256,27 +240,22 @@ async function trackRequest(ip, userId, method, path) {
       timestamp: Date.now()
     });
     
-    // Añadir a lista de solicitudes recientes - CORREGIDO: lpush en minúsculas
     if (redisService.client && redisService.isConnected) {
       await redisService.client.lpush(key, data);
       
       // Mantener solo las últimas 100 solicitudes - CORREGIDO: ltrim en minúsculas
       await redisService.client.ltrim(key, 0, 99);
       
-      // Establecer expiración (24 horas)
       await redisService.client.expire(key, 86400);
     } else {
-      // Fallback si redis no está disponible
       console.log('Redis no disponible para registrar solicitud');
     }
     
-    // Incrementar contador de solicitudes por minuto
     const minuteKey = `security:rate:${ip}:${Math.floor(Date.now() / 60000)}`;
     await redisService.set(minuteKey, 
       (parseInt(await redisService.get(minuteKey) || '0') + 1), 
       120); // 2 minutos
     
-    // Verificar umbral de solicitudes
     const requestCount = parseInt(await redisService.get(minuteKey) || '0');
     if (requestCount > THRESHOLDS.apiRequests) {
       logSecurityEvent('RATE_LIMIT', 'Umbral de solicitudes excedido', {
@@ -314,12 +293,10 @@ export const trackFailedLogins = async (req, res, next) => {
     return next();
   }
   
-  // Almacenar referencia al método original
   const originalSend = res.send;
   
   // Sobrescribir método para capturar respuesta
   res.send = function(data) {
-    // Restaurar método original
     res.send = originalSend;
     
     // Si es un error de autenticación
@@ -332,12 +309,10 @@ export const trackFailedLogins = async (req, res, next) => {
       
       const loginAttempt = req.body.correo || 'unknown';
       
-      // Incrementar contador de intentos fallidos
       trackFailedLoginAttempt(clientIp, loginAttempt)
         .catch(error => console.error('Error al registrar intento fallido:', error));
     }
     
-    // Llamar al método original
     return originalSend.call(this, data);
   };
   
@@ -353,23 +328,18 @@ async function trackFailedLoginAttempt(ip, loginAttempt) {
     // Clave para identificar intentos por IP
     const key = `security:failed-login:${ip}`;
     
-    // Verificar que Redis esté disponible
     if (redisService.client && redisService.isConnected) {
-      // Añadir timestamp del intento - CORREGIDO: lpush en minúsculas
       await redisService.client.lpush(key, Date.now().toString());
       
       // Mantener solo los últimos 10 intentos - CORREGIDO: ltrim en minúsculas
       await redisService.client.ltrim(key, 0, 9);
       
-      // Establecer expiración (1 hora)
       await redisService.client.expire(key, 3600);
       
-      // Obtener número de intentos - CORREGIDO: llen en minúsculas
       const attempts = await redisService.client.llen(key);
       
       // Si supera el umbral, bloquear IP temporalmente
       if (attempts >= THRESHOLDS.failedLogins) {
-        // Bloquear por 30 minutos
         await redisService.set(`security:blacklist:${ip}`, 'blocked', 1800);
         
         logSecurityEvent('BRUTE_FORCE', 'Posible ataque de fuerza bruta detectado', {
@@ -379,7 +349,6 @@ async function trackFailedLoginAttempt(ip, loginAttempt) {
         });
       }
     } else {
-      // Fallback si redis no está disponible
       console.log('Redis no disponible para registrar intento fallido');
     }
   } catch (error) {

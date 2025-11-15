@@ -42,7 +42,6 @@ router.get('/check-audio-processing/:chatId', authenticateUser, async (req, res)
   
   // Redirigir a la ruta existente en videoTranscriptionRoutes
   try {
-    // Usar axios para llamar al endpoint existente
     const apiUrl = `${process.env.API_URL || 'http://localhost:5000'}/api/transcription/chat/${chatId}/audio-processing-status`;
     const response = await axios.get(apiUrl);
     

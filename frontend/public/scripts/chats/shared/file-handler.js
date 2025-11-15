@@ -86,7 +86,6 @@ export async function validateFile(file, expectedType) {
   try {
     const { valid, detectedType, fileType } = await verifyFileSignature(file);
     
-    // Detectar archivos potencialmente peligrosos
     if (fileType === 'executable') {
       showAcadelError('EXECUTABLE_BLOCKED');
       return { valid: false, truncated: false, fileName: file.name };
@@ -108,7 +107,6 @@ export async function validateFile(file, expectedType) {
         if (previewContent.length > FILE_LIMITS.MAX_TEXT_CONTENT) {
           contentTruncated = true;
           
-          // MOSTRAR NOTIFICACIÓN INMEDIATA DE TRUNCADO
           showAcadelWarning('FILE_PARTIALLY_READ', 
             `"${file.name}" es muy largo (${previewContent.length.toLocaleString()} caracteres). Acadel leerá solo los primeros ${FILE_LIMITS.MAX_TEXT_CONTENT.toLocaleString()} caracteres.`
           );
@@ -117,11 +115,9 @@ export async function validateFile(file, expectedType) {
         }
       } catch (contentError) {
         console.warn('⚠️ No se pudo pre-validar contenido:', contentError);
-        // Continuar con la validación normal si falla la pre-validación
       }
     }
     
-    // Para archivos de código, validar que sea texto legible
     if (expectedType === 'code') {
       const isText = await isTextFile(file);
       if (!isText) {
@@ -138,7 +134,6 @@ export async function validateFile(file, expectedType) {
     
   } catch (error) {
     console.warn('Error en verificación avanzada:', error);
-    // Continuar con validación básica si falla la avanzada
     return { valid: true, truncated: false, fileName: file.name };
   }
 }
@@ -155,7 +150,6 @@ async function getFileContentPreview(file, fileType) {
     const extension = getFileExtension(file);
     const reader = new FileReader();
     
-    // Para archivos de texto plano
     if (extension === 'txt' || fileType === 'code') {
       reader.onload = (event) => {
         resolve(event.target.result || '');
@@ -163,11 +157,9 @@ async function getFileContentPreview(file, fileType) {
       reader.onerror = () => reject(new Error('Error leyendo archivo'));
       reader.readAsText(file);
     }
-    // Para documentos DOCX - hacer una lectura rápida
     else if (extension === 'doc' || extension === 'docx') {
       reader.onload = async (event) => {
         try {
-          // Intentar cargar mammoth si no está disponible
           if (typeof mammoth === 'undefined') {
             await loadMammothJs();
           }
@@ -192,7 +184,6 @@ async function getFileContentPreview(file, fileType) {
       reader.readAsArrayBuffer(file);
     }
     else {
-      // Para otros tipos, estimar por tamaño
       const estimatedChars = Math.floor(file.size / 2);
       resolve('x'.repeat(estimatedChars));
     }
@@ -264,7 +255,6 @@ export function imageToBase64(file, options = {}) {
       return;
     }
 
-    // Verificar que sea una imagen usando la configuración centralizada
     if (!SUPPORTED_FILES.IMAGES.mimeTypes.includes(file.type)) {
       showAcadelError('UNSUPPORTED_TYPE', 
         `Solo acepto ${SUPPORTED_FILES.IMAGES.description}`);
@@ -272,7 +262,6 @@ export function imageToBase64(file, options = {}) {
       return;
     }
 
-    // Verificar tamaño
     if (file.size > FILE_LIMITS.IMAGE_MAX_SIZE) {
       showAcadelError('FILE_TOO_LARGE', 
         `La imagen debe ser menor a ${FILE_LIMITS.IMAGE_MAX_SIZE / (1024 * 1024)}MB`);
@@ -280,12 +269,10 @@ export function imageToBase64(file, options = {}) {
       return;
     }
 
-    // Configurar opciones de compresión
     const maxWidth = options.maxWidth || 800;
     const maxHeight = options.maxHeight || 800;
     const quality = options.quality || 0.7;
 
-    // Crear un objeto URL para la imagen
     const url = URL.createObjectURL(file);
     const img = new Image();
 
@@ -293,7 +280,6 @@ export function imageToBase64(file, options = {}) {
       // Liberar el objeto URL después de cargar la imagen
       URL.revokeObjectURL(url);
 
-      // Calcular dimensiones manteniendo la proporción
       let width = img.width;
       let height = img.height;
       
@@ -305,16 +291,13 @@ export function imageToBase64(file, options = {}) {
       }
 
       try {
-        // Crear canvas para la compresión
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
         
-        // Dibujar la imagen redimensionada en el canvas
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Obtener la versión comprimida como base64
         let outputFormat = 'image/jpeg';
         if (file.type === 'image/png' && !options.forceJpeg) {
           outputFormat = 'image/png';
@@ -322,10 +305,8 @@ export function imageToBase64(file, options = {}) {
           outputFormat = 'image/webp';
         }
         
-        // Convertir a base64
         const base64 = canvas.toDataURL(outputFormat, quality);
         
-        // Limpiar recursos
         canvas.width = 0;
         canvas.height = 0;
         
@@ -358,7 +339,6 @@ export function extractTextFromFile(file) {
       return;
     }
     
-    // Verificar tamaño
     if (file.size > FILE_LIMITS.DOCUMENT_MAX_SIZE) {
       showAcadelError('FILE_TOO_LARGE', 
         `El documento debe ser menor a ${FILE_LIMITS.DOCUMENT_MAX_SIZE / (1024 * 1024)}MB`);
@@ -368,7 +348,6 @@ export function extractTextFromFile(file) {
     
     const extension = getFileExtension(file);
     
-    // Validar que sea un tipo de documento soportado
     if (!SUPPORTED_FILES.DOCUMENTS.extensions.includes(extension)) {
       showAcadelError('UNSUPPORTED_TYPE', 
         `Solo acepto ${SUPPORTED_FILES.DOCUMENTS.description}`);
@@ -378,7 +357,6 @@ export function extractTextFromFile(file) {
     
     const reader = new FileReader();
     
-    // Para archivos .txt - lectura directa
     if (extension === 'txt') {
       reader.onload = (event) => {
         const content = event.target.result;
@@ -403,19 +381,16 @@ export function extractTextFromFile(file) {
       
       reader.readAsText(file);
     } 
-    // Para archivos .doc y .docx - usar mammoth.js
     else if (extension === 'doc' || extension === 'docx') {
       reader.onload = async (event) => {
         try {
           // Cargamos mammoth.js dinámicamente si no está cargado
           await loadMammothJs();
           
-          // Verificar que mammoth esté disponible
           if (typeof mammoth === 'undefined') {
             throw new Error('La biblioteca Mammoth no se cargó correctamente');
           }
           
-          // Convertir docx a texto usando mammoth
           const result = await mammoth.extractRawText({
             arrayBuffer: event.target.result
           });
@@ -462,7 +437,6 @@ export function extractCodeFromFile(file) {
       return;
     }
     
-    // Verificar tamaño
     if (file.size > FILE_LIMITS.CODE_MAX_SIZE) {
       showAcadelError('FILE_TOO_LARGE', 
         `El archivo de código debe ser menor a ${FILE_LIMITS.CODE_MAX_SIZE / (1024 * 1024)}MB`);
@@ -470,7 +444,6 @@ export function extractCodeFromFile(file) {
       return;
     }
     
-    // Validar extensión
     const extension = getFileExtension(file);
     if (!SUPPORTED_FILES.CODE.extensions.includes(extension)) {
       showAcadelError('UNSUPPORTED_TYPE', 
@@ -707,7 +680,6 @@ export function generateFilePreview(file, fileId) {
       return;
     }
     
-    // Para imágenes
     if (file.type.match(/^image\//)) {
       const reader = new FileReader();
       
@@ -727,7 +699,6 @@ export function generateFilePreview(file, fileId) {
       reader.onerror = () => reject(new Error('Error al leer la imagen'));
       reader.readAsDataURL(file);
     }
-    // Para documentos
     else {
       const extension = getFileExtension(file);
       const icon = extension === 'docx' || extension === 'doc' ? 'bxs-file-doc' : 'bxs-file-txt';

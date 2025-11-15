@@ -11,7 +11,6 @@ export const TransactionsController = {
      */
     async getAllTransactions(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 id_user: req.query.id_user,
                 product_id: req.query.product_id,
@@ -26,13 +25,11 @@ export const TransactionsController = {
                 sort_direction: req.query.sort_direction
             };
             
-            // Extraer datos de paginación
             const pagination = {
                 page: parseInt(req.query.page) || 1,
                 limit: parseInt(req.query.limit) || 50
             };
             
-            // Log de acceso
             logSecurityEvent('TRANSACTION_LIST_ACCESS', 'Acceso a lista de transacciones', {
                 userId: req.user?.id_user,
                 filters,
@@ -73,7 +70,6 @@ export const TransactionsController = {
             
             const transaction = await transactionsService.getTransactionById(id);
             
-            // Verificar si el usuario tiene permisos para acceder a esta transacción
             const isOwnTransaction = req.user.id_user == transaction.id_user;
             const isAdmin = req.user.id_rol === 2; // Asumiendo que 2 es el ID del rol de administrador
             
@@ -91,7 +87,6 @@ export const TransactionsController = {
                 });
             }
             
-            // Log de acceso autorizado
             logSecurityEvent('TRANSACTION_DETAIL_ACCESS', 'Acceso a detalle de transacción', {
                 requestUserId: req.user.id_user,
                 transactionId: id,
@@ -135,7 +130,6 @@ export const TransactionsController = {
      */
     async getAnalytics(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 date_from: req.query.date_from,
                 date_to: req.query.date_to,
@@ -143,7 +137,6 @@ export const TransactionsController = {
                 currency_code: req.query.currency_code
             };
             
-            // Log de acceso
             logSecurityEvent('TRANSACTION_ANALYTICS_ACCESS', 'Acceso a analíticas de transacciones', {
                 userId: req.user?.id_user,
                 filters,
@@ -229,7 +222,6 @@ export const TransactionsController = {
                 });
             }
             
-            // Verificar que el usuario es administrador
             if (!req.user || req.user.id_rol !== 3) {
                 console.error(`Intento de acceso no autorizado al panel admin por usuario: ${req.user?.id_user}`);
                 return res.status(403).json({
@@ -269,7 +261,6 @@ export const TransactionsController = {
                 }
             } catch (dbError) {
                 console.error(`[ADMIN] Error al buscar URL de factura en DB: ${dbError.message}`);
-                // Continuar con Paddle si hay error en la DB
             }
             
             // Si no hay URL en Google Drive, obtener de Paddle como administrador
@@ -280,13 +271,11 @@ export const TransactionsController = {
                 const paddleModule = await import("../../services/pagos/paddleService.js");
                 const PaddleService = paddleModule.PaddleService;
                 
-                // Para Paddle, usar credenciales de administrador explícitamente
                 console.log(`[ADMIN] Obteniendo factura como ADMIN: {
                     transactionId: '${id}',
                     environment: '${process.env.NODE_ENV || 'development'}'
                 }`);
                 
-                // Usar null como userId explícitamente para acceder como admin
                 const result = await PaddleService.getInvoiceUrl(id, null);
                 return res.json(result);
             } catch (paddleError) {

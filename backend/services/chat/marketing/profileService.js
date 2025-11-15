@@ -8,11 +8,9 @@ export const profileService = {
   async createProfile(metadata) {
     const client = await pool.connect();
     try {
-      // Generar embedding del perfil
       const embeddingString = JSON.stringify(metadata);
       const embeddingVector = await embeddings.embedQuery(embeddingString);
       
-      // Formatear para PostgreSQL
       const formattedVector = `[${embeddingVector.join(',')}]`;
       
       await client.query('BEGIN');
@@ -26,7 +24,6 @@ export const profileService = {
       
       await client.query('COMMIT');
       
-      // ✅ REGISTRAR NOTIFICACIÓN SIEMPRE QUE SE GUARDE UN PERFIL
       if (result.rows[0]) {
         try {
           const notification = notificationTracker.trackProfile(result.rows[0]);
@@ -50,7 +47,6 @@ export const profileService = {
   async updateProfile(profileId, metadata) {
     const client = await pool.connect();
     try {
-      // Generar nuevo embedding
       const embeddingString = JSON.stringify(metadata);
       const embeddingVector = await embeddings.embedQuery(embeddingString);
       const formattedVector = `[${embeddingVector.join(',')}]`;
@@ -72,7 +68,6 @@ export const profileService = {
       
       await client.query('COMMIT');
       
-      // ✅ REGISTRAR NOTIFICACIÓN PARA ACTUALIZACIÓN DE PERFIL
       if (result.rows[0]) {
         try {
           const notification = notificationTracker.trackProfile(result.rows[0]);
@@ -99,7 +94,6 @@ export const profileService = {
       const params = [];
       const conditions = [];
       
-      // Construir condiciones basadas en filtros
       if (filters.career) {
         params.push(`%"carrera":"${filters.career}"%`);
         conditions.push(`metadata::text ILIKE $${params.length}`);
@@ -117,7 +111,6 @@ export const profileService = {
         }
       }
       
-      // Añadir condiciones a la consulta
       if (conditions.length > 0) {
         query += ` WHERE ${conditions.join(' AND ')}`;
       }
@@ -161,7 +154,6 @@ export const profileService = {
       
       console.log('🔍 Verificando existencia de perfil:', profileId);
       
-      // Verificar que el perfil existe
       const checkResult = await client.query(
         'SELECT id, metadata FROM marketing_profiles WHERE id = $1',
         [profileId]
@@ -180,7 +172,6 @@ export const profileService = {
       const profileName = profile.metadata?.nombre || `Perfil ${profileId}`;
       console.log('✅ Perfil encontrado:', profileName);
       
-      // Eliminar interacciones relacionadas con este perfil
       try {
         await client.query(
           'DELETE FROM marketing_interactions WHERE profile_id = $1',
@@ -189,10 +180,8 @@ export const profileService = {
         console.log('🧹 Interacciones relacionadas eliminadas');
       } catch (interactionError) {
         console.warn('⚠️ Error eliminando interacciones:', interactionError.message);
-        // Continuar aunque falle la eliminación de interacciones
       }
       
-      // Eliminar de memoria relacionada (si existe algún registro con este perfil)
       try {
         await client.query(`
           DELETE FROM marketing_memory 
@@ -202,10 +191,8 @@ export const profileService = {
         console.log('🧹 Memoria relacionada eliminada');
       } catch (memoryError) {
         console.warn('⚠️ Error eliminando memoria relacionada:', memoryError.message);
-        // Continuar aunque falle la eliminación de memoria
       }
       
-      // Eliminar el perfil
       const deleteResult = await client.query(
         'DELETE FROM marketing_profiles WHERE id = $1 RETURNING id, metadata',
         [profileId]
@@ -252,7 +239,6 @@ export const profileService = {
       
       console.log('🔍 Contando perfiles antes de eliminar...');
       
-      // Contar perfiles antes de eliminar
       const countResult = await client.query('SELECT COUNT(*) FROM marketing_profiles');
       const totalProfiles = parseInt(countResult.rows[0].count);
       
@@ -267,7 +253,6 @@ export const profileService = {
         };
       }
       
-      // Eliminar todas las interacciones relacionadas con perfiles
       try {
         const interactionsDeleteResult = await client.query(
           'DELETE FROM marketing_interactions WHERE profile_id IS NOT NULL'
@@ -275,10 +260,8 @@ export const profileService = {
         console.log(`🧹 ${interactionsDeleteResult.rowCount} interacciones eliminadas`);
       } catch (interactionError) {
         console.warn('⚠️ Error eliminando interacciones:', interactionError.message);
-        // Continuar aunque falle la eliminación de interacciones
       }
       
-      // Eliminar memoria relacionada con perfiles (si existe)
       try {
         const memoryDeleteResult = await client.query(`
           DELETE FROM marketing_memory 
@@ -287,10 +270,8 @@ export const profileService = {
         console.log(`🧹 ${memoryDeleteResult.rowCount} registros de memoria eliminados`);
       } catch (memoryError) {
         console.warn('⚠️ Error eliminando memoria relacionada:', memoryError.message);
-        // Continuar aunque falle la eliminación de memoria
       }
       
-      // Eliminar todos los perfiles
       const deleteResult = await client.query('DELETE FROM marketing_profiles');
       const deletedCount = deleteResult.rowCount;
       
@@ -328,11 +309,9 @@ export const profileService = {
   
   async findSimilarProfiles(profileMetadata, limit = 5) {
     try {
-      // Generar embedding para búsqueda
       const embeddingString = JSON.stringify(profileMetadata);
       const embeddingVector = await embeddings.embedQuery(embeddingString);
       
-      // Usar función de matching
       const { data, error } = await supabase.rpc('match_marketing_profiles', {
         query_embedding: embeddingVector,
         match_count: limit

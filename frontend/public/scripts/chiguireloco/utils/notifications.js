@@ -12,11 +12,9 @@ let toastInstance = null;
  * Inicializa el sistema de notificaciones
  */
 export function initNotifications() {
-    // Buscar el elemento toast
     const toastElement = document.getElementById('security-toast');
     
     if (toastElement) {
-        // Crear instancia del toast de Bootstrap
         toastInstance = new bootstrap.Toast(toastElement, {
             autohide: true,
             delay: 5000
@@ -34,9 +32,7 @@ export function initNotifications() {
  * @param {number} [duration=5000] - Duración en milisegundos
  */
 export function showNotification(title, message, type = 'info', duration = 5000) {
-    // Verificar que el toast está inicializado
     if (!toastInstance) {
-        // Intentar inicializar
         initNotifications();
         
         // Si sigue sin estar disponible, mostrar alerta nativa
@@ -47,19 +43,16 @@ export function showNotification(title, message, type = 'info', duration = 5000)
         }
     }
     
-    // Obtener elementos del toast
     const toastElement = document.getElementById('security-toast');
     const titleElement = document.getElementById('toast-title');
     const timeElement = document.getElementById('toast-time');
     const messageElement = document.getElementById('toast-message');
     const iconElement = toastElement.querySelector('.toast-header i');
     
-    // Configurar tipo y estilos
     toastElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
     iconElement.classList.remove('text-success', 'text-danger', 'text-warning', 'text-info', 
                                 'bi-shield-check', 'bi-shield-exclamation', 'bi-exclamation-triangle', 'bi-info-circle');
     
-    // Aplicar estilos según tipo
     switch (type) {
         case 'success':
             iconElement.classList.add('bi-shield-check', 'text-success');
@@ -76,12 +69,10 @@ export function showNotification(title, message, type = 'info', duration = 5000)
             break;
     }
     
-    // Actualizar contenido
     if (titleElement) titleElement.textContent = title;
     if (timeElement) timeElement.textContent = getTimeString();
     if (messageElement) messageElement.textContent = message;
     
-    // Actualizar duración si es diferente del valor por defecto
     if (duration !== 5000) {
         const bootstrapToast = bootstrap.Toast.getInstance(toastElement);
         if (bootstrapToast) {
@@ -89,7 +80,6 @@ export function showNotification(title, message, type = 'info', duration = 5000)
         }
     }
     
-    // Mostrar notificación
     toastInstance.show();
 }
 

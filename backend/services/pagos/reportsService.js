@@ -19,16 +19,13 @@ export class ReportsService {
      */
     async generateReport(params) {
         try {
-            // Validar parámetros requeridos
             if (!params.type || !params.created_by) {
                 throw new Error('Se requiere tipo de informe y usuario creador');
             }
             
-            // Determinar nombre y tipo de informe
             let reportName = params.name || `Informe ${params.type} - ${new Date().toISOString().substring(0, 10)}`;
             const format = params.format || 'json';
             
-            // Obtener datos según el tipo de informe
             let reportData;
             
             switch (params.type) {
@@ -78,7 +75,6 @@ export class ReportsService {
                     throw new Error(`Tipo de informe '${params.type}' no soportado`);
             }
             
-            // Registrar el informe en la base de datos
             const query = `
                 INSERT INTO informes (
                     name, type, format, parameters, created_by
@@ -109,7 +105,6 @@ export class ReportsService {
             if (process.env.NODE_ENV !== 'test') {
                 filePath = await this.saveReportToFile(reportId, reportData, format);
                 
-                // Actualizar la ruta del archivo en la base de datos
                 await pool.query(
                     'UPDATE informes SET file_path = $1 WHERE id = $2',
                     [filePath, reportId]
@@ -214,7 +209,6 @@ export class ReportsService {
     async generateUsersReport(params) {
         const filters = params.filters || {};
         
-        // Construir la consulta base
         let query = `
             SELECT u.id_user, u.correo, u.created_at, p.nombre, p.apellido, p.id_pais
             FROM usuario u
@@ -225,7 +219,6 @@ export class ReportsService {
         const queryParams = [];
         let paramIndex = 1;
         
-        // Aplicar filtros
         if (filters.date_from) {
             query += ` AND u.created_at >= $${paramIndex}`;
             queryParams.push(filters.date_from);
@@ -263,7 +256,6 @@ export class ReportsService {
             WHERE 1=1
         `;
         
-        // Aplicar los mismos filtros a las estadísticas
         let statsQueryWithFilters = statsQuery;
         let statsParams = [];
         let statsParamIndex = 1;
@@ -280,7 +272,6 @@ export class ReportsService {
             statsParamIndex++;
         }
         
-        // Ejecutar consulta de estadísticas
         const statsResult = await pool.query(statsQueryWithFilters, statsParams);
         const stats = statsResult.rows[0];
         
@@ -450,10 +441,8 @@ export class ReportsService {
         const filters = params.filters || {};
         
         try {
-            // Importar dinámicamente el servicio de gastos
             const { expensesService } = await import('./expensesService.js');
             
-            // Obtener datos de gastos
             const expenses = await expensesService.getAllExpenses(filters);
             const expensesTotals = await expensesService.getExpensesTotals(filters);
             const expensesByMonth = await expensesService.getExpensesByMonth(filters);
@@ -490,7 +479,6 @@ export class ReportsService {
      */
     async getReportsList(filters = {}, pagination = { page: 1, limit: 10 }) {
         try {
-            // Construir la consulta base
             let query = `
                 SELECT i.*, u.correo as created_by_email
                 FROM informes i
@@ -502,7 +490,6 @@ export class ReportsService {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros
             if (filters.type) {
                 query += ` AND i.type = $${paramIndex}`;
                 queryParams.push(filters.type);
@@ -538,7 +525,6 @@ export class ReportsService {
             const countResult = await pool.query(countQuery, queryParams);
             const totalCount = parseInt(countResult.rows[0].count);
             
-            // Aplicar ordenamiento y paginación
             query += ` ORDER BY i.created_at DESC`;
             
             // Paginación
@@ -549,7 +535,6 @@ export class ReportsService {
             query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
             queryParams.push(limit, offset);
             
-            // Ejecutar la consulta final
             const result = await pool.query(query, queryParams);
             
             return {
@@ -616,15 +601,12 @@ export class ReportsService {
  */
 async saveReportToFile(reportId, data, format) {
     try {
-      // Crear directorio para informes si no existe
       const reportsDir = path.join(process.cwd(), 'reports');
       await fsPromises.mkdir(reportsDir, { recursive: true });
       
-      // Determinar nombre y ruta del archivo
       const fileName = `report_${reportId}_${new Date().toISOString().replace(/:/g, '-')}.${format}`;
       const filePath = path.join(reportsDir, fileName);
       
-      // Convertir datos según formato
       let fileContent;
       
       switch (format.toLowerCase()) {
@@ -633,7 +615,6 @@ async saveReportToFile(reportId, data, format) {
           break;
           
         case 'csv':
-          // Implementación simple para CSV, en un caso real
           // se usaría una biblioteca específica
           fileContent = this.convertToCSV(data);
           break;
@@ -660,7 +641,6 @@ async saveReportToFile(reportId, data, format) {
      * @returns {string} - Contenido en formato CSV
      */
     convertToCSV(data) {
-        // Implementación básica para ejemplo
         // En un caso real se usaría una biblioteca específica
         
         let csv = '';
@@ -722,7 +702,6 @@ async generateIntegralReport(params) {
       logoUrl: params.logoUrl || '/images/Imagotipo.png'
     };
     
-    // Extraer el período para filtrado
     const filters = {
       date_from: reportParams.date_from,
       date_to: reportParams.date_to
@@ -751,12 +730,10 @@ async generateIntegralReport(params) {
       const { expensesService } = await import('./expensesService.js');
       const expensesResponse = await expensesService.getAllExpenses(filters);
       
-      // Verificar la estructura de los datos y extraer correctamente
       if (expensesResponse && expensesResponse.data && Array.isArray(expensesResponse.data)) {
         expenses = expensesResponse.data;
         console.log(`Obtenidos ${expenses.length} gastos para procesar`);
         
-        // Verificar si hay datos para debugear
         if (expenses.length > 0) {
           console.log('Muestra de gasto:', JSON.stringify(expenses[0]));
         }
@@ -781,14 +758,12 @@ async generateIntegralReport(params) {
     const totalRevenue = transactionAnalytics.totals.earnings_eur || 0;
     let totalExpenses = 0;
     if (Array.isArray(expenses) && expenses.length > 0) {
-      // Usar directamente el método que suma amount + tax_amount para cada gasto
       totalExpenses = this.calculateTotalExpensesWithTax(expenses);
       console.log(`Calculando egresos totales con IMPUESTOS incluidos: ${totalExpenses}`);
     } else {
       // Si no hay datos de gastos individuales, intentar estimar
       totalExpenses = expensesTotals.total || 0;
       
-      // Intentar sumar los impuestos totales si están disponibles separadamente
       const taxTotal = expensesTotals.tax_total || 
         (Array.isArray(expensesTotals.by_category) ? 
           expensesTotals.by_category.reduce((sum, cat) => 
@@ -828,7 +803,6 @@ async generateIntegralReport(params) {
     console.log("Obteniendo datos de suscripciones por producto...");
     const productSubscriptionsData = await this.countSubscriptionsByProduct(filters);
     
-    // Calcular el top de productos incluyendo datos de suscripciones precisos
     // Primero agrupamos los productos por product_id (para evitar que aparezcan duplicados por moneda)
     const productMap = new Map();
 
@@ -844,27 +818,21 @@ async generateIntegralReport(params) {
         });
       }
       
-      // Sumar values de earnings_eur y transactions
       const existingProduct = productMap.get(productId);
       existingProduct.earnings_eur += parseFloat(product.earnings_eur || 0);
       existingProduct.transactions += parseInt(product.transactions || 0);
     });
 
-    // Convertir el mapa a un array y ordenar por earnings_eur
     const groupedProducts = Array.from(productMap.values())
       .sort((a, b) => b.earnings_eur - a.earnings_eur);
 
     // Ahora procesar los productos agrupados correctamente
     const topProducts = groupedProducts.map(product => {
-      // Obtener el ID del producto
       const productId = product.product_id;
       
-      // Buscar información de suscripciones por product_id
       let subscriptionsInfo = productSubscriptionsData.byProductId[productId];
       
-      // Si no se encuentra, intentar buscar por id_carrera que podría estar relacionado
       if (!subscriptionsInfo && subscriptionStats && subscriptionStats.by_product) {
-        // Buscar en los datos de subscriptionStats si hay alguna coincidencia
         const matchedProduct = subscriptionStats.by_product.find(p => 
           p.id_product === productId || p.id === productId || 
           p.product_id === productId || p.nombre === product.product_name);
@@ -885,12 +853,10 @@ async generateIntegralReport(params) {
       // Asegurarse de que es un número
       const productSubscriptions = parseInt(subscriptionsInfo.count || 0);
       
-      // Calcular porcentaje respecto al total de INGRESOS (no de suscripciones)
       const revenuePercentage = totalRevenue > 0 
       ? (parseFloat(product.earnings_eur || 0) / totalRevenue * 100)
       : 0;
       
-      // Log para diagnóstico
       console.log(`Producto Agrupado: ${product.product_name} (ID: ${productId}), Ingresos: ${product.earnings_eur}, Porcentaje de ingresos: ${revenuePercentage.toFixed(2)}%`);
       
       return {
@@ -951,7 +917,6 @@ async generateIntegralReport(params) {
       paymentMethodsWithEarnings = [];
     }
     
-    // Crear revenueSummary con los nuevos datos
     const revenueSummary = {
       totalRevenue,
       methods: paymentMethodsWithEarnings.length > 0 
@@ -973,7 +938,6 @@ async generateIntegralReport(params) {
     const taxSummary = {
       totalAmount: parseFloat(taxAnalysis.totals.total_amount_eur) || 0,
       totalTax: parseFloat(taxAnalysis.totals.tax_amount_eur) || 0,
-      // Intentar primero tax_amount_eur, luego tax_amount como fallback
       spainTax: parseFloat(taxAnalysis.spain_vs_others.spain.tax_amount_eur || 
                           taxAnalysis.spain_vs_others.spain.tax_amount || 0),
       otherTax: parseFloat(taxAnalysis.spain_vs_others.others.tax_amount_eur || 
@@ -987,11 +951,9 @@ async generateIntegralReport(params) {
     // 11. Compilar el resumen de gastos
     const categoriesWithTax = [];
 
-    // Calcular gastos deducibles e IVA deducible con precisión
     let deductibleAmount = 0;
     let deductibleTax = 0;
 
-    // Calcular totales deducibles primero
     if (Array.isArray(expenses)) {
       expenses.forEach(e => {
         const expense = e.data ? e.data : e;
@@ -1005,7 +967,6 @@ async generateIntegralReport(params) {
     // Ahora procesar las categorías
     if (Array.isArray(expensesTotals.by_category)) {
       expensesTotals.by_category.forEach(category => {
-        // Filtrar los gastos de esta categoría
         const categoryExpenses = Array.isArray(expenses) 
           ? expenses.filter(e => {
               const expense = e.data ? e.data : e;
@@ -1013,7 +974,6 @@ async generateIntegralReport(params) {
             })
           : [];
         
-        // Sumar amount y tax_amount para cada gasto de esta categoría
         let totalWithTax = 0;
         categoryExpenses.forEach(e => {
           const expense = e.data ? e.data : e;
@@ -1027,10 +987,8 @@ async generateIntegralReport(params) {
           totalWithTax = parseFloat(category.total || 0);
         }
         
-        // Calcular el nuevo porcentaje basado en el total con IVA
         const percentage = totalExpenses > 0 ? (totalWithTax / totalExpenses * 100) : 0;
         
-        // Agregar la categoría con el total actualizado
         categoriesWithTax.push({
           ...category,
           total: totalWithTax,
@@ -1070,7 +1028,6 @@ async generateIntegralReport(params) {
       
       const intervalResult = await pool.query(intervalQuery);
       
-      // Procesar resultados
       intervalResult.rows.forEach(row => {
         if (row.interval === 'month') {
           monthlyCount = parseInt(row.count);
@@ -1121,7 +1078,6 @@ async generateIntegralReport(params) {
 
     console.log(`Distribución de planes calculada: ${monthlyCount} mensuales (${monthlyPercentage.toFixed(2)}%), ${yearlyCount} anuales (${yearlyPercentage.toFixed(2)}%)`);
 
-    // Calcular métricas adicionales de suscripciones
     console.log("Calculando métricas adicionales de suscripciones...");
 
     // 1. Tasa de Cancelación (canceladas + expiradas) / total
@@ -1131,7 +1087,6 @@ async generateIntegralReport(params) {
     const totalSubs = activeSubscriptions + totalCanceled;
     const cancelationRate = totalSubs > 0 ? (totalCanceled / totalSubs * 100) : 0;
     
-    // Analizar fechas de egresos para diagnóstico
     console.log("Analizando fechas de egresos para diagnóstico...");
     if (Array.isArray(expenses) && expenses.length > 0) {
       // Examinar la estructura para determinar si los datos están en .data
@@ -1168,10 +1123,8 @@ async generateIntegralReport(params) {
         endDate = new Date(); // Fecha actual por defecto
       }
       
-      // Obtener el primer día del mes actual o del mes especificado en date_to
       const endMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
       
-      // Calcular primer día 5 meses atrás (para tener 6 meses en total)
       const startMonth = new Date(endMonth);
       startMonth.setMonth(startMonth.getMonth() - 5);
       
@@ -1180,7 +1133,6 @@ async generateIntegralReport(params) {
       // 2. CONSULTA DIRECTA DE EGRESOS USANDO SQL HARD-CODED
       console.log("[TENDENCIAS] *** CONSULTANDO EGRESOS DIRECTAMENTE DE LA BASE DE DATOS ***");
       
-      // Formatear fechas como YYYY-MM-DD para la consulta SQL
       const startDateStr = startMonth.toISOString().split('T')[0];
       const endDateStr = endDate.toISOString().split('T')[0];
       
@@ -1194,7 +1146,6 @@ async generateIntegralReport(params) {
       
       console.log(`[TENDENCIAS] Ejecutando consulta SQL: ${egresosQuery}`);
       
-      // Ejecutar consulta sin parámetros para evitar posibles problemas
       let egresosByMonth = {};
       try {
         const egresosResult = await pool.query(egresosQuery);
@@ -1202,24 +1153,19 @@ async generateIntegralReport(params) {
         
         console.log(`[TENDENCIAS] ✅ ÉXITO! Obtenidos ${sixMonthsExpenses.length} egresos de la base de datos`);
         
-        // Verificar los datos recibidos
         if (sixMonthsExpenses.length > 0) {
           console.log("[TENDENCIAS] Muestra del primer egreso:", JSON.stringify(sixMonthsExpenses[0]));
           
-          // Procesar egresos por mes
           sixMonthsExpenses.forEach(expense => {
             if (expense.date) {
               try {
-                // Crear la clave de mes YYYY-MM
                 const dateObj = new Date(expense.date);
                 const monthKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
                 
-                // Calcular el total con impuestos
                 const amount = parseFloat(expense.amount || 0);
                 const taxAmount = parseFloat(expense.tax_amount || 0);
                 const total = amount + taxAmount;
                 
-                // Inicializar el objeto del mes si no existe
                 if (!egresosByMonth[monthKey]) {
                   egresosByMonth[monthKey] = {
                     total: 0,
@@ -1227,7 +1173,6 @@ async generateIntegralReport(params) {
                   };
                 }
                 
-                // Incrementar total y agregar a la lista
                 egresosByMonth[monthKey].total += total;
                 egresosByMonth[monthKey].items.push({
                   id: expense.id,
@@ -1244,7 +1189,6 @@ async generateIntegralReport(params) {
             }
           });
           
-          // Mostrar totales por mes
           console.log("[TENDENCIAS] Egresos agrupados por mes:");
           Object.keys(egresosByMonth).sort().forEach(month => {
             console.log(`[TENDENCIAS] 📊 ${month}: ${egresosByMonth[month].items.length} egresos, total: ${egresosByMonth[month].total.toFixed(2)}`);
@@ -1254,14 +1198,12 @@ async generateIntegralReport(params) {
         }
       } catch (sqlError) {
         console.error("[TENDENCIAS] ❌ ERROR EJECUTANDO CONSULTA SQL:", sqlError);
-        // Inicializar un objeto vacío en caso de error
         egresosByMonth = {};
       }
 
       // 3. Obtener datos de ingresos por mes
       console.log("[TENDENCIAS] Obteniendo datos de ingresos por mes...");
       
-      // Crear filtros específicos para las tendencias mensuales
       const trendsFilters = {
         ...filters,
         date_from: startMonth.toISOString(),
@@ -1306,7 +1248,6 @@ async generateIntegralReport(params) {
         }
       }
       
-      // Ordenar por fecha y limitar a 6 meses
       completeMonthlyRevenue.sort((a, b) => new Date(a.month) - new Date(b.month));
       if (completeMonthlyRevenue.length > 6) {
         completeMonthlyRevenue = completeMonthlyRevenue.slice(-6);
@@ -1320,25 +1261,19 @@ async generateIntegralReport(params) {
       console.log("[TENDENCIAS] Creando tendencias mensuales finales...");
       
       monthlyTrends = completeMonthlyRevenue.map(month => {
-        // Normalizar la fecha para búsqueda consistente
         const monthDate = new Date(month.month);
         const monthKey = this.normalizeMonthFormat(monthDate);
         
-        // Usar earnings_eur para los ingresos (valor neto)
         const monthRevenue = parseFloat(month.earnings_eur || 0);
         
-        // Buscar egresos para este mes (amount + tax_amount)
         const monthExpenses = egresosByMonth[monthKey] ? egresosByMonth[monthKey].total : 0;
         
-        // Buscar datos de suscripciones para este mes
         const subData = subscriptionsByMonth[monthKey] || { new_subscriptions: 0, canceled_subscriptions: 0 };
         const newSubs = parseInt(subData.new_subscriptions) || 0;
         const canceledSubs = parseInt(subData.canceled_subscriptions) || 0;
         
-        // Log para verificación completa de los datos
         console.log(`[TENDENCIAS] Mes ${monthKey} - Ingresos: ${monthRevenue.toFixed(2)}, Egresos: ${monthExpenses.toFixed(2)}, Nuevas suscripciones: ${newSubs}, Cancelaciones: ${canceledSubs}`);
         
-        // Generar label para mostrar en la tabla
         const label = monthDate.toLocaleDateString('es', { month: 'short', year: '2-digit' });
         
         return {
@@ -1357,11 +1292,9 @@ async generateIntegralReport(params) {
       console.log("[TENDENCIAS] Calculando métricas financieras basadas en tendencias mensuales...");
       
       if (Array.isArray(monthlyTrends) && monthlyTrends.length > 0) {
-        // Calcular el total de ingresos y el número de meses con datos
         let totalHistoricalRevenue = 0;
         let monthsWithRevenue = 0;
         
-        // Sumar los ingresos de todos los meses disponibles
         monthlyTrends.forEach(month => {
           if (month.revenue > 0) {
             totalHistoricalRevenue += month.revenue;
@@ -1371,11 +1304,9 @@ async generateIntegralReport(params) {
         
         console.log(`[TENDENCIAS] Total de ingresos históricos: €${totalHistoricalRevenue.toFixed(2)} en ${monthsWithRevenue} meses`);
         
-        // Calcular el promedio mensual de ingresos
         const avgMonthlyRevenue = monthsWithRevenue > 0 ? totalHistoricalRevenue / monthsWithRevenue : 0;
         console.log(`[TENDENCIAS] Promedio mensual de ingresos: €${avgMonthlyRevenue.toFixed(2)}`);
         
-        // Asignar valores (sin usar 'let', ya están declaradas fuera)
         monthlySubsRevenue = avgMonthlyRevenue;
         yearlySubsRevenue = totalHistoricalRevenue; // Lo que ya se ha ganado en lo que va del año
         projectedAnnualRevenue = avgMonthlyRevenue * 12; // Proyección basada en el promedio mensual
@@ -1383,10 +1314,8 @@ async generateIntegralReport(params) {
         // Si no hay datos históricos, usar el enfoque anterior como fallback
         console.log("[TENDENCIAS] No hay datos históricos disponibles, usando cálculo estimado");
         
-        // Calcular ingresos mensuales (suscripciones mensuales * ingreso promedio)
         monthlySubsRevenue = monthlyCount * avgRevenuePerSub;
         
-        // Calcular ingresos anuales (suscripciones anuales * ingreso promedio)
         yearlySubsRevenue = yearlyCount * avgRevenuePerSub;
         
         // Proyectar ingresos anuales
@@ -1484,7 +1413,6 @@ async generateIntegralReport(params) {
     let driveUrl = '';
     try {
       const reportDate = new Date(reportParams.date_to);
-      // Usar el nuevo método específico para informes integrales
       driveUrl = await googleDriveService.uploadIntegralReport(
         filePath, 
         reportId, 
@@ -1492,7 +1420,6 @@ async generateIntegralReport(params) {
       );
       console.log(`Informe guardado en Google Drive: ${driveUrl}`);
       
-      // Actualizar la URL de Google Drive en la base de datos
       try {
         await pool.query(
           'UPDATE informes SET drive_url = $1 WHERE id = $2',
@@ -1549,28 +1476,23 @@ analyzeExpenseDates(expenses) {
   expenses.forEach((expense, index) => {
     const expenseData = expense.data ? expense.data : expense;
     
-    // Verificar si tiene fecha
     if (!expenseData.date) {
       formatIssues.push({index, issue: "Sin fecha", data: expenseData});
       return;
     }
     
     try {
-      // Intentar parsear la fecha
       const dateObj = new Date(expenseData.date);
       
-      // Verificar si es una fecha válida
       if (isNaN(dateObj.getTime())) {
         formatIssues.push({index, issue: "Fecha inválida", data: expenseData});
         return;
       }
       
-      // Normalizar al formato YYYY-MM
       const year = dateObj.getFullYear();
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
       const monthKey = `${year}-${month}`;
       
-      // Calcular el total con impuestos
       const amount = parseFloat(expenseData.amount || 0);
       const taxAmount = parseFloat(expenseData.tax_amount || 0);
       const total = amount + taxAmount;
@@ -1587,7 +1509,6 @@ analyzeExpenseDates(expenses) {
       expensesByMonth[monthKey].count++;
       expensesByMonth[monthKey].total += total;
       
-      // Guardar las primeras 3 fechas para muestra
       if (expensesByMonth[monthKey].dates.length < 3) {
         expensesByMonth[monthKey].dates.push(expenseData.date);
       }
@@ -1597,7 +1518,6 @@ analyzeExpenseDates(expenses) {
     }
   });
   
-  // Mostrar resultados agrupados por mes
   console.log("Egresos por mes:");
   const months = Object.keys(expensesByMonth).sort();
   
@@ -1607,7 +1527,6 @@ analyzeExpenseDates(expenses) {
     console.log(`  Ejemplos de fechas: ${info.dates.join(', ')}`);
   });
   
-  // Reportar problemas encontrados
   if (formatIssues.length > 0) {
     console.log(`Se encontraron ${formatIssues.length} problemas con fechas:`);
     formatIssues.slice(0, 5).forEach(issue => {
@@ -1645,7 +1564,6 @@ async countSubscriptionsByProduct(filters = {}) {
     const queryParams = [];
     let paramIndex = 1;
     
-    // Aplicar filtros adicionales si es necesario
     if (filters.date_from) {
       query += ` AND created_at >= $${paramIndex}`;
       queryParams.push(filters.date_from);
@@ -1664,14 +1582,12 @@ async countSubscriptionsByProduct(filters = {}) {
     console.log("Ejecutando consulta para contar suscripciones por producto:", query);
     const result = await pool.query(query, queryParams);
     
-    // Crear un mapa para búsqueda rápida por product_id
     const productSubscriptionsMap = {};
     const idCarreraMap = {}; // Mapa secundario por id_carrera
     
     result.rows.forEach(row => {
       const count = parseInt(row.subscription_count);
       
-      // Guardar en el mapa por product_id
       if (row.product_id) {
         productSubscriptionsMap[row.product_id] = {
           count: count,
@@ -1718,10 +1634,8 @@ normalizeMonthFormat(date) {
   if (!date) return '';
   
   try {
-    // Convertir a objeto Date si es string
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     
-    // Extraer año y mes, asegurando que el mes tenga 2 dígitos
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     
@@ -1741,15 +1655,12 @@ normalizeMonthFormat(date) {
 async generateIntegralReportPDF(reportData, options) {
   return new Promise(async (resolve, reject) => {
     try {
-      // Crear directorio para informes si no existe
       const reportsDir = path.join(process.cwd(), 'reports');
       await fsPromises.mkdir(reportsDir, { recursive: true });
       
-      // Determinar nombre y ruta del archivo
       const fileName = `informe_integral_${new Date().toISOString().replace(/:/g, '-')}.pdf`;
       const filePath = path.join(reportsDir, fileName);
       
-      // Crear nuevo documento PDF con márgenes estrechos para aprovechar el espacio
       const doc = new PDFDocument({
         size: 'A4',
         margin: 40, // Reducir márgenes para maximizar espacio
@@ -1773,7 +1684,6 @@ async generateIntegralReportPDF(reportData, options) {
         pageCount++;
       });
       
-      // Definir colores corporativos de Acadelia
       const colors = {
         primary: '#582f0e', // Color principal de Acadelia
         secondary: '#656d4a', // Color secundario de Acadelia
@@ -1791,18 +1701,15 @@ async generateIntegralReportPDF(reportData, options) {
       // Variable para rastrear el logo
       let logoDrawn = false;
       
-      // Cargar logo si está disponible
       try {
         if (options.logoUrl && !logoDrawn) {
           console.log('Cargando logo desde:', options.logoUrl);
           
-          // Buscar en la ubicación del frontend/public
           const logoPath = path.join(process.cwd(), 'frontend', 'public', options.logoUrl.replace(/^\//, ''));
           
           try {
             await fsPromises.access(logoPath);
             
-            // Calcular posición para centrarlo
             const centerX = (doc.page.width - 140) / 2;
             
             doc.image(logoPath, centerX, 40, {
@@ -1811,7 +1718,6 @@ async generateIntegralReportPDF(reportData, options) {
               valign: 'center'
             });
             
-            // Mover el cursor después del logo
             doc.y = 130;
             logoDrawn = true;
             console.log(`Logo cargado correctamente desde: ${logoPath}`);
@@ -1825,7 +1731,6 @@ async generateIntegralReportPDF(reportData, options) {
         doc.y = 40;
       }
       
-      // Configurar estilos de texto
       const styles = {
         title: { fontSize: 20, font: 'Helvetica-Bold', color: colors.primary },
         subtitle: { fontSize: 14, font: 'Helvetica-Oblique', color: colors.textLight },
@@ -1836,12 +1741,10 @@ async generateIntegralReportPDF(reportData, options) {
         tableCell: { fontSize: 9, font: 'Helvetica', color: colors.text }
       };
       
-      // Función para aplicar estilo de texto
       const applyTextStyle = (style) => {
         doc.font(style.font).fontSize(style.fontSize).fillColor(style.color);
       };
       
-      // Añadir título centrado con línea de subrayado
       applyTextStyle(styles.title);
       const titleWidth = doc.widthOfString(reportData.title);
       const titleX = (doc.page.width - titleWidth) / 2;
@@ -1855,7 +1758,6 @@ async generateIntegralReportPDF(reportData, options) {
          .lineWidth(1)
          .stroke();
       
-      // Añadir período con estilo
       doc.moveDown(1);
       applyTextStyle(styles.subtitle);
       const periodText = `Período: ${reportData.period}`;
@@ -1863,7 +1765,6 @@ async generateIntegralReportPDF(reportData, options) {
       const periodX = (doc.page.width - periodWidth) / 2;
       doc.text(periodText, periodX, doc.y);
       
-      // Añadir fecha de generación
       doc.moveDown(0.5);
       const genDateText = `Generado el ${new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}`;
       const genDateWidth = doc.widthOfString(genDateText);
@@ -1872,17 +1773,13 @@ async generateIntegralReportPDF(reportData, options) {
       
       doc.moveDown(2);
       
-      // Función para crear encabezados de sección (en nueva página)
       const addSectionHeader = (text) => {
-        // Agregar nueva página para cada sección principal
         doc.addPage();
         
-        // Resetear el contador Y
         doc.y = 40;
         
         applyTextStyle(styles.sectionHeader);
         
-        // Dibujar una barra de color a la izquierda
         doc.rect(40, doc.y, 8, 20)
            .fill(colors.primary);
         
@@ -1891,9 +1788,7 @@ async generateIntegralReportPDF(reportData, options) {
         doc.moveDown(1.5);
       };
       
-      // Función para crear encabezados de subsección
       const addSubsectionHeader = (text) => {
-        // Verificar si es necesario saltar a una nueva página
         if (doc.y > doc.page.height - 100) {
           doc.addPage();
           doc.y = 40;
@@ -1912,11 +1807,9 @@ async generateIntegralReportPDF(reportData, options) {
         doc.moveDown(1.5);
       };
       
-      // Para la primera sección no necesitamos nueva página, ya estamos en la primera
       // SECCIÓN: RESUMEN EJECUTIVO
       applyTextStyle(styles.sectionHeader);
       
-      // Dibujar una barra de color a la izquierda
       doc.rect(40, doc.y, 8, 20)
          .fill(colors.primary);
       
@@ -2219,19 +2112,15 @@ async generateIntegralReportPDF(reportData, options) {
         const active = parseInt(reportData.subscriptionSummary.active || 0);
         const paused = parseInt(reportData.subscriptionSummary.paused || 0);
         
-        // Sumar canceladas y expiradas
         const canceled = parseInt(reportData.subscriptionSummary.canceled || 0);
         const expired = parseInt(reportData.subscriptionSummary.expired || 0);
         const canceledTotal = canceled + expired;
         
-        // Calcular el total correcto
         const totalSubs = active + canceledTotal;
         
-        // Calcular porcentajes correctamente (eliminando pausedPercent)
         const activePercent = totalSubs > 0 ? (active / totalSubs * 100) : 0;
         const canceledPercent = totalSubs > 0 ? (canceledTotal / totalSubs * 100) : 0;
         
-        // Crear las filas
         const subStatusRows = [
           [
             { text: 'Activas' },
@@ -2245,7 +2134,6 @@ async generateIntegralReportPDF(reportData, options) {
           ]
         ];
         
-        // Añadir fila de totales
         subStatusRows.push([
           { text: 'Total', bold: true },
           { text: totalSubs.toString(), bold: true, align: 'right' },
@@ -2278,19 +2166,15 @@ async generateIntegralReportPDF(reportData, options) {
         console.log(`Tendencias mensuales disponibles: ${reportData.monthlyTrends.length} meses`);
         
         try {
-          // Agregar encabezado de sección
           addSectionHeader('TENDENCIAS MENSUALES');
-          // Verificar una vez más
           if (!reportData.monthlyTrends || reportData.monthlyTrends.length === 0) {
             doc.text("No hay datos de tendencias mensuales disponibles.", 40, doc.y);
             doc.moveDown(1);
             return; // Salir para evitar errores
           }
           
-          // Preparar filas con manejo de errores
           const trendRows = reportData.monthlyTrends.map(month => {
             try {
-              // Determinar si el beneficio es positivo o negativo
               const isPositive = (month.netIncome || 0) >= 0;
               const netIncomeColor = isPositive ? colors.positive : colors.negative;
               
@@ -2325,7 +2209,6 @@ async generateIntegralReportPDF(reportData, options) {
             }
           });
           
-          // Dibujar la tabla
           this.drawExcelStyleTable(doc, 
             [
               { text: 'Mes', width: 60, align: 'left' },
@@ -2352,7 +2235,6 @@ async generateIntegralReportPDF(reportData, options) {
         } catch (error) {
           console.error("Error dibujando sección de tendencias mensuales:", error);
           
-          // Intentar recuperarse del error
           try {
             doc.moveDown(1);
             doc.font('Helvetica-Bold').fontSize(12).fillColor('#cc0000');
@@ -2368,12 +2250,9 @@ async generateIntegralReportPDF(reportData, options) {
         console.warn("No hay datos de tendencias mensuales disponibles");
       }
       
-      // Finalizar documento
       doc.end();
       
-      // Usar un enfoque alternativo para la numeración de páginas
       stream.on('finish', () => {
-        // Para este caso, no vamos a re-generar el documento para numerar páginas
         // sino que confiamos en la cuenta de páginas del documento original
         resolve(filePath);
       });
@@ -2413,49 +2292,41 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
     useCustomCellColors: false      // Permitir colores personalizados por celda
   };
   
-  // Combinar opciones (pero ignorar borderColor si se proporciona)
   const settings = { ...defaultOpts, ...options };
   
   // FORZAR color de borde gris independientemente de las opciones
   const GRAY_BORDER = '#d1d5db';
   
-  // Calcular ancho total disponible - utilizar todo el ancho hasta el margen derecho
   const availableWidth = doc.page.width - settings.x - 40; // 40px de margen derecho
   
   // Posición inicial
   let y = settings.y;
   
-  // Verificar si necesitamos una nueva página para la tabla completa
   if (y + settings.headerHeight + rows.length * settings.rowHeight > doc.page.height - 50) {
     doc.addPage();
     y = 40; // Margen superior
   }
   
-  // Calcular ancho total de todas las columnas definidas
   const totalDefinedWidth = headers.reduce((sum, header) => sum + header.width, 0);
   
   // Factor de escala para ajustar las columnas al ancho disponible
   const scaleFactor = availableWidth / totalDefinedWidth;
   
-  // Dibujar borde exterior completo de la tabla (GRIS FORZADO)
   const tableWidth = availableWidth;
   const tableHeight = settings.headerHeight + (rows.length * settings.rowHeight);
   
   // Estado original
   const originalStrokeColor = doc.strokeColor();
   
-  // Dibujar el borde exterior con gris forzado
   doc.rect(settings.x, y, tableWidth, tableHeight)
      .lineWidth(0.7)
      .strokeColor(GRAY_BORDER) // FORZAR GRIS
      .stroke();
   
-  // Dibujar fondo del encabezado
   doc.rect(settings.x, y, tableWidth, settings.headerHeight)
      .fillColor(settings.headerBg)
      .fill();
   
-  // Calcular posiciones de las líneas verticales
   let columnPositions = [];
   let xOffset = settings.x;
   
@@ -2469,46 +2340,38 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
     }
   });
   
-  // Dibujar textos de encabezado
   xOffset = settings.x;
   
   doc.font('Helvetica-Bold').fontSize(settings.headerFontSize).fillColor(settings.headerTextColor);
   
-  // Dibujar columnas de encabezado
   headers.forEach((header, colIndex) => {
     const scaledWidth = header.width * scaleFactor;
     
     // Centrar verticalmente el texto
     const textY = y + (settings.headerHeight - settings.headerFontSize) / 2;
     
-    // Manejar alineación del texto
     const textOptions = {
       width: scaledWidth - 10, // Margen interno
       align: header.align || 'left'
     };
     
-    // Dibujar texto con márgenes
     doc.text(header.text, xOffset + 5, textY, textOptions);
     
     xOffset += scaledWidth;
   });
   
-  // Dibujar línea horizontal después del encabezado (GRIS FORZADO)
   doc.moveTo(settings.x, y + settings.headerHeight)
      .lineTo(settings.x + tableWidth, y + settings.headerHeight)
      .lineWidth(0.7)
      .strokeColor(GRAY_BORDER) // FORZAR GRIS
      .stroke();
   
-  // Dibujar filas de datos
   y += settings.headerHeight;
   
   rows.forEach((row, rowIndex) => {
-    // Dibujar fondo alterno para las filas
     const isAlternate = rowIndex % 2 === 1;
     const isHighlighted = settings.highlight && settings.highlight.rowIndex === rowIndex;
     
-    // Determinar el color de fondo
     let bgColor;
     if (isHighlighted) {
       bgColor = settings.highlight.bg;
@@ -2518,19 +2381,16 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
       bgColor = '#ffffff'; // Filas pares con fondo blanco
     }
     
-    // Aplicar color de fondo
     doc.rect(settings.x + 0.5, y + 0.5, tableWidth - 1, settings.rowHeight - 1)
        .fillColor(bgColor)
        .fill();
     
-    // Dibujar celdas
     xOffset = settings.x;
     
     row.forEach((cell, colIndex) => {
       const header = headers[colIndex];
       const scaledWidth = header.width * scaleFactor;
       
-      // Determinar el texto y estilo
       const cellText = typeof cell === 'object' ? cell.text : cell.toString();
       const cellAlign = (typeof cell === 'object' && cell.align) ? cell.align : header.align || 'left';
       const isBold = typeof cell === 'object' && cell.bold;
@@ -2540,14 +2400,12 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
                        ? cell.color 
                        : settings.textColor;
       
-      // Establecer estilo de texto para la celda
       if (isBold) {
         doc.font('Helvetica-Bold');
       } else {
         doc.font('Helvetica');
       }
       
-      // Aplicar color de texto personalizado si corresponde
       doc.fontSize(settings.fontSize).fillColor(cellColor);
       
       // Centrar verticalmente el texto
@@ -2559,7 +2417,6 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
         align: cellAlign
       };
       
-      // Dibujar texto con márgenes
       doc.text(cellText, xOffset + 5, textY, textOptions);
       
       xOffset += scaledWidth;
@@ -2577,7 +2434,6 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
     y += settings.rowHeight;
   });
   
-  // Dibujar líneas verticales separadoras en toda la tabla (GRIS FORZADO)
   columnPositions.forEach(xPos => {
     doc.moveTo(xPos, settings.y)
        .lineTo(xPos, settings.y + tableHeight)
@@ -2586,7 +2442,6 @@ drawExcelStyleTable(doc, headers, rows, options = {}) {
        .stroke();
   });
   
-  // Actualizar posición del cursor
   doc.y = y + 10;
   
   // Restablecer el color de trazo original
@@ -2630,7 +2485,6 @@ async getSubscriptionsByMonth(filters = {}) {
     const queryParams = [];
     let paramIndex = 1;
     
-    // Aplicar filtros de fecha si existen
     if (filters && filters.date_from) {
       newSubsQuery += ` AND created_at >= $${paramIndex}`;
       canceledSubsQuery += ` AND updated_at >= $${paramIndex}`;
@@ -2653,13 +2507,11 @@ async getSubscriptionsByMonth(filters = {}) {
     console.log("Consulta para nuevas suscripciones:", newSubsQuery);
     console.log("Consulta para suscripciones canceladas:", canceledSubsQuery);
     
-    // Ejecutar ambas consultas
     const [newSubsResult, canceledSubsResult] = await Promise.all([
       pool.query(newSubsQuery, queryParams),
       pool.query(canceledSubsQuery, queryParams)
     ]);
     
-    // Log detallado para depuración
     console.log(`Encontrados ${newSubsResult.rows.length} meses con nuevas suscripciones:`);
     newSubsResult.rows.forEach(row => {
       console.log(`  ${new Date(row.month).toISOString().substring(0, 10)}: ${row.new_subscriptions} nuevas`);
@@ -2670,10 +2522,8 @@ async getSubscriptionsByMonth(filters = {}) {
       console.log(`  ${new Date(row.month).toISOString().substring(0, 10)}: ${row.canceled_subscriptions} canceladas`);
     });
     
-    // Crear mapa para búsqueda rápida
     const subscriptionsByMonth = {};
     
-    // Procesar suscripciones nuevas
     newSubsResult.rows.forEach(row => {
       const monthKey = this.normalizeMonthFormat(row.month);
       
@@ -2688,7 +2538,6 @@ async getSubscriptionsByMonth(filters = {}) {
       subscriptionsByMonth[monthKey].new_subscriptions = parseInt(row.new_subscriptions) || 0;
     });
     
-    // Procesar cancelaciones (incluye expired)
     canceledSubsResult.rows.forEach(row => {
       const monthKey = this.normalizeMonthFormat(row.month);
       
@@ -2703,7 +2552,6 @@ async getSubscriptionsByMonth(filters = {}) {
       subscriptionsByMonth[monthKey].canceled_subscriptions = parseInt(row.canceled_subscriptions) || 0;
     });
     
-    // Log para depuración del resultado final
     console.log("Resumen de suscripciones por mes (mapa final):");
     Object.keys(subscriptionsByMonth).sort().forEach(monthKey => {
       const data = subscriptionsByMonth[monthKey];
@@ -2726,7 +2574,6 @@ async calculaIngresosCorrectosPorMes(transactionAnalytics, filters) {
   try {
     console.log("Calculando ingresos por mes usando directamente la base de datos...");
     
-    // Construir consulta para agrupar transacciones por mes usando earnings_eur
     let query = `
       SELECT 
         DATE_TRUNC('month', updated_at) as month,
@@ -2742,7 +2589,6 @@ async calculaIngresosCorrectosPorMes(transactionAnalytics, filters) {
     const queryParams = [];
     let paramIndex = 1;
     
-    // Aplicar filtros de fecha si existen
     if (filters && filters.date_from) {
       query += ` AND updated_at >= $${paramIndex}`;
       queryParams.push(filters.date_from);
@@ -2758,11 +2604,9 @@ async calculaIngresosCorrectosPorMes(transactionAnalytics, filters) {
     // Agrupar por mes y ordenar
     query += ` GROUP BY DATE_TRUNC('month', updated_at) ORDER BY month`;
     
-    // Ejecutar la consulta
     const result = await pool.query(query, queryParams);
     console.log(`Encontrados ${result.rows.length} meses con datos de ingresos`);
     
-    // Transformar los resultados en el formato esperado
     const monthlyRevenue = result.rows.map(row => ({
       month: row.month,
       total_eur: parseFloat(row.total_earnings_eur) || 0, // Usar earnings_eur
@@ -2771,7 +2615,6 @@ async calculaIngresosCorrectosPorMes(transactionAnalytics, filters) {
       transactions: parseInt(row.transactions) || 0
     }));
     
-    // Mostrar los resultados para depuración
     console.log("Ingresos por mes calculados correctamente:");
     monthlyRevenue.forEach(month => {
       console.log(`${month.month.toISOString().substring(0, 10)}: earnings_eur=${month.earnings_eur}, amount_eur=${month.amount_eur}`);
@@ -2804,7 +2647,6 @@ async calculaIngresosCorrectosPorMes(transactionAnalytics, filters) {
  */
 async countActiveUsers(filters = {}, daysThreshold = 360) {
   try {
-    // Calcular fecha límite para considerar usuario activo
     const activeThreshold = new Date();
     activeThreshold.setDate(activeThreshold.getDate() - daysThreshold);
     
@@ -2817,7 +2659,6 @@ async countActiveUsers(filters = {}, daysThreshold = 360) {
     const queryParams = [activeThreshold.toISOString()];
     let paramIndex = 2;
     
-    // Aplicar filtros adicionales si es necesario
     if (filters.date_from) {
       query += ` AND created_at >= $${paramIndex}`;
       queryParams.push(filters.date_from);
@@ -2856,13 +2697,10 @@ calculateTotalExpensesWithTax(expenses) {
   let totalAmount = 0;
   let totalTax = 0;
   
-  // Procesar cada gasto individualmente para mejor control de errores
   expenses.forEach(expense => {
     try {
-      // Verificar si expense es un objeto de datos normal o contiene data
       const expenseData = expense.data ? expense.data : expense;
       
-      // Sumar amount + tax_amount para cada gasto
       const amount = parseFloat(expenseData.amount || 0);
       const taxAmount = parseFloat(expenseData.tax_amount || 0);
       
@@ -2870,12 +2708,10 @@ calculateTotalExpensesWithTax(expenses) {
       const validAmount = isNaN(amount) ? 0 : amount;
       const validTaxAmount = isNaN(taxAmount) ? 0 : taxAmount;
       
-      // Guardar los totales por separado para logging
       totalAmount += validAmount;
       totalTax += validTaxAmount;
       totalWithTax += (validAmount + validTaxAmount);
       
-      // Log para diagnóstico
       if (validAmount > 0 || validTaxAmount > 0) {
         console.log(`Gasto: ${validAmount} + IVA: ${validTaxAmount} = ${validAmount + validTaxAmount}`);
       }
@@ -2896,7 +2732,6 @@ calculateTotalExpensesWithTax(expenses) {
 formatTrendsSection(doc, monthlyTrends) {
   if (!monthlyTrends || monthlyTrends.length === 0) return;
   
-  // Formatear filas específicamente para resaltar beneficios positivos/negativos
   const trendRows = monthlyTrends.map(month => [
     { text: month.label },
     { 
@@ -2925,7 +2760,6 @@ formatTrendsSection(doc, monthlyTrends) {
     }
   ]);
   
-  // Usar el método optimizado con opciones específicas para tendencias
   this.drawExcelStyleTable(doc, 
     [
       { text: 'Mes', width: 60, align: 'center' },
@@ -2960,7 +2794,6 @@ formatTrendsSection(doc, monthlyTrends) {
   calculateTotalRevenue(transactions) {
     console.log(`Calculando ingresos con ${transactions.length} transacciones`);
     
-    // Para debugging, imprimir los primeros 3 registros
     if (transactions.length > 0) {
       console.log('Muestra de transacciones para verificar campos:');
       transactions.slice(0, 3).forEach((tx, index) => {
@@ -2971,12 +2804,10 @@ formatTrendsSection(doc, monthlyTrends) {
     return transactions.reduce((sum, tx) => {
       let amount = 0;
       
-      // Priorizar earnings_eur si existe y es un valor válido
       if (tx.earnings_eur !== undefined && tx.earnings_eur !== null && !isNaN(parseFloat(tx.earnings_eur))) {
         amount = this.normalizeAmount(tx.earnings_eur);
         // console.log(`Usando earnings_eur: ${amount} para tx ${tx.transaction_id}`);
       }
-      // Fallback a amount_eur si no hay earnings_eur válido
       else if (tx.amount_eur !== undefined && tx.amount_eur !== null && !isNaN(parseFloat(tx.amount_eur))) {
         amount = this.normalizeAmount(tx.amount_eur);
         // console.log(`Usando amount_eur: ${amount} para tx ${tx.transaction_id}`);
@@ -3012,15 +2843,12 @@ formatTrendsSection(doc, monthlyTrends) {
    * @returns {Object} - Resumen de impuestos
    */
   calculateTaxSummary(transactions) {
-    // Inicializar totales
     let totalAmount = 0;
     let totalTax = 0;
     let spainTax = 0;
     let otherTax = 0;
     
-    // Procesar transacciones usando amount_eur y tax_amount_eur
     transactions.forEach(transaction => {
-      // Usar directamente amount_eur y tax_amount_eur de la base de datos
       const amount = this.normalizeAmount(transaction.amount_eur || 0);
       const taxAmount = this.normalizeAmount(transaction.tax_amount_eur || 0);
       
@@ -3035,7 +2863,6 @@ formatTrendsSection(doc, monthlyTrends) {
       }
     });
   
-    // Calcular porcentajes
     const spainTaxPercentage = totalTax > 0 ? (spainTax / totalTax) * 100 : 0;
     const otherTaxPercentage = totalTax > 0 ? (otherTax / totalTax) * 100 : 0;
     
@@ -3092,13 +2919,11 @@ formatTrendsSection(doc, monthlyTrends) {
     
     // Si es string, convertir a número
     if (typeof amount === 'string') {
-      // Limpiar el string: remover caracteres no numéricos excepto punto o coma decimal
       const cleanedAmount = amount.replace(/[^\d.,\-]/g, '');
       
       // Si está vacío después de limpiar, retornar 0
       if (!cleanedAmount) return 0;
       
-      // Reemplazar coma por punto para manejar formatos europeos
       const normalizedAmount = cleanedAmount.replace(/,/g, '.');
       
       // Si no tiene punto decimal y parece un valor en centavos
@@ -3106,12 +2931,10 @@ formatTrendsSection(doc, monthlyTrends) {
         return parseInt(normalizedAmount) / 100;
       }
       
-      // Convertir a float
       const result = parseFloat(normalizedAmount);
       return isNaN(result) ? 0 : result;
     }
     
-    // Para cualquier otro tipo, intentar convertir a número
     const result = Number(amount);
     return isNaN(result) ? 0 : result;
   }
@@ -3152,11 +2975,9 @@ formatTrendsSection(doc, monthlyTrends) {
   addTableHeaderToPDF(doc, columns) {
     const y = doc.y;
     
-    // Dibujar fondo
     doc.rect(doc.page.margins.left, y, doc.page.width - doc.page.margins.left - doc.page.margins.right, 20)
       .fill('#656d4a');
     
-    // Dibujar texto
     doc.fillColor('#FFFFFF').font('Helvetica-Bold');
     
     let x = doc.page.margins.left;
@@ -3179,13 +3000,11 @@ formatTrendsSection(doc, monthlyTrends) {
     const y = doc.y;
     const rowHeight = 20;
     
-    // Dibujar fondo alterno
     if (alternate) {
       doc.rect(doc.page.margins.left, y, doc.page.width - doc.page.margins.left - doc.page.margins.right, rowHeight)
         .fill('#f0efe7');
     }
     
-    // Establecer fuente según si es negrita
     let x = doc.page.margins.left;
     columns.forEach(column => {
       if (column.bold) {
@@ -3241,15 +3060,12 @@ formatTrendsSection(doc, monthlyTrends) {
    */
   async sendReportByEmail(recipients, filePath, reportTitle, period, reportData) {
     try {
-      // Importar el servicio de email
       const { emailService } = await import('../../services/email/emailService.js');
       
-      // Configurar opciones
       const options = {
         fileName: `${reportTitle.replace(/\s+/g, '_')}_${period.replace(/\s+/g, '_')}.pdf`
       };
       
-      // Usar el nuevo método centralizado, pasando los datos del informe
       const result = await emailService.sendFinancialReport(
         recipients,
         filePath,
@@ -3288,13 +3104,11 @@ scheduleAutomaticReports(scheduleConfig) {
         try {
           console.log('Ejecutando generación automática de informe integral...');
           
-          // Calcular fechas para el mes anterior
           const now = new Date();
           const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
           const startDate = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
           const endDate = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0);
           
-          // Generar informe siempre con usuario ID 43
           const report = await this.generateIntegralReport({
             date_from: startDate.toISOString(),
             date_to: endDate.toISOString(),

@@ -46,7 +46,6 @@ const verifyWebhookSignature = (signatureHeader, rawBody, secretKey) => {
       .update(signedPayload, 'utf8')
       .digest('hex');
 
-    // Para debugging
     console.log("🔍 Debug información:", {
       evento: 'Verificación de firma',
       timestamp: timestamp,

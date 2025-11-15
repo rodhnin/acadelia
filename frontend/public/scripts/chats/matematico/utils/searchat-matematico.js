@@ -56,12 +56,10 @@ async function setupSearchModal() {
   
   // Forma segura de obtener avaId utilizando nuestra función robusta de state.js
   try {
-    // Intentar obtener avaId del state (nuestra versión robusta)
     state.avaId = getAvaId();
     
     // Si por alguna razón no hay avaId, usar un fallback
     if (!state.avaId) {
-      // Intentar obtener la configuración de manera segura
       const appConfig = getAppConfig();
       if (appConfig && appConfig.avaId) {
         state.avaId = appConfig.avaId;
@@ -77,7 +75,6 @@ async function setupSearchModal() {
     console.error('Error al obtener avaId:', error);
   }
   
-  // Si no se encuentra el botón principal, buscar alternativas
   if (!searchBtn) {
     const searchIconBtn = document.querySelector('button i.bx-search');
     if (searchIconBtn) {
@@ -86,7 +83,6 @@ async function setupSearchModal() {
         await setupButtonEvents(btnParent);
       }
     } else {
-      // Crear un botón de prueba solo si estamos en desarrollo
       if (process.env.NODE_ENV !== 'production') {
         const testBtn = createElement('button', {
           textContent: 'Buscar (Test)',
@@ -115,12 +111,10 @@ async function setupSearchModal() {
 async function setupButtonEvents(btn) {
   state.searchBtn = btn;
   
-  // Guardar referencias a elementos del modal
   const searchModal = state.searchModal;
   
   if (!searchModal) return;
   
-  // Eliminar eventos anteriores y agregar nuevo
   removeAllEvents(btn);
   addEvent(btn, 'click', function(e) {
     if (e) e.preventDefault();
@@ -128,7 +122,6 @@ async function setupButtonEvents(btn) {
     return false;
   });
   
-  // Configurar cierre del modal
   const closeBtn = document.getElementById('closeSearchModal');
   const cancelBtn = document.getElementById('cancelSearchButton');
   
@@ -142,7 +135,6 @@ async function setupButtonEvents(btn) {
     addEvent(cancelBtn, 'click', closeSearchModal);
   }
   
-  // Cerrar al hacer clic fuera del modal
   addEvent(document, 'mousedown', function(e) {
     const modalBox = searchModal.querySelector('.search-modal-box');
     if (searchModal.classList.contains('visible') && 
@@ -152,23 +144,19 @@ async function setupButtonEvents(btn) {
     }
   });
   
-  // Cerrar con ESC
   addEvent(document, 'keydown', function(e) {
     if (e.key === 'Escape' && searchModal.classList.contains('visible')) {
       closeSearchModal();
     }
   });
   
-  // Configurar botón de nuevo chat
   const newChatBtn = searchModal.querySelector('.search-new-chat');
   if (newChatBtn) {
-    // Sanitizar y establecer el contenido
     newChatBtn.innerHTML = `
       <i class='bx bx-plus'></i>
       <span>New chat</span>
     `;
     
-    // Añadir la clase correcta si no la tiene
     if (!newChatBtn.classList.contains('search-chat-item')) {
       newChatBtn.classList.add('search-chat-item');
     }
@@ -176,7 +164,6 @@ async function setupButtonEvents(btn) {
     removeAllEvents(newChatBtn);
     addEvent(newChatBtn, 'click', function() {
       closeSearchModal();
-      // Ejecutar la acción de nuevo chat
       const mainNewChatBtn = document.querySelector('.new-chat-btn');
       if (mainNewChatBtn) {
         mainNewChatBtn.click();
@@ -184,7 +171,6 @@ async function setupButtonEvents(btn) {
     });
   }
   
-  // Marcar el modal como configurado
   searchModal.classList.add('setup-complete');
 }
 
@@ -197,10 +183,8 @@ function openSearchModal() {
   
   if (!btn || !searchModal) return;
   
-  // Almacenar la posición actual del scroll sin moverlo
   const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
   
-  // Usar ScrollManager si está disponible
   if (window.scrollManager && window.scrollManager.isInitialized) {
     window.scrollManager.lockScrollWithReason('search-modal-open');
   } else {
@@ -211,26 +195,21 @@ function openSearchModal() {
     document.body.dataset.scrollPosition = currentScrollPosition;
   }
   
-  // Añadir clase al botón
   btn.classList.add('search-button-active');
   
-  // Comprobar el estado del sidebar y ajustar la visibilidad del botón
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
     updateButtonVisibility(sidebar, btn);
     startHoverObserver(sidebar, btn);
   }
   
-  // Calcular el ancho del scrollbar para compensación
   const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
   document.documentElement.style.setProperty('--scrollbar-compensation', `${scrollbarWidth}px`);
   
-  // Manejar el comportamiento del body
   document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
   document.body.style.paddingRight = `${scrollbarWidth}px`;
   
-  // Mostrar el modal
   searchModal.classList.add('visible');
 
   // ⭐ NUEVO: Notificación de éxito al abrir
@@ -243,7 +222,6 @@ acadelInfo("🔍 Buscador activado", "Acadel está listo para encontrar tus conv
       input.focus();
       input.setAttribute('placeholder', 'Search chats...');
       
-      // Obtener información de usuario y cargar chats
       getUserInfo().then(() => {
         if (state.userId) {
           loadChats();
@@ -265,19 +243,14 @@ function closeSearchModal() {
   
   if (!btn || !searchModal) return;
   
-  // Quitar clase del botón
   btn.classList.remove('search-button-active');
   
-  // Detener el observador de hover y limpiar timeout
   clearManagedTimeouts(TIMEOUT_HOVER);
   
-  // Restaurar la opacidad original
   btn.style.opacity = '';
   
-  // Ocultar el modal
   searchModal.classList.remove('visible');
   
-  // Usar ScrollManager si está disponible
   if (window.scrollManager && window.scrollManager.isInitialized) {
     window.scrollManager.unlockScrollWithReason('search-modal-closed');
   } else {
@@ -289,7 +262,6 @@ function closeSearchModal() {
     window.scrollTo(0, scrollPosition); // Solo hacer scroll después de restaurar la posición del body
   }
   
-  // Eliminar estilos que bloquean el scroll
   document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
   document.body.style.paddingRight = '';
@@ -302,7 +274,6 @@ function closeSearchModal() {
  */
 async function getUserInfo() {
   try {
-    // Obtener userId y avaId del state
     state.userId = getState('userId');
     const stateAvaId = getState('avaId');
     
@@ -316,7 +287,6 @@ async function getUserInfo() {
     
     return { userId: state.userId, avaId: state.avaId };
   } catch (error) {
-    // Si no se puede obtener del state, intentar con API de autenticación
     try {
       const response = await fetch(API_ROUTES.authentication, {
         method: 'GET',
@@ -343,7 +313,6 @@ async function getUserInfo() {
  */
 async function loadChats() {
   try {
-    // Construir URL de la API según config.js
     const apiUrl = API_ROUTES.chatHistory(state.userId, state.avaId);
     
     const response = await fetch(apiUrl, {
@@ -366,7 +335,6 @@ async function loadChats() {
       return;
     }
     
-    // Mostrar chats en la lista
     displayChats(state.allChats);
 
     // ⭐ NUEVO: Notificación de éxito
@@ -374,7 +342,6 @@ async function loadChats() {
       acadelExito("📚 Historial cargado", `Acadel encontró ${state.allChats.length} conversaciones en tu academia`);
     }
     
-    // Configurar evento de búsqueda
     setupSearchEvent();
   } catch (error) {
     acadelError("📁 Error de carga", "Acadel no pudo acceder a tu historial de chats. ¡Su cerebro de capibara está confundido!");
@@ -389,7 +356,6 @@ async function loadChats() {
 function displaySearchMessage(message) {
   const searchChatList = document.getElementById('searchChatList');
   if (searchChatList) {
-    // Sanitizar el mensaje
     const sanitizedMessage = sanitizeText(message);
     searchChatList.innerHTML = `<div class="search-empty-result">${sanitizedMessage}</div>`;
   }
@@ -403,24 +369,20 @@ function displayChats(chats) {
   const searchChatList = document.getElementById('searchChatList');
   if (!searchChatList) return;
 
-  // Limpiar lista actual y sus eventos
   const oldItems = searchChatList.querySelectorAll('.search-chat-item');
   oldItems.forEach(item => {
     removeAllEvents(item);
   });
   searchChatList.innerHTML = '';
 
-  // Filtrar los chats problemáticos
   const filteredChats = chats.filter(chat => !isChatProblematic(chat.id));
 
-  // Ordenar chats por fecha - más reciente primero
   const sortedChats = [...filteredChats].sort((a, b) => {
     const dateA = new Date(a.last_message_date || a.created_at);
     const dateB = new Date(b.last_message_date || b.created_at);
     return dateB - dateA; // Orden descendente (más reciente primero)
   });
 
-  // Agregar el encabezado "Previous 30 Days" si hay chats
   if (sortedChats.length > 0) {
     const headerElement = createElement('div', {
       className: 'search-date-header',
@@ -430,7 +392,6 @@ function displayChats(chats) {
   }
 
   sortedChats.forEach(chat => {
-    // Calcular días de diferencia
     const chatDate = new Date(chat.last_message_date || chat.created_at);
     const timeDiff = Math.floor((new Date() - chatDate) / (1000 * 60 * 60 * 24));
     let timeText;
@@ -443,10 +404,8 @@ function displayChats(chats) {
       timeText = `Hace ${timeDiff} días`;
     }
 
-    // Sanitizar datos
     const chatTitle = sanitizeText(chat.title || 'Chat sin título');
 
-    // Crear elemento de chat
     const chatItem = createElement('div', {
       className: 'search-chat-item',
       dataset: { chatId: chat.id }
@@ -478,10 +437,8 @@ function setupSearchEvent() {
   const searchInput = document.getElementById('chatSearchInput');
   if (!searchInput) return;
   
-  // Remover eventos anteriores
   removeAllEvents(searchInput);
   
-  // Filtrar chats en tiempo real al escribir
   addEvent(searchInput, 'input', function() {
     const query = this.value.toLowerCase().trim();
     
@@ -491,7 +448,6 @@ function setupSearchEvent() {
       return;
     }
     
-    // Filtrar chats por título
     const filteredChats = state.allChats.filter(chat => 
       chat.title && chat.title.toLowerCase().includes(query)
     );
@@ -504,7 +460,6 @@ function setupSearchEvent() {
     }
   });
   
-  // Configurar el botón de búsqueda
   const searchButton = document.getElementById('searchButton');
   if (searchButton) {
     removeAllEvents(searchButton);
@@ -534,13 +489,11 @@ function setupSearchEvent() {
  * @param {string|number} chatId - ID del chat
  */
 function navigateToChat(chatId) {
-  // Usar la configuración específica del URL_CONFIG
   const chatPath = URL_CONFIG.chatPath(chatId);
   
   // ⭐ NUEVO: Notificación de éxito antes de navegar
   acadelExito("🎯 Chat encontrado", "Acadel te lleva a tu conversación");
   
-  // Cerrar el modal primero
   closeSearchModal();
   
   // Navegar al chat después de un pequeño retraso
@@ -555,7 +508,6 @@ function navigateToChat(chatId) {
  * @param {HTMLElement} button - Botón a actualizar
  */
 function updateButtonVisibility(sidebar, button) {
-  // Comprobar si el sidebar está fijado o tiene hover
   const isPinned = sidebar.classList.contains('pinned');
   const hasHover = sidebar.matches(':hover');
   
@@ -574,10 +526,8 @@ function updateButtonVisibility(sidebar, button) {
  * @param {HTMLElement} button - Botón a observar
  */
 function startHoverObserver(sidebar, button) {
-  // Limpiar cualquier timeout existente
   clearManagedTimeouts(TIMEOUT_HOVER);
   
-  // Crear un nuevo intervalo para verificar el estado del hover
   const checkHoverState = () => {
     if (button.classList.contains('search-button-active')) {
       updateButtonVisibility(sidebar, button);
@@ -585,7 +535,6 @@ function startHoverObserver(sidebar, button) {
     }
   };
   
-  // Iniciar comprobación
   setManagedTimeout(checkHoverState, 100, TIMEOUT_HOVER);
 }
 
@@ -593,10 +542,8 @@ function startHoverObserver(sidebar, button) {
  * Configura el listener para detectar cambios en el pin/unpin del sidebar
  */
 function setupPinUnpinListener() {
-  // Eliminar eventos previos para evitar duplicados
   removeEvent(document, 'click', handlePinUnpinClick);
   
-  // Añadir nuevo evento
   addEvent(document, 'click', handlePinUnpinClick);
 }
 
@@ -605,19 +552,16 @@ function setupPinUnpinListener() {
  * @param {Event} e - Evento de clic
  */
 function handlePinUnpinClick(e) {
-  // Verificar si se hizo clic en los botones de pin/unpin
   if (e.target.matches('.pin-button') || e.target.matches('.unpin-button') || 
       e.target.closest('.pin-button') || e.target.closest('.unpin-button')) {
       
     // Dar tiempo a que se actualice el estado del sidebar
     setManagedTimeout(function() {
-      // Verificar visibilidad del botón
       const searchBtn = state.searchBtn;
       
       if (searchBtn && searchBtn.classList.contains('search-button-active')) {
         const sidebar = document.querySelector('.sidebar');
         if (sidebar) {
-          // Verificar si el sidebar está pinned
           const isPinned = sidebar.classList.contains('pinned');
           const hasHover = sidebar.matches(':hover');
           

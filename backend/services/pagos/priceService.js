@@ -1,4 +1,3 @@
-// backend/services/pagos/priceService.js
 import { redisService } from '../../lib/redis.js';
 import pool from '../../lib/dbPool.js';
 
@@ -10,7 +9,6 @@ class PriceService {
             PRICES_BY_COUNTRY: (country) => `prices:${country}`
         };
 
-        // Incrementar tiempos de caché
         this.CACHE_TIMES = {
             DEFAULT: 7200,    // 2 horas
             LONG_TERM: 86400, // 24 horas
@@ -21,7 +19,6 @@ class PriceService {
     async getAllCourses() {
         const cacheKey = this.CACHE_KEYS.ALL_COURSES;
         
-        // Intentar obtener de caché primero
         const cachedCourses = await redisService.get(cacheKey);
         if (cachedCourses) return cachedCourses;
 
@@ -38,7 +35,6 @@ class PriceService {
             
             const { rows } = await pool.query(query);
 
-            // Guardar en caché
             await redisService.set(
                 cacheKey, 
                 rows, 
@@ -55,7 +51,6 @@ class PriceService {
     async getCourseById(courseId) {
         const cacheKey = this.CACHE_KEYS.COURSE_DETAILS(courseId);
         
-        // Intentar obtener de caché primero
         const cachedCourse = await redisService.get(cacheKey);
         if (cachedCourse) return cachedCourse;
 
@@ -75,7 +70,6 @@ class PriceService {
 
             if (rows.length === 0) return null;
 
-            // Guardar en caché
             await redisService.set(
                 cacheKey, 
                 rows[0], 

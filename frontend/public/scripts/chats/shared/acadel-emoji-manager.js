@@ -9,7 +9,6 @@ class AcadelEmojiManager {
     this.processing = false;
     this.processedElements = new WeakSet();
     
-    // 🎯 Ruta de tu imagen de capibara
     this.capibaraImagePath = '/images/capibara-emoji.webp';
   }
 
@@ -20,7 +19,6 @@ class AcadelEmojiManager {
     console.log('🦫 Cargando sistema de emojis del Profesor Acadel...');
     
     try {
-      // Verificar que la imagen existe
       await this.preloadCapibaraImage();
       
       // CSS para la imagen (MISMOS ESTILOS QUE TIENES)
@@ -32,7 +30,6 @@ class AcadelEmojiManager {
       // Observer adicional para capturas perdidas
       this.setupBackupObserver();
       
-      // Procesar contenido existente
       this.replaceExistingCapibaras();
       
       this.initialized = true;
@@ -117,7 +114,6 @@ class AcadelEmojiManager {
     this.ultraFastObserver = new MutationObserver((mutations) => {
       // SIN DELAY - procesar INMEDIATAMENTE
       mutations.forEach(mutation => {
-        // Procesar nodos agregados AL INSTANTE
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             this.processElementInstantly(node);
@@ -126,7 +122,6 @@ class AcadelEmojiManager {
           }
         });
         
-        // Procesar cambios de texto AL INSTANTE
         if (mutation.type === 'characterData' && mutation.target.nodeType === Node.TEXT_NODE) {
           if (this.containsCapibara(mutation.target.textContent)) {
             this.replaceCapibaraInTextNode(mutation.target);
@@ -135,7 +130,6 @@ class AcadelEmojiManager {
       });
     });
 
-    // Observar con configuración ULTRA AGRESIVA
     this.ultraFastObserver.observe(document.body, {
       childList: true,
       subtree: true,
@@ -156,7 +150,6 @@ class AcadelEmojiManager {
     this.backupInterval = setInterval(() => {
       if (this.processing) return;
       
-      // Buscar rápidamente si hay capibaras sin procesar
       const walker = document.createTreeWalker(
         document.body,
         NodeFilter.SHOW_TEXT,
@@ -192,7 +185,6 @@ class AcadelEmojiManager {
     if (!element || !this.initialized) return;
     
     try {
-      // Buscar INMEDIATAMENTE todos los nodos de texto con capibaras
       const walker = document.createTreeWalker(
         element,
         NodeFilter.SHOW_TEXT,
@@ -211,7 +203,6 @@ class AcadelEmojiManager {
         textNodes.push(node);
       }
 
-      // Procesar TODOS los nodos encontrados SIN DELAY
       textNodes.forEach(textNode => {
         this.replaceCapibaraInTextNode(textNode);
       });
@@ -233,19 +224,15 @@ class AcadelEmojiManager {
     try {
       console.log('🦫 ¡Profesor Acadel detectado! Reemplazando AL INSTANTE...');
       
-      // Crear un fragment para los nuevos nodos
       const fragment = document.createDocumentFragment();
       
-      // Dividir el texto en partes
       const parts = text.split('🦫');
       
       for (let i = 0; i < parts.length; i++) {
-        // Agregar el texto antes del emoji
         if (parts[i]) {
           fragment.appendChild(document.createTextNode(parts[i]));
         }
         
-        // Agregar la imagen del capibara (excepto en la última parte)
         if (i < parts.length - 1) {
           const img = document.createElement('img');
           img.className = 'acadel-emoji-image';
@@ -258,7 +245,6 @@ class AcadelEmojiManager {
         }
       }
       
-      // Reemplazar el nodo de texto original con el fragment
       textNode.parentNode.replaceChild(fragment, textNode);
       
       console.log('✅ Profesor Acadel reemplazado INSTANTÁNEAMENTE');
@@ -276,7 +262,6 @@ class AcadelEmojiManager {
     
     console.log('🔄 Buscando Profesor Acadel en toda la app...');
     
-    // Procesar body completo instantáneamente
     this.processElementInstantly(document.body);
     
     console.log('✅ Todos los Profesor Acadel procesados sin romper estructura');
@@ -322,10 +307,8 @@ class AcadelEmojiManager {
     testDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #fff; padding: 15px; border: 2px solid #333; border-radius: 8px; z-index: 9999; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
     document.body.appendChild(testDiv);
     
-    // Procesar el test instantáneamente
     this.processElementInstantly(testDiv);
     
-    // Remover después de 5 segundos
     setTimeout(() => testDiv.remove(), 5000);
     
     console.log('🦫 Test Acadel emoji ejecutado');
@@ -378,7 +361,6 @@ class AcadelEmojiManager {
   }
 }
 
-// Crear instancia global
 const acadelEmojiManager = new AcadelEmojiManager();
 
 // Funciones globales útiles con nombres Acadel
@@ -386,5 +368,4 @@ window.testAcadelEmoji = () => acadelEmojiManager.testAcadelEmoji();
 window.setAcadelCapibaraImage = (path) => acadelEmojiManager.setCapibaraImage(path);
 window.getAcadelEmojiStatus = () => acadelEmojiManager.getStatus();
 
-// Exportar
 export default acadelEmojiManager;

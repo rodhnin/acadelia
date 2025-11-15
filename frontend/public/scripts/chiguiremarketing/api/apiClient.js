@@ -24,11 +24,9 @@ export class ApiClient {
     
     let cleaned = jsonString.trim();
     
-    // Remover BOM y caracteres invisibles
     cleaned = cleaned.replace(/^\uFEFF/, ''); // BOM
     cleaned = cleaned.replace(/^[\s\u200B-\u200D\uFEFF]/, ''); // Espacios invisibles
     
-    // Remover caracteres problemáticos al inicio y final
     cleaned = cleaned.replace(/^[^{[]*/g, '');
     cleaned = cleaned.replace(/[^}\]]*$/g, '');
     
@@ -39,13 +37,10 @@ export class ApiClient {
       cleaned = '\\"' + cleaned.substring(1);
     }
     
-    // Corregir comas duplicadas
     cleaned = cleaned.replace(/,\s*,/g, ',');
     
-    // Corregir comas antes de llaves de cierre
     cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
     
-    // Corregir propiedades sin comillas
     cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":');
     
     return cleaned;
@@ -59,13 +54,11 @@ export class ApiClient {
       console.log('📄 JSON Original:', jsonString.substring(0, 200) + '...');
       console.log('📏 Longitud:', jsonString.length);
       
-      // Verificar caracteres problemáticos
       const problematicChars = jsonString.match(/[^\x20-\x7E\n\r\t]/g);
       if (problematicChars) {
         console.warn('⚠️ Caracteres problemáticos encontrados:', [...new Set(problematicChars)]);
       }
       
-      // Intentar parsear directamente
       try {
         const direct = JSON.parse(jsonString);
         console.log('✅ Parseo directo exitoso');
@@ -74,7 +67,6 @@ export class ApiClient {
         console.log('❌ Error en parseo directo:', directError.message);
       }
       
-      // Intentar con sanitización
       try {
         const sanitized = this.sanitizeJsonForFrontend(jsonString);
         console.log('🧹 JSON Sanitizado:', sanitized.substring(0, 200) + '...');
@@ -108,7 +100,6 @@ export class ApiClient {
       credentials: 'include' // Incluir cookies para CSRF
     };
     
-    // Combinar opciones
     const requestOptions = {
       ...defaultOptions,
       ...options,
@@ -118,16 +109,13 @@ export class ApiClient {
       }
     };
     
-    // Mostrar loader mientras carga (opcional)
     const showLoader = options.showLoader !== false;
     if (showLoader && typeof window.showLoader === 'function') {
       window.showLoader('Comunicando con el servidor...');
     }
     
     try {
-      // Añadir token CSRF para peticiones que modifican datos
       if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(requestOptions.method)) {
-        // Obtener token CSRF (asumiendo que está en window.CSRF_TOKEN o en cookie)
         const csrfToken = window.CSRF_TOKEN || this.getCsrfTokenFromCookie();
         
         if (csrfToken) {
@@ -139,7 +127,6 @@ export class ApiClient {
       
       const response = await fetch(url, requestOptions);
       
-      // Comprobar si es JSON
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
       
@@ -149,7 +136,6 @@ export class ApiClient {
         const rawText = await response.text();
         
         try {
-          // Intentar parsear directamente
           data = JSON.parse(rawText);
           console.log('✅ JSON parseado directamente sin problemas');
         } catch (parseError) {
@@ -157,7 +143,6 @@ export class ApiClient {
           console.log('📄 Contenido problemático:', rawText.substring(0, 300));
           
           try {
-            // Intentar sanitizar y parsear
             const sanitizedJson = this.sanitizeJsonForFrontend(rawText);
             data = JSON.parse(sanitizedJson);
             console.log('✅ JSON sanitizado y parseado exitosamente');
@@ -165,7 +150,6 @@ export class ApiClient {
             console.error('❌ Error incluso después de sanitizar:', sanitizeError.message);
             console.log('🔍 Intentando debug completo...');
             
-            // Usar función de debug como último recurso
             data = this.debugJsonParsing(rawText, `endpoint-${endpoint}`);
             
             // Si debug también falla, crear objeto de error estructurado
@@ -209,14 +193,12 @@ export class ApiClient {
         { originalError: error }
       );
     } finally {
-      // Ocultar loader
       if (showLoader && typeof window.hideLoader === 'function') {
         window.hideLoader();
       }
     }
   }
   
-  // Obtener CSRF token desde cookie
   getCsrfTokenFromCookie() {
     const cookies = document.cookie.split('; ');
     const csrfCookie = cookies.find(cookie => cookie.startsWith('XSRF-TOKEN='));
@@ -230,7 +212,6 @@ export class ApiClient {
   
   // Métodos para cada verbo HTTP
   async get(endpoint, params = {}, options = {}) {
-    // Añadir query params
     const queryParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -269,18 +250,15 @@ export class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     try {
-      // Mostrar loader
       if (typeof window.showLoader === 'function') {
         window.showLoader('Esperando respuesta...');
       }
       
-      // Obtener token CSRF
       const csrfToken = window.CSRF_TOKEN || this.getCsrfTokenFromCookie();
       
       const controller = new AbortController();
       const signal = controller.signal;
       
-      // Configurar headers para streaming
       const headers = {
         ...this.defaultHeaders,
         'X-CSRF-Token': csrfToken || '',
@@ -304,7 +282,6 @@ export class ApiClient {
         signal: signal
       });
       
-      // Ocultar loader
       if (typeof window.hideLoader === 'function') {
         window.hideLoader();
       }
@@ -318,7 +295,6 @@ export class ApiClient {
           // Si es JSON, parsearlo con sanitización
           errorDetail = JSON.parse(errorText);
         } catch (e) {
-          // Intentar sanitizar antes de parsear
           try {
             const sanitizedError = this.sanitizeJsonForFrontend(errorText);
             errorDetail = JSON.parse(sanitizedError);
@@ -342,12 +318,10 @@ export class ApiClient {
       
       console.log("Respuesta de streaming recibida con status:", response.status);
       
-      // Verificar que la respuesta tiene cuerpo
       if (!response.body) {
         throw new Error('ReadableStream no soportado o no disponible en la respuesta');
       }
       
-      // Procesar stream de respuesta
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       
@@ -361,7 +335,6 @@ export class ApiClient {
             break;
           }
           
-          // Decodificar y enviar chunk
           const chunk = decoder.decode(value, { stream: true });
           if (chunk && chunk.trim() !== '') {
             console.log("Chunk recibido:", chunk.substring(0, 50) + (chunk.length > 50 ? "..." : ""));
@@ -383,7 +356,6 @@ export class ApiClient {
     } catch (error) {
       console.error(`Error en stream a ${endpoint}:`, error);
       
-      // Ocultar loader si aún está visible
       if (typeof window.hideLoader === 'function') {
         window.hideLoader();
       }
@@ -417,7 +389,6 @@ Posibles soluciones:
   }
 
   simulateStreaming(text, onChunk, onComplete, delay = 30) {
-    // Dividir la respuesta en fragmentos para simular streaming
     const words = text.split(' ');
     let index = 0;
     
@@ -500,7 +471,6 @@ export function sanitizeJsonResponse(response) {
   } catch (error) {
     console.error("❌ No se pudo sanitizar el JSON:", error.message);
     
-    // Devolver objeto de error estructurado
     return {
       error: true,
       message: "Error procesando respuesta del servidor",

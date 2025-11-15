@@ -28,16 +28,12 @@ const events = {
      * Inicializa el módulo de eventos
      */
     async init() {
-        // Inicializar filtros
         this.initFilters();
         
-        // Cargar eventos iniciales
         await this.loadEvents();
         
-        // Configurar event listeners
         this.setupEventListeners();
         
-        // Escuchar eventos globales
         window.addEventListener('viewAllCriticalEvents', () => {
             this.filterCriticalEvents();
         });
@@ -51,14 +47,12 @@ const events = {
      * Inicializa los filtros
      */
     initFilters() {
-        // Establecer fecha final como hoy
         const today = new Date();
         const endDateInput = document.getElementById('date-end');
         if (endDateInput) {
             endDateInput.valueAsDate = today;
         }
         
-        // Establecer fecha inicial como hace 7 días
         const startDate = new Date();
         startDate.setDate(today.getDate() - 7);
         const startDateInput = document.getElementById('date-start');
@@ -113,28 +107,22 @@ const events = {
      */
     async loadEvents(page = 1) {
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Actualizar página actual
             this.state.currentPage = page;
             
-            // Obtener eventos con filtros
             const result = await getSecurityEvents(
                 this.state.filters,
                 page,
                 this.state.limit
             );
             
-            // Actualizar estado
             this.state.events = result.events;
             this.state.pagination = result.pagination;
             
-            // Renderizar eventos
             this.renderEvents(result.events);
             
-            // Actualizar información de paginación
             updatePaginationInfo(
                 this.state.currentPage,
                 this.state.pagination.pages,
@@ -142,7 +130,6 @@ const events = {
                 this.state.limit
             );
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -161,11 +148,9 @@ const events = {
         const tableBody = document.getElementById('events-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         if (events.length === 0) {
-            // Mostrar mensaje si no hay eventos
             const emptyRow = createTableRow([
                 { colspan: 8, className: 'text-center', text: 'No se encontraron eventos con los filtros aplicados' }
             ]);
@@ -173,7 +158,6 @@ const events = {
             return;
         }
         
-        // Añadir filas de eventos
         events.forEach(event => {
             const row = createTableRow([
                 { text: event.id, className: 'text-nowrap' },
@@ -204,7 +188,6 @@ const events = {
      * @param {Object} event - Evento de seguridad
      */
     handleEventClick(event) {
-        // Mostrar detalles del evento en modal
         modals.showEventDetails(event);
     },
 
@@ -223,14 +206,12 @@ const events = {
             search: document.getElementById('events-search')?.value
         };
         
-        // Filtrar propiedades vacías
         Object.keys(filters).forEach(key => {
             if (!filters[key]) {
                 delete filters[key];
             }
         });
         
-        // Actualizar estado
         this.state.filters = filters;
         
         // Recargar eventos (volver a primera página)
@@ -241,7 +222,6 @@ const events = {
      * Resetea todos los filtros
      */
     resetFilters() {
-        // Limpiar campos de filtro
         if (document.getElementById('event-type-filter')) {
             document.getElementById('event-type-filter').value = '';
         }
@@ -265,7 +245,6 @@ const events = {
         // Fechas: mantener últimos 7 días
         this.initFilters();
         
-        // Resetear estado de filtros
         this.state.filters = {};
         
         // Recargar eventos
@@ -276,15 +255,12 @@ const events = {
      * Aplica filtro para mostrar solo eventos críticos
      */
     filterCriticalEvents() {
-        // Resetear primero
         this.resetFilters();
         
-        // Establecer filtro de severidad crítica
         if (document.getElementById('severity-filter')) {
             document.getElementById('severity-filter').value = 'critical';
         }
         
-        // Aplicar filtros
         this.applyFilters();
     },
 
@@ -293,10 +269,8 @@ const events = {
      * @param {number} page - Número de página
      */
     changePage(page) {
-        // Validar página
         if (page < 1 || page > this.state.pagination.pages) return;
         
-        // Cargar eventos de la página
         this.loadEvents(page);
     },
 
@@ -306,20 +280,17 @@ const events = {
      */
     async exportEvents(format = 'csv') {
         try {
-            // Mostrar notificación
             showNotification('Info', 'Preparando exportación...', 'info');
             
             // Realizar la exportación
             const blob = await exportSecurityEvents(this.state.filters, format);
             
-            // Generar nombre de archivo
             const date = new Date().toISOString().split('T')[0];
             const filename = `eventos_seguridad_${date}.${format}`;
             
             // Descargar archivo
             downloadBlob(blob, filename);
             
-            // Mostrar notificación de éxito
             showNotification('Éxito', 'Exportación completada', 'success');
         } catch (error) {
             console.error('Error exportando eventos:', error);
@@ -353,7 +324,6 @@ const events = {
         if (!tableBody) return;
         
         if (show) {
-            // Mostrar indicador de carga
             tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Cargando eventos...</td></tr>';
         }
     },
@@ -362,7 +332,6 @@ const events = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners
         document.getElementById('apply-event-filters')?.removeEventListener('click', () => this.applyFilters());
         document.getElementById('reset-event-filters')?.removeEventListener('click', () => this.resetFilters());
         document.getElementById('prev-page-btn')?.removeEventListener('click', () => this.changePage(this.state.currentPage - 1));

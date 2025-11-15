@@ -11,10 +11,8 @@ export const ExpensesController = {
      */
     async createExpense(req, res) {
         try {
-            // Extraer datos del cuerpo de la petición
             const { amount, description, date, category_id, payment_method, reference, tax_amount, is_tax_deductible } = req.body;
             
-            // Validar datos requeridos
             if (!amount || !description || !date || !category_id) {
                 return res.status(400).json({
                     success: false,
@@ -22,7 +20,6 @@ export const ExpensesController = {
                 });
             }
             
-            // Log de creación
             logSecurityEvent('EXPENSE_CREATION', 'Creación de nuevo egreso', {
                 userId: req.user?.id_user,
                 amount,
@@ -74,7 +71,6 @@ async uploadInvoice(req, res) {
     try {
       const { id } = req.params;
       
-      // Verificar si el archivo fue subido correctamente
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -82,7 +78,6 @@ async uploadInvoice(req, res) {
         });
       }
       
-      // Log de subida
       logSecurityEvent('EXPENSE_INVOICE_UPLOAD', 'Subida de factura para egreso', {
         userId: req.user?.id_user,
         expenseId: id,
@@ -102,7 +97,6 @@ async uploadInvoice(req, res) {
           expenseDate
         );
         
-        // Actualizar el egreso con la URL de la factura
         const updatedExpense = await expensesService.updateExpenseWithInvoice(id, invoiceUrl);
         
         res.json({
@@ -144,7 +138,6 @@ async uploadInvoice(req, res) {
      */
     async getAllExpenses(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 category_id: req.query.category_id,
                 payment_method: req.query.payment_method,
@@ -159,13 +152,11 @@ async uploadInvoice(req, res) {
                 sort_direction: req.query.sort_direction
             };
             
-            // Extraer datos de paginación
             const pagination = {
                 page: parseInt(req.query.page) || 1,
                 limit: parseInt(req.query.limit) || 50
             };
             
-            // Log de acceso
             logSecurityEvent('EXPENSES_LIST_ACCESS', 'Acceso a lista de egresos', {
                 userId: req.user?.id_user,
                 filters,
@@ -202,10 +193,8 @@ async uploadInvoice(req, res) {
  */
 async createExpenseWithInvoice(req, res) {
     try {
-        // Extraer datos del cuerpo de la petición
         const { amount, description, date, category_id, payment_method, reference, tax_amount, is_tax_deductible } = req.body;
         
-        // Validar datos requeridos
         if (!amount || !description || !date || !category_id) {
             return res.status(400).json({
                 success: false,
@@ -213,7 +202,6 @@ async createExpenseWithInvoice(req, res) {
             });
         }
         
-        // Verificar si el archivo fue subido correctamente
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -221,7 +209,6 @@ async createExpenseWithInvoice(req, res) {
             });
         }
         
-        // Log de creación
         logSecurityEvent('EXPENSE_CREATION_WITH_INVOICE', 'Creación de nuevo egreso con factura', {
             userId: req.user?.id_user,
             amount,
@@ -298,7 +285,6 @@ async createExpenseWithInvoice(req, res) {
         try {
             const { id } = req.params;
             
-            // Log de acceso
             logSecurityEvent('EXPENSE_DETAIL_ACCESS', 'Acceso a detalle de egreso', {
                 userId: req.user?.id_user,
                 expenseId: id,
@@ -344,10 +330,8 @@ async createExpenseWithInvoice(req, res) {
     async updateExpense(req, res) {
         try {
             const { id } = req.params;
-            // Extraer datos del cuerpo de la petición
             const { amount, description, date, category_id, payment_method, reference, tax_amount, is_tax_deductible } = req.body;
             
-            // Log de actualización
             logSecurityEvent('EXPENSE_UPDATE', 'Actualización de egreso', {
                 userId: req.user?.id_user,
                 expenseId: id,
@@ -406,7 +390,6 @@ async createExpenseWithInvoice(req, res) {
         try {
             const { id } = req.params;
             
-            // Log de eliminación
             logSecurityEvent('EXPENSE_DELETE', 'Eliminación de egreso', {
                 userId: req.user?.id_user,
                 expenseId: id,
@@ -474,10 +457,8 @@ async createExpenseWithInvoice(req, res) {
      */
     async createExpenseCategory(req, res) {
         try {
-            // Extraer datos del cuerpo de la petición
             const { name, description } = req.body;
             
-            // Validar datos requeridos
             if (!name) {
                 return res.status(400).json({
                     success: false,
@@ -485,7 +466,6 @@ async createExpenseWithInvoice(req, res) {
                 });
             }
             
-            // Log de creación
             logSecurityEvent('EXPENSE_CATEGORY_CREATION', 'Creación de nueva categoría de egreso', {
                 userId: req.user?.id_user,
                 name,
@@ -522,14 +502,12 @@ async createExpenseWithInvoice(req, res) {
      */
     async getExpensesTotals(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 category_id: req.query.category_id,
                 date_from: req.query.date_from,
                 date_to: req.query.date_to
             };
             
-            // Log de acceso
             logSecurityEvent('EXPENSES_TOTALS_ACCESS', 'Acceso a totales de egresos', {
                 userId: req.user?.id_user,
                 filters,
@@ -565,7 +543,6 @@ async createExpenseWithInvoice(req, res) {
      */
     async getExpensesByMonth(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 category_id: req.query.category_id,
                 date_from: req.query.date_from,
@@ -595,7 +572,6 @@ async createExpenseWithInvoice(req, res) {
      */
     async getExpensesByCategory(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 date_from: req.query.date_from,
                 date_to: req.query.date_to

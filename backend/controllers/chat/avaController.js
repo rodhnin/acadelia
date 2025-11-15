@@ -18,15 +18,11 @@ export const createAva = async (req, res) => {
       embedding_table_name 
     });
     
-    // ✅ Sincronizar cache después de crear AVA
     avaCacheService.addToCache(slug);
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -101,18 +97,14 @@ export const updateAva = async (req, res) => {
       slug 
     });
     
-    // ✅ Sincronizar cache si cambió el slug
     if (slug && slug !== avaExistente.slug) {
       avaCacheService.removeFromCache(avaExistente.slug);
       avaCacheService.addToCache(slug);
     }
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -140,24 +132,19 @@ export const deleteAva = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Obtener información del AVA antes de eliminarlo
     const ava = await AvaService.getAvaById(id);
     const avaName = ava ? ava.nom_ava : `AVA #${id}`;
     const avaSlug = ava ? ava.slug : null;
     
     await AvaService.deleteAva(id);
     
-    // ✅ Sincronizar cache después de eliminar AVA
     if (avaSlug) {
       avaCacheService.removeFromCache(avaSlug);
     }
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -187,7 +174,6 @@ export const clearAvaCache = async (req, res) => {
   try {
     avaCacheService.clearCache();
     
-    // Registrar actividad
     try {
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";

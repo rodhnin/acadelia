@@ -1,4 +1,3 @@
-// backend/controllers/chat/economia/EconomiaInternacionalController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleInternationalEconomicsQuery, handleInternationalEconomicsMultimodalQuery, handleInternationalEconomicsQueryWithoutSaving, handleInternationalEconomicsMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/economia/economiaInternacionalService.js";
@@ -17,7 +16,6 @@ export const queryEconomiaInternacional = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 150+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryEconomiaInternacionalMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 200+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryEconomiaInternacionalMultimodalWithoutSaving = async (req, res
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA EN LUGAR DE 180+
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

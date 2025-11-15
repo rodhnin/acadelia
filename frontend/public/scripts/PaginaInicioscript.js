@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar AOS (Animate On Scroll)
     AOS.init({
         duration: 800,
         once: true,
@@ -36,11 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const mediaOptions = document.querySelectorAll('.media-option');
     const mediaElements = document.querySelectorAll('.media-display video, .media-display img');
     
-    // Comprobar si los elementos existen antes de continuar
     if (mediaOptions.length > 0 && mediaElements.length > 0) {
-        // Función para cambiar el medio activo
         function changeMedia(mediaId) {
-            // Pausar todos los videos primero
             mediaElements.forEach(media => {
                 media.classList.remove('active');
                 if (media.tagName.toLowerCase() === 'video') {
@@ -48,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Mostrar y reproducir el medio seleccionado
             const selectedMedia = document.getElementById(mediaId);
             if (selectedMedia) {
                 selectedMedia.classList.add('active');
@@ -61,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Actualizar botones activos
             mediaOptions.forEach(option => {
                 if (option.getAttribute('data-media') === mediaId) {
                     option.classList.add('active');
@@ -71,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Añadir event listeners a las opciones
         mediaOptions.forEach(option => {
             option.addEventListener('click', function() {
                 const mediaId = this.getAttribute('data-media');
@@ -79,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Inicializar el primer video (opcional)
         const firstOption = mediaOptions[0];
         if (firstOption) {
             const firstMediaId = firstOption.getAttribute('data-media');

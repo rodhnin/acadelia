@@ -1,13 +1,8 @@
-// modalManager.js - Gestión centralizada de modales CON RESET AL CERRAR
-// Configurar los modales de la aplicación
 export function setupModalManager() {
-  // Obtener todos los modales
   const modals = document.querySelectorAll('.modal');
   
-  // Configurar botones de cierre para cada modal
   document.querySelectorAll('.modal-close').forEach(button => {
     button.addEventListener('click', () => {
-      // Obtener el modal padre
       const modal = button.closest('.modal');
       if (modal) {
         closeModal(modal);
@@ -15,7 +10,6 @@ export function setupModalManager() {
     });
   });
   
-  // Cerrar modal al hacer clic fuera del contenido
   modals.forEach(modal => {
     modal.addEventListener('click', (e) => {
       // Si el clic fue directamente en el fondo del modal (no en su contenido)
@@ -25,10 +19,8 @@ export function setupModalManager() {
     });
   });
   
-  // Cerrar con la tecla Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      // Cerrar el modal activo (si hay alguno)
       const activeModal = document.querySelector('.modal.active');
       if (activeModal) {
         closeModal(activeModal);
@@ -44,7 +36,6 @@ export function setupModalManager() {
   console.log('✅ Modal Manager configurado con reset automático');
 }
 
-// Abrir un modal específico
 export function openModal(modalIdOrElement) {
   let modal;
   
@@ -59,20 +50,16 @@ export function openModal(modalIdOrElement) {
     return;
   }
   
-  // Cerrar cualquier otro modal abierto
   document.querySelectorAll('.modal.active').forEach(openModal => {
     if (openModal !== modal) {
       closeModal(openModal);
     }
   });
   
-  // Añadir clase active para mostrar el modal
   modal.classList.add('active');
   
-  // Deshabilitar scroll del body
   document.body.style.overflow = 'hidden';
   
-  // Disparar evento personalizado
   modal.dispatchEvent(new CustomEvent('modal:open'));
   
   console.log(`📖 Modal abierta: ${modal.id}`);
@@ -95,15 +82,12 @@ export function closeModal(modalIdOrElement) {
   
   console.log(`📕 Cerrando modal: ${modal.id}`);
   
-  // Quitar clase active para ocultar el modal
   modal.classList.remove('active');
   
-  // Restaurar scroll del body si no hay otros modales abiertos
   if (document.querySelectorAll('.modal.active').length === 0) {
     document.body.style.overflow = '';
   }
   
-  // Disparar evento personalizado
   modal.dispatchEvent(new CustomEvent('modal:close'));
   
   // 🆕 RESET AUTOMÁTICO AL CERRAR (opcional pero recomendado)
@@ -111,7 +95,6 @@ export function closeModal(modalIdOrElement) {
   if (modalId) {
     const modalType = modalId.replace('Modal', '').toLowerCase();
     
-    // Aplicar reset después de la animación de cierre
     setTimeout(() => {
       if (window.resetModalState && typeof window.resetModalState === 'function') {
         console.log(`🔄 Aplicando reset post-cierre para: ${modalType}`);
@@ -127,7 +110,6 @@ export function closeModal(modalIdOrElement) {
   return modal;
 }
 
-// Actualizar el contenido de un modal
 export function refreshModalContent(modalId, content) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
@@ -152,9 +134,7 @@ export function refreshModalContent(modalId, content) {
   return modal;
 }
 
-// Crear un modal dinámicamente
 export function createDynamicModal({ id, title, content, footerButtons = [] }) {
-  // Verificar si ya existe un modal con ese ID
   let modal = document.getElementById(id);
   
   if (modal) {
@@ -166,7 +146,6 @@ export function createDynamicModal({ id, title, content, footerButtons = [] }) {
     
     refreshModalContent(id, content);
   } else {
-    // Crear estructura del modal
     modal = document.createElement('div');
     modal.id = id;
     modal.className = 'modal';
@@ -193,7 +172,6 @@ export function createDynamicModal({ id, title, content, footerButtons = [] }) {
     
     modal.innerHTML = modalHTML;
     
-    // Añadir al DOM
     document.body.appendChild(modal);
     
     // Si content es un elemento DOM o una función, procesarlo
@@ -201,20 +179,17 @@ export function createDynamicModal({ id, title, content, footerButtons = [] }) {
       refreshModalContent(id, content);
     }
     
-    // Configurar botón de cierre
     const closeBtn = modal.querySelector('.modal-close');
     if (closeBtn) {
       closeBtn.addEventListener('click', () => closeModal(modal));
     }
     
-    // Cerrar al hacer clic fuera
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         closeModal(modal);
       }
     });
     
-    // Configurar botones del footer
     footerButtons.forEach(btnConfig => {
       if (btnConfig.id) {
         const btn = modal.querySelector(`#${btnConfig.id}`);
@@ -230,7 +205,6 @@ export function createDynamicModal({ id, title, content, footerButtons = [] }) {
 
 // Funciones auxiliares para modales comunes
 
-// Modal de confirmación
 export function showConfirmModal(message, onConfirm, onCancel) {
   return new Promise((resolve) => {
     const id = 'confirm-modal-' + Date.now();
@@ -267,7 +241,6 @@ export function showConfirmModal(message, onConfirm, onCancel) {
   });
 }
 
-// Modal de alerta
 export function showAlertModal(message, title = 'Aviso') {
   return new Promise((resolve) => {
     const id = 'alert-modal-' + Date.now();
@@ -327,7 +300,6 @@ export function resetModal(modalIdOrElement) {
   return modal;
 }
 
-// Exportar funciones públicas
 export default {
   setupModalManager,
   openModal,

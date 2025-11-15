@@ -12,7 +12,6 @@ export class SubscriptionsService {
      */
     async getAllSubscriptions(filters = {}, pagination = { page: 1, limit: 50 }) {
         try {
-            // Construir la consulta base
             let query = `
                 SELECT s.*, u.correo as user_email, c.nombre as carrera_nombre
                 FROM suscripciones s
@@ -25,7 +24,6 @@ export class SubscriptionsService {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros
             if (filters.status) {
                 query += ` AND s.status = $${paramIndex}`;
                 queryParams.push(filters.status);
@@ -71,7 +69,6 @@ export class SubscriptionsService {
             const countResult = await pool.query(countQuery, queryParams);
             const totalCount = parseInt(countResult.rows[0].count);
             
-            // Aplicar ordenamiento y paginación
             const sortField = filters.sort_by || 'created_at';
             const sortDirection = filters.sort_direction || 'DESC';
             
@@ -85,7 +82,6 @@ export class SubscriptionsService {
             query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
             queryParams.push(limit, offset);
             
-            // Ejecutar la consulta final
             const result = await pool.query(query, queryParams);
             
             return {
@@ -182,7 +178,6 @@ export class SubscriptionsService {
             // 3. Actualizar en Paddle (delegando al servicio existente)
             const paddleResult = await PaddleService.updateSubscriptionStatus(subscriptionId, newStatus);
             
-            // Log de acción administrativa
             logSecurityEvent('ADMIN_SUBSCRIPTION_UPDATE', `Suscripción ${subscriptionId} actualizada a ${newStatus}`, {
                 adminUserId: adminUserId,
                 subscriptionId: subscriptionId,
@@ -211,7 +206,6 @@ export class SubscriptionsService {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Construir todas las condiciones de filtrado (no solo fechas)
             let conditions = ' WHERE 1=1';
             
             // Filtro por estado
@@ -252,7 +246,6 @@ export class SubscriptionsService {
             // Necesitamos una subconsulta para el filtro de búsqueda ya que involucra joins
             let searchCondition = '';
             if (filters.search) {
-                // Crear subconsulta para obtener IDs que coincidan con la búsqueda
                 const searchQuery = `
                     SELECT DISTINCT s.subscription_id
                     FROM suscripciones s
@@ -264,7 +257,6 @@ export class SubscriptionsService {
                         s.product_name ILIKE $${paramIndex}
                 `;
                 
-                // Ejecutar subconsulta
                 const searchResult = await pool.query(searchQuery, [`%${filters.search}%`]);
                 
                 // Si hay resultados, añadir condición
@@ -335,14 +327,12 @@ export class SubscriptionsService {
                 ORDER BY month
             `;
             
-            // Ejecutar consultas
             const statusResult = await pool.query(statusQuery, queryParams);
             const productResult = await pool.query(productQuery, queryParams);
             const growthResult = await pool.query(growthQuery, queryParams);
             const cancellationsResult = await pool.query(cancellationsQuery, queryParams);
             const expiredResult = await pool.query(expiredQuery, queryParams);
             
-            // Cargar nombres de carreras para los productos
             const carreraIds = productResult.rows.map(row => row.id_carrera).filter(id => id);
             let carreraNames = {};
             

@@ -32,7 +32,6 @@ export const uploadPDF = async (req, res) => {
       securityScanned: true
     };
 
-    // Verificar si ya existe un PDF para este chat
     const existingPdf = await PDFService.hasPDFProcessed(chatId, parseInt(userId));
     if (existingPdf) {
       return res.status(409).json({
@@ -74,7 +73,6 @@ export const uploadPDF = async (req, res) => {
       sanitizeResult = false;
     }
 
-    // Añadir información de seguridad a los metadatos
     metadata.securityScan = {
       scanned: true,
       clean: true,
@@ -85,7 +83,6 @@ export const uploadPDF = async (req, res) => {
     // 6. Leer el archivo sanitizado para procesarlo con Mistral OCR
     const fileBuffer = await fs.promises.readFile(sanitizedFilePath);
 
-    // ✅ PROCESAMIENTO SIMPLIFICADO CON MISTRAL OCR
     console.log(`Iniciando procesamiento de PDF con Mistral OCR: ${metadata.originalName} para chat ${chatId}`);
     const result = await PDFService.processPDF({
       fileBuffer,
@@ -94,7 +91,6 @@ export const uploadPDF = async (req, res) => {
       metadata
     });
 
-    // ✅ VERIFICACIÓN SIMPLIFICADA DE DOCUMENTOS
     const documents = await PDFStorageService.findPDFDocumentsByChat(chatId, parseInt(userId));
     if (!documents || documents.length === 0) {
       console.error(`Verificación de documentos fallida: No se encontraron documentos en la BD para chatId=${chatId}`);
@@ -110,7 +106,6 @@ export const uploadPDF = async (req, res) => {
 
     console.log(`✅ Respuesta del controlador: ${documents.length} documentos, ${totalPages} páginas confirmadas por Mistral`);
 
-    // Limpiar archivos temporales
     if (tempFilePath && fs.existsSync(tempFilePath)) {
       fs.unlinkSync(tempFilePath);
     }
@@ -118,7 +113,6 @@ export const uploadPDF = async (req, res) => {
       fs.unlinkSync(sanitizedFilePath);
     }
 
-    // ✅ RESPUESTA SIMPLIFICADA
     res.status(200).json({
       success: true,
       message: "PDF procesado exitosamente con Mistral OCR",
@@ -129,14 +123,12 @@ export const uploadPDF = async (req, res) => {
         savedName: result.fileInfo?.savedName || null,
         originalName: req.file.originalname,
 
-        // ✅ INFORMACIÓN SIMPLIFICADA
         totalPages: totalPages,
         documentChunks: documents.length,
         pagesProcessed: Array.from(actualPages).sort((a, b) => a - b),
         timestamp: result.fileInfo?.timestamp || Date.now(),
         ocrProvider: 'mistral',
 
-        // ✅ ESTADO SIMPLIFICADO
         processingStatus: {
           complete: true,
           pagesProcessed: documents.length,
@@ -151,7 +143,6 @@ export const uploadPDF = async (req, res) => {
         }
       },
 
-      // ✅ MENSAJE DEL ASISTENTE SIMPLIFICADO
       assistantMessage: result.assistantMessage ? {
         id: result.assistantMessage.messageId,
         message: result.assistantMessage.message,
@@ -161,7 +152,6 @@ export const uploadPDF = async (req, res) => {
         totalPages: totalPages
       } : null,
 
-      // ✅ METADATA SIMPLIFICADA
       metadata: {
         ...result.metrics,
         processingMode: 'complete_processing',
@@ -175,7 +165,6 @@ export const uploadPDF = async (req, res) => {
   } catch (error) {
     console.error("Error procesando PDF con Mistral OCR:", error);
 
-    // Limpiar archivos temporales en caso de error
     try {
       if (tempFilePath && fs.existsSync(tempFilePath)) {
         fs.unlinkSync(tempFilePath);
@@ -219,7 +208,6 @@ export const servePDFFile = async (req, res) => {
 
     console.log(`Solicitando servir PDF: chatId=${chatId}, userId=${userId}`);
 
-    // Obtener información del PDF
     let fileInfo;
     if (filename) {
       fileInfo = await PDFService.getPDFFileByName(chatId, userId, filename);
@@ -241,7 +229,6 @@ export const servePDFFile = async (req, res) => {
       });
     }
 
-    // Verificar que el archivo existe físicamente
     if (!fs.existsSync(fileInfo.path)) {
       return res.status(404).json({
         success: false,
@@ -250,7 +237,6 @@ export const servePDFFile = async (req, res) => {
       });
     }
 
-    // Configurar headers para cache
     const clientETag = req.headers['if-none-match'];
     const currentETag = `"${fileInfo.timestamp}-${fileInfo.savedName}"`;
 
@@ -343,7 +329,6 @@ export const extractPDFText = async (req, res) => {
       });
     }
 
-    // ✅ OPCIONES SIMPLIFICADAS
     const options = {
       maxPages: allPages === 'true' ? -1 : (maxPages !== undefined ? parseInt(maxPages) : 3),
       includePageNumbers: includePageNumbers !== 'false',
@@ -353,7 +338,6 @@ export const extractPDFText = async (req, res) => {
 
     console.log(`Extrayendo texto del PDF - chatId: ${chatId}, opciones:`, options);
 
-    // ✅ EXTRACCIÓN SIMPLIFICADA
     const result = await PDFService.extractPDFTextForChat(chatId, userIdNum, options);
 
     if (!result.success) {
@@ -474,7 +458,6 @@ export const extractTextSelection = async (req, res) => {
       });
     }
 
-    // ✅ VERIFICACIÓN SIMPLIFICADA
     try {
       const fileInfo = await PDFService.getPDFFile(chatId, parseInt(userId), pdfId);
       if (!fileInfo.success) {
@@ -487,7 +470,6 @@ export const extractTextSelection = async (req, res) => {
       console.error("Error verificando archivo PDF:", fileError);
     }
 
-    // ✅ CACHÉ SIMPLIFICADO
     let cacheKey = pdfId || chatId;
     if (useCache !== 'false') {
       try {
@@ -508,7 +490,6 @@ export const extractTextSelection = async (req, res) => {
       }
     }
 
-    // ✅ EXTRACCIÓN SIMPLIFICADA
     const options = {
       page: parseInt(page),
       x1: parseFloat(x1),
@@ -538,7 +519,6 @@ export const extractTextSelection = async (req, res) => {
       }
     };
 
-    // ✅ GUARDAR EN CACHÉ SIMPLIFICADO
     if (useCache !== 'false' && result.success) {
       try {
         await redisService.setRegionCache(
@@ -704,7 +684,6 @@ export const deletePDF = async (req, res) => {
 
     console.log(`Solicitando eliminación de PDF: chatId=${chatId}, userId=${userId}, pdfId=${pdfId || 'no especificado'}`);
 
-    // ✅ VALIDACIONES SIMPLIFICADAS
     if (pdfId && pdfId === chatId) {
       return res.status(400).json({
         success: false,
@@ -712,7 +691,6 @@ export const deletePDF = async (req, res) => {
       });
     }
 
-    // ✅ VERIFICACIÓN SIMPLIFICADA
     const fileCheck = await PDFService.getPDFFile(chatId, parseInt(userId), pdfId);
     if (!fileCheck.success) {
       logSecurityEvent('PDF_DELETE_NOT_FOUND', 'Intento de eliminar PDF inexistente', {
@@ -728,7 +706,6 @@ export const deletePDF = async (req, res) => {
       });
     }
 
-    // ✅ INVALIDAR CACHÉ SIMPLIFICADO
     try {
       const cacheKeys = [fileCheck.savedName, chatId, `${chatId}_${fileCheck.timestamp}`];
       for (const key of cacheKeys) {
@@ -738,7 +715,6 @@ export const deletePDF = async (req, res) => {
       console.warn(`Error invalidando caché: ${cacheError.message}`);
     }
 
-    // ✅ ELIMINACIÓN SIMPLIFICADA
     const result = await PDFService.deletePDF(chatId, parseInt(userId), pdfId);
 
     if (!result.success) {
@@ -798,7 +774,6 @@ export const cancelPDFProcessing = async (req, res) => {
 
     console.log(`📛 Solicitud de cancelación recibida: chatId=${chatId}, userId=${userId}`);
 
-    // ✅ CANCELACIÓN SIMPLIFICADA
     const processingResult = await PDFService.cancelProcessing(chatId, parseInt(userId));
 
     const duration = Date.now() - cancelStart;
@@ -847,7 +822,6 @@ export const getPDFProcessingStatus = async (req, res) => {
       });
     }
 
-    // ✅ ESTADO SIMPLIFICADO
     const processingStatus = await PDFService.getProcessingStatus(chatId, parseInt(userId));
 
     const progress = processingStatus.progress || 0;

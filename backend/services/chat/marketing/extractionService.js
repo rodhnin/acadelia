@@ -48,10 +48,8 @@ export const extractionService = {
         response_format: { type: "json_object" }
       });
       
-      // Parsear la respuesta
       const extractedData = JSON.parse(completion.choices[0].message.content);
       
-      // Validar según el tipo de datos
       let validationErrors = [];
       switch (type) {
         case 'profile':

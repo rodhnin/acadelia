@@ -1,4 +1,3 @@
-// backend/routes/usuarios/termsRoutes.js
 import express from 'express';
 import { authenticateUser } from '../../middlewares/authMiddleware.js';
 import { checkTermsAcceptance, acceptTerms, updateTermsAndNotify } from '../../controllers/usuarios/termsController.js';

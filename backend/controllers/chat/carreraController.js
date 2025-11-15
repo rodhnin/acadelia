@@ -12,12 +12,9 @@ const create = async (req, res) => {
     const { nombre, descripcion, month, year, imagen } = req.body;
     const nuevaCarrera = await createCarrera({ nombre, descripcion, month, year, imagen });
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -88,12 +85,9 @@ const update = async (req, res) => {
       imagen
     });
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({
@@ -121,18 +115,14 @@ const remove = async (req, res) => {
   try {
     const { id_carrera } = req.params;
     
-    // Obtener información de la carrera antes de eliminarla
     const carrera = await getCarreraById(id_carrera);
     const nombreCarrera = carrera ? carrera.nombre : `Carrera #${id_carrera}`;
     
     await deleteCarrera(id_carrera);
     
-    // Registrar actividad
     try {
-      // Obtener ID de usuario del request o un valor predeterminado
       const userId = req.body.userId || req.query.userId || req.user?.id_user;
       
-      // Obtener nombre de usuario mediante el servicio
       const userName = userId ? await activityMenteLogService.getUserName(userId) : "Administrador";
       
       await activityMenteLogService.logActivity({

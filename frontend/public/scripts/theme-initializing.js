@@ -1,9 +1,7 @@
-// Aplicar clase de inicialización inmediatamente
 document.documentElement.classList.add('theme-initializing');
 
 // Precargar tema desde localStorage y manejar específicamente el header
 (function() {
-  // Verificar explícitamente el consentimiento para cookies funcionales
   let savedTheme = 'light'; // Tema predeterminado si no hay consentimiento
   
   try {
@@ -24,11 +22,9 @@ document.documentElement.classList.add('theme-initializing');
   
   document.documentElement.setAttribute('data-theme', savedTheme);
   
-  // Crear estilo en línea específicamente para el header
   const headerStyle = document.createElement('style');
   headerStyle.id = 'header-theme-preload';
   
-  // Definir estilos específicos según el tema
   if (savedTheme === 'dark') {
     headerStyle.textContent = `
       /* Estilos inmediatos para el header en modo oscuro */
@@ -61,7 +57,6 @@ document.documentElement.classList.add('theme-initializing');
     `;
   }
   
-  // Agregar el estilo inmediatamente para que se aplique antes de cualquier renderizado
   document.head.appendChild(headerStyle);
   
   // Hacer visible después de un tiempo mínimo para garantizar que los estilos se hayan aplicado
@@ -70,7 +65,6 @@ document.documentElement.classList.add('theme-initializing');
     setTimeout(() => {
       document.documentElement.classList.remove('theme-initializing');
       
-      // Remover los estilos forzados del header después de completar la transición
       setTimeout(() => {
         const headerPreload = document.getElementById('header-theme-preload');
         if (headerPreload) {

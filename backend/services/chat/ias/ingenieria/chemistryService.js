@@ -2,7 +2,6 @@
 // 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO QUÍMICA V3.1 TÉCNICO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MULTIDISCIPLINARIO EN QUÍMICA TÉCNICO
-// Sistema técnico optimizado con Knowledge Base como cerebro principal y ejecución paralela
 // Especializado en Química Completa con enfoque técnico riguroso
 // ============================================================================
 
@@ -28,12 +27,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -100,7 +97,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -174,7 +170,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +190,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -264,7 +258,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -370,10 +363,8 @@ Hacer que CUALQUIER estudiante de química e ingeniería química:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS TÉCNICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES TÉCNICAS QUÍMICAS
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes científicas de QUÍMICA Y PROCESOS QUÍMICOS con precisión técnica extrema.
@@ -400,7 +391,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Aca
 
 Eres los OJOS ANALÍTICOS TÉCNICOS de Profesor Acadel - él interpretará tu análisis con su sabiduría química pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES TÉCNICAS QUÍMICAS (analysisContext)
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel, el capibara químico más brillante del universo en química y procesos químicos.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información técnica de esta imagen química/científica para que Profesor Acadel pueda enseñar efectivamente química completa.
@@ -446,7 +436,6 @@ Proporciona un análisis técnico estructurado, preciso y exhaustivo que permita
 
 **IMPORTANTE:** Sé OBSERVADOR TÉCNICO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos químicos. Profesor Acadel se encargará de la pedagogía técnica pero necesita que seas muy detallista con todo lo que observas químicamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS NORMALES (con y sin guardar)
 const UNIFIED_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA QUÍMICA TÉCNICA:
 - Consulta del estudiante de química: "${query}"
@@ -473,7 +462,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN QUÍMICA TÉCNICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -528,7 +516,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -538,7 +525,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -560,7 +546,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -568,7 +553,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // 🔍 DETECTAR TÉRMINOS QUÍMICOS ESPECÍFICOS
   const chemistryTerms = [
     // Química General
     'química', 'chemical', 'molécula', 'molecular', 'átomo', 'atómico', 'elemento', 'compuesto',
@@ -596,20 +580,17 @@ const classifyQuery = (query, content = null) => {
     'termodinámica', 'entalpía', 'entropía', 'energía libre', 'equilibrio', 'espontáneo'
   ];
 
-  // 🔍 DETECTAR INSTRUMENTOS Y TÉCNICAS QUÍMICAS
   const chemistryInstruments = [
     'espectrómetro', 'cromatógrafo', 'balanza analítica', 'bureta', 'pipeta', 'matraz aforado',
     'rotavapor', 'destilador', 'reactor', 'autoclave', 'centrifuga', 'ph-metro',
     'conductímetro', 'potencióstato', 'calorimetro', 'viscosímetro'
   ];
 
-  // 🔍 DETECTAR NOMENCLATURA Y FÓRMULAS QUÍMICAS
   const chemicalFormulas = [
     'h2o', 'co2', 'ch4', 'nh3', 'hcl', 'naoh', 'h2so4', 'caco3', 'fecl3',
     'benzeno', 'metano', 'etanol', 'acetona', 'ácido acético', 'glucosa'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS QUÍMICOS REALES
   const hasChemistryContent =
     chemistryTerms.some(term => lowercaseQuery.includes(term)) ||
     chemistryInstruments.some(term => lowercaseQuery.includes(term)) ||
@@ -617,7 +598,6 @@ const classifyQuery = (query, content = null) => {
     /[A-Z][a-z]?\d*/.test(query) || // Detectar fórmulas químicas como H2O, CaCl2
     /ph\s*=|ph\s*\d|pka|pkb/i.test(query); // Detectar pH, pKa, etc.
 
-  // Detectar exámenes
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -663,9 +643,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL QUÍMICO
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal químico
@@ -675,7 +653,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasChemistryContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal químico
     const result = {
@@ -701,7 +678,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS QUÍMICAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'principio', 'teoría de'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'balancear', 'estequiometría'];
   const theoryKeywords = ['teoría', 'ley', 'principio', 'demostrar', 'derivar', 'fundamento', 'mecanismo de'];
@@ -710,7 +686,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos avances', 'nuevos estudios', 'papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
 
-  // ✅ CLASIFICACIÓN QUÍMICA CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -747,14 +722,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar nivel de cálculos químicos
   const mathKeywords = ['ecuación', 'fórmula', 'estequiometría', 'molaridad', 'concentración', 'rendimiento', 'equilibrio', 'ph', 'pka'];
   if (mathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -764,7 +737,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'química es difícil'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -792,7 +764,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS QUÍMICAS TÉCNICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS QUÍMICAS TÉCNICAS
@@ -810,7 +781,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel activando cerebro principal químico (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -820,7 +790,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL QUÍMICO
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto químico para mejores decisiones
@@ -830,7 +799,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_quimica",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL QUÍMICO
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Chemical Knowledge Base timeout')), 30000)
       );
@@ -842,7 +810,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_CHEMICAL_MEMORY_BANK: El cerebro principal químico de Profesor Acadel no tiene contenido técnico específico sobre "${query}" en su biblioteca científica química. Proceder con conocimiento químico técnico general y experiencia científica acumulada en química y procesos químicos.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -862,7 +829,6 @@ ACADEL_CHEMICAL_MEMORY_BANK: El cerebro principal químico de Profesor Acadel no
 
 ACADEL_CHEMICAL_MEMORY_BANK: El cerebro principal químico de Profesor Acadel encontró información técnica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base químico técnico, analogías científicas químicas precisas y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -889,7 +855,6 @@ ACADEL_CHEMICAL_MEMORY_BANK: El cerebro principal químico de Profesor Acadel ac
 
 INTEGRATION_NOTES: Este es el conocimiento químico técnico central que Profesor Acadel usará como base neurológica principal para su respuesta. Representa su comprensión química profunda acumulada. Debe integrar esta información naturalmente como si fuera su propia sabiduría química científica, enriqueciéndola con casos técnicos químicos específicos, analogías científicas químicas precisas y metodología pedagógica química rigurosa.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1219,7 +1184,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel analizando concepto químico técnico: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN QUÍMICA
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos químicos
@@ -1229,7 +1193,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_quimica",
       });
 
-      // 📚 BÚSQUEDAS QUÍMICAS TÉCNICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto químico técnico ${concept}`,
         `principios químicos ${concept}`,
@@ -1239,7 +1202,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         `experimentos químicos técnicos ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA QUÍMICA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1272,7 +1234,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural química técnica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1461,7 +1422,6 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia química técnica 
 );
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS QUÍMICOS TÉCNICOS
 // ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1631,7 +1591,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
   // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA QUÍMICA TÉCNICA - OPTIMIZADAS
   // ============================================================================
 
   const chemicalTechnicalTypeInstructions = {
@@ -1720,7 +1679,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT QUÍMICO TÉCNICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
 
   return `${basePersonality}
@@ -1745,13 +1703,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL QUÍMICO TÉCNICO (Know
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE QUÍMICO TÉCNICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema químico técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Químico Técnico: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1773,7 +1729,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createCalculatorTool());
   }
 
-  // ✅ HERRAMIENTAS QUÍMICAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis químico técnico paralelo profundo`);
     tools.push(createConceptAnalyzerTool(embeddings));
@@ -1789,7 +1744,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL QUÍMICA TÉCNICA SIEMPRE DISPONIBLE
   tools.push(createFeedbackAnalyzerTool());
 
   console.log(`🦫 Profesor Acadel SISTEMA QUÍMICO TÉCNICO COMPLETO configurado con ${tools.length} herramientas químicas técnicas:`, tools.map(t => t.name));
@@ -1803,7 +1757,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocionalQuimicaTecnica: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt químico técnico especializado y escapado
   const specializedPrompt = createSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1835,7 +1788,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES QUÍMICAS TÉCNICAS OPTIMIZADAS
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1884,7 +1836,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Profesor Acadel generando contexto químico técnico para examen: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1894,7 +1845,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES QUÍMICOS
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes químicos necesitamos variedad
@@ -1904,7 +1854,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_quimica",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES QUÍMICOS
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Chemical exam context timeout')), 30000)
           );
@@ -1916,7 +1865,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1931,7 +1879,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Chemical exam context error: ${error.message}`);
 
-          // Fallback para exámenes químicos técnicos
           return `Contexto químico técnico base para "${input}": conocimiento fundamental en química y procesos químicos. Profesor Acadel debe generar preguntas desde su experiencia química técnica consolidada, con casos prácticos industriales realistas y conceptos fundamentales químicos técnicos.`;
         }
       },
@@ -2077,7 +2024,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA - handleChemistryQuery
 // ============================================================================
 
 export const handleChemistryQuery = async (params) => {
@@ -2087,7 +2033,6 @@ export const handleChemistryQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2106,7 +2051,6 @@ export const handleChemistryQuery = async (params) => {
     console.log(`🦫 Acadel analizando query (Química Completa): "${query}"`);
     console.log(`📊 Clasificación: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2128,7 +2072,6 @@ export const handleChemistryQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES  (AVA)
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2175,7 +2118,6 @@ export const handleChemistryQuery = async (params) => {
 
       } catch (saveError) {
         console.error('❌ Error guardando examen  (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2213,7 +2155,6 @@ export const handleChemistryQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2230,10 +2171,8 @@ export const handleChemistryQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2296,11 +2235,9 @@ export const handleChemistryQuery = async (params) => {
       };
     }
 
-    // Procesar respuesta con mejoras de LaTeX
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2344,7 +2281,6 @@ export const handleChemistryQuery = async (params) => {
 
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2404,7 +2340,6 @@ export const handleChemistryQuery = async (params) => {
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA - handleChemistryMultimodalQuery  
 // ============================================================================
 
 export const handleChemistryMultimodalQuery = async (params) => {
@@ -2430,7 +2365,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2442,7 +2376,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2453,7 +2386,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2491,7 +2423,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2551,7 +2482,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2621,11 +2551,9 @@ export const handleChemistryMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica química completa");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2658,7 +2586,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2685,7 +2612,6 @@ export const handleChemistryMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2711,11 +2637,9 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
       };
     }
 
-    // PROCESAR RESPUESTA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2728,7 +2652,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2780,7 +2703,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
 
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2865,7 +2787,6 @@ Si necesitas una explicación más detallada en cualquier área química, pregú
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS
 // ============================================================================
 
 export const handleChemistryQueryWithoutSaving = async (params) => {
@@ -2922,7 +2843,6 @@ export const handleChemistryQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2941,7 +2861,6 @@ export const handleChemistryQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE CORREGIDO
       const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3054,7 +2973,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido en modo sin guardar:", content);
       return {
@@ -3073,7 +2991,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3086,7 +3003,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DE QUÍMICA: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3100,7 +3016,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3161,7 +3076,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3181,10 +3095,8 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3218,7 +3130,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3278,7 +3189,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3363,11 +3273,9 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica química completa");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3398,7 +3306,6 @@ export const handleChemistryMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, combinedQuery);
 

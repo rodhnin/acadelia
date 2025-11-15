@@ -1,4 +1,3 @@
-// backend/services/pagos/subscriptionExpirationService.js
 import pool from '../../lib/dbPool.js';
 import cron from 'node-cron';
 
@@ -11,12 +10,10 @@ class SubscriptionExpirationService {
   start() {
     if (this.isRunning) return;
 
-    // Ejecutar cada hora
     this.task = cron.schedule('0 * * * *', async () => {
       await this.checkExpiredSubscriptions();
     });
 
-    // Ejecutar inmediatamente
     this.checkExpiredSubscriptions();
     
     this.isRunning = true;

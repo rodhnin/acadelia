@@ -1,6 +1,5 @@
 // formatting-marketing.js - Utilidades de formateo para marketing
 
-// Formatear números con separadores de miles
 export function formatNumber(num) {
   if (num === null || num === undefined) return '0';
   
@@ -14,7 +13,6 @@ export function formatNumber(num) {
   return new Intl.NumberFormat('es-ES').format(num);
 }
 
-// Formatear porcentajes
 export function formatPercentage(num, decimals = 2) {
   if (num === null || num === undefined) return '0%';
   
@@ -27,7 +25,6 @@ export function formatPercentage(num, decimals = 2) {
   return percentage.toFixed(decimals) + '%';
 }
 
-// Formatear fechas
 export function formatDate(date) {
   if (!date) return 'Fecha no disponible';
   
@@ -44,7 +41,6 @@ export function formatDate(date) {
   });
 }
 
-// Formatear fechas relativas (hace X tiempo)
 export function formatRelativeDate(date) {
   if (!date) return 'Fecha no disponible';
   
@@ -73,7 +69,6 @@ export function formatRelativeDate(date) {
   }
 }
 
-// Formatear métricas de marketing
 export function formatMetric(value, type = 'number') {
   switch (type) {
     case 'percentage':
@@ -87,7 +82,6 @@ export function formatMetric(value, type = 'number') {
   }
 }
 
-// Formatear moneda
 export function formatCurrency(amount, currency = 'EUR') {
   if (amount === null || amount === undefined) return '0 €';
   
@@ -97,7 +91,6 @@ export function formatCurrency(amount, currency = 'EUR') {
   }).format(amount);
 }
 
-// Formatear duración (en segundos a formato legible)
 export function formatDuration(seconds) {
   if (!seconds || seconds === 0) return '0s';
   
@@ -114,7 +107,6 @@ export function formatDuration(seconds) {
   }
 }
 
-// Formatear tamaño de archivo
 export function formatFileSize(bytes) {
   if (!bytes || bytes === 0) return '0 B';
   
@@ -125,7 +117,6 @@ export function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Formatear texto para mostrar solo las primeras palabras
 export function formatExcerpt(text, maxWords = 20) {
   if (!text) return '';
   
@@ -135,7 +126,6 @@ export function formatExcerpt(text, maxWords = 20) {
   return words.slice(0, maxWords).join(' ') + '...';
 }
 
-// 🔧 FUNCIÓN ACTUALIZADA: Formatear nombres de canales para mostrar
 export function formatChannelName(channel) {
   const channelMap = {
     'instagram': 'Instagram',
@@ -153,7 +143,6 @@ export function formatChannelName(channel) {
   return channelMap[channel?.toLowerCase()] || (channel || 'Desconocido');
 }
 
-// 🔧 FUNCIÓN ACTUALIZADA: Formatear tipo de contenido para el sistema de marketing
 export function formatContentType(type) {
   const typeMap = {
     'meme': 'Memes',
@@ -172,7 +161,6 @@ export function formatContentType(type) {
   return typeMap[type?.toLowerCase()] || (type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Desconocido');
 }
 
-// Exportar todas las funciones para uso global
 if (typeof window !== 'undefined') {
   window.formatNumber = formatNumber;
   window.formatPercentage = formatPercentage;

@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer';
 
-// Configurar transportador de email
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
@@ -13,7 +12,6 @@ export const sendContactEmail = async (req, res) => {
     try {
         const { fullName, reason, email, message } = req.body;
 
-        // Validación básica
         if (!fullName || !email || !message || !reason) {
             return res.status(400).json({
                 success: false,
@@ -73,7 +71,6 @@ export const sendContactEmail = async (req, res) => {
             `
         };
 
-        // Enviar ambos emails
         await Promise.all([
             transporter.sendMail(adminMailOptions),
             transporter.sendMail(userMailOptions)

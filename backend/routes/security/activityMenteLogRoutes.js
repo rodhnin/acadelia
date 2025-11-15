@@ -54,7 +54,6 @@ router.post("/log", async (req, res) => {
       usuario_nombre
     } = req.body;
 
-    // Validación básica
     if (!action_type || !entity_type || !entity_id) {
       return res.status(400).json({
         success: false,
@@ -62,13 +61,10 @@ router.post("/log", async (req, res) => {
       });
     }
 
-    // Usar ID de usuario de la sesión como fallback si no se proporciona en el cuerpo
     const userId = id_usuario || req.user?.id_user || null;
     
-    // Usar nombre de usuario de la sesión como fallback si no se proporciona
     let userName = usuario_nombre;
     if (!userName && req.user?.id_user) {
-      // Intentar obtener el nombre del usuario desde la BD
       try {
         userName = await activityMenteLogService.getUserName(req.user.id_user);
       } catch (error) {
@@ -81,7 +77,6 @@ router.post("/log", async (req, res) => {
       userName = "Sistema";
     }
 
-    // Registrar la actividad
     const result = await activityMenteLogService.logActivity({
       action_type,
       entity_type,

@@ -25,13 +25,10 @@ const dashboard = {
      */
     async init() {
         try {
-            // Inicializar charts vacíos
             this.initCharts();
             
-            // Cargar datos
             await this.loadDashboardData();
             
-            // Configurar eventos
             this.setupEventListeners();
             
             // Programar refresco automático cada 5 minutos
@@ -67,7 +64,6 @@ const dashboard = {
         
         // Botón para ver todos los eventos
         document.getElementById('view-all-events')?.addEventListener('click', () => {
-            // Disparar evento para cambiar a sección de eventos con filtro de severidad crítica
             window.dispatchEvent(new CustomEvent('viewAllCriticalEvents'));
         });
         
@@ -76,7 +72,6 @@ const dashboard = {
             window.dispatchEvent(new CustomEvent('exportSecurityEvents'));
         });
         
-        // Escuchar cambios globales
         window.addEventListener('securityDataUpdated', () => {
             this.loadDashboardData();
         });
@@ -87,31 +82,22 @@ const dashboard = {
      */
     async loadDashboardData() {
         try {
-            // Mostrar indicadores de carga
             this.showLoading(true);
             
-            // Obtener métricas de seguridad
             const metrics = await getSecurityMetrics();
             
-            // Procesar métricas (adaptar formato si es necesario)
             this.state.metrics = this.processMetrics(metrics);
             
-            // Actualizar contadores
             this.updateCounters(this.state.metrics);
             
-            // Preparar datos para gráficos si no existen en la respuesta
             await this.prepareChartData();
             
-            // Actualizar gráficos
             this.updateCharts(this.state.metrics);
             
-            // Cargar eventos críticos recientes
             await this.loadCriticalEvents();
             
-            // Ocultar indicadores de carga
             this.showLoading(false);
             
-            // Actualizar timestamp
             document.getElementById('last-update-time').textContent = 'ahora';
         } catch (error) {
             console.error('Error cargando datos del dashboard:', error);
@@ -155,12 +141,10 @@ const dashboard = {
                 return;
             }
             
-            // Para actividad por hora, si no viene en las métricas, obtenerla mediante getSecurityEvents
             if (!this.state.metrics.activityByHour) {
                 const activityByHour = {};
                 const criticalByHour = {};
                 
-                // Inicializar con 24 horas vacías (para gráfico de 24h)
                 const now = new Date();
                 for (let i = 0; i < 24; i++) {
                     const hour = new Date(now);
@@ -170,7 +154,6 @@ const dashboard = {
                     criticalByHour[hourKey] = 0;
                 }
                 
-                // Obtener eventos de las últimas 24 horas
                 const endDate = new Date().toISOString();
                 const startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
                 
@@ -179,38 +162,31 @@ const dashboard = {
                     endDate
                 }, 1, 1000); // Obtener hasta 1000 eventos
                 
-                // Procesar eventos para generar datos del gráfico
                 if (eventsResult && eventsResult.events && eventsResult.events.length > 0) {
                     eventsResult.events.forEach(event => {
                         const eventDate = new Date(event.timestamp);
                         const hourKey = `${eventDate.getHours()}:00`;
                         
-                        // Incrementar actividad total
                         if (activityByHour[hourKey] !== undefined) {
                             activityByHour[hourKey]++;
                         }
                         
-                        // Incrementar actividad crítica si aplica
                         if (event.severity === 'critical' && criticalByHour[hourKey] !== undefined) {
                             criticalByHour[hourKey]++;
                         }
                     });
                 }
                 
-                // Guardar datos generados
                 this.state.metrics.activityByHour = activityByHour;
                 this.state.metrics.criticalByHour = criticalByHour;
             }
             
-            // Para tipos de eventos, obtenerlos si no vienen en métricas
             if (!this.state.metrics.eventTypes) {
-                // Obtener distribución de eventos por tipo
                 const eventsResult = await getSecurityEvents({}, 1, 1000);
                 
                 const eventTypes = {};
                 
                 if (eventsResult && eventsResult.events && eventsResult.events.length > 0) {
-                    // Contar eventos por tipo
                     eventsResult.events.forEach(event => {
                         const eventType = event.eventType || 'UNKNOWN';
                         eventTypes[eventType] = (eventTypes[eventType] || 0) + 1;
@@ -235,9 +211,7 @@ const dashboard = {
                 }
             }
             
-            // Para resultados de login, usar datos de intentos fallidos si no vienen en métricas
             if (!this.state.metrics.loginResults) {
-                // Buscar eventos de login recientes
                 const loginEvents = await getSecurityEvents({
                     eventType: 'LOGIN_'
                 }, 1, 100);
@@ -264,7 +238,6 @@ const dashboard = {
             }
         } catch (error) {
             console.error('Error preparando datos para gráficos:', error);
-            // Crear datos dummy mínimos si hay error
             this.state.metrics.activityByHour = { '0:00': 0 };
             this.state.metrics.criticalByHour = { '0:00': 0 };
             this.state.metrics.eventTypes = { 'Sin datos': 1 };
@@ -277,7 +250,6 @@ const dashboard = {
      */
     async loadCriticalEvents() {
         try {
-            // Obtener eventos críticos recientes (max 5)
             const result = await getSecurityEvents({ severity: 'critical' }, 1, 5);
             
             if (result && result.events) {
@@ -296,24 +268,19 @@ const dashboard = {
      * @param {Object} metrics - Métricas de seguridad
      */
     updateCounters(metrics) {
-        // Actualizar contador de eventos
         document.getElementById('events-24h-count').textContent = metrics.events24h?.toLocaleString() || '0';
         
-        // Actualizar contador de eventos críticos y alta severidad
         const criticalAndHigh = (metrics.critical24h || 0) + (metrics.highSeverity24h || 0);
         document.getElementById('critical-high-count').textContent = criticalAndHigh.toLocaleString();
         
-        // Calcular porcentaje de críticos respecto al total
         const criticalPercent = metrics.events24h > 0 
             ? Math.round((criticalAndHigh / metrics.events24h) * 100) 
             : 0;
         
         document.getElementById('critical-percent').textContent = `${criticalPercent}%`;
         
-        // Actualizar contador de IPs bloqueadas
         document.getElementById('blocked-ips-count').textContent = metrics.blockedIPs?.toLocaleString() || '0';
         
-        // Actualizar contador de intentos de login fallidos
         document.getElementById('failed-logins-count').textContent = metrics.failedLogins?.toLocaleString() || '0';
     },
 
@@ -322,7 +289,6 @@ const dashboard = {
      * @param {Object} metrics - Métricas de seguridad
      */
     updateCharts(metrics) {
-        // Actualizar gráfico de actividad por hora
         if (this.state.charts.activity && metrics.activityByHour) {
             this.state.charts.activity.data.labels = Object.keys(metrics.activityByHour);
             this.state.charts.activity.data.datasets[0].data = Object.values(metrics.activityByHour);
@@ -339,7 +305,6 @@ const dashboard = {
                         tension: 0.2
                     });
                 } else {
-                    // Actualizar dataset existente
                     this.state.charts.activity.data.datasets[1].data = Object.values(metrics.criticalByHour);
                 }
             }
@@ -347,14 +312,12 @@ const dashboard = {
             this.state.charts.activity.update();
         }
         
-        // Actualizar gráfico de tipos de eventos
         if (this.state.charts.eventTypes && metrics.eventTypes) {
             this.state.charts.eventTypes.data.labels = Object.keys(metrics.eventTypes);
             this.state.charts.eventTypes.data.datasets[0].data = Object.values(metrics.eventTypes);
             this.state.charts.eventTypes.update();
         }
         
-        // Actualizar gráfico de resultados de login
         if (this.state.charts.loginResults && metrics.loginResults) {
             this.state.charts.loginResults.data.datasets[0].data = [
                 metrics.loginResults.success || 0,
@@ -373,11 +336,9 @@ const dashboard = {
         const tableBody = document.getElementById('critical-events-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         if (!events || events.length === 0) {
-            // Mostrar mensaje si no hay eventos
             const emptyRow = createTableRow([
                 { colspan: 5, className: 'text-center', text: 'No hay eventos críticos recientes' }
             ]);
@@ -385,7 +346,6 @@ const dashboard = {
             return;
         }
         
-        // Añadir filas de eventos
         events.forEach(event => {
             const row = createTableRow([
                 { text: event.eventType || 'UNKNOWN', className: 'text-nowrap' },
@@ -412,7 +372,6 @@ const dashboard = {
      * @param {Object} event - Evento de seguridad
      */
     handleEventClick(event) {
-        // Mostrar detalles del evento en modal
         modals.showEventDetails(event);
     },
 
@@ -421,23 +380,19 @@ const dashboard = {
      * @param {string} range - Rango de tiempo (24h, 7d, 30d)
      */
     async changeTimeRange(range) {
-        // Actualizar estado
         this.state.timeRange = range;
         
-        // Actualizar botones activos
         document.getElementById('chart-24h')?.classList.toggle('active', range === '24h');
         document.getElementById('chart-7d')?.classList.toggle('active', range === '7d');
         document.getElementById('chart-30d')?.classList.toggle('active', range === '30d');
         
         try {
-            // Actualizar datos según el rango seleccionado
             // Primero limpiar datos de actividad para que se regeneren
             if (this.state.metrics) {
                 delete this.state.metrics.activityByHour;
                 delete this.state.metrics.criticalByHour;
             }
             
-            // Mostrar loading
             this.showLoading(true);
             
             // Recargar métricas con nuevo rango
@@ -448,20 +403,15 @@ const dashboard = {
                 params.days = 30;
             }
             
-            // Obtener métricas con el nuevo rango
             const metrics = await getSecurityMetrics(params);
             
-            // Procesar métricas
             this.state.metrics = this.processMetrics(metrics);
             
-            // Preparar datos para gráficos
             await this.prepareChartData();
             
-            // Actualizar UI
             this.updateCounters(this.state.metrics);
             this.updateCharts(this.state.metrics);
             
-            // Ocultar loading
             this.showLoading(false);
         } catch (error) {
             console.error('Error cambiando rango de tiempo:', error);
@@ -489,10 +439,8 @@ const dashboard = {
             if (element) {
                 if (show) {
                     if (id === 'critical-events-table') {
-                        // Para tablas, mostrar fila de carga
                         element.innerHTML = '<tr><td colspan="5" class="text-center">Cargando datos...</td></tr>';
                     } else {
-                        // Para contadores, mostrar placeholder
                         element.innerHTML = '<span class="placeholder col-6"></span>';
                     }
                 }
@@ -523,10 +471,8 @@ const dashboard = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Detener refresco automático
         this.stopAutoRefresh();
         
-        // Limpiar event listeners
         document.getElementById('chart-24h')?.removeEventListener('click', () => this.changeTimeRange('24h'));
         document.getElementById('chart-7d')?.removeEventListener('click', () => this.changeTimeRange('7d'));
         document.getElementById('chart-30d')?.removeEventListener('click', () => this.changeTimeRange('30d'));

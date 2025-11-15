@@ -81,9 +81,7 @@ function enableImageDragging() {
   let startX, startY;
   let scrollLeft, scrollTop;
   
-  // Función para iniciar el arrastre
   const handleMouseDown = (e) => {
-    // Verificar si estamos en modo de selección
     if (imageContainer.closest('.region-selecting')) {
       return; // No activar arrastre en modo selección
     }
@@ -99,7 +97,6 @@ function enableImageDragging() {
     scrollTop = imageContainer.scrollTop;
   };
   
-  // Función para realizar el arrastre
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     
@@ -107,22 +104,18 @@ function enableImageDragging() {
     const x = e.pageX - imageContainer.offsetLeft;
     const y = e.pageY - imageContainer.offsetTop;
     
-    // Calcular la distancia movida
     const moveX = (x - startX) * -1;
     const moveY = (y - startY) * -1;
     
-    // Aplicar el desplazamiento
     imageContainer.scrollLeft = scrollLeft + moveX;
     imageContainer.scrollTop = scrollTop + moveY;
   };
   
-  // Función para finalizar el arrastre
   const handleMouseUp = () => {
     isDragging = false;
     imageContainer.classList.remove('grabbing');
   };
   
-  // Agregar los event listeners
   imageContainer.addEventListener('mousedown', handleMouseDown);
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('mouseup', handleMouseUp);
@@ -165,7 +158,6 @@ function createViewerElements() {
     </div>
   `;
   
-  // Obtener referencias
   pdfImageElement = container.querySelector('.pdf-image');
   zoomControls = container.querySelector('.pdf-viewer-zoom-controls');
   downloadButton = container.querySelector('.pdf-download');
@@ -192,12 +184,10 @@ function attachEventListeners() {
   // Descarga
   downloadButton.addEventListener('click', handleDownload);
   
-  // Manejo de gestos de zoom - CORREGIDO para usar listener pasivo
   pdfImageElement.addEventListener('wheel', handleZoomGesture, { 
     passive: false // Necesario para preventDefault en zoom
   });
   
-  // Manejo de doble clic para zoom
   pdfImageElement.addEventListener('dblclick', (e) => {
     e.preventDefault();
     if (viewerState.currentZoom > 1) {
@@ -218,18 +208,15 @@ function updateZoom(newZoom) {
   
   viewerState.currentZoom = newZoom;
   
-  // Guardar la posición relativa del scroll antes de cambiar el zoom
   const imageContainer = container.querySelector('.pdf-image-container');
   const scrollFractionX = imageContainer.scrollWidth > 0 ? 
     imageContainer.scrollLeft / imageContainer.scrollWidth : 0;
   const scrollFractionY = imageContainer.scrollHeight > 0 ? 
     imageContainer.scrollTop / imageContainer.scrollHeight : 0;
   
-  // Actualizar visualización
   pdfImageElement.style.transform = `scale(${newZoom})`;
   container.querySelector('.pdf-zoom-level').textContent = `${Math.round(newZoom * 100)}%`;
   
-  // Aplicar clase según el nivel de zoom
   imageContainer.classList.remove('zoomed-in', 'zoomed-out');
   
   if (newZoom > 1) {
@@ -239,7 +226,6 @@ function updateZoom(newZoom) {
     const imgWidth = pdfImageElement.offsetWidth;
     const imgHeight = pdfImageElement.offsetHeight;
     
-    // Crear espacio para el contenido ampliado
     pdfImageElement.style.width = `${imgWidth}px`;
     pdfImageElement.style.height = `${imgHeight}px`;
     
@@ -255,7 +241,6 @@ function updateZoom(newZoom) {
     const leftMargin = extraWidth * 0.7; // 70% del espacio extra
     const rightMargin = extraWidth * 0.7; // 70% restante para la derecha
     
-    // Aplicar márgenes para permitir scroll en todas direcciones
     pdfImageElement.style.marginLeft = `${leftMargin}px`;
     pdfImageElement.style.marginRight = `${rightMargin}px`;
     pdfImageElement.style.marginBottom = `${extraHeight}px`;
@@ -308,7 +293,6 @@ function handleDownload() {
   return;
 }
   
-  // Crear un enlace temporal para descargar
   const tempLink = document.createElement('a');
   tempLink.href = downloadUrl;
   tempLink.setAttribute('download', getPDFState('pdfInfo')?.originalName || 'documento.pdf');
@@ -319,7 +303,6 @@ function handleDownload() {
   // Simular clic
   tempLink.click();
   
-  // Limpiar
   setTimeout(() => {
     document.body.removeChild(tempLink);
   }, 100);
@@ -336,7 +319,6 @@ function handleZoomGesture(e) {
     e.preventDefault();
     e.stopPropagation();
     
-    // Determinar dirección de zoom
     const delta = e.deltaY || e.detail || e.wheelDelta;
     
     if (delta > 0) {
@@ -355,7 +337,6 @@ function handleZoomGesture(e) {
  * Esta función puede reemplazar a handleZoomGesture si se prefiere mayor control
  */
 function handleZoomGestureRobust(e) {
-  // Verificar múltiples condiciones para zoom
   const shouldZoom = e.ctrlKey || e.metaKey; // Ctrl en Windows/Linux, Cmd en Mac
   
   if (shouldZoom) {
@@ -368,7 +349,6 @@ function handleZoomGestureRobust(e) {
       return; // Salir si no podemos controlar el evento
     }
     
-    // Normalizar el delta para diferentes navegadores
     let delta = 0;
     if (e.deltaY !== undefined) {
       delta = e.deltaY;
@@ -378,7 +358,6 @@ function handleZoomGestureRobust(e) {
       delta = -e.wheelDelta; // IE/Edge/Safari
     }
     
-    // Aplicar zoom basado en la dirección
     const zoomFactor = 0.1;
     const newZoom = delta > 0 
       ? Math.max(0.5, viewerState.currentZoom - zoomFactor)
@@ -397,26 +376,20 @@ function handleZoomGestureRobust(e) {
 export function renderPDFPage(imageUrl, pageNumber) {
   if (!pdfImageElement) return;
   
-  // Guardar URL en caché
   viewerState.pageUrls[pageNumber] = imageUrl;
   
-  // Configurar imagen
   pdfImageElement.onload = () => {
-    // Calcular relación de aspecto
     const aspectRatio = pdfImageElement.naturalWidth / pdfImageElement.naturalHeight;
     container.style.setProperty('--pdf-aspect-ratio', aspectRatio);
     
-    // Cachear miniatura
     cacheThumbnail(pageNumber, imageUrl);
   };
   
   pdfImageElement.src = imageUrl;
   pdfImageElement.setAttribute('data-page', pageNumber);
   
-  // Resetear zoom
   updateZoom(1);
   
-  // Actualizar miniaturas
   updateThumbnails();
 }
 
@@ -438,7 +411,6 @@ async function updateThumbnails() {
   const thumbnailsContainer = container.querySelector('.pdf-thumbnails-container');
   thumbnailsContainer.innerHTML = '';
   
-  // Calcular cuántas miniaturas pueden caber basado en el espacio disponible
   const containerWidth = thumbnailsContainer.offsetWidth || 
                          thumbnailsContainer.clientWidth || 
                          thumbnailsContainer.getBoundingClientRect().width;
@@ -465,7 +437,6 @@ async function updateThumbnails() {
   let pagesToShow = [];
   
   if (viewMode === 'split' && totalPages >= 4) {
-    // LÓGICA ESPECIAL PARA SPLIT: Garantizar siempre 4 páginas mínimo
     
     // Estrategia: página actual + 3 páginas inteligentemente distribuidas
     pagesToShow.push(currentPage); // Siempre incluir la página actual
@@ -480,10 +451,8 @@ async function updateThumbnails() {
       pagesToShow.push(currentPage + 1);
     }
     
-    // Agregar páginas adicionales hasta llegar a maxThumbnails
     const needed = maxThumbnails - pagesToShow.length;
     
-    // Intentar agregar más páginas alrededor de la actual
     for (let i = 2; i <= needed && pagesToShow.length < maxThumbnails; i++) {
       // Página anterior más lejana
       if (currentPage - i >= 1 && !pagesToShow.includes(currentPage - i)) {
@@ -497,7 +466,6 @@ async function updateThumbnails() {
     
     // Si aún necesitamos más páginas, agregar desde el inicio o final
     if (pagesToShow.length < 4) {
-      // Agregar desde el inicio
       for (let i = 1; i <= totalPages && pagesToShow.length < 4; i++) {
         if (!pagesToShow.includes(i)) {
           pagesToShow.push(i);
@@ -515,7 +483,6 @@ async function updateThumbnails() {
     }
     
   } else {
-    // LÓGICA ORIGINAL para otros modos
     
     // Siempre incluir la primera página
     pagesToShow.push(1);
@@ -530,7 +497,6 @@ async function updateThumbnails() {
       pagesToShow.push(currentPage);
     }
     
-    // Calcular cuántas miniaturas adicionales podemos mostrar
     const remainingSlots = maxThumbnails - pagesToShow.length;
     
     if (remainingSlots > 0) {
@@ -551,7 +517,6 @@ async function updateThumbnails() {
         if (after < 0) after = 0;
       }
       
-      // Añadir páginas antes de la actual
       for (let i = 1; i <= before; i++) {
         const pageNum = currentPage - i;
         if (pageNum > 1 && !pagesToShow.includes(pageNum)) {
@@ -559,7 +524,6 @@ async function updateThumbnails() {
         }
       }
       
-      // Añadir páginas después de la actual
       for (let i = 1; i <= after; i++) {
         const pageNum = currentPage + i;
         if (pageNum < totalPages && !pagesToShow.includes(pageNum)) {
@@ -578,7 +542,6 @@ async function updateThumbnails() {
     }
   }
   
-  // Eliminar duplicados y ordenar las páginas
   pagesToShow = [...new Set(pagesToShow)].sort((a, b) => a - b);
   
   // GARANTÍA FINAL para modo split: Si no tenemos 4 páginas y hay suficientes páginas totales
@@ -600,36 +563,28 @@ async function updateThumbnails() {
     console.log(`Split mode: Mostrando ${pagesToShow.length} thumbnails para página ${currentPage}/${totalPages}:`, pagesToShow);
   }
   
-  // Crear miniaturas (resto del código igual)
   for (const pageNum of pagesToShow) {
     const thumbnailElement = document.createElement('div');
     thumbnailElement.className = `pdf-thumbnail${pageNum === currentPage ? ' active' : ''}`;
     thumbnailElement.setAttribute('data-page', pageNum);
     thumbnailElement.title = `Página ${pageNum}`;
     
-    // Crear loader temporal
     thumbnailElement.innerHTML = `
       <div class="pdf-thumbnail-loader"></div>
       <span class="pdf-thumbnail-page-num">${pageNum}</span>
     `;
     
-    // Cargar miniatura (reutilizamos las existentes o cargamos nuevas)
     const thumbnails = getPDFState('thumbnails');
     
     if (thumbnails[pageNum]) {
-      // Usar miniatura existente
       addThumbnailImage(thumbnailElement, thumbnails[pageNum]);
     } else if (viewerState.pageUrls[pageNum]) {
-      // Usar URL de página ya cargada
       addThumbnailImage(thumbnailElement, viewerState.pageUrls[pageNum]);
     } else {
-      // Cargar miniatura
       loadThumbnail(thumbnailElement, pageNum);
     }
     
-    // Agregar evento de clic
     thumbnailElement.addEventListener('click', () => {
-      // Importar dinámicamente para evitar dependencias circulares
       import('../services/pdf-state.js').then(module => {
         if (module.setCurrentPage) {
           module.setCurrentPage(pageNum);
@@ -656,7 +611,6 @@ function setupThumbnailsResponsiveness() {
   });
   
   // También necesitamos actualizar cuando cambie el modo de visualización
-  // Importar la función 'on' para escuchar eventos
   import('../services/pdf-state.js').then(module => {
     if (module.on) {
       module.on('onViewModeChanged', () => {
@@ -696,7 +650,6 @@ function addThumbnailImage(container, imageUrl) {
  */
 async function loadThumbnail(container, pageNum) {
   try {
-    // Solicitar miniatura más pequeña para ahorrar ancho de banda
     const imageUrl = await getPDFPreview({
       page: pageNum,
       width: 120,
@@ -705,7 +658,6 @@ async function loadThumbnail(container, pageNum) {
     
     addThumbnailImage(container, imageUrl);
     
-    // Cachear miniatura
     cacheThumbnail(pageNum, imageUrl);
   } catch (error) {
     console.error(`Error cargando miniatura para página ${pageNum}:`, error);

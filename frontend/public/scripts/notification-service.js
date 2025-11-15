@@ -9,7 +9,6 @@ class NotificationService {
         this.isProcessing = false;
         this.maxVisible = 3;
         
-        // Definir iconos de Boxicons
         this.icons = {
             success: '<i class="bx bx-check-circle"></i>',
             error: '<i class="bx bx-error-circle"></i>',
@@ -18,7 +17,6 @@ class NotificationService {
             loading: '<div class="spinner"></div>'
         };
         
-        // Crear el contenedor
         this.createContainer();
     }
     
@@ -55,7 +53,6 @@ class NotificationService {
     }
     
     update(id, message, type = null, duration = null) {
-        // Buscar en cola
         const queueIndex = this.queue.findIndex(n => n.id === id);
         if (queueIndex >= 0) {
             if (message) this.queue[queueIndex].message = message;
@@ -64,26 +61,20 @@ class NotificationService {
             return;
         }
         
-        // Buscar elemento activo
         const notification = document.getElementById(id);
         if (notification) {
-            // Actualizar mensaje
             if (message) {
                 const contentEl = notification.querySelector('.notification-content');
                 if (contentEl) contentEl.innerHTML = message;
             }
             
-            // Actualizar tipo
             if (type) {
                 const types = ['success', 'error', 'warning', 'info', 'loading'];
                 
-                // Quitar clases anteriores
                 types.forEach(t => notification.classList.remove(`notification-${t}`));
                 
-                // Añadir nueva clase
                 notification.classList.add(`notification-${type}`);
                 
-                // Actualizar icono
                 const iconEl = notification.querySelector('.notification-icon');
                 if (iconEl) {
                     iconEl.innerHTML = this.icons[type] || this.icons.info;
@@ -98,32 +89,26 @@ class NotificationService {
     }
     
     remove(id) {
-        // Eliminar de cola
         const queueIndex = this.queue.findIndex(n => n.id === id);
         if (queueIndex >= 0) {
             this.queue.splice(queueIndex, 1);
             return;
         }
         
-        // Eliminar elemento activo
         const notification = document.getElementById(id);
         if (notification) {
-            // Añadir clase de salida
             notification.classList.add('notification-hide');
             
-            // Eliminar del array de activos
             const activeIndex = this.activeNotifications.indexOf(id);
             if (activeIndex >= 0) {
                 this.activeNotifications.splice(activeIndex, 1);
             }
             
-            // Eliminar del DOM después de la animación
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
                 
-                // Procesar siguiente si hay espacio
                 if (this.activeNotifications.length < this.maxVisible && this.queue.length > 0) {
                     this.processQueue();
                 }
@@ -150,15 +135,12 @@ class NotificationService {
     }
     
     displayNotification(notification) {
-        // Añadir al array de activos
         this.activeNotifications.push(notification.id);
         
-        // Crear elemento
         const notificationEl = document.createElement('div');
         notificationEl.id = notification.id;
         notificationEl.className = `notification notification-${notification.type}`;
         
-        // Añadir índice para animaciones escalonadas
         notificationEl.style.setProperty('--index', this.activeNotifications.length - 1);
         
         notificationEl.innerHTML = `
@@ -167,16 +149,13 @@ class NotificationService {
             ${notification.type !== 'loading' ? '<button class="notification-close"><i class="bx bx-x"></i></button>' : ''}
         `;
         
-        // Añadir al contenedor
         this.container.appendChild(notificationEl);
         
-        // Configurar botón de cerrar
         const closeBtn = notificationEl.querySelector('.notification-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.remove(notification.id));
         }
         
-        // Mostrar con animación
         setTimeout(() => notificationEl.classList.add('notification-show'), 10);
         
         // Auto-eliminación si no es loading
@@ -202,10 +181,8 @@ class NotificationService {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    // Crear instancia global
     window.notifyService = new NotificationService();
     
-    // Reemplazar función showAlert global si existe
     if (typeof window.showAlert === 'function') {
         const originalShowAlert = window.showAlert;
         window.showAlert = function(message, type = 'info', duration = 3000) {
@@ -217,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return originalShowAlert(message, type, duration);
         };
     } else {
-        // Crear la función si no existe
         window.showAlert = function(message, type = 'info', duration = 3000) {
             return window.notifyService.add(message, type, duration);
         };

@@ -1,4 +1,3 @@
-// backend/services/security/cookieAuditService.js
 import pool from "../../lib/dbPool.js";
 import { redisService } from "../../lib/redis.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
@@ -18,12 +17,10 @@ class CookieAuditService {
    */
   async logAudit({ action, userId, ipAddress, userAgent, preferences, consentToken, geoData }) {
     try {
-      // Si no se proporcionaron datos de geolocalización, obtenerlos ahora
       if (!geoData) {
         geoData = getLocationFromIP(ipAddress);
       }
       
-      // Preparar datos para el evento
       const eventType = `COOKIE_${action.toUpperCase()}`;
       const message = this.formatMessage(action, preferences);
       const data = {
@@ -35,7 +32,6 @@ class CookieAuditService {
         geoLocation: geoData
       };
       
-      // Usar la función logSecurityEvent para registrar el evento
       // Esta función ya maneja correctamente los nombres de columnas
       await logSecurityEvent(
         eventType,
@@ -46,7 +42,6 @@ class CookieAuditService {
         ipAddress
       );
       
-      // Almacenar en Redis para consultas rápidas (30 días)
       const key = `cookie_audit:${userId || 'anonymous'}:${Date.now()}`;
       await redisService.set(key, {
         action,
@@ -91,7 +86,6 @@ class CookieAuditService {
       const { rows } = await pool.query(query, [userId, limit]);
       
       return rows.map(row => {
-        // Parsear los datos JSON
         let parsedData = {};
         try {
           parsedData = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;

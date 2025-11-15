@@ -1,4 +1,3 @@
-// backend/middlewares/termsMiddleware.js
 import { TermsService } from "../services/usuarios/termsService.js";
 
 /**
@@ -12,7 +11,6 @@ export const requireTermsAcceptance = async (req, res, next) => {
             return next();
         }
         
-        // Verificar si ha aceptado la versión actual
         const hasAccepted = await TermsService.hasAcceptedLatestTerms(req.user.id_user);
         
         if (!hasAccepted) {

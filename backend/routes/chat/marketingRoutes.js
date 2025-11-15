@@ -41,7 +41,6 @@ router.post('/notifications/mark-viewed/:section', authenticateUser, markSection
 router.post('/explain', authenticateUser, explainQueryController);
 router.post('/visualize', authenticateUser, visualizeDecisionController);
 
-// ✅ RUTAS PARA PERFILES - ORDEN CORREGIDO
 // IMPORTANTE: Las rutas específicas (como 'all') DEBEN ir ANTES que las rutas con parámetros (:id)
 router.delete('/profiles/all', authenticateUser, profileController.deleteAllProfiles);  // ⬆️ MOVIDO ARRIBA
 router.post('/profiles', authenticateUser, profileController.createProfile);
@@ -49,7 +48,6 @@ router.get('/profiles', authenticateUser, profileController.getProfiles);
 router.put('/profiles/:id', authenticateUser, profileController.updateProfile);
 router.delete('/profiles/:id', authenticateUser, profileController.deleteProfile);      // ⬇️ DESPUÉS DE 'all'
 
-// ✅ RUTAS PARA CONTENIDOS - ORDEN CORREGIDO
 router.delete('/contents/all', authenticateUser, contentController.deleteAllContents);  // ⬆️ ANTES DE :id
 router.post('/contents', authenticateUser, contentController.createContent);
 router.get('/contents', authenticateUser, contentController.getContents);
@@ -64,7 +62,6 @@ router.post('/interactions', authenticateUser, matchingController.recordInteract
 // Rutas para simulación
 router.post('/simulate', authenticateUser, simulationController.simulateCampaign);
 
-// ✅ RUTAS PARA TENDENCIAS - ORDEN CORREGIDO
 router.delete('/trends/all', authenticateUser, trendController.deleteAllTrends);        // ⬆️ ANTES DE :id
 router.get('/trends', authenticateUser, trendController.getTrends);
 router.post('/trends', authenticateUser, trendController.saveTrend);
@@ -73,7 +70,6 @@ router.delete('/trends/:id', authenticateUser, trendController.deleteTrend);    
 // Rutas para resumen
 router.get('/summary', authenticateUser, summaryController.getMarketingSummary);
 
-// ✅ RUTAS PARA GESTIÓN DE MEMORIA IA - ORDEN CORREGIDO
 router.delete('/memory/reset-all', authenticateUser, memoryController.resetAllMemory);  // ⬆️ ANTES DE :id
 router.get('/memory', authenticateUser, memoryController.getMemoryInsights);
 router.get('/memory/stats', authenticateUser, memoryController.getMemoryStats);

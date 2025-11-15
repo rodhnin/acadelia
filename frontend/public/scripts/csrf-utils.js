@@ -1,4 +1,3 @@
-// frontend/js/csrf-utils.js - REEMPLAZAR TODO
 (function() {
     'use strict';
     
@@ -90,7 +89,6 @@
             // Asegurar credentials
             options.credentials = options.credentials || 'include';
             
-            // Obtener token
             let token = getTokenFromCookie();
             
             // Si no hay token, intentar obtener uno
@@ -124,7 +122,6 @@
         isTrustedDomain // Exponer la función por si es útil
     };
     
-    // Verificar token inicial
     setTimeout(async () => {
         const token = getTokenFromCookie();
         if (!token) {

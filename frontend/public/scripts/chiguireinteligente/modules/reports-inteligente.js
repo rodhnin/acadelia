@@ -66,20 +66,16 @@ export class ReportsModule {
   async init() {
     console.log('Inicializando módulo de informes');
     
-    // Configurar event listeners
     this.setupEventListeners();
 
     await this.initAutomaticReports();
     
-    // Suscribirse a cambios de fecha
     this.eventBus.on('dateRangeChanged', (range) => {
       this.dateRange = range;
     });
     
-    // Cargar datos de informes recientes
     this.loadRecentReports();
     
-    // Cargar datos de informes programados
     this.loadScheduledReports();
     
     return true;
@@ -110,7 +106,6 @@ export class ReportsModule {
     const reportPeriodSelect = document.getElementById('report-period');
     if (reportPeriodSelect) {
       reportPeriodSelect.addEventListener('change', () => {
-        // Mostrar/ocultar selector de fecha personalizada
         const customDateContainer = document.querySelector('.custom-date-range');
         if (customDateContainer) {
           customDateContainer.style.display = reportPeriodSelect.value === 'custom' ? 'block' : 'none';
@@ -138,10 +133,8 @@ export class ReportsModule {
    * Se ejecuta cuando se activa la sección de informes
    */
   onSectionActivated() {
-    // Actualizar lista de informes recientes
     this.refreshRecentReports();
     
-    // Cargar datos necesarios para informes si no están cargados
     this.loadRequiredData();
   }
 
@@ -156,12 +149,9 @@ export class ReportsModule {
  */
 async initAutomaticReports() {
   try {
-    // Configurar event listeners para la sección de informes automáticos
     this.setupAutomaticReportsEventListeners();
     
-    // Configurar daterangepicker para el informe manual
     if (document.getElementById('manual-report-date-range')) {
-      // Verificar si jQuery y daterangepicker están disponibles
       if (typeof $ === 'function' && typeof $.fn.daterangepicker === 'function') {
         $('#manual-report-date-range').daterangepicker({
           locale: {
@@ -190,13 +180,10 @@ async initAutomaticReports() {
       }
     }
     
-    // Cargar configuración inicial de informes automáticos
     await this.loadAutomaticReportsConfig();
     
-    // Cargar informes guardados
     await this.loadSavedReports();
     
-    // Añadir un destinatario inicial en cada contenedor si están vacíos
     if (document.getElementById('recipients-container') && !document.querySelector('#recipients-container .recipient-group')) {
       this.addRecipientField();
     }
@@ -230,13 +217,11 @@ setupAutomaticReportsEventListeners() {
   const frequencySelect = document.getElementById('auto-report-frequency');
   if (frequencySelect) {
     frequencySelect.addEventListener('change', () => {
-      // Mostrar/ocultar el contenedor de cron personalizado
       const customCronContainer = document.querySelector('.custom-cron-container');
       if (customCronContainer) {
         customCronContainer.style.display = frequencySelect.value === 'custom' ? 'block' : 'none';
       }
       
-      // Actualizar la descripción
       this.updateCronDescription();
     });
   }
@@ -248,7 +233,6 @@ setupAutomaticReportsEventListeners() {
       // Primero actualizar la UI
       this.toggleAutomaticReportsFields(enabledSwitch.checked);
       
-      // AÑADIR ESTA PARTE: Guardar inmediatamente el cambio
       this.saveAutomaticReportsToggleState(enabledSwitch.checked);
     });
   }
@@ -281,7 +265,6 @@ setupAutomaticReportsEventListeners() {
   const savedReportsTable = document.getElementById('saved-reports');
   if (savedReportsTable) {
     savedReportsTable.addEventListener('click', (e) => {
-      // Verificar si se hizo clic en un botón de acción
       if (e.target.closest('.report-action')) {
         const button = e.target.closest('.report-action');
         const reportId = button.getAttribute('data-id');
@@ -318,11 +301,9 @@ async loadAutomaticReportsConfig() {
       // Asegurarse de que la configuración tenga un valor de enabled
       const config = response.data || {};
       
-      // Log para diagnóstico
       console.log('Configuración de informes automáticos cargada:', config);
       console.log('Estado de habilitación:', config.enabled);
       
-      // Aplicar la configuración al formulario
       this.populateAutomaticReportsForm(config);
     } else {
       console.warn('No se pudo obtener la configuración de informes automáticos');
@@ -347,53 +328,43 @@ async loadAutomaticReportsConfig() {
  * @param {Object} config - Configuración actual
  */
 populateAutomaticReportsForm(config = {}) {
-  // Aplicar estado de activación
   const enabledSwitch = document.getElementById('auto-report-enabled');
   if (enabledSwitch) {
     // Asegurarse de que enabled sea tratado como un booleano
     const isEnabled = config.enabled === true;
     console.log('Estableciendo estado del switch:', isEnabled);
     
-    // Establecer el estado del switch
     enabledSwitch.checked = isEnabled;
     
-    // Actualizar campos según estado
     this.toggleAutomaticReportsFields(isEnabled);
   }
   
-  // Establecer título con valor por defecto
   const titleInput = document.getElementById('auto-report-title');
   if (titleInput) {
     titleInput.value = config.title || 'Informe Integral Automático';
   }
   
-  // Configurar frecuencia basada en la expresión cron
   const frequencySelect = document.getElementById('auto-report-frequency');
   if (frequencySelect && config.cronExpression) {
-    // Intentar detectar la frecuencia basada en la expresión cron
     const frequency = this.detectFrequencyFromCron(config.cronExpression);
     if (frequency) {
       frequencySelect.value = frequency;
     }
   }
   
-  // Limpiar destinatarios existentes
   const recipientsContainer = document.getElementById('recipients-container');
   if (recipientsContainer) {
     recipientsContainer.innerHTML = '';
   }
   
-  // Añadir destinatarios
   if (Array.isArray(config.recipients) && config.recipients.length > 0) {
     config.recipients.forEach(email => {
       this.addRecipientField(email);
     });
   } else {
-    // Añadir un campo vacío si no hay destinatarios
     this.addRecipientField();
   }
   
-  // Actualizar descripción de la expresión cron
   this.updateCronDescription();
 }
 
@@ -411,14 +382,12 @@ detectFrequencyFromCron(cronExpression) {
     'quarterly': '0 3 1 1,4,7,10 *' // Primer día de cada trimestre a las 3 AM
   };
   
-  // Buscar coincidencia
   for (const [frequency, pattern] of Object.entries(cronPatterns)) {
     if (cronExpression === pattern) {
       return frequency;
     }
   }
   
-  // Si no se encuentra coincidencia, devolver 'custom'
   return 'custom';
 }
 
@@ -458,7 +427,6 @@ async saveAutomaticReportsToggleState(enabled) {
   try {
     this.ui.showLoading('Guardando configuración...');
     
-    // Obtener la configuración actual primero para mantener los otros valores
     let config = {
       enabled: enabled,
       cronExpression: '0 3 1 * *',  // Valor por defecto
@@ -467,7 +435,6 @@ async saveAutomaticReportsToggleState(enabled) {
     };
     
     try {
-      // Intentar obtener la configuración actual
       const currentConfig = await this.api.getAutomaticReportsConfig();
       
       if (currentConfig && currentConfig.success && currentConfig.data) {
@@ -483,7 +450,6 @@ async saveAutomaticReportsToggleState(enabled) {
     
     console.log('Enviando configuración:', config);
     
-    // Enviar la configuración al backend
     const response = await this.api.configureAutomaticReports(config);
     
     this.ui.hideLoading();
@@ -530,7 +496,6 @@ addRecipientField(email = '') {
     </button>
   `;
   
-  // Añadir event listener para el botón de eliminar
   div.querySelector('.remove-recipient-btn').addEventListener('click', () => {
     div.remove();
   });
@@ -575,10 +540,8 @@ updateCronDescription() {
       break;
   }
   
-  // Actualizar descripción visible
   descriptionEl.textContent = description;
   
-  // Actualizar campo oculto con la expresión cron
   const cronExpressionInput = document.getElementById('cron-expression-input');
   if (cronExpressionInput) {
     cronExpressionInput.value = cronExpression;
@@ -592,7 +555,6 @@ async saveAutomaticReportsConfig() {
   try {
     this.ui.showLoading('Guardando configuración...');
     
-    // Obtener estado de habilitado
     const enabled = document.getElementById('auto-report-enabled')?.checked || false;
     
     // Si está deshabilitado, solo enviar eso
@@ -610,10 +572,8 @@ async saveAutomaticReportsConfig() {
       return;
     }
     
-    // Obtener título
     const title = document.getElementById('auto-report-title')?.value || 'Informe Integral Automático';
     
-    // Obtener expresión cron
     const cronExpression = document.getElementById('cron-expression-input')?.value || '0 3 1 * *';
     
     // Recopilar destinatarios
@@ -622,14 +582,12 @@ async saveAutomaticReportsConfig() {
       .map(input => input.value.trim())
       .filter(email => email !== '');
     
-    // Validar que al menos haya un destinatario
     if (recipients.length === 0) {
       this.ui.hideLoading();
       this.ui.showErrorMessage('Error', 'Debe proporcionar al menos un destinatario de correo');
       return;
     }
     
-    // Enviar configuración al backend
     const config = {
       enabled,
       cronExpression,
@@ -680,7 +638,6 @@ addManualRecipientField(email = '') {
     </button>
   `;
   
-  // Añadir event listener para el botón de eliminar
   div.querySelector('.remove-recipient-btn').addEventListener('click', () => {
     div.remove();
   });
@@ -719,7 +676,6 @@ updateSavedReportsTable(reports) {
   const table = document.getElementById('saved-reports');
   if (!table) return;
   
-  // Limpiar tabla
   table.innerHTML = '';
   
   // Si no hay informes, mostrar mensaje
@@ -732,9 +688,7 @@ updateSavedReportsTable(reports) {
     return;
   }
   
-  // Renderizar cada informe
   reports.forEach(report => {
-    // Formatear fecha de creación
     const createdDate = new Date(report.created_at);
     const formattedDate = createdDate.toLocaleDateString('es-ES', { 
       day: '2-digit', 
@@ -744,7 +698,6 @@ updateSavedReportsTable(reports) {
       minute: '2-digit'
     });
     
-    // Crear fila
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${report.id}</td>
@@ -774,13 +727,11 @@ async openReportInDrive(reportId) {
   try {
     this.ui.showLoading('Obteniendo enlace del informe...');
     
-    // Obtener los detalles del informe para conseguir la URL de Drive
     const response = await this.api.get(`/admin/finance/reports/${reportId}`);
     
     this.ui.hideLoading();
     
     if (response && response.success && response.data && response.data.drive_url) {
-      // Abrir la URL de Drive en una nueva pestaña
       window.open(response.data.drive_url, '_blank');
     } else {
       this.ui.showErrorMessage('Error', 'No se pudo obtener el enlace del informe');
@@ -801,7 +752,6 @@ async deleteReport(reportId) {
   try {
     console.log(`Iniciando proceso de eliminación para informe ID: ${reportId}`);
     
-    // Buscar la fila correspondiente para obtener el nombre del informe
     const reportRow = document.querySelector(`#saved-reports .report-action[data-action="delete"][data-id="${reportId}"]`).closest('tr');
     if (!reportRow) {
       console.error(`No se encontró la fila para el informe ID: ${reportId}`);
@@ -812,7 +762,6 @@ async deleteReport(reportId) {
     const reportName = reportRow.querySelector('td:nth-child(2)').textContent;
     console.log(`Informe a eliminar: "${reportName}" (ID: ${reportId})`);
     
-    // Comprobar si existe el modal
     const modalElement = document.getElementById('deleteReportModal');
     if (!modalElement) {
       console.warn('Modal de eliminación no encontrado, usando confirm() nativo');
@@ -826,31 +775,26 @@ async deleteReport(reportId) {
     document.getElementById('delete-report-name').textContent = reportName;
     document.getElementById('delete-report-id').textContent = `ID: ${reportId}`;
     
-    // Configurar el botón de confirmación
     const confirmBtn = document.getElementById('confirm-delete-report');
     if (!confirmBtn) {
       console.error('Botón de confirmación no encontrado en el modal');
       return;
     }
     
-    // Eliminar listeners anteriores
     const newBtn = confirmBtn.cloneNode(true);
     confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
     
-    // Agregar nuevo listener
     newBtn.addEventListener('click', () => {
       console.log(`Botón de confirmación clickeado para informe ID: ${reportId}`);
       this.confirmDeleteReport(reportId);
     });
     
-    // Mostrar el modal
     try {
       const bootstrapModal = new bootstrap.Modal(modalElement);
       console.log('Mostrando modal de confirmación');
       bootstrapModal.show();
     } catch (modalError) {
       console.error('Error al mostrar el modal:', modalError);
-      // Fallback a confirm nativo
       if (confirm(`¿Estás seguro de que deseas eliminar el informe "${reportName}"?`)) {
         await this.confirmDeleteReport(reportId);
       }
@@ -867,23 +811,18 @@ async deleteReport(reportId) {
  * @param {string} reportName - Nombre del informe a eliminar
  */
 showDeleteReportModal(reportId, reportName) {
-  // Establecer datos en el modal
   document.getElementById('delete-report-name').textContent = reportName;
   document.getElementById('delete-report-id').textContent = `ID: ${reportId}`;
   
-  // Configurar el botón de confirmación
   const confirmBtn = document.getElementById('confirm-delete-report');
   
-  // Remover listeners anteriores para evitar duplicados
   const newBtn = confirmBtn.cloneNode(true);
   confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
   
-  // Agregar nuevo listener
   newBtn.addEventListener('click', () => {
     this.confirmDeleteReport(reportId);
   });
   
-  // Mostrar el modal
   const deleteModal = new bootstrap.Modal(document.getElementById('deleteReportModal'));
   deleteModal.show();
 }
@@ -896,7 +835,6 @@ async confirmDeleteReport(reportId) {
   try {
     console.log(`Confirmada eliminación para informe ID: ${reportId}`);
     
-    // Cerrar modal si existe
     try {
       const modalElement = document.getElementById('deleteReportModal');
       if (modalElement) {
@@ -910,10 +848,8 @@ async confirmDeleteReport(reportId) {
       // Continuamos con la eliminación aunque no se pueda cerrar el modal
     }
     
-    // Mostrar indicador de carga
     this.ui.showLoading('Eliminando informe...');
     
-    // Verificar que la API tenga el método deleteReport
     if (typeof this.api.deleteReport !== 'function') {
       console.error('Método api.deleteReport no está definido');
       this.ui.hideLoading();
@@ -921,12 +857,10 @@ async confirmDeleteReport(reportId) {
       return;
     }
     
-    // Llamar a la API para eliminar
     console.log('Llamando a API para eliminar informe');
     const response = await this.api.deleteReport(reportId);
     console.log('Respuesta de API:', response);
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
     if (response && response.success) {
@@ -948,21 +882,18 @@ async confirmDeleteReport(reportId) {
  */
 async generateManualReport() {
   try {
-    // Obtener rango de fechas
     const dateRangeInput = document.getElementById('manual-report-date-range');
     if (!dateRangeInput || !dateRangeInput.value) {
       this.ui.showErrorMessage('Error', 'Debe seleccionar un rango de fechas');
       return;
     }
     
-    // Parsear rango de fechas (formato: DD/MM/YYYY - DD/MM/YYYY)
     const [startStr, endStr] = dateRangeInput.value.split(' - ');
     if (!startStr || !endStr) {
       this.ui.showErrorMessage('Error', 'Formato de rango de fechas inválido');
       return;
     }
     
-    // Convertir a objetos Date
     const startParts = startStr.split('/');
     const endParts = endStr.split('/');
     
@@ -971,18 +902,15 @@ async generateManualReport() {
       return;
     }
     
-    // Crear objetos Date (formato: YYYY-MM-DD)
     const startDate = new Date(startParts[2], startParts[1] - 1, startParts[0]);
     const endDate = new Date(endParts[2], endParts[1] - 1, endParts[0]);
     endDate.setHours(23, 59, 59, 999); // Fin del día
     
-    // Validar fechas
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       this.ui.showErrorMessage('Error', 'Fechas inválidas');
       return;
     }
     
-    // Obtener título personalizado
     const titleInput = document.getElementById('manual-report-title');
     const title = titleInput?.value || `Informe Integral - ${startStr} a ${endStr}`;
     
@@ -992,7 +920,6 @@ async generateManualReport() {
       .map(input => input.value.trim())
       .filter(email => email !== '');
     
-    // Configurar parámetros
     const params = {
       date_from: startDate.toISOString(),
       date_to: endDate.toISOString(),
@@ -1002,7 +929,6 @@ async generateManualReport() {
     
     this.ui.showLoading('Generando informe integral...');
     
-    // Enviar solicitud
     const response = await this.api.generateIntegralReport(params);
     
     this.ui.hideLoading();
@@ -1010,9 +936,7 @@ async generateManualReport() {
     if (response && response.success) {
       this.ui.showSuccessMessage('Informe generado correctamente');
       
-      // Comprobar si la respuesta contiene la URL de Drive
       if (response.data && response.data.drive_url) {
-        // Crear una modal personalizada con mejor estilo
         this.showDriveConfirmModal(response.data.drive_url, title);
       } else {
         console.warn('No se encontró URL de Google Drive en la respuesta:', response);
@@ -1036,7 +960,6 @@ async generateManualReport() {
  * @param {string} reportTitle - Título del informe
  */
 showDriveConfirmModal(driveUrl, reportTitle) {
-  // Crear o reutilizar el contenedor de la modal
   let modalContainer = document.getElementById('drive-confirm-modal');
   
   if (!modalContainer) {
@@ -1071,16 +994,13 @@ showDriveConfirmModal(driveUrl, reportTitle) {
     </div>
   `;
   
-  // Mostrar la modal con animación
   setTimeout(() => {
     modalContainer.classList.add('active');
   }, 10);
   
-  // Configurar botones
   const cancelBtn = document.getElementById('drive-cancel-btn');
   const openBtn = document.getElementById('drive-open-btn');
   
-  // Cerrar modal
   cancelBtn.addEventListener('click', () => {
     modalContainer.classList.remove('active');
     setTimeout(() => {
@@ -1088,11 +1008,9 @@ showDriveConfirmModal(driveUrl, reportTitle) {
     }, 300);
   });
   
-  // Abrir en Google Drive
   openBtn.addEventListener('click', () => {
     modalContainer.classList.remove('active');
     
-    // Abrir URL en una nueva pestaña
     if (driveUrl) {
       window.open(driveUrl, '_blank');
     }
@@ -1108,10 +1026,8 @@ showDriveConfirmModal(driveUrl, reportTitle) {
  */
 async loadRequiredData() {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Cargando datos para informes...');
     
-    // Cargar datos en paralelo
     const dataPromises = [
       // Solo cargar si no tenemos datos
       this.transactions.length === 0 ? this.api.getTransactions() : Promise.resolve(this.transactions),
@@ -1121,10 +1037,8 @@ async loadRequiredData() {
       this.expenses.length === 0 ? this.api.getExpenses() : Promise.resolve(this.expenses)
     ];
     
-    // Esperar a que se completen todas las peticiones
     const [transactionsData, subscriptionsData, usersData, expensesData] = await Promise.all(dataPromises);
     
-    // Procesar datos de transacciones
     if (Array.isArray(transactionsData)) {
       this.transactions = transactionsData;
     } else if (transactionsData && transactionsData.data) {
@@ -1133,7 +1047,6 @@ async loadRequiredData() {
       this.transactions = transactionsData.data;
     }
     
-    // Procesar datos de suscripciones
     if (Array.isArray(subscriptionsData)) {
       this.subscriptions = subscriptionsData;
     } else if (subscriptionsData && subscriptionsData.data) {
@@ -1142,7 +1055,6 @@ async loadRequiredData() {
       this.subscriptions = subscriptionsData.data;
     }
     
-    // Procesar datos de usuarios
     if (Array.isArray(usersData)) {
       this.users = usersData;
     } else if (usersData && usersData.data) {
@@ -1151,7 +1063,6 @@ async loadRequiredData() {
       this.users = usersData.data;
     }
     
-    // Procesar datos de egresos - siguiendo el modelo de expenses-inteligente.js
     if (expensesData && expensesData.success && expensesData.data) {
       this.expenses = expensesData.data;
     } else if (Array.isArray(expensesData)) {
@@ -1165,7 +1076,6 @@ async loadRequiredData() {
       }
     }
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
     console.log('Datos cargados exitosamente:', {
@@ -1177,7 +1087,6 @@ async loadRequiredData() {
     
     return true;
   } catch (error) {
-    // Ocultar indicador de carga en caso de error
     this.ui.hideLoading();
     
     console.error('Error al cargar datos para informes:', error);
@@ -1241,11 +1150,9 @@ async loadRequiredData() {
           }
         ];
         
-        // Guardar en localStorage
         localStorage.setItem('recentReports', JSON.stringify(this.recentReports));
       }
       
-      // Actualizar UI
       this.updateRecentReportsUI();
       
       return true;
@@ -1301,7 +1208,6 @@ async loadRequiredData() {
           }
         ];
         
-        // Guardar en localStorage
         localStorage.setItem('scheduledReports', JSON.stringify(this.scheduledReports));
       }
       
@@ -1319,7 +1225,6 @@ async loadRequiredData() {
     const recentReportsTable = document.getElementById('recent-reports');
     if (!recentReportsTable) return;
     
-    // Limpiar tabla
     recentReportsTable.innerHTML = '';
     
     // Si no hay informes recientes
@@ -1332,7 +1237,6 @@ async loadRequiredData() {
       return;
     }
     
-    // Renderizar informes recientes
     this.recentReports.forEach(report => {
       const row = document.createElement('tr');
       row.innerHTML = `
@@ -1355,7 +1259,6 @@ async loadRequiredData() {
       recentReportsTable.appendChild(row);
     });
     
-    // Configurar botones de acción
     this.setupReportActionButtons();
   }
   
@@ -1422,7 +1325,6 @@ async loadRequiredData() {
     }
     
     // En una implementación real, aquí habría una llamada a la API
-    // para descargar el informe guardado
     
     // Por ahora, simular descarga regenerando el informe
     this.generateReportById(reportId);
@@ -1441,7 +1343,6 @@ async loadRequiredData() {
       return;
     }
     
-    // Configurar opciones según el informe guardado
     const options = {
       type: report.type,
       period: report.period,
@@ -1449,7 +1350,6 @@ async loadRequiredData() {
       title: report.title
     };
     
-    // Generar informe
     this.generateReportWithOptions(options);
   }
   
@@ -1469,7 +1369,6 @@ checkPDFCapabilities() {
   
   console.log('Capacidades de exportación a PDF:', capabilities);
   
-  // Verificar si hay problemas potenciales
   if (!capabilities.pdfMakeAvailable) {
     console.warn('ADVERTENCIA: La biblioteca pdfMake no está disponible. La exportación a PDF puede fallar.');
   }
@@ -1492,12 +1391,10 @@ checkPDFCapabilities() {
  * Genera un informe y verifica capacidades de PDF si es necesario
  */
 generateReport() {
-  // Obtener datos del formulario
   const reportType = document.getElementById('report-type').value;
   const reportPeriod = document.getElementById('report-period').value;
   const reportFormat = document.getElementById('report-format').value;
   
-  // Validar datos
   if (!reportType || !reportPeriod || !reportFormat) {
     this.ui.showErrorMessage('Error', 'Por favor, completa todos los campos obligatorios');
     return;
@@ -1510,7 +1407,6 @@ generateReport() {
     // Si faltan capacidades esenciales, mostrar mensaje y usar Excel como alternativa
     if (!pdfCapabilities.pdfMakeAvailable || !pdfCapabilities.exportDataMethodAvailable) {
       this.ui.showInfoMessage('La exportación a PDF requiere componentes adicionales que no están disponibles. Usando Excel como alternativa.');
-      // Cambiar formato a Excel
       const formatSelect = document.getElementById('report-format');
       if (formatSelect) {
         formatSelect.value = 'excel';
@@ -1518,7 +1414,6 @@ generateReport() {
     }
   }
   
-  // Determinar período
   let periodStart, periodEnd, periodLabel;
   
   if (reportPeriod === 'custom') {
@@ -1529,20 +1424,17 @@ generateReport() {
       return;
     }
     
-    // Parsear rango
     const [start, end] = reportDateRange.split(' - ');
     periodStart = this.parseDate(start);
     periodEnd = this.parseDate(end);
     periodLabel = `${start} - ${end}`;
   } else {
-    // Usar período predefinido
     const periodDates = this.getPredefinedPeriodDates(reportPeriod);
     periodStart = periodDates.start;
     periodEnd = periodDates.end;
     periodLabel = periodDates.label;
   }
   
-  // Configurar opciones
   const options = {
     type: reportType,
     period: periodLabel,
@@ -1555,7 +1447,6 @@ generateReport() {
   
   console.log('Opciones de generación de informe:', options);
   
-  // Generar informe
   this.generateReportWithOptions(options);
 }
   
@@ -1578,7 +1469,6 @@ getPredefinedPeriodDates(period) {
   const today = new Date();
   let start, end, label;
   
-  // Para diagnóstico
   console.log('Generando fechas para período:', period);
   
   try {
@@ -1686,7 +1576,6 @@ generateReportWithOptions(options) {
   // Simular carga
   setTimeout(() => {
     try {
-      // Generar informe según tipo
       switch (options.type) {
         case 'revenue':
           this.generateRevenueReport(options);
@@ -1714,7 +1603,6 @@ generateReportWithOptions(options) {
           return;
       }
       
-      // Añadir a informes recientes
       const reportId = 'report_' + Date.now();
       const reportTitle = this.getReportTitle(options);
       
@@ -1728,7 +1616,6 @@ generateReportWithOptions(options) {
         url: '#'
       };
       
-      // Añadir al inicio de la lista
       this.recentReports.unshift(newReport);
       
       // Limitar a 10 informes recientes
@@ -1736,10 +1623,8 @@ generateReportWithOptions(options) {
         this.recentReports = this.recentReports.slice(0, 10);
       }
       
-      // Guardar en localStorage
       localStorage.setItem('recentReports', JSON.stringify(this.recentReports));
       
-      // Actualizar UI
       this.updateRecentReportsUI();
 
     } catch (error) {
@@ -1755,10 +1640,8 @@ generateReportWithOptions(options) {
  */
 async generateExpensesReport(options) {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Generando informe de egresos...');
 
-    // Obtener todos los egresos
     let expenses = [];
     
     try {
@@ -1798,7 +1681,6 @@ async generateExpensesReport(options) {
       return;
     }
     
-    // VERSIÓN MEJORADA: Filtrar egresos por período si es necesario
     let filteredExpenses = expenses;
     
     if (options.dateRange) {
@@ -1829,7 +1711,6 @@ async generateExpensesReport(options) {
         endValid: endDate ? !isNaN(endDate.getTime()) : false
       });
       
-      // Verificar que las fechas sean válidas antes de filtrar
       if (startDate && endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
         filteredExpenses = expenses.filter(expense => {
           if (!expense.date) {
@@ -1837,21 +1718,16 @@ async generateExpensesReport(options) {
             return false; // Excluir egresos sin fecha
           }
           
-          // Crear una nueva fecha a partir del string para evitar problemas de zona horaria
           const expenseDate = new Date(expense.date);
-          // Normalizar a medianoche para comparar solo fechas
           expenseDate.setHours(12, 0, 0, 0);
           
-          // Verificar si la fecha es válida
           if (isNaN(expenseDate.getTime())) {
             console.log('Fecha de egreso inválida:', expense.date, expense);
             return false;
           }
           
-          // Verificar si está en el rango
           const isInRange = expenseDate >= startDate && expenseDate <= endDate;
           
-          // Para diagnóstico, mostrar algunos ejemplos de fechas
           if (!isInRange && filteredExpenses.length < 3) {
             console.log('Egreso fuera de rango:', {
               expenseDate: expenseDate.toISOString(),
@@ -1888,7 +1764,6 @@ async generateExpensesReport(options) {
       return;
     }
     
-    // Obtener categorías para tener información completa
     let categories = [];
     try {
       const categoriesResponse = await this.api.getExpenseCategories();
@@ -1906,10 +1781,8 @@ async generateExpensesReport(options) {
     // Enriquecer datos de egresos con información completa
     const enrichedExpenses = this.enrichExpensesWithCategories(filteredExpenses, categories);
     
-    // Calcular resumen de egresos
     const expensesSummary = this.calculateExpensesSummary(enrichedExpenses);
     
-    // Crear estructura del informe
     const reportData = {
       title: options.title || this.getReportTitle(options) || 'Informe de Egresos',
       period: options.period || this.formatDateRange(options.dateRange),
@@ -1919,11 +1792,9 @@ async generateExpensesReport(options) {
       dateRange: options.dateRange
     };
     
-    // Exportar según formato seleccionado
     this.ui.hideLoading();
     await this.exportReport(reportData, options);
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage(`Informe de egresos generado correctamente en formato ${options.format.toUpperCase()}`);
   } catch (error) {
     this.ui.hideLoading();
@@ -1945,10 +1816,8 @@ enrichExpensesWithCategories(expenses, categories) {
       return { ...expense };
     }
     
-    // Buscar la categoría por ID
     const category = categories.find(cat => cat.id == expense.category_id);
     
-    // Añadir nombre de categoría si se encuentra
     if (category) {
       return {
         ...expense,
@@ -1956,7 +1825,6 @@ enrichExpensesWithCategories(expenses, categories) {
       };
     }
     
-    // Si no se encuentra, dejar un placeholder
     return {
       ...expense,
       category_name: 'Sin categoría'
@@ -1971,12 +1839,10 @@ enrichExpensesWithCategories(expenses, categories) {
  * @returns {Object} Resumen de estadísticas
  */
 calculateExpensesSummary(expenses) {
-  // Calcular totales
   const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
   const totalTax = expenses.reduce((sum, expense) => sum + parseFloat(expense.tax_amount || 0), 0);
   const totalWithTax = total + totalTax;
   
-  // Filtrar egresos deducibles
   const deductibleExpenses = expenses.filter(expense => expense.is_tax_deductible);
   const deductibleTotal = deductibleExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
   const deductibleTax = deductibleExpenses.reduce((sum, expense) => sum + parseFloat(expense.tax_amount || 0), 0);
@@ -2057,7 +1923,6 @@ calculateExpensesSummary(expenses) {
     }
   });
   
-  // Convertir a arrays ordenados
   const categoriesArray = Object.values(categoryTotals)
     .sort((a, b) => b.total - a.total)
     .map(cat => ({
@@ -2075,11 +1940,9 @@ calculateExpensesSummary(expenses) {
   const monthsArray = Object.values(monthlyDistribution)
     .sort((a, b) => a.key.localeCompare(b.key));
   
-  // Calcular el promedio mensual si hay datos
   const monthCount = monthsArray.length;
   const monthlyAverage = monthCount > 0 ? total / monthCount : 0;
   
-  // Calcular porcentaje deducible
   const deductiblePercentage = total > 0 ? (deductibleTotal / total) * 100 : 0;
   
   return {
@@ -2114,20 +1977,17 @@ calculateExpensesSummary(expenses) {
  */
 exportExpensesReportWithManager(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación en formato optimizado
     const dataToExport = this.prepareExpensesDataForExport(reportData);
     
     // Columnas que deben tener totales
     const columnsWithTotals = ['Importe', 'IVA', 'Total'];
     
-    // Configurar formatos específicos para columnas
     const currencyFormats = {
       'Importe': '€#,##0.00',
       'IVA': '€#,##0.00',
       'Total': '€#,##0.00'
     };
     
-    // Calcular totales para deducibles - Usar Importe (no Total) para gastos deducibles
     const deductibleItems = dataToExport.filter(item => item.Deducible === 'Sí');
     const totalDeductibleIVA = deductibleItems.reduce((sum, item) => sum + item.IVA, 0);
     const totalDeductibleGasto = deductibleItems.reduce((sum, item) => sum + item.Importe, 0);
@@ -2136,7 +1996,6 @@ exportExpensesReportWithManager(reportData, fileName, options) {
     const totalDeducible = totalDeductibleIVA + totalDeductibleGasto;
     
     // MEJORA: Preparar datos de análisis para el informe
-    // Preparar datos de top 5 categorías
     const topCategories = {};
     reportData.summary.categoryDistribution.slice(0, 5).forEach(category => {
       topCategories[category.name] = {
@@ -2147,7 +2006,6 @@ exportExpensesReportWithManager(reportData, fileName, options) {
       };
     });
     
-    // Preparar datos de métodos de pago
     const paymentMethods = {};
     reportData.summary.paymentMethodDistribution.forEach(method => {
       paymentMethods[method.method] = {
@@ -2157,7 +2015,6 @@ exportExpensesReportWithManager(reportData, fileName, options) {
       };
     });
     
-    // Configurar opciones avanzadas para exportManager
     const exportOptions = {
       fileName,
       format: options.format || 'excel',
@@ -2172,7 +2029,6 @@ exportExpensesReportWithManager(reportData, fileName, options) {
       columnsWithTotals,
       currencyFormats,
       
-      // Añadir información de periodo
       period: reportData.period,
       
       // Opciones para deducibles
@@ -2197,7 +2053,6 @@ exportExpensesReportWithManager(reportData, fileName, options) {
       }
     };
     
-    // Exportar usando exportManager
     exportManager.exportData(dataToExport, exportOptions);
   } catch (error) {
     console.error('Error al exportar informe de egresos:', error);
@@ -2215,7 +2070,6 @@ prepareExpensesDataForExport(reportData) {
     return [];
   }
   
-  // Mapear egresos a formato optimizado para Excel
   return reportData.expenses.map(expense => {
     const total = parseFloat(expense.amount || 0) + parseFloat(expense.tax_amount || 0);
     
@@ -2253,7 +2107,6 @@ prepareExpensesDataForExport(reportData) {
  * @param {Object} options - Opciones del informe
  */
 generateRevenueReport(options) {
-  // Filtrar transacciones por período
   let filteredTransactions = this.transactions;
   
   if (options.dateRange) {
@@ -2263,16 +2116,13 @@ generateRevenueReport(options) {
     });
   }
   
-  // Calcular resumen de ingresos
   const revenueSummary = this.calculateRevenueSummary(filteredTransactions);
   
-  // Crear estructura del informe
   const reportData = {
     title: this.getReportTitle(options),
     period: options.period,
     generatedAt: new Date().toISOString(),
     summary: revenueSummary,
-    // Mapear los campos exactos de la base de datos sin transformaciones
     transactions: filteredTransactions.map(t => ({
       id: t.transaction_id,
       transaction_id: t.transaction_id,
@@ -2309,7 +2159,6 @@ generateRevenueReport(options) {
     }))
   };
   
-  // Exportar según formato seleccionado
   this.exportReport(reportData, options);
 }
   
@@ -2321,15 +2170,12 @@ generateRevenueReport(options) {
 calculateRevenueSummary(transactions) {
   // Total de ingresos (usar earnings_eur directamente)
   const totalRevenue = transactions.reduce((sum, t) => {
-    // Priorizar earnings_eur
     if (t.earnings_eur !== undefined && t.earnings_eur !== null) {
       return sum + this.normalizeAmount(t.earnings_eur);
     }
-    // Fallback a amount_eur
     else if (t.amount_eur !== undefined && t.amount_eur !== null) {
       return sum + this.normalizeAmount(t.amount_eur);
     }
-    // Calcular manualmente usando earnings con tasa de cambio
     else if (t.earnings && t.currency_code !== 'EUR' && t.exchange_rate) {
       return sum + (this.normalizeAmount(t.earnings) * t.exchange_rate);
     }
@@ -2356,7 +2202,6 @@ calculateRevenueSummary(transactions) {
     const productId = t.product_id;
     
     // CORRECCIÓN: Mejorada la lógica para obtener el nombre del producto
-    // Verificar todos los posibles campos que pueden contener el nombre
     const productName = 
       (t.product_name && t.product_name.trim()) || 
       (t.carrera_nombre && t.carrera_nombre.trim()) || 
@@ -2464,7 +2309,6 @@ calculateRevenueSummary(transactions) {
  */
 generateTaxReport(options) {
   try {
-    // Filtrar transacciones por período
     let filteredTransactions = this.transactions;
     
     if (options.dateRange) {
@@ -2474,26 +2318,21 @@ generateTaxReport(options) {
       });
     }
     
-    // Verificar si hay datos para procesar
     if (!filteredTransactions || filteredTransactions.length === 0) {
       this.ui.showErrorMessage('Error', 'No hay datos de transacciones para el período seleccionado');
       return;
     }
     
-    // Calcular resumen de impuestos
     const taxSummary = this.calculateTaxSummary(filteredTransactions);
     
-    // Crear estructura del informe
     const reportData = {
       title: this.getReportTitle(options),
       period: options.period,
       generatedAt: new Date().toISOString(),
       summary: taxSummary,
-      // Añadir el desglose de impuestos por país para exportar
       taxBreakdown: this.calculateTaxBreakdown(filteredTransactions)
     };
     
-    // Exportar según formato seleccionado
     this.exportReport(reportData, options);
   } catch (error) {
     console.error('Error al generar informe de impuestos:', error);
@@ -2507,17 +2346,13 @@ generateTaxReport(options) {
  * @returns {Object} Resumen de impuestos
  */
 calculateTaxSummary(transactions) {
-  // Usar los campos directamente disponibles en la base de datos
   
-  // Inicializar totales
   let totalAmount = 0;
   let totalTax = 0;
   let spainTax = 0;
   let otherTax = 0;
   
-  // Procesar transacciones usando amount_eur y tax_amount_eur
   transactions.forEach(transaction => {
-    // Usar directamente amount_eur y tax_amount_eur de la base de datos
     const amount = this.normalizeAmount(transaction.amount_eur || 0);
     const taxAmount = this.normalizeAmount(transaction.tax_amount_eur || 0);
     
@@ -2532,7 +2367,6 @@ calculateTaxSummary(transactions) {
     }
   });
 
-  // Calcular porcentajes
   const spainTaxPercentage = totalTax > 0 ? (spainTax / totalTax) * 100 : 0;
   const otherTaxPercentage = totalTax > 0 ? (otherTax / totalTax) * 100 : 0;
   
@@ -2560,7 +2394,6 @@ calculateTaxBreakdown(transactions) {
   // Países que queremos destacar (primero en la lista)
   const importantCountries = ['ES', 'MX', 'CO', 'AR', 'CL', 'PE', 'US', 'DE', 'FR', 'GB', 'IT'];
   
-  // Procesar transacciones
   transactions.forEach(transaction => {
     const countryCode = transaction.country_code || 'UNKNOWN';
     const amount = this.normalizeAmount(transaction.amount_eur || 0);
@@ -2575,7 +2408,6 @@ calculateTaxBreakdown(transactions) {
     const taxAmountOriginal = currency !== 'EUR' ? 
       this.normalizeAmount(transaction.tax_amount || 0) : taxAmount;
     
-    // Inicializar país si no existe
     if (!countryData[countryCode]) {
       countryData[countryCode] = {
         code: countryCode,
@@ -2600,23 +2432,19 @@ calculateTaxBreakdown(transactions) {
       }
     }
     
-    // Actualizar acumulados
     countryData[countryCode].total += taxAmount;
     countryData[countryCode].taxBase += (amount - taxAmount);
     countryData[countryCode].total_original += taxAmountOriginal;
     countryData[countryCode].taxBase_original += (amountOriginal - taxAmountOriginal);
     countryData[countryCode].count++;
     
-    // Actualizar tasa promedio si es más precisa que la actual
     if (taxRate > countryData[countryCode].rate) {
       countryData[countryCode].rate = taxRate;
     }
   });
   
-  // Convertir a array y ordenar
   let taxBreakdown = Object.values(countryData);
   
-  // Ordenar: primero países importantes, luego resto por total
   taxBreakdown.sort((a, b) => {
     const aImportant = importantCountries.includes(a.code);
     const bImportant = importantCountries.includes(b.code);
@@ -2640,17 +2468,14 @@ calculateTaxBreakdown(transactions) {
  */
 exportTaxReportWithManager(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación
     const dataToExport = this.prepareTaxDataForExport(reportData);
     
-    // Configurar columnas con totales
     const columnsWithTotals = [
       'Base Imponible (EUR)', 
       'IVA (EUR)',
       'Total Facturado (EUR)'
     ];
     
-    // Configurar formatos de moneda para columnas
     const currencyFormats = {
       'Base Imponible (EUR)': '#,##0.00 [$€]',
       'IVA (EUR)': '#,##0.00 [$€]',
@@ -2659,10 +2484,8 @@ exportTaxReportWithManager(reportData, fileName, options) {
       'IVA Original': '#,##0.00'
     };
     
-    // Calcular resumen para las tasas de impuestos por región
     const statusSummary = {};
     if (reportData.taxBreakdown && reportData.taxBreakdown.length > 0) {
-      // Contar países por región
       const regionCounts = {
         'España': 0,
         'Latinoamérica': 0,
@@ -2671,7 +2494,6 @@ exportTaxReportWithManager(reportData, fileName, options) {
         'Otros': 0
       };
       
-      // Asignar países a regiones
       reportData.taxBreakdown.forEach(country => {
         if (country.code === 'ES') {
           regionCounts['España']++;
@@ -2686,7 +2508,6 @@ exportTaxReportWithManager(reportData, fileName, options) {
         }
       });
       
-      // Añadir conteo a resumen
       Object.entries(regionCounts).forEach(([region, count]) => {
         if (count > 0) {
           statusSummary[region] = count;
@@ -2694,7 +2515,6 @@ exportTaxReportWithManager(reportData, fileName, options) {
       });
     }
     
-    // Añadir resumen de impuestos para España vs resto
     const deductibleSummary = {
       ivaEspana: reportData.summary.spainTax,
       ivaNoEspana: reportData.summary.otherTax,
@@ -2702,7 +2522,6 @@ exportTaxReportWithManager(reportData, fileName, options) {
       totalFacturado: reportData.summary.totalAmount
     };
     
-    // Configurar opciones avanzadas para exportManager
     const exportOptions = {
       fileName,
       format: options.format || 'excel',
@@ -2717,7 +2536,6 @@ exportTaxReportWithManager(reportData, fileName, options) {
       columnsWithTotals,
       currencyFormats,
       
-      // Añadir información de periodo
       period: reportData.period,
       
       // Resaltar filas según país
@@ -2729,12 +2547,10 @@ exportTaxReportWithManager(reportData, fileName, options) {
         'Norteamérica': 'f3e5f5' // Púrpura claro
       },
       
-      // Añadir resúmenes
       statusSummary,
       deductibleSummary
     };
     
-    // Exportar usando exportManager
     exportManager.exportData(dataToExport, exportOptions);
     
     this.ui.showSuccessMessage(`Informe de impuestos exportado correctamente en formato ${options.format.toUpperCase()}`);
@@ -2754,7 +2570,6 @@ prepareTaxDataForExport(reportData) {
     return [];
   }
   
-  // Determinar las regiones de los países
   const getRegionName = (countryCode) => {
     if (countryCode === 'ES') {
       return 'España';
@@ -2769,9 +2584,7 @@ prepareTaxDataForExport(reportData) {
     }
   };
   
-  // Formatear para exportación
   return reportData.taxBreakdown.map(country => {
-    // Aplicar formato de moneda solo si no es EUR o MULTIPLE
     const ivaOriginal = country.currency_code !== 'EUR' && country.currency_code !== 'MULTIPLE' 
       ? country.total_original 
       : null;
@@ -2780,7 +2593,6 @@ prepareTaxDataForExport(reportData) {
       ? country.taxBase_original
       : null;
       
-    // Determinar el símbolo de moneda para valores originales
     const currencySymbol = this.getCurrencySymbol(country.currency_code);
     
     return {
@@ -2828,12 +2640,10 @@ getCurrencySymbol(currencyCode) {
  */
 generateSubscriptionsReport(options) {
   try {
-    // Filtrar suscripciones por período
     let filteredSubscriptions = this.subscriptions;
     
     if (options.dateRange) {
       filteredSubscriptions = this.subscriptions.filter(subscription => {
-        // Usar fecha de creación para nuevas y fecha de actualización para canceladas
         let date;
         if (subscription.status === 'canceled') {
           date = new Date(subscription.updated_at || subscription.created_at);
@@ -2845,16 +2655,13 @@ generateSubscriptionsReport(options) {
       });
     }
     
-    // Verificar si hay datos para procesar
     if (!filteredSubscriptions || filteredSubscriptions.length === 0) {
       this.ui.showErrorMessage('Error', 'No hay datos de suscripciones para el período seleccionado');
       return;
     }
     
-    // Calcular resumen de suscripciones
     const subscriptionSummary = this.calculateSubscriptionsSummary(filteredSubscriptions);
     
-    // Crear estructura del informe
     const reportData = {
       title: this.getReportTitle(options),
       period: options.period,
@@ -2879,7 +2686,6 @@ generateSubscriptionsReport(options) {
       dateRange: options.dateRange
     };
     
-    // Exportar según formato seleccionado
     this.exportReport(reportData, options);
   } catch (error) {
     console.error('Error al generar informe de suscripciones:', error);
@@ -2895,10 +2701,8 @@ generateSubscriptionsReport(options) {
  */
 exportSubscriptionsReportWithManager(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación en formato optimizado
     const dataToExport = this.prepareSubscriptionsDataForExport(reportData);
     
-    // Contar suscripciones por estado
     const statusCounts = {
       'Activa': 0,
       'Pausada': 0,
@@ -2916,12 +2720,10 @@ exportSubscriptionsReportWithManager(reportData, fileName, options) {
     // Solo la columna Precio debería tener total
     const columnsWithTotals = ['Precio'];
     
-    // Configurar formatos de moneda para columnas
     const currencyFormats = {
       'Precio': '€#,##0.00'
     };
     
-    // Configurar opciones avanzadas para exportManager
     const exportOptions = {
       fileName,
       format: options.format || 'excel',
@@ -2936,7 +2738,6 @@ exportSubscriptionsReportWithManager(reportData, fileName, options) {
       columnsWithTotals,
       currencyFormats,
       
-      // Añadir información de periodo
       period: reportData.period,
       
       // Opciones para colorear estados
@@ -2948,11 +2749,9 @@ exportSubscriptionsReportWithManager(reportData, fileName, options) {
         'Expirada': 'f5f5f5'  // Gris claro
       },
       
-      // Añadir resumen de estados
       statusSummary: statusCounts
     };
     
-    // Exportar usando exportManager
     exportManager.exportData(dataToExport, exportOptions);
     
     this.ui.showSuccessMessage(`Informe de suscripciones exportado correctamente en formato ${options.format.toUpperCase()}`);
@@ -2972,12 +2771,9 @@ prepareSubscriptionsDataForExport(reportData) {
     return [];
   }
   
-  // Mapear suscripciones a formato optimizado para Excel
   return reportData.subscriptions.map(subscription => {
-    // Calcular precio según intervalo (usando la misma lógica que el panel original)
     const priceInfo = this.calculateSubscriptionPrice(subscription);
     
-    // Normalizar estado para consistencia
     const estado = subscription.status === 'active' ? 'Activa' : 
                   subscription.status === 'paused' ? 'Pausada' : 
                   subscription.status === 'canceled' ? 'Cancelada' : 'Expirada';
@@ -3004,7 +2800,6 @@ prepareSubscriptionsDataForExport(reportData) {
  * @returns {Object} Información de precio
  */
 calculateSubscriptionPrice(subscription) {
-  // Obtener monto base - asegurándonos de que sea un número
   let amount = subscription.amount;
   
   // Si es string, normalizarlo
@@ -3025,16 +2820,13 @@ calculateSubscriptionPrice(subscription) {
     amount = 19.00; // Valor predeterminado mensual
   }
   
-  // Calcular el precio final según el intervalo
   let finalAmount = amount;
   
-  // Para suscripciones anuales, aplicar el cálculo especial
   if (subscription.interval === 'year') {
     // Precio anual: mensual x 12 con 21% de descuento
     finalAmount = amount * 12 * 0.79;
   }
   
-  // Determinar divisa
   const currency = subscription.currency_code || 'EUR';
   
   return {
@@ -3051,7 +2843,6 @@ calculateSubscriptionPrice(subscription) {
  * @returns {Object} Resumen de suscripciones
  */
 calculateSubscriptionsSummary(subscriptions) {
-  // Contar por estado
   const statusCounts = {
     active: 0,
     paused: 0,
@@ -3072,7 +2863,6 @@ calculateSubscriptionsSummary(subscriptions) {
     
     // Solo calcular ingresos para suscripciones activas
     if (sub.status === 'active') {
-      // Calcular precio según intervalo
       const priceInfo = this.calculateSubscriptionPrice(sub);
       
       if (sub.interval === 'year') {
@@ -3122,7 +2912,6 @@ calculateSubscriptionsSummary(subscriptions) {
     }
   });
   
-  // Transformar para el resultado - MEJORADO
   const productsArray = Object.values(productSubscriptions)
     .map(product => {
       // CORRECCIÓN: Para cada producto, sumar expired a canceled
@@ -3153,15 +2942,12 @@ calculateSubscriptionsSummary(subscriptions) {
  */
 async generateUsersReport(options) {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Generando informe de usuarios...');
 
-    // Filtrar usuarios por período o criterios adicionales
     let filteredUsers = this.users;
     
     if (options.dateRange) {
       filteredUsers = this.users.filter(user => {
-        // Filtrar por fecha de registro si está disponible
         if (user.fecha_registro || user.created_at) {
           const registrationDate = new Date(user.fecha_registro || user.created_at);
           return registrationDate >= options.dateRange.start && registrationDate <= options.dateRange.end;
@@ -3178,17 +2964,14 @@ async generateUsersReport(options) {
     }
 
     // Enriquecer datos de usuarios con información completa
-    // Verificar si ya tenemos datos enriquecidos
     let usersWithCompleteData = filteredUsers;
     if (!filteredUsers[0]?.perfil || !filteredUsers[0]?.subscriptions) {
       console.log('Enriqueciendo datos de usuarios con información completa...');
       usersWithCompleteData = await this.enrichUsersWithCompleteData(filteredUsers);
     }
     
-    // Calcular resumen de usuarios
     const usersSummary = this.calculateUsersSummary(usersWithCompleteData);
     
-    // Crear estructura del informe
     const reportData = {
       title: options.title || this.getReportTitle(options) || 'Informe de Usuarios',
       period: options.period || this.formatDateRange(options.dateRange),
@@ -3198,11 +2981,9 @@ async generateUsersReport(options) {
       dateRange: options.dateRange
     };
     
-    // Exportar según formato seleccionado
     this.ui.hideLoading();
     this.exportReport(reportData, options);
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage(`Informe de usuarios generado correctamente en formato ${options.format.toUpperCase()}`);
   } catch (error) {
     this.ui.hideLoading();
@@ -3224,20 +3005,17 @@ formatDateRange(dateRange) {
     
     console.log('Formateando rango de fechas:', dateRange);
     
-    // Verificar que ambas fechas existan
     if (!dateRange.start || !dateRange.end) {
       console.warn('Rango de fechas incompleto:', dateRange);
       return 'Período parcial';
     }
     
-    // Convertir a objetos Date si son strings
     const startDate = dateRange.start instanceof Date ? 
       dateRange.start : new Date(dateRange.start);
     
     const endDate = dateRange.end instanceof Date ?
       dateRange.end : new Date(dateRange.end);
     
-    // Verificar que ambas fechas sean válidas
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       console.warn('Rango de fechas contiene fechas inválidas:', {
         start: dateRange.start,
@@ -3248,7 +3026,6 @@ formatDateRange(dateRange) {
       return 'Período indefinido';
     }
     
-    // Formatear fechas en formato local
     const formattedStart = startDate.toLocaleDateString('es-ES', { 
       day: '2-digit', 
       month: '2-digit', 
@@ -3279,7 +3056,6 @@ async enrichUsersWithCompleteData(users) {
     // Lista para usuarios enriquecidos
     const enrichedUsers = [];
     
-    // Procesar cada usuario
     const enrichPromises = users.map(async (user) => {
       try {
         // 1. Obtener detalles del perfil
@@ -3291,7 +3067,6 @@ async enrichUsersWithCompleteData(users) {
           if (detailResponse.success && detailResponse.data) {
             userDetails = detailResponse.data;
             
-            // Actualizar last_login si está disponible
             if (userDetails.usuario && userDetails.usuario.last_login) {
               user.last_login = userDetails.usuario.last_login;
             }
@@ -3337,9 +3112,7 @@ async enrichUsersWithCompleteData(users) {
           console.warn(`Error al obtener transacciones para usuario ${user.id_user}:`, transError);
         }
         
-        // Calcular gasto total priorizando amount_eur
         const totalSpend = transactions.reduce((sum, trans) => {
-          // Priorizar el uso de amount_eur si está disponible
           if (trans.amount_eur !== undefined && trans.amount_eur !== null) {
             return sum + this.normalizeAmount(trans.amount_eur);
           }
@@ -3353,13 +3126,11 @@ async enrichUsersWithCompleteData(users) {
           return sum + this.normalizeAmount(trans.amount);
         }, 0);
         
-        // Determinar último acceso
         const lastLogin = user.last_login || 
                          (userDetails?.usuario?.last_login) || 
                          (user.ultimo_login) || 
                          null;
         
-        // Añadir usuario enriquecido
         return {
           ...user,
           nombre: perfil?.nombre || (userDetails?.perfil?.nombre || ''),
@@ -3386,7 +3157,6 @@ async enrichUsersWithCompleteData(users) {
         };
       } catch (userError) {
         console.error(`Error procesando usuario ${user.id_user}:`, userError);
-        // Devolver usuario con datos mínimos en caso de error
         return {
           ...user,
           nombre: '',
@@ -3407,10 +3177,8 @@ async enrichUsersWithCompleteData(users) {
       }
     });
     
-    // Esperar a que todos los usuarios sean procesados
     const results = await Promise.allSettled(enrichPromises);
     
-    // Filtrar solo los resultados exitosos
     results.forEach(result => {
       if (result.status === 'fulfilled') {
         enrichedUsers.push(result.value);
@@ -3430,23 +3198,19 @@ async enrichUsersWithCompleteData(users) {
  * @returns {Object} Resumen de estadísticas
  */
 calculateUsersSummary(users) {
-  // Contar usuarios por estado de suscripción
   const usersWithActiveSubscriptions = users.filter(user => user.stats.activeSubscriptions > 0);
   const usersWithNoSubscriptions = users.filter(user => user.stats.subscriptionsCount === 0);
   const inactiveUsers = users.filter(user => 
     user.stats.subscriptionsCount > 0 && user.stats.activeSubscriptions === 0
   );
   
-  // Calcular totales
   const totalSpend = users.reduce((sum, user) => sum + user.stats.totalSpend, 0);
   const totalActiveSubscriptions = users.reduce((sum, user) => sum + user.stats.activeSubscriptions, 0);
   const totalTransactions = users.reduce((sum, user) => sum + user.stats.transactionsCount, 0);
   
-  // Calcular promedios
   const avgSpendPerUser = users.length > 0 ? totalSpend / users.length : 0;
   const avgTransactionsPerUser = users.length > 0 ? totalTransactions / users.length : 0;
   
-  // Calcular tasas
   const conversionRate = users.length > 0 ? (usersWithActiveSubscriptions.length / users.length) * 100 : 0;
   const churnRate = usersWithActiveSubscriptions.length > 0 ? 
     (inactiveUsers.length / (usersWithActiveSubscriptions.length + inactiveUsers.length)) * 100 : 0;
@@ -3537,19 +3301,15 @@ calculateUsersSummary(users) {
           productDistribution[productName].activeCount++;
         }
         
-        // Agregar ingresos del producto
-        // Buscar transacciones relacionadas con este producto
         if (user.transactions) {
           const productTransactions = user.transactions.filter(t => 
             t.product_id === sub.product_id || t.product_name === productName
           );
           
           productTransactions.forEach(trans => {
-            // Priorizar amount_eur
             if (trans.amount_eur !== undefined && trans.amount_eur !== null) {
               productDistribution[productName].totalRevenue += this.normalizeAmount(trans.amount_eur);
             }
-            // Fallback a conversión manual
             else if (trans.currency_code && trans.currency_code !== 'EUR' && trans.exchange_rate) {
               const convertedAmount = this.normalizeAmount(trans.amount) * trans.exchange_rate;
               productDistribution[productName].totalRevenue += convertedAmount;
@@ -3564,7 +3324,6 @@ calculateUsersSummary(users) {
     }
   });
   
-  // Convertir distribuciones a arrays ordenados
   const countriesArray = Object.entries(countryDistribution)
     .map(([country, data]) => ({ 
       country, 
@@ -3631,7 +3390,6 @@ calculateUsersSummary(users) {
  */
 exportUsersReportWithManager(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación en formato optimizado
     const dataToExport = this.prepareUsersDataForExport(reportData);
     
     // Identificar usuarios inactivos (que tenían suscripciones pero ahora no tienen activas)
@@ -3639,7 +3397,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
       user['Total Suscripciones'] > 0 && user['Suscripciones Activas'] === 0
     );
     
-    // Calcular estadísticas para el resumen
     const totalUsers = dataToExport.length;
     const inactiveCount = inactiveUsers.length;
     const inactivePercentage = totalUsers > 0 ? ((inactiveCount / totalUsers) * 100).toFixed(2) : 0;
@@ -3647,7 +3404,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
     // Columnas que deben tener totales
     const columnsWithTotals = ['Suscripciones Activas', 'Transacciones', 'Gasto Total (EUR)'];
     
-    // Configurar formatos específicos para columnas
     const currencyFormats = {
       'Gasto Total (EUR)': '€#,##0.00',
       'Suscripciones Activas': '#,##0',  // Formato entero sin decimales
@@ -3675,7 +3431,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
       };
     });
     
-    // Configurar opciones avanzadas para exportManager
     const exportOptions = {
       fileName,
       format: options.format || 'excel',
@@ -3690,7 +3445,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
       columnsWithTotals,
       currencyFormats,
       
-      // Añadir información de periodo
       period: reportData.period,
       
       // Opciones para resaltar usuarios inactivos
@@ -3714,7 +3468,6 @@ exportUsersReportWithManager(reportData, fileName, options) {
       }
     };
     
-    // Exportar usando exportManager
     exportManager.exportData(dataToExport, exportOptions);
   } catch (error) {
     console.error('Error al exportar informe de usuarios:', error);
@@ -3732,7 +3485,6 @@ prepareUsersDataForExport(reportData) {
     return [];
   }
   
-  // Mapear usuarios a formato optimizado para Excel
   return reportData.users.map(user => {
     return {
       'ID': user.id_user,
@@ -3758,10 +3510,8 @@ prepareUsersDataForExport(reportData) {
  */
 async generateProductsReport(options) {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Generando informe de productos...');
 
-    // Cargar datos necesarios si no están disponibles
     if (!this.loadRequiredData()) {
       await this.loadRequiredData();
     }
@@ -3844,9 +3594,7 @@ async generateProductsReport(options) {
         endValid: endDate ? !isNaN(endDate.getTime()) : false
       });
       
-      // Verificar que las fechas sean válidas antes de filtrar
       if (startDate && endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-        // Filtrar transacciones por fecha
         filteredTransactions = this.transactions.filter(transaction => {
           if (!transaction.updated_at && !transaction.created_at) return false;
           
@@ -3858,11 +3606,9 @@ async generateProductsReport(options) {
           return txDate >= startDate && txDate <= endDate;
         });
 
-        // Filtrar suscripciones por fecha (creación para nuevas, actualización para canceladas)
         filteredSubscriptions = this.subscriptions.filter(subscription => {
           if (!subscription.created_at) return false;
           
-          // Para suscripciones, usamos created_at para las nuevas y updated_at para las canceladas
           let subDate;
           if (subscription.status === 'canceled' && subscription.updated_at) {
             subDate = new Date(subscription.updated_at);
@@ -3942,12 +3688,10 @@ calculateProductsStatistics(products, subscriptions, transactions) {
       sub.status === 'canceled' || sub.status === 'expired'
     );
     
-    // Calcular tasa de cancelación
     const cancelationRate = productSubscriptions.length > 0 
       ? (canceledSubscriptions.length / productSubscriptions.length) * 100 
       : 0;
     
-    // Filtrar transacciones para este producto
     const productTransactions = transactions.filter(tx => 
       tx.product_id == product.id_carrera ||
       (monthPlanId && tx.price_id == monthPlanId) || 
@@ -3956,11 +3700,9 @@ calculateProductsStatistics(products, subscriptions, transactions) {
     
     // CORRECCIÓN: Calcular ingresos totales usando earnings_eur para consistencia
     const totalRevenue = productTransactions.reduce((sum, tx) => {
-      // Priorizar earnings_eur si existe
       if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
         return sum + this.normalizeAmount(tx.earnings_eur);
       }
-      // Fallback a amount_eur si no hay earnings_eur
       else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
         return sum + this.normalizeAmount(tx.amount_eur);
       } 
@@ -4031,11 +3773,9 @@ calculateProductsStatistics(products, subscriptions, transactions) {
  * @returns {Array} Tendencias mensuales
  */
 calculateMonthlyTrendsForProduct(transactions) {
-  // Obtener últimos 12 meses
   const today = new Date();
   const monthsMap = {};
   
-  // Inicializar últimos 12 meses
   for (let i = 11; i >= 0; i--) {
     const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -4065,7 +3805,6 @@ calculateMonthlyTrendsForProduct(transactions) {
       if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.earnings_eur);
       }
-      // Fallback a amount_eur
       else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.amount_eur);
       }
@@ -4078,14 +3817,12 @@ calculateMonthlyTrendsForProduct(transactions) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.earnings || tx.amount || 0);
       }
       
-      // Contar como nueva suscripción si es una transacción inicial
       if (tx.event_type === 'subscription_created' || tx.event_type === 'subscription_payment') {
         monthsMap[monthKey].subscriptions++;
       }
     }
   });
   
-  // Convertir a array ordenado por mes
   return Object.values(monthsMap).sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -4107,7 +3844,6 @@ calculateProductsSummary(enrichedProducts, subscriptions, transactions) {
     (a, b) => b.statistics.totalRevenue - a.statistics.totalRevenue
   );
   
-  // Calcular totales
   const totalActiveSubscriptions = enrichedProducts.reduce(
     (sum, product) => sum + product.statistics.activeSubscriptions, 0
   );
@@ -4124,7 +3860,6 @@ calculateProductsSummary(enrichedProducts, subscriptions, transactions) {
     (sum, product) => sum + product.statistics.yearlySubscriptions, 0
   );
   
-  // Calcular porcentajes de distribución
   const subscriptionDistribution = enrichedProducts.map(product => ({
     id: product.id_carrera,
     name: product.nombre,
@@ -4143,7 +3878,6 @@ calculateProductsSummary(enrichedProducts, subscriptions, transactions) {
       : 0
   })).sort((a, b) => b.amount - a.amount);
   
-  // Calcular distribución de suscripciones mensuales vs anuales
   const monthlyPercentage = totalActiveSubscriptions > 0 
     ? (totalMonthlySubscriptions / totalActiveSubscriptions) * 100 
     : 0;
@@ -4152,7 +3886,6 @@ calculateProductsSummary(enrichedProducts, subscriptions, transactions) {
     ? (totalYearlySubscriptions / totalActiveSubscriptions) * 100 
     : 0;
   
-  // Calcular tendencias generales mensuales (últimos 12 meses)
   const monthlyTrends = this.calculateMonthlyTrendsForAllProducts(transactions);
   
   // CORRECCIÓN: Asegurar que las claves existan en los objetos de topProductsByRevenue
@@ -4211,7 +3944,6 @@ calculateMonthlyTrendsForAllProducts(transactions) {
   const today = new Date();
   const monthsMap = {};
   
-  // Inicializar últimos 12 meses
   for (let i = 11; i >= 0; i--) {
     const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -4242,7 +3974,6 @@ calculateMonthlyTrendsForAllProducts(transactions) {
       if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.earnings_eur);
       }
-      // Fallback a amount_eur
       else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.amount_eur);
       }
@@ -4255,19 +3986,16 @@ calculateMonthlyTrendsForAllProducts(transactions) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.earnings || tx.amount || 0);
       }
       
-      // Contar como nueva suscripción si es una transacción inicial
       if (tx.event_type === 'subscription_created' || tx.event_type === 'subscription_payment') {
         monthsMap[monthKey].subscriptions++;
       }
       
-      // Contar cancelaciones
       if (tx.event_type === 'subscription_canceled') {
         monthsMap[monthKey].cancelations++;
       }
     }
   });
   
-  // Convertir a array ordenado por mes
   return Object.values(monthsMap).sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -4281,7 +4009,6 @@ prepareProductsDataForExport(reportData) {
     return [];
   }
   
-  // Mapear productos a formato optimizado para Excel
   return reportData.products.map(product => {
     const stats = product.statistics || {};
     
@@ -4312,7 +4039,6 @@ prepareProductsDataForExport(reportData) {
  */
 exportProductsReportWithManager(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación
     const dataToExport = this.prepareProductsDataForExport(reportData);
     
     // Columnas que deben tener totales
@@ -4327,7 +4053,6 @@ exportProductsReportWithManager(reportData, fileName, options) {
       'Total Transacciones'
     ];
     
-    // Configurar formatos específicos para columnas
     const currencyFormats = {
       'Ingresos Totales (EUR)': '€#,##0.00',
       'Ingresos Mensuales (EUR)': '€#,##0.00',
@@ -4345,7 +4070,6 @@ exportProductsReportWithManager(reportData, fileName, options) {
     };
     
     // MEJORA: Preparar datos de análisis para el informe
-    // Preparar datos para el resumen de tipos de suscripción (mensual/anual)
     const planDistribution = {
       'Mensual': reportData.summary.planDistribution.monthly.count,
       'Anual': reportData.summary.planDistribution.yearly.count
@@ -4353,12 +4077,10 @@ exportProductsReportWithManager(reportData, fileName, options) {
     
     // CORRECCIÓN: Incluir TODOS los productos, no solo top 5
     const topProducts = {};
-    // Usar toda la lista de productos ordenada por ingresos
     const sortedProducts = [...reportData.products].sort(
       (a, b) => (b.statistics?.totalRevenue || 0) - (a.statistics?.totalRevenue || 0)
     );
     
-    // Añadir todos los productos con ingresos positivos
     sortedProducts.forEach(product => {
       if (product.statistics?.totalRevenue > 0) {
         topProducts[product.nombre] = {
@@ -4370,7 +4092,6 @@ exportProductsReportWithManager(reportData, fileName, options) {
       }
     });
     
-    // Configurar opciones avanzadas para exportManager
     const exportOptions = {
       fileName,
       format: options.format || 'excel',
@@ -4386,7 +4107,6 @@ exportProductsReportWithManager(reportData, fileName, options) {
       currencyFormats,
       integerFormats, // NUEVO: Formatos para campos enteros
       
-      // Añadir información de periodo
       period: reportData.period,
       
       // Opciones para análisis de productos
@@ -4398,7 +4118,6 @@ exportProductsReportWithManager(reportData, fileName, options) {
       }
     };
     
-    // Exportar usando exportManager
     exportManager.exportData(dataToExport, exportOptions);
   } catch (error) {
     console.error('Error al exportar informe de productos:', error);
@@ -4432,17 +4151,14 @@ exportProductsReportWithManager(reportData, fileName, options) {
  */
 async generateComprehensiveReport(options) {
   try {
-    // Mostrar indicador de carga
     this.ui.showLoading('Generando informe integral...');
 
-    // Cargar todos los datos necesarios
     if (!this.loadRequiredData()) {
       await this.loadRequiredData();
     }
 
     console.log('Generando informe integral con opciones:', options);
 
-    // Filtrar datos por fecha si es necesario
     let filteredTransactions = this.transactions;
     let filteredSubscriptions = this.subscriptions;
     let filteredExpenses = this.expenses || [];
@@ -4468,9 +4184,7 @@ async generateComprehensiveReport(options) {
         endDate.setHours(23, 59, 59, 999); // Fin del día
       }
       
-      // Verificar que las fechas sean válidas antes de filtrar
       if (startDate && endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-        // Filtrar transacciones por fecha
         filteredTransactions = this.transactions.filter(transaction => {
           if (!transaction.updated_at && !transaction.created_at) return false;
           
@@ -4482,10 +4196,8 @@ async generateComprehensiveReport(options) {
           return txDate >= startDate && txDate <= endDate;
         });
 
-        // Filtrar suscripciones por fecha (incluir todas para análisis tendencial pero marcarlas en el período correcto)
         filteredSubscriptions = this.subscriptions;
 
-        // Filtrar egresos por fecha
         filteredExpenses = this.expenses.filter(expense => {
           if (!expense.date) return false;
           
@@ -4501,10 +4213,8 @@ async generateComprehensiveReport(options) {
       }
     }
 
-    // Obtener productos
     let products = await this.api.getProducts();
 
-    // Calcular todos los resúmenes para el informe integral
     const executiveSummary = this.calculateExecutiveSummary(
       filteredTransactions, 
       filteredSubscriptions, 
@@ -4513,30 +4223,23 @@ async generateComprehensiveReport(options) {
       products
     );
 
-    // Calcular resumen de ingresos
     const revenueSummary = this.calculateRevenueSummary(filteredTransactions);
 
-    // Calcular resumen de suscripciones
     const subscriptionSummary = this.calculateSubscriptionsSummary(filteredSubscriptions);
 
-    // Calcular resumen de impuestos
     const taxSummary = this.calculateTaxSummary(filteredTransactions);
 
-    // Calcular resumen de egresos
     const expensesSummary = this.calculateExpensesSummary(filteredExpenses);
 
-    // Calcular estadísticas de productos - CORRECCIÓN: Pasar todas las suscripciones
     const productsData = this.calculateProductsStatistics(products, filteredSubscriptions, filteredTransactions);
     const productsSummary = this.calculateProductsSummary(productsData, filteredSubscriptions, filteredTransactions);
 
-    // Calcular tendencias mensuales - CORRECCIÓN: Pasar explícitamente las suscripciones
     const monthlyTrends = this.calculateMonthlyTrendsForComprehensiveReport(
       filteredTransactions, 
       filteredExpenses,
       filteredSubscriptions // NUEVO: Pasamos directamente las suscripciones
     );
 
-    // Crear estructura del informe
     const reportData = {
       title: options.title || this.getReportTitle(options) || 'Informe Integral',
       period: options.period || this.formatDateRange(options.dateRange),
@@ -4551,11 +4254,9 @@ async generateComprehensiveReport(options) {
       dateRange: options.dateRange
     };
 
-    // Exportar según formato seleccionado
     this.ui.hideLoading();
     await this.exportComprehensiveReport(reportData, options);
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage(`Informe integral generado correctamente en formato ${options.format.toUpperCase()}`);
   } catch (error) {
     this.ui.hideLoading();
@@ -4576,11 +4277,9 @@ async generateComprehensiveReport(options) {
 calculateExecutiveSummary(transactions, subscriptions, expenses, users, products) {
   // 1. Cálculos de ingresos
   const totalRevenue = transactions.reduce((sum, tx) => {
-    // Priorizar earnings_eur si existe
     if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
       return sum + this.normalizeAmount(tx.earnings_eur);
     }
-    // Fallback a amount_eur si no hay earnings_eur
     else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
       return sum + this.normalizeAmount(tx.amount_eur);
     }
@@ -4596,7 +4295,6 @@ calculateExecutiveSummary(transactions, subscriptions, expenses, users, products
 
   // 2. Cálculos de egresos - CORREGIDO para incluir amount + tax_amount
   const totalExpenses = expenses.reduce((sum, expense) => {
-    // Sumar explícitamente amount + tax_amount
     return sum + parseFloat(expense.amount || 0) + parseFloat(expense.tax_amount || 0);
   }, 0);
 
@@ -4661,7 +4359,6 @@ calculateExecutiveSummary(transactions, subscriptions, expenses, users, products
     if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
       productRevenue[productId].revenue += this.normalizeAmount(tx.earnings_eur);
     } 
-    // Fallback a amount_eur
     else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
       productRevenue[productId].revenue += this.normalizeAmount(tx.amount_eur);
     } 
@@ -4675,7 +4372,6 @@ calculateExecutiveSummary(transactions, subscriptions, expenses, users, products
     }
   });
   
-  // Contar suscripciones activas por producto
   subscriptions.filter(sub => sub.status === 'active' || sub.status === 'paused').forEach(sub => {
     const productId = sub.product_id;
     if (!productId || !productRevenue[productId]) return;
@@ -4683,7 +4379,6 @@ calculateExecutiveSummary(transactions, subscriptions, expenses, users, products
     productRevenue[productId].subscriptions++;
   });
   
-  // Ordenar productos por ingresos
   const topProducts = Object.values(productRevenue)
     .sort((a, b) => b.revenue - a.revenue)
     .slice(0, 3);
@@ -4718,11 +4413,9 @@ calculateExecutiveSummary(transactions, subscriptions, expenses, users, products
  * @returns {Object} Tendencias mensuales
  */
 calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptions = []) {
-  // Obtener últimos 12 meses
   const today = new Date();
   const monthsMap = {};
   
-  // Inicializar últimos 12 meses
   for (let i = 11; i >= 0; i--) {
     const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -4755,7 +4448,6 @@ calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptio
       if (tx.earnings_eur !== undefined && tx.earnings_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.earnings_eur);
       }
-      // Fallback a amount_eur
       else if (tx.amount_eur !== undefined && tx.amount_eur !== null) {
         monthsMap[monthKey].revenue += this.normalizeAmount(tx.amount_eur);
       }
@@ -4772,7 +4464,6 @@ calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptio
     }
   });
   
-  // Procesar suscripciones directamente para contar nuevas y canceladas
   subscriptions.forEach(sub => {
     // Nuevas suscripciones - basadas en created_at
     if (sub.created_at) {
@@ -4808,12 +4499,10 @@ calculateMonthlyTrendsForComprehensiveReport(transactions, expenses, subscriptio
     }
   });
   
-  // Calcular ingreso neto para cada mes
   Object.values(monthsMap).forEach(month => {
     month.netIncome = month.revenue - month.expenses;
   });
   
-  // Convertir a array ordenado por mes
   return Object.values(monthsMap).sort((a, b) => a.key.localeCompare(b.key));
 }
 
@@ -4861,25 +4550,21 @@ async exportComprehensiveReportToExcel(reportData, fileName, options) {
     const Excel = window.ExcelJS;
     if (!Excel) {
       console.error('ExcelJS no está disponible');
-      // Fallback al método tradicional
       return this.exportReportToExcel(reportData, fileName);
     }
     
     const workbook = new Excel.Workbook();
     
-    // Configurar propiedades del documento
     workbook.creator = 'Acadelia';
     workbook.lastModifiedBy = 'Acadelia';
     workbook.created = new Date();
     workbook.modified = new Date();
     
-    // Crear hoja principal
     const worksheet = workbook.addWorksheet('Informe Integral', {
       views: [{ showGridLines: true }],
       properties: { tabColor: { argb: '656d4a' } }
     });
     
-    // Añadir encabezado corporativo (sin logo para evitar el error)
     this.addSimpleHeaderToWorksheet(worksheet, {
       title: reportData.title,
       period: reportData.period
@@ -4922,10 +4607,8 @@ async exportComprehensiveReportToExcel(reportData, fileName, options) {
       }
     };
     
-    // Generar archivo Excel
     const buffer = await workbook.xlsx.writeBuffer();
     
-    // Crear blob y descargar
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     this.downloadBlob(blob, `${fileName}.xlsx`);
     
@@ -4933,7 +4616,6 @@ async exportComprehensiveReportToExcel(reportData, fileName, options) {
     return true;
   } catch (error) {
     console.error('Error al exportar informe integral a Excel:', error);
-    // Fallback al método tradicional
     return this.exportReportToExcel(reportData, fileName);
   }
 }
@@ -4957,7 +4639,6 @@ addSimpleHeaderToWorksheet(worksheet, options) {
   titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
   worksheet.getRow(1).height = 30;
   
-  // Añadir período
   worksheet.mergeCells('A2:G2');
   const periodCell = worksheet.getCell('A2');
   periodCell.value = `Período: ${options.period}`;
@@ -4968,7 +4649,6 @@ addSimpleHeaderToWorksheet(worksheet, options) {
   };
   periodCell.alignment = { horizontal: 'center', vertical: 'middle' };
   
-  // Añadir fecha de generación
   worksheet.mergeCells('A3:G3');
   const dateCell = worksheet.getCell('A3');
   dateCell.value = `Generado el: ${new Date().toLocaleDateString('es-ES', { 
@@ -5018,7 +4698,6 @@ addCorporateHeaderToWorksheet(worksheet, workbook, options) {
   titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
   worksheet.getRow(1).height = 30;
   
-  // Añadir período
   worksheet.mergeCells('A2:G2');
   const periodCell = worksheet.getCell('A2');
   periodCell.value = `Período: ${options.period}`;
@@ -5029,7 +4708,6 @@ addCorporateHeaderToWorksheet(worksheet, workbook, options) {
   };
   periodCell.alignment = { horizontal: 'center', vertical: 'middle' };
   
-  // Añadir fecha de generación
   worksheet.mergeCells('A3:G3');
   const dateCell = worksheet.getCell('A3');
   dateCell.value = `Generado el: ${new Date().toLocaleDateString('es-ES', { 
@@ -5055,7 +4733,6 @@ addCorporateHeaderToWorksheet(worksheet, workbook, options) {
   };
   worksheet.mergeCells(`A${separatorRow.number}:G${separatorRow.number}`);
   
-  // Intentar añadir la imagen del logo si está disponible
   try {
     if (options.logoUrl) {
       // Este código depende de la implementación específica en export.js
@@ -5100,7 +4777,6 @@ addExecutiveSummarySection(worksheet, executiveSummary) {
     fgColor: { argb: '656d4a' }
   };
   
-  // Crear tabla de resumen en dos columnas
   worksheet.addRow([]);
   
   // Primera fila: Ingresos y Egresos
@@ -5138,7 +4814,6 @@ addExecutiveSummarySection(worksheet, executiveSummary) {
   worksheet.mergeCells(`A${headerRow.number}:G${headerRow.number}`);
   headerRow.alignment = { horizontal: 'center' };
   
-  // Añadir top productos
   worksheet.addRow(['Producto', 'Ingresos', '', 'Suscripciones Activas']);
   executiveSummary.topProducts.forEach(product => {
     const productRow = worksheet.addRow([product.name, product.revenue, '', product.subscriptions]);
@@ -5496,7 +5171,6 @@ addProductAnalysisSection(worksheet, reportData) {
       productRow.getCell(5).numFmt = '#,##0';
     });
   } else if (reportData.executiveSummary && reportData.executiveSummary.topProducts) {
-    // Usar datos del resumen ejecutivo si no hay datos específicos
     console.log("Usando datos de resumen ejecutivo como alternativa");
     
     reportData.executiveSummary.topProducts.forEach(product => {
@@ -5617,7 +5291,6 @@ addMonthlyTrendsSection(worksheet, monthlyTrends) {
   // Espacio después de la sección
   worksheet.addRow([]);
   
-  // Añadir nota final
   const noteRow = worksheet.addRow(['NOTA: Este informe integral proporciona una visión general del rendimiento de la empresa. Para análisis más detallados, consulte los informes específicos.']);
   noteRow.font = { italic: true };
   worksheet.mergeCells(`A${noteRow.number}:G${noteRow.number}`);
@@ -5632,15 +5305,12 @@ addMonthlyTrendsSection(worksheet, monthlyTrends) {
  * @param {string} fileName - Nombre del archivo
  */
 downloadBlob(blob, fileName) {
-  // Crear URL para el Blob
   const url = window.URL.createObjectURL(blob);
   
-  // Crear enlace de descarga
   const link = document.createElement('a');
   link.href = url;
   link.download = fileName;
   
-  // Añadir al documento, simular clic y eliminar
   document.body.appendChild(link);
   link.click();
   setTimeout(() => {
@@ -5658,13 +5328,11 @@ exportReport(reportData, options) {
   // Nombre del archivo
   const fileName = `${reportData.title.replace(/\s+/g, '_')}`;
   
-  // Verificar el formato seleccionado
   const format = options.format.toLowerCase();
   
   // Registro para diagnóstico
   console.log(`Exportando informe: ${reportData.title} en formato: ${format}`);
   
-  // Verificar tipo de informe
   if (reportData.title.startsWith('Informe de Ingresos')) {
     if (format === 'pdf') {
       return this.exportRevenueReportToPDF(reportData, fileName, options);
@@ -5673,7 +5341,6 @@ exportReport(reportData, options) {
     }
   } else if (reportData.title.startsWith('Informe de Impuestos')) {
     if (format === 'pdf') {
-      // Usar la implementación personalizada para PDF de impuestos
       return this.exportTaxReportToPDF(reportData, fileName, {
         ...options,
         logoUrl: '/images/Imagotipo.webp' // Asegurar que siempre tenga logoUrl
@@ -5701,7 +5368,6 @@ exportReport(reportData, options) {
     }
   } else if (reportData.title.startsWith('Informe de Productos')) {
     if (format === 'pdf') {
-      // Usar la implementación personalizada para PDF de productos
       return this.exportProductsReportToPDF(reportData, fileName, {
         ...options,
         logoUrl: '/images/Imagotipo.webp' // Asegurar que siempre tenga logoUrl
@@ -5711,7 +5377,6 @@ exportReport(reportData, options) {
     }
   } else if (reportData.title.startsWith('Informe Integral')) {
     if (format === 'pdf') {
-      // Usar la implementación personalizada para PDF de informe integral
       return this.exportComprehensiveReportToPDF(reportData, fileName, {
         ...options,
         logoUrl: '/images/Imagotipo.webp' // Asegurar que siempre tenga logoUrl
@@ -5720,7 +5385,6 @@ exportReport(reportData, options) {
       return this.exportComprehensiveReportToExcel(reportData, fileName, options);
     }
   } else {
-    // Para otros tipos, mantener el comportamiento original
     switch (format) {
       case 'excel':
       case 'xlsx':
@@ -5743,10 +5407,8 @@ exportReport(reportData, options) {
    */
   exportRevenueReportWithManager(reportData, fileName, options) {
     try {
-      // Preparar los datos para exportación en formato optimizado
       const dataToExport = this.prepareRevenueDataForExport(reportData);
       
-      // Configurar columnas con totales (usar los campos exactos de tu estructura)
       const columnsWithTotals = [
         'Importe (EUR)', 
         'IVA (EUR)', 
@@ -5754,7 +5416,6 @@ exportReport(reportData, options) {
         'Ingreso Neto (EUR)'
       ];
       
-      // Configurar formatos de moneda para columnas
       const currencyFormats = {
         'Importe': '#,##0.00',
         'Importe (EUR)': '[$€] #,##0.00',
@@ -5766,10 +5427,8 @@ exportReport(reportData, options) {
         'Ingreso Neto (EUR)': '[$€] #,##0.00'
       };
       
-      // Preparar análisis para el informe
       const reportAnalysis = this.prepareRevenueAnalysis(reportData);
       
-      // Configurar opciones avanzadas para exportManager
       const exportOptions = {
         fileName,
         format: options.format || 'excel',
@@ -5784,14 +5443,11 @@ exportReport(reportData, options) {
         columnsWithTotals,
         currencyFormats,
         
-        // Añadir información de periodo
         period: reportData.period,
         
-        // Añadir análisis de transacciones
         transactionAnalysis: reportAnalysis
       };
       
-      // Exportar usando exportManager
       exportManager.exportData(dataToExport, exportOptions);
       
       this.ui.showSuccessMessage(`Informe de ingresos exportado correctamente en formato ${options.format.toUpperCase()}`);
@@ -5811,10 +5467,8 @@ prepareRevenueDataForExport(reportData) {
     return [];
   }
   
-  // Mapear transacciones a formato optimizado para Excel
   return reportData.transactions.map(transaction => {
     // CORRECCIÓN: Mejorar la lógica para obtener el nombre del producto
-    // Priorizar product_name, luego carrera_nombre, y finalmente construir con product_id
     const productName = 
       (transaction.product_name && transaction.product_name.trim()) || 
       (transaction.carrera_nombre && transaction.carrera_nombre.trim()) || 
@@ -5859,7 +5513,6 @@ prepareRevenueDataForExport(reportData) {
       };
     }
     
-    // Crear análisis para métodos de pago
     const paymentMethods = {};
     if (summary.methods && summary.methods.length > 0) {
       // Tomar hasta los 5 principales métodos de pago
@@ -5874,7 +5527,6 @@ prepareRevenueDataForExport(reportData) {
       });
     }
     
-    // Crear análisis para países
     const countries = {};
     if (summary.countries && summary.countries.length > 0) {
       // Tomar hasta los 5 principales países
@@ -5890,7 +5542,6 @@ prepareRevenueDataForExport(reportData) {
       });
     }
     
-    // Devolver el objeto de análisis completo
     return {
       totalAmount: summary.totalRevenue,
       paymentMethods,
@@ -5904,7 +5555,6 @@ prepareRevenueDataForExport(reportData) {
    * @param {string} fileName - Nombre del archivo
    */
   exportReportToExcel(reportData, fileName) {
-    // Crear workbook
     const workbook = XLSX.utils.book_new();
     
     // Hoja de resumen
@@ -5915,7 +5565,6 @@ prepareRevenueDataForExport(reportData) {
       ['', '', '']
     ];
     
-    // Añadir datos específicos según tipo de informe
     if (reportData.summary) {
       switch (reportData.title.split(' - ')[0]) {
         case 'Informe de Ingresos':
@@ -5930,7 +5579,6 @@ prepareRevenueDataForExport(reportData) {
             ['Producto', 'Ingresos', 'Transacciones']
           ];
           
-          // Añadir datos de productos
           reportData.summary.products.forEach(product => {
             summaryData.push([
               product.name,
@@ -5971,7 +5619,6 @@ prepareRevenueDataForExport(reportData) {
             ['Producto', 'Total', 'Activas', 'Canceladas']
           ];
           
-          // Añadir datos de productos
           reportData.summary.products.forEach(product => {
             summaryData.push([
               product.name,
@@ -5985,11 +5632,9 @@ prepareRevenueDataForExport(reportData) {
       }
     }
     
-    // Crear hoja de resumen
     const summaryWorksheet = XLSX.utils.aoa_to_sheet(summaryData);
     XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Resumen');
     
-    // Añadir hoja de datos detallados si existen
     if (reportData.transactions) {
       const transactionsData = [
         ['ID', 'Usuario', 'Producto', 'Importe', 'Moneda', 'IVA', 'Fecha', 'País', 'Método de Pago']
@@ -6035,7 +5680,6 @@ prepareRevenueDataForExport(reportData) {
       XLSX.utils.book_append_sheet(workbook, subscriptionsWorksheet, 'Suscripciones');
     }
     
-    // Exportar
     XLSX.writeFile(workbook, `${fileName}.xlsx`);
   }
   
@@ -6048,7 +5692,6 @@ exportReportToPdf(reportData, fileName) {
   try {
     console.log('Exportando a PDF usando método genérico:', fileName);
     
-    // Determinar qué datos exportar
     let dataToExport = [];
     let title = reportData.title || 'Informe';
     let period = reportData.period || '';
@@ -6113,7 +5756,6 @@ exportReportToPdf(reportData, fileName) {
         }
       ];
       
-      // Añadir datos relevantes del resumen según el tipo
       if (reportData.title.startsWith('Informe de Ingresos')) {
         dataToExport[0]['Ingresos Totales'] = reportData.summary.totalRevenue;
         dataToExport[0]['Transacciones'] = reportData.summary.transactionCount;
@@ -6143,7 +5785,6 @@ exportReportToPdf(reportData, fileName) {
       }
     };
     
-    // Exportar usando exportManager
     return exportManager.exportData(dataToExport, {
       fileName,
       format: 'pdf',
@@ -6170,10 +5811,8 @@ exportReportToPdf(reportData, fileName) {
  */
 exportUsersReportToPDF(reportData, fileName, options) {
   try {
-    // Usar tu método original para preparar los datos
     const dataToExport = this.prepareUsersDataForExport(reportData);
     
-    // Verificar si hay datos para exportar
     if (!dataToExport || dataToExport.length === 0) {
       this.ui.showErrorMessage('Error', 'No hay datos de usuarios para exportar a PDF.');
       return false;
@@ -6186,7 +5825,6 @@ exportUsersReportToPDF(reportData, fileName, options) {
       user['Total Suscripciones'] > 0 && user['Suscripciones Activas'] === 0
     );
     
-    // Calcular estadísticas para el resumen
     const totalUsers = dataToExport.length;
     const inactiveCount = inactiveUsers.length;
     const inactivePercentage = totalUsers > 0 ? ((inactiveCount / totalUsers) * 100).toFixed(2) : 0;
@@ -6194,12 +5832,10 @@ exportUsersReportToPDF(reportData, fileName, options) {
     // Columnas que deben tener totales
     const columnsWithTotals = ['Suscripciones Activas', 'Transacciones', 'Gasto Total (EUR)'];
     
-    // Configurar formatos específicos para columnas
     const currencyFormats = {
       'Gasto Total (EUR)': '€#,##0.00'
     };
     
-    // Definir anchos de columna optimizados para PDF
     const columnWidths = {
       'ID': 25,
       'Correo': 80,
@@ -6238,11 +5874,9 @@ exportUsersReportToPDF(reportData, fileName, options) {
       }
     };
     
-    // Preparar datos de análisis usando la información disponible en reportData
     let userAnalysis = null;
     
     if (reportData.summary) {
-      // Extraer países por número de usuarios
       const topCountries = {};
       if (reportData.summary.countryDistribution) {
         reportData.summary.countryDistribution.slice(0, 5).forEach(country => {
@@ -6254,7 +5888,6 @@ exportUsersReportToPDF(reportData, fileName, options) {
         });
       }
       
-      // Extraer productos por número de usuarios
       const topProducts = {};
       if (reportData.summary.productDistribution) {
         reportData.summary.productDistribution.slice(0, 5).forEach(product => {
@@ -6266,7 +5899,6 @@ exportUsersReportToPDF(reportData, fileName, options) {
         });
       }
       
-      // Crear resumen para PDF
       userAnalysis = {
         totalUsers: reportData.summary.totalUsers,
         activeUsers: reportData.summary.activeUsers,
@@ -6279,7 +5911,6 @@ exportUsersReportToPDF(reportData, fileName, options) {
       };
     }
     
-    // Exportar usando exportManager
     const result = exportManager.exportData(dataToExport, {
       fileName,
       format: 'pdf',
@@ -6328,10 +5959,8 @@ exportUsersReportToPDF(reportData, fileName, options) {
  */
 exportExpensesReportToPDF(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación en formato optimizado para PDF
     const dataToExport = this.prepareExpensesDataForExport(reportData);
     
-    // Verificar si hay datos para exportar
     if (!dataToExport || dataToExport.length === 0) {
       this.ui.showErrorMessage('Error', 'No hay datos de egresos para exportar a PDF.');
       return false;
@@ -6342,14 +5971,12 @@ exportExpensesReportToPDF(reportData, fileName, options) {
     // Columnas que deben tener totales
     const columnsWithTotals = ['Importe', 'IVA', 'Total'];
     
-    // Configurar formatos específicos para columnas
     const currencyFormats = {
       'Importe': '€#,##0.00',
       'IVA': '€#,##0.00',
       'Total': '€#,##0.00'
     };
     
-    // Definir anchos de columna optimizados para PDF
     const columnWidths = {
       'ID': 25,
       'Fecha': 40,
@@ -6388,24 +6015,19 @@ exportExpensesReportToPDF(reportData, fileName, options) {
       }
     };
     
-    // Calcular totales para deducibles - Usar Importe (no Total) para gastos deducibles
     const deductibleItems = dataToExport.filter(item => item.Deducible === 'Sí');
     const totalDeductibleIVA = deductibleItems.reduce((sum, item) => sum + (typeof item.IVA === 'number' ? item.IVA : 0), 0);
     const totalDeductibleGasto = deductibleItems.reduce((sum, item) => sum + (typeof item.Importe === 'number' ? item.Importe : 0), 0);
     
-    // Calcular el total deducible (IVA + Gasto)
     const totalDeducible = totalDeductibleIVA + totalDeductibleGasto;
     
-    // Configurar resumen de deducibles para mostrar en el informe
     const deductibleSummary = {
       ivaDeducible: totalDeductibleIVA,
       gastoDeducible: totalDeductibleGasto,
       totalDeducible: totalDeducible
     };
     
-    // Preparar datos de análisis para incluir en el informe
     
-    // Preparar datos de top 5 categorías
     const topCategories = {};
     
     if (reportData.summary && reportData.summary.categoryDistribution) {
@@ -6419,7 +6041,6 @@ exportExpensesReportToPDF(reportData, fileName, options) {
       });
     }
     
-    // Preparar datos de métodos de pago
     const paymentMethods = {};
     
     if (reportData.summary && reportData.summary.paymentMethodDistribution) {
@@ -6443,7 +6064,6 @@ exportExpensesReportToPDF(reportData, fileName, options) {
       monthlyTrend: reportData.summary && reportData.summary.monthlyDistribution ? reportData.summary.monthlyDistribution.slice(-6) : [] // Últimos 6 meses
     };
     
-    // Exportar usando exportManager
     const result = exportManager.exportData(dataToExport, {
       fileName,
       format: 'pdf',
@@ -6465,10 +6085,8 @@ exportExpensesReportToPDF(reportData, fileName, options) {
       deductibleColor: 'e6fffa', // Color verde claro para deducibles
       nonDeductibleColor: 'ffebee', // Color rojo claro para no deducibles
       
-      // Añadir resumen de deducibles
       deductibleSummary: deductibleSummary,
       
-      // Añadir análisis de egresos
       expenseAnalysis: expenseAnalysis
     });
     
@@ -6493,13 +6111,11 @@ exportExpensesReportToPDF(reportData, fileName, options) {
  */
 exportProductsReportToPDF(reportData, fileName, options) {
   try {
-    // Verificar que los datos necesarios estén disponibles
     if (!reportData || !reportData.summary || !reportData.products) {
       this.ui.showErrorMessage('Error', 'Datos insuficientes para generar el informe de productos en PDF.');
       return false;
     }
     
-    // Verificar que pdfMake esté disponible
     if (typeof pdfMake === 'undefined') {
       console.error('La biblioteca pdfMake no está disponible. No se puede generar el PDF.');
       this.ui.showErrorMessage('Error', 'No se puede generar el PDF porque faltan componentes necesarios.');
@@ -6508,7 +6124,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
     
     console.log('Iniciando creación del PDF de productos personalizado...');
     
-    // Crear el contenido del PDF
     const content = [];
     
     // 1. Añadir título del informe
@@ -6559,7 +6174,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       ['Ingresos Totales', `€${reportData.summary.totalRevenue.toFixed(2)}`]
     ];
     
-    // Añadir tabla de resumen
     content.push({
       table: {
         headerRows: 1,
@@ -6606,7 +6220,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       ]
     ];
     
-    // Añadir tabla de distribución de planes
     content.push({
       table: {
         headerRows: 1,
@@ -6643,7 +6256,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
     // Datos para la tabla de productos
     const productTableBody = [productTableHeaders];
     
-    // Añadir cada producto a la tabla
     if (reportData.summary.topProductsByRevenue) {
       reportData.summary.topProductsByRevenue.forEach((product, index) => {
         productTableBody.push([
@@ -6655,7 +6267,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       });
     }
     
-    // Añadir tabla de productos
     content.push({
       table: {
         headerRows: 1,
@@ -6695,7 +6306,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
     // Datos para la tabla de detalles
     const detailsTableBody = [detailsTableHeaders];
     
-    // Añadir cada producto detallado a la tabla
     let totalActive = 0;
     let totalMonthly = 0;
     let totalYearly = 0;
@@ -6712,7 +6322,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       totalRevenue += stats.totalRevenue || 0;
       totalCanceled += stats.canceledSubscriptions || 0;
       
-      // Añadir fila del producto
       detailsTableBody.push([
         product.id_carrera.toString(),
         product.nombre,
@@ -6724,7 +6333,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       ]);
     });
     
-    // Añadir fila de totales
     detailsTableBody.push([
       { text: 'TOTAL', bold: true },
       { text: '' },
@@ -6735,7 +6343,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       { text: totalCanceled.toString(), bold: true, alignment: 'right' }
     ]);
     
-    // Añadir tabla de detalles
     content.push({
       table: {
         headerRows: 1,
@@ -6759,7 +6366,6 @@ exportProductsReportToPDF(reportData, fileName, options) {
       }
     });
     
-    // Crear definición del documento
     const docDefinition = {
       content: content,
       styles: {
@@ -6806,11 +6412,9 @@ exportProductsReportToPDF(reportData, fileName, options) {
       }
     };
     
-    // Intentar cargar el logo si la URL está disponible
     if (options.logoUrl) {
       this.getImageAsDataURL(options.logoUrl || '/images/Imagotipo.webp')
         .then(logoDataUrl => {
-          // Añadir el logo al inicio del contenido
           docDefinition.content.unshift({
             image: logoDataUrl,
             width: 100,
@@ -6818,16 +6422,13 @@ exportProductsReportToPDF(reportData, fileName, options) {
             margin: [0, 0, 0, 10]
           });
           
-          // Crear y descargar el PDF
           this.createAndDownloadPDF(docDefinition, fileName);
         })
         .catch(error => {
           console.warn('No se pudo cargar el logo:', error);
-          // Continuar sin logo
           this.createAndDownloadPDF(docDefinition, fileName);
         });
     } else {
-      // Crear y descargar el PDF sin logo
       this.createAndDownloadPDF(docDefinition, fileName);
     }
     
@@ -6849,13 +6450,11 @@ exportProductsReportToPDF(reportData, fileName, options) {
  */
 exportComprehensiveReportToPDF(reportData, fileName, options) {
   try {
-    // Verificar que los datos necesarios estén disponibles
     if (!reportData || !reportData.executiveSummary) {
       this.ui.showErrorMessage('Error', 'Datos insuficientes para generar el informe integral en PDF.');
       return false;
     }
     
-    // Verificar que pdfMake esté disponible
     if (typeof pdfMake === 'undefined') {
       console.error('La biblioteca pdfMake no está disponible. No se puede generar el PDF.');
       this.ui.showErrorMessage('Error', 'No se puede generar el PDF porque faltan componentes necesarios.');
@@ -6864,7 +6463,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
     
     console.log('Iniciando creación del PDF de informe integral personalizado...');
     
-    // Crear el contenido del PDF
     const content = [];
     
     // 1. Añadir título del informe
@@ -6920,17 +6518,14 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       ['Tasa de Conversión', `${executiveSummary.conversionRate}%`]
     ];
     
-    // Añadir Ratio Ingresos/Gastos si está disponible
     if (executiveSummary.revenueVsExpensesRatio !== undefined) {
       executiveTableBody.push(['Ratio Ingresos/Gastos', executiveSummary.revenueVsExpensesRatio]);
     }
     
-    // Añadir Ingreso Promedio por Suscripción si está disponible
     if (executiveSummary.avgRevenuePerSub !== undefined) {
       executiveTableBody.push(['Ingreso Promedio por Suscripción', `€${executiveSummary.avgRevenuePerSub}`]);
     }
     
-    // Añadir tabla de resumen ejecutivo
     content.push({
       table: {
         headerRows: 1,
@@ -6977,11 +6572,9 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       // Datos para la tabla de métodos de pago
       const methodsTableBody = [methodsTableHeaders];
       
-      // Calcular correctamente los porcentajes
       const totalRevenue = reportData.revenueSummary.totalRevenue || 1; // Evitar división por cero
       const totalTransactions = reportData.revenueSummary.transactionCount || 1; // Evitar división por cero
       
-      // Añadir cada método de pago
       reportData.revenueSummary.methods.forEach(method => {
         methodsTableBody.push([
           method.method,
@@ -6992,7 +6585,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         ]);
       });
       
-      // Añadir tabla de métodos de pago
       content.push({
         table: {
           headerRows: 1,
@@ -7046,7 +6638,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
             ]
           ];
           
-          // Añadir tabla de resumen de impuestos
           content.push({
             table: {
               headerRows: 1,
@@ -7087,13 +6678,10 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       // Datos para la tabla de categorías
       const categoriesTableBody = [categoriesTableHeaders];
       
-      // Calcular correctamente los porcentajes y totales
       const totalExpenses = reportData.expensesSummary.totalWithTax || reportData.expensesSummary.totalAmount + reportData.expensesSummary.totalTax || 1; // Evitar división por cero
       const totalExpensesCount = reportData.expensesSummary.totalExpenses || 1; // Evitar división por cero
       
-      // Añadir cada categoría con el importe correcto que incluye impuestos
       reportData.expensesSummary.categoryDistribution.slice(0, 5).forEach(category => {
-        // Calcular el monto total correcto (base + impuesto)
         const categoryTotal = category.totalWithTax || (category.total + category.tax);
         
         categoriesTableBody.push([
@@ -7105,7 +6693,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         ]);
       });
       
-      // Añadir tabla de categorías
       content.push({
         table: {
           headerRows: 1,
@@ -7195,9 +6782,7 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
     // Datos para la tabla de productos principales
     const topProductsTableBody = [topProductsTableHeaders];
     
-    // Añadir cada producto principal a la tabla
     if (reportData.productsSummary && reportData.productsSummary.topProductsByRevenue) {
-      // Usar los datos directamente del resumen de productos
       reportData.productsSummary.topProductsByRevenue.forEach(product => {
         topProductsTableBody.push([
           product.name,
@@ -7212,14 +6797,12 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         topProductsTableBody.push([
           product.name,
           { text: `€${product.revenue.toFixed(2)}`, alignment: 'right' },
-          // Calcular porcentaje si no está disponible
           { text: `${((product.revenue / executiveSummary.totalRevenue) * 100).toFixed(2)}%`, alignment: 'right' },
           { text: product.subscriptions.toString(), alignment: 'right' }
         ]);
       });
     }
     
-    // Añadir tabla de productos principales
     content.push({
       table: {
         headerRows: 1,
@@ -7267,7 +6850,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         ]
       ];
       
-      // Añadir tabla de distribución de planes
       content.push({
         table: {
           headerRows: 1,
@@ -7326,7 +6908,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         ]
       ];
       
-      // Añadir tabla de resumen de suscripciones
       content.push({
         table: {
           headerRows: 1,
@@ -7370,7 +6951,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       // Datos para la tabla de tendencias
       const trendsTableBody = [trendsTableHeaders];
       
-      // Añadir cada mes a la tabla
       reportData.monthlyTrends.forEach(month => {
         trendsTableBody.push([
           month.label,
@@ -7382,7 +6962,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         ]);
       });
       
-      // Añadir tabla de tendencias
       content.push({
         table: {
           headerRows: 1,
@@ -7405,7 +6984,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       });
     }
     
-    // Crear definición del documento
     const docDefinition = {
       content: content,
       styles: {
@@ -7458,11 +7036,9 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       }
     };
     
-    // Intentar cargar el logo si la URL está disponible
     if (options.logoUrl) {
       this.getImageAsDataURL(options.logoUrl || '/images/Imagotipo.webp')
         .then(logoDataUrl => {
-          // Añadir el logo al inicio del contenido
           docDefinition.content.unshift({
             image: logoDataUrl,
             width: 100,
@@ -7470,16 +7046,13 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
             margin: [0, 0, 0, 10]
           });
           
-          // Crear y descargar el PDF
           this.createAndDownloadPDF(docDefinition, fileName);
         })
         .catch(error => {
           console.warn('No se pudo cargar el logo:', error);
-          // Continuar sin logo
           this.createAndDownloadPDF(docDefinition, fileName);
         });
     } else {
-      // Crear y descargar el PDF sin logo
       this.createAndDownloadPDF(docDefinition, fileName);
     }
     
@@ -7497,7 +7070,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
    * @param {string} fileName - Nombre del archivo
    */
   exportReportToCsv(reportData, fileName) {
-    // Determinar qué datos exportar
     let dataToExport = [];
     
     if (reportData.transactions) {
@@ -7533,7 +7105,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
         'Generado': new Date().toLocaleDateString('es-ES')
       }];
       
-      // Añadir datos del resumen según el tipo de informe
       if (reportData.summary) {
         Object.entries(reportData.summary).forEach(([key, value]) => {
           // No incluir arrays, solo valores simples
@@ -7544,7 +7115,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       }
     }
     
-    // Exportar usando el exportManager
     exportManager.exportToCSV(dataToExport, {
       fileName,
       csvDelimiter: ';'
@@ -7555,23 +7125,19 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
    * Guarda un informe programado
    */
   saveScheduledReport() {
-    // Obtener datos del formulario
     const name = document.getElementById('scheduled-report-name').value;
     const type = document.getElementById('scheduled-report-type').value;
     const frequency = document.getElementById('scheduled-report-frequency').value;
     const format = document.getElementById('scheduled-report-format').value;
     const recipients = document.getElementById('scheduled-report-recipients').value;
     
-    // Validar datos
     if (!name || !type || !frequency || !format) {
       this.ui.showErrorMessage('Error', 'Por favor, completa todos los campos obligatorios');
       return;
     }
     
-    // Calcular próxima ejecución
     const nextRun = this.calculateNextRunDate(frequency);
     
-    // Crear informe programado
     const scheduledReport = {
       id: 'scheduled_' + Date.now(),
       name,
@@ -7584,13 +7150,10 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
       active: true
     };
     
-    // Añadir a la lista
     this.scheduledReports.push(scheduledReport);
     
-    // Guardar en localStorage
     localStorage.setItem('scheduledReports', JSON.stringify(this.scheduledReports));
     
-    // Cerrar modal
     if (this.ui.modals.scheduleReportModal) {
       this.ui.modals.scheduleReportModal.hide();
     }
@@ -7681,7 +7244,6 @@ exportComprehensiveReportToPDF(reportData, fileName, options) {
  */
 exportRevenueReportToPDF(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación
     const dataToExport = this.prepareRevenueDataForExport(reportData);
     
     // Título del informe
@@ -7690,14 +7252,10 @@ exportRevenueReportToPDF(reportData, fileName, options) {
     // Opciones específicas para PDF
     const pdfOptions = {
       pdf: {
-        // Usar formato apaisado (landscape) para dar más espacio horizontal
         pageSize: 'A4',
         orientation: 'landscape',
-        // Activar optimizaciones para tablas anchas
         optimizeForWideTables: true,
-        // Usar reducción de fuente para acomodar más datos
         fontSizeReduction: 'medium',
-        // Comprimir imágenes para reducir tamaño
         compressImages: true,
         // Asegurar que las tablas se ajusten a la página
         fitToPage: true,
@@ -7715,7 +7273,6 @@ exportRevenueReportToPDF(reportData, fileName, options) {
       'Factura': 15
     };
     
-    // Configurar columnas con totales
     const columnsWithTotals = [
       'Importe (EUR)', 
       'IVA (EUR)', 
@@ -7723,7 +7280,6 @@ exportRevenueReportToPDF(reportData, fileName, options) {
       'Ingreso Neto (EUR)'
     ];
     
-    // Configurar formatos de moneda para columnas
     const currencyFormats = {
       'Importe': '#,##0.00',
       'Importe (EUR)': '€#,##0.00',
@@ -7735,7 +7291,6 @@ exportRevenueReportToPDF(reportData, fileName, options) {
       'Ingreso Neto (EUR)': '€#,##0.00'
     };
     
-    // Definir anchos de columna para optimizar espacio en PDF
     const columnWidths = {
       'ID Transacción': 35,
       'ID Usuario': 25,
@@ -7756,10 +7311,8 @@ exportRevenueReportToPDF(reportData, fileName, options) {
       'Factura': 30
     };
     
-    // Preparar análisis para incluir en el informe
     const reportAnalysis = this.prepareRevenueAnalysis(reportData);
     
-    // Exportar usando exportManager con configuración especializada para PDF
     exportManager.exportData(dataToExport, {
       fileName,
       format: 'pdf',
@@ -7799,13 +7352,11 @@ exportRevenueReportToPDF(reportData, fileName, options) {
  */
 exportTaxReportToPDF(reportData, fileName, options) {
   try {
-    // Verificar que los datos necesarios estén disponibles
     if (!reportData || !reportData.summary || !reportData.taxBreakdown) {
       this.ui.showErrorMessage('Error', 'Datos insuficientes para generar el informe de impuestos en PDF.');
       return false;
     }
     
-    // Verificar que pdfMake esté disponible
     if (typeof pdfMake === 'undefined') {
       console.error('La biblioteca pdfMake no está disponible. No se puede generar el PDF.');
       this.ui.showErrorMessage('Error', 'No se puede generar el PDF porque faltan componentes necesarios.');
@@ -7815,7 +7366,6 @@ exportTaxReportToPDF(reportData, fileName, options) {
     console.log('Iniciando creación del PDF de impuestos personalizado...');
     console.log(`Datos disponibles: ${reportData.taxBreakdown.length} países`);
     
-    // Crear el contenido del PDF
     const content = [];
     
     // 1. Añadir título del informe
@@ -7885,7 +7435,6 @@ exportTaxReportToPDF(reportData, fileName, options) {
       ]
     ];
     
-    // Añadir tabla de resumen
     content.push({
       table: {
         headerRows: 1,
@@ -7925,14 +7474,12 @@ exportTaxReportToPDF(reportData, fileName, options) {
     // Datos para la tabla de países
     const countryTableBody = [countryTableHeaders];
     
-    // Añadir cada país a la tabla
     let totalTaxBase = 0;
     let totalTaxAmount = 0;
     let totalBilled = 0;
     let totalTransactions = 0;
     
     reportData.taxBreakdown.forEach((country, index) => {
-      // Calcular el total facturado para este país
       const taxBase = country.taxBase || 0;
       const taxAmount = country.total || 0;
       const totalBilledForCountry = taxBase + taxAmount;
@@ -7943,20 +7490,17 @@ exportTaxReportToPDF(reportData, fileName, options) {
       totalBilled += totalBilledForCountry;
       totalTransactions += country.count || 0;
       
-// Procesar la tasa de impuesto de manera segura - MODIFICADO para mostrar como decimal sin % y sin redondeo
 let rateValue = 0.0;
 let rateDisplay = '0';
 
 try {
   if (typeof country.rate === 'string') {
     // Si es un string, intentar extraer el valor numérico
-    // Eliminar cualquier símbolo de porcentaje o caracteres no numéricos
     const cleanRate = country.rate.replace(/[^0-9.,]/g, '').replace(',', '.');
     rateValue = parseFloat(cleanRate);
     
     // Si el valor original tenía un punto decimal, preservar la cantidad de decimales
     if (cleanRate.includes('.')) {
-      // Usar el string limpio para la visualización, evitando el redondeo
       rateDisplay = cleanRate;
     } else {
       // Si no tenía punto decimal, mostrar como entero
@@ -7966,7 +7510,6 @@ try {
     // Si ya es un número, usarlo directamente pero sin redondear
     rateValue = country.rate;
     
-    // Convertir a string para evitar el redondeo
     // Si el número tiene decimales, los preservamos
     if (rateValue % 1 !== 0) {
       // Tiene decimales, convertir a string para preservarlos
@@ -7977,7 +7520,6 @@ try {
     }
   }
   
-  // Verificar si es un número válido
   if (isNaN(rateValue)) {
     rateValue = 0.0;
     rateDisplay = '0';
@@ -7988,7 +7530,6 @@ try {
   rateDisplay = '0';
 }
       
-      // Añadir fila a la tabla
       countryTableBody.push([
         country.name,
         country.code,
@@ -8000,7 +7541,6 @@ try {
       ]);
     });
     
-    // Añadir fila de totales
     countryTableBody.push([
       { text: 'TOTAL', bold: true },
       { text: '' },
@@ -8011,7 +7551,6 @@ try {
       { text: totalTransactions.toString(), bold: true, alignment: 'right' }
     ]);
     
-    // Añadir tabla de países
     content.push({
       table: {
         headerRows: 1,
@@ -8035,7 +7574,6 @@ try {
       }
     });
     
-    // Crear definición del documento
     const docDefinition = {
       content: content,
       styles: {
@@ -8082,11 +7620,9 @@ try {
       }
     };
     
-    // Intentar cargar el logo si la URL está disponible
     if (options.logoUrl) {
       this.getImageAsDataURL(options.logoUrl || '/images/Imagotipo.webp')
         .then(logoDataUrl => {
-          // Añadir el logo al inicio del contenido
           docDefinition.content.unshift({
             image: logoDataUrl,
             width: 100,
@@ -8094,16 +7630,13 @@ try {
             margin: [0, 0, 0, 10]
           });
           
-          // Crear y descargar el PDF
           this.createAndDownloadPDF(docDefinition, fileName);
         })
         .catch(error => {
           console.warn('No se pudo cargar el logo:', error);
-          // Continuar sin logo
           this.createAndDownloadPDF(docDefinition, fileName);
         });
     } else {
-      // Crear y descargar el PDF sin logo
       this.createAndDownloadPDF(docDefinition, fileName);
     }
     
@@ -8122,16 +7655,13 @@ try {
  */
 createAndDownloadPDF(docDefinition, fileName) {
   try {
-    // Mostrar mensaje de generación
     this.ui.showSuccessMessage('Generando PDF, espere un momento...');
     
-    // Crear el PDF
     const pdfDoc = pdfMake.createPdf(docDefinition);
     
     // Descargar el archivo
     pdfDoc.download(`${fileName}.pdf`);
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage('El informe ha sido exportado a PDF correctamente');
   } catch (error) {
     console.error('Error al generar PDF:', error);
@@ -8146,7 +7676,6 @@ createAndDownloadPDF(docDefinition, fileName) {
  */
 getImageAsDataURL(url) {
   return new Promise((resolve, reject) => {
-    // Verificar si la URL está vacía
     if (!url) {
       reject(new Error('URL de imagen vacía'));
       return;
@@ -8187,12 +7716,10 @@ inspectReportDataStructure(reportData, reportType) {
   try {
     console.log('Propiedades principales:', Object.keys(reportData));
     
-    // Verificar propiedades específicas según el tipo de informe
     if (reportType === 'taxes') {
       if (reportData.summary) {
         console.log('Propiedades del resumen:', Object.keys(reportData.summary));
         
-        // Mostrar valores y tipos de datos en el resumen
         Object.entries(reportData.summary).forEach(([key, value]) => {
           console.log(`- summary.${key}: ${value} (${typeof value})`);
         });
@@ -8203,7 +7730,6 @@ inspectReportDataStructure(reportData, reportType) {
       if (reportData.taxBreakdown) {
         console.log('Total países en taxBreakdown:', reportData.taxBreakdown.length);
         
-        // Mostrar ejemplo del primer país si existe
         if (reportData.taxBreakdown.length > 0) {
           const sampleCountry = reportData.taxBreakdown[0];
           console.log('Estructura de ejemplo de país:');
@@ -8224,7 +7750,6 @@ inspectReportDataStructure(reportData, reportType) {
       if (reportData.transactions) {
         console.log('Total transacciones:', reportData.transactions.length);
         
-        // Mostrar ejemplo de la primera transacción si existe
         if (reportData.transactions.length > 0) {
           console.log('Estructura de ejemplo de transacción:', 
             Object.keys(reportData.transactions[0]));
@@ -8238,7 +7763,6 @@ inspectReportDataStructure(reportData, reportType) {
       if (reportData.subscriptions) {
         console.log('Total suscripciones:', reportData.subscriptions.length);
         
-        // Mostrar ejemplo de la primera suscripción si existe
         if (reportData.subscriptions.length > 0) {
           console.log('Estructura de ejemplo de suscripción:', 
             Object.keys(reportData.subscriptions[0]));
@@ -8252,7 +7776,6 @@ inspectReportDataStructure(reportData, reportType) {
       if (reportData.expenses) {
         console.log('Total egresos:', reportData.expenses.length);
         
-        // Mostrar ejemplo del primer egreso si existe
         if (reportData.expenses.length > 0) {
           console.log('Estructura de ejemplo de egreso:', 
             Object.keys(reportData.expenses[0]));
@@ -8260,7 +7783,6 @@ inspectReportDataStructure(reportData, reportType) {
       }
     }
     
-    // Verificar algunos valores comunes que pueden causar problemas
     console.log('Valores críticos:');
     console.log('- title:', reportData.title);
     console.log('- period:', reportData.period);
@@ -8281,10 +7803,8 @@ inspectReportDataStructure(reportData, reportType) {
  */
 exportSubscriptionsReportToPDF(reportData, fileName, options) {
   try {
-    // Preparar los datos para exportación en formato optimizado para PDF
     const dataToExport = this.prepareSubscriptionsDataForExport(reportData);
     
-    // Verificar si hay datos para exportar
     if (!dataToExport || dataToExport.length === 0) {
       this.ui.showErrorMessage('Error', 'No hay datos de suscripciones para exportar a PDF.');
       return false;
@@ -8292,7 +7812,6 @@ exportSubscriptionsReportToPDF(reportData, fileName, options) {
     
     console.log(`Preparando exportación de ${dataToExport.length} suscripciones a PDF...`);
     
-    // Contar suscripciones por estado para el resumen
     const statusCounts = {
       'Activa': 0,
       'Pausada': 0,
@@ -8310,12 +7829,10 @@ exportSubscriptionsReportToPDF(reportData, fileName, options) {
     // Solo la columna Precio debería tener total
     const columnsWithTotals = ['Precio'];
     
-    // Configurar formatos de moneda para columnas
     const currencyFormats = {
       'Precio': '€#,##0.00'
     };
     
-    // Definir anchos de columna optimizados para PDF
     const columnWidths = {
       'ID Suscripción': 40,
       'Usuario': 80,
@@ -8349,7 +7866,6 @@ exportSubscriptionsReportToPDF(reportData, fileName, options) {
       }
     };
     
-    // Exportar usando exportManager
     const result = exportManager.exportData(dataToExport, {
       fileName,
       format: 'pdf',
@@ -8375,7 +7891,6 @@ exportSubscriptionsReportToPDF(reportData, fileName, options) {
         'Expirada': 'f5f5f5'  // Gris claro
       },
       
-      // Añadir resumen de estados
       statusSummary: statusCounts
     });
     

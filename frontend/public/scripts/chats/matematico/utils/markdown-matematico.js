@@ -53,7 +53,6 @@ const REGEX = {
 };
 
 // ========================================
-// FUNCIÓN PRINCIPAL MEJORADA
 // ========================================
 
 /**
@@ -65,12 +64,10 @@ export function parseMarkdownToHTML(markdownText) {
   // 1. Validación y normalización inicial
   if (!markdownText) return '';
   
-  // Normalizar saltos de línea para consistencia
   const normalizedText = markdownText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   
   // 2. Optimización: bypass para texto plano sin markdown
   if (!containsMarkdownElements(normalizedText)) {
-    // Para texto plano, convertir saltos de línea simples a <br> y separar párrafos
     const paragraphs = normalizedText.split(/\n\s*\n+/);
     return paragraphs.map(p => 
       `<p>${p.replace(/\n/g, '<br>')}</p>`
@@ -80,7 +77,6 @@ export function parseMarkdownToHTML(markdownText) {
   // 3. Pre-procesamiento para características específicas
   let processedText = preProcessInlineHorizontalRules(normalizedText);
   
-  // 4. 🌟 FASE 1: PROTECCIÓN DE CONTENIDO ESPECIAL (del framework)
   
   // Proteger fórmulas LaTeX/matemáticas primero (usando TU sistema)
   const { text: textWithoutLatex, blocks: latexBlocks } = protectContentBlocks(
@@ -147,7 +143,6 @@ export function parseMarkdownToHTML(markdownText) {
     ]
   );
 
-  // 5. 🌟 FASE 2: PROCESAMIENTO DE ELEMENTOS MARKDOWN (mejorado del framework)
   let html = processableText;
 
   // BLOQUE 1: Procesamiento de elementos de bloque (orden optimizado)
@@ -170,7 +165,6 @@ export function parseMarkdownToHTML(markdownText) {
   html = html.replace(/\^(.*?)\^/g, '<sup>$1</sup>');
   html = html.replace(/~(.*?)~/g, '<sub>$1</sub>');
   
-  // Procesar negritas e itálicas con enfoque mejorado (corrige el problema \n**texto**)
   html = processEmphasisImproved(html);
 
   // BLOQUE 4: Listas (completamente mejoradas del framework)
@@ -183,9 +177,7 @@ export function parseMarkdownToHTML(markdownText) {
   // BLOQUE 6: Párrafos y saltos de línea (algoritmo mejorado del framework)
   html = processParagraphsAndLineBreaksImproved(html);
 
-  // 6. 🌟 FASE 3: RESTAURACIÓN DE CONTENIDO PROTEGIDO
   
-  // Restaurar LaTeX usando TU sistema de detección y procesamiento
   html = restoreContentBlocks(html, latexBlocks, (block) => {
     if (block.type === 'display-latex') {
       // Mantener tu lógica existente para detectar contexto
@@ -208,7 +200,6 @@ export function parseMarkdownToHTML(markdownText) {
     return '';
   });
 
-  // Restaurar bloques de código (mejorado)
   html = restoreContentBlocks(html, codeBlocks, (block, id) => {
     if (block.type === 'code-block') {
       if (isMermaidCode(block.content.code, block.content.language)) {
@@ -222,7 +213,6 @@ export function parseMarkdownToHTML(markdownText) {
     return '';
   });
 
-  // Restaurar enlaces e imágenes (mejorado)
   html = restoreContentBlocks(html, linkImageBlocks, (block) => {
     if (block.type === 'link') {
       let safeUrl = block.content.url.trim();
@@ -243,7 +233,6 @@ export function parseMarkdownToHTML(markdownText) {
     else if (block.type === 'image') {
       let safeSrc = block.content.src.trim();
       
-      // Sanitizar URL
       safeSrc = encodeURI(safeSrc)
         .replace(/\|/g, '%7C')
         .replace(/"/g, '%22')
@@ -254,7 +243,6 @@ export function parseMarkdownToHTML(markdownText) {
       // Texto alternativo usando TU función sanitizeText
       const safeAlt = sanitizeText(block.content.alt || '');
 
-      // Procesar atributos adicionales
       let attrHTML = '';
       if (block.content.attributes) {
         const attrMatches = block.content.attributes.match(/(\w+)=(['"]?)([^'"=\s]+)\2/g) || [];
@@ -265,7 +253,6 @@ export function parseMarkdownToHTML(markdownText) {
         });
       }
 
-      // Generar HTML de imagen
       return createImagePreviewHTML(safeSrc, safeAlt, attrHTML);
     }
     return '';
@@ -281,7 +268,6 @@ export function parseMarkdownToHTML(markdownText) {
 }
 
 // ========================================
-// 🌟 FUNCIONES DEL FRAMEWORK MEJORADAS
 // ========================================
 
 /**
@@ -321,7 +307,6 @@ function restoreContentBlocks(text, blocks, formatter) {
  * 🌟 MEJORADA: Procesamiento de énfasis que corrige el problema \n**texto** (del framework)
  */
 function processEmphasisImproved(html) {
-  // Procesar negritas primero para evitar conflictos - con mejor handling de saltos de línea
   let processed = html.replace(/\*\*((?:[^*\n]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>');
   
   // Luego procesar itálicas - evitando conflictos con negritas ya procesadas
@@ -345,7 +330,6 @@ function processListsImproved(htmlText) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trimRight();
 
-    // Detectar líneas vacías
     if (line.trim() === '') {
       if (inList) {
         result.push('<div class="list-spacer"></div>');
@@ -355,7 +339,6 @@ function processListsImproved(htmlText) {
       continue;
     }
 
-    // Detectar tipos de lista
     const bulletMatch = line.match(/^([ \t]*)([-*+])[ \t]+(.+)$/);
     const numberMatch = line.match(/^([ \t]*)(\d+)\.[ \t]+(.+)$/);
 
@@ -380,7 +363,6 @@ function processListsImproved(htmlText) {
       }
       // Ya estamos en una lista
       else {
-        // Verificar si el stack no está vacío
         if (listStack.length === 0) {
           let startAttr = '';
           if (!isBullet && match[2] !== '1') {
@@ -457,12 +439,10 @@ function processListsImproved(htmlText) {
         }
       }
 
-      // Añadir nuevo ítem
       result.push(`<li class="compact-item">${content}`);
     }
     // No es un ítem de lista
     else if (inList) {
-      // Cerrar ítem y listas
       if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
         result[result.length - 1] += '</li>';
       }
@@ -480,7 +460,6 @@ function processListsImproved(htmlText) {
     }
   }
 
-  // Cerrar listas pendientes
   if (inList) {
     if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
       result[result.length - 1] += '</li>';
@@ -512,13 +491,11 @@ function processParagraphsAndLineBreaksImproved(html) {
     const line = lines[i];
     const trimmedLine = line.trim();
     
-    // Detectar elementos de bloque
     const openMatches = [...line.matchAll(/<([a-z][a-z0-9]*)[^>]*>/gi)];
     const closeMatches = [...line.matchAll(/<\/([a-z][a-z0-9]*)>/gi)];
     
     const isHorizontalRule = trimmedLine === '<hr>';
     
-    // Rastrear elementos de bloque abiertos/cerrados
     for (const match of openMatches) {
       const tag = match[1].toLowerCase();
       if (['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'th', 'td', 
@@ -537,7 +514,6 @@ function processParagraphsAndLineBreaksImproved(html) {
       inBlockElement = blockStack.length > 0;
     }
     
-    // Lógica de procesamiento
     if (isHorizontalRule) {
       if (currentParagraph.length > 0) {
         result.push('<p>' + currentParagraph.join('<br>') + '</p>');
@@ -693,7 +669,6 @@ function processMarkdownTable(tableLines) {
   const separatorLine = tableLines[1];
   const dataLines = tableLines.slice(2);
 
-  // Extraer alineación de columnas
   const alignments = separatorLine
     .split('|')
     .filter((cell, index, array) => index > 0 && index < array.length - 1)
@@ -705,13 +680,11 @@ function processMarkdownTable(tableLines) {
       return '';
     });
 
-  // Extraer encabezados
   const headers = headerLine
     .split('|')
     .filter((cell, index, array) => index > 0 && index < array.length - 1)
     .map(cell => cell.trim());
 
-  // Extraer filas de datos
   const rows = dataLines.map(line => {
     return line
       .split('|')
@@ -719,7 +692,6 @@ function processMarkdownTable(tableLines) {
       .map(cell => cell.trim());
   });
 
-  // Construir HTML
   let tableHTML = '<div class="table-container"><table class="data-table"><thead><tr>';
   
   // Encabezados

@@ -49,7 +49,6 @@ import {
 } from '../../../shared/dom-helpers.js';
 import { showWelcomeMessage, registerSendMessageHandler, clearDomCache, getCachedElement } from '../ui/welcome-message-agente.js';
 import { initCharacterLimit, exceedsLimit, showLimitExceededAlert } from '../../../shared/character-limit.js';
-// ✅ AÑADIR esta importación después de las existentes
 import ChatNoticesSystem from '../../../shared/chat-notices.js';
 const {
   initChatNotices,
@@ -131,10 +130,8 @@ class EventManager {
 
     const listenerKey = key || `${element.id || 'element'}_${event}_${Date.now()}`;
 
-    // Limpiar listener previo si existe
     this.remove(listenerKey);
 
-    // Usar la función existente de dom-helpers.js
     const success = addEvent(element, event, handler, options);
 
     if (success) {
@@ -156,7 +153,6 @@ class EventManager {
   remove(key) {
     const listener = this.listeners.get(key);
     if (listener) {
-      // Usar la función existente de dom-helpers.js
       const success = removeEvent(listener.element, listener.event, listener.handler);
       if (success) {
         this.listeners.delete(key);
@@ -178,10 +174,8 @@ class EventManager {
       }
     }
 
-    // Usar la función existente de dom-helpers.js
     const success = removeAllEvents(element);
 
-    // Limpiar nuestro tracking
     toRemove.forEach(key => this.listeners.delete(key));
 
     return success;
@@ -210,20 +204,17 @@ class ChatUtils {
     selectors.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
         if (el && el.parentNode) {
-          // Usar función existente de dom-helpers.js
           removeAllEvents(el);
           el.remove();
         }
       });
     });
 
-    // Limpiar paneles matemáticos específicos de bienvenida
     ['welcome-mathPanel', 'welcome-math-editor-container'].forEach(id => {
       const panel = document.getElementById(id);
       if (panel) panel.remove();
     });
 
-    // Limpiar referencias globales
     if (window.welcomeFiles) {
       window.welcomeFiles.clear();
       window.welcomeFiles = null;
@@ -277,30 +268,25 @@ class ChatUtils {
    * Limpia archivos adjuntos con patrón unificado
    */
   static async cleanupFileAttachments() {
-    // Cerrar contenedor de vista previa
     const filePreviewContainer = domManager.filePreviewContainer;
     if (filePreviewContainer) {
       const previewElements = filePreviewContainer.querySelectorAll('.file-preview');
       previewElements.forEach(element => {
-        // Usar función existente de dom-helpers.js
         removeAllEvents(element);
       });
       filePreviewContainer.innerHTML = '';
     }
 
-    // Limpiar función nativa si está disponible
     if (typeof clearAttachedFiles === 'function') {
       clearAttachedFiles();
     }
 
-    // Limpiar contenedor de upload
     const fileUploadContainer = domManager.fileUploadContainer;
     if (fileUploadContainer) {
       removeClass(fileUploadContainer, 'active');
       removeClass(fileUploadContainer, 'dragging');
     }
 
-    // Limpiar URLs de objetos
     if (window.objectURLs && Array.isArray(window.objectURLs)) {
       window.objectURLs.forEach(url => {
         if (url && typeof URL !== 'undefined' && URL.revokeObjectURL) {
@@ -354,7 +340,6 @@ class ChatUtils {
    * Configura el controlador de aborto con sincronización
    */
 static setupAbortController() {
-  // ✅ LIMPIAR CONTROLADORES EXISTENTES DE MANERA ROBUSTA
   const controllersToAbort = [
     window.currentAbortController,
     window.currentFetchController,
@@ -373,18 +358,15 @@ static setupAbortController() {
 
   const abortController = new AbortController();
   
-  // ✅ VERIFICACIÓN DE CREACIÓN EXITOSA
   if (!abortController || !abortController.signal) {
     console.error('❌ Error: AbortController no se creó correctamente');
     throw new Error('No se pudo crear AbortController');
   }
   
-  // ✅ SINCRONIZACIÓN SÍNCRONA PARA PRODUCCIÓN
   window.currentAbortController = abortController;
   window.currentFetchController = abortController;
   window.fetchController = abortController;
 
-  // ✅ SINCRONIZACIÓN ASÍNCRONA COMO RESPALDO
   try {
     import('../ui/ui-manager-agente.js').then(module => {
       if (typeof module.setCurrentFetchController === 'function') {
@@ -408,7 +390,6 @@ static setupAbortController() {
    * Usa clearManagedTimeouts de dom-helpers.js
    */
   static cleanupTimeouts() {
-    // Usar función existente de dom-helpers.js
     clearManagedTimeouts();
   }
 
@@ -449,11 +430,9 @@ let pendingChatSwitch = null;
  * Inicializa el controlador de chat con gestión optimizada
  */
 export function initChatController() {
-  // Limpiar gestores para reinicio limpio
   domManager.clearAll();
   eventManager.removeAll();
 
-  // Cargar y limpiar chats problemáticos de forma más robusta
   Promise.all([
     import('../utils/chat-error-handler-agente.js'),
     import('../api/chat-agente.js'),
@@ -482,12 +461,10 @@ export function initChatController() {
       console.warn('Error al cargar módulos de manejo de errores:', error);
     });
 
-  // Inicializar limitador de caracteres para el textarea principal
   const textarea = domManager.textarea;
   if (textarea) {
     initializeCharacterLimit(textarea);
 
-    // Configurar validación de límite en evento input
     eventManager.add(textarea, 'input', function () {
       if (typeof exceedsLimit === 'function' && textarea.value) {
         const isExceeded = exceedsLimit(textarea.value);
@@ -496,13 +473,11 @@ export function initChatController() {
     }, false, 'main-textarea-limit-validation');
   }
 
-  // Inicializar en el textarea de nuevo chat si existe
   const welcomeTextarea = document.querySelector('#welcome-message-input');
   if (welcomeTextarea) {
     initializeCharacterLimit(welcomeTextarea);
   }
 
-  // Escuchar cambios de textarea globalmente para mantener la validación
   eventManager.add(document, 'focusin', function (e) {
     if (e.target.tagName === 'TEXTAREA') {
       if (!e.target._hasLimitHandler && typeof initCharacterLimit === 'function') {
@@ -512,26 +487,20 @@ export function initChatController() {
     }
   }, false, 'global-textarea-limit-init');
 
-  // Registrar manejador de mensajes para la pantalla de bienvenida
   registerSendMessageHandler(handleSendMessage);
 
-  // Verificar si hay un chat en la URL
   checkInitialChatFromURL();
 
-  // Configurar eventos específicos de chat
   setupChatEventListeners();
   setupMessageRenderingInterceptor();
   setupMessageObserver();
 
-  // Procesar mensajes existentes si los hay
   setTimeout(() => {
     processAllExistingMessages();
   }, 1000);
 
-  // Configurar el observer para scroll en móviles
   setupScrollObserver();
 
-  // ✅ NUEVO: Inicializar sistema de avisos al final
   try {
     initChatNotices({ variant: 'agente' });
     console.log('✅ Sistema de avisos inicializado para agente');
@@ -588,19 +557,16 @@ function setupChatEventListeners() {
 }
 
 function setupScrollObserver() {
-  // Limpiar observador existente si hay alguno
   if (window.chatMessagesObserver) {
     window.chatMessagesObserver.disconnect();
   }
 
-  // Esperar a que el DOM esté completamente cargado
   setTimeout(() => {
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages && window.MutationObserver) {
       const observer = new MutationObserver((mutations) => {
         // Solo aplicar en móviles y cuando no estemos en pantalla de bienvenida
         if (window.innerWidth < 768 && !document.querySelector('.welcome-message')) {
-          // Usar setTimeout para dar tiempo a la renderización
           setTimeout(() => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
           }, 50);
@@ -613,7 +579,6 @@ function setupScrollObserver() {
         characterData: true
       });
 
-      // Guardar referencia para limpieza posterior
       window.chatMessagesObserver = observer;
     }
   }, 500); // Esperar a que todo esté cargado
@@ -734,7 +699,6 @@ function constructSimplifiedMultimodalContent(text, files) {
 
   let html = '<div class="multimodal-container">';
 
-  // Agregar texto si existe
   if (text && text.trim()) {
     html += `<div class="multimodal-text">${parseMarkdownToHTML(text)}</div>`;
   }
@@ -747,9 +711,7 @@ function constructSimplifiedMultimodalContent(text, files) {
         if (file.type === 'image') {
           // ⭐ MANEJO SEGURO DE IMÁGENES ⭐
           if (file.data && file.data.base64) {
-            // Validar que el base64 sea válido
             try {
-              // Verificar formato de data URL
               if (file.data.base64.startsWith('data:') && file.data.base64.includes('base64,')) {
                 html += `
                   <div class="chat-image-item clickable">
@@ -872,7 +834,6 @@ function constructSimplifiedMultimodalContent(text, files) {
       } catch (fileError) {
         console.error(`❌ Error procesando archivo ${index + 1}:`, fileError);
 
-        // Mostrar placeholder de error
         html += `
           <div class="attachment-indicator error">
             <i class='bx bx-error-circle'></i>
@@ -918,7 +879,6 @@ function processServerResponseDocuments(data, messageElement) {
         doc.name
       ].filter(Boolean);
 
-      // Mapear todos los nombres posibles al mismo documento
       names.forEach(name => {
         if (!serverDocsByName.has(name)) {
           serverDocsByName.set(name, { doc, used: false });
@@ -983,7 +943,6 @@ function processServerResponseDocuments(data, messageElement) {
         tempPreview.style.opacity = '0.6';
         tempPreview.title = 'Documento no disponible (error al procesar)';
 
-        // Agregar indicador visual de error
         const icon = tempPreview.querySelector('.document-icon');
         if (icon) {
           icon.className = 'bx bx-error-circle document-icon';
@@ -1000,7 +959,6 @@ function processServerResponseDocuments(data, messageElement) {
         if (typeof activateDocumentEvents === 'function') {
           activateDocumentEvents(messageElement);
         } else {
-          // Importar dinámicamente la función
           import('./content-processing-agente.js').then(module => {
             if (module.activateDocumentEvents) {
               module.activateDocumentEvents(messageElement);
@@ -1019,7 +977,6 @@ function processServerResponseDocuments(data, messageElement) {
  * ⭐ NUEVA: Detecta y procesa JSON doblemente escapado ⭐
  */
 function processEscapedJSON(content) {
-  // Verificar si el contenido es un string que parece JSON escapado
   if (typeof content === 'string' &&
     content.trim().startsWith('"{') &&
     content.trim().endsWith('}"')) {
@@ -1035,7 +992,6 @@ function processEscapedJSON(content) {
 
       console.log('✅ JSON parseado exitosamente:', parsedData);
 
-      // Verificar si es contenido multimodal
       if ((parsedData.hasDocuments && parsedData.documents) ||
         (parsedData.hasImage && parsedData.images)) {
 
@@ -1109,7 +1065,6 @@ function setupMessageRenderingInterceptor() {
  */
 function processMessageElement(messageElement) {
   try {
-    // Buscar elementos que puedan contener JSON
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
 
     textElements.forEach(textElement => {
@@ -1129,7 +1084,6 @@ function processMessageElement(messageElement) {
           textElement.innerHTML = processedContent;
           textElement.setAttribute('data-processed', 'true');
 
-          // Activar eventos de click para documentos
           setTimeout(() => {
             activateDocumentEvents(textElement);
           }, 50);
@@ -1176,7 +1130,6 @@ function formatMultimodalContentSync(jsonData) {
 
   let html = '<div class="multimodal-container">';
 
-  // Agregar texto si existe y no es consulta por defecto
   const cleanedText = text.trim();
   const isDefaultQuery = [
     "Consulta con imagen",
@@ -1306,7 +1259,6 @@ function processExistingMessage(messageElement) {
           if (processedHTML !== content) {
             textElement.innerHTML = processedHTML;
 
-            // Activar eventos de click para documentos
             setTimeout(() => {
               activateDocumentEvents(textElement);
             }, 100);
@@ -1439,7 +1391,6 @@ async function handleYouTubeProcessingInNewChat(originalMessage, newChatId) {
     localStorage.setItem('youtubeProcessingChat', newChatId);
 
     // 3. Iniciar verificación de estado pero con un pequeño retraso
-    // para dar tiempo a que el backend asocie el procesamiento con el nuevo chat
     setTimeout(() => {
       startProcessingCheck(newChatId);
     }, 2000);
@@ -1448,7 +1399,6 @@ async function handleYouTubeProcessingInNewChat(originalMessage, newChatId) {
     // por si acaso la primera verificación falla
     setTimeout(async () => {
       try {
-        // Verificar estado actual del procesamiento
         const response = await fetch(`/api/video-transcription/chat/${newChatId}/video-processing-status`);
         const data = await response.json();
 
@@ -1458,7 +1408,6 @@ async function handleYouTubeProcessingInNewChat(originalMessage, newChatId) {
             hideYouTubeProcessingLoader();
           }
 
-          // Actualizar mensajes y mostrar notificación
           if (typeof refreshChatWithNewMessages === 'function') {
             await refreshChatWithNewMessages(newChatId);
           }
@@ -1468,11 +1417,9 @@ async function handleYouTubeProcessingInNewChat(originalMessage, newChatId) {
             "Acadel terminó de analizar tu contenido audiovisual con precisión académica"
           );
 
-          // Actualizar interfaz para mostrar la transcripción
           import('../components/youtube-panel.js').then(module => {
             if (module.youtubePanel && typeof module.youtubePanel.checkForVideo === 'function') {
               module.youtubePanel.checkForVideo();
-              // INSERTAR AQUÍ - Forzar scroll después de procesar YouTube
               if (window.innerWidth < 768) {
                 setTimeout(() => {
                   const chatMessages = document.querySelector('.chat-messages');
@@ -1588,7 +1535,6 @@ const ACADEL_THINKING_MESSAGES = [
   }
 ];
 
-// ⏳ ARRAY DE MENSAJES VARIADOS PARA "OPERACIÓN LENTA" (8+ segundos) - CONOCIMIENTO GENERAL
 const ACADEL_PATIENCE_MESSAGES = [
   // Mensajes clásicos de paciencia
   {
@@ -1713,7 +1659,6 @@ function getRandomPatienceMessage() {
  * 5. Notificaciones para procesamiento de archivos
  */
 export async function handleSendMessage() {
-  // ✅ PROTECCIÓN CONTRA EJECUCIÓN MÚLTIPLE
   if (window._isHandlingSend) {
     console.log('🚫 handleSendMessage ya en ejecución');
     return;
@@ -1739,7 +1684,6 @@ export async function handleSendMessage() {
     return;
   }
 
-  // 🚀 ACTIVAR LOADING INMEDIATAMENTE (ANTES DE TODO)
   setProcessingState(true);
   toggleUIState(true);
 
@@ -1753,7 +1697,6 @@ export async function handleSendMessage() {
   const currentChatId = getState('currentChatId');
   let isNewChat = !currentChatId || !validateUUID(currentChatId);
 
-  // ✅ FUNCIÓN DE LIMPIEZA COMPLETA
   const cleanupAllNotifications = () => {
     if (thinkingNotificationId) {
       acadelCerrar(thinkingNotificationId);
@@ -1784,7 +1727,6 @@ export async function handleSendMessage() {
     // ⚡ DIFERIR VALIDACIONES PESADAS
     await new Promise(resolve => requestAnimationFrame(resolve));
 
-    // Validación de límite de caracteres (diferida)
     const isValidLimit = await ChatUtils.validateCharacterLimit(originalMessage);
     if (!isValidLimit) {
       cleanupAllNotifications();
@@ -1794,10 +1736,8 @@ export async function handleSendMessage() {
       return;
     }
 
-    // Detectar contexto
     const isInWelcomeScreen = document.querySelector('.welcome-message, .centered-input-container, .suggestions-container') !== null;
 
-    // Preparar archivos adjuntos (diferido)
     let attachedFiles = [];
     if (temporaryFiles && temporaryFiles.length > 0) {
       attachedFiles = temporaryFiles;
@@ -1812,7 +1752,6 @@ export async function handleSendMessage() {
     });
 
     // ⚡ CREAR UI ELEMENTOS DE FORMA DIFERIDA
-    // Crear mensaje del usuario (diferido)
     if (originalMessage || hasAttachments) {
       messageElement = addMessageWithAttachmentsSimplified('user', originalMessage, attachedFiles);
     }
@@ -1824,11 +1763,9 @@ export async function handleSendMessage() {
       window.temporaryWelcomeFiles = null;
     }
 
-    // Limpiar textarea (diferido)
     if (textarea) {
       textarea.value = '';
 
-      // Diferir resize
       requestAnimationFrame(() => {
         import('../ui/ui-manager-agente.js').then(module => {
           if (typeof module.handleTextareaResize === 'function') {
@@ -1838,7 +1775,6 @@ export async function handleSendMessage() {
       });
     }
 
-    // Crear loading message (diferido)
     loadingMessage = createLoadingMessage();
     chatMessages.appendChild(loadingMessage);
 
@@ -1916,7 +1852,6 @@ export async function handleSendMessage() {
       }, 200);
     }
 
-    // ✅ VERIFICAR TOKENS ANTES DE ENVIAR
     let tokenCheck = { canProceed: true, warningInfo: null };
     if (!isNewChat) {
       tokenCheck = await checkTokensBeforeSend(currentChatId);
@@ -1945,7 +1880,6 @@ export async function handleSendMessage() {
           );
         }, 500);
 
-        // Finalizar
         cleanupAllNotifications();
         setProcessingState(false);
         toggleUIState(false);
@@ -1954,10 +1888,8 @@ export async function handleSendMessage() {
       }
     }
 
-// ✅ CONFIGURAR CONTROLADOR DE ABORTO CON VERIFICACIÓN
     const abortController = ChatUtils.setupAbortController();
     
-    // ✅ VERIFICACIÓN ADICIONAL PARA PRODUCCIÓN
     if (!abortController || !abortController.signal) {
       console.error('❌ [SEND] Error: AbortController no se creó correctamente');
       throw new Error('No se pudo crear AbortController');
@@ -1984,7 +1916,6 @@ export async function handleSendMessage() {
       }
     }, 8000);
 
-    // 🎬 DETECCIÓN MEJORADA DE URL DE YOUTUBE (MANTENER FUNCIONALIDAD ESPECIAL)
     let isYouTubeProcessing = false;
     const youtubeURLRegex = /https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+/;
     if (youtubeURLRegex.test(originalMessage)) {
@@ -2010,19 +1941,16 @@ export async function handleSendMessage() {
       }
     }
 
-    // 🔄 CREAR NUEVO CHAT SI ES NECESARIO
     if (isNewChat) {
       const newChat = await createNewChat(originalMessage || "Nueva conversación");
       newChatId = newChat.id;
       setCurrentChat(newChat.id);
       window.tempChatIdForFiles = newChatId;
 
-      // 🎬 PROCESAMIENTO ESPECIAL PARA YOUTUBE EN CHAT NUEVO (MANTENER)
       if (isYouTubeProcessing) {
         await handleYouTubeProcessingInNewChat(originalMessage, newChatId);
       }
 
-      // Diferir limpieza de event listeners (NO archivos)
       setTimeout(() => {
         const usingTemporaryFiles = temporaryFiles && temporaryFiles.length > 0;
         if (!usingTemporaryFiles) {
@@ -2036,7 +1964,6 @@ export async function handleSendMessage() {
       }, 100);
     }
 
-    // 🚀 ENVIAR MENSAJE AL SERVIDOR
     console.log('🚀 Enviando al servidor:', {
       mensaje: originalMessage,
       archivos: attachedFiles.length,
@@ -2050,11 +1977,9 @@ export async function handleSendMessage() {
       data = await sendMessage(originalMessage, getState('currentChatId'), abortController.signal);
     }
 
-    // 🧹 LIMPIAR NOTIFICACIONES AL RECIBIR RESPUESTA
     console.log('✅ Respuesta recibida - Limpiando notificaciones...');
     cleanupAllNotifications();
 
-    // Verificar si fue abortado
     if (abortController.signal.aborted) {
       if (loadingMessage && loadingMessage.parentNode) {
         loadingMessage.remove();
@@ -2062,26 +1987,22 @@ export async function handleSendMessage() {
       return;
     }
 
-    // Manejo de errores
     if (data && data.error) {
       console.error('Error en la respuesta:', data.error);
       await handleSendMessageError(data.error, isNewChat, newChatId, currentChatId);
       throw new Error(data.error.message || 'Error en la respuesta del servidor');
     }
 
-    // Renderizar respuesta exitosa
     await renderSuccessfulResponse(data, loadingMessage, isNewChat, newChatId, tokenCheck);
 
   } catch (error) {
     console.error('Error en handleSendMessage:', error);
 
-    // 🧹 LIMPIAR NOTIFICACIONES EN CASO DE ERROR
     console.log('❌ Error detectado - Limpiando notificaciones...');
     cleanupAllNotifications();
 
     await handleSendMessageCatch(error, loadingMessage, isNewChat, newChatId, currentChatId, originalMessage);
   } finally {
-    // 🧹 LIMPIEZA FINAL GARANTIZADA
     console.log('🔚 Finally block - Limpieza final...');
     cleanupAllNotifications();
 
@@ -2089,7 +2010,6 @@ export async function handleSendMessage() {
     toggleUIState(false);
     window.currentAbortController = null;
 
-    // Finalizar
     setTimeout(() => {
       window._isHandlingSend = false;
     }, 100);
@@ -2103,7 +2023,6 @@ async function checkTokensBeforeSend(chatId) {
   if (!chatId) return { canProceed: true, warningInfo: null };
 
   try {
-    // ✅ USAR RUTA CORRECTA SIN HARDCODEO
     const response = await fetch(API_ROUTES.checkTokenLimits, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2138,15 +2057,12 @@ async function checkTokensBeforeSend(chatId) {
       return { canProceed: true, warningInfo: null };
     }
 
-    // ✅ MANEJO MEJORADO DE ERRORES HTTP
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
 
       console.log(`🚨 [DINÁMICO] Error HTTP ${response.status} en pre-check:`, errorData);
 
-      // ✅ ERROR 429 - DETECTAR TIPO ESPECÍFICO
       if (response.status === 429) {
-        // Detectar si es límite de tokens o límite de usuario gratuito
         const isTokenLimit = errorData.error?.code === 'TOKEN_LIMITS.CHAT_LIMIT_EXCEEDED' ||
           errorData.message?.includes('token') ||
           errorData.tokenLimitExceeded;
@@ -2187,7 +2103,6 @@ async function checkTokensBeforeSend(chatId) {
         }
       }
 
-      // ✅ ERROR 400 con código específico
       if (response.status === 400 && errorData.error) {
         const errorCode = errorData.error.code;
 
@@ -2235,7 +2150,6 @@ async function checkTokensBeforeSend(chatId) {
   } catch (error) {
     console.warn('Error al verificar tokens antes de enviar:', error);
 
-    // ✅ VERIFICAR SI EL ERROR CONTIENE INFORMACIÓN DE LÍMITES
     if (error.message && (
       error.message.includes('TOKEN_LIMITS') ||
       error.message.includes('token limit') ||
@@ -2308,7 +2222,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
       const { type, content } = processServerResponse(data);
       replaceLoadingMessage(loadingMessage, content, type);
 
-      // ✅ SISTEMA SIMPLIFICADO: Detección inteligente de warnings
       console.group('🎯 [FRONTEND] Procesando warnings del backend');
 
       let shouldShowTokenWarning = false;
@@ -2316,14 +2229,12 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
       let tokenInfo = null;
       let freeUserLimitInfo = null;
 
-      // ✅ 1. DETECTAR FLAGS DIRECTOS DEL BACKEND (más confiable)
       if (data._hasTokenWarning || data._shouldShowTokenWarning || data._warningPercentage) {
         shouldShowTokenWarning = true;
         tokenInfo = data.tokenInfo || data.tokenWarning || tokenCheck?.warningInfo;
         console.log('🚨 [FRONTEND] Token warning detectado por flags del backend');
       }
 
-      // ✅ 2. DETECTAR WARNINGS DE TOKENS EN ARRAY
       if (data.warnings && Array.isArray(data.warnings)) {
         const tokenWarnings = data.warnings.filter(w =>
           w.type && w.type.includes('token') && w.level === 'high'
@@ -2336,14 +2247,12 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
         }
       }
 
-      // ✅ 3. DETECTAR LÍMITES DE HERRAMIENTAS ESPECÍFICAS
       if (data.toolLimits && data.toolLimits.type === 'free_user_limits') {
         const { daily, hourly, warningThresholds } = data.toolLimits;
 
         let shouldWarn = false;
         let warningType = null;
 
-        // Usar thresholds dinámicos del backend
         if (warningThresholds) {
           if (daily && warningThresholds.daily && daily.used >= warningThresholds.daily) {
             shouldWarn = true;
@@ -2354,7 +2263,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
             warningType = 'hourly';
           }
         } else {
-          // Fallback: 80% de los límites reales
           const dailyWarning = daily?.limit ? Math.round(daily.limit * 0.8) : null;
           const hourlyWarning = hourly?.limit ? Math.round(hourly.limit * 0.8) : null;
 
@@ -2384,7 +2292,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
         }
       }
 
-      // ✅ 4. MOSTRAR AVISOS SEGÚN PRIORIDAD
       if (shouldShowFreeUserWarning && freeUserLimitInfo) {
         setTimeout(() => {
           console.log('🎯 [FRONTEND] Mostrando aviso de límite de usuario gratuito');
@@ -2426,7 +2333,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
 
       console.groupEnd();
 
-      // ✅ RESTO DE LA LÓGICA EXISTENTE (mantener sin cambios)
       const chatId = data.chatId || getState('currentChatId');
       if (chatId) {
         setTimeout(async () => {
@@ -2466,14 +2372,12 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
       }
     }
 
-    // ✅ ACTUALIZAR UI PARA NUEVO CHAT O EXISTENTE
     if (isNewChat && newChatId) {
       await handleNewChatSuccess(newChatId);
     } else {
       updateExistingChatPosition();
     }
 
-    // ✅ VERIFICAR PANEL DE YOUTUBE DESPUÉS DE ENVIAR MENSAJE
     try {
       import('../components/youtube-panel.js').then(module => {
         if (module.youtubePanel && typeof module.youtubePanel.checkForVideo === 'function') {
@@ -2535,12 +2439,10 @@ async function initializeResponseInteraction() {
  * Maneja éxito de nuevo chat
  */
 async function handleNewChatSuccess(newChatId) {
-  // Limpiar problemas potenciales
   import('../utils/chat-error-handler-agente.js').then(module => {
     // código existente...
   }).catch(e => console.warn('Error al limpiar problemas:', e));
 
-  // Actualizar URL y cargar historial
   history.pushState({}, '', URL_CONFIG.chatPath(newChatId));
 
   // ⭐ NUEVO: Limpiar ID temporal después del éxito
@@ -2605,7 +2507,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
 if (error.name === 'AbortError') {
   console.log("🚫 Error de cancelación detectado");
 
-  // 🔥 SOLO MOSTRAR NOTIFICACIÓN SI NO SE HA MOSTRADO YA
   if (!window._cancelNotificationAlreadyShown) {
     acadelInfo(
       "🛑 ¡Operación cancelada!",
@@ -2664,12 +2565,10 @@ if (error.name === 'AbortError') {
       replaceWithError(loadingMessage, userMessage, originalMessage);
     }
 
-    // ✅ ELIMINAR CHAT NUEVO Y REDIRIGIR
     if (isNewChat && newChatId) {
       console.log('🎬 Eliminando chat nuevo con error de YouTube:', newChatId);
       await handleNewChatError(newChatId);
 
-      // ✅ NOTIFICACIÓN ESPECÍFICA PARA YOUTUBE
       setTimeout(() => {
         acadelError(
           "🎬 ¡YouTube está siendo difícil!",
@@ -2680,7 +2579,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // ✅ FUNCIÓN AUXILIAR MEJORADA: Detectar errores de límites de usuario gratuito
   const isFreeUserLimitError = (error) => {
     // Verificaciones directas
     if (error.isFreeUserLimit) return true;
@@ -2718,7 +2616,6 @@ if (error.name === 'AbortError') {
     );
   };
 
-  // ✅ FUNCIÓN AUXILIAR MEJORADA: Detectar errores de tokens
   const isTokenError = (error) => {
     if (error.isTokenLimit || error.isPreValidationLimit) return true;
 
@@ -2748,7 +2645,6 @@ if (error.name === 'AbortError') {
     );
   };
 
-  // ✅ CASO 2: ERRORES DE LÍMITE DE USUARIO GRATUITO (PRIORIDAD ALTA)
   if (isFreeUserLimitError(error)) {
     console.log('💰 Error de límite de usuario gratuito detectado:', error);
 
@@ -2759,7 +2655,6 @@ if (error.name === 'AbortError') {
 
       replaceWithError(loadingMessage, userFriendlyMessage, originalMessage);
 
-      // ✅ MOSTRAR AVISO ESPECÍFICO SIN HARDCODEO
       setTimeout(() => {
         const limitType = error.limitType ||
           (error.error?.code?.includes('DAILY') ? 'daily' : 'hourly');
@@ -2784,7 +2679,6 @@ if (error.name === 'AbortError') {
       }, 300);
     }
 
-    // ✅ NOTIFICACIÓN ESPECÍFICA SEGÚN TIPO DE LÍMITE
     setTimeout(() => {
       const limitType = error.limitType ||
         (error.error?.code?.includes('DAILY') ? 'daily' : 'hourly');
@@ -2822,7 +2716,6 @@ if (error.name === 'AbortError') {
     return;
   }
 
-  // ✅ CASO 3: ERRORES DE TOKENS (DESPUÉS DE LÍMITES DE USUARIO)
   if (isTokenError(error)) {
     console.log('🚫 Error de tokens detectado:', error);
 
@@ -2850,7 +2743,6 @@ if (error.name === 'AbortError') {
 
       replaceWithError(loadingMessage, userFriendlyMessage, originalMessage);
 
-      // ✅ MOSTRAR AVISO ESPECÍFICO DE TOKENS
       setTimeout(() => {
         if (typeof showTokenLimitNotice === 'function') {
           showTokenLimitNotice(loadingMessage, tokenInfo.maxTokens, tokenInfo.tokenInfo);
@@ -2860,7 +2752,6 @@ if (error.name === 'AbortError') {
       }, 300);
     }
 
-    // ✅ NOTIFICACIÓN ESPECÍFICA SEGÚN TIPO DE ERROR DE TOKEN
     const isPreValidation = error.isPreValidationLimit;
     const notificationTitle = isPreValidation ?
       "🧠 ¡Acadel prevé sobrecarga!" :
@@ -2878,7 +2769,6 @@ if (error.name === 'AbortError') {
       }
     }, 500);
 
-    // ✅ VERIFICAR SI ES NUEVO CHAT PARA ELIMINARLO
     if (isNewChat && newChatId) {
       console.log('🧠 Error de tokens en nuevo chat - eliminando chat:', newChatId);
       await handleNewChatError(newChatId);
@@ -3106,13 +2996,11 @@ function isInCancellationState() {
  */
 async function finalizeSendMessage(textarea) {
   try {
-    // 🔧 VERIFICAR FLAG DE CANCELACIÓN PRIMERO
     if (window.isCancellationInProgress) {
       console.log("🚫 NO restaurando interactividad - Cancelación en progreso");
       return; // SALIR INMEDIATAMENTE SIN RESTAURAR NADA
     }
 
-    // Restaurar interactividad completa SOLO si no hay cancelación
     if (textarea) {
       textarea.removeAttribute('disabled');
       textarea.removeAttribute('readonly');
@@ -3126,7 +3014,6 @@ async function finalizeSendMessage(textarea) {
       }, 50);
     }
 
-    // Restaurar botones SOLO si no hay cancelación
     const sendButton = domManager.sendButton;
     const mathButton = domManager.mathButton;
     const attachButton = domManager.attachButton;
@@ -3149,7 +3036,6 @@ async function finalizeSendMessage(textarea) {
   }
   setProcessingState(false);
 
-  // 🔧 VERIFICACIÓN MEJORADA: Solo restaurar UI si no hay cancelación
   if (!window.isCancellationInProgress) {
     toggleUIState(false);
   } else {
@@ -3166,7 +3052,6 @@ async function finalizeSendMessage(textarea) {
     }, 2000);
   }
 
-  // Limpiar controlador de aborto
   window.currentAbortController = null;
 
   import('../ui/ui-manager-agente.js').then(module => {
@@ -3175,7 +3060,6 @@ async function finalizeSendMessage(textarea) {
     }
   }).catch(err => console.warn('Error al limpiar controlador:', err));
 
-  // Limpiar caché de elementos DOM para obtener referencias frescas
   if (typeof clearDomCache === 'function') {
     clearDomCache(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
   }
@@ -3191,9 +3075,7 @@ export function handleNewChat() {
   if (typeof clearTokenWarnings === 'function') {
     clearTokenWarnings();
   }
-  // Verificar si ya estamos en la pantalla de bienvenida
 
-  // 🔽 NUEVO: Cerrar dropdown del header
   closeHeaderDropdown();
 
   setTimeout(() => {
@@ -3216,10 +3098,8 @@ export function handleNewChat() {
   window.isHandlingNewChat = true;
 
   try {
-    // Cerrar paneles matemáticos
     ChatUtils.closeMathPanels();
 
-    // Cerrar panel de previsualización si está abierto
     const previewPanel = document.querySelector('#preview-panel');
     if (previewPanel && previewPanel.classList.contains('open')) {
       try {
@@ -3240,9 +3120,7 @@ export function handleNewChat() {
 
     // NUEVO: Cerrar panel de YouTube y resetear estado de audio
     try {
-      // Resetear panel de YouTube
       if (window.youtubePanel) {
-        // Resetear datos del panel
         window.youtubePanel.videoData = null;
         window.youtubePanel.audioData = null;
         window.youtubePanel.currentMode = null;
@@ -3251,7 +3129,6 @@ export function handleNewChat() {
         window.youtubePanel.currentSearchIndex = -1;
         window.youtubePanel.currentlyHighlightedSegment = null;
 
-        // Cerrar el panel si está visible
         if (window.youtubePanel.isVisible && typeof window.youtubePanel.togglePanel === 'function') {
           window.youtubePanel.togglePanel();
         }
@@ -3259,7 +3136,6 @@ export function handleNewChat() {
         console.log("Panel de transcripción reseteado para nuevo chat");
       }
 
-      // Cerrar menú de audio si está abierto
       if (window.audioPanel) {
         const audioMenu = document.querySelector('.audio-menu');
         if (audioMenu && audioMenu.style.display === 'block') {
@@ -3269,7 +3145,6 @@ export function handleNewChat() {
         }
       }
 
-      // Ocultar acciones de selección si están visibles
       const selectionActions = document.querySelector('.youtube-selection-actions');
       if (selectionActions && selectionActions.classList.contains('visible')) {
         selectionActions.classList.remove('visible');
@@ -3278,28 +3153,22 @@ export function handleNewChat() {
       console.warn('Error al resetear componentes de audio/video:', e);
     }
 
-    // Desactivar chat activo en sidebar
     document.querySelectorAll('.sidebar-item.active').forEach(item => {
       removeClass(item, 'active');
     });
 
-    // Actualizar estado
     setCurrentChat(null);
 
-    // Restaurar el subtítulo por defecto
     const headerSubtitle = getCachedElement('.header-subtitle');
     if (headerSubtitle) {
       headerSubtitle.textContent = 'Asistente virtual académico';
       headerSubtitle.removeAttribute('title');
     }
 
-    // Limpiar mensajes del chat
     clearChatMessages();
 
-    // Actualizar URL
     history.pushState({}, '', URL_CONFIG.basePath);
 
-    // Preparar para mostrar mensaje de bienvenida
     const textarea = domManager.textarea;
     const fixedSpace = domManager.fixedSpace;
 
@@ -3311,7 +3180,6 @@ export function handleNewChat() {
       fixedSpace.style.overflow = 'hidden';
       void fixedSpace.offsetHeight;
 
-      // Limpiar función nativa si está disponible
       if (typeof clearAttachedFiles === 'function') {
         clearAttachedFiles();
       }
@@ -3347,7 +3215,6 @@ export async function switchChat(chatId) {
     clearTokenWarnings();
   }
 
-  // 🔽 NUEVO: Cerrar dropdown del header
   closeHeaderDropdown();
 
   // Control de concurrencia para evitar cambios simultáneos
@@ -3367,7 +3234,6 @@ export async function switchChat(chatId) {
     if (window.youtubePanel) {
       console.log('Deteniendo reproducción de audio/video en youtubePanel antes de cambiar chat');
 
-      // Detener reproducción inmediatamente
       if (typeof window.youtubePanel.pauseMediaPlayback === 'function') {
         window.youtubePanel.pauseMediaPlayback();
       }
@@ -3398,7 +3264,6 @@ export async function switchChat(chatId) {
     // No bloquear el cambio de chat si falla la detención de audio
   }
 
-  // Configurar controlador de aborto
   const abortController = ChatUtils.setupAbortController();
   const signal = abortController.signal;
 
@@ -3422,13 +3287,11 @@ export async function switchChat(chatId) {
       return;
     }
 
-    // 💬 NOTIFICACIÓN SUTIL DE CAMBIO
     acadelInfo(
       "💬 Cambiando de conversación",
       "Acadel está preparando tu chat anterior..."
     );
 
-    // Mostrar indicador de carga
     if (typeof applyChatSwitchSkeleton === 'function') {
       applyChatSwitchSkeleton();
     } else {
@@ -3463,33 +3326,26 @@ export async function switchChat(chatId) {
  * VERSIÓN CORREGIDA - Incluye cierre del preview panel
  */
 async function performCompleteCleaning() {
-  // Limpiar timeouts
   ChatUtils.cleanupTimeouts();
 
-  // Limpiar elementos de bienvenida
   ChatUtils.cleanupWelcomeElements();
 
-  // Cerrar paneles matemáticos
   ChatUtils.closeMathPanels();
 
-  // Cerrar preview panel si está abierto
   const previewPanel = document.querySelector('#preview-panel');
   if (previewPanel && previewPanel.classList.contains('open')) {
     const { closePreviewPanel } = await import('../components/preview-panel-agente.js');
     closePreviewPanel();
   }
 
-  // Cerrar modales
   const previewModal = domManager.previewModal;
   if (previewModal) {
     previewModal.classList.remove('show');
     previewModal.style.display = '';
   }
 
-  // Limpiar archivos adjuntos
   await ChatUtils.cleanupFileAttachments();
 
-  // Resetear textarea
   const textarea = domManager.textarea;
   if (textarea) {
     textarea.value = '';
@@ -3499,7 +3355,6 @@ async function performCompleteCleaning() {
     textarea.style.display = '';
   }
 
-  // Limpiar modales y estados
   document.querySelectorAll('.modal, .modal-backdrop, .overlay').forEach(el => {
     if (!el.classList.contains('sidebar-overlay')) {
       eventManager.removeFromElement(el);
@@ -3509,7 +3364,6 @@ async function performCompleteCleaning() {
 
   // Reseteo forzado del panel de YouTube y audio ANTES de cargar el nuevo chat
   try {
-    // Resetear panel de YouTube
     if (window.youtubePanel) {
       // Forzar limpieza de datos internos
       window.youtubePanel.videoData = null;
@@ -3528,7 +3382,6 @@ async function performCompleteCleaning() {
       console.log("Panel de transcripción reseteado forzosamente en switchChat");
     }
 
-    // Ocultar también cualquier menú de audio abierto
     if (window.audioPanel) {
       const audioMenu = document.querySelector('.audio-menu');
       if (audioMenu && audioMenu.style.display === 'block') {
@@ -3538,7 +3391,6 @@ async function performCompleteCleaning() {
       }
     }
 
-    // Ocultar acciones de selección si están visibles
     const selectionActions = document.querySelector('.youtube-selection-actions');
     if (selectionActions && selectionActions.classList.contains('visible')) {
       selectionActions.classList.remove('visible');
@@ -3547,7 +3399,6 @@ async function performCompleteCleaning() {
     console.warn('Error al resetear componentes de audio/video:', e);
   }
 
-  // Limpiar URLs de objetos
   if (window.objectURLs && Array.isArray(window.objectURLs)) {
     window.objectURLs.forEach(url => {
       try {
@@ -3561,7 +3412,6 @@ async function performCompleteCleaning() {
     window.objectURLs = [];
   }
 
-  // Resetear clases del body
   document.body.classList.remove(
     'modal-open', 'preview-panel-active', 'welcome-active', 'initializing',
     'sidebar-expanded', 'has-modal', 'no-scroll', 'overflow-hidden'
@@ -3589,7 +3439,6 @@ async function performCompleteCleaning() {
  */
 function updateChatState(chatId) {
   if (typeof setCurrentChat === 'function') {
-    // Guardar el chat anterior para eventos
     const prevChatId = getState('currentChatId');
     setCurrentChat(chatId);
 
@@ -3691,7 +3540,6 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
         }).catch(e => console.warn('Error al importar procesamiento inmediato:', e));
       });
 
-      // INSERTAR AQUÍ - Scroll forzado después de cambiar chat en móviles
       if (window.innerWidth < 768) {
         setTimeout(() => {
           const chatMessages = document.querySelector('.chat-messages');
@@ -3716,7 +3564,6 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
       }
     }
   } catch (error) {
-    // Determinar si el error es de aborto con verificación mejorada
     const isAbortError = error.name === 'AbortError' ||
       error.message?.includes('aborted') ||
       signal.aborted;
@@ -3725,7 +3572,6 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
       console.log('Carga de mensajes abortada:', error.message || 'Sin detalles');
     } else {
       console.error('Error al cargar mensajes del chat:', error);
-      // 📚 Notificación divertida de error de carga
       acadelError(
         "📚 ¡No pude cargar esa conversación!",
         "Acadel está teniendo problemas accediendo a ese chat. Tal vez está en el rincón más profundo de su memoria de capibara"
@@ -3741,10 +3587,8 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
 async function restoreComponentsAndFunctionality(signal, pendingPromises) {
   if (signal.aborted) return;
 
-  // Restaurar visibilidad del área de entrada
   ChatUtils.restoreInputVisibility();
 
-  // Restaurar funcionalidad matemática
   try {
     const setupPromise = Promise.resolve().then(async () => {
       await setupMathButton();
@@ -3761,19 +3605,15 @@ async function restoreComponentsAndFunctionality(signal, pendingPromises) {
 
   } catch (e) {
     console.warn('Error al restaurar funcionalidad matemática:', e);
-    // Fallback de emergencia
     setupMathButtonFallback();
   }
 
   if (signal.aborted) return;
 
-  // Restaurar eventos del textarea
   restoreTextareaEvents();
 
-  // Restaurar botones
   restoreButtonEvents();
 
-  // Restaurar drag & drop
   try {
     restoreDragAndDrop();
   } catch (e) {
@@ -3796,7 +3636,6 @@ async function restoreComponentsAndFunctionality(signal, pendingPromises) {
   try {
     import('../components/youtube-panel.js').then(module => {
       if (module.youtubePanel && typeof module.youtubePanel.checkForVideo === 'function') {
-        // Verificar si hay un video en el chat actual después de cargar los mensajes
         setTimeout(() => {
           module.youtubePanel.checkForVideo();
         }, 500);
@@ -3812,7 +3651,6 @@ async function restoreComponentsAndFunctionality(signal, pendingPromises) {
   try {
     import('../components/audio-panel.js').then(module => {
       if (module.audioPanel && typeof module.audioPanel.updateButtonState === 'function') {
-        // Actualizar estado del botón de audio para el chat actual
         module.audioPanel.updateButtonState();
       }
     }).catch(e => {
@@ -4051,7 +3889,6 @@ function finalCleanup() {
       }
     }
 
-    // Eliminar skeleton de carga
     Promise.resolve().then(() => {
       try {
         if (typeof removeChatSwitchSkeleton === 'function') {
@@ -4078,7 +3915,6 @@ function finalCleanup() {
     ChatUtils.cleanupTimeouts();
     cleanupProblematicElements();
 
-    // Limpiar caché
     if (typeof clearDomCache === 'function') {
       clearDomCache();
     }
@@ -4087,7 +3923,6 @@ function finalCleanup() {
     document.body.style.pointerEvents = '';
     isSwitchingChat = false;
 
-    // Comprobar si hay un cambio de chat pendiente
     if (pendingChatSwitch) {
       const nextChatId = pendingChatSwitch;
       pendingChatSwitch = null;
@@ -4158,7 +3993,6 @@ async function checkInitialChatFromURL() {
       return;
     }
 
-    // Restaurar visibilidad del textarea inmediatamente
     document.documentElement.classList.remove('welcome-pending');
     const fixedSpace = domManager.fixedSpace;
     if (fixedSpace) {
@@ -4222,7 +4056,6 @@ async function checkInitialChatFromURL() {
         }
       }
 
-      // Configurar eventos con EventManager
       const sendButton = domManager.sendButton;
       if (sendButton) {
         eventManager.add(sendButton, 'click', handleSendMessage, false, 'initial-send-button');
@@ -4260,7 +4093,6 @@ async function checkInitialChatFromURL() {
 
       window.isInitialChatLoad = false;
 
-      // Limpiar caché para referencias frescas
       domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 
       setTimeout(() => {
@@ -4460,7 +4292,6 @@ function restoreDragAndDrop() {
       }, false, 'file-preview-click');
     }
 
-    // Configurar eventos de drag & drop con EventManager
     setupDragDropEvents(fileUploadContainer);
 
   } catch (error) {
@@ -4555,7 +4386,6 @@ function setupDragDropEvents(fileUploadContainer) {
  */
 async function resetMathEditor() {
   try {
-    // Cerrar cualquier panel o editor matemático visible
     const mathPanel = domManager.mathPanel;
     if (mathPanel) {
       mathPanel.classList.remove('show');
@@ -4567,18 +4397,15 @@ async function resetMathEditor() {
       mathEditorContainer.style.display = 'none';
     }
 
-    // Actualizar el estado global
     if (typeof setMathPanelState === 'function') {
       setMathPanelState(false);
     }
 
-    // Restaurar estado visual del botón matemático
     const mathButton = domManager.mathButton;
     if (mathButton) {
       mathButton.classList.remove('active');
     }
 
-    // Limpiar la instancia del editor si existe
     const mathEditorModule = await import('../math/interactive-math-editor-agente.js').catch(() => null);
     if (mathEditorModule && mathEditorModule.cleanupMathEditor) {
       mathEditorModule.cleanupMathEditor();
@@ -4607,18 +4434,15 @@ function repairMathButton() {
       return false;
     }
 
-    // Crear un nuevo botón para garantizar limpieza total
     const newButton = document.createElement('button');
     newButton.id = mathButton.id || 'math-button';
     newButton.className = mathButton.className || 'attach-btn';
     newButton.title = 'Fórmulas matemáticas';
     newButton.innerHTML = mathButton.innerHTML || '<i class="bx bx-math"></i>';
 
-    // Aplicar estilos explícitos para garantizar interactividad
     newButton.style.pointerEvents = 'auto';
     newButton.style.cursor = 'pointer';
 
-    // Reemplazar el botón antiguo con el nuevo
     if (mathButton.parentNode) {
       mathButton.parentNode.replaceChild(newButton, mathButton);
     } else {
@@ -4626,7 +4450,6 @@ function repairMathButton() {
       return false;
     }
 
-    // Configurar el handler del clic con EventManager
     eventManager.add(newButton, 'click', async function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4678,7 +4501,6 @@ function repairMathButton() {
           return;
         }
 
-        // Fallback: usar panel matemático básico
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4698,7 +4520,6 @@ function repairMathButton() {
       }
     }, false, 'repaired-math-button');
 
-    // Actualizar referencia en DOMManager
     domManager.invalidate([DOM_SELECTORS.mathButton]);
 
     return true;
@@ -4716,10 +4537,8 @@ async function setupMathButton() {
   if (!mathButton) return false;
 
   try {
-    // Limpiar eventos existentes
     eventManager.removeFromElement(mathButton);
 
-    // Configurar el nuevo handler optimizado
     eventManager.add(mathButton, 'click', async function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4773,7 +4592,6 @@ async function setupMathButton() {
           return;
         }
 
-        // Fallback: usar el panel matemático básico
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4787,7 +4605,6 @@ async function setupMathButton() {
       } catch (error) {
         console.error('Error al interactuar con el editor matemático:', error);
 
-        // Fallback de emergencia
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4855,7 +4672,6 @@ export async function handleDeleteChat(chatId) {
             if (isCurrentChat) {
               ChatUtils.closeMathPanels();
 
-              // Cerrar panel de YouTube y resetear audio
               try {
                 if (window.youtubePanel) {
                   window.youtubePanel.videoData = null;
@@ -5139,19 +4955,16 @@ async function performChatDeletion(chatId, isCurrentChat, deleteChat, setCurrent
 
       // NUEVO: Cerrar panel de YouTube y resetear audio
       try {
-        // Resetear panel de YouTube
         if (window.youtubePanel) {
           window.youtubePanel.videoData = null;
           window.youtubePanel.audioData = null;
           window.youtubePanel.currentMode = null;
 
-          // Cerrar el panel si está visible
           if (window.youtubePanel.isVisible && typeof window.youtubePanel.togglePanel === 'function') {
             window.youtubePanel.togglePanel();
           }
         }
 
-        // Cerrar menú de audio si está abierto
         if (window.audioPanel) {
           const audioMenu = document.querySelector('.audio-menu');
           if (audioMenu && audioMenu.style.display === 'block') {
@@ -5278,7 +5091,6 @@ function prepareForWelcomeMessage() {
     // 2. Intentar importar y reset programático del panel de YouTube
     import('../components/youtube-panel.js').then(module => {
       if (module.youtubePanel) {
-        // Resetear datos internos
         module.youtubePanel.videoData = null;
         module.youtubePanel.audioData = null;
         module.youtubePanel.currentMode = null;
@@ -5293,7 +5105,6 @@ function prepareForWelcomeMessage() {
           module.youtubePanel.togglePanel();
         }
 
-        // Llamar a resetPanelData si existe
         if (typeof module.youtubePanel.resetPanelData === 'function') {
           module.youtubePanel.resetPanelData();
         }
@@ -5312,7 +5123,6 @@ function prepareForWelcomeMessage() {
             module.audioPanel.releaseMediaResources();
           }
 
-          // Cerrar menú de audio si está abierto
           if (typeof module.audioPanel.closeAudioMenu === 'function') {
             const audioMenu = document.querySelector('.audio-menu');
             if (audioMenu && (audioMenu.style.display === 'block' || audioMenu.style.display === 'flex')) {
@@ -5379,7 +5189,6 @@ async function refreshChatWithNewMessages(chatId) {
 
 export { addMessageWithAttachmentsSimplified as addMessageWithAttachments };
 
-// ✅ AÑADIR al final del archivo, después de las exportaciones:
 if (typeof window !== 'undefined') {
   window.handleNewChat = handleNewChat;
 }

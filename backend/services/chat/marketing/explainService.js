@@ -11,7 +11,6 @@ export const explainService = {
    */
   async generateExplanation(decisionContext, level = 'intermediate') {
     try {
-      // Extraer información relevante del contexto
       const { 
         query, 
         agentsUsed, 
@@ -21,11 +20,9 @@ export const explainService = {
         recommendations 
       } = decisionContext;
       
-      // Construir el prompt según el nivel de detalle solicitado
       let systemPrompt = EXPLAIN_PROMPTS[level] || EXPLAIN_PROMPTS.intermediate;
 
       
-      // Generar la explicación usando la API
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18",
         messages: [
@@ -80,7 +77,6 @@ export const explainService = {
     try {
       const { agentsUsed, decisions, savedElements } = decisionContext;
       
-      // Generar un diagrama Mermaid que muestre el proceso de decisión
       const mermaidDiagram = await this.generateMermaidDiagram(agentsUsed, decisions, savedElements);
       
       return {
@@ -102,7 +98,6 @@ export const explainService = {
    * @private
    */
   async generateMermaidDiagram(agentsUsed, decisions, savedElements) {
-    // Construir un diagrama de flujo básico
     let diagram = 'graph TD\n';
     
     // Nodo inicial
@@ -117,7 +112,6 @@ export const explainService = {
       diagram += '\n';
     }
     
-    // Añadir nodos para elementos guardados
     if (savedElements) {
       if (savedElements.profiles && savedElements.profiles.length > 0) {
         diagram += '  Perfiles --> PerfilesGuardados[Perfiles Guardados: ' + savedElements.profiles.length + ']\n';
@@ -133,7 +127,6 @@ export const explainService = {
       }
     }
     
-    // Añadir decisiones clave si están disponibles
     if (decisions) {
       let decisionIdx = 0;
       for (const [tool, instances] of Object.entries(decisions)) {
@@ -192,7 +185,6 @@ function summarizeToolInput(toolInput) {
   }
   
   if (typeof toolInput === 'object') {
-    // Intentar extraer información relevante según el tipo de herramienta
     if (toolInput.query) return `Búsqueda: ${toolInput.query.substring(0, 15)}...`;
     if (toolInput.profileId) return `Perfil: ${toolInput.profileId.substring(0, 10)}...`;
     if (toolInput.contentId) return `Contenido: ${toolInput.contentId.substring(0, 10)}...`;

@@ -1,5 +1,3 @@
-// backend/lib/openai.js - Solución Simple
-// Cargar dotenv al inicio (igual que en dbPool.js)
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,7 +5,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar dotenv desde la raíz del proyecto (2 niveles arriba: backend/lib -> raíz)
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Importa las clases ChatOpenAI y OpenAIEmbeddings desde la biblioteca @langchain/openai
@@ -19,7 +16,6 @@ import OpenAI from 'openai';
 // Esta clave permite acceder a los servicios de OpenAI como GPT y generación de embeddings
 const openaiKey = process.env.OPENAI_API_KEY;
 
-// Verificar que la API key esté configurada
 if (!openaiKey) {
   console.error("Error: OPENAI_API_KEY debe estar definida en el archivo .env");
   process.exit(1);

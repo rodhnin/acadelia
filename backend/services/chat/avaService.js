@@ -7,7 +7,6 @@ const createAva = async ({ nom_ava, descripcion, id_carrera, imagen, slug, embed
   if (!id_carrera) throw new Error("El ID de la carrera es obligatorio");
   if (!slug) throw new Error("El slug del AVA es obligatorio");
 
-  // Verificar si ya existe un AVA con este nombre
   const checkQuery = "SELECT id_ava FROM ava WHERE nom_ava = $1";
   const checkResult = await pool.query(checkQuery, [nom_ava]);
   
@@ -15,21 +14,17 @@ const createAva = async ({ nom_ava, descripcion, id_carrera, imagen, slug, embed
     throw new Error("Ya existe un AVA con este nombre");
   }
 
-  // Iniciar una transacción para garantizar que todo se complete correctamente
   const client = await pool.connect();
   
   try {
     await client.query('BEGIN');
     
-    // Obtener el siguiente ID disponible
     const nextIdQuery = "SELECT COALESCE(MAX(id_ava), 0) + 1 AS next_id FROM ava";
     const nextIdResult = await client.query(nextIdQuery);
     const nextId = nextIdResult.rows[0].next_id;
     
-    // Usar el nombre de tabla proporcionado o generar uno automáticamente si no se proporciona
     let embeddingTableName;
     if (embedding_table_name && embedding_table_name.trim() !== '') {
-      // Validar y formatear el nombre de tabla proporcionado para evitar problemas
       embeddingTableName = embedding_table_name.trim()
         .replace(/[^a-zA-Z0-9_]/g, "_")
         .toLowerCase();
@@ -39,11 +34,9 @@ const createAva = async ({ nom_ava, descripcion, id_carrera, imagen, slug, embed
         embeddingTableName = 'emb_' + embeddingTableName;
       }
     } else {
-      // Si no se proporciona un nombre, crear uno basado en el slug y el ID
       embeddingTableName = await createEmbeddingTable(slug, nextId);
     }
     
-    // Verificar si la tabla ya existe
     const checkTableQuery = `
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -56,7 +49,6 @@ const createAva = async ({ nom_ava, descripcion, id_carrera, imagen, slug, embed
       throw new Error(`La tabla de embeddings ${embeddingTableName} ya existe. Por favor elige otro nombre.`);
     }
     
-    // Crear la tabla de embeddings con el nombre seleccionado
     await client.query(`
       -- Asegurar que la extensión pgvector está habilitada
       CREATE EXTENSION IF NOT EXISTS vector;
@@ -132,7 +124,6 @@ const createAva = async ({ nom_ava, descripcion, id_carrera, imagen, slug, embed
       CREATE INDEX ON ${embeddingTableName} USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
     `);
     
-    // Insertar el nuevo AVA incluyendo el nombre de la tabla de embeddings
     const insertQuery = `
       INSERT INTO ava (id_ava, nom_ava, descripcion, id_carrera, imagen, slug, embedding_table_name)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -197,7 +188,6 @@ const deleteAva = async (id) => {
   try {
     await client.query('BEGIN');
     
-    // Obtener la información del AVA, incluyendo el nombre de su tabla de embeddings
     const getAvaQuery = "SELECT * FROM ava WHERE id_ava = $1";
     const avaResult = await client.query(getAvaQuery, [id]);
     
@@ -207,12 +197,10 @@ const deleteAva = async (id) => {
     
     const ava = avaResult.rows[0];
     
-    // Eliminar la tabla de embeddings asociada si existe
     if (ava.embedding_table_name) {
       await deleteEmbeddingTable(ava.embedding_table_name);
     }
     
-    // Eliminar el AVA
     const deleteAvaQuery = "DELETE FROM ava WHERE id_ava = $1 RETURNING *;";
     await client.query(deleteAvaQuery, [id]);
     
@@ -228,7 +216,6 @@ const deleteAva = async (id) => {
   }
 };
 
-// Obtener un AVA por ID
 const getAvaById = async (id) => {
   if (!id) throw new Error("El ID del AVA es obligatorio");
 

@@ -168,7 +168,6 @@ export class UniquenessMiddleware {
       const result = await isUniqueInsightIntelligent(content);
       
       if (!result.isUnique) {
-        // ✅ CASO ESPECIAL: FUSIÓN INTELIGENTE
         if (result.shouldFuse) {
           console.log(`🔗 MIDDLEWARE: Insight candidato para fusión inteligente`);
           console.log(`📊 Análisis: ${result.analysisType}, Similitud: ${result.similarityScore ? (result.similarityScore * 100).toFixed(1) + '%' : 'N/A'}`);
@@ -326,7 +325,6 @@ export class UniquenessMiddleware {
       
       const duration = Date.now() - startTime;
       
-      // ✅ LOGGING INTELIGENTE CON DETALLES DE IA
       if (result.similarityScore !== undefined) {
         console.log(`⏱️ MIDDLEWARE INTELIGENTE: Verificación de ${type} completada en ${duration}ms`);
         console.log(`📊 Similitud: ${(result.similarityScore * 100).toFixed(1)}%, Análisis: ${result.analysisType || 'N/A'}`);
@@ -369,7 +367,6 @@ export class UniquenessMiddleware {
     if (verification.shouldSkip) {
       console.log(`🚫 MIDDLEWARE: Guardado de ${type} CANCELADO - ${verification.reason}`);
       
-      // ✅ LOGGING DETALLADO PARA DUPLICADOS
       if (verification.similarityScore) {
         console.log(`📊 DETALLES: Similitud ${(verification.similarityScore * 100).toFixed(1)}%, Análisis: ${verification.analysisType}`);
       }
@@ -416,7 +413,6 @@ export class UniquenessMiddleware {
     
     console.log(`✅ MIDDLEWARE: Guardado de ${type} AUTORIZADO por sistema inteligente - ${verification.reason}`);
     
-    // ✅ LOGGING POSITIVO DETALLADO
     if (verification.analysisType) {
       console.log(`📊 CONFIRMACIÓN: Análisis ${verification.analysisType} completado exitosamente`);
     }
@@ -441,7 +437,6 @@ export class UniquenessMiddleware {
       const intelligentStats = await getIntelligentDuplicationStats();
       
       if (!intelligentStats) {
-        // Fallback a estadísticas básicas
         const basicStats = await Promise.all([
           pool.query('SELECT COUNT(*) as total FROM marketing_profiles'),
           pool.query('SELECT COUNT(*) as total FROM marketing_contents'),  

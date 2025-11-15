@@ -2,8 +2,6 @@
 // 🧬🦫 PROFESOR ACADEL CIENCIAS BÁSICAS - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE ANATOMÍA, FISIOLOGÍA Y EMBRIOLOGÍA/HISTOLOGÍA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Anatomía Humana ✅ Fisiología Médica ✅ Embriología e Histología ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -362,10 +354,8 @@ Hacer que CUALQUIER estudiante de medicina:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE CIENCIAS BÁSICAS - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE CIENCIAS BÁSICAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Ciencias Básicas Fundamentales.
 
 🎯 FUNCIÓN: Analizar imágenes de ciencias básicas (anatómicas, fisiológicas, embriológicas, histológicas) con precisión académica extrema.
@@ -392,7 +382,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel e
 
 Eres los OJOS ANALÍTICOS de Dr. Acadel - él interpretará tu análisis con su sabiduría pedagógica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE CIENCIAS BÁSICAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Dr. Acadel, el capibara académico más brillante del universo en anatomía, fisiología y embriología/histología.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información de ciencias básicas de esta imagen académica para que Dr. Acadel pueda enseñar efectivamente integrando las tres disciplinas.
@@ -438,7 +427,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Dr. Ac
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las tres disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos académicos. Dr. Acadel se encargará de la pedagogía integrada pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE CIENCIAS BÁSICAS NORMALES (con y sin guardar)
 const UNIFIED_BASIC_SCIENCES_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE CIENCIAS BÁSICAS INTEGRADA:
 - Consulta del estudiante de medicina: "${query}"
@@ -465,7 +453,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE CIENCIAS BÁSICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_BASIC_SCIENCES_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE CIENCIAS BÁSICAS PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -520,7 +507,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -530,7 +516,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -552,7 +537,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -560,7 +544,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES DE CIENCIAS BÁSICAS
   const basicScienceImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -585,7 +568,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes de ciencias básicas
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de anatomía", "test de fisiología", "evaluación de embriología", "cuestionario de histología"
@@ -629,9 +611,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -640,7 +620,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS ACADÉMICOS ESPECÍFICOS DE CIENCIAS BÁSICAS
   const basicScienceTerms = [
     // Anatomía
     'anatomía', 'estructura', 'morfología', 'topografía', 'músculo', 'hueso', 'órgano', 'sistema anatómico',
@@ -662,7 +641,6 @@ const classifyQuery = (query, content = null) => {
     'base anatómica', 'fundamento fisiológico', 'origen embriológico'
   ];
   
-  // 🔍 DETECTAR ÓRGANOS Y SISTEMAS QUE REQUIEREN KNOWLEDGE BASE
   const anatomicalSystems = [
     'cardiovascular', 'respiratorio', 'digestivo', 'urinario', 'nervioso', 'endocrino',
     'reproductor', 'musculoesquelético', 'tegumentario', 'inmunológico', 'linfático',
@@ -670,20 +648,17 @@ const classifyQuery = (query, content = null) => {
     'páncreas', 'tiroides', 'suprarrenales', 'ovarios', 'testículos', 'útero'
   ];
   
-  // 🔍 DETECTAR PROCEDIMIENTOS Y TÉCNICAS DE CIENCIAS BÁSICAS
   const basicScienceProcedures = [
     'disección', 'preparación histológica', 'tinción', 'microscopía', 'corte anatómico',
     'sección transversal', 'sección sagital', 'sección coronal', 'atlas anatómico',
     'modelo anatómico', 'esquema fisiológico', 'diagrama embriológico'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS ACADÉMICOS REALES
   const hasAcademicContent = 
     basicScienceTerms.some(term => lowercaseQuery.includes(term)) ||
     anatomicalSystems.some(term => lowercaseQuery.includes(term)) ||
     basicScienceProcedures.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasAcademicContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -708,7 +683,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'estructura de', 'función de', 'desarrollo de'];
   const diagnosticKeywords = ['identificar', 'localizar', 'ubicar', 'reconocer', 'caso anatómico', 'estudio fisiológico', 'preparación histológica'];
   const anatomyKeywords = ['anatomía', 'estructura', 'morfología', 'topografía', 'músculo', 'hueso', 'órgano', 'sistema anatómico'];
@@ -720,7 +694,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'artículos anatómicos', 'avances en fisiología', 'nuevos hallazgos embriológicos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -759,7 +732,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -769,7 +741,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional académica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -796,7 +767,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS DE CIENCIAS BÁSICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE CIENCIAS BÁSICAS
@@ -814,7 +784,6 @@ const createBasicSciencesKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -824,7 +793,6 @@ const createBasicSciencesKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -834,7 +802,6 @@ const createBasicSciencesKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_cienciasbasicas",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -846,7 +813,6 @@ const createBasicSciencesKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_BASIC_SCIENCES_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene contenido académico específico sobre "${query}" en su biblioteca de anatomía, fisiología y embriología/histología. Proceder con conocimiento académico general integrado y experiencia docente acumulada en las tres disciplinas fundamentales.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -866,7 +832,6 @@ ACADEL_BASIC_SCIENCES_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene c
 
 ACADEL_BASIC_SCIENCES_MEMORY_BANK: El cerebro principal de Dr. Acadel encontró información académica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base académico integrado, analogías memorables y experiencia docente acumulada en anatomía, fisiología y embriología/histología.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -893,7 +858,6 @@ ACADEL_BASIC_SCIENCES_MEMORY_BANK: El cerebro principal de Dr. Acadel activó la
 
 INTEGRATION_NOTES: Este es el conocimiento académico central que Dr. Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en anatomía, fisiología y embriología/histología. Debe integrar esta información naturalmente como si fuera su propia sabiduría académica, enriqueciéndola con casos específicos, analogías memorables y humor inteligente que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1119,7 +1083,6 @@ const createBasicSciencesConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto académico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1129,7 +1092,6 @@ const createBasicSciencesConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_cienciasbasicas",
       });
       
-      // 📚 BÚSQUEDAS ACADÉMICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `anatomía estructura ${concept}`,
@@ -1139,7 +1101,6 @@ const createBasicSciencesConceptAnalyzerTool = (embeddings) => tool(
         `integración ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1172,7 +1133,6 @@ const createBasicSciencesConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural académica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1351,7 +1311,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia académica según este 
 );
 
 // ============================================================================
-// 📷 ACADEMIC IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES DE CIENCIAS BÁSICAS (MANTENIDA ORIGINAL)
 // ============================================================================
 
 export const detectBasicSciencesImageRequest = (query) => {
@@ -1383,7 +1342,6 @@ export const extractBasicSciencesImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema académico
 const createBasicSciencesVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1418,7 +1376,6 @@ const createBasicSciencesVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts académicos
 const enhanceBasicSciencesImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración académica educativa de alta calidad integrando anatomía, fisiología y embriología/histología: ${prompt}. 
@@ -1437,7 +1394,6 @@ const enhanceBasicSciencesImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE CIENCIAS BÁSICAS
 // ============================================================================
 
 const createSpecializedBasicSciencesPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1546,7 +1502,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
 // ============================================================================
-// 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA ACADÉMICA - OPTIMIZADAS
 // ============================================================================
 
 const basicSciencesTypeInstructions = {
@@ -1630,7 +1585,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT ACADÉMICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1655,13 +1609,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE ACADÉMICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelBasicSciencesAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧬🦫 Dr. Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1676,7 +1628,6 @@ const createAcadelBasicSciencesAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido académico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando BasicSciencesConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createBasicSciencesConceptAnalyzerTool(embeddings));
@@ -1692,7 +1643,6 @@ const createAcadelBasicSciencesAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createBasicSciencesComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createBasicSciencesFeedbackAnalyzerTool());
   
   console.log(`🧬🦫 Dr. Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas académicas:`, tools.map(t => t.name));
@@ -1705,7 +1655,6 @@ const createAcadelBasicSciencesAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt académico especializado y escapado
   const specializedPrompt = createSpecializedBasicSciencesPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1737,7 +1686,6 @@ const createAcadelBasicSciencesAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES ACADÉMICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1786,7 +1734,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto para examen académico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1796,7 +1743,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1806,7 +1752,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_cienciasbasicas",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1818,7 +1763,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1833,7 +1777,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto académico base para "${input}": conocimiento fundamental en anatomía, fisiología y embriología/histología. Dr. Acadel debe generar preguntas desde su experiencia académica consolidada, integrando las tres disciplinas con casos realistas y conceptos fundamentales.`;
         }
       },
@@ -1942,7 +1885,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA ACADÉMICA - handleBasicSciencesQuery
 // ============================================================================
 
 export const handleBasicSciencesQuery = async (params) => {
@@ -1952,7 +1894,6 @@ export const handleBasicSciencesQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1968,13 +1909,11 @@ export const handleBasicSciencesQuery = async (params) => {
     // CLASIFICAR EL QUERY ACADÉMICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES ACADÉMICAS
     const { isImageRequest, prompt: imagePrompt } = detectBasicSciencesImageRequest(query);
     
     console.log(`🧬🦫 Dr. Acadel analizando query académico integrado: "${query}"`);
     console.log(`📊 Clasificación académica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES ACADÉMICAS
     if (isImageRequest) {
       console.log(`🎨 Dr. Acadel generando visualización académica integrada: ${imagePrompt}`);
       
@@ -1983,7 +1922,6 @@ export const handleBasicSciencesQuery = async (params) => {
       const basicSciencesVisualizationTool = createBasicSciencesVisualizationTool();
       const imageResponse = await basicSciencesVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1996,7 +1934,6 @@ export const handleBasicSciencesQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen académica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2054,7 +1991,6 @@ export const handleBasicSciencesQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2091,7 +2027,6 @@ export const handleBasicSciencesQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes académicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen académico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2159,7 +2094,6 @@ export const handleBasicSciencesQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
     
       const responseData = {
@@ -2197,7 +2131,6 @@ export const handleBasicSciencesQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA ACADÉMICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2214,10 +2147,8 @@ export const handleBasicSciencesQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico académico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelBasicSciencesAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2244,7 +2175,6 @@ export const handleBasicSciencesQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel académica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas académicas, pero no me rendiré.
 
 Sobre tu pregunta académica: **"${query}"**
@@ -2270,7 +2200,6 @@ Si necesitas más detalles académicos, pregúntame de nuevo y activaré todas m
       };
     }
 
-    // Procesar respuesta académica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2317,7 +2246,6 @@ Si necesitas más detalles académicos, pregúntame de nuevo y activaré todas m
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2378,7 +2306,6 @@ Si necesitas más detalles académicos, pregúntame de nuevo y activaré todas m
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA ACADÉMICA - handleBasicSciencesMultimodalQuery  
 // ============================================================================
 
 export const handleBasicSciencesMultimodalQuery = async (params) => {
@@ -2404,7 +2331,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2416,7 +2342,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación académica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto académico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2427,7 +2352,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal académico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS ACADÉMICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2465,7 +2389,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES ACADÉMICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2525,7 +2448,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ACADÉMICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes académicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2595,11 +2517,9 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE ACADÉMICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA ACADÉMICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2632,7 +2552,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ACADÉMICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2659,7 +2578,6 @@ export const handleBasicSciencesMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto académico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal académico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes académicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2685,7 +2603,6 @@ Si necesitas una explicación académica más detallada, pregúntame de nuevo y 
       };
     }
 
-    // PROCESAR RESPUESTA ACADÉMICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2701,7 +2618,6 @@ Si necesitas una explicación académica más detallada, pregúntame de nuevo y 
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal clínico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2753,7 +2669,6 @@ Si necesitas una explicación académica más detallada, pregúntame de nuevo y 
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2837,7 +2752,6 @@ Si necesitas una explicación académica más detallada, pregúntame de nuevo y 
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS ACADÉMICAS
 // ============================================================================
 
 export const handleBasicSciencesQueryWithoutSaving = async (params) => {
@@ -2860,12 +2774,10 @@ export const handleBasicSciencesQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES ACADÉMICAS
     const { isImageRequest, prompt: imagePrompt } = detectBasicSciencesImageRequest(query);
     
     console.log(`🔄 Dr. Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES ACADÉMICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2898,7 +2810,6 @@ export const handleBasicSciencesQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen académica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2958,7 +2869,6 @@ export const handleBasicSciencesQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA ACADÉMICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2977,7 +2887,6 @@ export const handleBasicSciencesQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE ACADÉMICO CORREGIDO
       const { agent, tools } = await createAcadelBasicSciencesAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3080,7 +2989,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content académico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content académico no es un array válido en modo sin guardar:", content);
       return {
@@ -3099,7 +3007,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
     
     console.log(`🧠 Query multimodal académico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos académicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3112,7 +3019,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido académico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO ACADÉMICO INTEGRADO: ${doc.name || doc.filename || 'documento académico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3126,7 +3032,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO ACADÉMICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido académico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3187,7 +3092,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
                 console.log(`✅ [RETRY/EDIT] Contenido académico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3207,10 +3111,8 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
           return `${fileInfo} ${typeInfo}\n[Contenido académico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto académico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos académicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido académico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3244,7 +3146,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
       }
     }
 
-    // Procesar imágenes académicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3304,7 +3205,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
               analysisContext += `\n\nCONTEXTO ACADÉMICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes académicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3389,11 +3289,9 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
       };
     }
 
-    // Cargar historial académico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada académica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3424,7 +3322,6 @@ export const handleBasicSciencesMultimodalQueryWithoutSaving = async (params) =>
       };
     }
 
-    // Crear agente académico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelBasicSciencesAgent(llm, queryInfo, combinedQuery);
 

@@ -1,4 +1,3 @@
-// backend/controllers/pagos/priceController.js
 import { priceService } from '../../services/pagos/priceService.js';
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 
@@ -36,7 +35,6 @@ export const clearCache = async (req, res) => {
     try {
         await priceService.clearCache();
         
-        // Log de limpieza de caché
         logSecurityEvent('CACHE_CLEARED', 'Caché de precios limpiado', {
             userId: req.user?.id_user,
             ip: req.ip
@@ -44,7 +42,6 @@ export const clearCache = async (req, res) => {
         
         res.json({ message: 'Caché limpiado exitosamente' });
     } catch (error) {
-        // Log de error en limpieza de caché
         logSecurityEvent('CACHE_CLEAR_ERROR', 'Error al limpiar caché de precios', {
             userId: req.user?.id_user,
             error: error.message,

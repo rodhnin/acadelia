@@ -22,17 +22,13 @@ const configuration = {
      */
     async init() {
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Cargar configuración actual
             await this.loadConfiguration();
             
-            // Configurar event listeners
             this.setupEventListeners();
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -71,7 +67,6 @@ const configuration = {
             addWhitelistBtn.addEventListener('click', this.addWhitelistIP.bind(this));
         }
         
-        // Detectar cambios en los campos para marcar el formulario como modificado
         const formInputs = document.querySelectorAll('#security-config-form input, #security-config-form select');
         formInputs.forEach(input => {
             input.addEventListener('change', this.handleFormChange.bind(this));
@@ -99,31 +94,24 @@ const configuration = {
      */
     async loadConfiguration() {
         try {
-            // Obtener configuración del backend usando la API real
             const config = await getSecurityConfig();
             
-            // Verificar si la respuesta es válida
             if (!config) {
                 throw new Error('No se pudo obtener la configuración del servidor');
             }
             
-            // Normalizar la estructura si es necesario
             const normalizedConfig = this.normalizeConfigStructure(config);
             
-            // Actualizar estado
             this.state.config = normalizedConfig;
             this.state.originalConfig = JSON.parse(JSON.stringify(normalizedConfig)); // Copia profunda
             
-            // Actualizar formulario
             this.updateConfigForm(normalizedConfig);
             
-            // Actualizar lista blanca
             this.renderWhitelistIPs(normalizedConfig.whitelistIPs);
         } catch (error) {
             console.error('Error cargando configuración:', error);
             showNotification('Error', `No se pudo cargar la configuración: ${error.message}`, 'error');
             
-            // Intentar cargar valores predeterminados
             this.loadDefaultConfig();
         }
     },
@@ -194,17 +182,13 @@ const configuration = {
         // Configuración predeterminada
         const defaultConfig = this.getDefaultConfig();
         
-        // Actualizar estado
         this.state.config = defaultConfig;
         this.state.originalConfig = JSON.parse(JSON.stringify(defaultConfig)); // Copia profunda
         
-        // Actualizar formulario
         this.updateConfigForm(defaultConfig);
         
-        // Actualizar lista blanca
         this.renderWhitelistIPs(defaultConfig.whitelistIPs);
         
-        // Mostrar notificación
         showNotification('Advertencia', 'Se ha cargado la configuración predeterminada', 'warning');
     },
 
@@ -293,7 +277,6 @@ const configuration = {
         if (enableAutoBlock) enableAutoBlock.checked = config.advanced.enableAutoBlock;
         if (emergencyUnblockKey) emergencyUnblockKey.value = config.advanced.emergencyUnblockKey;
         
-        // Actualizar también los valores en el modal de confirmación de limpieza
         const archiveDaysElem = document.getElementById('archive-days');
         const deleteDaysElem = document.getElementById('delete-days');
         const loginDaysElem = document.getElementById('login-days');
@@ -311,7 +294,6 @@ const configuration = {
         const tableBody = document.getElementById('whitelist-ips-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         // Si no hay IPs, mostrar mensaje
@@ -323,9 +305,7 @@ const configuration = {
             return;
         }
         
-        // Añadir filas para cada IP
         whitelistIPs.forEach((ip, index) => {
-            // Determinar si es fija (localhost) o editable
             const isFixed = index < 2 && (ip.ip === '127.0.0.1' || ip.ip === '::1' || ip.ip === 'localhost');
             
             const row = createTableRow([
@@ -347,7 +327,6 @@ const configuration = {
             
             tableBody.appendChild(row);
             
-            // Añadir event listener al botón de eliminar (solo si no es fija)
             if (!isFixed) {
                 const removeBtn = row.querySelector('.remove-whitelist-ip');
                 if (removeBtn) {
@@ -362,45 +341,36 @@ const configuration = {
      */
     async saveConfiguration() {
         try {
-            // Verificar si hay cambios
             if (!this.state.isDirty) {
                 showNotification('Info', 'No hay cambios que guardar', 'info');
                 return;
             }
             
-            // Validar formulario
             if (!this.validateConfigForm()) {
                 return;
             }
             
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
             // Recopilar valores del formulario
             const config = this.getFormValues();
             
-            // Guardar configuración usando la API real
             const result = await saveSecurityConfig(config);
             
-            // Verificar resultado
             if (!result || !result.success) {
                 throw new Error(result?.error || 'Error desconocido al guardar la configuración');
             }
             
-            // Actualizar estado con la configuración guardada (por si el servidor la modificó)
             this.state.config = result.config || config;
             this.state.originalConfig = JSON.parse(JSON.stringify(this.state.config)); // Copia profunda
             this.state.isDirty = false;
             
-            // Actualizar interfaz
             this.updateConfigForm(this.state.config);
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
             
-            // Mostrar notificación
             showNotification('Éxito', 'Configuración guardada correctamente', 'success');
         } catch (error) {
             console.error('Error guardando configuración:', error);
@@ -415,7 +385,6 @@ const configuration = {
      * @returns {boolean} Si el formulario es válido
      */
     validateConfigForm() {
-        // Validar umbrales positivos
         const failedLoginThreshold = parseInt(document.getElementById('failed-login-threshold').value);
         const apiRequestsThreshold = parseInt(document.getElementById('api-requests-threshold').value);
         const suspiciousActivityThreshold = parseInt(document.getElementById('suspicious-activity-threshold').value);
@@ -435,7 +404,6 @@ const configuration = {
             return false;
         }
         
-        // Validar duraciones de bloqueo
         const defaultBlockDuration = parseInt(document.getElementById('default-block-duration').value);
         const bruteForceBlockDuration = parseInt(document.getElementById('brute-force-block-duration').value);
         const manualBlockDuration = parseInt(document.getElementById('manual-block-duration').value);
@@ -455,7 +423,6 @@ const configuration = {
             return false;
         }
         
-        // Validar períodos de retención
         const archiveEventsDays = parseInt(document.getElementById('archive-events-days').value);
         const deleteEventsDays = parseInt(document.getElementById('delete-events-days').value);
         const deleteLoginsDays = parseInt(document.getElementById('delete-logins-days').value);
@@ -480,7 +447,6 @@ const configuration = {
             return false;
         }
         
-        // Validar clave de emergencia si está presente
         const emergencyUnblockKey = document.getElementById('emergency-unblock-key').value;
         if (emergencyUnblockKey && emergencyUnblockKey.length < 8) {
             showNotification('Error', 'La clave de desbloqueo debe tener al menos 8 caracteres', 'error');
@@ -524,28 +490,22 @@ const configuration = {
      * Resetea la configuración a sus valores originales
      */
     resetConfiguration() {
-        // Verificar si hay configuración original
         if (!this.state.originalConfig) {
             showNotification('Error', 'No hay configuración original disponible', 'error');
             return;
         }
         
-        // Pedir confirmación
         if (!confirm('¿Estás seguro de resetear la configuración a los valores originales?')) {
             return;
         }
         
-        // Actualizar estado
         this.state.config = JSON.parse(JSON.stringify(this.state.originalConfig)); // Copia profunda
         this.state.isDirty = false;
         
-        // Actualizar formulario
         this.updateConfigForm(this.state.config);
         
-        // Actualizar lista blanca
         this.renderWhitelistIPs(this.state.config.whitelistIPs);
         
-        // Mostrar notificación
         showNotification('Éxito', 'Configuración reseteada correctamente', 'success');
     },
 
@@ -553,18 +513,14 @@ const configuration = {
      * Genera una clave de desbloqueo de emergencia
      */
     generateEmergencyKey() {
-        // Generar clave aleatoria
         const key = Array.from(crypto.getRandomValues(new Uint8Array(16)))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
         
-        // Actualizar campo
         document.getElementById('emergency-unblock-key').value = key;
         
-        // Marcar como modificado
         this.state.isDirty = true;
         
-        // Mostrar notificación
         showNotification('Éxito', 'Clave de emergencia generada', 'success');
     },
 
@@ -572,7 +528,6 @@ const configuration = {
      * Añade una IP a la lista blanca
      */
     addWhitelistIP() {
-        // Obtener valor del campo
         const ip = document.getElementById('whitelist-ip').value.trim();
         
         if (!ip) {
@@ -580,19 +535,16 @@ const configuration = {
             return;
         }
         
-        // Validar formato de IP
         if (!this.isValidIP(ip)) {
             showNotification('Error', 'Formato de IP inválido', 'error');
             return;
         }
         
-        // Verificar si ya existe
         if (this.state.config.whitelistIPs.some(item => item.ip === ip)) {
             showNotification('Advertencia', 'Esta IP ya está en la lista blanca', 'warning');
             return;
         }
         
-        // Añadir a la lista
         const newIP = {
             ip,
             description: 'Añadida manualmente',
@@ -601,16 +553,12 @@ const configuration = {
         
         this.state.config.whitelistIPs.push(newIP);
         
-        // Actualizar tabla
         this.renderWhitelistIPs(this.state.config.whitelistIPs);
         
-        // Limpiar campo
         document.getElementById('whitelist-ip').value = '';
         
-        // Marcar como modificado
         this.state.isDirty = true;
         
-        // Mostrar notificación
         showNotification('Éxito', `IP ${ip} añadida a la lista blanca`, 'success');
     },
 
@@ -620,21 +568,17 @@ const configuration = {
      * @returns {boolean} Si la IP es válida
      */
     isValidIP(ip) {
-        // Validar IPv4
         const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
         if (ipv4Regex.test(ip)) {
-            // Verificar que cada componente sea <= 255
             const parts = ip.split('.');
             return parts.every(part => parseInt(part) <= 255);
         }
         
-        // Validar IPv6 (validación simplificada)
         const ipv6Regex = /^([0-9a-fA-F]{1,4}:){1,7}([0-9a-fA-F]{1,4})?$/;
         if (ipv6Regex.test(ip)) {
             return true;
         }
         
-        // Validar localhost
         if (ip === 'localhost') {
             return true;
         }
@@ -647,7 +591,6 @@ const configuration = {
      * @param {number} index - Índice de la IP a eliminar
      */
     removeWhitelistIP(index) {
-        // Verificar que el índice es válido
         if (index < 0 || index >= this.state.config.whitelistIPs.length) {
             showNotification('Error', 'No se puede eliminar esta IP', 'error');
             return;
@@ -660,21 +603,16 @@ const configuration = {
             return;
         }
         
-        // Pedir confirmación
         if (!confirm(`¿Estás seguro de eliminar la IP ${ip} de la lista blanca?`)) {
             return;
         }
         
-        // Eliminar de la lista
         this.state.config.whitelistIPs.splice(index, 1);
         
-        // Actualizar tabla
         this.renderWhitelistIPs(this.state.config.whitelistIPs);
         
-        // Marcar como modificado
         this.state.isDirty = true;
         
-        // Mostrar notificación
         showNotification('Éxito', `IP ${ip} eliminada de la lista blanca`, 'success');
     },
 
@@ -695,7 +633,6 @@ const configuration = {
             }
         }
         
-        // Deshabilitar o habilitar todos los campos
         const formInputs = document.querySelectorAll('#security-config-form input, #security-config-form select, #security-config-form button');
         formInputs.forEach(input => {
             input.disabled = show;
@@ -706,7 +643,6 @@ const configuration = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners específicamente enlazados con bind
         const configForm = document.getElementById('security-config-form');
         if (configForm) {
             configForm.removeEventListener('submit', this.handleFormSubmit.bind(this));
@@ -727,7 +663,6 @@ const configuration = {
             addWhitelistBtn.removeEventListener('click', this.addWhitelistIP.bind(this));
         }
         
-        // Para otros listeners dinámicos como los botones de eliminar IP,
         // no es necesario eliminarlos específicamente ya que los elementos
         // se eliminan del DOM cuando se cambia de sección
     }

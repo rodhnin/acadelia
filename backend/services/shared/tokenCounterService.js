@@ -1,4 +1,3 @@
-// backend/services/shared/tokenCounterService.js (OPTIMIZADO PARA VELOCIDAD)
 
 import { encoding_for_model } from 'tiktoken';
 import { redisService } from '../../lib/redis.js';
@@ -20,7 +19,6 @@ export class TokenCounterService {
     this.encoders = new Map();
     this.defaultModel = 'gpt-4';
     
-    // 🚀 CACHE AGRESIVO - OPTIMIZADO PARA VELOCIDAD
     this.cacheConfig = {
       TTL: 600, // 10 minutos - más agresivo
       keyPrefix: 'tokens_chat:',
@@ -71,7 +69,6 @@ export class TokenCounterService {
   }
 
   // ================================
-  // 🚀 MÉTODOS OPTIMIZADOS PARA VELOCIDAD
   // ================================
 
   /**
@@ -81,7 +78,6 @@ export class TokenCounterService {
     const cacheKey = `${this.cacheConfig.keyPrefix}${chatId}`;
     
     try {
-      // 🚀 NIVEL 1: Cache en memoria (0.1ms)
       if (!forceRecalculate) {
         const memoryResult = this._getMemoryCache(chatId);
         if (memoryResult) {
@@ -94,7 +90,6 @@ export class TokenCounterService {
         }
       }
 
-      // 🚀 NIVEL 2: Redis cache (1-2ms)
       if (!forceRecalculate) {
         const cached = await redisService.get(cacheKey);
         if (cached && this._isCacheValid(cached)) {
@@ -111,7 +106,6 @@ export class TokenCounterService {
         }
       }
 
-      // 🚀 NIVEL 3: Cálculo optimizado desde BD (solo si es necesario)
       console.log(`🔄 DB Calculation: ${chatId} - calculando...`);
       const calculated = await this._calculateChatTokensOptimized(chatId);
       
@@ -127,7 +121,6 @@ export class TokenCounterService {
     } catch (error) {
       console.error(`❌ Error en countChatTokens para ${chatId}:`, error);
       
-      // 🛡️ Fallback ultrarrápido
       return {
         totalTokens: 0,
         messageCount: 0,
@@ -143,14 +136,12 @@ export class TokenCounterService {
    */
   async updateChatTokens(chatId, lastKnownMessageId = null) {
     try {
-      // 🚀 Intentar cache primero
       const cached = await this._getCacheAggressive(chatId);
       
       if (!cached) {
         return await this.countChatTokens(chatId);
       }
 
-      // 🚀 Obtener solo mensajes nuevos (query optimizada)
       const newMessages = await this._getNewMessagesOptimized(chatId, cached.lastMessageId);
       
       if (newMessages.length === 0) {
@@ -164,12 +155,10 @@ export class TokenCounterService {
         };
       }
 
-      // 🚀 Cálculo incremental ultrarrápido
       if (newMessages.length <= this.cacheConfig.maxIncrementalMessages) {
         return await this._calculateIncrementalOptimized(chatId, cached, newMessages);
       }
 
-      // 🚀 Recalcular completo solo si hay demasiados mensajes
       console.log(`🔄 Token Update: ${chatId} - Demasiados mensajes nuevos, recalculando...`);
       return await this.countChatTokens(chatId, true);
 
@@ -252,7 +241,6 @@ export class TokenCounterService {
     const client = await pool.connect();
     
     try {
-      // 🚀 Query optimizada - solo columnas necesarias, índice en id_chat
       const messagesQuery = `
         SELECT id, message
         FROM chat_history 
@@ -297,7 +285,6 @@ export class TokenCounterService {
     const client = await pool.connect();
     
     try {
-      // 🚀 Query optimizada con LIMIT para evitar cargar demasiados
       const query = `
         SELECT id, message
         FROM chat_history 
@@ -357,13 +344,11 @@ export class TokenCounterService {
    * ⚡ OPTIMIZADO: Cache agresivo (memoria + Redis)
    */
   async _getCacheAggressive(chatId) {
-    // 🚀 Intentar memoria primero
     const memoryResult = this._getMemoryCache(chatId);
     if (memoryResult) {
       return memoryResult;
     }
     
-    // 🚀 Intentar Redis
     const cacheKey = `${this.cacheConfig.keyPrefix}${chatId}`;
     const cached = await redisService.get(cacheKey);
     
@@ -397,7 +382,6 @@ export class TokenCounterService {
   }
 
   // ================================
-  // ✅ MÉTODOS ORIGINALES OPTIMIZADOS
   // ================================
 
   /**
@@ -507,7 +491,6 @@ export class TokenCounterService {
   }
 
   // ================================
-  // 📊 MÉTODOS DE ADMINISTRACIÓN OPTIMIZADOS
   // ================================
 
   /**
@@ -599,5 +582,4 @@ export class TokenCounterService {
   }
 }
 
-// ✅ Singleton instance optimizado
 export const tokenCounter = new TokenCounterService();

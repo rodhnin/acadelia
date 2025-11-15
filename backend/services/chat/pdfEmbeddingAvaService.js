@@ -33,7 +33,6 @@ const pdfEmbeddingAvaService = {
   async processPDF({ fileBuffer, avaId, userId, filename = 'document.pdf', progressCallback = null }) {
     const startTime = Date.now();
     
-    // Función para actualizar progreso si se proporcionó un callback
     const updateProgress = (progress, message) => {
       if (typeof progressCallback === 'function') {
         progressCallback(progress, message);
@@ -92,7 +91,6 @@ const pdfEmbeddingAvaService = {
       
       updateProgress(60, 'Extracción OCR completada');
       
-      // Verificar que la respuesta tenga la estructura esperada
       if (!ocrResponse.pages || !Array.isArray(ocrResponse.pages)) {
         console.warn("La respuesta OCR no contiene la estructura esperada de páginas");
         return {
@@ -113,7 +111,6 @@ const pdfEmbeddingAvaService = {
         const page = ocrResponse.pages[i];
         const pageNumber = i + 1;
         
-        // Verificar que la página tenga contenido
         if (!page.markdown) {
           console.warn(`Página ${pageNumber} sin contenido`);
           continue;
@@ -121,7 +118,6 @@ const pdfEmbeddingAvaService = {
         
         updateProgress(70 + (i / totalPages) * 20, `Procesando página ${pageNumber} de ${totalPages}`);
         
-        // Crear metadata para la página
         const metadata = {
           filename: filename,
           page: pageNumber,
@@ -133,7 +129,6 @@ const pdfEmbeddingAvaService = {
           source: 'mistral_ocr'
         };
         
-        // Generar embedding para la página
         console.log(`Generando embedding para página ${pageNumber}`);
         const embedding = await this.generateEmbedding(page.markdown);
         
@@ -142,7 +137,6 @@ const pdfEmbeddingAvaService = {
           continue;
         }
         
-        // Guardar en la tabla de embeddings
         const savedPage = await this.saveToEmbeddingTable(
           embeddingTableName,
           page.markdown,
@@ -267,7 +261,6 @@ const pdfEmbeddingAvaService = {
    */
 async saveToEmbeddingTable(tableName, content, metadata, embedding) {
   try {
-    // Verificar que la tabla existe
     const tableCheckQuery = `
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -281,7 +274,6 @@ async saveToEmbeddingTable(tableName, content, metadata, embedding) {
       throw new Error(`La tabla ${tableName} no existe`);
     }
     
-    // Formatear el embedding como un string con el formato correcto para pgvector: [val1,val2,...]
     // Este formato es el que funciona en PDFStorageService.js
     let formattedEmbedding;
     
@@ -304,7 +296,6 @@ async saveToEmbeddingTable(tableName, content, metadata, embedding) {
     
     console.log(`Guardando embedding en formato correcto para pgvector: ${formattedEmbedding.substring(0, 50)}...`);
     
-    // Insertar en la tabla de embeddings
     const query = `
       INSERT INTO ${tableName} (content, metadata, embedding)
       VALUES ($1, $2, $3)
@@ -365,14 +356,12 @@ async saveToEmbeddingTable(tableName, content, metadata, embedding) {
    */
   async countDocuments(avaId, filename) {
     try {
-      // Obtener información de la tabla
       const tableInfo = await this.getAvaEmbeddingTable(avaId);
       
       if (!tableInfo.success) {
         return tableInfo; // Devuelve el error
       }
       
-      // Contar documentos
       const query = `
         SELECT COUNT(*) as count
         FROM ${tableInfo.tableName}
@@ -403,14 +392,12 @@ async saveToEmbeddingTable(tableName, content, metadata, embedding) {
    */
   async deleteDocuments(avaId, filename) {
     try {
-      // Obtener información de la tabla
       const tableInfo = await this.getAvaEmbeddingTable(avaId);
       
       if (!tableInfo.success) {
         return tableInfo; // Devuelve el error
       }
       
-      // Eliminar documentos
       const query = `
         DELETE FROM ${tableInfo.tableName}
         WHERE metadata->>'filename' = $1
@@ -440,7 +427,6 @@ async saveToEmbeddingTable(tableName, content, metadata, embedding) {
    */
   async listProcessedFiles(avaId) {
     try {
-      // Obtener información de la tabla
       const tableInfo = await this.getAvaEmbeddingTable(avaId);
       
       if (!tableInfo.success) {

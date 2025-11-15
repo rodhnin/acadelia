@@ -79,7 +79,6 @@ export function initPDFPanel() {
   createDOMElements();
   attachEventListeners();
   
-  // Inicializar componentes internos
   initPDFViewer(pdfContainer);
   initMarkdownViewer(markdownContainer);
   initRegionSelector();
@@ -89,7 +88,6 @@ export function initPDFPanel() {
   
   panelState.isInitialized = true;
   
-  // Suscribirse a cambios en el estado del PDF
   setupStateListeners();
 }
 
@@ -104,17 +102,14 @@ function createPanelTriggerButton() {
   
   document.body.appendChild(triggerButton);
   
-  // Añadir evento para desplegar el panel
   triggerButton.addEventListener('click', () => {
     import('../services/pdf-state.js').then(module => {
       module.togglePDFPanel(true);
     });
   });
   
-  // Obtener referencia al botón de subida
   const uploaderButton = document.querySelector('.pdf-upload-button');
   
-  // Inicializar controlador con las referencias disponibles
   import('../utils/pdf-button-controller.js').then(module => {
     if (typeof module.initPDFButtonController === 'function') {
       module.initPDFButtonController(uploaderButton, triggerButton);
@@ -282,7 +277,6 @@ function createDOMElements() {
   pageJumpCancel = pageJumpModal.querySelector('.pdf-jump-cancel');
   pageJumpClose = pageJumpModal.querySelector('.pdf-jump-modal-close');
   
-  // Ocultar loading inicialmente
   hideElement(loadingIndicator);
 }
 
@@ -290,7 +284,6 @@ function createDOMElements() {
  * Agrega los event listeners necesarios usando dom-helpers
  */
 function attachEventListeners() {
-  // Cerrar panel
   addEvent(closeButton, 'click', () => {
     togglePDFPanel(false);
   });
@@ -312,21 +305,17 @@ function attachEventListeners() {
   });
   
   // NUEVO: Event listeners para el buscador de páginas
-  // Abrir modal de salto de página
   addEvent(pageJumpButton, 'click', showPageJumpModal);
   
-  // Cerrar modal
   addEvent(pageJumpCancel, 'click', hidePageJumpModal);
   addEvent(pageJumpClose, 'click', hidePageJumpModal);
   
-  // Cerrar modal al hacer clic fuera
   addEvent(pageJumpModal, 'click', (e) => {
     if (e.target === pageJumpModal) {
       hidePageJumpModal();
     }
   });
   
-  // Enviar al presionar Enter
   addEvent(pageJumpInput, 'keypress', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -334,10 +323,8 @@ function attachEventListeners() {
     }
   });
   
-  // Enviar al hacer clic en botón
   addEvent(pageJumpSubmit, 'click', handlePageJump);
   
-  // Validación en tiempo real
   addEvent(pageJumpInput, 'input', validatePageInput);
   
   // Modos de visualización
@@ -356,7 +343,6 @@ function attachEventListeners() {
     updateActiveViewButton('split');
   });
   
-  // Eliminar PDF
   addEvent(deleteButton, 'click', handlePDFDelete);
 }
 
@@ -367,15 +353,12 @@ function showPageJumpModal() {
   const totalPages = getPDFState('totalPages');
   const currentPage = getPDFState('currentPage');
   
-  // Actualizar rango permitido
   pageJumpInput.setAttribute('max', totalPages);
   pageJumpInput.value = currentPage;
   
-  // Actualizar texto de rango
   const rangeElement = pageJumpModal.querySelector('.pdf-jump-range');
   rangeElement.textContent = `(1 - ${totalPages})`;
   
-  // Mostrar modal
   pageJumpModal.classList.add('show');
   
   // Enfocar y seleccionar el input
@@ -400,7 +383,6 @@ function validatePageInput() {
   const value = parseInt(pageJumpInput.value);
   const totalPages = getPDFState('totalPages');
   
-  // Remover clases de estado anterior
   pageJumpInput.classList.remove('valid', 'invalid');
   pageJumpSubmit.disabled = false;
   
@@ -426,7 +408,6 @@ function handlePageJump() {
   const totalPages = getPDFState('totalPages');
   const currentPage = getPDFState('currentPage');
   
-  // Validar entrada
   if (!targetPage || isNaN(targetPage)) {
     acadelWarning("Número inválido", "Acadel necesita un número de página válido");
     pageJumpInput.focus();
@@ -449,7 +430,6 @@ function handlePageJump() {
   // Navegar a la página
   setCurrentPage(targetPage);
   
-  // Cerrar modal
   hidePageJumpModal();
   
   // Notificación de éxito
@@ -473,7 +453,6 @@ function updateActiveViewButton(mode) {
  * Actualiza el diseño según el modo de visualización y restablece el zoom
  */
 function updateViewMode() {
-  // Mostrar/ocultar contenedores según el modo
   if (['pdf', 'split'].includes(panelState.activeTab)) {
     showElement(pdfContainer, 'block');
   } else {
@@ -509,10 +488,8 @@ function updateViewMode() {
  * Esta función debe ser añadida al archivo pdf-panel.js
  */
 function resetPDFZoom() {
-  // Importar dinámicamente el módulo de visualización de PDF
   import('./pdf-viewer.js')
     .then(pdfViewerModule => {
-      // Verificar si el módulo tiene la función updateZoom 
       if (typeof pdfViewerModule.updateZoom === 'function') {
         // Restablecer zoom a 1 (100%)
         pdfViewerModule.updateZoom(1);
@@ -583,7 +560,6 @@ function setupStateListeners() {
 function updatePDFInfo(pdfInfo) {
   if (!pdfInfo) return;
   
-  // Actualizar nombre de archivo
   const filenameElement = pdfPanel.querySelector('.pdf-panel-filename');
   if (filenameElement) {
     filenameElement.textContent = pdfInfo.originalName || 'Documento PDF';
@@ -596,11 +572,9 @@ function updatePDFInfo(pdfInfo) {
       module.updatePDFState({ totalPages: pdfInfo.pageCount });
       console.log(`PDF Info: Actualizando total páginas a ${pdfInfo.pageCount}`);
       
-      // CRÍTICO: Actualizar la información de página inmediatamente
       setTimeout(() => updatePageInfo(), 0);
     });
   } else {
-    // Actualizar información de páginas con lo que tengamos
     updatePageInfo();
   }
 }
@@ -614,7 +588,6 @@ function updatePageInfo() {
   
   pageDisplay.textContent = `Página ${currentPage} de ${totalPages}`;
   
-  // Actualizar estado de botones de navegación
   prevPageButton.disabled = currentPage <= 1;
   nextPageButton.disabled = currentPage >= totalPages;
   
@@ -641,7 +614,6 @@ async function loadPDFContent() {
     // Si tenemos info del PDF pero el totalPages no está actualizado en la interfaz, actualizarlo
     if (pdfInfo && pdfInfo.pageCount && getPDFState('totalPages') !== pdfInfo.pageCount) {
       console.log(`Actualizando conteo de páginas: ${pdfInfo.pageCount}`);
-      // Importar dinámicamente para evitar dependencias circulares
       const pdfStateModule = await import('../services/pdf-state.js');
       pdfStateModule.updatePDFState({ totalPages: pdfInfo.pageCount });
       
@@ -649,13 +621,11 @@ async function loadPDFContent() {
       updatePageInfo();
     }
     
-    // Cargar en paralelo PDF y texto markdown
     const [pdfPreviewPromise, pdfTextPromise] = await Promise.allSettled([
       getPDFPreview({ page: currentPage, pdfId }),
       getPDFText({ specificPage: currentPage, pdfId })
     ]);
     
-    // Procesar resultado de vista previa
     if (pdfPreviewPromise.status === 'fulfilled') {
       const imageUrl = pdfPreviewPromise.value;
       renderPDFPage(imageUrl, currentPage);
@@ -663,7 +633,6 @@ async function loadPDFContent() {
       console.error('Error cargando vista previa:', pdfPreviewPromise.reason);
     }
     
-    // Procesar resultado de texto
     if (pdfTextPromise.status === 'fulfilled') {
       const textData = pdfTextPromise.value;
       
@@ -709,7 +678,6 @@ function togglePanelVisibility(visible) {
     const previewPanel = document.querySelector('#preview-panel');
     if (previewPanel && previewPanel.classList.contains('open')) {
       console.log('PDF Panel: Cerrando preview panel antes de abrir PDF panel');
-      // Cerrar preview panel directamente
       previewPanel.classList.remove('open');
       document.body.classList.remove('preview-panel-active');
       setTimeout(() => {
@@ -721,7 +689,6 @@ function togglePanelVisibility(visible) {
   }
   
   // Incluso si ya está en el estado deseado, aplicar de todos modos
-  // para asegurar consistencia visual
   panelState.isVisible = visible;
   
   if (visible) {
@@ -741,14 +708,12 @@ function togglePanelVisibility(visible) {
     pdfPanel.style.opacity = '1';
     pdfPanel.style.visibility = 'visible';
     
-    // Cargar contenido si no está ya cargado
     loadPDFContent();
     
     // NUEVO: Forzar actualización del conteo de páginas al mostrar el panel
     // Acceder directamente a la información del PDF actual
     const pdfInfo = getPDFState('pdfInfo');
     if (pdfInfo && pdfInfo.pageCount) {
-      // Actualizar directamente totalPages en el estado
       import('../services/pdf-state.js').then(module => {
         console.log(`Panel visible: Actualizando páginas a ${pdfInfo.pageCount}`);
         module.updatePDFState({ totalPages: pdfInfo.pageCount });
@@ -760,7 +725,6 @@ function togglePanelVisibility(visible) {
           console.log(`Actualizando display de página: ${currentPage} de ${totalPages}`);
           pageDisplay.textContent = `Página ${currentPage} de ${totalPages}`;
           
-          // Actualizar estado de botones
           prevPageButton.disabled = currentPage <= 1;
           nextPageButton.disabled = currentPage >= totalPages;
           pageJumpButton.disabled = totalPages <= 1; // NUEVO
@@ -790,7 +754,6 @@ function togglePanelVisibility(visible) {
  */
 async function handlePDFDelete() {
   try {
-    // Importar módulos necesarios
     const modalsModule = await import('../ui/modals-pdf.js');
     
     // MEJORA: Verificar si ya hay una modal abierta
@@ -800,12 +763,10 @@ async function handlePDFDelete() {
     }
     
     if (typeof modalsModule.showConfirmation === 'function') {
-      // Usar modal correcta de modals.js
       modalsModule.showConfirmation(
         'Eliminar PDF',
         '¿Estás seguro que deseas eliminar este PDF? Esta acción no se puede deshacer.',
         async () => {
-          // Función a ejecutar cuando el usuario confirma
           setLoading(true);
           
           try {
@@ -815,7 +776,6 @@ async function handlePDFDelete() {
             // Reiniciar estado y ocultar panel
             togglePDFPanel(false);
             
-            // Verificar estado después de eliminar
             setManagedTimeout(() => {
               import('../services/pdf-state.js').then(module => {
                 if (module.initPDFCheck) {
@@ -823,14 +783,12 @@ async function handlePDFDelete() {
                 }
               });
               
-              // Actualizar botones explícitamente
               updatePDFButtonsVisibility(false);
             }, 500, 'pdf-state-check');
             
           } catch (error) {
             console.error('Error eliminando PDF:', error);
             
-            // Mostrar error con ui-manager
             acadelError("No se pudo eliminar", "Acadel tuvo problemas eliminando el PDF. Intenta de nuevo");
           } finally {
             setLoading(false);
@@ -839,7 +797,6 @@ async function handlePDFDelete() {
         null // No hacer nada si el usuario cancela
       );
     } else {
-      // Fallback al confirm() básico si no está disponible showConfirmation
       const confirmed = confirm('¿Estás seguro que deseas eliminar este PDF?');
       
       if (confirmed) {
@@ -852,7 +809,6 @@ async function handlePDFDelete() {
           // Reiniciar estado y ocultar panel
           togglePDFPanel(false);
           
-          // Verificar estado después de eliminar
           setManagedTimeout(() => {
             import('../services/pdf-state.js').then(module => {
               if (module.initPDFCheck) {
@@ -860,7 +816,6 @@ async function handlePDFDelete() {
               }
             });
             
-            // Actualizar botones explícitamente
             updatePDFButtonsVisibility(false);
           }, 500, 'pdf-state-check');
           
@@ -875,7 +830,6 @@ async function handlePDFDelete() {
   } catch (error) {
     console.error('Error al importar módulos:', error);
     
-    // Fallback al código original si falla la importación
     const confirmed = confirm('¿Estás seguro que deseas eliminar este PDF?');
     
     if (!confirmed) return;
@@ -889,7 +843,6 @@ async function handlePDFDelete() {
       // Reiniciar estado y ocultar panel
       togglePDFPanel(false);
       
-      // Verificar estado después de eliminar
       setManagedTimeout(() => {
         import('../services/pdf-state.js').then(module => {
           if (module.initPDFCheck) {
@@ -897,7 +850,6 @@ async function handlePDFDelete() {
           }
         });
         
-        // Actualizar botones explícitamente
         updatePDFButtonsVisibility(false);
       }, 500, 'pdf-state-check');
       

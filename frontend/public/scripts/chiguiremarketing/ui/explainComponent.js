@@ -26,11 +26,9 @@ function preCleanMarkdownContent(content) {
  * Crea un componente de explicabilidad usando el Sistema Unificado de Mermaid
  */
 export function createExplainComponent(explanation, agentsUsed = [], agentSelection = null) {
-  // Crear contenedor principal
   const container = document.createElement('div');
   container.className = 'explanation-container';
   
-  // Crear encabezado
   const header = document.createElement('div');
   header.className = 'explanation-header';
   header.innerHTML = `
@@ -55,7 +53,6 @@ export function createExplainComponent(explanation, agentsUsed = [], agentSelect
   const visualizationContainer = createVisualizationSection(explanation, agentsUsed);
   container.appendChild(visualizationContainer);
   
-  // Configurar interactividad
   setupInteractivityUnified(container, explanation);
   
   return container;
@@ -141,7 +138,6 @@ function createExplanationContent(explanation) {
     // Solo limpieza básica, la corrección de negrita se hace en markdownParser.js
     const cleanedExplanation = preCleanMarkdownContent(explanation.explanation);
     
-    // Usar función centralizada (que incluye la corrección de negrita)
     const explanationHtml = renderMarkdownComplete(cleanedExplanation);
     content.innerHTML = explanationHtml;
   } else {
@@ -201,7 +197,6 @@ function generateMermaidCode(explanation, actualAgentsUsed) {
 }
 
 function setupInteractivityUnified(container, explanation) {
-  // Manejar cambios de nivel de explicación
   const levelButtons = container.querySelectorAll('.explain-level-btn');
   levelButtons.forEach(button => {
     button.addEventListener('click', async () => {
@@ -298,7 +293,6 @@ async function processDiagramWithUnifiedSystem(mermaidElement, explanation) {
           mermaidElement.innerHTML = visualization.mermaidDiagram;
         }
       } catch (apiError) {
-        // Usar diagrama por defecto
       }
     }
     
@@ -356,7 +350,6 @@ export function integrateExplainComponent(responseData, query, chatElement) {
   let agentsUsed = [];
   let agentSelection = null;
   
-  // Procesar explicación
   if (responseData.explanation) {
     explanation = responseData.explanation;
     if (!explanation.query) {
@@ -370,7 +363,6 @@ export function integrateExplainComponent(responseData, query, chatElement) {
     };
   }
   
-  // Procesar agentes usados
   if (responseData.agentsUsed && Array.isArray(responseData.agentsUsed)) {
     agentsUsed = responseData.agentsUsed;
   } else if (responseData['agents Used'] && Array.isArray(responseData['agents Used'])) {
@@ -383,12 +375,10 @@ export function integrateExplainComponent(responseData, query, chatElement) {
     }
   }
   
-  // Procesar selección de agentes
   if (responseData.agentSelection) {
     agentSelection = responseData.agentSelection;
   }
   
-  // Crear datos mínimos si es necesario
   if (!explanation && agentsUsed.length === 0 && !agentSelection) {
     agentsUsed = ['strategist'];
     explanation = {
@@ -398,10 +388,8 @@ export function integrateExplainComponent(responseData, query, chatElement) {
     };
   }
   
-  // Crear componente
   const explainComponent = createExplainComponent(explanation, agentsUsed, agentSelection);
   
-  // Insertarlo en el chat
   const messageContent = chatElement.querySelector('.message-content');
   if (messageContent) {
     const separator = document.createElement('div');
@@ -419,7 +407,6 @@ export function integrateExplainComponent(responseData, query, chatElement) {
     processSpecialElements(explainComponent);
   }
   
-  // Procesar diagramas
   setTimeout(async () => {
     if (window.mermaidManager && window.mermaidManager.isInitialized) {
       await window.mermaidManager.processContainer(explainComponent);
@@ -433,5 +420,4 @@ export function integrateExplainComponent(responseData, query, chatElement) {
   return explainComponent;
 }
 
-// Exportar para uso global
 window.integrateExplainComponent = integrateExplainComponent;

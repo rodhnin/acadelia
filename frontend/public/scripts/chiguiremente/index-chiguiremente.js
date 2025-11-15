@@ -6,25 +6,19 @@ import { initTrainMindModule } from './train-mind-chiguiremente.js';
 import { setupThemeToggle, showNotification, setupLoader, setupConfirmModal } from './utils-chiguiremente.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar cargador
     setupLoader();
     
-    // Inicializar tema
     setupThemeToggle(updateVisualElements);
     
-    // Inicializar modal de confirmación
     setupConfirmModal();
     
-    // Inicializar navegación
     setupNavigation();
     
-    // Inicializar módulos
     initDashboardModule();
     initCreationModule();
     initEditionModule();
     initTrainMindModule();
     
-    // Inicializar botones de acción global
     setupGlobalActions();
     
     console.log('✅ Panel de Administración inicializado correctamente');
@@ -32,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Actualiza elementos visuales cuando cambia el tema
 function updateVisualElements() {
-    // Actualizar imagen del Chiguire según el tema
     const isDarkTheme = document.body.classList.contains('dark-theme');
     const chiguireImg = document.getElementById('chiguire-img');
     
@@ -53,12 +46,9 @@ function setupNavigation() {
         'train-mind': document.getElementById('train-mind-section')
     };
     
-    // Establecer vista activa basada en hash URL
     function setActiveView() {
-        // Obtener la vista del hash o usar 'dashboard' por defecto
         const hash = window.location.hash.substring(1) || 'dashboard';
         
-        // Activar elemento de navegación correspondiente
         navItems.forEach(item => {
             const viewName = item.dataset.view || item.querySelector('.nav-link')?.dataset?.section;
             
@@ -69,17 +59,14 @@ function setupNavigation() {
             }
         });
         
-        // Mostrar vista correspondiente
         Object.keys(views).forEach(viewName => {
             if (views[viewName]) {
                 if (viewName === hash) {
                     views[viewName].style.display = 'block';
                     views[viewName].classList.add('active');
-                    // Disparar evento personalizado para notificar a los módulos
                     document.dispatchEvent(new CustomEvent('viewActivated', { 
                         detail: { 
                             view: viewName,
-                            // Añadir información del estado de navegación
                             navigationState: JSON.parse(localStorage.getItem('navigationState') || 'null')
                         } 
                     }));
@@ -91,10 +78,8 @@ function setupNavigation() {
         });
     }
     
-    // Establecer vista inicial
     setActiveView();
     
-    // Cambiar vista al hacer clic en elementos de navegación
     navItems.forEach(item => {
         const navLink = item.querySelector('.nav-link');
         if (navLink) {
@@ -111,7 +96,6 @@ function setupNavigation() {
         }
     });
     
-    // Actualizar vista cuando cambia el hash de la URL
     window.addEventListener('hashchange', setActiveView);
     
     // Ver más botones
@@ -145,7 +129,6 @@ function setupGlobalActions() {
         });
     }
     
-    // Manejar eventos de clic en el contenido principal para ocultar sidebar móvil
     const contentBackdrop = document.getElementById('content-backdrop');
     if (contentBackdrop) {
         contentBackdrop.addEventListener('click', () => {

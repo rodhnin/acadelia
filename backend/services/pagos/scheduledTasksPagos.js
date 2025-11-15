@@ -9,7 +9,6 @@ export async function initReportScheduledTasks() {
   try {
     console.log('Inicializando tareas programadas de informes...');
     
-    // Obtener configuración de informes automáticos
     const configResult = await pool.query(
       'SELECT value FROM config WHERE key = $1',
       ['automatic_reports']
@@ -21,7 +20,6 @@ export async function initReportScheduledTasks() {
       return;
     }
     
-    // Extraer configuración
     const config = configResult.rows[0].value;
     
     // Programar tarea
@@ -42,7 +40,6 @@ export async function initReportScheduledTasks() {
   }
 }
 
-// Exportar función para usar en la inicialización de la aplicación
 export default {
   initReportScheduledTasks
 };

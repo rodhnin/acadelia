@@ -1,4 +1,3 @@
-// backend/lib/throttleService.js
 import { getQueue } from './queueService.js';
 
 // Configuración de concurrencia por tipo de operación
@@ -33,7 +32,6 @@ const statsCounts = {
   youtube: { completed: 0, failed: 0 }
 };
 
-// Registrar último ID para seguimiento de trabajos
 let lastJobId = 0;
 
 // Mapa de trabajos activos para seguimiento detallado
@@ -55,7 +53,6 @@ const statsJobIds = {
   youtube: null
 };
 
-// Actualizar estadísticas en colas - pero SOLO cuando realmente hay cambios
 let lastUpdateTime = 0;
 let throttleUpdates = false;
 
@@ -74,7 +71,6 @@ async function updateQueueStats(force = false) {
   lastUpdateTime = now;
   throttleUpdates = true;
   
-  // Actualizar cada tipo de cola
   for (const type of ['openai', 'pdf', 'audio', 'youtube']) {
     try {
       const queue = getQueue(`throttle-${type}`);
@@ -98,7 +94,6 @@ async function updateQueueStats(force = false) {
           }))
       };
       
-      // Actualizar trabajo existente en lugar de crear uno nuevo
       if (statsJobIds[type]) {
         const existingJob = await queue.getJob(statsJobIds[type]);
         if (existingJob) {
@@ -115,7 +110,6 @@ async function updateQueueStats(force = false) {
         removeOnFail: false
       });
       
-      // Guardar referencia
       statsJobIds[type] = job.id;
     } catch (error) {
       console.error(`Error al actualizar estadísticas para ${type}:`, error);
@@ -136,7 +130,6 @@ async function updateQueueStats(force = false) {
   }
 }
 
-// Inicializar estadísticas
 updateQueueStats(true).catch(console.error);
 
 // Programar actualización periódica con baja frecuencia
@@ -155,25 +148,20 @@ function processWaitingQueue(type) {
   while (activeCounts[type] < limit && waitingQueues[type].length > 0) {
     const waitingJob = waitingQueues[type].shift(); // Tomar el primero de la cola
     
-    // Actualizar contadores
     waitingCounts[type]--;
     activeCounts[type]++;
     
-    // Actualizar estado del trabajo
     waitingJob.job.status = 'active';
     waitingJob.job.startTime = Date.now();
     
     console.log(`Trabajo ${waitingJob.id} movido de espera a activo para ${type}. Activos: ${activeCounts[type]}/${limit}, En espera: ${waitingCounts[type]}`);
     
-    // Resolver la promesa para continuar la ejecución
     waitingJob.resolve(waitingJob.id);
   }
   
-  // Actualizar estadísticas si hubo cambios
   updateQueueStats(true).catch(console.error);
 }
 
-// Revisar colas de espera periódicamente
 setInterval(() => {
   for (const type of ['openai', 'pdf', 'audio', 'youtube']) {
     if (waitingQueues[type].length > 0) {
@@ -208,7 +196,6 @@ export async function acquireSemaphore(type, metadata = {}, waitIfFull = true, m
   if (activeCounts[type] < limit) {
     activeCounts[type]++;
     
-    // Registrar trabajo activo con metadatos
     activeJobs.set(jobId, {
       type,
       startTime: Date.now(),
@@ -218,7 +205,6 @@ export async function acquireSemaphore(type, metadata = {}, waitIfFull = true, m
     
     console.log(`Semáforo adquirido para ${type} (${jobId}). Activos: ${activeCounts[type]}/${limit}`);
     
-    // Actualizar estadísticas cuando hay un nuevo trabajo
     updateQueueStats(true).catch(console.error);
     
     return jobId;
@@ -232,11 +218,9 @@ export async function acquireSemaphore(type, metadata = {}, waitIfFull = true, m
   
   // Si queremos esperar, agregar a la cola de espera
   return new Promise((resolve, reject) => {
-    // Crear timeout si es necesario
     let timeoutId = null;
     if (maxWaitTime > 0) {
       timeoutId = setTimeout(() => {
-        // Buscar y eliminar de la cola de espera
         const index = waitingQueues[type].findIndex(waiting => waiting.id === jobId);
         if (index !== -1) {
           waitingQueues[type].splice(index, 1);
@@ -249,7 +233,6 @@ export async function acquireSemaphore(type, metadata = {}, waitIfFull = true, m
       }, maxWaitTime);
     }
     
-    // Registrar trabajo en espera
     const waitingJob = {
       id: jobId,
       job: {
@@ -263,19 +246,15 @@ export async function acquireSemaphore(type, metadata = {}, waitIfFull = true, m
       timeoutId
     };
     
-    // Agregar a la cola
     waitingQueues[type].push(waitingJob);
     waitingCounts[type]++;
     
-    // Registrar en el mapa de trabajos para seguimiento
     activeJobs.set(jobId, waitingJob.job);
     
     console.log(`Trabajo ${jobId} puesto en espera para ${type}. En espera: ${waitingCounts[type]}`);
     
-    // Actualizar estadísticas
     updateQueueStats(true).catch(console.error);
     
-    // Intentar procesar la cola inmediatamente (por si acaso)
     processWaitingQueue(type);
   });
 }
@@ -294,15 +273,12 @@ export function completeSemaphore(jobId, result = {}) {
   const job = activeJobs.get(jobId);
   const { type } = job;
   
-  // Decrementar contador activo
   if (activeCounts[type] > 0) {
     activeCounts[type]--;
   }
   
-  // Actualizar contadores de estadísticas
   statsCounts[type].completed++;
   
-  // Actualizar estado del trabajo
   job.status = 'completed';
   job.endTime = Date.now();
   job.result = result;
@@ -316,10 +292,8 @@ export function completeSemaphore(jobId, result = {}) {
     activeJobs.delete(jobId);
   }, 60000); // Eliminar de historial después de 1 minuto
   
-  // Procesar cola de espera para ver si podemos activar algún trabajo
   processWaitingQueue(type);
   
-  // Actualizar estadísticas cuando se completa un trabajo
   updateQueueStats(true).catch(console.error);
   
   return true;
@@ -339,15 +313,12 @@ export function failSemaphore(jobId, error = 'Error desconocido') {
   const job = activeJobs.get(jobId);
   const { type } = job;
   
-  // Decrementar contador activo
   if (activeCounts[type] > 0) {
     activeCounts[type]--;
   }
   
-  // Actualizar contadores de estadísticas
   statsCounts[type].failed++;
   
-  // Actualizar estado del trabajo
   job.status = 'failed';
   job.endTime = Date.now();
   job.error = error instanceof Error ? error.message : error;
@@ -361,10 +332,8 @@ export function failSemaphore(jobId, error = 'Error desconocido') {
     activeJobs.delete(jobId);
   }, 300000); // Eliminar de historial después de 5 minutos (más tiempo para revisar errores)
   
-  // Procesar cola de espera para ver si podemos activar algún trabajo
   processWaitingQueue(type);
   
-  // Actualizar estadísticas cuando falla un trabajo
   updateQueueStats(true).catch(console.error);
   
   return true;
@@ -433,7 +402,6 @@ export function getAllJobs() {
  * @param {string} type - Tipo de cola
  */
 export function clearStats(type) {
-  // Extraer "throttle-" del tipo si está presente
   const cleanType = type.replace('throttle-', '');
   
   if (statsCounts[cleanType]) {
@@ -450,5 +418,4 @@ export function clearStats(type) {
   return false;
 }
 
-// Exportar límites de concurrencia (para lectura)
 export const limits = { ...concurrencyLimits };

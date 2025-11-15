@@ -32,13 +32,10 @@ const suspiciousActivity = {
      */
     async init() {
         try {
-            // Inicializar gráficos vacíos
             this.initCharts();
             
-            // Cargar datos
             await this.loadSuspiciousActivity();
             
-            // Configurar event listeners
             this.setupEventListeners();
         } catch (error) {
             console.error('Error inicializando módulo de actividad sospechosa:', error);
@@ -92,7 +89,6 @@ const suspiciousActivity = {
         
         // Botón para ver todas las amenazas
         document.getElementById('view-all-threats-btn')?.addEventListener('click', () => {
-            // Disparar evento para cambiar a sección de eventos con filtro por tipo de evento
             window.dispatchEvent(new CustomEvent('viewAllThreats', {
                 detail: {
                     filter: 'THREAT_DETECTED'
@@ -111,33 +107,24 @@ const suspiciousActivity = {
      */
     async loadSuspiciousActivity() {
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Obtener actividad sospechosa
             const result = await getSuspiciousActivity();
             
-            // Actualizar estado
             this.state.recentActivity = result.recentActivity || [];
             this.state.dbEvents = result.dbEvents || [];
             
-            // Cargar datos adicionales para completar la información
             await this.loadAdditionalThreatData();
             
-            // Actualizar amenazas y contadores
             this.updateThreatCounts();
             
-            // Renderizar tabla
             this.renderSuspiciousActivityTable();
             
-            // Actualizar gráficos
             this.updateCharts();
             
-            // Actualizar barras de progreso
             this.updateProgressBars();
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -153,7 +140,6 @@ const suspiciousActivity = {
      */
     async loadAdditionalThreatData() {
         try {
-            // Obtener eventos relacionados con amenazas de las últimas 24 horas
             const threatsResult = await getSecurityEvents({
                 eventType: 'THREAT_',
                 startDate: this.getDateRange(24)  // últimas 24 horas
@@ -161,12 +147,10 @@ const suspiciousActivity = {
             
             // Si hay eventos, añadirlos a los dbEvents
             if (threatsResult && threatsResult.events && threatsResult.events.length > 0) {
-                // Filtrar solo aquellos que no estén ya en dbEvents
                 const existingIds = new Set(this.state.dbEvents.map(e => e.id));
                 
                 const newEvents = threatsResult.events.filter(event => !existingIds.has(event.id));
                 
-                // Añadir los nuevos eventos
                 this.state.dbEvents = [...this.state.dbEvents, ...newEvents];
             }
             
@@ -177,12 +161,10 @@ const suspiciousActivity = {
             }, 1, 100);
             
             if (suspiciousResult && suspiciousResult.events && suspiciousResult.events.length > 0) {
-                // Filtrar solo aquellos que no estén ya en dbEvents
                 const existingIds = new Set(this.state.dbEvents.map(e => e.id));
                 
                 const newEvents = suspiciousResult.events.filter(event => !existingIds.has(event.id));
                 
-                // Añadir los nuevos eventos
                 this.state.dbEvents = [...this.state.dbEvents, ...newEvents];
             }
         } catch (error) {
@@ -198,10 +180,8 @@ const suspiciousActivity = {
         const tableBody = document.getElementById('suspicious-activity-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
-        // Combinar datos de redis y eventos de la base de datos
         const allActivity = [
             ...this.state.recentActivity.map(activity => ({
                 ip: activity.ipAddress,
@@ -224,7 +204,6 @@ const suspiciousActivity = {
         ];
         
         if (allActivity.length === 0) {
-            // Mostrar mensaje si no hay actividad
             const emptyRow = createTableRow([
                 { colspan: 6, className: 'text-center', text: 'No hay actividad sospechosa reciente' }
             ]);
@@ -232,7 +211,6 @@ const suspiciousActivity = {
             return;
         }
         
-        // Ordenar por timestamp (más reciente primero)
         allActivity.sort((a, b) => {
             return new Date(b.timestamp) - new Date(a.timestamp);
         });
@@ -240,12 +218,9 @@ const suspiciousActivity = {
         // Limitar a 20 elementos para no sobrecargar la tabla
         const recentActivity = allActivity.slice(0, 20);
         
-        // Añadir filas a la tabla
         recentActivity.forEach(activity => {
-            // Determinar severidad para el estilo
             const severity = activity.severity || (activity.isSuspicious ? 'medium' : 'low');
             
-            // Crear fila
             const row = createTableRow([
                 { text: activity.ip || 'Desconocida', className: 'text-nowrap' },
                 { text: activity.type || 'Desconocido', className: 'text-nowrap' },
@@ -275,7 +250,6 @@ const suspiciousActivity = {
             
             tableBody.appendChild(row);
             
-            // Añadir event listeners a los botones
             const blockBtn = row.querySelector('.block-ip-btn');
             if (blockBtn && activity.ip) {
                 blockBtn.addEventListener('click', () => {
@@ -299,7 +273,6 @@ const suspiciousActivity = {
      * Actualiza los contadores de amenazas basados en datos reales
      */
     updateThreatCounts() {
-        // Inicializar contadores
         const threatCounts = {
             'SQL Injection': 0,
             'XSS': 0,
@@ -308,13 +281,10 @@ const suspiciousActivity = {
             'Otros': 0
         };
         
-        // Analizar eventos de la base de datos
         this.state.dbEvents.forEach(event => {
             try {
-                // Intentar extraer detalles del evento
                 let threatType = 'Otros';
                 
-                // Verificar en el eventType
                 if (event.eventType === 'SQL_INJECTION' || event.eventType.includes('SQL_INJECTION')) {
                     threatType = 'SQL Injection';
                 } else if (event.eventType === 'XSS' || event.eventType.includes('XSS')) {
@@ -324,7 +294,6 @@ const suspiciousActivity = {
                 } else if (event.eventType === 'BRUTE_FORCE' || event.eventType.includes('BRUTE_FORCE')) {
                     threatType = 'Brute Force';
                 } else {
-                    // Verificar en el mensaje
                     const message = event.message?.toLowerCase() || '';
                     
                     if (message.includes('sql') || message.includes('injection')) {
@@ -338,7 +307,6 @@ const suspiciousActivity = {
                     }
                 }
                 
-                // Incrementar el contador correspondiente
                 threatCounts[threatType]++;
             } catch (err) {
                 // En caso de error procesando un evento, incrementar "Otros"
@@ -347,7 +315,6 @@ const suspiciousActivity = {
             }
         });
         
-        // Analizar eventos de Redis (actividad sospechosa)
         this.state.recentActivity.forEach(activity => {
             // Actividad con muchas solicitudes es probablemente fuerza bruta
             if (activity.count > 5) {
@@ -357,10 +324,8 @@ const suspiciousActivity = {
             }
         });
         
-        // Actualizar estado
         this.state.threatCounts = threatCounts;
         
-        // Actualizar contadores en la interfaz
         document.getElementById('sql-injection-count').textContent = threatCounts['SQL Injection'];
         document.getElementById('xss-count').textContent = threatCounts['XSS'];
         document.getElementById('path-traversal-count').textContent = threatCounts['Path Traversal'];
@@ -379,12 +344,10 @@ const suspiciousActivity = {
             'Brute Force': 12
         };
         
-        // Calcular porcentajes limitados a 100%
         const calculatePercentage = (value, threshold) => {
             return Math.min(Math.round((value / threshold) * 100), 100);
         };
         
-        // Actualizar barras de progreso
         const sqlInjectionPercentage = calculatePercentage(this.state.threatCounts['SQL Injection'], thresholds['SQL Injection']);
         document.getElementById('sql-injection-progress').style.width = `${sqlInjectionPercentage}%`;
         
@@ -397,7 +360,6 @@ const suspiciousActivity = {
         const bruteForcePercentage = calculatePercentage(this.state.threatCounts['Brute Force'], thresholds['Brute Force']);
         document.getElementById('brute-force-progress').style.width = `${bruteForcePercentage}%`;
         
-        // Actualizar colores según el porcentaje
         this.updateProgressBarColors('sql-injection-progress', sqlInjectionPercentage);
         this.updateProgressBarColors('xss-progress', xssPercentage);
         this.updateProgressBarColors('path-traversal-progress', pathTraversalPercentage);
@@ -413,10 +375,8 @@ const suspiciousActivity = {
         const progressBar = document.getElementById(elementId);
         if (!progressBar) return;
         
-        // Limpiar clases anteriores
         progressBar.classList.remove('bg-success', 'bg-warning', 'bg-danger');
         
-        // Añadir clase según porcentaje
         if (percentage < 50) {
             progressBar.classList.add('bg-success');
         } else if (percentage < 80) {
@@ -430,7 +390,6 @@ const suspiciousActivity = {
      * Actualiza los gráficos con datos reales
      */
     updateCharts() {
-        // Actualizar gráfico de patrones
         if (this.state.charts.patternsChart) {
             const patternData = [
                 this.state.threatCounts['SQL Injection'],
@@ -444,19 +403,16 @@ const suspiciousActivity = {
             this.state.charts.patternsChart.update();
         }
         
-        // Actualizar gráfico de tasas de detección con datos reales
         if (this.state.charts.detectionRates) {
             // Agrupar eventos por rango horario
             const hourRanges = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
             const detectionData = Array(6).fill(0);
             
-            // Procesar eventos para agrupar por rango
             [...this.state.dbEvents, ...this.state.recentActivity].forEach(event => {
                 try {
                     const eventDate = new Date(event.timestamp);
                     const hour = eventDate.getHours();
                     
-                    // Determinar a qué rango pertenece
                     let rangeIndex = 0;
                     
                     if (hour >= 4 && hour < 8) rangeIndex = 1;
@@ -465,7 +421,6 @@ const suspiciousActivity = {
                     else if (hour >= 16 && hour < 20) rangeIndex = 4;
                     else if (hour >= 20) rangeIndex = 5;
                     
-                    // Incrementar contador
                     detectionData[rangeIndex]++;
                 } catch (err) {
                     console.warn('Error procesando evento para gráfico:', err);
@@ -479,7 +434,6 @@ const suspiciousActivity = {
                 });
             }
             
-            // Actualizar gráfico
             this.state.charts.detectionRates.data.labels = hourRanges;
             this.state.charts.detectionRates.data.datasets[0].data = detectionData;
             this.state.charts.detectionRates.update();
@@ -492,7 +446,6 @@ const suspiciousActivity = {
      * @param {string} reason - Razón del bloqueo
      */
     handleBlockIP(ip, reason) {
-        // Preparar modal de bloqueo
         modals.prepareBlockIp(ip, `Actividad sospechosa: ${reason}`);
     },
 
@@ -501,11 +454,9 @@ const suspiciousActivity = {
      * @param {string|number} eventId - ID del evento
      */
     viewEventDetails(eventId) {
-        // Buscar evento en los datos
         const event = this.state.dbEvents.find(e => e.id == eventId);
         
         if (event) {
-            // Mostrar detalles en modal
             modals.showEventDetails(event);
         } else {
             showNotification('Error', 'No se encontró el evento', 'error');
@@ -517,7 +468,6 @@ const suspiciousActivity = {
      */
     async exportThreatData() {
         try {
-            // Intentar usar la API de exportación real
             const filters = {
                 eventType: 'THREAT_',
                 startDate: this.getDateRange(24) // últimas 24 horas
@@ -525,14 +475,12 @@ const suspiciousActivity = {
             
             const blob = await exportSecurityEvents(filters, 'json');
             
-            // Generar nombre de archivo
             const date = new Date().toISOString().split('T')[0];
             const filename = `amenazas_${date}.json`;
             
             // Descargar archivo
             downloadBlob(blob, filename);
             
-            // Mostrar notificación
             showNotification('Éxito', 'Exportación completada', 'success');
         } catch (error) {
             console.error('Error exportando datos a través de API:', error);
@@ -546,19 +494,16 @@ const suspiciousActivity = {
                     securityEvents: this.state.dbEvents
                 };
                 
-                // Crear blob
                 const blob = new Blob([JSON.stringify(data, null, 2)], {
                     type: 'application/json;charset=utf-8;'
                 });
                 
-                // Generar nombre de archivo
                 const date = new Date().toISOString().split('T')[0];
                 const filename = `amenazas_${date}.json`;
                 
                 // Descargar archivo
                 downloadBlob(blob, filename);
                 
-                // Mostrar notificación
                 showNotification('Éxito', 'Exportación completada (modo local)', 'success');
             } catch (fallbackError) {
                 console.error('Error en exportación fallback:', fallbackError);
@@ -593,7 +538,6 @@ const suspiciousActivity = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners
         document.getElementById('refresh-suspicious-activity')?.removeEventListener('click', () => this.loadSuspiciousActivity());
         document.getElementById('view-all-threats-btn')?.removeEventListener('click', () => window.dispatchEvent(new CustomEvent('viewAllThreats')));
         document.getElementById('export-threats-btn')?.removeEventListener('click', () => this.exportThreatData());

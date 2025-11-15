@@ -2,8 +2,6 @@
 // 🩺🦫 PROFESOR ACADEL SEMIOLOGÍA Y DIAGNÓSTICO - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
 // ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO - PROFESOR DE SEMIOLOGÍA Y DIAGNÓSTICO SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Propedéutica y Semiología ✅ Métodos Diagnósticos ✅ Medicina Basada en Evidencia ✅
 // ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
@@ -27,12 +25,10 @@ import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
 // ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
 // ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
 // ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
 // ============================================================================
 
 class BraveSearchOrchestrator {
@@ -99,7 +95,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +168,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +188,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +256,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -367,10 +359,8 @@ Hacer que CUALQUIER estudiante de medicina:
 `;
 
 // ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE SEMIOLOGÍA - REUTILIZABLES PARA TODAS LAS FUNCIONES
 // ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE SEMIOLOGÍA
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel en Semiología y Diagnóstico.
 
 🎯 FUNCIÓN: Analizar imágenes médicas (radiografías, laboratorios, signos clínicos, métodos diagnósticos) con precisión médica extrema.
@@ -397,7 +387,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Dr. Acadel e
 
 Eres los OJOS ANALÍTICOS de Dr. Acadel - él interpretará tu análisis con su sabiduría pedagógica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE SEMIOLOGÍA (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Dr. Acadel, el capibara médico más brillante del universo en semiología, métodos diagnósticos y medicina basada en evidencia.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información médica de esta imagen para que Dr. Acadel pueda enseñar efectivamente integrando las tres disciplinas.
@@ -443,7 +432,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Dr. Ac
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las tres disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos médicos. Dr. Acadel se encargará de la pedagogía integrada pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE SEMIOLOGÍA NORMALES (con y sin guardar)
 const UNIFIED_SEMIOLOGY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA MÉDICA INTEGRADA:
 - Consulta del estudiante de medicina: "${query}"
@@ -470,7 +458,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE SEMIOLOGÍA MULTIMODALES (con y sin guardar)
 const UNIFIED_SEMIOLOGY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN MÉDICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -525,7 +512,6 @@ ${queryInfo.hasEmotionalContent ?
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -535,7 +521,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -557,7 +542,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -565,7 +549,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES MÉDICAS
   const medicalImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -590,7 +573,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes médicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de semiología", "test de métodos diagnósticos", "evaluación de medicina basada en evidencia", "cuestionario de propedéutica"
@@ -634,9 +616,7 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
   let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
@@ -645,7 +625,6 @@ const classifyQuery = (query, content = null) => {
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS MÉDICOS ESPECÍFICOS
   const semiologyTerms = [
     // Semiología y Propedéutica
     'semiología', 'semiology', 'propedéutica', 'propedeutics', 'anamnesis', 'historia clínica',
@@ -675,7 +654,6 @@ const classifyQuery = (query, content = null) => {
     'correlación clínica', 'clinical correlation', 'presentación clínica'
   ];
   
-  // 🔍 DETECTAR ÓRGANOS Y SISTEMAS QUE REQUIEREN KNOWLEDGE BASE
   const anatomicalTerms = [
     'cardiovascular', 'respiratorio', 'digestivo', 'renal', 'neurológico', 'endocrino',
     'reproductor', 'inmunológico', 'musculoesquelético', 'dermatológico', 'oftalmológico',
@@ -683,20 +661,17 @@ const classifyQuery = (query, content = null) => {
     'intestino', 'páncreas', 'tiroides', 'suprarrenales', 'ovarios', 'testículos', 'próstata'
   ];
   
-  // 🔍 DETECTAR PROCEDIMIENTOS Y ESTUDIOS MÉDICOS
   const medicalProcedures = [
     'procedimiento', 'procedure', 'técnica', 'technique', 'método', 'method',
     'estudio', 'study', 'evaluación', 'evaluation', 'valoración', 'assessment',
     'screening', 'cribado', 'seguimiento', 'follow-up', 'monitoreo', 'monitoring'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS MÉDICOS REALES
   const hasMedicalContent = 
     semiologyTerms.some(term => lowercaseQuery.includes(term)) ||
     anatomicalTerms.some(term => lowercaseQuery.includes(term)) ||
     medicalProcedures.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasMedicalContent) {
     needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
     const result = {
@@ -721,7 +696,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'signo de', 'síntoma de', 'método de'];
   const diagnosticKeywords = ['diagnosticar', 'evaluar', 'examinar', 'caso clínico', 'paciente con', 'síntomas de', 'signos de'];
   const semiologyKeywords = ['semiología', 'propedéutica', 'exploración física', 'anamnesis', 'inspección', 'palpación', 'percusión', 'auscultación'];
@@ -732,7 +706,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'artículos médicos', 'avances en medicina', 'nuevos hallazgos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -770,7 +743,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -780,7 +752,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional médica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -807,7 +778,6 @@ const classifyQuery = (query, content = null) => {
 };
 
 // ============================================================================
-// 🔧 HERRAMIENTAS MÉDICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
 // ============================================================================
 
 // ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS MÉDICAS
@@ -825,7 +795,6 @@ const createSemiologyKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -835,7 +804,6 @@ const createSemiologyKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
@@ -845,7 +813,6 @@ const createSemiologyKnowledgeBaseTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_semiologia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -857,7 +824,6 @@ const createSemiologyKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_SEMIOLOGY_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene contenido médico específico sobre "${query}" en su biblioteca clínica. Proceder con conocimiento médico general integrado y experiencia clínica acumulada en semiología, métodos diagnósticos y medicina basada en evidencia.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -877,7 +843,6 @@ ACADEL_SEMIOLOGY_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene conten
 
 ACADEL_SEMIOLOGY_MEMORY_BANK: El cerebro principal de Dr. Acadel encontró información médica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base médico integrado, analogías clínicas memorables y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -904,7 +869,6 @@ ACADEL_SEMIOLOGY_MEMORY_BANK: El cerebro principal de Dr. Acadel activó la sigu
 
 INTEGRATION_NOTES: Este es el conocimiento médico central que Dr. Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en semiología, métodos diagnósticos y medicina basada en evidencia. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica, enriqueciéndola con casos clínicos específicos, analogías memorables y humor médico inteligente que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1130,7 +1094,6 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto médico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
         similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
@@ -1140,7 +1103,6 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
         keywordQueryName: "kw_match_emb_semiologia",
       });
       
-      // 📚 BÚSQUEDAS MÉDICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `semiología signos síntomas ${concept}`,
@@ -1150,7 +1112,6 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
         `diagnóstico diferencial ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1183,7 +1144,6 @@ const createSemiologyConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural médica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1362,7 +1322,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia médica según este an�
 );
 
 // ============================================================================
-// 📷 MEDICAL IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES MÉDICAS (MANTENIDA ORIGINAL)
 // ============================================================================
 
 export const detectSemiologyImageRequest = (query) => {
@@ -1394,7 +1353,6 @@ export const extractSemiologyImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema médico
 const createSemiologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1429,7 +1387,6 @@ const createSemiologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts médicos
 const enhanceSemiologyImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración médica educativa de alta calidad integrando semiología, métodos diagnósticos y medicina basada en evidencia: ${prompt}. 
@@ -1448,7 +1405,6 @@ const enhanceSemiologyImagePrompt = (prompt) => {
 };
 
 // ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE SEMIOLOGÍA
 // ============================================================================
 
 const createSpecializedSemiologyPrompt = (queryType, queryInfo, studentQuery) => {
@@ -1556,7 +1512,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 `;
 
 // ============================================================================
-// 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA MÉDICA - OPTIMIZADAS
 // ============================================================================
 
 const semiologyTypeInstructions = {
@@ -1640,7 +1595,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
   };
 
   // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT MÉDICO FINAL ULTRA-OPTIMIZADO
   // ============================================================================
   
   return `${basePersonality}
@@ -1665,13 +1619,11 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
 };
 
 // ============================================================================
-// 🤖 CREACIÓN DEL AGENTE MÉDICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
 // ============================================================================
 
 const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🩺🦫 Dr. Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
@@ -1686,7 +1638,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido médico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsMedicalSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando SemiologyConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createSemiologyConceptAnalyzerTool(embeddings));
@@ -1702,7 +1653,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createSemiologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createSemiologyFeedbackAnalyzerTool());
   
   console.log(`🩺🦫 Dr. Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas médicas:`, tools.map(t => t.name));
@@ -1715,7 +1665,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt médico especializado y escapado
   const specializedPrompt = createSpecializedSemiologyPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1747,7 +1696,6 @@ const createAcadelSemiologyAgent = async (llm, queryInfo, studentQuery) => {
 };
 
 // ============================================================================
-// 📝 FUNCIONES AUXILIARES MÉDICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
 // ============================================================================
 
 export const detectExamRequest = (query) => {
@@ -1796,7 +1744,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto para examen médico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1806,7 +1753,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
             similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
@@ -1816,7 +1762,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             keywordQueryName: "kw_match_emb_semiologia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1828,7 +1773,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1843,7 +1787,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto médico base para "${input}": conocimiento fundamental en semiología, métodos diagnósticos y medicina basada en evidencia. Dr. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las tres disciplinas médicas con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1952,7 +1895,6 @@ const hasDocuments = (content) => {
 };
 
 // ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA MÉDICA - handleSemiologyQuery
 // ============================================================================
 
 export const handleSemiologyQuery = async (params) => {
@@ -1962,7 +1904,6 @@ export const handleSemiologyQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1978,13 +1919,11 @@ export const handleSemiologyQuery = async (params) => {
     // CLASIFICAR EL QUERY MÉDICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES MÉDICAS
     const { isImageRequest, prompt: imagePrompt } = detectSemiologyImageRequest(query);
     
     console.log(`🩺🦫 Dr. Acadel analizando query médico integrado: "${query}"`);
     console.log(`📊 Clasificación médica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES MÉDICAS
     if (isImageRequest) {
       console.log(`🎨 Dr. Acadel generando visualización médica integrada: ${imagePrompt}`);
       
@@ -1993,7 +1932,6 @@ export const handleSemiologyQuery = async (params) => {
       const semiologyVisualizationTool = createSemiologyVisualizationTool();
       const imageResponse = await semiologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -2006,7 +1944,6 @@ export const handleSemiologyQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen médica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2064,7 +2001,6 @@ export const handleSemiologyQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2101,7 +2037,6 @@ export const handleSemiologyQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes médicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen médico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2169,7 +2104,6 @@ export const handleSemiologyQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
     
       const responseData = {
@@ -2207,7 +2141,6 @@ export const handleSemiologyQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA MÉDICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2224,10 +2157,8 @@ export const handleSemiologyQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico médico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE MÉDICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelSemiologyAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2254,7 +2185,6 @@ export const handleSemiologyQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel médica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas médicas, pero no me rendiré.
 
 Sobre tu pregunta médica: **"${query}"**
@@ -2280,7 +2210,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       };
     }
 
-    // Procesar respuesta médica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2327,7 +2256,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2388,7 +2316,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
 };
 
 // ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA MÉDICA - handleSemiologyMultimodalQuery  
 // ============================================================================
 
 export const handleSemiologyMultimodalQuery = async (params) => {
@@ -2414,7 +2341,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2426,7 +2352,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación médica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto médico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2437,7 +2362,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal médico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS MÉDICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2475,7 +2399,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES MÉDICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2535,7 +2458,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS MÉDICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes médicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2605,11 +2527,9 @@ export const handleSemiologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE MÉDICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal médica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA MÉDICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2642,7 +2562,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE MÉDICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2669,7 +2588,6 @@ export const handleSemiologyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto médico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal médico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes médicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2695,7 +2613,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       };
     }
 
-    // PROCESAR RESPUESTA MÉDICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2711,7 +2628,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal clínico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2763,7 +2679,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2847,7 +2762,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
 };
 
 // ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS MÉDICAS
 // ============================================================================
 
 export const handleSemiologyQueryWithoutSaving = async (params) => {
@@ -2870,12 +2784,10 @@ export const handleSemiologyQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES MÉDICAS
     const { isImageRequest, prompt: imagePrompt } = detectSemiologyImageRequest(query);
     
     console.log(`🔄 Dr. Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES MÉDICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2908,7 +2820,6 @@ export const handleSemiologyQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen médica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2968,7 +2879,6 @@ export const handleSemiologyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA MÉDICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2987,7 +2897,6 @@ export const handleSemiologyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE MÉDICO CORREGIDO
       const { agent, tools } = await createAcadelSemiologyAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3090,7 +2999,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content médico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content médico no es un array válido en modo sin guardar:", content);
       return {
@@ -3109,7 +3017,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
     
     console.log(`🧠 Query multimodal médico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos médicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3122,7 +3029,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido médico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO MÉDICO INTEGRADO: ${doc.name || doc.filename || 'documento médico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3136,7 +3042,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO MÉDICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido médico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3197,7 +3102,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido médico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3217,10 +3121,8 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido médico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto médico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos médicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido médico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3254,7 +3156,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes médicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3314,7 +3215,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO MÉDICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes médicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3399,11 +3299,9 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial médico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal médica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada médica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3434,7 +3332,6 @@ export const handleSemiologyMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente médico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelSemiologyAgent(llm, queryInfo, combinedQuery);
 

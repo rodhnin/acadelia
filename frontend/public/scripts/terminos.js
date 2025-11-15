@@ -3,7 +3,6 @@
  * Incluye notificaciones del proceso de aceptación y mejoras visuales
  */
 document.addEventListener('DOMContentLoaded', async () => {
-    // Ocultar contenido inicialmente
     
     // Referencias a elementos del DOM
     const ingresarBtn = document.querySelector('.ingresar-btn');
@@ -20,15 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         userEmail: ''
     };
     
-    // Crear el overlay de procesamiento
     createProcessingOverlay();
     
-    // Obtener parámetros de URL
     const urlParams = new URLSearchParams(window.location.search);
     pageState.isRequired = urlParams.get('required') === 'true';
     pageState.currentVersion = urlParams.get('version') || '1.0';
     
-    // Verificar autenticación
     await checkAuthentication();
     
     // Si está autenticado y requiere aceptación, mostrar mensaje y botón
@@ -104,13 +100,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pageState.userId = data.user.id_user;
                 pageState.userEmail = data.user.correo;
                 
-                // Mostrar mensaje de bienvenida personalizado
                 showAlert(`Bienvenido, ${data.user.nombre || 'Usuario'}`, 'success', 2000);
   // Usuario autenticado - los botones permanecen ocultos (por CSS)
 // No agregar la clase show-login-buttons
                 
                 // Si el usuario está autenticado pero no fue redirigido,
-                // verificar si ya aceptó los términos actuales
                 if (!pageState.isRequired) {
                     await checkTermsAcceptance();
                 }
@@ -120,7 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Error al verificar autenticación:', error);
             
-            // Mostrar mensaje de error
             showAlert('Error al verificar tu estado de sesión. Intenta recargando la página.', 'error');
             
             // En caso de error, mostrar los botones de ingreso
@@ -159,7 +152,6 @@ document.body.classList.add('show-login-buttons');
                 showAlert('Ya has aceptado los términos y condiciones actuales', 'success', 3000);
             } else {
                 // Si no ha aceptado pero está en la página de términos voluntariamente,
-                // mostrar botón de aceptación sin el mensaje de requerimiento
                 showAlert('Se recomienda aceptar los términos actualizados', 'info', 4000);
                 addAcceptTermsButton();
             }
@@ -173,15 +165,12 @@ document.body.classList.add('show-login-buttons');
      * Muestra mensaje de que se requiere aceptación de términos
      */
     function showAcceptanceRequiredMessage() {
-        // Crear contenedor de alerta
         const alertContainer = document.createElement('div');
         alertContainer.className = 'terms-alert required';
         
-        // Crear ícono de alerta
         const alertIcon = document.createElement('i');
         alertIcon.className = 'bx bx-error-circle';
         
-        // Crear texto de la alerta
         const alertText = document.createElement('div');
         alertText.className = 'alert-text';
         alertText.innerHTML = `
@@ -193,22 +182,18 @@ document.body.classList.add('show-login-buttons');
         alertContainer.appendChild(alertIcon);
         alertContainer.appendChild(alertText);
         
-        // Añadir efectos de animación
         alertContainer.style.opacity = '0';
         alertContainer.style.transform = 'translateY(-10px)';
         
-        // Insertar después del header de términos
         if (termsHeader) {
             termsHeader.insertAdjacentElement('afterend', alertContainer);
         } else {
-            // Fallback si no existe el header
             const container = document.querySelector('.terms-container');
             if (container) {
                 container.insertAdjacentElement('afterbegin', alertContainer);
             }
         }
         
-        // Mostrar con animación
         setTimeout(() => {
             alertContainer.style.transition = 'all 0.5s ease';
             alertContainer.style.opacity = '1';
@@ -220,17 +205,14 @@ document.body.classList.add('show-login-buttons');
      * Añade botón para aceptar términos al final de la página
      */
     function addAcceptTermsButton() {
-        // Crear contenedor para botones
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'terms-buttons';
         
-        // Crear botón de aceptar
         const acceptButton = document.createElement('button');
         acceptButton.className = 'terms-button accept';
         acceptButton.innerHTML = '<i class="bx bx-check-circle" style="margin-right: 8px;"></i>Aceptar Términos y Condiciones';
         acceptButton.addEventListener('click', handleAcceptTerms);
         
-        // Crear botón de rechazar/gestionar cuenta
         const rejectButton = document.createElement('button');
         rejectButton.className = 'terms-button reject';
         rejectButton.innerHTML = '<i class="bx bx-cog" style="margin-right: 8px;"></i>Gestionar mi cuenta';
@@ -241,25 +223,21 @@ document.body.classList.add('show-login-buttons');
             }, 800);
         });
         
-        // Añadir botones al contenedor con animación de entrada
         buttonContainer.style.opacity = '0';
         buttonContainer.style.transform = 'translateY(20px)';
         
         buttonContainer.appendChild(acceptButton);
         buttonContainer.appendChild(rejectButton);
         
-        // Añadir al final del contenido
         if (termsContent) {
             termsContent.appendChild(buttonContainer);
         } else {
-            // Fallback si no existe el contenedor de términos
             const container = document.querySelector('.terms-container');
             if (container) {
                 container.appendChild(buttonContainer);
             }
         }
         
-        // Mostrar con animación
         setTimeout(() => {
             buttonContainer.style.transition = 'all 0.5s ease';
             buttonContainer.style.opacity = '1';
@@ -273,16 +251,13 @@ document.body.classList.add('show-login-buttons');
      */
     async function handleAcceptTerms() {
         try {
-            // Mostrar overlay de procesamiento
             showProcessingOverlay('Procesando tu aceptación...');
             
-            // Obtener token CSRF
             const csrfToken = getCsrfToken();
             
             // Simular retraso para procesamiento (solo para demo, puedes quitar esto)
             await new Promise(resolve => setTimeout(resolve, 1000));
             
-            // Enviar solicitud de aceptación
             const response = await fetch('/api/terminos/aceptar', {
                 method: 'POST',
                 headers: {
@@ -296,7 +271,6 @@ document.body.classList.add('show-login-buttons');
                 })
             });
             
-            // Ocultar overlay de procesamiento
             hideProcessingOverlay();
             
             if (!response.ok) {
@@ -304,14 +278,11 @@ document.body.classList.add('show-login-buttons');
                 throw new Error(errorData.error || 'Error al aceptar términos');
             }
             
-            // Procesar respuesta
             const data = await response.json();
             
             if (data.success) {
-                // Mostrar mensaje de éxito
                 showAlert('¡Términos aceptados correctamente! Redirigiendo...', 'success');
                 
-                // Deshabilitar los botones
                 const acceptButton = document.querySelector('.terms-button.accept');
                 const rejectButton = document.querySelector('.terms-button.reject');
                 
@@ -351,7 +322,6 @@ document.body.classList.add('show-login-buttons');
             return window.csrfUtils.getToken();
         }
         
-        // Intentar obtener de meta tag
         const metaTag = document.querySelector('meta[name="csrf-token"]');
         if (metaTag) {
             const token = metaTag.getAttribute('content');
@@ -372,7 +342,6 @@ document.body.classList.add('show-login-buttons');
             info: { icon: '<i class="bx bx-info-circle"></i>', class: 'alert-info' }
         };
 
-        // Eliminar alertas anteriores del mismo tipo
         const existingAlerts = document.querySelectorAll(`.custom-alert.${alertTypes[type].class}`);
         existingAlerts.forEach(alert => {
             alert.classList.remove('show');
@@ -389,10 +358,8 @@ document.body.classList.add('show-login-buttons');
 
         document.body.appendChild(alertDiv);
         
-        // Agregar la clase después de un breve retraso para permitir la animación
         setTimeout(() => alertDiv.classList.add('show'), 10);
         
-        // Eliminar la alerta después del tiempo especificado
         setTimeout(() => {
             alertDiv.classList.remove('show');
             setTimeout(() => alertDiv.remove(), 400);

@@ -1,4 +1,3 @@
-// backend/controllers/chat/videoTranscriptionController.js
 import pool from "../../lib/dbPool.js";
 import { isValidUUID } from '../../utils/chat/validators.js';
 import { logSecurityEvent } from '../../utils/securityLogger.js';
@@ -11,9 +10,7 @@ import { logSecurityEvent } from '../../utils/securityLogger.js';
 export const checkChatHasTranscription = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
-    // Log de intento con chatId inválido
     logSecurityEvent('INVALID_CHAT_ID', 'Intento de verificar transcripción con chatId inválido', {
       chatId: chatId,
       ip: req.ip,
@@ -49,7 +46,6 @@ export const checkChatHasTranscription = async (req, res) => {
       client.release();
     }
   } catch (error) {
-    // Log de error verificando transcripciones
     logSecurityEvent('TRANSCRIPTION_CHECK_ERROR', 'Error verificando transcripciones en chat', {
       chatId: chatId,
       error: error.message,
@@ -73,9 +69,7 @@ export const checkChatHasTranscription = async (req, res) => {
 export const checkChatHasVideo = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
-    // Log de intento con chatId inválido
     logSecurityEvent('INVALID_CHAT_ID', 'Intento de obtener datos de video con chatId inválido', {
       chatId: chatId,
       ip: req.ip,
@@ -129,7 +123,6 @@ export const checkChatHasVideo = async (req, res) => {
 export const checkChatHasAudio = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -179,7 +172,6 @@ export const checkChatHasAudio = async (req, res) => {
 export const checkYouTubeProcessingStatus = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -251,7 +243,6 @@ export const checkYouTubeProcessingStatus = async (req, res) => {
         client.query(errorQuery, [chatId, lastUploadTimestamp])
       ]);
       
-      // Verificar si hay mensaje de éxito o de error después del último intento
       const isSuccess = parseInt(successResult.rows[0].count) > 0;
       const hasError = parseInt(errorResult.rows[0].count) > 0;
       
@@ -301,7 +292,6 @@ export const checkYouTubeProcessingStatus = async (req, res) => {
 export const checkAudioProcessingStatus = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -373,7 +363,6 @@ export const checkAudioProcessingStatus = async (req, res) => {
         client.query(errorQuery, [chatId, lastUploadTimestamp])
       ]);
       
-      // Verificar si hay mensaje de éxito o de error después del último intento
       const isSuccess = parseInt(successResult.rows[0].count) > 0;
       const hasError = parseInt(errorResult.rows[0].count) > 0;
       
@@ -422,7 +411,6 @@ export const checkAudioProcessingStatus = async (req, res) => {
 export const getVideoData = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -434,7 +422,6 @@ export const getVideoData = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener metadatos del video
       const metadataQuery = `
         SELECT metadata
         FROM agentetube 
@@ -453,12 +440,10 @@ export const getVideoData = async (req, res) => {
         });
       }
       
-      // Extraer videoId y otros metadatos
       const metadata = metadataResult.rows[0].metadata;
       const videoId = metadata.videoId;
       
       if (!videoId) {
-        // Log de video sin ID válido
         logSecurityEvent('INVALID_VIDEO_METADATA', 'Video sin ID válido en metadatos', {
           chatId: chatId,
           metadata: JSON.stringify(metadata),
@@ -471,7 +456,6 @@ export const getVideoData = async (req, res) => {
         });
       }
       
-      // Obtener todas las transcripciones con marcas de tiempo
       const transcriptionsQuery = `
         SELECT content, special_elements
         FROM agentetube 
@@ -482,12 +466,10 @@ export const getVideoData = async (req, res) => {
       
       const transcriptionsResult = await client.query(transcriptionsQuery, [chatId]);
       
-      // Procesar y formatear las transcripciones
       const transcriptions = transcriptionsResult.rows.map(row => {
         const content = row.content;
         const special_elements = row.special_elements;
         
-        // Extraer timestamps cuando están disponibles
         let timestamps = [];
         if (special_elements && typeof special_elements === 'object') {
           if (Array.isArray(special_elements.timestamps)) {
@@ -509,7 +491,6 @@ export const getVideoData = async (req, res) => {
       client.release();
     }
   } catch (error) {
-    // Log de error obteniendo datos de video
     logSecurityEvent('VIDEO_DATA_ERROR', 'Error obteniendo datos del video', {
       chatId: chatId,
       error: error.message,
@@ -533,7 +514,6 @@ export const getVideoData = async (req, res) => {
 export const getAudioData = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -545,7 +525,6 @@ export const getAudioData = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener metadatos del audio
       const metadataQuery = `
         SELECT metadata
         FROM agentetube 
@@ -565,11 +544,9 @@ export const getAudioData = async (req, res) => {
         });
       }
       
-      // Extraer audioId y otros metadatos
       const metadata = metadataResult.rows[0].metadata;
       const audioId = metadata.audioId;
       
-      // Obtener todas las transcripciones con marcas de tiempo
       const transcriptionsQuery = `
         SELECT content, special_elements
         FROM agentetube 
@@ -581,12 +558,10 @@ export const getAudioData = async (req, res) => {
       
       const transcriptionsResult = await client.query(transcriptionsQuery, [chatId]);
       
-      // Procesar y formatear las transcripciones
       const transcriptions = transcriptionsResult.rows.map(row => {
         const content = row.content;
         const special_elements = row.special_elements;
         
-        // Extraer timestamps cuando están disponibles
         let timestamps = [];
         if (special_elements && typeof special_elements === 'object') {
           if (Array.isArray(special_elements.timestamps)) {
@@ -625,7 +600,6 @@ export const getAudioData = async (req, res) => {
 export const getVideoTimestamps = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -637,7 +611,6 @@ export const getVideoTimestamps = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener todas las marcas de tiempo
       const query = `
         SELECT special_elements
         FROM agentetube 
@@ -649,7 +622,6 @@ export const getVideoTimestamps = async (req, res) => {
       
       const result = await client.query(query, [chatId]);
       
-      // Extraer y formatear timestamps
       const allTimestamps = [];
       
       result.rows.forEach(row => {
@@ -685,7 +657,6 @@ export const getVideoTimestamps = async (req, res) => {
 export const getAudioTimestamps = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -697,7 +668,6 @@ export const getAudioTimestamps = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Obtener todas las marcas de tiempo
       const query = `
         SELECT special_elements
         FROM agentetube 
@@ -710,7 +680,6 @@ export const getAudioTimestamps = async (req, res) => {
       
       const result = await client.query(query, [chatId]);
       
-      // Extraer y formatear timestamps
       const allTimestamps = [];
       
       result.rows.forEach(row => {
@@ -746,9 +715,7 @@ export const getAudioTimestamps = async (req, res) => {
 export const getYouTubeProcessingProgress = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
-    // Log de intento con chatId inválido
     logSecurityEvent('INVALID_CHAT_ID', 'Intento de verificar progreso de YouTube con chatId inválido', {
       chatId: chatId,
       ip: req.ip,
@@ -765,7 +732,6 @@ export const getYouTubeProcessingProgress = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Verificar si el procesamiento fue cancelado
       const cancellationQuery = `
   SELECT EXISTS (
     SELECT 1
@@ -789,7 +755,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
         });
       }
       
-      // Verificar etapa actual del procesamiento mediante conteo de chunks
       const chunksQuery = `
         SELECT COUNT(*) as count, MAX(CAST(metadata->>'chunkIndex' AS INTEGER)) as max_chunk
         FROM agentetube 
@@ -809,7 +774,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
         let progress = 0;
         let stage = "";
         
-        // Intentar obtener metadata que incluya totalChunks si existe
         const metadataQuery = `
           SELECT metadata
           FROM agentetube 
@@ -917,7 +881,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
       client.release();
     }
   } catch (error) {
-    // Log de error obteniendo progreso de procesamiento
     logSecurityEvent('YOUTUBE_PROGRESS_ERROR', 'Error obteniendo progreso de procesamiento de YouTube', {
       chatId: chatId,
       error: error.message,
@@ -941,7 +904,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
 export const getAudioProcessingProgress = async (req, res) => {
   const { chatId } = req.params;
   
-  // Validar formato de chatId (UUID)
   if (!isValidUUID(chatId)) {
     return res.status(400).json({
       success: false,
@@ -953,7 +915,6 @@ export const getAudioProcessingProgress = async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Verificar si el procesamiento fue cancelado
       const cancellationQuery = `
   SELECT EXISTS (
     SELECT 1
@@ -977,7 +938,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
         });
       }
       
-      // Verificar etapa actual del procesamiento mediante conteo de chunks
       const chunksQuery = `
         SELECT COUNT(*) as count, MAX(CAST(metadata->>'chunkIndex' AS INTEGER)) as max_chunk
         FROM agentetube 
@@ -996,7 +956,6 @@ const wasCancelled = cancellationResult.rows[0].was_cancelled;
         let progress = 0;
         let stage = "";
         
-        // Intentar obtener metadata que incluya totalChunks si existe
         const metadataQuery = `
           SELECT metadata
           FROM agentetube 

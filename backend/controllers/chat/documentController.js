@@ -1,4 +1,3 @@
-// backend/controllers/chat/documentController.js
 import { 
     getChatDocuments, 
     getDocumentContent, 
@@ -119,7 +118,6 @@ export const getChatDocumentsController = async (req, res) => {
         
         const documents = await getChatDocuments(chatId, userId);
         
-        // Log de seguridad
         logSecurityEvent('DOCUMENT_LIST_VIEW', 'Listado de documentos de chat', {
             userId,
             chatId,
@@ -154,7 +152,6 @@ export const getDocumentContentController = async (req, res) => {
             return createAcadelErrorResponse(res, 404, 'NOT_FOUND');
         }
         
-        // Validar contenido si existe
         if (document.extracted_content) {
             const validation = validateTextContentBackend(document.extracted_content, document.original_name);
             if (validation.truncated) {
@@ -164,7 +161,6 @@ export const getDocumentContentController = async (req, res) => {
             }
         }
         
-        // Log de acceso
         logSecurityEvent('DOCUMENT_CONTENT_VIEW', 'Visualización de contenido de documento', {
             userId,
             fileId,
@@ -199,7 +195,6 @@ export const searchDocumentsController = async (req, res) => {
         
         const documents = await searchDocumentsInChat(chatId, userId, searchTerm.trim());
         
-        // Log de búsqueda
         logSecurityEvent('DOCUMENT_SEARCH', 'Búsqueda de documentos', {
             userId,
             chatId,
@@ -248,7 +243,6 @@ export const getDocumentStatsController = async (req, res) => {
             }
         };
         
-        // Log de estadísticas
         logSecurityEvent('DOCUMENT_STATS_VIEW', 'Visualización de estadísticas de documentos', {
             userId,
             totalDocuments: formattedStats.totalDocuments,
@@ -308,7 +302,6 @@ export const getRecentDocumentsController = async (req, res) => {
         
         const documents = await getRecentDocuments(userId, limit);
         
-        // Log de acceso a recientes
         logSecurityEvent('DOCUMENT_RECENT_VIEW', 'Visualización de documentos recientes', {
             userId,
             limit,
@@ -376,10 +369,8 @@ export const processDocumentController = async (req, res) => {
         
         // ⭐ VALIDACIÓN PREVIA CON SISTEMA CENTRALIZADO ⭐
         if (originalName) {
-            // Extraer información básica para validación previa
             const extension = originalName.split('.').pop().toLowerCase();
             
-            // Verificar si está prohibido
             if (FORBIDDEN_FILES.BLOCKED_EXTENSIONS.includes(extension)) {
                 const reason = FORBIDDEN_FILES.REASONS[extension];
                 const errorCode = extension === 'pdf' ? 'PDF_NOT_SUPPORTED' : 'EXECUTABLE_BLOCKED';
@@ -387,7 +378,6 @@ export const processDocumentController = async (req, res) => {
             }
         }
         
-        // Log de procesamiento manual
         logSecurityEvent('DOCUMENT_MANUAL_PROCESS', 'Procesamiento manual de documento', {
             userId,
             chatId,

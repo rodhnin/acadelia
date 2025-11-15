@@ -1,4 +1,3 @@
-// backend/utils/debugAuth.js - HERRAMIENTAS DE DEBUGGING INTENSIVO
 import jwt from 'jsonwebtoken';
 import { redisService } from '../lib/redis.js';
 
@@ -32,13 +31,11 @@ class AuthDebugger {
             stack: new Error().stack.split('\n').slice(2, 4) // Context de dónde se llamó
         };
         
-        // Agregar a logs internos
         this.logs.push(logEntry);
         if (this.logs.length > this.maxLogs) {
             this.logs = this.logs.slice(-500); // Mantener últimos 500
         }
         
-        // Log a consola con formato claro
         const prefix = this.getLogPrefix(type);
         console.log(`${prefix} [${timestamp}] ${message}`);
         

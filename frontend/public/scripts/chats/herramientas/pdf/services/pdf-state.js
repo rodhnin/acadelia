@@ -48,7 +48,6 @@ export function on(eventName, callback) {
   
   eventCallbacks[eventName].push(callback);
   
-  // Devolver función para eliminar el listener
   return () => {
     const index = eventCallbacks[eventName].indexOf(callback);
     if (index !== -1) {
@@ -95,19 +94,16 @@ export async function checkPDF(forceCheck = false) {
     return false;
   }
   
-  // Verificar si ya hemos verificado recientemente
   const now = Date.now();
   const timeSinceLastCheck = now - pdfState.lastCheck;
   
   // Si se fuerza la verificación o ha pasado suficiente tiempo, o si acabamos de cambiar de chat
   if (forceCheck || timeSinceLastCheck > 3000 || pdfState.lastChatId !== chatId) {
-    // Actualizar el último chatId verificado
     pdfState.lastChatId = chatId;
     
     try {
       const result = await hasPDF(chatId);
       
-      // Actualizar estado
       updatePDFState({
         hasPDF: result.hasPDF,
         pdfInfo: result.pdfInfo,
@@ -139,13 +135,10 @@ export async function checkPDF(forceCheck = false) {
  * @param {Object} newState - Nuevos valores para el estado
  */
 export function updatePDFState(newState) {
-  // Verificar cambios en propiedades específicas para disparar eventos
   const oldState = { ...pdfState };
   
-  // Actualizar el estado
   Object.assign(pdfState, newState);
   
-  // Disparar eventos según los cambios (sin notificaciones, son cambios internos)
   if (oldState.currentPage !== pdfState.currentPage && 'currentPage' in newState) {
     triggerEvent('onPageChanged', pdfState.currentPage);
   }
@@ -162,7 +155,6 @@ export function updatePDFState(newState) {
     triggerEvent('onRegionSelected', pdfState.selectedRegion);
   }
   
-  // Verificar cambios en hasPDF para disparar el evento correspondiente
   if (oldState.hasPDF && !pdfState.hasPDF && 'hasPDF' in newState) {
     triggerEvent('onPDFRemoved', oldState.pdfInfo);
   }
@@ -225,7 +217,6 @@ export function setViewMode(mode) {
 export function togglePDFPanel(show = !pdfState.showPanel) {
   // Si el valor es el mismo, forzar actualización de todos modos
   if (show === pdfState.showPanel) {
-    // Disparar evento explícitamente sin notificación
     triggerEvent('onPanelToggled', show);
     return;
   }
@@ -314,11 +305,9 @@ export async function initPDFCheck() {
     showPanel: false // Siempre iniciar con el panel cerrado
   });
   
-  // Verificar si tiene PDF y devolver la promesa directamente
   return checkPDF(true).then(hasPDF => {
     setLoading(false);
     
-    // Actualizar visibilidad de botones
     return import('../utils/pdf-button-controller.js').then(module => {
       if (typeof module.updatePDFButtonsVisibility === 'function') {
         module.updatePDFButtonsVisibility(hasPDF);
@@ -382,7 +371,6 @@ export function forceCheckAndShowPanel() {
     showPanel: false
   });
   
-  // Esperar un momento y verificar
   setTimeout(async () => {
     const chatId = getState('currentChatId');
     if (!chatId) return;

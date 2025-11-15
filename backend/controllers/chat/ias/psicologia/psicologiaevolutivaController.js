@@ -1,4 +1,3 @@
-// backend/controllers/chat/ias/psicologia/psicologiaevolutivaController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
 // ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handlePsychologyEvolutiveQuery, handlePsychologyEvolutiveMultimodalQuery, handlePsychologyEvolutiveQueryWithoutSaving, handlePsychologyEvolutiveMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/psicologia/psicologiaevolutivaService.js";
@@ -17,7 +16,6 @@ export const queryPsicologiaEvolutiva = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +43,6 @@ export const queryPsicologiaEvolutivaMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -135,7 +132,6 @@ export const queryPsicologiaEvolutivaMultimodalWithoutSaving = async (req, res) 
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

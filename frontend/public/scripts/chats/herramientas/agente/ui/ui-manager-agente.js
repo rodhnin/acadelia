@@ -114,7 +114,6 @@ export function closeAcadelNotification(id) {
  * @param {boolean} disabled - true para deshabilitar.
  */
 export function toggleUIState(disabled) {
-  // CRÍTICO: Ignorar intentos de desbloquear durante cancelación
   if (!disabled && window.isCancellationInProgress) {
     console.log("🚫 Bloqueando desbloqueo de UI - Cancelación en progreso");
     return;
@@ -156,7 +155,6 @@ export function toggleUIState(disabled) {
     }
   }
 
-  // Lógica del botón de enviar/cancelar
   if (disabled) {
     window._buttonChangeTime = Date.now();
 
@@ -174,18 +172,15 @@ export function toggleUIState(disabled) {
     addEvent(elements.sendButton, 'click', function cancelHandler(e) {
       e.preventDefault();
 
-      // 🔥 DETECCIÓN DE ENTORNO Y TIMEOUT DINÁMICO
       const isProduction = !window.location.hostname.includes('localhost') &&
         !window.location.hostname.includes('127.0.0.1');
       const minTimeout = isProduction ? 50 : 350; // MUY CORTO EN PRODUCCIÓN
 
       const timeSinceButtonChange = Date.now() - (window._buttonChangeTime || 0);
 
-      // 🔥 VERIFICACIONES MÁS PERMISIVAS EN PRODUCCIÓN
       const hasController = currentFetchController || window.currentAbortController;
       const isProcessing = getState('isProcessing');
 
-      // 🔥 DETECCIÓN AMPLIA DE INDICADORES DE PROCESAMIENTO
       const hasAnyProcessingIndicator = hasController || isProcessing ||
         document.querySelector('.message.ai-message.processing') ||
         document.querySelector('.message .thought-bubble') ||
@@ -236,12 +231,10 @@ export function toggleUIState(disabled) {
  * *** NUEVA FUNCIÓN: Deshabilita todos los botones de interacción de mensajes de manera no intrusiva ***
  */
 function disableInteractionButtons() {
-  // Deshabilitar botones de respuesta de AI
   const responseActions = document.querySelectorAll('.response-actions');
   responseActions.forEach(container => {
     container.classList.add('disabled-during-processing');
 
-    // Deshabilitar todos los botones dentro del contenedor
     const buttons = container.querySelectorAll('.response-action-btn');
     buttons.forEach(btn => {
       btn.disabled = true;
@@ -249,7 +242,6 @@ function disableInteractionButtons() {
       btn.style.opacity = '0.4';
       btn.setAttribute('aria-disabled', 'true');
 
-      // Cambiar tooltip para indicar que está deshabilitado
       const originalTooltip = btn.getAttribute('data-tooltip');
       if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
         btn.setAttribute('data-original-tooltip', originalTooltip);
@@ -258,7 +250,6 @@ function disableInteractionButtons() {
     });
   });
 
-  // Deshabilitar botones de edición de usuario
   const userActions = document.querySelectorAll('.user-response-actions');
   userActions.forEach(container => {
     container.classList.add('disabled-during-processing');
@@ -270,7 +261,6 @@ function disableInteractionButtons() {
       btn.style.opacity = '0.4';
       btn.setAttribute('aria-disabled', 'true');
 
-      // Cambiar tooltip para indicar que está deshabilitado
       const originalTooltip = btn.getAttribute('data-tooltip');
       if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
         btn.setAttribute('data-original-tooltip', originalTooltip);
@@ -279,7 +269,6 @@ function disableInteractionButtons() {
     });
   });
 
-  // Deshabilitar otros elementos interactivos relacionados con mensajes
   const messageInteractives = document.querySelectorAll(
     '.chat-image-item.clickable, .document-preview.clickable, .file-preview'
   );
@@ -309,7 +298,6 @@ function enableInteractionButtons() {
       btn.style.opacity = '';
       btn.removeAttribute('aria-disabled');
 
-      // Restaurar tooltip original
       const originalTooltip = btn.getAttribute('data-original-tooltip');
       if (originalTooltip) {
         btn.setAttribute('data-tooltip', originalTooltip);
@@ -330,7 +318,6 @@ function enableInteractionButtons() {
       btn.style.opacity = '';
       btn.removeAttribute('aria-disabled');
 
-      // Restaurar tooltip original
       const originalTooltip = btn.getAttribute('data-original-tooltip');
       if (originalTooltip) {
         btn.setAttribute('data-tooltip', originalTooltip);
@@ -354,21 +341,17 @@ function enableInteractionButtons() {
 }
 
 export function cancelCurrentRequest() {
-  // ✅ DEBOUNCE: Evitar múltiples clicks rápidos
   if (window._cancelInProgress) {
     console.log('🚫 [CANCEL] Ya hay una cancelación en progreso');
     return;
   }
   window._cancelInProgress = true;
 
-  // 🔥 DETECCIÓN DE ENTORNO PARA VALIDACIONES DINÁMICAS
   const isProduction = !window.location.hostname.includes('localhost') &&
     !window.location.hostname.includes('127.0.0.1');
 
-  // ✅ VERIFICACIÓN SIMPLIFICADA: Indicadores más universales
   const isProcessing = getState('isProcessing');
 
-  // ✅ VERIFICAR que el botón esté en modo cancelar
   const sendButton = elements.sendButton || document.querySelector('#sendButton') ||
     document.querySelector('.send-button');
   const isInCancelMode = sendButton && (
@@ -377,7 +360,6 @@ export function cancelCurrentRequest() {
     sendButton.title.includes('Cancelar')
   );
 
-  // 🔥 BÚSQUEDA MEJORADA DEL MENSAJE DE LOADING
   let loadingMessage = null;
 
   // Prioridad 1: Mensaje explícitamente marcado como loading
@@ -406,7 +388,6 @@ export function cancelCurrentRequest() {
     console.log('✅ [CANCEL] Usando mensaje processing');
   }
 
-  // 🔥 VALIDACIÓN MÁS FLEXIBLE - Ser más permisivo en producción
   const hasValidCancelContext = isInCancelMode ||
     (isProduction && (loadingMessage || window._currentLoadingMessage));
 
@@ -424,10 +405,8 @@ export function cancelCurrentRequest() {
 
   console.log('🛑 [CANCEL] Iniciando cancelación válida');
 
-  // CRÍTICO: Marcar que estamos en proceso de cancelación
   window.isCancellationInProgress = true;
 
-  // ✅ ABORTAR TODOS LOS CONTROLADORES POSIBLES
   let abortedCount = 0;
 
   const controllersToCancel = [
@@ -452,27 +431,22 @@ export function cancelCurrentRequest() {
     }
   });
 
-  // ✅ LIMPIAR REFERENCIAS
   currentFetchController = null;
   window.currentAbortController = null;
   window.fetchController = null;
 
   console.log('🛑 [CANCEL] Controllers cancelados:', { abortedCount });
 
-  // Cambiar botón a modo cargando INMEDIATAMENTE
   changeButtonToLoading();
 
-  // ✅ PROCESAR LA CANCELACIÓN DEL MENSAJE
   if (loadingMessage) {
     console.log('✅ [CANCEL] Aplicando cancelación a mensaje válido:', loadingMessage.dataset.messageId);
     handleMessageCancellation(loadingMessage);
   }
 
-  // 🔥 NOTIFICACIÓN ÚNICA - SOLO SI NO SE HA MOSTRADO
   if (!window._cancelNotificationShown) {
     window._cancelNotificationShown = true;
 
-    // 🔥 AÑADIR ESTA LÍNEA para prevenir duplicación en handleSendMessageCatch
     window._cancelNotificationAlreadyShown = true;
 
     acadelInfo(
@@ -480,14 +454,12 @@ export function cancelCurrentRequest() {
       "Acadel detuvo la consulta como pediste. ¡No hay problema!"
     );
 
-    // Limpiar flags después de un tiempo
     setTimeout(() => {
       window._cancelNotificationShown = false;
       window._cancelNotificationAlreadyShown = false; // 🔥 TAMBIÉN LIMPIAR ESTE FLAG
     }, 7000);
   }
 
-  // Enviar señal al servidor
   const chatId = getState('currentChatId');
   if (chatId) {
     sendCancellationRequest(chatId).finally(() => {
@@ -504,7 +476,6 @@ export function cancelCurrentRequest() {
  * Maneja la cancelación visual de un mensaje
  */
 function handleMessageCancellation(loadingMessage) {
-  // 🎯 VERIFICACIÓN SÚPER SIMPLE: Si ya tiene botones, es respuesta real
   const hasResponseButtons = loadingMessage.querySelector('.response-actions');
 
   if (hasResponseButtons) {
@@ -519,7 +490,6 @@ function handleMessageCancellation(loadingMessage) {
     loadingMessage.classList.remove('processing');
     loadingMessage.removeAttribute('data-is-loading');
 
-    // Restaurar UI inmediatamente sin aplicar clases de cancelación
     setTimeout(() => {
       restoreUIAfterCancellation();
     }, 100);
@@ -527,7 +497,6 @@ function handleMessageCancellation(loadingMessage) {
     return; // ✅ SALIR SIN APLICAR CLASES DE CANCELACIÓN
   }
 
-  // 🔄 COMPORTAMIENTO ORIGINAL: Solo si NO tiene botones (es mensaje en proceso)
   const aiProfile = loadingMessage.querySelector('.ai-profile');
   if (aiProfile) {
     aiProfile.classList.remove('thinking');
@@ -538,7 +507,6 @@ function handleMessageCancellation(loadingMessage) {
   loadingMessage.dataset.cancelled = "true";
   loadingMessage.dataset.cancelTime = Date.now().toString();
 
-  // Eliminar botones de edición del mensaje de usuario asociado
   const userMessage = loadingMessage.previousElementSibling;
   if (userMessage?.classList.contains('user-message')) {
     const userActions = userMessage.querySelector('.user-response-actions');
@@ -570,7 +538,6 @@ function handleMessageCancellation(loadingMessage) {
   loadingMessage.style.display = 'flex';
   messageContent.style.display = 'block';
 
-  // Mostrar mensaje final después de 4 segundos
   setTimeout(() => {
     showFinalCancellationMessage(loadingMessage, messageContent);
   }, 7000);
@@ -580,7 +547,6 @@ function handleMessageCancellation(loadingMessage) {
  * 🔧 REEMPLAZAR la función showFinalCancellationMessage en ui-manager-agente.js
  */
 function showFinalCancellationMessage(loadingMessage, messageContent) {
-  // 🎯 SEGUNDA VERIFICACIÓN: Por si acaso, verificar de nuevo si tiene botones
   const hasResponseButtons = loadingMessage.querySelector('.response-actions');
 
   if (hasResponseButtons) {
@@ -594,7 +560,6 @@ function showFinalCancellationMessage(loadingMessage, messageContent) {
     return; // ✅ SALIR SIN MOSTRAR MENSAJE DE CANCELACIÓN
   }
 
-  // 🔄 COMPORTAMIENTO ORIGINAL: Solo si NO tiene botones
   const mensajesGraciosos = [
     {
       titulo: "¡Listo! El profesor Acadel detuvo tu consulta",
@@ -1138,7 +1103,6 @@ export function applyInitialLoader() {
   // Si ya existe, no crear otro
   if (document.querySelector('.acadel-tech-loader')) return;
 
-  // Detectar tema para recursos
   const isDarkTheme = document.body.getAttribute('data-theme') === 'dark' ||
     localStorage.getItem('theme') === 'dark';
   const logoPath = isDarkTheme
@@ -1171,7 +1135,6 @@ export function applyInitialLoader() {
   // Mensaje inicial aleatorio
   const mensajeInicial = mensajesTech[Math.floor(Math.random() * mensajesTech.length)];
 
-  // Crear elementos del terminal tecnológico
   const logo = createElement('img', {
     src: logoPath,
     alt: 'Agente Acadel',
@@ -1215,7 +1178,6 @@ export function applyInitialLoader() {
   progressContainer.appendChild(progressInfo);
   progressContainer.appendChild(progressBar);
 
-  // Crear pasos del sistema
   const stepsContainer = createElement('div', {
     className: 'acadel-tech-steps-container'
   });
@@ -1293,7 +1255,6 @@ export function applyInitialLoader() {
     ]
   };
 
-  // Iniciar rotación de mensajes tecnológicos
   const intervaloMensajes = setInterval(() => {
     window.acadelTechLoadingState.mensajeActual =
       (window.acadelTechLoadingState.mensajeActual + 1) % mensajesTech.length;
@@ -1316,7 +1277,6 @@ export function applyInitialLoader() {
 
   window.acadelTechLoadingState.intervalosActivos.push(intervaloMensajes);
 
-  // Actualizar terminal periódicamente
   const intervaloTerminal = setInterval(() => {
     updateTerminalContent();
   }, 2000);
@@ -1329,7 +1289,6 @@ export function applyInitialLoader() {
   // Precargar recursos
   preloadCriticalResources();
 
-  // Activar primer paso
   setTimeout(() => {
     const firstStep = document.querySelector('.acadel-tech-step[data-step="1"]');
     if (firstStep) {
@@ -1355,7 +1314,6 @@ export function updateAcadelTechProgress(progress) {
 
   window.acadelTechLoadingState.progress = Math.max(window.acadelTechLoadingState.progress, progress);
 
-  // Determinar fase tecnológica
   let phase;
   let systemStatus = '';
 
@@ -1372,7 +1330,6 @@ export function updateAcadelTechProgress(progress) {
 
   window.acadelTechLoadingState.phase = phase;
 
-  // Actualizar pasos visualmente
   document.querySelectorAll('.acadel-tech-step').forEach(step => {
     const stepNum = parseInt(step.dataset.step);
     const icon = step.querySelector('.acadel-tech-step-icon');
@@ -1404,7 +1361,6 @@ export function updateAcadelTechProgress(progress) {
     }
   });
 
-  // Actualizar barra de progreso
   const progressBar = document.getElementById('acadelTechProgress');
   const progressPercent = document.getElementById('acadelTechProgressPercent');
   const progressLabel = document.querySelector('.acadel-tech-progress-label');
@@ -1442,7 +1398,6 @@ function createDataStreamEffect() {
     return;
   }
 
-  // Crear múltiples streams de datos
   for (let i = 0; i < 5; i++) {
     setTimeout(() => {
       const dataStream = createElement('div', {
@@ -1459,7 +1414,6 @@ function createDataStreamEffect() {
 
       loader.appendChild(dataStream);
 
-      // Eliminar después de la animación
       setTimeout(() => {
         if (dataStream.parentNode) {
           dataStream.parentNode.removeChild(dataStream);
@@ -1468,7 +1422,6 @@ function createDataStreamEffect() {
     }, i * 150);
   }
 
-  // Permitir nuevo efecto después de 2 segundos
   setTimeout(() => {
     if (window.acadelTechLoadingState) {
       window.acadelTechLoadingState.dataStreamActive = false;
@@ -1554,7 +1507,6 @@ export function removeAcadelTechLoader(forceRemove = false) {
   const initialLoader = document.querySelector('.acadel-tech-loader');
   if (!initialLoader) return;
 
-  // Limpiar intervalos
   if (window.acadelTechLoadingState?.intervalosActivos) {
     window.acadelTechLoadingState.intervalosActivos.forEach(clearInterval);
   }
@@ -1769,7 +1721,6 @@ const MEDIA_CONFIG = {
 export function checkMediaProcessingStatus(mediaType, chatId) {
   return new Promise(async (resolve) => {
     try {
-      // Verificar si ya hay transcripción
       const transcriptionResponse = await fetch(`/api/video-transcription/chat/${chatId}/has-transcription`);
       const transcriptionData = await transcriptionResponse.json();
 
@@ -1779,7 +1730,6 @@ export function checkMediaProcessingStatus(mediaType, chatId) {
         return;
       }
 
-      // Verificar procesamiento en curso
       const processingChat = localStorage.getItem(`${mediaType}ProcessingChat`);
       const loaderId = localStorage.getItem(`${mediaType}ProcessingLoader`);
 
@@ -1878,7 +1828,6 @@ export function startMediaProcessingCheck(mediaType, chatId) {
 function handleProcessingCompleted(mediaType, chatId) {
   hideMediaProcessingLoader(mediaType);
 
-  // Importar y verificar panel específico
   if (mediaType === 'youtube') {
     import('../components/youtube-panel.js').then(module => {
       if (module.youtubePanel?.checkForVideo) {
@@ -1896,7 +1845,6 @@ function handleProcessingCompleted(mediaType, chatId) {
     }).catch(err => console.error('Error al cargar el panel de audio:', err));
   }
 
-  // Emitir eventos
   try {
     import('../core/event-bus-agente.js').then(module => {
       if (module.default?.emit) {
@@ -1929,7 +1877,6 @@ function handleProcessingCompleted(mediaType, chatId) {
  * Maneja errores durante el procesamiento
  */
 function handleProcessingError(mediaType, data) {
-  // ✅ VERIFICAR si es cancelación antes de mostrar error
   if (data && (
     data.cancelled === true ||
     data.status === 'cancelled' ||
@@ -1941,7 +1888,6 @@ function handleProcessingError(mediaType, data) {
 
     hideMediaProcessingLoader(mediaType);
 
-    // Emitir eventos de cancelación
     try {
       import('../core/event-bus-agente.js').then(module => {
         if (module.default?.emit) {
@@ -1958,7 +1904,6 @@ function handleProcessingError(mediaType, data) {
     return;
   }
 
-  // ✅ SOLO mostrar error si realmente hay un error
   const loaderId = localStorage.getItem(`${mediaType}ProcessingLoader`);
 
   if (loaderId) {
@@ -1986,7 +1931,6 @@ function handleProcessingError(mediaType, data) {
     );
   }
 
-  // Emitir eventos de error
   try {
     import('../core/event-bus-agente.js').then(module => {
       if (module.default?.emit) {
@@ -2027,7 +1971,6 @@ function handleProcessingError(mediaType, data) {
 export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
   return new Promise(async (resolve) => {
     try {
-      // Verificar si hay transcripción existente
       const response = await fetch(`/api/video-transcription/chat/${chatId}/has-transcription`);
       const data = await response.json();
 
@@ -2042,7 +1985,6 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
       const config = MEDIA_CONFIG[mediaType];
       const loaderId = `media-loading-${mediaType}-${chatId}-${Date.now()}`;
 
-      // Eliminar loaders existentes del mismo tipo
       const existingLoaders = document.querySelectorAll(`.media-loading-overlay.${mediaType}-type`);
       existingLoaders.forEach(loader => {
         if (loader.parentNode) {
@@ -2050,24 +1992,20 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
         }
       });
 
-      // Crear el overlay de carga
       const loadingOverlay = createElement('div', {
         className: `media-loading-overlay ${mediaType}-type`,
         id: loaderId
       });
 
-      // Detectar tema para logo
       const isDarkTheme = document.body.getAttribute('data-theme') === 'dark' ||
         localStorage.getItem('theme') === 'dark';
       const logoPath = isDarkTheme
         ? '/images/Laptop_oscuro.gif'
         : '/images/Laptop_claro.gif';
 
-      // Verificar Font Awesome
       const hasFA = document.querySelector('link[href*="font-awesome"]') !== null;
       const iconHTML = hasFA ? config.icon : config.iconFallback;
 
-      // Crear partículas animadas
       const particlesHTML = createParticlesHTML(mediaType, 15);
 
       loadingOverlay.innerHTML = `
@@ -2089,7 +2027,6 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
         </div>
       `;
 
-      // Agregar event listener para cancelación
       const cancelBtn = loadingOverlay.querySelector('#cancel-transcription-btn');
       if (cancelBtn) {
         cancelBtn.addEventListener('click', async () => {
@@ -2098,7 +2035,6 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
 
           loadingOverlay.classList.add('error-state');
 
-          // Actualizar elementos visuales
           const messageElement = loadingOverlay.querySelector('.media-loading-message');
           const submessageElement = loadingOverlay.querySelector('.media-loading-submessage');
           const gifElement = loadingOverlay.querySelector('.media-loading-gif');
@@ -2159,7 +2095,6 @@ export function showMediaProcessingLoader(chatId, url = null, isAudio = false) {
  * Cancela el proceso de transcripción
  */
 // ===================================================================
-// 🚫 CORRECCIONES FRONTEND - Evitar errores falsos
 // ===================================================================
 
 // 1. REEMPLAZAR cancelTranscriptionProcess() - línea ~1140 aprox
@@ -2190,7 +2125,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
 
     loadingOverlay.classList.add('error-state');
 
-    // Detener intervalos
     if (loadingOverlay.progressCheckInterval) {
       clearInterval(loadingOverlay.progressCheckInterval);
       loadingOverlay.progressCheckInterval = null;
@@ -2200,7 +2134,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
       loadingOverlay.updateInterval = null;
     }
 
-    // ✅ ENVIAR CANCELACIÓN SIN MOSTRAR ERROR si es exitosa
     const cancelResponse = await fetch(`/api/chats/chats/${chatId}/cancel-request`, {
       method: 'POST',
       headers: {
@@ -2212,11 +2145,9 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
       body: JSON.stringify({ userId, mediaType })
     });
 
-    // ✅ VERIFICACIÓN: Solo mostrar error si la cancelación falló
     if (!cancelResponse.ok) {
       console.error('❌ Error en request de cancelación:', cancelResponse.status);
 
-      // ✅ SOLO AQUÍ mostrar error si la cancelación realmente falló
       setTimeout(() => {
         hideMediaProcessingLoader(mediaType);
         acadelError(
@@ -2230,7 +2161,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
     const cancelResult = await cancelResponse.json();
     console.log('✅ Cancelación enviada exitosamente:', cancelResult);
 
-    // ✅ VERIFICAR CANCELACIÓN EXITOSA sin timeout excesivo
     let isCancelled = false;
     let attempts = 0;
     const maxAttempts = 3; // Reducido de 4 a 3
@@ -2243,7 +2173,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
         const endpoint = `/api/video-transcription/chat/${chatId}/${config.progressDetailEndpoint}`;
         const progressResponse = await fetch(endpoint);
 
-        // ✅ MANEJAR ERRORES DE RED sin mostrar error de procesamiento
         if (!progressResponse.ok) {
           console.warn('Error verificando estado después de cancelación, pero esto es normal');
           isCancelled = true; // Asumir que se canceló si no podemos verificar
@@ -2263,7 +2192,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
         }
       } catch (checkError) {
         console.warn('Error verificando estado de cancelación (normal durante cancelación):', checkError);
-        // ✅ NO mostrar error, es normal durante cancelación
         isCancelled = true; // Asumir cancelación exitosa
         break;
       }
@@ -2283,13 +2211,11 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
     localStorage.removeItem(`${mediaType}ProcessingLoader`);
     localStorage.removeItem(`${mediaType}ProcessingChat`);
 
-    // ✅ MENSAJE DE CANCELACIÓN EXITOSA (no error)
     window.acadelInfo(
       "✋ ¡Cancelación nivel ninja completada!",
       "Acadel paró todo más rápido que un capibara huyendo de un cocodrilo. ¡Todo bajo control!"
     );
 
-    // Emitir eventos de cancelación
     try {
       import('../core/event-bus-agente.js').then(module => {
         if (module.default?.emit) {
@@ -2310,7 +2236,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
       console.error('Error al emitir evento de cancelación:', eventError);
     }
 
-    // Manejar chat nuevo
     const isNewChat = document.querySelectorAll('.chat-messages .message').length <= 1;
     const currentChatId = getState('currentChatId');
     const isCurrentChat = currentChatId === chatId;
@@ -2387,7 +2312,6 @@ async function cancelTranscriptionProcess(chatId, mediaType) {
   } catch (error) {
     console.error('Error procesando cancelación:', error);
 
-    // ✅ SOLO mostrar error si realmente hay un problema crítico
     window.acadelError(
       "🤯 ¡Error en la operación de parada!",
       "Acadel se enredó tratando de cancelar. Es como intentar parar de comer cuando hay pizza disponible."
@@ -2456,7 +2380,6 @@ function startProgressAnimation(loaderId, mediaType) {
     progressBar.style.transition = 'width 0.8s ease';
   }
 
-  // Verificar progreso real
   const progressCheckInterval = setInterval(async () => {
     try {
       const loadingElement = document.getElementById(loaderId);
@@ -2665,7 +2588,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
     return false;
   }
 
-  // ✅ VERIFICAR si es realmente un error o una cancelación
   if (errorMessage && (
     errorMessage.includes('cancelado') ||
     errorMessage.includes('cancelled') ||
@@ -2677,7 +2599,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
     return false;
   }
 
-  // ✅ VERIFICAR si el errorDetails indica cancelación
   if (errorDetails && (
     errorDetails.cancelled === true ||
     errorDetails.status === 'cancelled' ||
@@ -2794,7 +2715,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
       }
     }
 
-    // ✅ CANCELACIÓN AUTOMÁTICA más rápida y sin mostrar errores adicionales
     setTimeout(async () => {
       try {
         const userId = getState('userId');
@@ -2810,7 +2730,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
 
         console.log(`Enviando cancelación automática para ${mediaType} en chat ${chatId}`);
 
-        // ✅ INTENTAR CANCELACIÓN sin mostrar errores si falla
         try {
           const cancelResponse = await fetch(`/api/chats/chats/${chatId}/cancel-request`, {
             method: 'POST',
@@ -2838,7 +2757,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
           });
         } catch (cancelError) {
           console.warn('Error en cancelación automática (continuando con limpieza):', cancelError);
-          // ✅ NO mostrar error adicional, solo continuar con limpieza
         }
 
         const submessageElement = loadingOverlay.querySelector('.media-loading-submessage');
@@ -2939,7 +2857,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
             updateUIAfterError(mediaType);
           }
 
-          // ✅ MENSAJE DE CANCELACIÓN, no de error
           acadelInfo(
             "✅ ¡Cancelación ejecutada como un ninja peludo!",
             "Acadel paró todo perfectamente. Operación: No hacer nada... ¡COMPLETADA!"
@@ -2953,7 +2870,6 @@ export function showMediaLoadingError(mediaType, errorMessage, errorDetails = {}
           hideMediaProcessingLoader(mediaType, loadingOverlay.id);
           updateUIAfterError(mediaType);
 
-          // ✅ SOLO mostrar error si realmente hay un problema
           acadelError(
             "💥 ¡Se enredó mi cola de capibara!",
             "Acadel se confundió tratando de cancelar. Es como intentar desconectar el wifi mientras mamá trabaja."

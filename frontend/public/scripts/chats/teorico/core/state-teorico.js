@@ -26,7 +26,6 @@ export function initializeState(variantData) {
   }
   
   // Si no recibimos datos de variante, podríamos estar en una carrera
-  // Escuchar el evento de inicialización como respaldo
   document.addEventListener(VARIANT_INITIALIZED_EVENT, (event) => {
     if (event.detail && event.detail.avaId && !state.avaId) {
       state.avaId = event.detail.avaId;
@@ -65,7 +64,6 @@ export function getState(property) {
     if (mainProp === 'chats' && state.chats instanceof Map) {
       return state.chats.get(subProp);
     }
-    // Para otras propiedades anidadas en el futuro
     return state[mainProp]?.[subProp];
   }
   
@@ -140,7 +138,6 @@ export function getAvaId() {
   // Intento de recuperación de emergencia
   const config = getAppConfig();
   if (config && config.avaId) {
-    // Actualizar el estado para futuros usos
     state.avaId = config.avaId;
     console.warn("avaId recuperado de emergencia:", config.avaId);
     return config.avaId;

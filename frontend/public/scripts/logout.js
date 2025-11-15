@@ -2,7 +2,6 @@
  * Script dedicado para manejar el logout
  */
 (function() {
-    // Obtener el token CSRF de múltiples fuentes
     const getCsrfToken = () => {
         // 1. Primero intentar obtener de la variable global
         if (window.CSRF_TOKEN) {
@@ -30,14 +29,12 @@
         return null;
     };
 
-    // Función para realizar el logout
     async function performLogout() {
         try {
             console.log('Iniciando logout...');
             const csrfToken = getCsrfToken();
             console.log('Token CSRF obtenido:', csrfToken);
             
-            // Establecer opciones para la petición
             const options = {
                 method: 'POST',
                 credentials: 'include',
@@ -46,7 +43,6 @@
                 }
             };
             
-            // Añadir token CSRF si está disponible
             if (csrfToken) {
                 options.headers['X-CSRF-Token'] = csrfToken;
             }
@@ -57,13 +53,11 @@
                 throw new Error('Error al cerrar sesión');
             }
 
-            // Limpiar cookies del cliente
             document.cookie.split(';').forEach(cookie => {
                 document.cookie = cookie.replace(/^ +/, '')
                     .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
             });
 
-            // Limpiar almacenamiento local y sesión
             localStorage.clear();
             sessionStorage.clear();
 
@@ -76,14 +70,11 @@
         }
     }
 
-    // Función para redirigir a la página de login
     function redirectToLogin() {
         window.location.href = 'login';
     }
 
-    // Agregar el event listener cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', () => {
-        // Buscar múltiples posibles botones/enlaces de logout
         const logoutElements = [
             document.querySelector('.logout a'),
             document.querySelector('a.logout'),

@@ -417,10 +417,8 @@ async function generateProfileEmbedding(profileData) {
     if (typeof profileData === 'string') {
       profileText = profileData;
     } else if (typeof profileData === 'object' && profileData !== null) {
-      // Crear texto estructurado priorizando campos psicográficos
       const parts = [];
       
-      // CRÍTICO: Personalidad
       if (profileData.personalidad) {
         parts.push(`Personalidad: ${JSON.stringify(profileData.personalidad)}`);
       }
@@ -457,7 +455,6 @@ async function generateProfileEmbedding(profileData) {
       return null;
     }
     
-    // Generar embedding
     const vector = await embeddings.embedQuery(profileText);
     return vector;
     
@@ -477,7 +474,6 @@ async function generateContentEmbedding(type, channel, payload) {
       `Canal: ${channel}`
     ];
     
-    // Extraer elementos clave del payload
     if (payload) {
       if (payload.theme) parts.push(`Tema: ${payload.theme}`);
       if (payload.title || payload.titulo) parts.push(`Título: ${payload.title || payload.titulo}`);
@@ -485,7 +481,6 @@ async function generateContentEmbedding(type, channel, payload) {
       if (payload.concept || payload.concepto) parts.push(`Concepto: ${payload.concept || payload.concepto}`);
       if (payload.hashtags) parts.push(`Tags: ${Array.isArray(payload.hashtags) ? payload.hashtags.join(', ') : payload.hashtags}`);
       
-      // Para contenido específico
       if (payload.video && payload.video.titulo) parts.push(`Video: ${payload.video.titulo}`);
       if (payload.meme && payload.meme.titulo) parts.push(`Meme: ${payload.meme.titulo}`);
       if (payload.email && payload.email.subject) parts.push(`Email: ${payload.email.subject}`);
@@ -542,7 +537,6 @@ async function generateInsightEmbedding(insightData) {
     } else if (insightData && insightData.insight) {
       insightText = insightData.insight;
       
-      // Agregar contexto adicional si existe
       if (insightData.type) insightText += ` | Tipo: ${insightData.type}`;
       if (insightData.source) insightText += ` | Fuente: ${insightData.source}`;
       if (insightData.context) insightText += ` | Contexto: ${insightData.context}`;

@@ -1,4 +1,3 @@
-// backend/middlewares/hookdeckValidator.js - HEADERS REALES DE HOOKDECK
 import crypto from 'crypto';
 
 class HookdeckValidator {
@@ -9,7 +8,6 @@ class HookdeckValidator {
 
   validateSignature(req) {
     try {
-      // ✅ CORREGIDO: Headers REALES que envía Hookdeck (basado en tus logs)
       const signature = req.headers['x-hookdeck-signature'];
       const eventId = req.headers['x-hookdeck-eventid'];
       const requestId = req.headers['x-hookdeck-requestid'];
@@ -24,7 +22,6 @@ class HookdeckValidator {
         environment: this.isDevelopment ? 'development' : 'production'
       });
 
-      // ✅ SIMPLIFICADO: Solo verificar headers esenciales
       if (!signature || !eventId) {
         console.error('❌ Faltan headers mínimos requeridos');
         console.error('Headers hookdeck disponibles:', 
@@ -33,7 +30,6 @@ class HookdeckValidator {
         return false;
       }
 
-      // ✅ NUEVO: Si Hookdeck ya verificó, confiar en esa verificación
       const hookdeckVerified = req.headers['x-hookdeck-verified'];
       if (hookdeckVerified === 'true') {
         console.log('✅ Hookdeck ya verificó el webhook');
@@ -45,10 +41,8 @@ class HookdeckValidator {
         return false;
       }
 
-      // ✅ NUEVO: No validar timestamp ya que Hookdeck no lo envía
       // En su lugar, usar el requestId o eventId como parte de la validación
 
-      // ✅ MODIFICADO: Payload simplificado sin timestamp
       const rawBody = JSON.stringify(req.body);
       const payload = `${eventId}.${rawBody}`;
       
@@ -58,7 +52,6 @@ class HookdeckValidator {
         payloadLength: payload.length
       });
       
-      // Generar firma esperada
       const expectedSignature = crypto
         .createHmac('sha256', this.signingSecret)
         .update(payload)
@@ -71,13 +64,11 @@ class HookdeckValidator {
         match: signature === expectedSignature
       });
 
-      // Comparar firmas
       const isValid = signature === expectedSignature;
       
       if (!isValid) {
         console.error('❌ Firma inválida');
         
-        // ✅ NUEVO: Intentar métodos alternativos de validación
         console.log('🔄 Intentando métodos alternativos de validación...');
         
         // Método 1: Payload con requestId
@@ -117,7 +108,6 @@ class HookdeckValidator {
     }
   }
 
-  // ✅ CORREGIDO: Headers reales de Hookdeck
   getEventInfo(req) {
     return {
       eventId: req.headers['x-hookdeck-eventid'] || 'unknown', // SIN GUIÓN
