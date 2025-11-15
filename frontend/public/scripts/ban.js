@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Añadir fecha estimada de terminación de la suspensión
   const startDateElement = document.querySelector('.detail-row:nth-child(2) .detail-value');
   if (startDateElement) {
     const startDate = new Date();
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Encontrar el elemento de duración
     const durationElement = document.querySelector('.detail-row:nth-child(3) .detail-value');
     if (durationElement) {
-      // Añadir fecha estimada de fin
       durationElement.innerHTML += ` <span style="color: #666; font-size: 0.9rem;">(hasta el ${endDate.toLocaleDateString('es-ES')})</span>`;
     }
   }

@@ -31,21 +31,16 @@ const previewPanelState = {
  * Inicializa el panel de previsualización
  */
 export function initPreviewPanel() {
-  // Remover panel existente si hay uno (para evitar duplicados)
   const existingPanel = document.querySelector('#preview-panel');
   if (existingPanel) {
     existingPanel.remove();
   }
   
-  // Crear el panel nuevo
   createPreviewPanel();
   
-  // Configurar eventos
   setupPanelEvents();
   
-  // Agregar un listener global como respaldo para el botón de cierre
   document.addEventListener('click', function(event) {
-    // Verificar si el clic fue en un botón de cierre
     if (event.target.closest('.preview-control.close') || 
         event.target.classList.contains('preview-control') && 
         event.target.classList.contains('close')) {
@@ -58,10 +53,8 @@ export function initPreviewPanel() {
  * Crea la estructura del panel de previsualización
  */
 function createPreviewPanel() {
-  // Crear el encabezado del panel
   const panelTitle = createElement('h3', { className: 'preview-panel-title' }, 'Vista detallada');
   
-  // Crear botones de control
   // Nuevos botones de zoom
   const zoomInIcon = createElement('i', { className: 'bx bx-zoom-in' });
   const zoomInBtn = createElement('button', 
@@ -100,10 +93,8 @@ function createPreviewPanel() {
     closeIcon
   );
   
-  // Agregar atributo data-action para facilitar selección
   closeBtn.setAttribute('data-action', 'close-panel');
   
-  // Agregar evento inline como respaldo adicional
   closeBtn.setAttribute('onclick', 'window.previewPanel && window.previewPanel.closePreviewPanel()');
   
   const controlsDiv = createElement('div', 
@@ -116,10 +107,8 @@ function createPreviewPanel() {
     [panelTitle, controlsDiv]
   );
   
-  // Crear contenedor de contenido
   const contentDiv = createElement('div', { className: 'preview-panel-content' });
   
-  // Crear panel principal
   const panel = createElement('div', 
     { id: 'preview-panel', className: 'preview-panel' }, 
     [headerDiv, contentDiv]
@@ -160,7 +149,6 @@ function handlePanelThemeChange(event) {
   const theme = event.detail.theme;
   const container = document.querySelector('.preview-panel-content');
   
-  // Verificar si hay un diagrama Mermaid en el panel
   if (container && previewPanelState.currentType === 'mermaid') {
     // Re-renderizar el diagrama con el nuevo tema
     const diagramContainer = container.querySelector('.preview-diagram');
@@ -168,7 +156,6 @@ function handlePanelThemeChange(event) {
       const code = previewPanelState.currentContent.code;
       const id = diagramContainer.id;
       
-      // Mostrar mensaje de carga
       diagramContainer.innerHTML = `
         <div class="mermaid-loading">
           <i class="bx bx-loader-alt bx-spin"></i>
@@ -176,7 +163,6 @@ function handlePanelThemeChange(event) {
         </div>
       `;
       
-      // Usar setTimeout para dar tiempo a que se complete el cambio de tema
       setTimeout(() => {
         import('../../shared/mermaid-utils.js').then(module => {
           if (module.initializeMermaidDiagram) {
@@ -196,13 +182,10 @@ function setupPanelEvents() {
   const panel = document.querySelector('#preview-panel');
   if (!panel) return;
   
-  // Limpiar event listeners previos para evitar duplicados
   clearPanelEventListeners();
   
-  // Añadir este listener para tema
   document.addEventListener('themeChanged', handlePanelThemeChange);
   
-  // Registrar para limpieza posterior
   previewPanelState.eventListeners.set(document, { 
     event: 'themeChanged', 
     handler: handlePanelThemeChange 
@@ -211,18 +194,14 @@ function setupPanelEvents() {
   // Botón de cierre - Implementación directa para garantizar su funcionamiento
   const closeBtn = panel.querySelector('.preview-control.close');
   if (closeBtn) {
-    // Eliminar cualquier controlador anterior primero
     closeBtn.removeEventListener('click', closePreviewPanel);
     
-    // Usar una función anónima para agregar un log opcional antes de cerrar
     function handleClose() {
       closePreviewPanel();
     }
     
-    // Agregar el evento directamente
     closeBtn.addEventListener('click', handleClose);
     
-    // Almacenar la referencia para limpieza posterior
     previewPanelState.eventListeners.set(closeBtn, { 
       event: 'click', 
       handler: handleClose 
@@ -241,7 +220,6 @@ function setupPanelEvents() {
 // Botón para copiar todo el contenido
 const copyAllBtn = document.getElementById('preview-copy-all-btn');
 if (copyAllBtn) {
-  // Eliminar cualquier controlador anterior para evitar duplicación
   if (previewPanelState.eventListeners.has(copyAllBtn)) {
     const oldHandler = previewPanelState.eventListeners.get(copyAllBtn).handler;
     copyAllBtn.removeEventListener('click', oldHandler);
@@ -256,7 +234,6 @@ if (copyAllBtn) {
       } catch (e) {
         console.error('Error al intentar copiar:', e);
         
-        // Fallback directo como último recurso
         try {
           const text = contentContainer.innerText || contentContainer.textContent;
           navigator.clipboard.writeText(text)
@@ -305,7 +282,6 @@ function setupZoomControls(zoomInBtn, zoomOutBtn, resetBtn) {
   previewPanelState.eventListeners.set(zoomOutBtn, { event: 'click', handler: zoomOutHandler });
   previewPanelState.eventListeners.set(resetBtn, { event: 'click', handler: resetHandler });
   
-  // Usar addEventListener directamente para asegurar compatibilidad
   zoomInBtn.addEventListener('click', zoomInHandler);
   zoomOutBtn.addEventListener('click', zoomOutHandler);
   resetBtn.addEventListener('click', resetHandler);
@@ -331,13 +307,10 @@ function copyFullPanelContent(container, button) {
   if (!container) return;
   
   try {
-    // Crear un elemento temporal para manipular el contenido
     const tempDiv = document.createElement('div');
     
-    // Clonar profundamente todo el contenido
     const clone = container.cloneNode(true);
     
-    // Eliminar botones de copia y otros elementos interactivos que no queremos copiar
     const elementsToRemove = clone.querySelectorAll('.copy-button, .preview-control, .expand-content-btn, .button, [type="button"]');
     elementsToRemove.forEach(el => el.remove());
     
@@ -376,26 +349,20 @@ function copyFullPanelContent(container, button) {
       formatExamForCopy(clone);
     }
     
-    // Añadir el clon al div temporal
     tempDiv.appendChild(clone);
     
-    // Obtener el contenido como texto plano preservando el formato
     const contentText = tempDiv.innerText || tempDiv.textContent;
     
-    // Limpiar el texto de espacios excesivos y formato innecesario
     const cleanedText = cleanTextForCopy(contentText);
     
-    // Copiar al portapapeles usando la función existente
     copyToClipboard(cleanedText, { 
       button, 
       successMessage: 'Contenido completo copiado',
       errorMessage: 'Error al copiar contenido'
     });
     
-    // Implementación directa de respaldo en caso de que la función importada falle
     if (button && button.dataset.copyFailed === 'true') {
       try {
-        // Usar API de portapapeles nativa como respaldo
         navigator.clipboard.writeText(cleanedText).then(() => {
           // Éxito - cambiar estado del botón temporalmente
           const originalText = button.innerHTML;
@@ -414,7 +381,6 @@ function copyFullPanelContent(container, button) {
   } catch (error) {
     console.error('Error al copiar contenido completo:', error);
     
-    // Fallback al método original
     copyElementContent(container, { button });
   }
 }
@@ -427,13 +393,10 @@ function copyFullPanelContent(container, button) {
 function cleanTextForCopy(text) {
   if (!text) return '';
   
-  // Reemplazar múltiples líneas en blanco con una sola
   let cleaned = text.replace(/\n{3,}/g, '\n\n');
   
-  // Eliminar espacios en blanco al final de las líneas
   cleaned = cleaned.replace(/[ \t]+\n/g, '\n');
   
-  // Eliminar espacios en blanco al principio de cada línea si hay demasiados
   cleaned = cleaned.replace(/\n[ \t]{4,}/g, '\n  ');
   
   return cleaned;
@@ -445,29 +408,22 @@ function cleanTextForCopy(text) {
  */
 function formatExamForCopy(examContainer) {
   try {
-    // Buscar todas las preguntas
     const questions = examContainer.querySelectorAll('.exam-question, .quiz-question, .question-item');
     
     questions.forEach((question, index) => {
-      // Verificar si ya está formateada
       if (question.getAttribute('data-formatted')) return;
       
-      // Extraer la pregunta principal
       const questionText = question.querySelector('.question-text, .question-statement, h3, h4')?.textContent || '';
       
-      // Extraer las opciones
       const options = question.querySelectorAll('.option, .answer-option, li');
       const optionsText = Array.from(options).map(opt => {
-        // Intentar extraer la letra/número y el texto
         const prefix = opt.querySelector('.option-prefix')?.textContent || '';
         const text = opt.querySelector('.option-text')?.textContent || opt.textContent;
         return (prefix ? prefix + ' ' : '') + text;
       }).join('\n');
       
-      // Extraer la respuesta correcta si existe
       const correctAnswer = question.querySelector('.correct-answer, .solution, .answer')?.textContent || '';
       
-      // Crear un nuevo formato para la pregunta
       const formattedQuestion = document.createElement('div');
       formattedQuestion.innerHTML = `
         <p><strong>Pregunta ${index + 1}:</strong> ${questionText}</p>
@@ -476,10 +432,8 @@ function formatExamForCopy(examContainer) {
         ${correctAnswer ? `<p><strong>Respuesta:</strong> ${correctAnswer}</p>` : ''}
       `;
       
-      // Marcar como formateada para evitar duplicados
       formattedQuestion.setAttribute('data-formatted', 'true');
       
-      // Reemplazar la pregunta original por la formateada
       question.innerHTML = formattedQuestion.innerHTML;
     });
   } catch (error) {
@@ -499,16 +453,13 @@ function clearPanelEventListeners() {
         return; // Mantener listener de tema global
       }
       
-      // Eliminar otros listeners
       element.removeEventListener(config.event, config.handler, config.options);
     }
   });
   
-  // Limpiar registro pero preservar tema
   const themeListener = previewPanelState.eventListeners.get(document);
   previewPanelState.eventListeners.clear();
   
-  // Restaurar listener de tema si existe
   if (themeListener && themeListener.event === 'themeChanged') {
     previewPanelState.eventListeners.set(document, themeListener);
   }
@@ -523,29 +474,23 @@ export function showPreviewPanel(content, type) {
   const panel = document.querySelector('#preview-panel');
   if (!panel) return;
   
-  // Limpiar estado anterior
   cleanupPanelState();
   
-  // Bloquear scroll durante la transición
   if (scrollManager && typeof scrollManager.lockScrollWithReason === 'function') {
     scrollManager.lockScrollWithReason('preview-panel-show', 800);
   } else if (scrollManager) {
     scrollManager.lockScrollWithReason('preview-panel-show', 800);
   }
 
-  // Actualizar el estado
   previewPanelState.isOpen = true;
   previewPanelState.currentContent = content;
   previewPanelState.currentType = type;
   
-  // Actualizar el título
   updatePanelTitle(type, content);
   
-  // Mostrar el panel
   panel.classList.add('open');
   document.body.classList.add('preview-panel-active');
   
-  // Renderizar el contenido
   renderContentInPanel(content, type);
   
   // IMPORTANTE: Asegurar que el listener de tema esté activo
@@ -554,7 +499,6 @@ export function showPreviewPanel(content, type) {
   // Si es Mermaid, asegurar que el tema es correcto
   if (type === 'mermaid') {
     const currentTheme = document.documentElement?.getAttribute('data-theme') || 'light';
-    // Sincronizar tema después de breve retraso para permitir renderización
     setTimeout(() => {
       syncMermaidTheme(currentTheme);
     }, 300);
@@ -570,11 +514,9 @@ function setupThemeListener() {
   
   console.log("Configurando listener de tema para panel de vista previa");
   
-  // Usar captura para asegurar que se procese antes que otros handlers
   document.addEventListener('themeChanged', handlePreviewThemeChange, true);
   previewPanelState.themeListenerAttached = true;
   
-  // Registrar para limpieza
   previewPanelState.eventListeners.set(document, {
     event: 'themeChanged',
     handler: handlePreviewThemeChange,
@@ -620,7 +562,6 @@ function syncMermaidTheme(theme) {
   const code = previewPanelState.currentContent.code;
   const id = diagramDiv.id;
   
-  // Mostrar indicador de carga
   diagramDiv.innerHTML = `
     <div class="mermaid-loading">
       <i class="bx bx-loader-alt bx-spin"></i>
@@ -628,12 +569,10 @@ function syncMermaidTheme(theme) {
     </div>
   `;
   
-  // Usar la nueva utilidad de Mermaid con sincronización de tema
   import('../../shared/mermaid-utils.js').then(module => {
     if (typeof module.initializeMermaidDiagram === 'function') {
       module.updateMermaidTheme(theme); // Asegurar que el tema esté actualizado
       
-      // Esperar un poco para permitir la actualización del tema
       setTimeout(() => {
         module.initializeMermaidDiagram(id, code).then(() => {
           console.log("Diagrama en panel actualizado correctamente");
@@ -656,18 +595,14 @@ function updatePanelTitle(type, content) {
   
   switch (type) {
     case 'exam':
-      // Buscar primero si hay un título directo en el examen ya renderizado
       const examHeading = document.querySelector('.exam-preview-container .exam h3');
       if (examHeading && examHeading.textContent.startsWith('Examen:')) {
-        // Usar el título ya renderizado que contiene la información correcta
         titleElement.textContent = examHeading.textContent;
         return;
       }
       
-      // Si no se encontró un título renderizado, buscar en múltiples lugares
       let examTitle = null;
       
-      // Intentar extraer de varias ubicaciones posibles
       if (content.topic) {
         examTitle = content.topic;
       } else if (content.title && content.title !== 'Examen completo') {
@@ -677,7 +612,6 @@ function updatePanelTitle(type, content) {
       } else if (content.exam && content.exam.topic) {
         examTitle = content.exam.topic;
       } else if (typeof content === 'object') {
-        // Buscar más profundamente
         for (const key in content) {
           if (content[key] && typeof content[key] === 'object' && content[key].topic) {
             examTitle = content[key].topic;
@@ -689,7 +623,6 @@ function updatePanelTitle(type, content) {
       titleElement.textContent = `Examen: ${examTitle || 'Sin título'}`;
       break;
     case 'code':
-      // Verificar si es un documento tratado como código
       if (content.isDocument) {
         titleElement.textContent = `Documento: ${content.title || 'Sin título'}`;
       } else {
@@ -714,10 +647,8 @@ function renderContentInPanel(content, type) {
   const contentContainer = document.querySelector('.preview-panel-content');
   if (!contentContainer) return;
   
-  // Limpiar el contenedor
   clearElement(contentContainer);
   
-  // Renderizar según el tipo
   switch (type) {
     case 'exam':
       renderExamInPanel(content, contentContainer);
@@ -747,12 +678,10 @@ function renderContentInPanel(content, type) {
  */
 function renderMermaidInPanel(mermaidData, container) {
   try {
-    // Validar datos
     if (!mermaidData || !mermaidData.code) {
       throw new Error('Datos de diagrama inválidos');
     }
     
-    // Crear contenedor para el diagrama que ocupe todo el espacio disponible
     const previewContainer = createElement('div', { 
       className: 'concept-map-preview-container',
       style: {
@@ -799,7 +728,6 @@ function renderMermaidInPanel(mermaidData, container) {
     
     previewContainer.appendChild(diagramDiv);
     
-    // Añadir botón para descargar
     const downloadContainer = createElement('div', {
       style: {
         display: 'flex',
@@ -819,7 +747,6 @@ function renderMermaidInPanel(mermaidData, container) {
     downloadBtn.appendChild(downloadIcon);
     downloadBtn.appendChild(document.createTextNode(' Descargar como SVG'));
     
-    // Añadir evento para descargar
     addEvent(downloadBtn, 'click', () => {
       import('../../shared/mermaid-utils.js').then(module => {
         if (typeof module.downloadMermaidAsSVG === 'function') {
@@ -835,10 +762,8 @@ function renderMermaidInPanel(mermaidData, container) {
     downloadContainer.appendChild(downloadBtn);
     previewContainer.appendChild(downloadContainer);
     
-    // Agregar al contenedor principal
     container.appendChild(previewContainer);
     
-    // Renderizar diagrama usando funciones de utilidad
     import('../../shared/mermaid-utils.js').then(module => {
       if (typeof module.initializeMermaidDiagram === 'function') {
         module.initializeMermaidDiagram(uniqueId, mermaidData.code);
@@ -846,7 +771,6 @@ function renderMermaidInPanel(mermaidData, container) {
     }).catch(error => {
       console.error('Error al importar utilidades Mermaid:', error);
       
-      // Mostrar error en el contenedor
       diagramDiv.innerHTML = `
         <div class="mermaid-error">
           <i class="bx bx-error"></i>
@@ -878,9 +802,7 @@ function renderMermaidInPanel(mermaidData, container) {
 function renderMermaidDiagram(containerId, code) {
   if (!code) return;
   
-  // Verificar si Mermaid.js está cargado
   if (!window.mermaid) {
-    // Crear mensaje de carga para el contenedor
     const container = document.getElementById(containerId);
     if (container) {
       container.innerHTML = `
@@ -891,7 +813,6 @@ function renderMermaidDiagram(containerId, code) {
       `;
     }
     
-    // Cargar Mermaid.js dinámicamente
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js';
     script.onload = () => {
@@ -918,7 +839,6 @@ function renderMermaidDiagram(containerId, code) {
   initializeMermaid();
   renderDiagram();
   
-  // Función para inicializar Mermaid
   function initializeMermaid() {
     if (!window.mermaid) return;
     
@@ -941,23 +861,19 @@ function renderMermaidDiagram(containerId, code) {
     });
   }
   
-  // Función para renderizar el diagrama
   function renderDiagram() {
     const container = document.getElementById(containerId);
     if (!container) return;
     
     try {
-      // Limpiar el contenedor
       container.innerHTML = '';
       
-      // Crear contenido Mermaid
       const mermaidDiv = document.createElement('div');
       mermaidDiv.className = 'mermaid';
       mermaidDiv.textContent = code;
       
       container.appendChild(mermaidDiv);
       
-      // Renderizar
       window.mermaid.init(undefined, mermaidDiv);
     } catch (error) {
       container.innerHTML = `
@@ -970,7 +886,6 @@ function renderMermaidDiagram(containerId, code) {
         </div>
       `;
       
-      // Agregar evento al botón de reintento
       const retryBtn = container.querySelector('.retry-render-btn');
       if (retryBtn) {
         addEvent(retryBtn, 'click', () => {
@@ -992,7 +907,6 @@ function renderExamInPanel(examData, container) {
     // Encontrar el objeto con las preguntas del examen
     let examContent = null;
     
-    // Extraer título primero para preservarlo
     let examTitle = null;
     if (examData.topic) {
       examTitle = examData.topic;
@@ -1004,7 +918,6 @@ function renderExamInPanel(examData, container) {
       examTitle = examData.exam.topic;
     }
     
-    // Verificar diferentes estructuras posibles de datos
     if (examData.content && examData.content.questions && Array.isArray(examData.content.questions)) {
       examContent = examData.content;
     } else if (examData.questions && Array.isArray(examData.questions)) {
@@ -1017,7 +930,6 @@ function renderExamInPanel(examData, container) {
       }
     }
     
-    // Comprobar que tenemos un objeto válido con preguntas
     if (!examContent || !examContent.questions || !Array.isArray(examContent.questions)) {
       throw new Error('Formato de examen inválido recibido');
     }
@@ -1027,7 +939,6 @@ function renderExamInPanel(examData, container) {
       examContent.topic = examTitle;
     }
     
-    // Renderizar el examen
     renderExam(examContent, examContainer);
   } catch (error) {
     clearElement(container);
@@ -1068,7 +979,6 @@ function renderCodeInPanel(codeData, container) {
     if (codeData.codeContent) {
       const codeContainer = createElement('div', { className: 'code-content-preview' });
       
-      // Usar directamente innerHTML para el contenido del código
       // Esto es necesario para que el código conserve su formato y resaltado
       if (typeof DOMPurify !== 'undefined') {
         codeContainer.innerHTML = DOMPurify.sanitize(codeData.codeContent);
@@ -1077,14 +987,12 @@ function renderCodeInPanel(codeData, container) {
         codeContainer.innerHTML = codeData.codeContent;
       }
       
-      // Aplicar resaltado de sintaxis
       if (window.hljs) {
         codeContainer.querySelectorAll('pre code').forEach(block => {
           window.hljs.highlightElement(block);
         });
       }
       
-      // Configurar eventos de copia
       attachCopyEvents(codeContainer);
       
       container.appendChild(codeContainer);
@@ -1094,10 +1002,8 @@ function renderCodeInPanel(codeData, container) {
     // CASO 2: Formato con un solo bloque de código
     const { code, language } = codeData;
     
-    // Sanitizar lenguaje pero no el código, ya que se agregará como textContent
     const safeLang = sanitizeText(language || 'text');
     
-    // Crear elementos del bloque de código
     const languageSpan = createElement('span', 
       { className: 'code-language' }, 
       safeLang
@@ -1126,7 +1032,6 @@ function renderCodeInPanel(codeData, container) {
     
     container.appendChild(codeBlock);
     
-    // Aplicar highlight.js
     if (window.hljs) {
       container.querySelectorAll('pre code').forEach(block => {
         window.hljs.highlightElement(block);
@@ -1162,7 +1067,6 @@ function renderTableInPanel(tableData, container) {
     
     // CASO 1: Si hay contenido HTML directo
     if (tableData.tableContent) {
-      // Para tablas, es necesario usar innerHTML directamente para preservar la estructura
       if (typeof DOMPurify !== 'undefined') {
         tableContainer.innerHTML = DOMPurify.sanitize(tableData.tableContent);
       } else {
@@ -1170,11 +1074,9 @@ function renderTableInPanel(tableData, container) {
         tableContainer.innerHTML = tableData.tableContent;
       }
       
-      // Eliminar cualquier botón de expansión que pudiera existir
       const expandButtons = tableContainer.querySelectorAll('.expand-content-btn');
       expandButtons.forEach(button => button.remove());
       
-      // Agregar leyenda si existe
       if (tableData.caption) {
         addTableCaption(tableContainer, tableData.caption);
       }
@@ -1183,7 +1085,6 @@ function renderTableInPanel(tableData, container) {
     else if (Array.isArray(tableData.headers) && Array.isArray(tableData.rows)) {
       tableContainer.appendChild(createTableFromJSON(tableData));
       
-      // Agregar leyenda si existe
       if (tableData.caption) {
         addTableCaption(tableContainer, tableData.caption);
       }
@@ -1193,7 +1094,6 @@ function renderTableInPanel(tableData, container) {
       if (typeof DOMPurify !== 'undefined') {
         tableContainer.innerHTML = DOMPurify.sanitize(tableData);
       } else {
-        // Usar innerHTML directamente para contenido de tabla
         tableContainer.innerHTML = tableData;
       }
     }
@@ -1218,10 +1118,8 @@ function renderTableInPanel(tableData, container) {
  * Crea una tabla a partir de datos JSON
  */
 function createTableFromJSON(tableData) {
-  // Sanitizar datos
   const safeHeaders = tableData.headers.map(header => sanitizeText(header));
   
-  // Crear elementos de encabezado
   const headerRow = createElement('tr');
   
   safeHeaders.forEach(header => {
@@ -1231,7 +1129,6 @@ function createTableFromJSON(tableData) {
   
   const thead = createElement('thead', {}, headerRow);
   
-  // Crear filas de la tabla
   const tbody = createElement('tbody');
   
   tableData.rows.forEach(row => {
@@ -1246,7 +1143,6 @@ function createTableFromJSON(tableData) {
     tbody.appendChild(tr);
   });
   
-  // Crear tabla
   const table = createElement('table', 
     { className: 'preview-table' }, 
     [thead, tbody]
@@ -1288,29 +1184,23 @@ export function closePreviewPanel() {
   const panel = document.querySelector('#preview-panel');
   if (!panel) return;
 
-  // Restaurar botones a su estado original
   resetPanelButtons();
 
-  // Bloquear scroll brevemente durante la transición
   if (scrollManager?.lockScrollWithReason) {
     scrollManager.lockScrollWithReason('preview-panel-close', 800);
   }
   
-  // Cerrar panel
   panel.classList.remove('open');
   document.body.classList.remove('preview-panel-active');
   
-  // Limpiar timeouts y event listeners
   clearManagedTimeouts();
   clearPanelEventListeners();
   
-  // Actualizar estado
   previewPanelState.isOpen = false;
   previewPanelState.currentContent = null;
   previewPanelState.currentType = null;
   // Mantenemos themeListenerAttached para evitar agregar/quitar demasiado
   
-  // Ocultar si las clases no funcionan
   panel.style.display = 'none';
   setTimeout(() => panel.style.removeProperty('display'), 1000);
 }
@@ -1320,13 +1210,10 @@ export function closePreviewPanel() {
  * Limpia el estado y recursos del panel
  */
 function cleanupPanelState() {
-  // Limpiar timeouts
   clearManagedTimeouts();
   
-  // Limpiar event listeners
   clearPanelEventListeners();
   
-  // Actualizar estado
   previewPanelState.isOpen = false;
   previewPanelState.currentContent = null;
   previewPanelState.currentType = null;

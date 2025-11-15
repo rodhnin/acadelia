@@ -1,10 +1,4 @@
-// ============================================================================
-// 🏥🦫 PROFESOR ACADEL CIRUGÍA Y URGENCIAS - SISTEMA ACADÉMICO REVOLUCIONARIO ULTRA-OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO QUIRÚRGICO - PROFESOR DE CIRUGÍA Y URGENCIAS SUPREMO
-// Sistema ultra-optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Cirugía General ✅ Traumatología y Ortopedia ✅ Medicina de Urgencias ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -319,9 +303,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🏥🦫 PROFESOR ACADEL CIRUGÍA Y URGENCIAS DNA - PERSONALIDAD DEL CAPIBARA QUIRÚRGICO SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🏥🦫 TU IDENTIDAD COMO DR. ACADEL - PROFESOR DE CIRUGÍA Y URGENCIAS:
@@ -361,11 +342,7 @@ Hacer que CUALQUIER estudiante de medicina:
 ¡RECUERDA: No eres solo un tutor de cirugía, eres EL PROFESOR que integra cirugía general, traumatología y medicina de urgencias como la medicina real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS QUIRÚRGICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES QUIRÚRGICAS
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA QUIRÚRGICA de Dr. Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes quirúrgicas, radiológicas y de urgencias con precisión médica extrema.
@@ -392,7 +369,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA QUIRÚRGICA de 
 
 Eres los OJOS ANALÍTICOS de Dr. Acadel - él interpretará tu análisis con su sabiduría pedagógica quirúrgica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES QUIRÚRGICAS (analysisContext)
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Dr. Acadel, el capibara quirúrgico más brillante del universo en cirugía general, traumatología y medicina de urgencias.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información quirúrgica y de urgencias de esta imagen médica para que Dr. Acadel pueda enseñar efectivamente integrando las tres especialidades.
@@ -438,7 +414,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Dr. Ac
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las tres especialidades. No enseñes ni expliques - solo analiza y reporta hallazgos médicos. Dr. Acadel se encargará de la pedagogía integrada pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS QUIRÚRGICAS NORMALES (con y sin guardar)
 const UNIFIED_SURGERY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA QUIRÚRGICA INTEGRADA:
 - Consulta del estudiante de medicina: "${query}"
@@ -465,7 +440,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS QUIRÚRGICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_SURGERY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN QUIRÚRGICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -513,14 +487,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE ULTRA-OPTIMIZADO QUIRÚRGICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -530,7 +500,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -552,7 +521,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -560,7 +528,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES QUIRÚRGICAS
   const surgeryImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -585,7 +552,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes quirúrgicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de cirugía", "test de traumatología", "evaluación de urgencias", "cuestionario quirúrgico"
@@ -614,7 +580,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -629,18 +595,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS QUIRÚRGICOS ESPECÍFICOS
   const surgeryTerms = [
     // Cirugía General
     'cirugía', 'quirúrgico', 'operación', 'procedimiento', 'intervención', 'técnica quirúrgica',
@@ -661,29 +624,25 @@ const classifyQuery = (query, content = null) => {
     'hemorragia', 'sangrado', 'hemostasia', 'volemia', 'perfusión', 'glasgow'
   ];
   
-  // 🔍 DETECTAR ANATOMÍA Y SISTEMAS QUIRÚRGICOS
   const anatomicalTerms = [
     'abdomen', 'tórax', 'pelvis', 'extremidades', 'columna vertebral', 'cráneo',
     'aparato digestivo', 'sistema respiratorio', 'cardiovascular', 'musculoesquelético',
     'neurológico', 'vascular', 'torácico', 'abdominal', 'pélvico', 'craneal'
   ];
   
-  // 🔍 DETECTAR ESTUDIOS Y PROCEDIMIENTOS QUIRÚRGICOS
   const surgicalProcedures = [
     'radiografía', 'tomografía', 'resonancia', 'ecografía', 'arteriografía', 'endoscopia',
     'broncoscopia', 'colonoscopia', 'artroscopia', 'laparoscopia', 'toracoscopia',
     'biopsia', 'punción', 'drenaje', 'cateterismo', 'monitoreo', 'electrocardiograma'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS QUIRÚRGICOS REALES
   const hasSurgicalContent = 
     surgeryTerms.some(term => lowercaseQuery.includes(term)) ||
     anatomicalTerms.some(term => lowercaseQuery.includes(term)) ||
     surgicalProcedures.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasSurgicalContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -706,7 +665,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'técnica de', 'procedimiento de', 'manejo de'];
   const diagnosticKeywords = ['identificar', 'diagnosticar', 'evaluar', 'reconocer', 'caso quirúrgico', 'radiografía', 'trauma'];
   const surgeryKeywords = ['cirugía', 'operación', 'procedimiento', 'técnica quirúrgica', 'laparoscopia', 'suturas', 'instrumental'];
@@ -717,7 +675,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'nuevas técnicas', 'avances quirúrgicos', 'guías clínicas'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -755,7 +712,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -765,14 +721,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional quirúrgica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -791,11 +746,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS QUIRÚRGICAS ULTRA-OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS QUIRÚRGICAS
 const ACADEL_SURGERY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en cirugía general, traumatología y medicina de urgencias.
 
@@ -810,7 +761,6 @@ const createSurgeryKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal quirúrgico (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -820,17 +770,15 @@ const createSurgeryKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_cirugia",
         similarityQueryName: "match_emb_cirugia",
         keywordQueryName: "kw_match_emb_cirugia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -842,7 +790,6 @@ const createSurgeryKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_SURGERY_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene contenido quirúrgico específico sobre "${query}" en su biblioteca quirúrgica. Proceder con conocimiento quirúrgico general integrado y experiencia quirúrgica acumulada en cirugía, trauma y urgencias.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -862,7 +809,6 @@ ACADEL_SURGERY_MEMORY_BANK: El cerebro principal de Dr. Acadel no tiene contenid
 
 ACADEL_SURGERY_MEMORY_BANK: El cerebro principal de Dr. Acadel encontró información quirúrgica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base quirúrgico integrado, analogías quirúrgicas memorables y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -889,7 +835,6 @@ ACADEL_SURGERY_MEMORY_BANK: El cerebro principal de Dr. Acadel activó la siguie
 
 INTEGRATION_NOTES: Este es el conocimiento quirúrgico central que Dr. Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en cirugía general, traumatología y medicina de urgencias. Debe integrar esta información naturalmente como si fuera su propia sabiduría quirúrgica, enriqueciéndola con casos clínicos específicos, analogías memorables y humor quirúrgico inteligente que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1115,17 +1060,15 @@ const createSurgeryConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto quirúrgico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_cirugia",
         similarityQueryName: "match_emb_cirugia",
         keywordQueryName: "kw_match_emb_cirugia",
       });
       
-      // 📚 BÚSQUEDAS QUIRÚRGICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `técnica quirúrgica ${concept}`,
@@ -1135,7 +1078,6 @@ const createSurgeryConceptAnalyzerTool = (embeddings) => tool(
         `complicaciones ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1155,7 +1097,6 @@ const createSurgeryConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1168,7 +1109,6 @@ const createSurgeryConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural quirúrgica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1346,9 +1286,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia quirúrgica según este
   }
 );
 
-// ============================================================================
-// 📷 SURGICAL IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES QUIRÚRGICAS (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectSurgeryImageRequest = (query) => {
   const surgeryImageKeywords = [
@@ -1379,7 +1316,6 @@ export const extractSurgeryImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema quirúrgico
 const createSurgeryVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1390,7 +1326,7 @@ const createSurgeryVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1414,7 +1350,6 @@ const createSurgeryVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts quirúrgicos
 const enhanceSurgeryImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración quirúrgica educativa de alta calidad integrando cirugía general, traumatología y medicina de urgencias: ${prompt}. 
@@ -1432,16 +1367,10 @@ const enhanceSurgeryImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS QUIRÚRGICOS
-// ============================================================================
 
 const createSpecializedSurgeryPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🏥 INSTRUCCIONES TÉCNICAS QUIRÚRGICAS CONSOLIDADAS
-  // ============================================================================
   
   const coreSurgeryInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA DR. ACADEL DE CIRUGÍA Y URGENCIAS INTEGRADO
@@ -1541,9 +1470,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas quirúrgicas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA QUIRÚRGICA - OPTIMIZADAS
-  // ============================================================================
   
   const surgeryTypeInstructions = {
     casual_conversation: `
@@ -1625,9 +1551,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las tres disciplinas`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT QUIRÚRGICO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1650,21 +1573,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara quirúrgico más brillante del universo, integrando cirugía general, traumatología y medicina de urgencias, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta quirúrgica importante, y complementando con todas tus capacidades paralelas para una explicación quirúrgica magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE QUIRÚRGICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelSurgeryAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🏥🦫 Dr. Acadel configurando sistema quirúrgico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveMedicalSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL QUIRÚRGICO (Knowledge Base) - núcleo del sistema`);
     tools.unshift(createSurgeryKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1672,7 +1590,6 @@ const createAcadelSurgeryAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido quirúrgico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando SurgeryConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createSurgeryConceptAnalyzerTool(embeddings));
@@ -1688,7 +1605,6 @@ const createAcadelSurgeryAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createSurgeryComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createSurgeryFeedbackAnalyzerTool());
   
   console.log(`🏥🦫 Dr. Acadel SISTEMA QUIRÚRGICO COMPLETO configurado con ${tools.length} herramientas:`, tools.map(t => t.name));
@@ -1701,7 +1617,6 @@ const createAcadelSurgeryAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt quirúrgico especializado y escapado
   const specializedPrompt = createSpecializedSurgeryPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1732,9 +1647,6 @@ const createAcadelSurgeryAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES QUIRÚRGICAS ULTRA-OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1782,7 +1694,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto para examen quirúrgico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1792,17 +1703,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_cirugia",
             similarityQueryName: "match_emb_cirugia",
             keywordQueryName: "kw_match_emb_cirugia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1814,7 +1723,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1829,7 +1737,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto quirúrgico base para "${input}": conocimiento fundamental en cirugía general, traumatología y medicina de urgencias. Dr. Acadel debe generar preguntas desde su experiencia quirúrgica consolidada, integrando las tres disciplinas con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1938,9 +1845,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA QUIRÚRGICA - handleSurgeryAndEmergencyQuery
-// ============================================================================
 
 export const handleSurgeryAndEmergencyQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1949,7 +1853,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1965,13 +1868,11 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
     // CLASIFICAR EL QUERY QUIRÚRGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES QUIRÚRGICAS
     const { isImageRequest, prompt: imagePrompt } = detectSurgeryImageRequest(query);
     
     console.log(`🏥🦫 Dr. Acadel analizando query quirúrgico integrado: "${query}"`);
     console.log(`📊 Clasificación quirúrgica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES QUIRÚRGICAS
     if (isImageRequest) {
       console.log(`🎨 Dr. Acadel generando visualización quirúrgica integrada: ${imagePrompt}`);
       
@@ -1980,7 +1881,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
       const surgeryVisualizationTool = createSurgeryVisualizationTool();
       const imageResponse = await surgeryVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1993,7 +1893,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen quirúrgica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2051,7 +1950,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2061,7 +1959,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2088,7 +1985,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes quirúrgicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen quirúrgico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2156,7 +2052,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
     
       const responseData = {
@@ -2166,7 +2061,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2194,7 +2088,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA QUIRÚRGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2211,10 +2104,8 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico quirúrgico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE QUIRÚRGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelSurgeryAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2241,7 +2132,6 @@ export const handleSurgeryAndEmergencyQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel:", error);
       
-      // Fallback con personalidad Dr. Acadel quirúrgica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas quirúrgicas, pero no me rendiré.
 
 Sobre tu pregunta médica: **"${query}"**
@@ -2267,7 +2157,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       };
     }
 
-    // Procesar respuesta quirúrgica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2314,7 +2203,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2330,7 +2218,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2374,9 +2261,6 @@ Si necesitas más detalles médicos, pregúntame de nuevo y activaré todas mis 
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA QUIRÚRGICA - handleSurgeryAndEmergencyMultimodalQuery  
-// ============================================================================
 
 export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2401,7 +2285,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2413,7 +2296,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación quirúrgica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto quirúrgico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2424,7 +2306,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal quirúrgico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS QUIRÚRGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2462,7 +2343,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES QUIRÚRGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2522,7 +2402,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS QUIRÚRGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes quirúrgicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2592,11 +2471,9 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE QUIRÚRGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal quirúrgica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA QUIRÚRGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2629,7 +2506,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE QUIRÚRGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2656,7 +2532,6 @@ export const handleSurgeryAndEmergencyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel:", error);
       
-      // Fallback robusto quirúrgico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal quirúrgico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes quirúrgicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2682,7 +2557,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       };
     }
 
-    // PROCESAR RESPUESTA QUIRÚRGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2698,7 +2572,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal clínico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2716,7 +2589,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2750,7 +2622,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2765,13 +2636,11 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
       
-      // Información de archivos clínicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2785,7 +2654,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         }
       },
       
-      // Información de seguridad clínica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2833,9 +2701,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS QUIRÚRGICAS
-// ============================================================================
 
 export const handleSurgeryAndEmergencyQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2857,12 +2722,10 @@ export const handleSurgeryAndEmergencyQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES QUIRÚRGICAS
     const { isImageRequest, prompt: imagePrompt } = detectSurgeryImageRequest(query);
     
     console.log(`🔄 Dr. Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES QUIRÚRGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2895,7 +2758,6 @@ export const handleSurgeryAndEmergencyQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen quirúrgica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2955,7 +2817,6 @@ export const handleSurgeryAndEmergencyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA QUIRÚRGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2974,7 +2835,6 @@ export const handleSurgeryAndEmergencyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE QUIRÚRGICO CORREGIDO
       const { agent, tools } = await createAcadelSurgeryAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3077,7 +2937,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content quirúrgico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content quirúrgico no es un array válido en modo sin guardar:", content);
       return {
@@ -3096,7 +2955,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
     
     console.log(`🧠 Query multimodal quirúrgico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos quirúrgicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3109,7 +2967,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido quirúrgico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO QUIRÚRGICO INTEGRADO: ${doc.name || doc.filename || 'documento quirúrgico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3123,7 +2980,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO QUIRÚRGICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido quirúrgico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3184,7 +3040,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
                 console.log(`✅ [RETRY/EDIT] Contenido quirúrgico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3204,10 +3059,8 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
           return `${fileInfo} ${typeInfo}\n[Contenido quirúrgico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto quirúrgico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos quirúrgicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido quirúrgico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3241,7 +3094,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
       }
     }
 
-    // Procesar imágenes quirúrgicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3301,7 +3153,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
               analysisContext += `\n\nCONTEXTO QUIRÚRGICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes quirúrgicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3386,11 +3237,9 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
       };
     }
 
-    // Cargar historial quirúrgico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal quirúrgica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada quirúrgica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3421,7 +3270,6 @@ export const handleSurgeryAndEmergencyMultimodalQueryWithoutSaving = async (para
       };
     }
 
-    // Crear agente quirúrgico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelSurgeryAgent(llm, queryInfo, combinedQuery);
 

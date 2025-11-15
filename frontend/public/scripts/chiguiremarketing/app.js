@@ -2,14 +2,12 @@
 
 import { initChatUI } from './ui/chatUI.js';
 
-// ✨ IMPORTACIÓN CENTRALIZADA - TODO EL MARKDOWN VIENE DE AQUÍ
 import { 
   initMarkdownParser, 
   renderMarkdownComplete, 
   processSpecialElements 
 } from './utils/markdownParser.js';
 
-// ✨ NUEVO: SISTEMA UNIVERSAL DE MATHJAX (reemplaza mathPreprocessor)
 import { 
   processUniversalMath,
   processCompleteMath,
@@ -18,7 +16,6 @@ import {
   isUniversalMathReady
 } from './utils/universalMathProcessor.js';
 
-// ✨ SISTEMA UNIFICADO DE MERMAID
 import { initMermaidUnified } from './utils/mermaidIntegration.js';
 
 import { setupModalManager } from './ui/modalManager.js';
@@ -35,7 +32,6 @@ import './utils/formatting-marketing.js';
 // Servicio de notificaciones
 import notificationService from './utils/notificationService.js';
 
-// Configurar mermaid (configuración básica, el sistema unificado se encarga del resto)
 if (typeof mermaid !== 'undefined') {
   mermaid.initialize({
     startOnLoad: false,
@@ -44,12 +40,10 @@ if (typeof mermaid !== 'undefined') {
   });
 }
 
-// ✨ FUNCIÓN PRINCIPAL DE INICIALIZACIÓN - RENOVADA CON SISTEMA UNIVERSAL
 async function initApp() {
   try {
     console.log('🚀 Iniciando aplicación con Sistema Universal de MathJax...');
     
-    // ✨ PASO 1: INICIALIZAR EL SISTEMA CENTRALIZADO DE MARKDOWN PRIMERO
     const markdownInitialized = initMarkdownParser();
     if (markdownInitialized) {
       console.log('✅ Sistema centralizado de markdown inicializado correctamente');
@@ -57,7 +51,6 @@ async function initApp() {
       console.warn('⚠️ Advertencia: Sistema de markdown no pudo inicializarse completamente');
     }
     
-    // ✨ PASO 2: INICIALIZAR SISTEMA UNIVERSAL DE MATHJAX (reemplaza initMathEnhancements)
     try {
       console.log('🧮 Inicializando Sistema Universal de MathJax...');
       
@@ -81,7 +74,6 @@ async function initApp() {
       if (mathSystemReady) {
         console.log('✅ Sistema Universal de MathJax inicializado correctamente');
         
-        // ✨ EXPONER FUNCIONES UNIVERSALES DE MATEMÁTICAS
         window.processUniversalMath = processUniversalMath;
         window.processCompleteMath = processCompleteMath;
         window.reprocessAllMath = reprocessAllMath;
@@ -101,7 +93,6 @@ async function initApp() {
       showNotification('Error en sistema de matemáticas', 'error');
     }
 
-    // ✨ PASO 3: EXPONER FUNCIONES CENTRALIZADAS GLOBALMENTE
     window.renderMarkdownModule = renderMarkdownComplete;
     window.renderMarkdown = renderMarkdownComplete;
     window.processSpecialElementsModule = processSpecialElements;
@@ -121,7 +112,6 @@ async function initApp() {
     // PASO 5: Configurar gestor de temas
     initThemeManager();
     
-    // ✨ PASO 6: INICIALIZAR SISTEMA UNIFICADO DE MERMAID
     try {
       const mermaidManager = await initMermaidUnified();
       if (mermaidManager) {
@@ -156,7 +146,6 @@ async function initApp() {
       window.initThinkingObserver();
     }
     
-    // ✨ PASO 8: INICIALIZAR LA INTERFAZ DEL CHAT
     await initChatUI(document.getElementById('chat-messages'));
     console.log('✅ Chat UI inicializado');
     
@@ -221,7 +210,6 @@ async function initApp() {
     
     console.log('✅ Aplicación inicializada correctamente con Sistema Universal de MathJax');
     
-    // ✨ PASO 17: VERIFICAR ESTADO DE AMBOS SISTEMAS
     setTimeout(() => {
       // Estado del Sistema Mermaid
       if (window.mermaidManager) {
@@ -229,7 +217,6 @@ async function initApp() {
         console.log('📊 Estado del Sistema Mermaid:', mermaidStatus);
       }
       
-      // ✨ NUEVO: Estado del Sistema Universal de MathJax
       const mathDiagnosis = diagnoseMath();
       console.log('🧮 Diagnóstico del Sistema Universal de MathJax:', mathDiagnosis);
       
@@ -241,7 +228,6 @@ async function initApp() {
   }
 }
 
-// ✨ FUNCIÓN MEJORADA DE RESET DE MODALES CON AMBOS SISTEMAS UNIFICADOS
 function resetModalState(modalType) {
   console.log(`🔄 Reiniciando modal: ${modalType}`);
   
@@ -278,7 +264,6 @@ function resetInformationModal() {
     modalBody.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando...</p></div>';
   }
   
-  // ✨ MEJORADO: Destruir charts, diagramas Mermaid y matemáticas
   try {
     // Destruir Chart.js instances
     if (window.Chart) {
@@ -298,11 +283,9 @@ function resetInformationModal() {
       });
     }
     
-    // ✨ NUEVO: Limpiar diagramas Mermaid usando sistema unificado
     if (window.mermaidManager && modalBody) {
       const mermaidDiagrams = modalBody.querySelectorAll('.mermaid');
       mermaidDiagrams.forEach(diagram => {
-        // Limpiar zoom si existe
         if (diagram._zoomPanInstance) {
           try {
             diagram._zoomPanInstance.destroy();
@@ -311,18 +294,15 @@ function resetInformationModal() {
           }
         }
         
-        // Limpiar atributos
         diagram.removeAttribute('data-processed');
         diagram.removeAttribute('data-zoom-enabled');
       });
     }
     
-    // ✨ NUEVO: Limpiar matemáticas renderizadas
     if (modalBody) {
       const mathElements = modalBody.querySelectorAll('.MathJax, mjx-container, .has-math-content');
       mathElements.forEach(mathEl => {
         try {
-          // Limpiar clases y atributos de MathJax
           mathEl.classList.remove('has-math-content');
           mathEl.removeAttribute('data-math-confidence');
           mathEl.removeAttribute('data-math-types');
@@ -469,7 +449,6 @@ function setupNotificationCallbacks() {
     updatePageTitle(notifications.total);
   });
   
-  // ✨ SOLUCIÓN: Verificar notificaciones existentes DESPUÉS de configurar callbacks
   setTimeout(() => {
     const currentNotifications = notificationService.notifications;
     if (currentNotifications && currentNotifications.total > 0) {
@@ -593,7 +572,6 @@ function updateClearButtonVisibilityWhenExpanded() {
 function updatePageTitle(notificationCount) {
   const baseTitle = 'Marketing IA - Acadelia';
   
-  // Validar que el count sea un número válido
   const count = typeof notificationCount === 'number' && notificationCount >= 0 ? 
     notificationCount : 0;
   
@@ -839,7 +817,6 @@ function setupAccessibility() {
   });
 }
 
-// ✨ EVENTOS GLOBALES MEJORADOS CON DIAGNÓSTICO DE SISTEMAS
 function setupGlobalEvents() {
   let resizeTimeout;
   window.addEventListener('resize', () => {
@@ -924,7 +901,6 @@ function setupGlobalEvents() {
       }
     }
     
-    // ✨ NUEVO: Atajo para diagnóstico de sistemas
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'M') {
       e.preventDefault();
       console.log('🔍 DIAGNÓSTICO DE SISTEMAS:');
@@ -1132,7 +1108,6 @@ function checkNotificationServiceAvailability() {
   return isAvailable;
 }
 
-// Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     ensureThemeConsistency();
@@ -1162,11 +1137,9 @@ window.removeNotification = removeNotification;
 window.setupThinkingGifHandling = setupThinkingGifHandling;
 window.announceThemeChange = announceThemeChange;
 
-// ✨ FUNCIONES CENTRALIZADAS Y UNIVERSALES TAMBIÉN EXPUESTAS
 window.renderMarkdown = renderMarkdownComplete;
 window.processSpecialElements = processSpecialElements;
 
-// ✨ NUEVO: FUNCIONES DEL SISTEMA UNIVERSAL DE MATHJAX
 window.processUniversalMath = processUniversalMath;
 window.processCompleteMath = processCompleteMath;
 window.reprocessAllMath = reprocessAllMath;

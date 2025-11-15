@@ -3,7 +3,6 @@
  * Con integración optimizada para el sistema de temas
  */
 
-// Variables para controlar el estado
 let mermaidInitialized = false;
 let mermaidLoadPromise = null;
 let isUpdatingTheme = false;
@@ -22,7 +21,6 @@ export function initMermaidSystem() {
     mermaidInitStatus = 'pending';
     lastThemeApplied = document.documentElement?.getAttribute('data-theme') || 'light';
     
-    // Configurar listener para cambios de tema
     document.removeEventListener('themeChanged', handleThemeChange);
     document.addEventListener('themeChanged', handleThemeChange);
     
@@ -56,7 +54,6 @@ export function initMermaidSystem() {
       const maxAttempts = 20;
       const checkInterval = Math.min(maxWait / maxAttempts, 250);
       
-      // Verificar periódicamente
       const checker = setInterval(() => {
         attempts++;
         const element = document.getElementById(elementId);
@@ -97,7 +94,6 @@ function loadMermaidWithRetry(attempt = 0) {
       return Promise.resolve(window.mermaid);
     }
     
-    // Marcar como cargando
     mermaidInitStatus = 'loading';
     
     // Realizar carga
@@ -113,7 +109,6 @@ function loadMermaidWithRetry(attempt = 0) {
           lastThemeApplied = currentTheme;
         }
         
-        // Buscar y renderizar diagramas existentes
         setTimeout(() => {
           refreshAllMermaidDiagrams().catch(error => {
             console.warn('Error actualizando diagramas existentes:', error);
@@ -160,7 +155,6 @@ function handleThemeChange(event) {
   
   console.log(`Cambio de tema detectado: ${newTheme}`);
   
-  // Actualizar variable de seguimiento inmediatamente
   lastThemeApplied = newTheme;
   
   // Si Mermaid aún no está listo, solo actualizar la variable
@@ -169,7 +163,6 @@ function handleThemeChange(event) {
     return;
   }
   
-  // Actualizar configuración inmediatamente
   updateMermaidTheme(newTheme);
   
   // Si se indica que no es necesario actualizar los diagramas, retornar
@@ -190,10 +183,8 @@ function handleThemeChange(event) {
     return;
   }
   
-  // Marcar como actualizando
   isUpdatingTheme = true;
   
-  // Actualizar diagramas con el nuevo tema
   console.log(`Actualizando diagramas con nuevo tema: ${newTheme}`);
   setTimeout(() => {
     try {
@@ -224,7 +215,6 @@ export function loadMermaidLibrary() {
   
   console.log("Iniciando carga de Mermaid...");
   
-  // Crear una nueva promesa para cargar Mermaid
   mermaidLoadPromise = new Promise((resolve, reject) => {
     // Si ya está inicializado, resolver inmediatamente
     if (mermaidInitialized && window.mermaid) {
@@ -242,11 +232,9 @@ export function loadMermaidLibrary() {
       return;
     }
     
-    // Verificar si ya hay un script de carga en progreso
     if (document.querySelector('script[src*="mermaid"]')) {
       console.log("Script de Mermaid en proceso de carga, esperando...");
       
-      // Esperar a que se complete la carga
       const checkInterval = setInterval(() => {
         if (window.mermaid) {
           clearInterval(checkInterval);
@@ -272,7 +260,6 @@ export function loadMermaidLibrary() {
       return;
     }
     
-    // Cargar la librería si no existe
     console.log("Cargando librería Mermaid desde CDN...");
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js';
@@ -280,7 +267,6 @@ export function loadMermaidLibrary() {
     
     script.onload = () => {
       console.log("Mermaid cargado exitosamente");
-      // Inicializar con la configuración predeterminada
       if (window.mermaid) {
         initializeMermaidConfig();
         mermaidInitialized = true;
@@ -301,7 +287,6 @@ export function loadMermaidLibrary() {
     document.head.appendChild(script);
   });
   
-  // Agregar handler para reintentar en caso de error
   mermaidLoadPromise.catch(error => {
     console.warn("Error en carga inicial de Mermaid, limpiando para reintentar:", error);
     mermaidLoadPromise = null; // Permite reintentar
@@ -339,7 +324,6 @@ function initializeMermaidConfig() {
         curve: 'basis',
         diagramPadding: 20
       },
-      // Habilitar configuración de interactividad
       zoomEnabled: true, // Habilitar zoom
       pan: true,         // Habilitar desplazamiento
       maxZoom: 5,        // Máximo zoom permitido
@@ -424,14 +408,12 @@ export function refreshAllMermaidDiagrams() {
  * Nueva función a añadir
  */
 function processAllDiagrams(diagrams) {
-    // Crear un array de promesas para renderizerlos todos
     const renderPromises = Array.from(diagrams).map(diagram => {
       const code = diagram.getAttribute('data-code');
       const id = diagram.id;
       
       if (!code || !id) return Promise.resolve();
       
-      // Mostrar carga
       diagram.innerHTML = `
         <div class="mermaid-loading">
           <i class="bx bx-loader-alt bx-spin"></i>
@@ -439,7 +421,6 @@ function processAllDiagrams(diagrams) {
         </div>
       `;
       
-      // Devolver promesa con retraso para evitar sobrecarga
       return new Promise(resolve => {
         setTimeout(() => {
           try {
@@ -486,19 +467,15 @@ export function getMermaidStatus() {
  * Nueva función a añadir
  */
 export function forceSyncMermaid() {
-    // Obtener el tema actual
     const currentTheme = document.documentElement?.getAttribute('data-theme') || 'light';
     
-    // Actualizar variable de seguimiento
     lastThemeApplied = currentTheme;
     
-    // Cargar Mermaid si es necesario
     return loadMermaidWithRetry()
       .then(() => {
         // Asegurar que tengamos el tema correcto
         updateMermaidTheme(currentTheme);
         
-        // Renderizar todos los diagramas
         return refreshAllMermaidDiagrams();
       })
       .catch(error => {
@@ -517,7 +494,6 @@ export async function convertMermaidToSVG(code) {
     // Asegurarse de que Mermaid esté cargado
     const mermaid = await loadMermaidLibrary();
     
-    // Convertir a SVG
     const { svg } = await mermaid.render('export-diagram', code);
     return svg;
   } catch (error) {
@@ -535,7 +511,6 @@ export async function downloadMermaidAsSVG(code, filename = 'diagrama') {
   try {
     const svg = await convertMermaidToSVG(code);
     
-    // Crear blob y enlace de descarga
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     
@@ -545,7 +520,6 @@ export async function downloadMermaidAsSVG(code, filename = 'diagrama') {
     document.body.appendChild(a);
     a.click();
     
-    // Limpiar
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
@@ -576,17 +550,14 @@ export async function initializeMermaidDiagram(containerId, code) {
       return false;
     }
     
-    // Esperar a que el contenedor tenga dimensiones válidas
     const hasDimensions = await waitForValidDimensions(containerId);
     if (!hasDimensions) {
       console.warn(`El contenedor ${containerId} no tiene dimensiones después de esperar`);
       // Continuamos de todas formas - algunos diagramas pueden renderizarse aún sin dimensiones iniciales
     }
     
-    // Limpiar el contenedor
     container.innerHTML = '';
     
-    // Añadir controles de zoom/pan para interactividad
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'mermaid-controls';
     controlsDiv.innerHTML = `
@@ -598,7 +569,6 @@ export async function initializeMermaidDiagram(containerId, code) {
     `;
     container.appendChild(controlsDiv);
     
-    // Crear elemento para el diagrama
     const mermaidContainer = document.createElement('div');
     mermaidContainer.className = 'mermaid-container';
     
@@ -610,9 +580,7 @@ export async function initializeMermaidDiagram(containerId, code) {
     mermaidContainer.appendChild(mermaidDiv);
     container.appendChild(mermaidContainer);
     
-    // Renderizar
     try {
-      // Obtener el tema actual
       const currentTheme = document.documentElement?.getAttribute('data-theme') || 'light';
       
       // Siempre actualizar el tema para asegurar la sincronización
@@ -633,14 +601,12 @@ export async function initializeMermaidDiagram(containerId, code) {
       await window.mermaid.init(config, mermaidDiv);
       console.log(`Diagrama renderizado en ${containerId}`);
       
-      // Configurar interactividad después de la renderización
       setupDiagramInteractivity(containerId, mermaidContainer);
       
       return true;
     } catch (renderError) {
       console.error(`Error renderizando Mermaid:`, renderError);
 
-      // Crear un placeholder simple y limpio
       container.innerHTML = `
         <div class="mermaid-placeholder">
           <i class="bx bx-map"></i>
@@ -655,10 +621,8 @@ export async function initializeMermaidDiagram(containerId, code) {
   } catch (error) {
     console.error('Error al inicializar diagrama Mermaid:', error);
     
-    // Mostrar error en el contenedor
     const container = document.getElementById(containerId);
     if (container) {
-      // Mostrar notificación Acadel 
       acadelError("🧩 Diagrama complicado", "Acadel no pudo crear este mapa conceptual. ¡A veces los diagramas se ponen rebeldes!");
       // Placeholder limpio
       container.innerHTML = `
@@ -686,7 +650,6 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
   const svgElement = mermaidContainer.querySelector('svg');
   if (!svgElement) return;
   
-  // Variables para el pan y zoom
   let scale = 1;
   let originalWidth = svgElement.getBoundingClientRect().width;
   let translateX = 0;
@@ -695,18 +658,15 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
   let lastX = 0;
   let lastY = 0;
   
-  // Aplicar transformación
   function applyTransform() {
     svgElement.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
     svgElement.style.transformOrigin = 'center center';
   }
   
-  // Obtener referencias a los botones
   const zoomInBtn = document.querySelector(`#controls-${containerId} .zoom-in-btn`);
   const zoomOutBtn = document.querySelector(`#controls-${containerId} .zoom-out-btn`);
   const resetZoomBtn = document.querySelector(`#controls-${containerId} .reset-zoom-btn`);
   
-  // Configurar eventos de los botones
   if (zoomInBtn) {
     zoomInBtn.addEventListener('click', () => {
       scale = Math.min(scale + 0.1, 5);
@@ -730,9 +690,8 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
     });
   }
   
-  // Configurar eventos para el arrastre (pan)
   mermaidContainer.addEventListener('mousedown', (e) => {
-    if (e.button === 0) { // Solo botón izquierdo
+    if (e.button === 0) {
       isDragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
@@ -761,17 +720,14 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
     }
   }
   
-  // Añadir listeners al documento para capturar el movimiento fuera del contenedor
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
   
-  // Configurar wheel para zoom
   mermaidContainer.addEventListener('wheel', (e) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     const newScale = Math.max(0.5, Math.min(5, scale + delta));
     
-    // Calcular el punto sobre el que hacemos zoom
     const rect = mermaidContainer.getBoundingClientRect();
     const mouseX = (e.clientX - rect.left) / scale - translateX;
     const mouseY = (e.clientY - rect.top) / scale - translateY;
@@ -784,7 +740,6 @@ function setupDiagramInteractivity(containerId, mermaidContainer) {
     applyTransform();
   }, { passive: false });
   
-  // Configurar estilo inicial
   mermaidContainer.style.cursor = 'grab';
   svgElement.style.transition = 'transform 0.1s ease';
 }
@@ -818,7 +773,6 @@ export default {
   };
 
   document.addEventListener('click', function(event) {
-    // Verificar si el clic fue en un botón de reintentar diagrama
     if (event.target.closest('.retry-render-btn')) {
       const button = event.target.closest('.retry-render-btn');
       
@@ -834,28 +788,23 @@ export default {
       
       console.log('Intentando reintentar mensaje con diagrama Mermaid');
       
-      // Intentar usar handleRetryAction si está disponible
       if (typeof window.handleRetryAction === 'function') {
         window.handleRetryAction(messageElement);
         return;
       }
       
       // Alternativa si handleRetryAction no está disponible
-      // Mostrar indicador de carga en el mensaje
       messageElement.classList.add('processing');
       
-      // Agregar clase 'thinking' a la imagen de perfil
       const profileElement = messageElement.querySelector('.ai-profile');
       if (profileElement) {
         profileElement.classList.add('thinking');
       }
       
-      // Mostrar indicador de carga
       const contentElement = messageElement.querySelector('.message-content');
       if (contentElement) {
         const originalContent = contentElement.innerHTML;
         
-        // Mostrar animación de carga
         contentElement.innerHTML = `
           <div class="thought-bubble">
             <div class="thought-bubbles">
@@ -866,18 +815,14 @@ export default {
           </div>
         `;
         
-        // Esperar un momento y luego simular una respuesta
         setTimeout(() => {
-          // Restaurar el contenido original
           contentElement.innerHTML = originalContent;
           
-          // Quitar clases de carga
           messageElement.classList.remove('processing');
           if (profileElement) {
             profileElement.classList.remove('thinking');
           }
           
-          // Intentar recargar la página si todo lo demás falla
           location.reload();
         }, 2000);
       }

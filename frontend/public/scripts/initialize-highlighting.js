@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   if (window.hljs) {
     console.log('Highlight.js detectado, inicializando...');
-    window.hljs.configure({  // ✅ CORREGIDO
+    window.hljs.configure({
       languages: ['javascript', 'python', 'matlab', 'latex', 'typescript', 'css', 'html', 'bash', 'json'],
       ignoreUnescapedHTML: true
     });
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
    
-    // Observar cambios en el contenedor de mensajes
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages) {
       observer.observe(chatMessages, { childList: true, subtree: true });
@@ -34,7 +33,7 @@ function initializeHighlighting() {
     // Verifica si ya tiene la clase hljs para evitar duplicar el proceso
     if (!block.classList.contains('hljs')) {
       console.log('Aplicando highlight a:', block);
-      window.hljs.highlightElement(block);  // ✅ CORREGIDO
+      window.hljs.highlightElement(block);
     }
   });
 }

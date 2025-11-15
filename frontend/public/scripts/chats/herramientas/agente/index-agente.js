@@ -5,5 +5,4 @@
  * especializado en matemáticas y Agente.
  */
 
-// Importar solo el módulo principal de la aplicación matemática
 import './core/app-agente.js';

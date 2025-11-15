@@ -90,7 +90,6 @@ export const runSecurityDiagnostics = async () => {
     
     console.log('✅ Llamada a logSecurityEvent completada');
     
-    // Verificar si realmente se guardó
     const checkResult = await pool.query(`
       SELECT COUNT(*) 
       FROM security_events 
@@ -135,12 +134,10 @@ export const runSecurityDiagnostics = async () => {
   console.log('🔍 Diagnóstico completo');
 };
 
-// Exportar una versión simplificada para uso directo
 export const testSecurityEvent = async () => {
   try {
     console.log('🔍 Probando registro de evento de seguridad...');
     
-    // Crear evento de prueba
     await logSecurityEvent(
       'MANUAL_TEST',
       'Prueba manual de evento de seguridad',
@@ -150,7 +147,6 @@ export const testSecurityEvent = async () => {
       '127.0.0.1'
     );
     
-    // Verificar si se guardó
     const result = await pool.query(`
       SELECT COUNT(*) 
       FROM security_events 

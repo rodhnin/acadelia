@@ -2,13 +2,11 @@ import { embeddings } from "../../../lib/openai.js";
 import pool from "../../../lib/dbPool.js";
 
 export const matchingService = {
-  // Función auxiliar para validar UUID
   isValidUUID(id) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(id);
   },
 
-  // Función auxiliar para resolver identificadores a UUIDs
   async resolveProfileIdentifier(identifier) {
     // Si ya es un UUID válido, devolverlo directamente
     if (this.isValidUUID(identifier)) {
@@ -17,10 +15,8 @@ export const matchingService = {
     
     // Si no es UUID, intentar resolver por texto descriptivo
     try {
-      // Crear un vector para la búsqueda
       const embeddingVector = await embeddings.embedQuery(identifier);
       
-      // Buscar perfiles similares usando el vector
       const result = await pool.query(`
         SELECT id, metadata, 
           1 - (embedding <=> $1::vector(1536)) AS similarity
@@ -39,7 +35,6 @@ export const matchingService = {
         };
       }
       
-      // Si no se encuentra, intentar con una búsqueda simple
       const textResult = await pool.query(`
         SELECT id, metadata
         FROM marketing_profiles
@@ -72,15 +67,12 @@ export const matchingService = {
     }
   },
 
-  // Función similar para resolver identificadores de contenido
   async resolveContentIdentifier(identifier) {
-    // Lógica similar a resolveProfileIdentifier pero para contenidos
     if (this.isValidUUID(identifier)) {
       return { id: identifier, isResolved: true };
     }
     
     try {
-      // Buscar por texto en contenidos
       const result = await pool.query(`
         SELECT id, type, channel
         FROM marketing_contents
@@ -114,7 +106,6 @@ export const matchingService = {
     }
   },
 
-  // Versión mejorada de matchProfileToContent con resolución automática
   async matchProfileToContent(profileId, contentType = null, limit = 5) {
     try {
       console.log(`Buscando contenido relevante para perfil con identificador: ${profileId}`);
@@ -187,7 +178,6 @@ export const matchingService = {
         
         const interactionsResult = await pool.query(interactionsQuery, [contentIds]);
         
-        // Combinar datos de contenido con interacciones
         const matchedContents = contentResult.rows.map(content => {
           const interactions = interactionsResult.rows.find(
             i => i.content_id === content.id
@@ -207,7 +197,7 @@ export const matchingService = {
             id: profile.id,
             metadata: profile.metadata
           },
-          resolvedFrom: resolvedProfile.originalIdentifier // Incluir información de resolución si se hizo
+          resolvedFrom: resolvedProfile.originalIdentifier
         };
       } else {
         return {
@@ -226,7 +216,6 @@ export const matchingService = {
     }
   },
   
-  // Versión mejorada de matchContentToProfiles con resolución automática
   async matchContentToProfiles(contentId, limit = 5) {
     try {
       console.log(`Buscando perfiles relevantes para contenido con identificador: ${contentId}`);
@@ -289,7 +278,6 @@ export const matchingService = {
     }
   },
   
-  // Versión mejorada de recordInteraction con resolución automática
   async recordInteraction(profileId, contentId, channel, action) {
     const client = await pool.connect();
     

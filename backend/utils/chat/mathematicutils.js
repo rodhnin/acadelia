@@ -1,6 +1,5 @@
 import { isValidUUID } from "./validators.js";
 
-// ✅ IMPORTAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
 import {
   SUPPORTED_FILES,
   createSupportedMimeTypesConfig
@@ -44,10 +43,6 @@ export const isValidUUIDv4 = (uuid) => {
   return version === 4 && variant >= 8 && variant <= 11;
 };
 
-/**
- * ✅ USAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
- * Obtiene tipos de documento soportados desde backend-file-constants.js
- */
 export const getSupportedDocumentTypes = () => {
   const supportedMimeTypesConfig = createSupportedMimeTypesConfig();
   
@@ -67,35 +62,24 @@ export const getSupportedDocumentTypes = () => {
   };
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isSupportedDocumentType = (mimeType) => {
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.mimeTypes.includes(mimeType);
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isSupportedDocumentExtension = (extension) => {
   const normalizedExt = extension.startsWith('.') ? extension : `.${extension}`;
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.extensions.includes(normalizedExt.toLowerCase());
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- */
 export const isDocumentItem = (item) => {
   if (!item || typeof item !== 'object') return false;
   
-  // Verificar tipos explícitos de documento
   if (item.type === 'file' || item.type === 'document') {
     return true;
   }
   
-  // Verificar si tiene propiedades de archivo
   if (item.file_url || item.data_url) {
     // Si tiene información de tipo MIME, verificar que sea documento
     if (item.mime_type || item.mimeType) {
@@ -126,13 +110,11 @@ export const validateQueryParams = (params) => {
   const { userId, query, avaId, chatId } = params;
   const errors = [];
   
-  // Validación de campos obligatorios
   if (!userId || !query || !avaId || !chatId) {
     errors.push("Todos los campos son requeridos: userId, query, avaId, chatId");
     return errors; // Salir temprano si faltan campos esenciales
   }
   
-  // Validación de tipos
   if (!Number.isInteger(userId) || userId <= 0) {
     errors.push("userId debe ser un número entero positivo");
   }
@@ -141,7 +123,6 @@ export const validateQueryParams = (params) => {
     errors.push("avaId debe ser un número entero positivo");
   }
   
-  // Validación mejorada de UUID con comprobación de versión
   if (!isValidUUID(chatId)) {
     errors.push("Formato de chatId inválido (debe ser UUID v4)");
   } else if (!isValidUUIDv4(chatId)) {
@@ -158,13 +139,11 @@ export const validateMultimodalParams = (params) => {
   const { userId, avaId, chatId, content } = params;
   const errors = [];
   
-  // Validación de campos obligatorios
   if (!userId || !avaId || !chatId || !content) {
     errors.push("Todos los campos son requeridos: userId, avaId, chatId, content");
     return errors; // Salir temprano si faltan campos esenciales
   }
   
-  // Validación de tipos
   if (!Number.isInteger(userId) || userId <= 0) {
     errors.push("userId debe ser un número entero positivo");
   }
@@ -173,25 +152,21 @@ export const validateMultimodalParams = (params) => {
     errors.push("avaId debe ser un número entero positivo");
   }
   
-  // Validación mejorada de UUID
   if (!isValidUUID(chatId)) {
     errors.push("Formato de chatId inválido (debe ser UUID v4)");
   } else if (!isValidUUIDv4(chatId)) {
     errors.push("El chatId debe ser específicamente un UUID versión 4");
   }
   
-  // Validación mejorada del contenido multimodal
   if (!Array.isArray(content)) {
     errors.push("El campo 'content' debe ser un array");
   } else if (content.length === 0) {
     errors.push("El campo 'content' no puede estar vacío");
   } else {
-    // Validación de tamaño máximo
     if (content.length > 25) { // Aumentado para permitir más archivos
       errors.push("Demasiados elementos en 'content'. Máximo permitido: 25");
     }
     
-    // Validar cada item del contenido
     content.forEach((item, index) => {
       if (!item || typeof item !== 'object') {
         errors.push(`El elemento ${index} del contenido debe ser un objeto válido`);
@@ -204,7 +179,6 @@ export const validateMultimodalParams = (params) => {
         errors.push(`El elemento ${index} tiene un tipo desconocido: ${item.type}`);
       }
       
-      // Validación para elementos de texto
       if (item.type === 'text') {
         if (!item.text || typeof item.text !== 'string') {
           errors.push(`El elemento ${index} de tipo 'text' debe tener un campo 'text' válido`);
@@ -213,17 +187,14 @@ export const validateMultimodalParams = (params) => {
         }
       }
       
-      // Validación para elementos de imagen (mantener validación existente)
       if (item.type === 'image_url') {
         if (!item.image_url) {
           errors.push(`El elemento ${index} de tipo 'image_url' debe tener un campo 'image_url' válido`);
         } else if (typeof item.image_url === 'object' && !item.image_url.url) {
           errors.push(`El elemento ${index} de tipo 'image_url' debe tener un campo 'image_url.url' válido`);
         } else if (typeof item.image_url === 'string') {
-          // Validar URL si es string
           try {
             const url = new URL(item.image_url);
-            // Validar protocolo
             if (!['http:', 'https:', 'data:'].includes(url.protocol)) {
               errors.push(`El elemento ${index} tiene una URL con protocolo no permitido`);
             }
@@ -231,7 +202,6 @@ export const validateMultimodalParams = (params) => {
             errors.push(`El elemento ${index} tiene una URL inválida`);
           }
         } else if (typeof item.image_url === 'object' && item.image_url.url) {
-          // Validar URL en objeto
           try {
             const url = new URL(item.image_url.url);
             if (!['http:', 'https:', 'data:'].includes(url.protocol)) {
@@ -250,7 +220,6 @@ export const validateMultimodalParams = (params) => {
           errors.push(`El elemento ${index} de tipo '${item.type}' debe tener 'file_url' o 'data_url'`);
         }
         
-        // Validar file_url si existe
         if (item.file_url) {
           if (typeof item.file_url !== 'string') {
             errors.push(`El elemento ${index} tiene un 'file_url' inválido`);
@@ -266,7 +235,6 @@ export const validateMultimodalParams = (params) => {
           }
         }
         
-        // Validar data_url si existe
         if (item.data_url) {
           if (typeof item.data_url !== 'string') {
             errors.push(`El elemento ${index} tiene un 'data_url' inválido`);
@@ -275,7 +243,6 @@ export const validateMultimodalParams = (params) => {
           }
         }
         
-        // Validar nombre de archivo si se proporciona
         if (item.name && typeof item.name !== 'string') {
           errors.push(`El elemento ${index} tiene un nombre de archivo inválido`);
         }
@@ -284,7 +251,6 @@ export const validateMultimodalParams = (params) => {
           errors.push(`El elemento ${index} tiene un nombre de archivo inválido`);
         }
         
-        // Validar tipo MIME si se proporciona
         if (item.mime_type && !isSupportedDocumentType(item.mime_type)) {
           errors.push(`El elemento ${index} tiene un tipo MIME no soportado: ${item.mime_type}`);
         }
@@ -293,7 +259,6 @@ export const validateMultimodalParams = (params) => {
           errors.push(`El elemento ${index} tiene un tipo MIME no soportado: ${item.mimeType}`);
         }
         
-        // Validar tamaño si se proporciona
         if (item.size && (!Number.isInteger(item.size) || item.size <= 0)) {
           errors.push(`El elemento ${index} tiene un tamaño de archivo inválido`);
         } else if (item.size && item.size > 10 * 1024 * 1024) { // 10MB
@@ -314,11 +279,9 @@ export const validateMultimodalParams = (params) => {
 export const extractTextFromMultimodal = (content) => {
   if (!Array.isArray(content)) return "";
   
-  // Filtrar y extraer el texto con límite de longitud por seguridad
   return content
     .filter(item => item && item.type === 'text' && typeof item.text === 'string')
     .map(item => {
-      // Truncar textos excesivamente largos
       return item.text.substring(0, 10000);
     })
     .join("\n\n")

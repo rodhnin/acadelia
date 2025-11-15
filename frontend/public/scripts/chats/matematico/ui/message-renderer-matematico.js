@@ -27,9 +27,7 @@ import {
 } from '../../shared/mermaid-utils.js';
 import contentProcessing from './content-processing-matematico.js';
 
-// ==========================================
 // IMPORTACIONES DEL PROCESADOR DE IMÁGENES
-// ==========================================
 
 import {
   processImagesOptimized,
@@ -43,9 +41,7 @@ import {
   IMAGE_CONFIG
 } from '../utils/markdown-image-processor.js';
 
-// ==========================================
 // INICIALIZACIÓN Y REGISTRO DE RENDERIZADORES
-// ==========================================
 
 const MERMAID_TYPE_PATTERN = /^(graph |flowchart |sequenceDiagram|classDiagram|classDiagram-v2|gitGraph|pie title|gantt|stateDiagram|stateDiagram-v2|mindmap|timeline|journey|erDiagram|requirementDiagram)/m;
 
@@ -175,17 +171,13 @@ function initializeMermaidObserver() {
     });
 }
 
-/**
- * ✅ CORRECCIÓN ADICIONAL: Observer optimizado en message-renderer-matematico.js
- * REEMPLAZAR la función setupUnifiedObserver existente
- */
 function setupUnifiedObserver() {
   if (window._unifiedObserverConfigured) return;
   window._unifiedObserverConfigured = true;
 
   let pendingElements = [];
   let processingScheduled = false;
-  let imageProcessingThrottle = new Map(); // ✅ NUEVO: Throttling para imágenes
+  let imageProcessingThrottle = new Map();
 
   const processPendingElements = () => {
     const elementsToProcess = [...pendingElements];
@@ -205,23 +197,20 @@ function setupUnifiedObserver() {
     let newMessagesAdded = false;
     let hasNewImages = false;
     let hasNewContent = false;
-    let messagesToProcess = new Set(); // ✅ NUEVO: Evitar duplicados
+    let messagesToProcess = new Set();
 
     mutations.forEach(mutation => {
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType === 1) {
-            // Detectar nuevos mensajes
             if (node.classList?.contains('message') || node.querySelector?.('.message')) {
               newMessagesAdded = true;
 
-              // ✅ AGREGAR a set para evitar duplicados
               const messageElement = node.classList?.contains('message') ? node : node.querySelector('.message');
               if (messageElement) {
                 messagesToProcess.add(messageElement);
               }
 
-              // Agregar a pendientes para limpieza
               const contentElement = node.querySelector('.message-content') ||
                 (node.classList?.contains('message') ? node.querySelector('.message-content') : null);
               if (contentElement) {
@@ -230,7 +219,6 @@ function setupUnifiedObserver() {
               }
             }
 
-            // Detectar nuevas imágenes
             const hasImages = node.querySelector('img') ||
               node.querySelector('.image-preview') ||
               node.querySelector('.multimodal-container');
@@ -242,13 +230,11 @@ function setupUnifiedObserver() {
       }
     });
 
-    // ✅ PROCESAR mensajes nuevos SIN DUPLICADOS
     if (newMessagesAdded && messagesToProcess.size > 0) {
       setTimeout(() => {
         console.log(`🔍 [OBSERVER] ${messagesToProcess.size} mensajes únicos detectados`);
 
         messagesToProcess.forEach(message => {
-          // ✅ VERIFICAR si ya fue procesado
           if (message.hasAttribute('data-images-processed')) {
             console.log('📦 [OBSERVER] Mensaje ya procesado, saltando');
             return;
@@ -260,7 +246,6 @@ function setupUnifiedObserver() {
             if (externalImages.length > 0) {
               const containerKey = container.dataset.containerId || container.outerHTML.slice(0, 100);
 
-              // ✅ THROTTLING: Solo procesar si no se procesó recientemente
               const lastProcessed = imageProcessingThrottle.get(containerKey);
               const now = Date.now();
 
@@ -269,7 +254,6 @@ function setupUnifiedObserver() {
                 imageProcessingThrottle.set(containerKey, now);
                 processImagesOptimized(container);
 
-                // Limpiar throttle después de un tiempo
                 setTimeout(() => {
                   imageProcessingThrottle.delete(containerKey);
                 }, 10000); // 10 segundos
@@ -279,19 +263,16 @@ function setupUnifiedObserver() {
             }
           }
 
-          // ✅ MARCAR como procesado para evitar reprocesamiento
           message.setAttribute('data-images-processed', 'true');
         });
 
       }, 150); // Reducido de 300ms a 150ms
     }
 
-    // Procesar imágenes con errores
     if (hasNewImages) {
       setTimeout(handleNewImages, 200);
     }
 
-    // Procesar contenido para limpieza
     if (hasNewContent && !processingScheduled) {
       processingScheduled = true;
       requestAnimationFrame(() => {
@@ -679,14 +660,11 @@ function extractCodeContent(originalMessage, fileName) {
   }
 }
 
-// Inicializar contentProcessing con la función de manejadores de archivos
 contentProcessing.initialize({
   initializeFileAttachmentHandlers: initializeFileAttachmentHandlers
 });
 
-// ==========================================
 // RENDERIZADO DE TIPOS DE MENSAJES
-// ==========================================
 
 /**
  * Verifica si el texto contiene diagramas Mermaid
@@ -866,9 +844,6 @@ function extractTextBetweenDiagrams(text, diagram1, diagram2) {
   return text.substring(diagram1.end, diagram2.start).trim();
 }
 
-/**
- * ✅ RENDERIZADOR PRINCIPAL DE MENSAJES DE TEXTO
- */
 export function renderTextMessage(container, content, role = '') {
   const safeContent = typeof content === 'string' ? content : String(content);
   const isAIMessage = role === 'ai';
@@ -903,7 +878,6 @@ export function renderTextMessage(container, content, role = '') {
 
     container.innerHTML = parseMarkdownToHTML(safeContent);
 
-    // ✅ OPTIMIZACIÓN: Verificar si realmente hay imágenes externas antes de procesar
     const externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
     const hasImages = container.querySelectorAll('.markdown-image').length > 0;
 
@@ -1263,7 +1237,7 @@ function renderTableMessage(container, content) {
 
     if (content && Array.isArray(content.headers) && Array.isArray(content.rows)) {
       renderFormattedTable(container, content);
-      renderMathWithRetry(container); // ✅ Unificado - eliminando renderMathInTable redundante
+      renderMathWithRetry(container);
       tableRendered = true;
     }
     else if (content && typeof content === 'object') {
@@ -1323,11 +1297,7 @@ function renderTableMessage(container, content) {
   }
 }
 
-/**
- * ✅ UNIFICADO - Renderiza matemáticas con sistema de backoff exponencial
- */
 function renderMathWithRetry(container, attempt = 1, maxAttempts = 3) {
-  // Marcar contenedor y celdas con contenido matemático
   container.setAttribute('data-has-math', 'true');
 
   container.querySelectorAll('th, td').forEach(cell => {
@@ -1625,9 +1595,7 @@ function renderLoadingMessage(container) {
   `;
 }
 
-// ==========================================
 // FUNCIONES AUXILIARES DE RENDERIZADO
-// ==========================================
 
 /**
  * Aplica highlight.js a todos los bloques de código en un contenedor
@@ -1735,9 +1703,7 @@ function addExpandButton(container, data, type = 'table') {
   container.appendChild(expandButton);
 }
 
-// ==========================================
 // GESTIÓN DE MENSAJES DEL CHAT
-// ==========================================
 
 /**
  * Renderiza los mensajes del chat
@@ -1879,9 +1845,6 @@ function _createMessageElement(options) {
   return messageDiv;
 }
 
-/**
- * ✅ FUNCIÓN UNIFICADA - Renderiza mensajes ya ordenados
- */
 function renderMessagesInOrder(messages, container) {
   const fragment = document.createDocumentFragment();
 
@@ -1901,9 +1864,6 @@ function renderMessagesInOrder(messages, container) {
   container.appendChild(fragment);
 }
 
-/**
- * ✅ FUNCIÓN PRINCIPAL UNIFICADA - Renderiza un elemento de mensaje
- */
 function renderMessageItem(item, container) {
   try {
     const msg = item.message;
@@ -1951,7 +1911,6 @@ function getMessageTimestamp(msg) {
       try {
         return new Date(msg[field]);
       } catch (e) {
-        // Continuar con el siguiente campo
       }
     }
   }
@@ -2013,10 +1972,8 @@ export function createLoadingMessage() {
     </div>
   `;
 
-  // 🔥 ESTABLECER REFERENCIA GLOBAL INMEDIATAMENTE
   window._currentLoadingMessage = loader;
 
-  // 🔥 AÑADIR TIMESTAMP PARA VALIDACIÓN
   const timestamp = Date.now();
   loader.dataset.messageId = `msg-${timestamp}-loading`;
   loader.dataset.createdAt = timestamp.toString();
@@ -2059,7 +2016,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
     initializeInteractions(loader);
   }, 50);
 
-  // ✅ DESPUÉS:
   setTimeout(() => {
     console.log('🖼️ [AUTO-PROCESS] Iniciando procesamiento automático después de renderizar IA');
 
@@ -2095,7 +2051,6 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
     }, 30);
   });
 
-  // 🔥 LIMPIAR REFERENCIA GLOBAL AL REEMPLAZAR
   if (window._currentLoadingMessage === loader) {
     window._currentLoadingMessage = null;
     console.log('🧹 [LOADING] Referencia global limpiada después de reemplazar');
@@ -2109,13 +2064,11 @@ export function replaceLoadingMessage(loader, content, type = 'message') {
 export function replaceWithError(loadingMessage, errorMessage, originalQuery = '') {
   if (!loadingMessage) return;
 
-  // 🔥 LIMPIAR REFERENCIA GLOBAL EN ERRORES
   if (window._currentLoadingMessage === loadingMessage) {
     window._currentLoadingMessage = null;
     console.log('🧹 [ERROR] Referencia global limpiada después de error');
   }
 
-  // ⭐ SOLUCIÓN: Limpiar ID temporal si hay error
   if (window.tempChatIdForFiles) {
     window.tempChatIdForFiles = null;
     console.log(`🧹 Chat temporal limpiado por error en respuesta`);
@@ -2470,9 +2423,7 @@ export function processServerResponse(data) {
   return messageProcessing.processResponse(data);
 }
 
-// ==========================================
 // PROCESAMIENTO DE IMÁGENES - Funciones simplificadas que delegan al nuevo módulo
-// ==========================================
 
 function processAllExistingImages() {
   const messages = document.querySelectorAll('.message');
@@ -2480,7 +2431,6 @@ function processAllExistingImages() {
 
   console.log(`🖼️ [BATCH] Procesando proactivamente imágenes en ${messages.length} mensajes con sistema de locks...`);
 
-  // ✅ OPTIMIZACIÓN: Procesar solo mensajes con imágenes externas reales
   const messagesWithExternalImages = [];
 
   messages.forEach(message => {
@@ -2500,7 +2450,6 @@ function processAllExistingImages() {
 
   console.log(`📦 [BATCH] ${messagesWithExternalImages.length} mensajes contienen imágenes externas`);
 
-  // ✅ PROCESAMIENTO OPTIMIZADO: Solo donde realmente se necesita
   messagesWithExternalImages.forEach(({ container, count }, index) => {
     setTimeout(() => {
       console.log(`📦 [BATCH] Procesando mensaje ${index + 1}/${messagesWithExternalImages.length} (${count} imágenes)`);
@@ -2769,9 +2718,6 @@ function createModal(options = {}) {
   return modal;
 }
 
-/**
- * Función simplificada para mostrar modal de error de imagen
- */
 function showErrorModal(options = {}) {
   const title = options.title || 'Imagen invisible! 👻 Acadel no puede identificar esta imagen. Las imagenes fantasma existen';
   const description = options.description || '';
@@ -2834,9 +2780,7 @@ function showErrorModal(options = {}) {
   }
 }
 
-// ==========================================
 // INICIALIZACIÓN DE EVENTOS PARA SCROLL E IMÁGENES
-// ==========================================
 
 let processingScrollThrottled = false;
 window.addEventListener('scroll', () => {
@@ -2893,9 +2837,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 500);
 });
 
-// ==========================================
 // EXPOSICIÓN GLOBAL CONTROLADA
-// ==========================================
 
 // Exposición global controlada
 if (typeof window !== 'undefined') {
@@ -2904,9 +2846,7 @@ if (typeof window !== 'undefined') {
   window.imageUrlCache = imageUrlCache;
 }
 
-// ==========================================
 // EXPORTACIONES PRINCIPALES
-// ==========================================
 
 // Exportación por defecto con todas las funciones principales
 export default {

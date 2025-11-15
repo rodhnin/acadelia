@@ -20,10 +20,8 @@ class NotificationTracker {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  // 🆕 NUEVA FUNCIÓN: Limpiar sección específica
   clearSection(section) {
     try {
-      // Validar que la sección existe
       if (!this.savedElements.hasOwnProperty(section)) {
         return {
           success: false,
@@ -33,7 +31,6 @@ class NotificationTracker {
       
       const previousCount = this.savedElements[section].length;
       
-      // Limpiar la sección específica
       this.savedElements[section] = [];
       
       console.log(`🧹 Tracker: Limpiada sección ${section} (${previousCount} elementos eliminados)`);
@@ -54,24 +51,19 @@ class NotificationTracker {
     }
   }
   
-  // 🆕 NUEVA FUNCIÓN: Obtener conteo total actual
   getTotalCount() {
     return Object.values(this.savedElements).reduce((sum, arr) => sum + arr.length, 0);
   }
   
-  // 🆕 NUEVA FUNCIÓN: Verificar si una sección tiene notificaciones
   hasNotificationsInSection(section) {
     return this.savedElements[section] && this.savedElements[section].length > 0;
   }
   
-  // 🆕 NUEVA FUNCIÓN: Obtener conteo por sección específica
   getCountBySection(section) {
     return this.savedElements[section] ? this.savedElements[section].length : 0;
   }
   
-  // ============== MÉTODOS TRANSFORMADOS PARA ACADELIA ==============
   
-  // Registrar perfil guardado - ACADELIA VERSION
   trackProfile(profileData) {
     const notification = {
       id: profileData.id,
@@ -87,7 +79,6 @@ class NotificationTracker {
     return notification;
   }
   
-  // Registrar contenido guardado - ACADELIA VERSION
   trackContent(contentData) {
     const notification = {
       id: contentData.id,
@@ -103,7 +94,6 @@ class NotificationTracker {
     return notification;
   }
   
-  // Registrar tendencia guardada - ACADELIA VERSION
   trackTrend(trendData) {
     const notification = {
       id: trendData.id,
@@ -119,7 +109,6 @@ class NotificationTracker {
     return notification;
   }
   
-  // Registrar insight de memoria guardado - ACADELIA VERSION
   trackMemory(memoryData) {
     const notification = {
       id: memoryData.id,
@@ -135,14 +124,12 @@ class NotificationTracker {
     return notification;
   }
   
-  // ============== GENERADORES DE TÍTULOS TRANSFORMADOS PARA ACADELIA ==============
   
   generateProfileTitle(profileData) {
     const metadata = profileData.metadata || profileData;
     const carrera = metadata.carrera || metadata.Carrera || 'Estudiante';
     const personalidad = metadata.personalidad || metadata.tipo_personalidad || '';
     
-    // 🎯 CLASIFICACIÓN BASADA EN POTENCIAL CON ACADEL
     if (personalidad.toLowerCase().includes('ansioso') || 
         personalidad.includes('INFP') || 
         personalidad.includes('ISFP') ||
@@ -182,7 +169,6 @@ class NotificationTracker {
     const edad = metadata.edad || metadata.Edad;
     const personalidad = metadata.personalidad || '';
     
-    // 🎯 DESCRIPCIONES ENFOCADAS EN POTENCIAL CON ACADEL
     if (personalidad.toLowerCase().includes('ansioso')) {
       return `${edad ? edad + ' años, ' : ''}Necesita tough love de Acadel`;
     }
@@ -208,7 +194,6 @@ class NotificationTracker {
     const channel = contentData.channel || '';
     const payload = contentData.payload || {};
     
-    // 🎯 EMOJIS Y CLASIFICACIÓN VIRAL
     const typeViralEmojis = {
       'meme': '😂',
       'video': '🎬', 
@@ -222,7 +207,6 @@ class NotificationTracker {
     
     const emoji = typeViralEmojis[type.toLowerCase()] || '✨';
     
-    // 🔥 DETECTAR POTENCIAL VIRAL EN EL CONTENIDO
     const viralIndicators = [
       payload.viral_potential,
       payload.shareability,
@@ -244,7 +228,6 @@ class NotificationTracker {
     const payload = contentData.payload || {};
     const type = contentData.type || '';
     
-    // 🎯 DESCRIPCIONES ENFOCADAS EN ACADEL Y VIRALIDAD
     if (payload.acadel_personality) {
       return `Acadel siendo ${payload.acadel_personality} - Peak content`;
     }
@@ -279,7 +262,6 @@ class NotificationTracker {
     const theme = trendData.theme || trendData.title || 'Nueva tendencia';
     const popularity = trendData.popularity || 0;
     
-    // 🎯 CLASIFICACIÓN POR POTENCIAL VIRAL
     if (popularity > 0.8) {
       return `🔥 MEGA TREND: ${theme.substring(0, 25)} - Acadel MUST dominate`;
     }
@@ -297,7 +279,6 @@ class NotificationTracker {
     const popularity = trendData.popularity || 0;
     const metadata = trendData.metadata || {};
     
-    // 🎯 DESCRIPCIONES ENFOCADAS EN OPORTUNIDAD PARA ACADEL
     const percentage = Math.round(popularity * 100);
     
     if (popularity > 0.8) {
@@ -310,7 +291,6 @@ class NotificationTracker {
       return `${percentage}% popularidad - Early Acadel adoption opportunity`;
     }
     
-    // Información adicional si está disponible
     if (metadata.carreras_afectadas) {
       return `${percentage}% popularidad - Affects ${metadata.carreras_afectadas.join(', ')}`;
     }
@@ -323,7 +303,6 @@ class NotificationTracker {
     const importance = memoryData.importance || 0;
     const type = memoryData.type || '';
     
-    // 🎯 TÍTULOS ENFOCADOS EN VALOR PARA ACADEL
     if (content.insight) {
       const insight = content.insight.substring(0, 35);
       
@@ -359,7 +338,6 @@ class NotificationTracker {
     const importance = memoryData.importance || 0;
     const content = memoryData.content || {};
     
-    // 🎯 DESCRIPCIONES ENFOCADAS EN VALOR ESTRATÉGICO PARA ACADEL
     let description = '';
     
     // Descripción basada en importancia
@@ -375,7 +353,6 @@ class NotificationTracker {
       description = `📝 NOTED - Basic Acadel intelligence`;
     }
     
-    // Información adicional según tipo
     if (type.includes('viral')) {
       description += ` | Viralidad pattern`;
     } else if (type.includes('student') || type.includes('profile')) {
@@ -395,9 +372,7 @@ class NotificationTracker {
     return description;
   }
   
-  // ============== MÉTODOS ORIGINALES (SIN CAMBIOS) ==============
   
-  // Obtener resumen de notificaciones
   getNotificationSummary() {
     const summary = {
       total: 0,
@@ -422,7 +397,6 @@ class NotificationTracker {
     return summary;
   }
   
-  // Verificar si hay notificaciones
   hasNotifications() {
     return this.savedElements.profiles.length > 0 ||
            this.savedElements.contents.length > 0 ||
@@ -430,7 +404,6 @@ class NotificationTracker {
            this.savedElements.memory.length > 0;
   }
   
-  // Obtener conteo por tipo
   getCountByType(type) {
     return this.savedElements[type]?.length || 0;
   }

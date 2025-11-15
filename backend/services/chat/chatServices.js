@@ -3,9 +3,6 @@ import pool from '../../lib/dbPool.js';
 import { embeddings } from '../../lib/openai.js';
 
 
-// ============================================================================
-// FUNCIÓN createChat CORREGIDA EN chatServices.js
-// ============================================================================
 
 /**
  * Crea un nuevo chat
@@ -26,7 +23,6 @@ export const createChat = async (userId, avaId, query, herramientaId = null) => 
         query: query.substring(0, 30) + '...'
     });
 
-    // ✅ Validación: exactamente uno debe estar presente
     const hasAva = avaId !== null && avaId !== undefined;
     const hasHerramienta = herramientaId !== null && herramientaId !== undefined;
 
@@ -65,7 +61,6 @@ export const createChat = async (userId, avaId, query, herramientaId = null) => 
     }
 };
 
-// ✅ AGREGAR función auxiliar para mapeo de herramientas
 export const getToolIdByType = (toolType) => {
     const toolMap = {
         'agent': 2,
@@ -74,11 +69,6 @@ export const getToolIdByType = (toolType) => {
     return toolMap[toolType] || null;
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: Obtiene información completa del chat (AVA o herramienta)
- * @param {string} chatId - ID del chat
- * @returns {Promise<Object>} - Información del chat con tipo claramente identificado
- */
 export const getChatInfo = async (chatId) => {
     try {
         const result = await pool.query(
@@ -98,19 +88,17 @@ export const getChatInfo = async (chatId) => {
 
         console.log(`🔍 getChatInfo para ${chatId}: id_ava=${row.id_ava}, id_herramienta=${row.id_herramienta}`);
 
-        // ✅ LÓGICA CORREGIDA: Validación de integridad y detección correcta
         if (hasAva && hasHerramienta) {
             console.error(`❌ INCONSISTENCIA CRÍTICA: Chat ${chatId} tiene tanto AVA (${row.id_ava}) como herramienta (${row.id_herramienta})`);
             console.warn(`🔧 CORRIGIENDO: Priorizando herramienta y limpiando AVA`);
             return {
                 type: 'herramienta',
-                avaId: null,                    // ✅ Limpiar avaId
+                avaId: null,
                 herramientaId: row.id_herramienta,
                 id: row.id_herramienta // Para compatibilidad con código existente
             };
         }
 
-        // ✅ CASO 1: Es una herramienta (verificar PRIMERO porque es más común en los logs)
         if (hasHerramienta) {
             console.log(`✅ Chat ${chatId} es de tipo HERRAMIENTA: ${row.id_herramienta}`);
             return {
@@ -121,7 +109,6 @@ export const getChatInfo = async (chatId) => {
             };
         }
 
-        // ✅ CASO 2: Es un AVA
         if (hasAva) {
             console.log(`✅ Chat ${chatId} es de tipo AVA: ${row.id_ava}`);
             return {
@@ -132,7 +119,6 @@ export const getChatInfo = async (chatId) => {
             };
         }
 
-        // ✅ CASO 3: Fallback si no tiene ninguno (caso edge)
         console.warn(`⚠️ Chat ${chatId} no tiene AVA ni herramienta, usando herramienta por defecto`);
         return {
             type: 'herramienta',
@@ -170,16 +156,12 @@ export const getAvatarIdForChat = async (chatId) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: markMessageAsCancelled
- */
 export const markMessageAsCancelled = async (chatId, userId, avaId = null, herramientaId = null) => {
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
-        // ✅ DETERMINAR QUÉ TIPO DE CHAT ES usando la función corregida
         let actualAvaId = avaId;
         let actualHerramientaId = herramientaId;
 
@@ -196,14 +178,11 @@ export const markMessageAsCancelled = async (chatId, userId, avaId = null, herra
             }
         }
 
-        // ✅ VALIDACIÓN FINAL CRÍTICA
         const hasAva = actualAvaId !== null && actualAvaId !== undefined;
         const hasHerramienta = actualHerramientaId !== null && actualHerramientaId !== undefined;
 
-        // 🚨 ASEGURAR QUE NUNCA TENGAMOS AMBOS
         if (hasAva && hasHerramienta) {
             console.error(`❌ ERROR CRÍTICO en markMessageAsCancelled: Chat ${chatId} tiene tanto AVA (${actualAvaId}) como herramienta (${actualHerramientaId})`);
-            // Priorizar herramienta
             actualAvaId = null;
             console.log(`🔧 CORRIGIENDO: Limpiando avaId, manteniendo herramientaId = ${actualHerramientaId}`);
         }
@@ -217,7 +196,6 @@ export const markMessageAsCancelled = async (chatId, userId, avaId = null, herra
 
         console.log(`🔄 Marcando mensaje como cancelado para chat ${chatId}, usuario ${userId}, AVA: ${actualAvaId}, Herramienta: ${actualHerramientaId}`);
 
-        // ✅ QUERY CORREGIDO: Buscar mensaje usando los campos correctos
         const findQuery = `
             SELECT id, id_ava, id_herramienta
             FROM chat_history
@@ -293,7 +271,6 @@ export const getChats = async (userId, avaId, herramientaId = null) => {
     let params;
 
     if (herramientaId !== null && herramientaId !== undefined) {
-        // Filtrar por herramienta
         query = `SELECT id_chat::text AS id, title, created_at, last_message_date, id_herramienta
                  FROM chat
                  WHERE id_user = $1 
@@ -302,7 +279,6 @@ export const getChats = async (userId, avaId, herramientaId = null) => {
                  ORDER BY last_message_date DESC NULLS LAST, created_at DESC`;
         params = [userId, herramientaId];
     } else {
-        // Filtrar por AVA (lógica original)
         query = `SELECT id_chat::text AS id, title, created_at, last_message_date, id_ava
                  FROM chat
                  WHERE id_user = $1 
@@ -329,16 +305,12 @@ export const getChatsByTool = async (userId, herramientaId) => {
     return result.rows;
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: registerCancelledRequest
- */
 export const registerCancelledRequest = async (chatId, userId, avaId = null, herramientaId = null) => {
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
-        // ✅ OBTENER INFORMACIÓN DEL CHAT usando la función corregida
         let actualAvaId = avaId;
         let actualHerramientaId = herramientaId;
 
@@ -355,14 +327,11 @@ export const registerCancelledRequest = async (chatId, userId, avaId = null, her
             }
         }
 
-        // ✅ VALIDACIÓN Y FALLBACK CORREGIDO
         const hasAva = actualAvaId !== null && actualAvaId !== undefined;
         const hasHerramienta = actualHerramientaId !== null && actualHerramientaId !== undefined;
 
-        // 🚨 ASEGURAR QUE NUNCA TENGAMOS AMBOS
         if (hasAva && hasHerramienta) {
             console.error(`❌ ERROR CRÍTICO en registerCancelledRequest: Chat ${chatId} tiene tanto AVA (${actualAvaId}) como herramienta (${actualHerramientaId})`);
-            // Priorizar herramienta
             actualAvaId = null;
             console.log(`🔧 CORRIGIENDO: Limpiando avaId, manteniendo herramientaId = ${actualHerramientaId}`);
         }
@@ -375,7 +344,6 @@ export const registerCancelledRequest = async (chatId, userId, avaId = null, her
 
         console.log(`🔄 Registrando cancelación para chat ${chatId}: AVA=${actualAvaId}, Herramienta=${actualHerramientaId}`);
 
-        // Marcar TODOS los mensajes relacionados con este chat
         await client.query(
             `UPDATE chat_history
              SET has_pending_cancellation = true,
@@ -384,7 +352,6 @@ export const registerCancelledRequest = async (chatId, userId, avaId = null, her
             [chatId]
         );
 
-        // Crear mensaje específico de cancelación con parámetros CORRECTOS
         const result = await markMessageAsCancelled(chatId, userId, actualAvaId, actualHerramientaId);
 
         await client.query('COMMIT');
@@ -401,11 +368,6 @@ export const registerCancelledRequest = async (chatId, userId, avaId = null, her
     }
 };
 
-/**
- * ✅ FUNCIÓN MEJORADA: Verifica si una solicitud ha sido cancelada con logging detallado
- * @param {string} chatId - ID del chat
- * @returns {Promise<boolean>} true si fue cancelada
- */
 export const wasRequestCancelled = async (chatId) => {
     if (!chatId) {
         console.warn('wasRequestCancelled: No se proporcionó chatId');
@@ -413,7 +375,6 @@ export const wasRequestCancelled = async (chatId) => {
     }
 
     try {
-        // ✅ CORRECCIÓN CRÍTICA: Solo considerar cancelaciones de los últimos 8 segundos para nuevos procesos
         const result = await pool.query(
             `SELECT COUNT(*) as count, 
               MAX(cancellation_timestamp) as latest_cancellation,
@@ -429,7 +390,6 @@ export const wasRequestCancelled = async (chatId) => {
         const latestCancellation = result.rows[0].latest_cancellation;
         const secondsAgo = parseFloat(result.rows[0].seconds_ago || 999);
 
-        // ✅ CORRECCIÓN: Solo considerar cancelación si es MUY RECIENTE (menos de 8 segundos)
         const isCancelled = cancelCount > 0 && secondsAgo < 8;
 
         if (isCancelled) {
@@ -446,10 +406,6 @@ export const wasRequestCancelled = async (chatId) => {
 };
 
 
-/**
- * ✅ FUNCIÓN MEJORADA: Limpia la bandera de cancelación con logging detallado
- * @param {string} chatId - ID del chat
- */
 export const clearCancellationFlag = async (chatId) => {
     if (!chatId) {
         console.warn('clearCancellationFlag: No se proporcionó chatId');
@@ -463,7 +419,6 @@ export const clearCancellationFlag = async (chatId) => {
 
         console.log(`🔄 clearCancellationFlag: Limpieza específica para chat ${chatId}...`);
 
-        // ✅ LIMPIEZA MUY SELECTIVA - Solo mensajes assistant cancelados
         const updateResult = await client.query(
             `UPDATE chat_history
              SET has_pending_cancellation = false,
@@ -481,7 +436,6 @@ export const clearCancellationFlag = async (chatId) => {
         if (updatedCount > 0) {
             console.log(`✅ clearCancellationFlag: ${updatedCount} flags de cancelación limpiados para chat ${chatId}`);
 
-            // Log detalles solo en desarrollo
             if (process.env.NODE_ENV === 'development') {
                 const cleaned = updateResult.rows;
                 console.log(`📊 Limpiados: ${cleaned.map(r => `${r.role}:${r.status}`).join(', ')}`);
@@ -507,12 +461,6 @@ export const clearCancellationFlag = async (chatId) => {
 };
 
 
-/**
- * ✅ FUNCIÓN MEJORADA: Limpiar banderas de cancelación al iniciar nuevo procesamiento
- * @param {string} chatId - ID del chat
- * @param {string} operationType - Tipo de operación (audio, youtube, etc.)
- * @returns {Promise<boolean>} true si se limpiaron correctamente
- */
 export const resetCancellationFlagsForNewProcess = async (chatId, operationType = 'unknown') => {
     if (!chatId) {
         console.warn('resetCancellationFlagsForNewProcess: No se proporcionó chatId');
@@ -522,13 +470,11 @@ export const resetCancellationFlagsForNewProcess = async (chatId, operationType 
     try {
         console.log(`🔄 resetCancellationFlagsForNewProcess: Reseteando banderas de cancelación para nuevo procesamiento de ${operationType} en chat ${chatId}`);
 
-        // ✅ PASO 1: Verificar si hay alguna bandera activa con detalles
         const isCancelled = await wasRequestCancelled(chatId);
 
         if (isCancelled) {
             console.log(`❗ resetCancellationFlagsForNewProcess: Se detectaron banderas de cancelación activas para chat ${chatId} al iniciar nuevo proceso de ${operationType}`);
 
-            // ✅ PASO 2: Forzar limpieza directa para permitir nuevo procesamiento
             console.log(`✅ resetCancellationFlagsForNewProcess: Forzando limpieza de banderas para permitir nuevo procesamiento de ${operationType}`);
             const result = await clearCancellationFlag(chatId);
 
@@ -539,7 +485,6 @@ export const resetCancellationFlagsForNewProcess = async (chatId, operationType 
             } else {
                 console.warn(`⚠️ resetCancellationFlagsForNewProcess: Error al limpiar banderas para chat ${chatId}: ${result.error}`);
 
-                // ✅ PASO 3: Fallback con limpieza forzada si la normal falla
                 console.log(`🔄 resetCancellationFlagsForNewProcess: Intentando limpieza forzada para chat ${chatId}`);
                 const forceResult = await forceCleanCancellationFlags(chatId);
 
@@ -576,11 +521,6 @@ export const resetCancellationFlagsForNewProcess = async (chatId, operationType 
     }
 };
 
-/**
- * ✅ FUNCIÓN MEJORADA: Forzar limpieza de banderas de cancelación
- * @param {string} chatId - ID del chat
- * @returns {Promise<boolean>} true si se limpiaron correctamente
- */
 export const forceCleanCancellationFlags = async (chatId) => {
     if (!chatId) {
         console.warn('forceCleanCancellationFlags: No se proporcionó chatId');
@@ -594,7 +534,6 @@ export const forceCleanCancellationFlags = async (chatId) => {
 
         console.log(`🔄 forceCleanCancellationFlags: FORZANDO limpieza de todas las banderas de cancelación para chat ${chatId}`);
 
-        // ✅ PASO 1: Verificar estado antes de forzar
         const preCheckResult = await client.query(
             `SELECT COUNT(*) as count,
                     array_agg(DISTINCT id_ava) FILTER (WHERE id_ava IS NOT NULL) as ava_ids,
@@ -611,7 +550,6 @@ export const forceCleanCancellationFlags = async (chatId) => {
         console.log(`📊 forceCleanCancellationFlags: Chat ${chatId} tiene ${totalMessages} mensajes total`);
         console.log(`📊 Tipos en chat: AVAs=${avaIds.join(',') || 'ninguno'}, Herramientas=${herramientaIds.join(',') || 'ninguno'}`);
 
-        // ✅ PASO 2: Actualizar TODOS los mensajes sin importar su estado
         const updateResult = await client.query(
             `UPDATE chat_history
              SET has_pending_cancellation = false,
@@ -654,11 +592,9 @@ export const getChatMessages = async (chatId, userId) => {
     `;
 
     try {
-        // Ejecutar la consulta de mensajes
         const result = await pool.query(chatQuery, [chatId, userId]);
 
         if (result.rowCount === 0) {
-            // Verificar si el chat existe pero no tiene mensajes
             const chatExists = await pool.query(
                 `SELECT id_chat FROM chat 
                  WHERE id_chat = $1 AND id_user = $2`,
@@ -725,7 +661,6 @@ export const deleteChat = async (chatId, userId) => {
  * @returns {Object} Mensaje actualizado
  */
 export const updateChatMessage = async (chatId, userId, messageId, content) => {
-    // Verificar que el chat existe y pertenece al usuario
     const chatCheck = await pool.query(
         `SELECT id_chat, id_ava, id_herramienta FROM chat WHERE id_chat = $1 AND id_user = $2`,
         [chatId, userId]
@@ -737,7 +672,6 @@ export const updateChatMessage = async (chatId, userId, messageId, content) => {
 
     const chatData = chatCheck.rows[0];
 
-    // Generar embedding
     let embeddingArray;
     try {
         embeddingArray = await embeddings.embedQuery(content);
@@ -756,7 +690,6 @@ export const updateChatMessage = async (chatId, userId, messageId, content) => {
         let result;
 
         if (messageId) {
-            // ✅ ACTUALIZAR MENSAJE ESPECÍFICO
             result = await client.query(
                 `UPDATE chat_history 
                 SET message = $1, 
@@ -767,7 +700,6 @@ export const updateChatMessage = async (chatId, userId, messageId, content) => {
                 [content, embeddingVector, messageId, chatId]
             );
         } else {
-            // ✅ BUSCAR ÚLTIMO MENSAJE DEL USUARIO CON FILTROS CORRECTOS
             const searchQuery = `
                 UPDATE chat_history 
                 SET message = $1, 
@@ -826,7 +758,6 @@ export const updateChatMessage = async (chatId, userId, messageId, content) => {
  * @returns {Object} Resultado de la operación
  */
 export const replaceInteraction = async (chatId, userId, userMessageId, aiMessageId, userContent, aiContent) => {
-    // Verificar que el chat existe y pertenece al usuario
     const chatCheck = await pool.query(
         `SELECT id_chat, id_ava FROM chat WHERE id_chat = $1 AND id_user = $2`,
         [chatId, userId]
@@ -849,13 +780,10 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
             aiMessage: null
         };
 
-        // Actualizar mensaje del usuario si se proporciona contenido
         if (userContent) {
-            // 🔥 NUEVO: Procesar userContent para mensajes multimodales
             let processedUserContent = userContent;
 
             try {
-                // Verificar si userContent es un JSON string que contiene datos multimodales
                 const parsed = JSON.parse(userContent);
                 if (parsed && typeof parsed === 'object' &&
                     (parsed.hasImage || parsed.hasDocuments || parsed.images || parsed.documents)) {
@@ -869,7 +797,6 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
             }
 
             // CLAVE: Importar el módulo de embeddings correctamente
-            // Generar embedding para el mensaje del usuario
             let userEmbeddingArray;
             try {
                 // Asegurarse de que embeddings.embedQuery está disponible
@@ -887,7 +814,6 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                 userEmbeddingArray = new Array(1536).fill(0);
             }
 
-            // Formatear para PostgreSQL
             const userEmbeddingVector = `[${userEmbeddingArray.join(',')}]`;
 
             let userResult;
@@ -902,10 +828,9 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                         updated_at = NOW()
                     WHERE id = $3 AND id_chat = $4
                     RETURNING id, role, message AS content, timestamp AS created_at, now() AS updated_at`,
-                    [processedUserContent, userEmbeddingVector, userMessageId, chatId]  // 🔥 Usar processedUserContent
+                    [processedUserContent, userEmbeddingVector, userMessageId, chatId]
                 );
             } else {
-                // Si no se proporciona ID, buscar el último mensaje del usuario
                 console.log(`Actualizando último mensaje de usuario en chat: ${chatId}`);
                 userResult = await client.query(
                     `WITH latest_user_message AS (
@@ -920,7 +845,7 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                         updated_at = NOW()
                     WHERE id IN (SELECT id FROM latest_user_message)
                     RETURNING id, role, message AS content, timestamp AS created_at, now() AS updated_at`,
-                    [processedUserContent, userEmbeddingVector, chatId]  // 🔥 Usar processedUserContent
+                    [processedUserContent, userEmbeddingVector, chatId]
                 );
             }
 
@@ -932,7 +857,6 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
             }
         }
 
-        // Actualizar mensaje de IA si se proporciona contenido
         if (aiContent) {
             // CLAVE: Generar embedding para el mensaje de IA
             let aiEmbeddingArray;
@@ -952,7 +876,6 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
                 aiEmbeddingArray = new Array(1536).fill(0);
             }
 
-            // Formatear para PostgreSQL
             const aiEmbeddingVector = `[${aiEmbeddingArray.join(',')}]`;
 
             let aiResult;
@@ -1016,7 +939,6 @@ export const replaceInteraction = async (chatId, userId, userMessageId, aiMessag
             }
         }
 
-        // Actualizar la fecha del último mensaje en el chat
         await client.query(
             `UPDATE chat 
             SET last_message_date = NOW() 

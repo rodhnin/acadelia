@@ -145,7 +145,6 @@ const FALLBACK_DATA = {
   }
 };
 
-// Función para sanitizar JSON de metadatos
 function sanitizeMetadataJson(jsonString) {
   if (!jsonString || typeof jsonString !== 'string') {
     return jsonString;
@@ -177,13 +176,11 @@ function sanitizeMetadataJson(jsonString) {
   return cleaned;
 }
 
-// Función principal de procesamiento de metadatos
 function processStreamMetadata(chunk, responseMetadata) {
   let cleanChunk = chunk;
   let hasMetadata = false;
   let hasNotifications = false;
   
-  // Procesar notificaciones - solo bloques completos
   const notificationsRegex = /\*\*NOTIFICATIONS_START\*\*([\s\S]*?)\*\*NOTIFICATIONS_END\*\*/g;
   let notificationMatch;
   
@@ -205,7 +202,6 @@ function processStreamMetadata(chunk, responseMetadata) {
     }
   }
   
-  // Procesar metadatos - solo bloques completos
   const mainMetadataRegex = /\*\*METADATA_START\*\*([\s\S]*?)\*\*METADATA_END\*\*/g;
   let metadataMatch;
   
@@ -243,7 +239,6 @@ function processStreamMetadata(chunk, responseMetadata) {
     }
   }
   
-  // Limpiar bloques procesados
   if (hasNotifications) {
     cleanChunk = cleanChunk.replace(notificationsRegex, '');
   }
@@ -268,7 +263,6 @@ function processStreamMetadata(chunk, responseMetadata) {
     return '';
   }
   
-  // Solo eliminar si realmente está vacío
   const trimmedChunk = cleanChunk.trim();
   const isActuallyEmpty = !trimmedChunk || 
                          trimmedChunk.length === 0 ||
@@ -940,7 +934,6 @@ export async function getMemoryStats() {
   }
 }
 
-// Obtener notificaciones actuales
 export async function getNotifications() {
   try {
     const response = await api.get(`${MARKETING_ENDPOINT}/notifications`);
@@ -999,7 +992,6 @@ export async function clearNotifications() {
   }
 }
 
-// 🆕 NUEVA FUNCIÓN: Limpiar notificaciones por sección específica
 export async function clearSectionNotifications(section) {
   try {
     console.log(`🧹 Limpiando notificaciones de la sección: ${section}`);
@@ -1007,10 +999,8 @@ export async function clearSectionNotifications(section) {
     const response = await api.post(`${MARKETING_ENDPOINT}/notifications/clear/${section}`);
     
     if (response.success && response.updatedNotifications) {
-      // Actualizar notificaciones locales con el estado del servidor
       currentNotifications = response.updatedNotifications;
       
-      // Disparar evento para actualizar la UI
       window.dispatchEvent(new CustomEvent('sectionNotificationsCleared', {
         detail: {
           section: section,
@@ -1032,7 +1022,6 @@ export async function clearSectionNotifications(section) {
   }
 }
 
-// 🆕 NUEVA FUNCIÓN: Marcar sección como vista
 export async function markSectionAsViewed(section, userId = null) {
   try {
     console.log(`👁️ Marcando sección ${section} como vista`);
@@ -1041,10 +1030,8 @@ export async function markSectionAsViewed(section, userId = null) {
     const response = await api.post(`${MARKETING_ENDPOINT}/notifications/mark-viewed/${section}`, requestBody);
     
     if (response.success && response.updatedNotifications) {
-      // Actualizar notificaciones locales
       currentNotifications = response.updatedNotifications;
       
-      // Disparar evento para actualizar la UI
       window.dispatchEvent(new CustomEvent('sectionMarkedAsViewed', {
         detail: {
           section: section,

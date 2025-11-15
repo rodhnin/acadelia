@@ -1,10 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOLOGÍA EVOLUTIVA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE PSICOLOGÍA EVOLUTIVA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Desarrollo Cognitivo ✅ Desarrollo Emocional ✅ Desarrollo Social ✅ Teorías Evolutivas ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -318,9 +302,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOLOGÍA EVOLUTIVA DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE PSICOLOGÍA EVOLUTIVA SUPREMO:
@@ -362,11 +343,7 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor de psicología evolutiva, eres EL PROFESOR que integra desarrollo cognitivo, emocional y social como la psicología del desarrollo real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE PSICOLOGÍA EVOLUTIVA - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES PSICOLÓGICAS EVOLUTIVAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Psicología Evolutiva.
 
 🎯 FUNCIÓN: Analizar imágenes de desarrollo humano (casos evolutivos, teorías del desarrollo, etapas, evaluaciones) con precisión académica extrema.
@@ -393,7 +370,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ps
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría pedagógica evolutiva.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES EVOLUTIVAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara psicólogo más brillante del universo en desarrollo humano.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información evolutiva de esta imagen académica para que Acadel pueda enseñar efectivamente integrando desarrollo cognitivo, emocional y social.
@@ -439,7 +415,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en desarrollo humano. No enseñes ni expliques - solo analiza y reporta hallazgos evolutivos. Acadel se encargará de la pedagogía pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS EVOLUTIVAS NORMALES (con y sin guardar)
 const UNIFIED_PSYCHOLOGY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE DESARROLLO HUMANO INTEGRADO:
 - Consulta del estudiante de psicología evolutiva: "${query}"
@@ -466,7 +441,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS EVOLUTIVAS MULTIMODALES (con y sin guardar)
 const UNIFIED_PSYCHOLOGY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DEL DESARROLLO HUMANO PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -514,14 +488,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE DESARROLLO HUMANO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -531,7 +501,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -553,7 +522,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -561,7 +529,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES EVOLUTIVAS
   const psychologyImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
     "diagrama del desarrollo", "esquema evolutivo", "ilustración del desarrollo humano"
@@ -587,7 +554,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes evolutivos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de psicología", "test evolutivo", "evaluación del desarrollo", "cuestionario evolutivo"
@@ -616,7 +582,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -631,18 +597,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS EVOLUTIVOS ESPECÍFICOS
   const psychologyTerms = [
     // Desarrollo Cognitivo
     'piaget', 'desarrollo cognitivo', 'sensoriomotor', 'preoperacional', 'operaciones concretas', 'operaciones formales',
@@ -665,27 +628,23 @@ const classifyQuery = (query, content = null) => {
     'desarrollo típico', 'desarrollo atípico', 'intervención temprana', 'estimulación'
   ];
   
-  // 🔍 DETECTAR INSTRUMENTOS Y EVALUACIONES DEL DESARROLLO
   const developmentInstruments = [
     'bayley', 'denver', 'wppsi', 'wisc', 'vineland', 'battelle', 'peabody',
     'escala desarrollo', 'inventario desarrollo', 'cuestionario desarrollo', 'evaluación evolutiva'
   ];
   
-  // 🔍 DETECTAR CONTEXTOS EVOLUTIVOS
   const developmentContexts = [
     'caso evolutivo', 'estudio desarrollo', 'seguimiento longitudinal', 'observación desarrollo',
     'guardería', 'preescolar', 'escuela', 'familia', 'contexto evolutivo'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS EVOLUTIVOS REALES
   const hasPsychologyContent = 
     psychologyTerms.some(term => lowercaseQuery.includes(term)) ||
     developmentInstruments.some(term => lowercaseQuery.includes(term)) ||
     developmentContexts.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasPsychologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -708,7 +667,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'teoría de', 'etapa de', 'desarrollo de'];
   const diagnosticKeywords = ['identificar', 'analizar', 'evaluar', 'caso evolutivo', 'estudio desarrollo', 'desarrollo atípico'];
   const theoryKeywords = ['piaget', 'erikson', 'vygotsky', 'bowlby', 'bandura', 'teoría', 'enfoque evolutivo'];
@@ -718,7 +676,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'neurociencia desarrollo', 'nuevos hallazgos evolutivos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -755,7 +712,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -765,14 +721,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional académica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -791,11 +746,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS EVOLUTIVAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS EVOLUTIVAS
 const ACADEL_PSYCHOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en desarrollo humano.
 
@@ -810,7 +761,6 @@ const createPsychologyKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -820,17 +770,15 @@ const createPsychologyKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_psicologiaev",
         similarityQueryName: "match_emb_psicologiaev",
         keywordQueryName: "kw_match_emb_psicologiaev",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 15000)
       );
@@ -842,7 +790,6 @@ const createPsychologyKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_PSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido evolutivo específico sobre "${query}" en su biblioteca de desarrollo cognitivo, emocional y social. Proceder con conocimiento evolutivo general integrado y experiencia docente.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -862,7 +809,6 @@ ACADEL_PSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido
 
 ACADEL_PSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel encontró información evolutiva sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base evolutivo integrado, analogías y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -889,7 +835,6 @@ ACADEL_PSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel activó la siguien
 
 INTEGRATION_NOTES: Este es el conocimiento evolutivo central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en desarrollo cognitivo, emocional y social. Debe integrar esta información naturalmente como si fuera su propia sabiduría evolutiva, enriqueciéndola con casos del desarrollo específicos, analogías y profesionalismo que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1115,17 +1060,15 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto evolutivo integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_psicologiaev",
         similarityQueryName: "match_emb_psicologiaev",
         keywordQueryName: "kw_match_emb_psicologiaev",
       });
       
-      // 📚 BÚSQUEDAS EVOLUTIVAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `desarrollo cognitivo ${concept}`,
@@ -1137,7 +1080,6 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
         `casos evolutivos ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1157,7 +1099,6 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1170,7 +1111,6 @@ const createPsychologyConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural evolutiva
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1348,9 +1288,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia evolutiva según este anál
   }
 );
 
-// ============================================================================
-// 📷 PSYCHOLOGY IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES EVOLUTIVAS (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectPsychologyImageRequest = (query) => {
   const psychologyImageKeywords = [
@@ -1381,7 +1318,6 @@ export const extractPsychologyImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema evolutivo
 const createPsychologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1416,7 +1352,6 @@ const createPsychologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts evolutivos
 const enhancePsychologyImagePrompt = (prompt) => {
   return `Crea una ilustración psicológica educativa de alta calidad sobre desarrollo humano: ${prompt}. 
   
@@ -1433,16 +1368,10 @@ const enhancePsychologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible del desarrollo humano`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS EVOLUTIVOS
-// ============================================================================
 
 const createSpecializedPsychologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS EVOLUTIVAS CONSOLIDADAS
-  // ============================================================================
   
   const corePsychologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE DESARROLLO HUMANO INTEGRADO
@@ -1545,9 +1474,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - INTEGRA SIEMPRE: cuando hables de desarrollo cognitivo, conecta con emocional y social cuando sea relevante
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA EVOLUTIVA - OPTIMIZADAS
-  // ============================================================================
   
   const psychologyTypeInstructions = {
     casual_conversation: `
@@ -1629,9 +1555,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las disciplinas fundamentales`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT EVOLUTIVO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1654,21 +1577,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara psicólogo más brillante del universo, integrando desarrollo cognitivo, emocional y social, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta evolutiva importante, y complementando con todas tus capacidades paralelas para una explicación evolutiva magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE EVOLUTIVO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema evolutivo`);
     tools.unshift(createPsychologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1676,7 +1594,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido evolutivo`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando PsychologyConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createPsychologyConceptAnalyzerTool(embeddings));
@@ -1692,7 +1609,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createPsychologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createPsychologyFeedbackAnalyzerTool());
   
   console.log(`🧠🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas evolutivas:`, tools.map(t => t.name));
@@ -1705,7 +1621,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt evolutivo especializado y escapado
   const specializedPrompt = createSpecializedPsychologyPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1736,9 +1651,6 @@ const createAcadelPsychologyAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES EVOLUTIVAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1786,7 +1698,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen evolutivo: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1796,17 +1707,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_psicologiaev",
             similarityQueryName: "match_emb_psicologiaev",
             keywordQueryName: "kw_match_emb_psicologiaev",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1818,7 +1727,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1833,7 +1741,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto evolutivo base para "${input}": conocimiento fundamental en desarrollo cognitivo, emocional y social. Acadel debe generar preguntas desde su experiencia evolutiva consolidada, integrando las tres disciplinas del desarrollo con casos evolutivos realistas y conceptos fundamentales.`;
         }
       },
@@ -1940,9 +1847,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA PSICOLÓGICA - handlePsychologyEvolutiveQuery
-// ============================================================================
 
 export const handlePsychologyEvolutiveQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1951,7 +1855,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1967,13 +1870,11 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
     // CLASIFICAR EL QUERY PSICOLÓGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychologyImageRequest(query);
     
     console.log(`🧠🦫 Acadel analizando query psicológico evolutivo: "${query}"`);
     console.log(`📊 Clasificación psicológica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización psicológica evolutiva: ${imagePrompt}`);
       
@@ -1982,7 +1883,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       const psychologyVisualizationTool = createPsychologyVisualizationTool();
       const imageResponse = await psychologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1995,7 +1895,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen psicológica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2021,7 +1920,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2033,7 +1931,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2047,7 +1944,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para generación de imágenes
         if (isCacheable(query, 'psicologiaev')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2059,7 +1955,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen psicológica evolutiva en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2069,7 +1964,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2080,7 +1974,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes psicológicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen psicológico evolutivo: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2113,7 +2006,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2125,7 +2017,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2142,7 +2033,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para exámenes
         if (isCacheable(query, 'psicologiaev')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2155,7 +2045,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen psicológico evolutivo en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2165,7 +2054,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2176,7 +2064,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2193,10 +2080,8 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico psicológico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelPsychologyAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2223,7 +2108,6 @@ export const handlePsychologyEvolutiveQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel psicológico:", error);
       
-      // Fallback con personalidad Acadel psicológica
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas psicológicas, pero no me rendiré.
 
 Sobre tu pregunta psicológica: **"${query}"**
@@ -2249,7 +2133,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       };
     }
 
-    // Procesar respuesta psicológica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2264,7 +2147,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2276,7 +2158,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2290,7 +2171,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
 
       await client.query("COMMIT");
       
-      // Cache inteligente
       if (isCacheable(query, 'psicologiaev')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2304,7 +2184,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes psicológicos evolutivos en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2320,7 +2199,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2346,9 +2224,6 @@ Si necesitas más detalles psicológicos, pregúntame de nuevo y activaré todas
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA PSICOLÓGICA - handlePsychologyEvolutiveMultimodalQuery  
-// ============================================================================
 
 export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2373,7 +2248,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2385,7 +2259,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación psicológica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto psicológico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2396,7 +2269,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal psicológico evolutivo clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS PSICOLÓGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2434,7 +2306,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES PSICOLÓGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2494,7 +2365,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS PSICOLÓGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes psicológicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2564,11 +2434,9 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE PSICOLÓGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica evolutiva");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA PSICOLÓGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2601,7 +2469,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE PSICOLÓGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2628,7 +2495,6 @@ export const handlePsychologyEvolutiveMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel psicológico:", error);
       
-      // Fallback robusto psicológico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal psicológico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes psicológicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2654,7 +2520,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       };
     }
 
-    // PROCESAR RESPUESTA PSICOLÓGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2669,7 +2534,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal psicológico evolutivo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2687,10 +2551,8 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
           client,
           userId,
@@ -2702,7 +2564,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2716,7 +2577,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
 
       await client.query("COMMIT");
       
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'psicologiaev')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2730,7 +2590,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes psicológicos evolutivos multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2747,7 +2606,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos psicológicos evolutivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2761,12 +2619,10 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
         }
       },
       
-      // Información de seguridad psicológica evolutiva
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
       
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2797,9 +2653,6 @@ Si necesitas una explicación psicológica más detallada, pregúntame de nuevo 
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PSICOLÓGICAS
-// ============================================================================
 
 export const handlePsychologyEvolutiveQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2821,12 +2674,10 @@ export const handlePsychologyEvolutiveQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychologyImageRequest(query);
     
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOLÓGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2859,7 +2710,6 @@ export const handlePsychologyEvolutiveQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen psicológica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2919,7 +2769,6 @@ export const handlePsychologyEvolutiveQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA PSICOLÓGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2938,7 +2787,6 @@ export const handlePsychologyEvolutiveQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE PSICOLÓGICO CORREGIDO
       const { agent, tools } = await createAcadelPsychologyAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3041,7 +2889,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content psicológico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content psicológico no es un array válido en modo sin guardar:", content);
       return {
@@ -3060,7 +2907,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
     
     console.log(`🧠 Query multimodal psicológico evolutivo (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos psicológicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3087,7 +2933,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // RECUPERAR CONTENIDO PSICOLÓGICO DE BD SI NO LO TIENE
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido psicológico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3148,7 +2993,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
                 console.log(`✅ [RETRY/EDIT] Contenido psicológico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3168,10 +3012,8 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
           return `${fileInfo} ${typeInfo}\n[Contenido psicológico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto psicológico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos psicológicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido psicológico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3205,7 +3047,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
       }
     }
 
-    // Procesar imágenes psicológicas evolutivas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3265,7 +3106,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS PSICOLÓGICOS EVOLUTIVOS: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes psicológicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3350,11 +3190,9 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
       };
     }
 
-    // Cargar historial psicológico evolutivo relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicológica evolutiva");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada psicológica evolutiva
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3385,7 +3223,6 @@ export const handlePsychologyEvolutiveMultimodalQueryWithoutSaving = async (para
       };
     }
 
-    // Crear agente psicológico evolutivo especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelPsychologyAgent(llm, queryInfo, combinedQuery); // Usar la función de psicología evolutiva
 

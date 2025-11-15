@@ -49,7 +49,6 @@ import {
 } from '../../shared/dom-helpers.js';
 import { showWelcomeMessage, registerSendMessageHandler, clearDomCache, getCachedElement } from '../ui/welcome-message-matematico.js';
 import { initCharacterLimit, exceedsLimit, showLimitExceededAlert, hideLimitAlert } from '../../shared/character-limit.js';
-// ✅ REEMPLAZAR este import:
 import { closeHeaderDropdown } from "../ui/header-manager-matematico.js";
 import {
   showTokenLimitNotice,
@@ -58,7 +57,6 @@ import {
   showFreeUserAvaAccessNotice  // ← SOLO ESTA IMPORTACIÓN NUEVA
 } from '../../shared/chat-notices.js';
 
-// ===== SISTEMA DE GESTIÓN CENTRALIZADA =====
 
 /**
  * Gestor centralizado de DOM para optimizar querySelector calls
@@ -130,10 +128,8 @@ class EventManager {
 
     const listenerKey = key || `${element.id || 'element'}_${event}_${Date.now()}`;
 
-    // Limpiar listener previo si existe
     this.remove(listenerKey);
 
-    // Usar la función existente de dom-helpers.js
     const success = addEvent(element, event, handler, options);
 
     if (success) {
@@ -155,7 +151,6 @@ class EventManager {
   remove(key) {
     const listener = this.listeners.get(key);
     if (listener) {
-      // Usar la función existente de dom-helpers.js
       const success = removeEvent(listener.element, listener.event, listener.handler);
       if (success) {
         this.listeners.delete(key);
@@ -177,10 +172,8 @@ class EventManager {
       }
     }
 
-    // Usar la función existente de dom-helpers.js
     const success = removeAllEvents(element);
 
-    // Limpiar nuestro tracking
     toRemove.forEach(key => this.listeners.delete(key));
 
     return success;
@@ -209,20 +202,17 @@ class ChatUtils {
     selectors.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
         if (el && el.parentNode) {
-          // Usar función existente de dom-helpers.js
           removeAllEvents(el);
           el.remove();
         }
       });
     });
 
-    // Limpiar paneles matemáticos específicos de bienvenida
     ['welcome-mathPanel', 'welcome-math-editor-container'].forEach(id => {
       const panel = document.getElementById(id);
       if (panel) panel.remove();
     });
 
-    // Limpiar referencias globales
     if (window.welcomeFiles) {
       window.welcomeFiles.clear();
       window.welcomeFiles = null;
@@ -230,7 +220,6 @@ class ChatUtils {
     if (window.temporaryWelcomeFiles) {
       window.temporaryWelcomeFiles = null;
     }
-    // ⭐ NUEVO: Limpiar ID temporal si hubo error y no se completó el flujo normal
     if (window.tempChatIdForFiles) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error en creación`);
@@ -275,30 +264,25 @@ class ChatUtils {
    * Limpia archivos adjuntos con patrón unificado
    */
   static async cleanupFileAttachments() {
-    // Cerrar contenedor de vista previa
     const filePreviewContainer = domManager.filePreviewContainer;
     if (filePreviewContainer) {
       const previewElements = filePreviewContainer.querySelectorAll('.file-preview');
       previewElements.forEach(element => {
-        // Usar función existente de dom-helpers.js
         removeAllEvents(element);
       });
       filePreviewContainer.innerHTML = '';
     }
 
-    // Limpiar función nativa si está disponible
     if (typeof clearAttachedFiles === 'function') {
       clearAttachedFiles();
     }
 
-    // Limpiar contenedor de upload
     const fileUploadContainer = domManager.fileUploadContainer;
     if (fileUploadContainer) {
       removeClass(fileUploadContainer, 'active');
       removeClass(fileUploadContainer, 'dragging');
     }
 
-    // Limpiar URLs de objetos
     if (window.objectURLs && Array.isArray(window.objectURLs)) {
       window.objectURLs.forEach(url => {
         if (url && typeof URL !== 'undefined' && URL.revokeObjectURL) {
@@ -378,7 +362,6 @@ class ChatUtils {
    * Usa clearManagedTimeouts de dom-helpers.js
    */
   static cleanupTimeouts() {
-    // Usar función existente de dom-helpers.js
     clearManagedTimeouts();
   }
 
@@ -411,17 +394,14 @@ class ChatUtils {
 const domManager = new DOMManager();
 const eventManager = new EventManager();
 
-// ===== FUNCIONES PRINCIPALES OPTIMIZADAS =====
 
 /**
  * Inicializa el controlador de chat con gestión optimizada
  */
 export function initChatController() {
-  // Limpiar gestores para reinicio limpio
   domManager.clearAll();
   eventManager.removeAll();
 
-  // Cargar y limpiar chats problemáticos de forma más robusta
   Promise.all([
     import('../utils/chat-error-handler-matematico.js'),
     import('../api/chat-matematico.js'),
@@ -450,12 +430,10 @@ export function initChatController() {
       console.warn('Error al cargar módulos de manejo de errores:', error);
     });
 
-  // Inicializar limitador de caracteres para el textarea principal
   const textarea = domManager.textarea;
   if (textarea) {
     initializeCharacterLimit(textarea);
 
-    // Configurar validación de límite en evento input
     eventManager.add(textarea, 'input', function () {
       if (typeof exceedsLimit === 'function' && textarea.value) {
         const isExceeded = exceedsLimit(textarea.value);
@@ -464,13 +442,11 @@ export function initChatController() {
     }, false, 'main-textarea-limit-validation');
   }
 
-  // Inicializar en el textarea de nuevo chat si existe
   const welcomeTextarea = document.querySelector('#welcome-message-input');
   if (welcomeTextarea) {
     initializeCharacterLimit(welcomeTextarea);
   }
 
-  // Escuchar cambios de textarea globalmente para mantener la validación
   eventManager.add(document, 'focusin', function (e) {
     if (e.target.tagName === 'TEXTAREA') {
       if (!e.target._hasLimitHandler && typeof initCharacterLimit === 'function') {
@@ -480,17 +456,13 @@ export function initChatController() {
     }
   }, false, 'global-textarea-limit-init');
 
-  // Registrar manejador de mensajes para la pantalla de bienvenida
   registerSendMessageHandler(handleSendMessage);
 
-  // Verificar si hay un chat en la URL
   checkInitialChatFromURL();
 
-  // Configurar eventos específicos de chat
   setupChatEventListeners();
   setupMessageRenderingInterceptor();
   setupMessageObserver();
-  // Procesar mensajes existentes si los hay
   setTimeout(() => {
     processAllExistingMessages();
   }, 1000);
@@ -544,10 +516,6 @@ function setupChatEventListeners() {
   eventManager.add(window, 'sendMessageRequest', handleSendMessage, false, 'send-message-request');
 }
 
-/**
- * ✅ VERIFICACIÓN SIMPLIFICADA PARA AVA PREMIUM
- * Solo verifica tokens generales de conversación (50k límite)
- */
 async function checkTokensBeforeSend(chatId) {
   if (!chatId) return { canProceed: true, warningInfo: null };
 
@@ -563,7 +531,6 @@ async function checkTokensBeforeSend(chatId) {
     if (response.ok) {
       const data = await response.json();
 
-      // ✅ SOLO procesar tokenInfo general (no límites de usuario)
       if (data.tokenInfo && data.tokenInfo.current && data.tokenInfo.max) {
         const { current, max } = data.tokenInfo;
         console.log(`📊 [AVA] Tokens del chat: ${current}/${max}`);
@@ -582,7 +549,6 @@ async function checkTokensBeforeSend(chatId) {
       return { canProceed: true, warningInfo: null };
     }
 
-    // ✅ SOLO manejar error 429 de tokens de chat excedidos
     if (response.status === 429) {
       const errorData = await response.json().catch(() => ({}));
 
@@ -683,10 +649,8 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
     }
   }
 
-  // ⚡ AÑADIR AL DOM INMEDIATAMENTE
   chatMessages.appendChild(messageDiv);
 
-  // ⚡ RENDERIZAR MATEMÁTICAS INMEDIATAMENTE (sin setTimeout)
   if (role === 'user' && typeof content === 'string' &&
     (content.includes('$') || content.includes('\\(') || content.includes('\\)'))) {
     const contentElem = messageDiv.querySelector('.message-content');
@@ -702,7 +666,6 @@ function addMessageWithAttachmentsSimplified(role, content, files = []) {
   return messageDiv;
 }
 
-// ===== FUNCIÓN constructSimplifiedMultimodalContent NUEVA =====
 
 /**
  * Construye el contenido HTML para mensajes multimodales - VERSIÓN SIMPLIFICADA
@@ -720,21 +683,17 @@ function constructSimplifiedMultimodalContent(text, files) {
 
   let html = '<div class="multimodal-container">';
 
-  // Agregar texto si existe
   if (text && text.trim()) {
     html += `<div class="multimodal-text">${parseMarkdownToHTML(text)}</div>`;
   }
 
   if (files.length > 0) {
-    // ⭐ CONTENEDOR UNIFICADO PARA TODOS LOS ARCHIVOS ⭐
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR ARCHIVOS PRESERVANDO ORDEN ORIGINAL ⭐
     files.forEach((file, index) => {
       console.log(`📎 Procesando archivo ${index + 1}/${files.length}: ${file.file.name}`);
 
       if (file.type === 'image') {
-        // Renderizar imagen directamente
         if (file.data && file.data.base64) {
           html += `
           <div class="chat-image-item clickable">
@@ -750,7 +709,6 @@ function constructSimplifiedMultimodalContent(text, files) {
           `;
         }
       } else if (file.type === 'document' || file.type === 'code') {
-        // ⭐ RENDERIZAR DOCUMENTO CON ORDEN PRESERVADO ⭐
         const extension = file.file.name.split('.').pop().toLowerCase();
         let iconClass = 'bxs-file-txt';
         let attachmentType = 'document';
@@ -772,7 +730,6 @@ function constructSimplifiedMultimodalContent(text, files) {
         const fileName = file.file.name.length > 12 ? file.file.name.substring(0, 9) + '...' : file.file.name;
         const fileSize = ((file.file.size || 0) / 1024).toFixed(1);
 
-        // ⭐ CRÍTICO: Usar nombre completo en data-file-name para mapeo correcto ⭐
         html += `
           <div class="document-preview temp-preview" 
                data-file-name="${sanitize(file.file.name)}"
@@ -797,11 +754,6 @@ function constructSimplifiedMultimodalContent(text, files) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Procesa la respuesta del servidor y actualiza documentos temporales ⭐
- * @param {Object} data - Respuesta del servidor
- * @param {HTMLElement} messageElement - Elemento del mensaje del usuario
- */
 function processServerResponseDocuments(data, messageElement) {
   if (data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
     console.log('📄 Actualizando documentos temporales con fileIds del servidor...');
@@ -810,7 +762,6 @@ function processServerResponseDocuments(data, messageElement) {
 
     console.log(`🔍 Debug: ${tempPreviews.length} previews temporales, ${data.documents.length} documentos del servidor`);
 
-    // ⭐ NUEVO: Crear mapas para mejor búsqueda ⭐
     const serverDocsMap = new Map();
     data.documents.forEach(doc => {
       if (doc.originalName && doc.fileId) {
@@ -828,7 +779,6 @@ function processServerResponseDocuments(data, messageElement) {
       }
     });
 
-    // ⭐ MAPEO CORREGIDO: Por nombre de archivo ⭐
     let successCount = 0;
     let failCount = 0;
 
@@ -836,7 +786,6 @@ function processServerResponseDocuments(data, messageElement) {
       const tempPreview = tempPreviewsMap.get(fileName);
 
       if (tempPreview && serverDoc.fileId) {
-        // ✅ MAPEO CORRECTO ENCONTRADO
         tempPreview.dataset.fileId = serverDoc.fileId;
         tempPreview.classList.remove('temp-preview');
         tempPreview.classList.add('clickable');
@@ -856,7 +805,6 @@ function processServerResponseDocuments(data, messageElement) {
       }
     }
 
-    // ⭐ FALLBACK: Si hay previews que no se mapearon, intentar por posición como último recurso ⭐
     const unmappedPreviews = Array.from(tempPreviews).filter(preview =>
       preview.classList.contains('temp-preview')
     );
@@ -886,17 +834,11 @@ function processServerResponseDocuments(data, messageElement) {
 
     console.log(`📊 Resultado del mapeo: ${successCount} exitosos, ${failCount} fallidos`);
 
-    // Activar eventos de click para los documentos actualizados
     activateDocumentEvents(messageElement);
   }
 }
 
-/**
- * 🦫 SISTEMA DE MENSAJES DINÁMICOS PARA ACADEL PENSANDO
- * Mensajes variados para hacer la experiencia más divertida
- */
 
-// 🧠 ARRAY DE MENSAJES VARIADOS PARA "ACADEL ESTÁ PENSANDO"
 const ACADEL_THINKING_MESSAGES = [
   // Mensajes básicos de pensamiento
   {
@@ -969,7 +911,6 @@ const ACADEL_THINKING_MESSAGES = [
   }
 ];
 
-// ⏳ ARRAY DE MENSAJES VARIADOS PARA "OPERACIÓN LENTA" (8+ segundos)
 const ACADEL_PATIENCE_MESSAGES = [
   // Mensajes clásicos de paciencia
   {
@@ -1042,10 +983,6 @@ const ACADEL_PATIENCE_MESSAGES = [
   }
 ];
 
-/**
- * 🎲 FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE ACADEL PENSANDO
- * @returns {Object} Objeto con title y message aleatorios
- */
 function getRandomThinkingMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_THINKING_MESSAGES.length);
   const selectedMessage = ACADEL_THINKING_MESSAGES[randomIndex];
@@ -1055,10 +992,6 @@ function getRandomThinkingMessage() {
   return selectedMessage;
 }
 
-/**
- * ⏳ FUNCIÓN PARA OBTENER MENSAJE ALEATORIO DE PACIENCIA/OPERACIÓN LENTA
- * @returns {Object} Objeto con title y message aleatorios para operaciones lentas
- */
 function getRandomPatienceMessage() {
   const randomIndex = Math.floor(Math.random() * ACADEL_PATIENCE_MESSAGES.length);
   const selectedMessage = ACADEL_PATIENCE_MESSAGES[randomIndex];
@@ -1068,18 +1001,7 @@ function getRandomPatienceMessage() {
   return selectedMessage;
 }
 
-/**
- * ✅ FUNCIÓN COMPLETAMENTE CORREGIDA: handleSendMessage
- * REEMPLAZAR la función handleSendMessage existente con esta versión
- * 
- * CORRIGE:
- * 1. Manejo completo cuando se excede límite en pre-validación
- * 2. Limpieza de estado y notificaciones
- * 3. Mostrar avisos apropiados al usuario
- * 4. Restauración completa de UI
- */
 export async function handleSendMessage() {
-  // ✅ PROTECCIÓN CONTRA EJECUCIÓN MÚLTIPLE
   if (window._isHandlingSend) {
     console.log('🚫 handleSendMessage ya en ejecución');
     return;
@@ -1087,7 +1009,6 @@ export async function handleSendMessage() {
 
   window._isHandlingSend = true;
 
-  // ⚡ VERIFICACIONES MÍNIMAS Y RÁPIDAS
   const textarea = domManager.textarea;
   const chatMessages = domManager.chatMessages;
 
@@ -1099,17 +1020,14 @@ export async function handleSendMessage() {
   const hasAttachments = temporaryFiles.length > 0 ||
     (typeof hasAttachedFiles === 'function' ? hasAttachedFiles() : false);
 
-  // ⚡ VALIDACIÓN MÍNIMA - Si no hay contenido, salir inmediatamente
   if (getState('isProcessing') || (!originalMessage && !hasAttachments)) {
     window._isHandlingSend = false;
     return;
   }
 
-  // 🚀 ACTIVAR LOADING INMEDIATAMENTE (ANTES DE TODO)
   setProcessingState(true);
   toggleUIState(true);
 
-  // 🦫 VARIABLES PARA TRACKING DE NOTIFICACIONES
   let thinkingNotificationId = null;
   let slowOperationNotificationId = null;
   let slowOperationTimeout = null;
@@ -1119,7 +1037,6 @@ export async function handleSendMessage() {
   const currentChatId = getState('currentChatId');
   let isNewChat = !currentChatId || !validateUUID(currentChatId);
 
-  // ✅ FUNCIÓN DE LIMPIEZA COMPLETA
   const cleanupAllNotifications = () => {
     if (thinkingNotificationId) {
       acadelCerrar(thinkingNotificationId);
@@ -1140,20 +1057,16 @@ export async function handleSendMessage() {
   };
 
   try {
-    // 🦫 NOTIFICACIÓN INMEDIATA DE PROCESAMIENTO
     const randomThinking = getRandomThinkingMessage();
     thinkingNotificationId = acadelLoading(
       randomThinking.title,
       randomThinking.message
     );
 
-    // ⚡ DIFERIR VALIDACIONES PESADAS
     await new Promise(resolve => requestAnimationFrame(resolve));
 
-    // Validación de límite de caracteres (diferida)
     const isValidLimit = await ChatUtils.validateCharacterLimit(originalMessage);
     if (!isValidLimit) {
-      // Limpiar y salir
       cleanupAllNotifications();
       setProcessingState(false);
       toggleUIState(false);
@@ -1161,10 +1074,8 @@ export async function handleSendMessage() {
       return;
     }
 
-    // Detectar contexto
     const isInWelcomeScreen = document.querySelector('.welcome-message, .centered-input-container, .suggestions-container') !== null;
 
-    // Preparar archivos adjuntos (diferido)
     let attachedFiles = [];
     if (temporaryFiles && temporaryFiles.length > 0) {
       attachedFiles = temporaryFiles;
@@ -1172,24 +1083,19 @@ export async function handleSendMessage() {
       attachedFiles = getAttachedFiles();
     }
 
-    // ⚡ CREAR UI ELEMENTOS DE FORMA DIFERIDA
-    // Crear mensaje del usuario (diferido)
     if (originalMessage || hasAttachments) {
       messageElement = addMessageWithAttachmentsSimplified('user', originalMessage, attachedFiles);
     }
 
-    // ⚡ LIMPIAR PREVIEW CONTAINER INMEDIATAMENTE (ANTES DEL ENVÍO)
     if (hasAttachments) {
       console.log('📎 Limpiando preview container inmediatamente...');
       ChatUtils.cleanupFileAttachments();
       window.temporaryWelcomeFiles = null;
     }
 
-    // Limpiar textarea (diferido)
     if (textarea) {
       textarea.value = '';
 
-      // Diferir resize
       requestAnimationFrame(() => {
         import('../ui/ui-manager-matematico.js').then(module => {
           if (typeof module.handleTextareaResize === 'function') {
@@ -1199,11 +1105,9 @@ export async function handleSendMessage() {
       });
     }
 
-    // Crear loading message (diferido)
     loadingMessage = createLoadingMessage();
     chatMessages.appendChild(loadingMessage);
 
-    // ⚡ DIFERIR OPERACIONES DE SCROLL (no críticas)
     setTimeout(() => {
       if (messageElement) {
         scrollManager.scrollToElement(messageElement, {
@@ -1220,7 +1124,6 @@ export async function handleSendMessage() {
       }
     }, 0);
 
-    // ⚡ DIFERIR LIMPIEZA DE WELCOME (no crítica)
     if (isInWelcomeScreen) {
       setTimeout(() => {
         ChatUtils.cleanupWelcomeElements();
@@ -1228,7 +1131,6 @@ export async function handleSendMessage() {
       }, 100);
     }
 
-    // ⚡ DIFERIR NOTIFICACIONES DE ARCHIVOS (no críticas)
     if (hasAttachments && attachedFiles.length > 0) {
       setTimeout(() => {
         if (attachedFiles.length === 1) {
@@ -1249,7 +1151,6 @@ export async function handleSendMessage() {
       }, 200);
     }
 
-    // ✅ VERIFICAR TOKENS ANTES DE ENVIAR
     let tokenCheck = { canProceed: true, warningInfo: null };
     if (!isNewChat) {
       tokenCheck = await checkTokensBeforeSend(currentChatId);
@@ -1278,7 +1179,6 @@ export async function handleSendMessage() {
           );
         }, 500);
 
-        // Finalizar
         cleanupAllNotifications();
         setProcessingState(false);
         toggleUIState(false);
@@ -1287,19 +1187,15 @@ export async function handleSendMessage() {
       }
     }
 
-    // Configurar controlador de aborto
     const abortController = ChatUtils.setupAbortController();
 
-    // 🦫 AVISO PARA OPERACIONES LENTAS (GUARDANDO REFERENCIA)
     slowOperationTimeout = setTimeout(() => {
       if (getState('isProcessing')) {
-        // Cerrar notificación de pensamiento
         if (thinkingNotificationId) {
           acadelCerrar(thinkingNotificationId);
           thinkingNotificationId = null;
         }
 
-        // Crear notificación de paciencia Y GUARDAR REFERENCIA
         const randomPatience = getRandomPatienceMessage();
         slowOperationNotificationId = acadelLoading(
           randomPatience.title,
@@ -1310,18 +1206,15 @@ export async function handleSendMessage() {
       }
     }, 8000);
 
-    // 🔄 CREAR NUEVO CHAT SI ES NECESARIO
     if (isNewChat) {
       const newChat = await createNewChat(originalMessage || "Nueva conversación");
       newChatId = newChat.id;
       setCurrentChat(newChat.id);
       window.tempChatIdForFiles = newChatId;
 
-      // CRÍTICO: Marcar que este chat está en proceso de creación
       window._chatBeingCreated = newChatId;
       console.log('🔒 Marcando chat en creación:', newChatId);
 
-      // Diferir limpieza de event listeners (NO archivos)
       setTimeout(() => {
         const usingTemporaryFiles = temporaryFiles && temporaryFiles.length > 0;
         if (!usingTemporaryFiles) {
@@ -1335,7 +1228,6 @@ export async function handleSendMessage() {
       }, 100);
     }
 
-    // 🚀 ENVIAR MENSAJE AL SERVIDOR
     let data;
     if (hasAttachments) {
       data = await sendMessageWithAttachments(originalMessage, getState('currentChatId'), attachedFiles, abortController.signal);
@@ -1343,11 +1235,9 @@ export async function handleSendMessage() {
       data = await sendMessage(originalMessage, getState('currentChatId'), abortController.signal);
     }
 
-    // 🧹 LIMPIAR NOTIFICACIONES AL RECIBIR RESPUESTA
     console.log('✅ Respuesta recibida - Limpiando notificaciones...');
     cleanupAllNotifications();
 
-    // Verificar si fue abortado
     if (abortController.signal.aborted) {
       if (loadingMessage && loadingMessage.parentNode) {
         loadingMessage.remove();
@@ -1355,26 +1245,22 @@ export async function handleSendMessage() {
       return;
     }
 
-    // Manejo de errores
     if (data && data.error) {
       console.error('Error en la respuesta:', data.error);
       await handleSendMessageError(data.error, isNewChat, newChatId, currentChatId);
       throw new Error(data.error.message || 'Error en la respuesta del servidor');
     }
 
-    // Renderizar respuesta exitosa
     await renderSuccessfulResponse(data, loadingMessage, isNewChat, newChatId, tokenCheck);
 
   } catch (error) {
     console.error('Error en handleSendMessage:', error);
 
-    // 🧹 LIMPIAR NOTIFICACIONES EN CASO DE ERROR
     console.log('❌ Error detectado - Limpiando notificaciones...');
     cleanupAllNotifications();
 
     await handleSendMessageCatch(error, loadingMessage, isNewChat, newChatId, currentChatId, originalMessage);
   } finally {
-    // 🧹 LIMPIEZA FINAL GARANTIZADA
     console.log('🔚 Finally block - Limpieza final...');
     cleanupAllNotifications();
 
@@ -1382,7 +1268,6 @@ export async function handleSendMessage() {
     toggleUIState(false);
     window.currentAbortController = null;
 
-    // Finalizar
     setTimeout(() => {
       window._isHandlingSend = false;
     }, 100);
@@ -1424,12 +1309,6 @@ async function handleSendMessageError(error, isNewChat, newChatId, currentChatId
   }
 }
 
-/**
- * ✅ renderSuccessfulResponse CORREGIDA - SOLO BACKEND REAL
- * REEMPLAZAR TODA la función renderSuccessfulResponse en chat-controller.js
- * 
- * SIN TRUNCAMIENTO - Solo flags que SÍ existen en TokenManager actual
- */
 async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChatId, tokenCheck = null) {
   await new Promise(resolve => requestAnimationFrame(resolve));
 
@@ -1440,29 +1319,23 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
       const { type, content } = processServerResponse(data);
       replaceLoadingMessage(loadingMessage, content, type);
 
-      // 🎯 SISTEMA SIMPLIFICADO: Solo usar detectAndShowNotices() 
       console.group('🎯 [FRONTEND] Procesando avisos del backend REAL');
 
       try {
-        // ✅ MÉTODO 1: Usar detectAndShowNotices() del sistema de avisos
         if (typeof window.AcadelChatNotices?.detectAndShowNotices === 'function') {
           console.log('🎯 [FRONTEND] Usando detectAndShowNotices()...');
           window.AcadelChatNotices.detectAndShowNotices(loadingMessage, data);
         }
-        // ✅ MÉTODO 2: Fallback a función importada
         else if (typeof detectAndShowNotices === 'function') {
           console.log('🎯 [FRONTEND] Usando detectAndShowNotices() importada...');
           detectAndShowNotices(loadingMessage, data);
         }
-        // ✅ MÉTODO 3: Solo flags REALES del TokenManager actual
         else {
           console.log('🎯 [FRONTEND] Verificando flags REALES del TokenManager...');
 
-          // 🚫 BYPASS ADMIN
           if (data.accessInfo?.isAdmin || data.tokenInfo?.isAdmin) {
             console.log('👑 [FRONTEND] Admin detectado - Sin avisos');
           }
-          // ✅ SOLO FLAGS REALES que genera TokenManager.addWarningFlags()
           else if (data._shouldShowTokenWarning || data._hasPostWarning || data._hasPreWarning) {
             console.log('⚠️ [FRONTEND] Flags REALES del TokenManager detectados:', {
               shouldShowTokenWarning: data._shouldShowTokenWarning,
@@ -1485,7 +1358,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
               }
             }
           }
-          // ✅ VERIFICAR warnings en array del backend
           else if (data.warnings && Array.isArray(data.warnings)) {
             const tokenWarnings = data.warnings.filter(w =>
               w.type && w.type.includes('token') && w.level === 'high'
@@ -1515,11 +1387,9 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
           }
         }
 
-        // ✅ ACTUALIZAR límites dinámicos
         if (data.tokenInfo && typeof window.AcadelChatNotices?.updateDynamicLimits === 'function') {
           window.AcadelChatNotices.updateDynamicLimits(data.tokenInfo);
         }
-        // 🆕 FALLBACK: Usar tokenCheck si el backend no devolvió información completa
         if (!data.tokenInfo && tokenCheck && tokenCheck.warningInfo) {
           console.log('📊 [FRONTEND] Usando tokenCheck como fallback:', tokenCheck.warningInfo);
 
@@ -1553,7 +1423,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
 
       console.groupEnd();
 
-      // ✅ RESTO DE LÓGICA EXISTENTE (sin cambios)
       const chatId = data.chatId || getState('currentChatId');
       if (chatId) {
         setTimeout(async () => {
@@ -1583,7 +1452,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
       }, 500);
     }
 
-    // ✅ MANTENER: Lógica de documentos y nuevo chat (sin cambios)
     if (data.documents && Array.isArray(data.documents) && data.documents.length > 0) {
       const chatMessages = domManager.chatMessages;
       const userMessages = chatMessages.querySelectorAll('.user-message');
@@ -1597,7 +1465,6 @@ async function renderSuccessfulResponse(data, loadingMessage, isNewChat, newChat
     if (isNewChat && newChatId) {
       await handleNewChatSuccess(newChatId);
 
-      // Limpiar flag de chat en creación
       if (window._chatBeingCreated === newChatId) {
         window._chatBeingCreated = null;
         console.log('✅ Chat creación completada:', newChatId);
@@ -1652,7 +1519,6 @@ async function initializeResponseInteraction() {
 }
 
 async function handleNewChatSuccess(newChatId) {
-  // Limpiar problemas potenciales
   import('../utils/chat-error-handler-matematico.js').then(module => {
     if (module.problematicChatIds && module.problematicChatIds.has(newChatId)) {
       module.problematicChatIds.delete(newChatId);
@@ -1667,10 +1533,8 @@ async function handleNewChatSuccess(newChatId) {
     }
   }).catch(e => console.warn('Error al limpiar problemas:', e));
 
-  // Actualizar URL y cargar historial
   history.pushState({}, '', URL_CONFIG.chatPath(newChatId));
 
-  // ⭐ NUEVO: Limpiar ID temporal después del éxito
   setTimeout(() => {
     if (window.tempChatIdForFiles === newChatId) {
       window.tempChatIdForFiles = null;
@@ -1709,16 +1573,6 @@ function updateExistingChatPosition() {
   }
 }
 
-/**
- * ✅ FUNCIÓN MEJORADA: handleSendMessageCatch
- * REEMPLAZAR la función handleSendMessageCatch existente con esta versión
- * 
- * MEJORAS:
- * 1. Detección más robusta de errores de tokens
- * 2. Manejo específico para errores HTTP 429
- * 3. Mejor extracción de información de límites del backend
- * 4. Preservación de mensajes del usuario en errores de tokens
- */
 async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatId, currentChatId, originalMessage) {
   console.group('🚨 HANDLE SEND MESSAGE CATCH');
   console.log('Error details:', {
@@ -1738,11 +1592,9 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     window._chatBeingCreated = null;
   }
 
-  // 🦫 CASO 1: ERROR DE CANCELACIÓN
   if (error.name === 'AbortError') {
     console.log("🚫 Error de cancelación detectado");
 
-    // 🔥 SOLO mostrar notificación si NO se mostró ya en cancelCurrentRequest
     if (!window._cancelNotificationAlreadyShown) {
       acadelInfo(
         "🛑 ¡Operación cancelada!",
@@ -1753,7 +1605,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       console.log('ℹ️ Notificación de cancelación ya mostrada, omitiendo duplicación');
     }
 
-    // Manejo específico para nuevos chats
     if (isNewChat && newChatId) {
       try {
         await deleteChat(newChatId);
@@ -1804,7 +1655,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
         originalMessage
       );
 
-      // ✅ MOSTRAR AVISO ESPECÍFICO PARA USUARIOS GRATUITOS
       setTimeout(() => {
         showFreeUserAvaAccessNotice(
           loadingMessage,
@@ -1815,7 +1665,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       }, 300);
     }
 
-    // 🚨 MARCAR CHAT COMO PROBLEMÁTICO (IGUAL QUE CANCELACIÓN)
     if (isNewChat && newChatId) {
       try {
         await deleteChat(newChatId);
@@ -1831,13 +1680,11 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       console.log(`⚠️ [AVA 402] Chat existente ${currentChatId} marcado como problemático`);
     }
 
-    // 🧹 LIMPIAR CHAT TEMPORAL SI EXISTE
     if (window.tempChatIdForFiles === newChatId) {
       window.tempChatIdForFiles = null;
       console.log(`🧹 Chat temporal limpiado por error AVA 402: ${newChatId}`);
     }
 
-    // ✅ LIMPIAR SIDEBAR SI ES NECESARIO
     if (isNewChat && newChatId) {
       const chatItem = document.querySelector(`[data-chat-id="${newChatId}"]`);
       if (chatItem) {
@@ -1846,7 +1693,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
         setTimeout(() => chatItem.remove(), 200);
       }
 
-      // 🔄 ACTUALIZAR SIDEBAR
       setTimeout(async () => {
         try {
           const { loadChatHistory } = await import('../api/chat-matematico.js');
@@ -1859,7 +1705,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       }, 300);
     }
 
-    // ✅ NOTIFICACIÓN DE ACADEL
     setTimeout(() => {
       acadelWarning(
         "🎓 ¡Zona VIP académica!",
@@ -1870,7 +1715,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return; // ← SALIR SIN MÁS PROCESAMIENTO
   }
 
-  // ✅ FUNCIÓN AUXILIAR: Detectar errores de tokens de forma más robusta
   const isTokenError = (error) => {
     // Verificaciones directas en propiedades del error
     if (error.isTokenLimit || error.isPreValidationLimit) {
@@ -1914,7 +1758,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     );
   };
 
-  // ✅ FUNCIÓN AUXILIAR: Extraer información de tokens del error
   const extractTokenInfo = (error) => {
     return {
       maxTokens: error.maxTokens ||
@@ -1930,14 +1773,12 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     };
   };
 
-  // 🦫 CASO 2: ERRORES DE TOKENS (UNIFICADO)
   if (isTokenError(error)) {
     console.log('🚫 Error de tokens detectado:', error);
 
     const tokenInfo = extractTokenInfo(error);
 
     if (loadingMessage) {
-      // ✅ MENSAJE SIN CANTIDADES ESPECÍFICAS pero más informativo
       let userFriendlyMessage = tokenInfo.errorMessage;
 
       // Personalizar mensaje según el tipo de error
@@ -1949,7 +1790,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
 
       replaceWithError(loadingMessage, userFriendlyMessage, originalMessage);
 
-      // ✅ MOSTRAR aviso específico SIN cantidades
       setTimeout(() => {
         if (typeof showTokenLimitNotice === 'function') {
           showTokenLimitNotice(loadingMessage, tokenInfo.maxTokens, tokenInfo.tokenInfo);
@@ -1957,7 +1797,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       }, 300);
     }
 
-    // ✅ NOTIFICACIÓN ACADÉMICA PERSONALIZADA
     const isPreValidation = error.isPreValidationLimit;
     const notificationTitle = isPreValidation ?
       "🧠 ¡Acadel prevé sobrecarga!" :
@@ -1975,11 +1814,9 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
       }
     }, 500);
 
-    // ✅ NO eliminar el chat por errores de tokens
     return;
   }
 
-  // 🦫 CASO 3: ERRORES DE RED/CONEXIÓN
   if (error.message && (
     error.message.includes('fetch') ||
     error.message.includes('network') ||
@@ -2006,7 +1843,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 4: ERRORES DE TIMEOUT
   if (error.message && (
     error.message.includes('timeout') ||
     error.message.includes('tiempo') ||
@@ -2031,7 +1867,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 5: ERRORES DE SERVIDOR
   if (error.message && (
     error.message.includes('servidor') ||
     error.message.includes('server') ||
@@ -2059,7 +1894,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 6: ERRORES DE AUTENTICACIÓN
   if (error.message && (
     error.message.includes('401') ||
     error.message.includes('403') ||
@@ -2086,7 +1920,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 7: ERRORES DE ARCHIVO/UPLOAD
   if (error.message && (
     error.message.includes('archivo') ||
     error.message.includes('file') ||
@@ -2111,7 +1944,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     return;
   }
 
-  // 🦫 CASO 8: ERROR GENERAL (FALLBACK)
   console.log('❌ Error general detectado:', error);
 
   if (loadingMessage) {
@@ -2126,7 +1958,6 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
     "Acadel encontró un problema que no estaba en sus libros. Inténtalo de nuevo en un momento"
   );
 
-  // 🦫 MANEJO DE CHAT PROBLEMÁTICO SOLO PARA ERRORES GENERALES
   if (isNewChat && newChatId) {
     await handleNewChatError(newChatId);
   } else if (currentChatId) {
@@ -2141,17 +1972,12 @@ async function handleSendMessageCatch(error, loadingMessage, isNewChat, newChatI
   }
 }
 
-// =============================================================================
-// 🦫 MEJORA EN ChatUtils.validateCharacterLimit
-// =============================================================================
 
-// REEMPLAZAR la función validateCharacterLimit en ChatUtils:
 ChatUtils.validateCharacterLimit = async function (text) {
   if (!text) return true;
 
   try {
     if (typeof exceedsLimit === 'function' && exceedsLimit(text)) {
-      // 🦫 USAR NUEVA FUNCIÓN DE ACADEL en lugar de showLimitExceededAlert
       if (typeof acadelWarning === 'function') {
         acadelWarning(
           "📝 ¡Mensaje muy extenso!",
@@ -2193,7 +2019,6 @@ async function handleNewChatError(newChatId) {
   setCurrentChat(null);
   history.pushState({}, '', URL_CONFIG.basePath);
 
-  // ⭐ NUEVO: Limpiar ID temporal en caso de error
   if (window.tempChatIdForFiles === newChatId) {
     window.tempChatIdForFiles = null;
     console.log(`🧹 Chat temporal limpiado por error: ${newChatId}`);
@@ -2242,13 +2067,11 @@ function isInCancellationState() {
  */
 async function finalizeSendMessage(textarea) {
   try {
-    // 🔧 VERIFICAR FLAG DE CANCELACIÓN PRIMERO
     if (window.isCancellationInProgress) {
       console.log("🚫 NO restaurando interactividad - Cancelación en progreso");
       return; // SALIR INMEDIATAMENTE SIN RESTAURAR NADA
     }
 
-    // Restaurar interactividad completa SOLO si no hay cancelación
     if (textarea) {
       textarea.removeAttribute('disabled');
       textarea.removeAttribute('readonly');
@@ -2262,7 +2085,6 @@ async function finalizeSendMessage(textarea) {
       }, 50);
     }
 
-    // Restaurar botones SOLO si no hay cancelación
     const sendButton = domManager.sendButton;
     const mathButton = domManager.mathButton;
     const attachButton = domManager.attachButton;
@@ -2280,12 +2102,11 @@ async function finalizeSendMessage(textarea) {
   }
 
   // Finalización estándar
-  if (textarea && !window.isCancellationInProgress) { // AGREGAR verificación
+  if (textarea && !window.isCancellationInProgress) {
     textarea.value = '';
   }
   setProcessingState(false);
 
-  // 🔧 VERIFICACIÓN MEJORADA: Solo restaurar UI si no hay cancelación
   if (!window.isCancellationInProgress) {
     toggleUIState(false);
   } else {
@@ -2301,7 +2122,6 @@ async function finalizeSendMessage(textarea) {
     }, 2000);
   }
 
-  // Limpiar controlador de aborto
   window.currentAbortController = null;
 
   import('../ui/ui-manager-matematico.js').then(module => {
@@ -2310,7 +2130,6 @@ async function finalizeSendMessage(textarea) {
     }
   }).catch(err => console.warn('Error al limpiar controlador:', err));
 
-  // Limpiar caché de elementos DOM para obtener referencias frescas
   if (typeof clearDomCache === 'function') {
     clearDomCache(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
   }
@@ -2318,17 +2137,12 @@ async function finalizeSendMessage(textarea) {
   domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: handleNewChat con limpieza simplificada
- */
 export function handleNewChat() {
-  // 🧹 LIMPIAR estado de avisos de tokens
   if (typeof clearTokenWarnings === 'function') {
     clearTokenWarnings();
   }
 
 
-  // 🔽 NUEVO: Cerrar dropdown del header
   closeHeaderDropdown();
 
   setTimeout(() => {
@@ -2338,7 +2152,6 @@ export function handleNewChat() {
     );
   }, 500);
 
-  // Verificar si ya estamos en la pantalla de bienvenida
   const welcomeMessageExists = document.querySelector('.welcome-message') !== null;
   const currentChatId = getState('currentChatId');
 
@@ -2351,10 +2164,8 @@ export function handleNewChat() {
   window.isHandlingNewChat = true;
 
   try {
-    // Cerrar paneles matemáticos
     ChatUtils.closeMathPanels();
 
-    // Cerrar panel de previsualización si está abierto
     const previewPanel = document.querySelector('#preview-panel');
     if (previewPanel && previewPanel.classList.contains('open')) {
       try {
@@ -2373,28 +2184,22 @@ export function handleNewChat() {
       }
     }
 
-    // Desactivar chat activo en sidebar
     document.querySelectorAll('.sidebar-item.active').forEach(item => {
       removeClass(item, 'active');
     });
 
-    // Actualizar estado
     setCurrentChat(null);
 
-    // Restaurar el subtítulo por defecto
     const headerSubtitle = getCachedElement('.header-subtitle');
     if (headerSubtitle) {
       headerSubtitle.textContent = 'Asistente virtual académico';
       headerSubtitle.removeAttribute('title');
     }
 
-    // Limpiar mensajes del chat
     clearChatMessages();
 
-    // Actualizar URL
     history.pushState({}, '', URL_CONFIG.basePath);
 
-    // Preparar para mostrar mensaje de bienvenida
     const textarea = domManager.textarea;
     const fixedSpace = domManager.fixedSpace;
 
@@ -2406,7 +2211,6 @@ export function handleNewChat() {
       fixedSpace.style.overflow = 'hidden';
       void fixedSpace.offsetHeight;
 
-      // Limpiar función nativa si está disponible
       if (typeof clearAttachedFiles === 'function') {
         clearAttachedFiles();
       }
@@ -2433,9 +2237,6 @@ export function handleNewChat() {
   }
 }
 
-/**
- * ✅ FUNCIÓN MODIFICADA: switchChat con limpieza simplificada
- */
 export async function switchChat(chatId) {
   console.log('🔄 switchChat llamado:', chatId);
 
@@ -2444,7 +2245,6 @@ export async function switchChat(chatId) {
     const creatingChatId = window._chatBeingCreated;
     console.log('⚠️ Detectado cambio desde chat en creación:', creatingChatId);
 
-    // Limpiar el flag inmediatamente
     window._chatBeingCreated = null;
 
     // Si el AbortController actual tiene el chat en creación, NO abortarlo
@@ -2455,12 +2255,10 @@ export async function switchChat(chatId) {
     }
   }
 
-  // 🧹 LIMPIAR estado de avisos de tokens
   if (typeof clearTokenWarnings === 'function') {
     clearTokenWarnings();
   }
 
-  // 🔽 NUEVO: Cerrar dropdown del header
   closeHeaderDropdown();
 
 
@@ -2471,7 +2269,6 @@ export async function switchChat(chatId) {
   const pendingPromises = [];
   window.isSwitchingChat = true;
 
-  // Configurar controlador de aborto
   const abortController = ChatUtils.setupAbortController();
   const signal = abortController.signal;
 
@@ -2495,13 +2292,11 @@ export async function switchChat(chatId) {
       return;
     }
 
-    // 💬 NOTIFICACIÓN SUTIL DE CAMBIO
     acadelInfo(
       "💬 Cambiando de conversación",
       "Acadel está preparando tu chat anterior..."
     );
 
-    // Mostrar indicador de carga
     if (typeof applyChatSwitchSkeleton === 'function') {
       applyChatSwitchSkeleton();
     } else {
@@ -2536,33 +2331,26 @@ export async function switchChat(chatId) {
  * VERSIÓN CORREGIDA - Incluye cierre del preview panel
  */
 async function performCompleteCleaning() {
-  // Limpiar timeouts
   ChatUtils.cleanupTimeouts();
 
-  // Limpiar elementos de bienvenida
   ChatUtils.cleanupWelcomeElements();
 
-  // Cerrar paneles matemáticos
   ChatUtils.closeMathPanels();
 
-  // Cerrar preview panel si está abierto
   const previewPanel = document.querySelector('#preview-panel');
   if (previewPanel && previewPanel.classList.contains('open')) {
     const { closePreviewPanel } = await import('../components/preview-panel-matematico.js');
     closePreviewPanel();
   }
 
-  // Cerrar modales
   const previewModal = domManager.previewModal;
   if (previewModal) {
     previewModal.classList.remove('show');
     previewModal.style.display = '';
   }
 
-  // Limpiar archivos adjuntos
   await ChatUtils.cleanupFileAttachments();
 
-  // Resetear textarea
   const textarea = domManager.textarea;
   if (textarea) {
     textarea.value = '';
@@ -2572,7 +2360,6 @@ async function performCompleteCleaning() {
     textarea.style.display = '';
   }
 
-  // Limpiar modales y estados
   document.querySelectorAll('.modal, .modal-backdrop, .overlay').forEach(el => {
     if (!el.classList.contains('sidebar-overlay')) {
       eventManager.removeFromElement(el);
@@ -2580,7 +2367,6 @@ async function performCompleteCleaning() {
     }
   });
 
-  // Limpiar URLs de objetos
   if (window.objectURLs && Array.isArray(window.objectURLs)) {
     window.objectURLs.forEach(url => {
       try {
@@ -2594,7 +2380,6 @@ async function performCompleteCleaning() {
     window.objectURLs = [];
   }
 
-  // Resetear clases del body
   document.body.classList.remove(
     'modal-open', 'preview-panel-active', 'welcome-active', 'initializing',
     'sidebar-expanded', 'has-modal', 'no-scroll', 'overflow-hidden'
@@ -2696,13 +2481,11 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
       await new Promise(resolve => requestAnimationFrame(resolve));
       renderChatMessages(messages);
 
-      // ⭐ CAMBIO PRINCIPAL: Reducir delay drásticamente de 300ms a 50ms ⭐
       setTimeout(() => {
         console.log('🔍 Procesando documentos existentes tras renderizado...');
         processExistingDocuments();
         processAllExistingMessages();
 
-        // ⭐ NUEVO: Procesamiento inmediato adicional después de un momento ⭐
         requestAnimationFrame(() => {
           import('../ui/content-processing-matematico.js').then(contentModule => {
             if (typeof contentModule.processMessagesImmediately === 'function') {
@@ -2720,7 +2503,6 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
     if (!isAbortError) {
       console.error('Error al cargar mensajes del chat:', error);
 
-      // 📚 Notificación divertida de error de carga
       acadelError(
         "📚 ¡No pude cargar esa conversación!",
         "Acadel está teniendo problemas accediendo a ese chat. Tal vez está en el rincón más profundo de su memoria de capibara"
@@ -2736,10 +2518,8 @@ async function loadAndRenderMessages(chatId, signal, pendingPromises) {
 async function restoreComponentsAndFunctionality(signal, pendingPromises) {
   if (signal.aborted) return;
 
-  // Restaurar visibilidad del área de entrada
   ChatUtils.restoreInputVisibility();
 
-  // Restaurar funcionalidad matemática
   try {
     const setupPromise = Promise.resolve().then(async () => {
       await setupMathButton();
@@ -2756,19 +2536,15 @@ async function restoreComponentsAndFunctionality(signal, pendingPromises) {
 
   } catch (e) {
     console.warn('Error al restaurar funcionalidad matemática:', e);
-    // Fallback de emergencia
     setupMathButtonFallback();
   }
 
   if (signal.aborted) return;
 
-  // Restaurar eventos del textarea
   restoreTextareaEvents();
 
-  // Restaurar botones
   restoreButtonEvents();
 
-  // Restaurar drag & drop
   try {
     restoreDragAndDrop();
   } catch (e) {
@@ -2862,11 +2638,7 @@ function restoreTextareaEvents() {
   }
 }
 
-/**
- * ⭐ NUEVA: Detecta y procesa JSON doblemente escapado ⭐
- */
 function processEscapedJSON(content) {
-  // Verificar si el contenido es un string que parece JSON escapado
   if (typeof content === 'string' &&
     content.trim().startsWith('"{') &&
     content.trim().endsWith('}"')) {
@@ -2882,7 +2654,6 @@ function processEscapedJSON(content) {
 
       console.log('✅ JSON parseado exitosamente:', parsedData);
 
-      // Verificar si es contenido multimodal
       if ((parsedData.hasDocuments && parsedData.documents) ||
         (parsedData.hasImage && parsedData.images)) {
 
@@ -2925,9 +2696,6 @@ function processEscapedJSON(content) {
   return content;
 }
 
-/**
- * ⭐ CORREGIDA: Intercepta el renderizado de mensajes usando override ⭐
- */
 function setupMessageRenderingInterceptor() {
   // Método 1: Interceptar appendChild para detectar nuevos mensajes
   const originalAppendChild = Element.prototype.appendChild;
@@ -2940,7 +2708,6 @@ function setupMessageRenderingInterceptor() {
       newChild.classList &&
       newChild.classList.contains('user-message')) {
 
-      // ✅ CORREGIDO: Usar processMessageElement en lugar de processMessageElementImmediately
       requestAnimationFrame(() => {
         processMessageElement(newChild);
       });
@@ -2952,18 +2719,13 @@ function setupMessageRenderingInterceptor() {
   console.log('✅ Interceptor de renderizado mejorado configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un elemento de mensaje después de ser agregado al DOM ⭐
- */
 function processMessageElement(messageElement) {
   try {
-    // Buscar elementos que puedan contener JSON
     const textElements = messageElement.querySelectorAll('.message-text, .message-content, div');
 
     textElements.forEach(textElement => {
       const content = textElement.textContent || textElement.innerHTML;
 
-      // Solo procesar si parece JSON y no ha sido procesado
       if (content &&
         typeof content === 'string' &&
         !textElement.hasAttribute('data-processed') &&
@@ -2977,7 +2739,6 @@ function processMessageElement(messageElement) {
           textElement.innerHTML = processedContent;
           textElement.setAttribute('data-processed', 'true');
 
-          // Activar eventos de click para documentos
           setTimeout(() => {
             activateDocumentEvents(textElement);
           }, 50);
@@ -2992,23 +2753,18 @@ function processMessageElement(messageElement) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa todos los mensajes existentes al cargar ⭐
- */
 function processAllExistingMessages() {
   console.log('🔍 Procesando todos los mensajes existentes...');
 
   const userMessages = document.querySelectorAll('.user-message');
   console.log(`Encontrados ${userMessages.length} mensajes de usuario`);
 
-  // ⭐ CAMBIO: Usar delays muy pequeños en lugar de eliminarlos completamente ⭐
   userMessages.forEach((messageElement, index) => {
     setTimeout(() => {
       processMessageElement(messageElement); // Usar la función original
     }, index * 2); // Reducir de 10ms a 2ms entre mensajes
   });
 
-  // ⭐ NUEVO: Agregar procesamiento adicional inmediato DESPUÉS ⭐
   setTimeout(() => {
     import('../ui/content-processing-matematico.js').then(contentModule => {
       if (typeof contentModule.processMessagesImmediately === 'function') {
@@ -3018,9 +2774,6 @@ function processAllExistingMessages() {
   }, userMessages.length * 2 + 10); // Esperar a que termine el procesamiento original
 }
 
-/**
- * ⭐ NUEVA: Versión mejorada de formatMultimodalContentSync ⭐
- */
 function formatMultimodalContentSync(jsonData) {
   const text = jsonData.text || '';
   const images = jsonData.images || [];
@@ -3028,7 +2781,6 @@ function formatMultimodalContentSync(jsonData) {
 
   let html = '<div class="multimodal-container">';
 
-  // Agregar texto si existe y no es consulta por defecto
   const cleanedText = text.trim();
   const isDefaultQuery = [
     "Consulta con imagen",
@@ -3043,14 +2795,12 @@ function formatMultimodalContentSync(jsonData) {
     html += `<div class="multimodal-text">${processedText}</div>`;
   }
 
-  // ⭐ NUEVO: CONTENEDOR UNIFICADO PARA TODOS LOS ELEMENTOS ⭐
   const hasImages = images.length > 0;
   const hasDocuments = documents.length > 0;
 
   if (hasImages || hasDocuments) {
     html += `<div class="unified-attachments">`;
 
-    // ⭐ PROCESAR IMÁGENES DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasImages) {
       const validImages = images.filter(img => img && img.path);
 
@@ -3063,7 +2813,6 @@ function formatMultimodalContentSync(jsonData) {
       });
     }
 
-    // ⭐ PROCESAR DOCUMENTOS DIRECTAMENTE (sin contenedor separado) ⭐
     if (hasDocuments) {
       const validDocuments = documents.filter(doc => doc && doc.fileId);
 
@@ -3094,9 +2843,6 @@ function formatMultimodalContentSync(jsonData) {
   return html;
 }
 
-/**
- * ⭐ NUEVA: Función para escapar HTML ⭐
- */
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div');
@@ -3259,7 +3005,6 @@ function finalCleanup() {
       }
     }
 
-    // Eliminar skeleton de carga
     Promise.resolve().then(() => {
       try {
         if (typeof removeChatSwitchSkeleton === 'function') {
@@ -3286,7 +3031,6 @@ function finalCleanup() {
     ChatUtils.cleanupTimeouts();
     cleanupProblematicElements();
 
-    // Limpiar caché
     if (typeof clearDomCache === 'function') {
       clearDomCache();
     }
@@ -3355,7 +3099,6 @@ async function checkInitialChatFromURL() {
       return;
     }
 
-    // Restaurar visibilidad del textarea inmediatamente
     document.documentElement.classList.remove('welcome-pending');
     const fixedSpace = domManager.fixedSpace;
     if (fixedSpace) {
@@ -3391,7 +3134,6 @@ async function checkInitialChatFromURL() {
       if (messages) {
         renderChatMessages(messages);
 
-        // ⭐ PROCESAMIENTO INMEDIATO - SIN DELAY
         requestAnimationFrame(() => {
           console.log('🔍 Procesando documentos existentes inmediatamente...');
 
@@ -3419,7 +3161,6 @@ async function checkInitialChatFromURL() {
         }
       }
 
-      // Configurar eventos con EventManager
       const sendButton = domManager.sendButton;
       if (sendButton) {
         eventManager.add(sendButton, 'click', handleSendMessage, false, 'initial-send-button');
@@ -3457,7 +3198,6 @@ async function checkInitialChatFromURL() {
 
       window.isInitialChatLoad = false;
 
-      // Limpiar caché para referencias frescas
       domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 
       setTimeout(() => {
@@ -3492,9 +3232,6 @@ function handleKeyPress(e) {
   }
 }
 
-/**
- * ⭐ NUEVA: Procesa contenido de mensaje para detectar JSON multimodal ⭐
- */
 function processMessageContent(messageContent, isAIMessage = false) {
   if (typeof messageContent === 'string' &&
     messageContent.trim().startsWith('{') &&
@@ -3519,9 +3256,6 @@ function processMessageContent(messageContent, isAIMessage = false) {
   return messageContent;
 }
 
-/**
- * ⭐ NUEVAS: Funciones auxiliares ⭐
- */
 function getIconForFileType(fileType) {
   const iconMap = {
     'document': 'bxs-file-txt',
@@ -3556,9 +3290,6 @@ function formatFileSizeSimple(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-/**
- * ⭐ NUEVA: Observer para procesar mensajes después de renderizarse ⭐
- */
 function setupMessageObserver() {
   const chatMessages = domManager.chatMessages;
   if (!chatMessages) return;
@@ -3587,9 +3318,6 @@ function setupMessageObserver() {
   console.log('✅ Observer de mensajes configurado');
 }
 
-/**
- * ⭐ NUEVA: Procesa un mensaje individual después de renderizarse ⭐
- */
 function processExistingMessage(messageElement) {
   try {
     const textElements = messageElement.querySelectorAll('.message-text, .message-content');
@@ -3610,7 +3338,6 @@ function processExistingMessage(messageElement) {
           if (processedHTML !== content) {
             textElement.innerHTML = processedHTML;
 
-            // Activar eventos de click para documentos
             setTimeout(() => {
               activateDocumentEvents(textElement);
             }, 100);
@@ -3650,10 +3377,6 @@ function processExistingMessage(messageElement) {
   }
 }
 
-/**
- * ⭐ FUNCIÓN MODIFICADA: handleDeleteChat con overlay de eliminación ⭐
- * REEMPLAZAR la función handleDeleteChat existente en chat-controller-matematico.js
- */
 export async function handleDeleteChat(chatId) {
   try {
     closeExistingModals();
@@ -3676,7 +3399,6 @@ export async function handleDeleteChat(chatId) {
         '¿Estás seguro de eliminar esta conversación? Una vez que Acadel la borre, no podrá recuperarla (ni siquiera con magia de capibara)',
         async () => {
           try {
-            // ⭐ MOSTRAR OVERLAY INMEDIATAMENTE DESPUÉS DE CONFIRMAR ⭐
             if (isCurrentChat) {
               showDeleteChatOverlay();
             }
@@ -3697,7 +3419,6 @@ export async function handleDeleteChat(chatId) {
             if (isCurrentChat) {
               ChatUtils.closeMathPanels();
 
-              // Cerrar preview panel si está abierto (específico de matemático)
               const previewPanel = document.querySelector('#preview-panel');
               if (previewPanel && previewPanel.classList.contains('open')) {
                 try {
@@ -3716,7 +3437,6 @@ export async function handleDeleteChat(chatId) {
                 }
               }
 
-              // Cerrar modales de previsualización
               const previewModal = domManager.previewModal;
               if (previewModal) {
                 previewModal.classList.remove('show');
@@ -3751,7 +3471,6 @@ export async function handleDeleteChat(chatId) {
                 history.pushState({}, '', '/matematico');
               }
 
-              // ⭐ PREPARAR BIENVENIDA Y OCULTAR OVERLAY ⭐
               setTimeout(() => {
                 const textarea = domManager.textarea;
                 const fixedSpace = domManager.fixedSpace;
@@ -3902,10 +3621,6 @@ export async function handleDeleteChat(chatId) {
   domManager.invalidate(['.fixed-space', '.input-box', '#messageInput', '#sendButton']);
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Muestra overlay de eliminación de chat ⭐
- * AÑADIR esta función al chat-controller-matematico.js
- */
 function showDeleteChatOverlay() {
   if (document.querySelector('.delete-chat-overlay')) {
     console.log('Overlay de eliminación ya existe');
@@ -3960,10 +3675,6 @@ function showDeleteChatOverlay() {
   window.currentDeleteChatOverlay = overlay;
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Oculta overlay de eliminación de chat ⭐
- * AÑADIR esta función al chat-controller-matematico.js
- */
 function hideDeleteChatOverlay() {
   const overlay = window.currentDeleteChatOverlay || document.querySelector('.delete-chat-overlay');
 
@@ -4077,7 +3788,6 @@ async function performChatDeletion(chatId, isCurrentChat, deleteChat, setCurrent
       }).catch(e => console.warn('Error al renderizar historial:', e));
     }
 
-    // Mostrar mensaje de éxito cuando el chat se elimina correctamente
     acadelExito(
       "📋 Chat removido de la lista",
       "Acadel organizó tu interfaz como buen profesor ordenado"
@@ -4315,7 +4025,6 @@ function restoreDragAndDrop() {
       }, false, 'file-preview-click');
     }
 
-    // Configurar eventos de drag & drop con EventManager
     setupDragDropEvents(fileUploadContainer);
 
   } catch (error) {
@@ -4403,14 +4112,12 @@ function setupDragDropEvents(fileUploadContainer) {
   eventManager.add(fileUploadContainer, 'drop', dropHandler, false, 'drag-drop');
 }
 
-// ===== FUNCIONES AUXILIARES PARA EDITOR MATEMÁTICO =====
 
 /**
  * Reinicia completamente el editor matemático
  */
 async function resetMathEditor() {
   try {
-    // Cerrar cualquier panel o editor matemático visible
     const mathPanel = domManager.mathPanel;
     if (mathPanel) {
       mathPanel.classList.remove('show');
@@ -4422,18 +4129,15 @@ async function resetMathEditor() {
       mathEditorContainer.style.display = 'none';
     }
 
-    // Actualizar el estado global
     if (typeof setMathPanelState === 'function') {
       setMathPanelState(false);
     }
 
-    // Restaurar estado visual del botón matemático
     const mathButton = domManager.mathButton;
     if (mathButton) {
       mathButton.classList.remove('active');
     }
 
-    // Limpiar la instancia del editor si existe
     const mathEditorModule = await import('../math/interactive-math-editor.js').catch(() => null);
     if (mathEditorModule && mathEditorModule.cleanupMathEditor) {
       mathEditorModule.cleanupMathEditor();
@@ -4462,18 +4166,15 @@ function repairMathButton() {
       return false;
     }
 
-    // Crear un nuevo botón para garantizar limpieza total
     const newButton = document.createElement('button');
     newButton.id = mathButton.id || 'math-button';
     newButton.className = mathButton.className || 'attach-btn';
     newButton.title = 'Fórmulas matemáticas';
     newButton.innerHTML = mathButton.innerHTML || '<i class="bx bx-math"></i>';
 
-    // Aplicar estilos explícitos para garantizar interactividad
     newButton.style.pointerEvents = 'auto';
     newButton.style.cursor = 'pointer';
 
-    // Reemplazar el botón antiguo con el nuevo
     if (mathButton.parentNode) {
       mathButton.parentNode.replaceChild(newButton, mathButton);
     } else {
@@ -4481,7 +4182,6 @@ function repairMathButton() {
       return false;
     }
 
-    // Configurar el handler del clic con EventManager
     eventManager.add(newButton, 'click', async function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4533,7 +4233,6 @@ function repairMathButton() {
           return;
         }
 
-        // Fallback: usar panel matemático básico
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4550,7 +4249,6 @@ function repairMathButton() {
       }
     }, false, 'repaired-math-button');
 
-    // Actualizar referencia en DOMManager
     domManager.invalidate([DOM_SELECTORS.mathButton]);
 
     return true;
@@ -4568,10 +4266,8 @@ async function setupMathButton() {
   if (!mathButton) return false;
 
   try {
-    // Limpiar eventos existentes
     eventManager.removeFromElement(mathButton);
 
-    // Configurar el nuevo handler optimizado
     eventManager.add(mathButton, 'click', async function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4625,7 +4321,6 @@ async function setupMathButton() {
           return;
         }
 
-        // Fallback: usar el panel matemático básico
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4639,7 +4334,6 @@ async function setupMathButton() {
       } catch (error) {
         console.error('Error al interactuar con el editor matemático:', error);
 
-        // Fallback de emergencia
         const mathPanel = domManager.mathPanel;
         if (mathPanel) {
           mathPanel.classList.toggle('show');
@@ -4660,9 +4354,7 @@ async function setupMathButton() {
   }
 }
 
-// ===== EXPORTACIONES Y COMPATIBILIDAD =====
 
-// ✅ AÑADIR al final del archivo, después de las exportaciones:
 if (typeof window !== 'undefined') {
   window.handleNewChat = handleNewChat;
 }

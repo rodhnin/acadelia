@@ -124,7 +124,6 @@ export function createLineChart(elementId, data, options = {}) {
         activeCharts[elementId].destroy();
     }
     
-    // Aplicar el tema según el modo actual
     const isDarkMode = document.body.classList.contains('dark-mode');
     const scales = isDarkMode ? DARK_MODE_SCALES : DEFAULT_SCALES;
     
@@ -152,17 +151,14 @@ export function createLineChart(elementId, data, options = {}) {
         scales
     };
     
-    // Combinar opciones
     const chartOptions = { ...defaultOptions, ...options };
     
-    // Crear gráfico
     const chart = new Chart(canvas, {
         type: 'line',
         data,
         options: chartOptions
     });
     
-    // Guardar referencia
     activeCharts[elementId] = chart;
     
     return chart;
@@ -187,7 +183,6 @@ export function createBarChart(elementId, data, options = {}) {
         activeCharts[elementId].destroy();
     }
     
-    // Aplicar el tema según el modo actual
     const isDarkMode = document.body.classList.contains('dark-mode');
     const scales = isDarkMode ? DARK_MODE_SCALES : DEFAULT_SCALES;
     
@@ -210,17 +205,14 @@ export function createBarChart(elementId, data, options = {}) {
         scales
     };
     
-    // Combinar opciones
     const chartOptions = { ...defaultOptions, ...options };
     
-    // Crear gráfico
     const chart = new Chart(canvas, {
         type: 'bar',
         data,
         options: chartOptions
     });
     
-    // Guardar referencia
     activeCharts[elementId] = chart;
     
     return chart;
@@ -246,7 +238,6 @@ export function createPieChart(elementId, data, options = {}, doughnut = true) {
         activeCharts[elementId].destroy();
     }
     
-    // Aplicar el tema según el modo actual
     const isDarkMode = document.body.classList.contains('dark-mode');
     
     // Configuración del gráfico
@@ -263,17 +254,14 @@ export function createPieChart(elementId, data, options = {}, doughnut = true) {
         }
     };
     
-    // Combinar opciones
     const chartOptions = { ...defaultOptions, ...options };
     
-    // Crear gráfico
     const chart = new Chart(canvas, {
         type: doughnut ? 'doughnut' : 'pie',
         data,
         options: chartOptions
     });
     
-    // Guardar referencia
     activeCharts[elementId] = chart;
     
     return chart;
@@ -293,10 +281,8 @@ export function updateChart(elementId, newData, animate = true) {
         return;
     }
     
-    // Actualizar datos
     chart.data = newData;
     
-    // Actualizar gráfico
     chart.update(animate ? undefined : 0);
 }
 
@@ -312,7 +298,6 @@ export function createActivityChart(elementId, activityData, criticalData = null
     const totalEvents = [];
     const criticalEvents = criticalData ? [] : null;
     
-    // Ordenar horas y formatear datos
     const hours = Object.keys(activityData).sort();
     
     for (const hour of hours) {
@@ -324,7 +309,6 @@ export function createActivityChart(elementId, activityData, criticalData = null
         }
     }
     
-    // Configurar conjuntos de datos
     const datasets = [
         {
             label: 'Total de Eventos',
@@ -336,7 +320,6 @@ export function createActivityChart(elementId, activityData, criticalData = null
         }
     ];
     
-    // Añadir datos críticos si existen
     if (criticalEvents) {
         datasets.push({
             label: 'Eventos Críticos',
@@ -348,7 +331,6 @@ export function createActivityChart(elementId, activityData, criticalData = null
         });
     }
     
-    // Crear gráfico
     return createLineChart(elementId, { labels, datasets });
 }
 
@@ -363,14 +345,12 @@ export function createEventTypesChart(elementId, eventTypesData) {
     const data = [];
     const backgroundColor = [];
     
-    // Preparar datos
     for (const [type, count] of Object.entries(eventTypesData)) {
         labels.push(type);
         data.push(count);
         backgroundColor.push(EVENT_TYPE_COLORS[type] || CHART_COLORS.secondary);
     }
     
-    // Crear gráfico
     return createPieChart(elementId, {
         labels,
         datasets: [{
@@ -405,7 +385,6 @@ export function createLoginResultsChart(elementId, loginResultsData) {
         }]
     };
     
-    // Crear gráfico
     return createPieChart(elementId, data);
 }
 
@@ -417,14 +396,11 @@ export function updateChartsTheme(darkMode) {
     const scales = darkMode ? DARK_MODE_SCALES : DEFAULT_SCALES;
     const labelColor = darkMode ? 'rgba(255,255,255,0.7)' : undefined;
     
-    // Actualizar cada gráfico activo
     for (const chartId in activeCharts) {
         const chart = activeCharts[chartId];
         
-        // Actualizar escalas
         chart.options.scales = scales;
         
-        // Actualizar color de etiquetas de leyenda
         if (chart.options.plugins && chart.options.plugins.legend) {
             chart.options.plugins.legend.labels = {
                 ...chart.options.plugins.legend.labels,
@@ -432,7 +408,6 @@ export function updateChartsTheme(darkMode) {
             };
         }
         
-        // Actualizar el gráfico
         chart.update();
     }
 }
@@ -462,6 +437,5 @@ export function destroyAllCharts() {
         activeCharts[chartId].destroy();
     }
     
-    // Limpiar referencias
     Object.keys(activeCharts).forEach(key => delete activeCharts[key]);
 }

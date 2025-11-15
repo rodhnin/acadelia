@@ -1,15 +1,12 @@
 // Script para la página de mantenimiento (503)
 document.addEventListener('DOMContentLoaded', function() {
-  // Actualizar el temporizador ETA
   function updateTimer() {
     const timerElement = document.querySelector('.eta-timer');
     if (!timerElement) return;
     
-    // Obtener valores del temporizador actual
     const currentText = timerElement.textContent;
     const [hours, minutes, seconds] = currentText.split(':').map(num => parseInt(num, 10));
     
-    // Calcular nuevo tiempo (reducir en 1 segundo)
     let newSeconds = seconds - 1;
     let newMinutes = minutes;
     let newHours = hours;
@@ -41,16 +38,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     
-    // Formatear el nuevo tiempo con ceros a la izquierda
     const formattedHours = newHours.toString().padStart(2, '0');
     const formattedMinutes = newMinutes.toString().padStart(2, '0');
     const formattedSeconds = newSeconds.toString().padStart(2, '0');
     
-    // Actualizar el temporizador
     timerElement.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
   
-  // Iniciar el temporizador
   const timerInterval = setInterval(updateTimer, 1000);
   
   // Efecto de animación para la barra de progreso
@@ -68,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     
-    // Actualizar la barra cada 5 segundos
     setInterval(animateProgress, 5000);
   }
   
@@ -87,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
         subscribeBtn.innerHTML = '<i class="bx bx-check"></i> ¡Te avisaremos!';
         subscribeBtn.disabled = true;
         
-        // Restaurar después de 3 segundos
         setTimeout(() => {
           subscribeBtn.innerHTML = '<i class="bx bx-bell"></i> Notificarme';
           subscribeBtn.disabled = false;
@@ -97,14 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
         subscribeInput.style.borderColor = '#ff6b6b';
         subscribeInput.focus();
         
-        // Restaurar el estilo después de un momento
         setTimeout(() => {
           subscribeInput.style.borderColor = '';
         }, 2000);
       }
     });
     
-    // Validar formato de email simple
     function isValidEmail(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }

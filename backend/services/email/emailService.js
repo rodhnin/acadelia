@@ -1,4 +1,3 @@
-// backend/services/email/emailService.js
 import nodemailer from 'nodemailer';
 import path from 'path';
 
@@ -12,7 +11,6 @@ class EmailService {
       }
     });
 
-    // Añadir URL base como propiedad configurable
     this.baseUrl = process.env.FRONTEND_URL || 'http://localhost:5000';
 
     // Colores de la marca Acadelia
@@ -289,7 +287,6 @@ class EmailService {
    */
   async sendVerificationCode(email, code, options = {}) {
     try {
-      // Generar el HTML con el nuevo diseño
       const htmlTemplate = this.getVerificationCodeTemplate(code);
 
       const mailOptions = {
@@ -307,7 +304,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de verificación enviado:', info.messageId);
       return true;
@@ -598,7 +594,6 @@ class EmailService {
         resetUrl = `${this.baseUrl}/reset-password?token=${resetToken}&id=${userId}`;
       }
 
-      // Generar el HTML con el diseño
       const htmlTemplate = this.getPasswordResetTemplate(resetToken, resetUrl);
 
       const mailOptions = {
@@ -617,7 +612,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de recuperación enviado:', info.messageId);
       return true;
@@ -641,10 +635,8 @@ class EmailService {
     const mascotaUrl = this.imageUrls.mascota;
     const profesorUrl = "https://i.imgur.com/7DH7j9o.png";
 
-    // Determinar saludo personalizado
     const greeting = recipientName ? `Estimado/a ${recipientName}` : 'Estimado/a usuario/a';
 
-    // Usar datos financieros proporcionados o valores por defecto
     const data = financialData || {
       period: period,
       totalRevenue: "€XX,XXX.XX",
@@ -884,17 +876,14 @@ class EmailService {
    */
   async sendFinancialReport(recipients, filePath, reportTitle, period, options = {}, reportData = null) {
     try {
-      // Normalizar destinatarios a array
       const recipientsList = Array.isArray(recipients) ? recipients : [recipients];
 
-      // Preparar datos financieros para la plantilla
       const financialData = {
         period: period,
         totalRevenue: reportData?.executiveSummary?.totalRevenue !== undefined ?
           `€${reportData.executiveSummary.totalRevenue.toFixed(2)}` :
           "€XX,XXX.XX",
 
-        // Manejar específicamente el caso donde los gastos son 0
         totalExpenses: reportData?.executiveSummary?.totalExpenses !== undefined ?
           (reportData.executiveSummary.totalExpenses === 0 ?
             "€0.00" :
@@ -911,7 +900,6 @@ class EmailService {
         netIncomeColor: (reportData?.executiveSummary?.netIncome || 0) >= 0 ? "#008847" : "#d13438"
       };
 
-      // Generar el HTML con el diseño y datos reales
       const htmlTemplate = this.getFinancialReportTemplate(
         reportTitle,
         period,
@@ -919,7 +907,6 @@ class EmailService {
         financialData // Pasar los datos financieros a la plantilla
       );
 
-      // Preparar adjuntos
       const attachments = [];
 
       if (filePath) {
@@ -947,7 +934,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo con informe financiero enviado:', info.messageId);
       return true;
@@ -969,7 +955,6 @@ class EmailService {
     const mascotaUrl = this.imageUrls.mascota;
     const profesorCapibara = "https://i.imgur.com/0ml5iJ1.png"; // Imagen del profesor Acadel capibara
 
-    // Usar el nombre de usuario o el email
     const userDisplay = userName.includes('@') ? userName.split('@')[0] : userName;
 
     return `
@@ -1235,10 +1220,8 @@ class EmailService {
    */
   async sendWelcomeVerificationEmail(email, verificationToken) {
     try {
-      // Construir el enlace de verificación
       const verificationLink = `${this.baseUrl}/verify-email?token=${verificationToken}`;
 
-      // Generar el HTML con el diseño
       const htmlTemplate = this.getWelcomeVerificationTemplate(email, verificationLink);
 
       const mailOptions = {
@@ -1257,7 +1240,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de bienvenida enviado:', info.messageId);
       return true;
@@ -1277,23 +1259,19 @@ class EmailService {
     const logoUrl = this.imageUrls.logo;
     const mascotaUrl = this.imageUrls.mascota;
 
-    // Extraer datos importantes de la transacción
     const transaction = transactionData.data;
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
     const subtotalAmount = parseFloat(transaction.details?.totals?.subtotal) / 100;
     const taxAmount = parseFloat(transaction.details?.totals?.tax) / 100;
 
-    // Obtener símbolo de moneda para mostrar explícitamente
     const currencySymbol = getCurrencySymbol(currencyCode);
 
     // Formato de moneda según el código de divisa
@@ -1307,7 +1285,6 @@ class EmailService {
     const formattedSubtotal = formatter.format(subtotalAmount);
     const formattedTax = formatter.format(taxAmount);
 
-    // Información del período de facturación
     const startDate = transaction.billing_period?.starts_at
       ? new Date(transaction.billing_period.starts_at)
       : new Date();
@@ -1342,17 +1319,14 @@ class EmailService {
     const formattedStartDate = startDate.toLocaleDateString('es-ES', dateOptions);
     const formattedEndDate = endDate.toLocaleDateString('es-ES', dateOptions);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de facturación
     const invoiceId = transaction.invoice_id;
     const invoiceNumber = transaction.invoice_number;
 
     // URL de la factura (usar directamente la que proporciona Paddle)
-    // Intentar obtener de diferentes fuentes en orden de prioridad
     let invoiceUrl = '';
 
     if (transaction.invoice_url) {
@@ -1649,10 +1623,8 @@ class EmailService {
    */
   async sendPurchaseConfirmationEmail(email, transactionData) {
     try {
-      // Generar el HTML con el diseño y los datos de la transacción
       const htmlTemplate = this.getTransactionConfirmationTemplate(transactionData);
 
-      // Obtener detalles del producto para un asunto más personalizado
       const productName = transactionData.data?.details?.line_items?.[0]?.product?.name || 'Asistente Virtual Académico';
 
       const mailOptions = {
@@ -1671,7 +1643,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de confirmación de compra enviado:', info.messageId);
       return true;
@@ -1693,11 +1664,9 @@ class EmailService {
     // URL del profesor Acadel triste
     const profesorTristeUrl = "https://i.imgur.com/xwLSkfQ.png"; // Profesor Acadel triste
 
-    // Extraer datos importantes de la suscripción
     const subscription = subscriptionData.data;
     const item = subscription.items?.[0];
 
-    // Información del producto
     const productName = item?.product?.name || 'Producto Acadelia';
     const productDescription = item?.product?.description || 'Asistente Virtual Académico';
 
@@ -1926,10 +1895,8 @@ class EmailService {
    */
   async sendCancelSubscriptionEmail(email, subscriptionData) {
     try {
-      // Generar el HTML con el diseño y los datos de la suscripción
       const htmlTemplate = this.getCancelSubscriptionTemplate(subscriptionData);
 
-      // Obtener detalles del producto para un asunto más personalizado
       const productName = subscriptionData.data?.items?.[0]?.product?.name || 'Asistente Virtual Académico';
 
       const mailOptions = {
@@ -1948,7 +1915,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de cancelación de suscripción enviado:', info.messageId);
       return true;
@@ -1968,17 +1934,14 @@ class EmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorTristeUrl = "https://i.imgur.com/xwLSkfQ.png"; // Profesor Acadel triste
 
-    // Extraer datos importantes del pago fallido
     const transaction = paymentData.data;
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const currencySymbol = getCurrencySymbol(currencyCode);
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
@@ -1992,12 +1955,10 @@ class EmailService {
 
     const formattedTotal = formatter.format(totalAmount);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de fecha del intento fallido
     const paymentAttemptDate = transaction.payments?.[0]?.created_at ?
       new Date(transaction.payments[0].created_at) : new Date();
 
@@ -2270,10 +2231,8 @@ class EmailService {
    */
   async sendFailedPaymentEmail(email, paymentData) {
     try {
-      // Generar el HTML con el diseño y los datos del pago fallido
       const htmlTemplate = this.getFailedPaymentTemplate(paymentData);
 
-      // Obtener detalles del producto para un asunto más personalizado
       const productName = paymentData.data?.details?.line_items?.[0]?.product?.name || 'Asistente Virtual Académico';
 
       const mailOptions = {
@@ -2292,7 +2251,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de alerta de pago fallido enviado:', info.messageId);
       return true;
@@ -2312,21 +2270,17 @@ class EmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorFelizUrl = "https://i.imgur.com/leLwp5s.png"; // Profesor Acadel feliz/satisfecho
 
-    // Extraer datos importantes de la transacción
     const transaction = transactionData.data;
     const primaryItem = transaction.items?.[0];
     const lineItem = transaction.details?.line_items?.[0];
 
-    // Información del producto
     const productName = lineItem?.product?.name || 'Producto Acadelia';
     const productDescription = lineItem?.product?.description || primaryItem?.price?.description || 'Asistente Virtual Académico';
     const subscriptionType = primaryItem?.price?.description || 'Suscripción';
 
-    // Información monetaria
     const currencyCode = transaction.currency_code;
     const currencySymbol = getCurrencySymbol(currencyCode);
     const totalAmount = parseFloat(transaction.details?.totals?.grand_total) / 100;
-    // Añadir extracción de subtotal e impuestos
     const subtotalAmount = parseFloat(transaction.details?.totals?.subtotal) / 100;
     const taxAmount = parseFloat(transaction.details?.totals?.tax) / 100;
 
@@ -2338,22 +2292,18 @@ class EmailService {
     });
 
     const formattedTotal = formatter.format(totalAmount);
-    // Añadir formateo para subtotal e impuestos
     const formattedSubtotal = formatter.format(subtotalAmount);
     const formattedTax = formatter.format(taxAmount);
 
-    // Información del método de pago
     const paymentMethod = transaction.payments?.[0]?.method_details?.card;
     const paymentType = paymentMethod?.type || 'tarjeta';
     const paymentLast4 = paymentMethod?.last4 || '****';
 
-    // Información de fechas de facturación
     const billingPeriod = transaction.billing_period || {};
     const startDate = billingPeriod.starts_at ? new Date(billingPeriod.starts_at) : new Date();
     const endDate = billingPeriod.ends_at ? new Date(billingPeriod.ends_at) : new Date(startDate);
 
     if (!billingPeriod.ends_at && primaryItem?.price?.billing_cycle) {
-      // Calcular fecha de fin si no está disponible
       const interval = primaryItem.price.billing_cycle.interval;
       const frequency = primaryItem.price.billing_cycle.frequency || 1;
 
@@ -2378,7 +2328,6 @@ class EmailService {
     const formattedStartDate = startDate.toLocaleDateString('es-ES', dateOptions);
     const formattedEndDate = endDate.toLocaleDateString('es-ES', dateOptions);
 
-    // Información de facturación
     const invoiceId = transaction.invoice_id;
     const invoiceNumber = transaction.invoice_number;
 
@@ -2668,10 +2617,8 @@ class EmailService {
    */
   async sendRenewalConfirmationEmail(email, transactionData) {
     try {
-      // Generar el HTML con el diseño y los datos de la renovación
       const htmlTemplate = this.getRenewalConfirmationTemplate(transactionData);
 
-      // Obtener detalles del producto para un asunto más personalizado
       const productName = transactionData.data?.details?.line_items?.[0]?.product?.name || 'Asistente Virtual Académico';
 
       const mailOptions = {
@@ -2690,7 +2637,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de confirmación de renovación enviado:', info.messageId);
       return true;
@@ -2711,15 +2657,12 @@ class EmailService {
     // URL del profesor Acadel muy triste (usar la imagen del profesor triste)
     const profesorMuyTristeUrl = "https://i.imgur.com/xwLSkfQ.png"; // Profesor Acadel triste
 
-    // Extraer datos importantes de la suscripción
     const subscription = subscriptionData.data;
     const item = subscription.items?.[0];
 
-    // Información del producto
     const productName = item?.product?.name || 'Producto Acadelia';
     const productDescription = item?.product?.description || 'Asistente Virtual Académico';
 
-    // Obtener la fecha de cancelación (fecha actual)
     const cancellationDate = new Date();
 
     // Formateo de fecha en español
@@ -2963,10 +2906,8 @@ class EmailService {
    */
   async sendCancelConfirmationEmail(email, subscriptionData) {
     try {
-      // Generar el HTML con el diseño y los datos de la suscripción
       const htmlTemplate = this.getCancelConfirmationTemplate(subscriptionData);
 
-      // Obtener detalles del producto para un asunto más personalizado
       const productName = subscriptionData.data?.items?.[0]?.product?.name || 'Asistente Virtual Académico';
 
       const mailOptions = {
@@ -2985,7 +2926,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de confirmación de cancelación enviado:', info.messageId);
       return true;
@@ -3009,14 +2949,11 @@ class EmailService {
     const mascotaUrl = this.imageUrls.mascota;
     const profesorCapibara = "https://i.imgur.com/0ml5iJ1.png";
 
-    // Usar el nombre de usuario o el email
     const userDisplay = userName.includes('@') ? userName.split('@')[0] : userName;
 
-    // Calcular fecha límite
     const deadlineDate = new Date();
     deadlineDate.setDate(deadlineDate.getDate() + daysToAccept);
 
-    // Formatear fecha en español
     const dateOptions = {
       year: 'numeric',
       month: 'long',
@@ -3292,13 +3229,11 @@ class EmailService {
    */
   async sendTermsUpdateEmail(email, newTermsVersion, acceptToken = null, daysToAccept = 30) {
     try {
-      // Construir URL de aceptación con token si se proporciona
       let acceptUrl = `${this.baseUrl}/terminos/aceptar`;
       if (acceptToken) {
         acceptUrl += `?token=${acceptToken}&version=${newTermsVersion}`;
       }
 
-      // Generar el HTML con el diseño
       const htmlTemplate = this.getTermsUpdateTemplate(email, newTermsVersion, acceptUrl, daysToAccept);
 
       const mailOptions = {
@@ -3318,7 +3253,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de actualización de términos enviado:', info.messageId);
       return true;
@@ -3585,7 +3519,6 @@ class EmailService {
    */
   async sendAccountDeletionCode(email, code) {
     try {
-      // Generar el HTML con el nuevo diseño
       const htmlTemplate = this.getAccountDeletionTemplate(code);
 
       const mailOptions = {
@@ -3603,7 +3536,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de verificación para eliminar cuenta enviado:', info.messageId);
       return true;
@@ -3624,14 +3556,12 @@ class EmailService {
     const logoUrl = this.imageUrls.logo;
     const mascotaUrl = this.imageUrls.mascota;
 
-    // Información del dispositivo y ubicación
     const deviceInfo = options.deviceInfo || {};
     const ipAddress = deviceInfo.ipAddress || 'No disponible';
     const userAgent = deviceInfo.userAgent || 'No disponible';
     const browserName = this.getBrowserName(userAgent);
     const deviceType = this.getDeviceType(userAgent);
 
-    // Obtener la fecha y hora actual formateada
     const now = new Date();
     const dateOptions = {
       year: 'numeric',
@@ -3642,7 +3572,6 @@ class EmailService {
     };
     const formattedDate = now.toLocaleDateString('es-ES', dateOptions);
 
-    // Determinar si mostrar la parte de "no fui yo"
     const showSecurityWarning = options.showSecurityWarning !== false;
 
     return `
@@ -3943,19 +3872,16 @@ class EmailService {
    */
   async sendPasswordChangeConfirmation(email, userData = {}, options = {}) {
     try {
-      // Preparar datos del dispositivo
       const deviceInfo = {
         ipAddress: options.ipAddress || 'No disponible',
         userAgent: options.userAgent || 'No disponible'
       };
 
-      // Preparar opciones
       const emailOptions = {
         deviceInfo,
         showSecurityWarning: options.showSecurityWarning !== false
       };
 
-      // Generar el HTML con el diseño
       const htmlTemplate = this.getPasswordChangeTemplate(userData, emailOptions);
 
       const mailOptions = {
@@ -3975,7 +3901,6 @@ class EmailService {
         console.log('==========================================');
       }
 
-      // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Correo de confirmación de cambio de contraseña enviado:', info.messageId);
       return true;

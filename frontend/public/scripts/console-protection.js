@@ -16,7 +16,6 @@
   // Si está desactivado, no hacer nada
   if (config.enabled === false) return;
   
-  // === 1. MENSAJE DE ADVERTENCIA PERSONALIZADO ===
   const titleStyles = [
     'color: #5D4037',
     'font-size: 22px', 
@@ -54,7 +53,6 @@
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠘⠙⠒⠭⠗⠵⠄⠀⠀⠿⠗⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀
   `;
   
-  // Guardar los métodos originales
   const originalConsole = {
     log: console.log,
     warn: console.warn,
@@ -76,7 +74,6 @@
   // Variable para almacenar si el mensaje de advertencia ya se mostró
   let warningShown = false;
   
-  // Función para mostrar la advertencia
   function showWarning() {
     if (warningShown) return;
     warningShown = true;
@@ -90,25 +87,20 @@
     originalConsole.log('%c' + config.termsUrl, linkStyles);
   }
   
-  // Función para comprobar si un mensaje es parte de nuestra advertencia
   function isWarningMessage(args) {
     if (!args || args.length === 0) return false;
     
-    // Convertir argumentos a texto
     const text = Array.from(args).join(' ');
     
-    // Verificar si coincide con alguno de nuestros mensajes de advertencia
     return warningMessages.some(message => text.includes(message));
   }
   
-  // Mostrar la advertencia al inicio
   showWarning();
   
   // Sobrescribir todos los métodos de consola para ocultar todos los mensajes
   // excepto nuestra advertencia personalizada
   
   console.log = function() {
-    // Solo permitir mensajes de nuestra advertencia
     if (isWarningMessage(arguments)) {
       originalConsole.log.apply(console, arguments);
     }

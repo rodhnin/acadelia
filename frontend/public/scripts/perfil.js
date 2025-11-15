@@ -47,7 +47,6 @@ const checkAuthentication = async () => {
     }
 };
 
-// Función para mostrar alertas personalizadas
 const showAlert = (message, type = 'info', duration = 3000) => {
     console.log(`🔔 Mostrando alerta: ${type} - ${message}`);
     
@@ -59,7 +58,6 @@ const showAlert = (message, type = 'info', duration = 3000) => {
         info: { icon: 'ⓘ', class: 'alert-info' }
     };
 
-    // Crear elemento de alerta
     const alertDiv = document.createElement('div');
     alertDiv.className = `custom-alert ${alertTypes[type].class}`;
     
@@ -68,16 +66,12 @@ const showAlert = (message, type = 'info', duration = 3000) => {
         <div class="alert-content">${message}</div>
     `;
 
-    // Agregar al documento
     document.body.appendChild(alertDiv);
     
-    // Mostrar con un pequeño retraso para permitir la animación
     setTimeout(() => alertDiv.classList.add('show'), 10);
     
-    // Ocultar después del tiempo especificado
     setTimeout(() => {
         alertDiv.classList.remove('show');
-        // Eliminar del DOM después de la animación
         setTimeout(() => alertDiv.remove(), 400);
     }, duration);
 };
@@ -107,7 +101,6 @@ const performForcedLogout = async () => {
 const initProfileForm = (userId) => {
     console.log('📝 Inicializando formulario para user ID:', userId);
     
-    // Crear campo oculto para user ID
     const form = document.querySelector('form');
     const userIdField = document.createElement('input');
     userIdField.type = 'hidden';
@@ -116,7 +109,6 @@ const initProfileForm = (userId) => {
     form.prepend(userIdField);
     console.log('📌 Campo oculto creado:', userIdField);
 
-    // Configurar evento submit
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         console.log('📤 Evento submit detectado');
@@ -145,7 +137,6 @@ const validateForm = () => {
         idRol: document.getElementById('idRol')
     };
 
-    // Log de valores actuales
     console.log('📋 Valores actuales:', {
         nombre: fields.nombre.value,
         apellido: fields.apellido.value,
@@ -155,7 +146,6 @@ const validateForm = () => {
         idRol: fields.idRol.value
     });
 
-    // Validación completa
     return Object.values(fields).every(field => {
         const isValid = field.checkValidity();
         console.log(`➡️ Campo ${field.id}:`, {
@@ -170,7 +160,6 @@ const handleFormSubmit = async (userId) => {
     try {
         console.log('🚀 Iniciando envío de formulario...');
         
-        // Obtener elementos
         const elements = {
             nombre: document.getElementById('nombre'),
             apellido: document.getElementById('apellido'),
@@ -180,7 +169,6 @@ const handleFormSubmit = async (userId) => {
             idRol: document.getElementById('idRol')
         };
 
-        // Construir objeto de datos
         const formData = {
             id_usuario: userId,
             id_rol: elements.idRol.value,
@@ -193,12 +181,10 @@ const handleFormSubmit = async (userId) => {
 
         console.log('📦 Datos procesados:', formData);
 
-        // Validación final
         if (Object.values(formData).some(v => v === undefined || v === null || v === '')) {
             throw new Error('⚠️ Campos vacíos detectados después de validación');
         }
 
-        // Enviar datos
         console.log('📨 Enviando datos al servidor...');
         const response = await fetch('api/perfil', {
             method: 'POST',
@@ -207,7 +193,6 @@ const handleFormSubmit = async (userId) => {
             credentials: 'include'
         });
 
-        // Manejar respuesta
         const responseText = await response.text();
         console.log('📩 Respuesta cruda del servidor:', responseText);
 

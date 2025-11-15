@@ -2,7 +2,7 @@
 import pool from "../../../lib/dbPool.js";
 import { supabase } from "../../../lib/supabaseService.js";
 import { embeddings } from '../../../lib/openai.js';
-import { notificationTracker } from '../../../utils/marketing/notificationTracker.js'; // ✅ IMPORTAR TRACKER
+import { notificationTracker } from '../../../utils/marketing/notificationTracker.js';
 
 export const memoryService = {
   async saveToMemory(memoryData) {
@@ -10,7 +10,6 @@ export const memoryService = {
     const client = await pool.connect();
     
     try {
-      // Procesar content para asegurar que sea un objeto JSON válido
       let processedContent;
       
       if (typeof content === 'string') {
@@ -23,7 +22,6 @@ export const memoryService = {
         processedContent = content;
       }
       
-      // Generar embedding para el contenido de memoria
       const contentString = JSON.stringify(processedContent);
       const embeddingVector = await embeddings.embedQuery(contentString);
       const formattedVector = `[${embeddingVector.join(',')}]`;
@@ -39,7 +37,6 @@ export const memoryService = {
       
       await client.query('COMMIT');
       
-      // ✅ REGISTRAR NOTIFICACIÓN SIEMPRE QUE SE GUARDE EN MEMORIA
       if (result.rows[0]) {
         try {
           const notification = notificationTracker.trackMemory(result.rows[0]);
@@ -77,10 +74,8 @@ export const memoryService = {
       const existingInsight = existingResult.rows[0];
       
       // 2. Crear una versión fusionada
-      // Extraer el contenido existente
       let existingContent = existingInsight.content;
       
-      // Preparar el contenido fusionado
       const fusedContent = {
         insight: existingContent.insight, // Mantener el insight principal
         fused_insights: existingContent.fused_insights || [], // Array de insights adicionales
@@ -91,7 +86,6 @@ export const memoryService = {
         original_type: existingContent.original_type || existingInsight.type
       };
       
-      // Añadir el nuevo insight a la colección
       fusedContent.fused_insights.push({
         insight: newInsight.insight || (typeof newInsight === 'string' ? newInsight : JSON.stringify(newInsight)),
         added_at: new Date().toISOString(),
@@ -110,7 +104,6 @@ export const memoryService = {
       
       await client.query('COMMIT');
       
-      // ✅ REGISTRAR NOTIFICACIÓN PARA FUSIÓN DE INSIGHTS
       if (updateResult.rows[0]) {
         try {
           const notification = notificationTracker.trackMemory(updateResult.rows[0]);
@@ -140,10 +133,8 @@ export const memoryService = {
   
   async searchMemory(query, type = null, limit = 5) {
     try {
-      // Generar embedding para la consulta
       const queryEmbedding = await embeddings.embedQuery(query);
       
-      // Buscar en memoria usando función SQL
       const { data, error } = await supabase.rpc('search_marketing_memory', {
         query_embedding: queryEmbedding,
         memory_type: type,
@@ -216,7 +207,6 @@ export const memoryService = {
           const memA = memoryA.rows[0];
           const memB = memoryB.rows[0];
           
-          // Determinar cuál tiene mayor importancia para mantenerlo como base
           let baseMemory, secondaryMemory;
           
           if (memA.importance >= memB.importance) {
@@ -227,11 +217,9 @@ export const memoryService = {
             secondaryMemory = memA;
           }
           
-          // Usar el método de fusión para combinar
           const fusionResult = await this.fuseInsights(secondaryMemory.content, baseMemory.id);
           
           if (fusionResult.success) {
-            // Eliminar la memoria secundaria ya que se fusionó
             await client.query('DELETE FROM marketing_memory WHERE id = $1', [secondaryMemory.id]);
             consolidatedCount++;
           }

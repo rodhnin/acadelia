@@ -8,13 +8,10 @@ import pool from "../../lib/dbPool.js";
  * @returns {string} El nombre de la tabla creada
  */
 export const createEmbeddingTable = async (avaSlug, avaId) => {
-  // Convertir el slug a un nombre de tabla válido, reemplazando caracteres no válidos
   const baseTableName = avaSlug.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
-  // Añadir prefijo para evitar colisiones de nombres y añadir el ID del AVA
   const tableName = `emb_${baseTableName}_${avaId}`;
   
   try {
-    // Validar que la tabla no existe ya
     const checkTableQuery = `
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -27,7 +24,6 @@ export const createEmbeddingTable = async (avaSlug, avaId) => {
       throw new Error(`La tabla de embeddings ${tableName} ya existe`);
     }
     
-    // Crear la tabla de embeddings
     const createTableQuery = `
       -- Asegurar que la extensión pgvector está habilitada
       CREATE EXTENSION IF NOT EXISTS vector;
@@ -168,19 +164,16 @@ export const searchSimilarDocuments = async (tableName, queryEmbedding, limit = 
  */
 export const deleteEmbeddingTable = async (tableName) => {
   try {
-    // Validar el nombre de la tabla para prevenir inyección SQL
     if (!tableName.startsWith('emb_')) {
       throw new Error('Nombre de tabla inválido');
     }
     
-    // Eliminar funciones asociadas
     const dropFunctionsQuery = `
       DROP FUNCTION IF EXISTS match_${tableName};
       DROP FUNCTION IF EXISTS kw_match_${tableName};
     `;
     await pool.query(dropFunctionsQuery);
     
-    // Eliminar la tabla
     const dropTableQuery = `DROP TABLE IF EXISTS ${tableName};`;
     await pool.query(dropTableQuery);
     

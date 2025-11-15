@@ -1,4 +1,3 @@
-// backend/routes/usuarios/cookieConsentRoutes.js
 import express from 'express';
 import { 
   getConsent, 
@@ -14,7 +13,6 @@ const router = express.Router();
 
 // Middleware para autenticación opcional (no obliga a estar autenticado)
 const optionalAuth = (req, res, next) => {
-  // Obtener token de cookie o header
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
   
   // Si no hay token, continuar sin autenticación
@@ -32,13 +30,10 @@ const optionalAuth = (req, res, next) => {
   });
 };
 
-// Obtener preferencias de consentimiento (autenticación opcional)
 router.get('/', optionalAuth, getConsent);
 
-// Guardar preferencias de consentimiento (autenticación opcional)
 router.post('/', optionalAuth, saveConsent);
 
-// Obtener historial de consentimiento (requiere autenticación)
 router.get('/history', authenticateUser, getConsentHistory);
 
 // Revocar consentimiento (autenticación opcional)

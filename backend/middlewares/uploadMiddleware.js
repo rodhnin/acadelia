@@ -9,7 +9,6 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ===== TU CONFIGURACIÓN ORIGINAL (MANTENER) =====
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
@@ -21,7 +20,6 @@ const storage = multer.diskStorage({
   }
 });
 
-// Filtrar solo archivos PDF (TU ORIGINAL)
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true);
@@ -30,12 +28,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Configurar límites (TU ORIGINAL)
 const limits = {
   fileSize: 5 * 1024 * 1024, // Limitar a 5MB
 };
 
-// Exportar el middleware configurado (TU ORIGINAL)
 export const uploadInvoice = multer({
   storage: storage,
   fileFilter: fileFilter,
@@ -64,7 +60,6 @@ export const handleUploadErrors = (err, req, res, next) => {
   next();
 };
 
-// ===== SOLO AGREGAR ESTO PARA ARGENTINA (SIN TOCAR LO DE ARRIBA) =====
 
 // Storage específico para comprobantes de transferencia argentina
 const transferStorage = multer.diskStorage({

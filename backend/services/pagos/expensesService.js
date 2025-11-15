@@ -9,7 +9,6 @@ export class ExpensesService {
      */
     async createExpense(expenseData) {
         try {
-            // Validar datos requeridos
             if (!expenseData.amount || !expenseData.description || !expenseData.date || 
                 !expenseData.category_id || !expenseData.created_by) {
                 throw new Error('Faltan campos obligatorios para crear el egreso');
@@ -37,7 +36,6 @@ export class ExpensesService {
                 expenseData.created_by
             ]);
             
-            // Obtener el nombre de la categoría para la respuesta
             const categoryResult = await pool.query(
                 'SELECT name FROM categorias_egresos WHERE id = $1',
                 [expenseData.category_id]
@@ -45,7 +43,6 @@ export class ExpensesService {
             
             const categoryName = categoryResult.rows[0]?.name || 'Desconocida';
             
-            // Combinar resultado con nombre de categoría
             return {
                 ...result.rows[0],
                 category_name: categoryName
@@ -64,7 +61,6 @@ export class ExpensesService {
      */
     async getAllExpenses(filters = {}, pagination = { page: 1, limit: 50 }) {
         try {
-            // Construir la consulta base
             let query = `
                 SELECT e.*, c.name as category_name, u.correo as created_by_email
                 FROM egresos e
@@ -77,7 +73,6 @@ export class ExpensesService {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros
             if (filters.category_id) {
                 query += ` AND e.category_id = $${paramIndex}`;
                 queryParams.push(filters.category_id);
@@ -135,7 +130,6 @@ export class ExpensesService {
             const countResult = await pool.query(countQuery, queryParams);
             const totalCount = parseInt(countResult.rows[0].count);
             
-            // Aplicar ordenamiento y paginación
             const sortField = filters.sort_by || 'date';
             const sortDirection = filters.sort_direction || 'DESC';
             
@@ -149,7 +143,6 @@ export class ExpensesService {
             query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
             queryParams.push(limit, offset);
             
-            // Ejecutar la consulta final
             const result = await pool.query(query, queryParams);
             
             return {
@@ -203,7 +196,6 @@ export class ExpensesService {
      */
     async updateExpense(expenseId, expenseData) {
         try {
-            // Verificar que el egreso existe
             const checkQuery = 'SELECT * FROM egresos WHERE id = $1';
             const checkResult = await pool.query(checkQuery, [expenseId]);
             
@@ -211,12 +203,10 @@ export class ExpensesService {
                 throw new Error('Egreso no encontrado');
             }
             
-            // Construir la consulta de actualización
             let query = 'UPDATE egresos SET updated_at = NOW()';
             const queryParams = [];
             const setValues = [];
             
-            // Incluir solo campos que están en expenseData
             if (expenseData.amount !== undefined) {
                 queryParams.push(expenseData.amount);
                 setValues.push(`amount = $${queryParams.length}`);
@@ -262,14 +252,11 @@ export class ExpensesService {
                 return checkResult.rows[0];
             }
             
-            // Completar la consulta
             query += `, ${setValues.join(', ')} WHERE id = $${queryParams.length + 1} RETURNING *`;
             queryParams.push(expenseId);
             
-            // Ejecutar la actualización
             const result = await pool.query(query, queryParams);
             
-            // Obtener el nombre de la categoría para la respuesta
             const categoryResult = await pool.query(
                 'SELECT name FROM categorias_egresos WHERE id = $1',
                 [result.rows[0].category_id]
@@ -277,7 +264,6 @@ export class ExpensesService {
             
             const categoryName = categoryResult.rows[0]?.name || 'Desconocida';
             
-            // Combinar resultado con nombre de categoría
             return {
                 ...result.rows[0],
                 category_name: categoryName
@@ -309,7 +295,6 @@ async updateExpenseWithInvoice(expenseId, invoiceUrl) {
         throw new Error('Egreso no encontrado');
       }
       
-      // Obtener el nombre de la categoría para la respuesta
       const categoryResult = await pool.query(
         'SELECT name FROM categorias_egresos WHERE id = $1',
         [result.rows[0].category_id]
@@ -317,7 +302,6 @@ async updateExpenseWithInvoice(expenseId, invoiceUrl) {
       
       const categoryName = categoryResult.rows[0]?.name || 'Desconocida';
       
-      // Combinar resultado con nombre de categoría
       return {
         ...result.rows[0],
         category_name: categoryName
@@ -371,7 +355,6 @@ async updateExpenseWithInvoice(expenseId, invoiceUrl) {
      */
     async createExpenseCategory(categoryData) {
         try {
-            // Validar datos requeridos
             if (!categoryData.name) {
                 throw new Error('El nombre de la categoría es obligatorio');
             }
@@ -403,7 +386,6 @@ async updateExpenseWithInvoice(expenseId, invoiceUrl) {
  */
 async getExpensesTotals(filters = {}) {
     try {
-        // Construir la consulta base
         let query = `
             SELECT 
                 SUM(amount) as total,
@@ -417,7 +399,6 @@ async getExpensesTotals(filters = {}) {
         const queryParams = [];
         let paramIndex = 1;
         
-        // Aplicar filtros
         if (filters.category_id) {
             query += ` AND category_id = $${paramIndex}`;
             queryParams.push(filters.category_id);
@@ -436,7 +417,6 @@ async getExpensesTotals(filters = {}) {
             paramIndex++;
         }
         
-        // Ejecutar la consulta
         const result = await pool.query(query, queryParams);
         
         // Reiniciar los parámetros para la segunda consulta
@@ -453,7 +433,6 @@ async getExpensesTotals(filters = {}) {
             WHERE 1=1
         `;
         
-        // Aplicar los mismos filtros pero con nuevos índices
         if (filters.date_from) {
             categoryQuery += ` AND e.date >= $${categoryParamIndex}`;
             categoryQueryParams.push(filters.date_from);
@@ -495,7 +474,6 @@ async getExpensesTotals(filters = {}) {
      */
     async getExpensesByMonth(filters = {}) {
         try {
-            // Construir la consulta base
             let query = `
                 SELECT 
                     DATE_TRUNC('month', date) as month,
@@ -509,7 +487,6 @@ async getExpensesTotals(filters = {}) {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros
             if (filters.category_id) {
                 query += ` AND category_id = $${paramIndex}`;
                 queryParams.push(filters.category_id);
@@ -530,7 +507,6 @@ async getExpensesTotals(filters = {}) {
             
             query += ` GROUP BY DATE_TRUNC('month', date) ORDER BY month`;
             
-            // Ejecutar la consulta
             const result = await pool.query(query, queryParams);
             
             return result.rows.map(row => ({
@@ -551,7 +527,6 @@ async getExpensesTotals(filters = {}) {
      */
     async getExpensesByCategory(filters = {}) {
         try {
-            // Construir la consulta base
             let query = `
                 SELECT 
                     c.id, c.name, SUM(e.amount) as total, COUNT(*) as count
@@ -564,7 +539,6 @@ async getExpensesTotals(filters = {}) {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros
             if (filters.date_from) {
                 query += ` AND e.date >= $${paramIndex}`;
                 queryParams.push(filters.date_from);
@@ -579,7 +553,6 @@ async getExpensesTotals(filters = {}) {
             
             query += ` GROUP BY c.id, c.name ORDER BY total DESC`;
             
-            // Ejecutar la consulta
             const result = await pool.query(query, queryParams);
             
             return result.rows.map(row => ({

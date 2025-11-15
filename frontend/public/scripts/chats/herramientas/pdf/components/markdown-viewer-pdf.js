@@ -70,7 +70,6 @@ export function initMarkdownViewer(containerElement) {
  * Crea los elementos DOM del visor utilizando dom-helpers
  */
 function createViewerElements() {
-  // Crear toolbar principal
   const toolbar = createElement('div', { className: 'markdown-viewer-toolbar' });
   
   // Título con icono Boxicons en lugar de emoji
@@ -94,7 +93,6 @@ function createViewerElements() {
   });
   searchBtn.innerHTML = '<i class="bx bx-search"></i>';
   
-  // Añadir botones a las acciones en el orden invertido: primero búsqueda, luego copiar
   actions.appendChild(searchBtn);
   actions.appendChild(copyBtn);
   
@@ -102,16 +100,13 @@ function createViewerElements() {
   toolbar.appendChild(title);
   toolbar.appendChild(actions);
 
-  // Copiar con animación
   addEvent(copyBtn, 'click', () => {
     if (contentElement && contentElement.textContent) {
       navigator.clipboard.writeText(contentElement.textContent)
         .then(() => {
-          // Añadir clase para animación
           addClass(copyBtn, 'copied');
           showTemporaryMessage('Acadel copió todo el contenido');
           
-          // Quitar clase después de la animación
           setTimeout(() => {
             removeClass(copyBtn, 'copied');
           }, 1000);
@@ -123,7 +118,6 @@ function createViewerElements() {
     }
   });
   
-  // Abrir panel de búsqueda
   addEvent(searchBtn, 'click', toggleSearchPanel);
   
   // Contenido principal
@@ -158,7 +152,6 @@ function createViewerElements() {
   container.appendChild(contentElement);
   document.body.appendChild(selectionToolbar); // Añadir al body en vez del contenedor
   
-  // Ocultar toolbar de selección inicialmente
   hideElement(selectionToolbar);
 }
 
@@ -251,10 +244,8 @@ function createSearchPanel() {
   searchPanel.appendChild(panelHeader);
   searchPanel.appendChild(panelContent);
   
-  // Añadir al body
   document.body.appendChild(searchPanel);
   
-  // Ocultar panel inicialmente
   hideElement(searchPanel);
   
   // Eventos del panel de búsqueda
@@ -264,7 +255,6 @@ function createSearchPanel() {
     if (e.key === 'Enter') {
       performSearch(searchInput.value);
     }
-    // Cerrar al presionar Escape
     if (e.key === 'Escape') {
       toggleSearchPanel();
     }
@@ -289,7 +279,6 @@ function toggleSearchPanel() {
   viewerState.search.panelVisible = !viewerState.search.panelVisible;
   
   if (viewerState.search.panelVisible) {
-    // Mostrar panel
     showElement(searchPanel);
     addClass(searchPanel, 'visible');
     
@@ -298,10 +287,8 @@ function toggleSearchPanel() {
       searchInput.focus();
     }, 300);
   } else {
-    // Ocultar panel
     removeClass(searchPanel, 'visible');
     
-    // Esperar a que termine la animación para ocultar completamente
     setTimeout(() => {
       if (!viewerState.search.panelVisible) {
         hideElement(searchPanel);
@@ -330,14 +317,12 @@ function attachEventListeners() {
     });
   }
 
-  // Ocultar toolbar cuando se haga clic fuera
   addEvent(document, 'mousedown', (e) => {
     if (selectionToolbar && !selectionToolbar.contains(e.target) && !contentElement.contains(e.target)) {
       hideSelectionToolbar();
     }
   });
   
-  // Manejar ESC para cancelar selección
   addEvent(document, 'keydown', (e) => {
     if (e.key === 'Escape') {
       if (selectionToolbar.classList.contains('active')) {
@@ -360,7 +345,6 @@ function performSearch(term) {
     searchPrevButton.disabled = true;
     searchNextButton.disabled = true;
     
-    // Limpiar resaltados anteriores si hay
     if (viewerState.search.active) {
       clearSearchHighlights();
     }
@@ -373,23 +357,19 @@ function performSearch(term) {
     return;
   }
   
-  // Actualizar estado
   viewerState.search.term = term;
   viewerState.search.active = true;
   
-  // Limpiar resaltados anteriores si hay
   clearSearchHighlights();
   
   // Realizar la búsqueda
   const regex = new RegExp(escapeRegExp(term), 'gi');
   const content = contentElement.innerHTML;
   
-  // Reemplazar todas las coincidencias con spans resaltados
   const highlightedContent = content.replace(regex, match => 
     `<mark class="search-highlight">${match}</mark>`
   );
   
-  // Actualizar el contenido con los resaltados
   contentElement.innerHTML = highlightedContent;
   
   // Recolectar todos los elementos resaltados
@@ -397,13 +377,10 @@ function performSearch(term) {
   viewerState.search.results = Array.from(highlights);
   viewerState.search.currentIndex = viewerState.search.results.length > 0 ? 0 : -1;
   
-  // Actualizar contador de resultados
   updateSearchResultCounter();
   
-  // Actualizar estado de botones
   updateSearchNavigationButtons();
   
-  // Marcar el resultado actual si hay resultados
   if (viewerState.search.results.length > 0) {
     highlightCurrentResult();
     scrollToCurrentResult();
@@ -451,12 +428,10 @@ function updateSearchNavigationButtons() {
 function highlightCurrentResult() {
   const { results, currentIndex } = viewerState.search;
   
-  // Quitar el resaltado actual de todos
   results.forEach(element => {
     removeClass(element, 'current-highlight');
   });
   
-  // Aplicar el resaltado actual
   if (currentIndex >= 0 && currentIndex < results.length) {
     addClass(results[currentIndex], 'current-highlight');
   }
@@ -506,9 +481,7 @@ function scrollToCurrentResult() {
   const elementRect = currentElement.getBoundingClientRect();
   const containerRect = contentElement.getBoundingClientRect();
   
-  // Verificar si el elemento está fuera de vista
   if (elementRect.top < containerRect.top || elementRect.bottom > containerRect.bottom) {
-    // Calcular una posición que coloca el elemento a 1/3 de la altura del contenedor
     const offset = elementRect.top - containerRect.top - (containerRect.height / 3);
     contentElement.scrollTop += offset;
   }
@@ -518,21 +491,17 @@ function scrollToCurrentResult() {
  * Limpia la búsqueda actual
  */
 function clearSearch() {
-  // Limpiar campos
   if (searchInput) {
     searchInput.value = '';
   }
   
-  // Limpiar resaltados
   clearSearchHighlights();
   
-  // Resetear estado
   viewerState.search.active = false;
   viewerState.search.results = [];
   viewerState.search.currentIndex = -1;
   viewerState.search.term = '';
   
-  // Actualizar UI
   searchResultCounter.textContent = 'Ingresa un término para buscar';
   searchPrevButton.disabled = true;
   searchNextButton.disabled = true;
@@ -550,7 +519,6 @@ function clearSearchHighlights() {
   // Si no hay resultados activos, no hacer nada
   if (!viewerState.search.results.length) return;
   
-  // Quitar spans de resaltado manteniendo el texto
   const highlights = contentElement.querySelectorAll('.search-highlight, .current-highlight');
   
   highlights.forEach(highlight => {
@@ -558,7 +526,6 @@ function clearSearchHighlights() {
     highlight.parentNode.replaceChild(textNode, highlight);
   });
   
-  // Normalizar nodos de texto adyacentes
   contentElement.normalize();
 }
 
@@ -570,7 +537,6 @@ function handleTextSelection(e) {
   const selection = window.getSelection();
   const selectedText = selection.toString().trim();
   
-  // Validar que hay texto seleccionado
   if (selectedText === '') {
     // No ocultar inmediatamente para permitir clic en botones
     setTimeout(() => {
@@ -581,14 +547,11 @@ function handleTextSelection(e) {
     return;
   }
   
-  // Guardar la selección actual
   viewerState.currentSelection = selectedText;
   
-  // Obtener las coordenadas de la selección
   const range = selection.getRangeAt(0);
   const rect = range.getBoundingClientRect();
   
-  // Mostrar la barra justo encima de la selección
   showSelectionToolbar(rect.left + rect.width/2, rect.top);
 }
 
@@ -600,21 +563,17 @@ function handleTextSelection(e) {
 function showSelectionToolbar(x, y) {
   if (!selectionToolbar) return;
   
-  // Obtener dimensiones de la barra (necesitamos mostrarla brevemente para medir)
   selectionToolbar.style.display = 'flex';
   selectionToolbar.style.opacity = '0';
   selectionToolbar.style.visibility = 'hidden';
   
-  // Esperar un momento para que el DOM se actualice
   setTimeout(() => {
     const toolbarHeight = selectionToolbar.offsetHeight;
     const toolbarWidth = selectionToolbar.offsetWidth;
     
-    // Calcular límites de pantalla
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Determinar posición X asegurando que no se salga por los lados
     let posX = x;
     if (x - (toolbarWidth / 2) < 10) {
       posX = 10 + (toolbarWidth / 2);
@@ -622,7 +581,6 @@ function showSelectionToolbar(x, y) {
       posX = viewportWidth - 10 - (toolbarWidth / 2);
     }
     
-    // Determinar posición Y asegurando que no se salga por arriba
     // Dejar un espacio (15px) entre la selección y la barra
     let posY = y - toolbarHeight - 15;
     if (posY < 10) {
@@ -633,14 +591,12 @@ function showSelectionToolbar(x, y) {
       removeClass(selectionToolbar, 'position-below');
     }
     
-    // Establecer posición
     selectionToolbar.style.position = 'fixed';
     selectionToolbar.style.left = `${posX}px`;
     selectionToolbar.style.top = `${posY}px`;
     selectionToolbar.style.transform = 'translateX(-50%)'; // Centrar horizontalmente
     selectionToolbar.style.zIndex = '99999';
     
-    // Mostrar la barra
     selectionToolbar.style.visibility = 'visible';
     selectionToolbar.style.opacity = '1';
     addClass(selectionToolbar, 'active');
@@ -688,7 +644,6 @@ async function handleSelectionAction(action) {
       break;
       
     case 'chat':
-      // Enviar texto directamente al chat
       await sendTextToChat(selectedText);
       hideSelectionToolbar();
       break;
@@ -709,16 +664,13 @@ async function sendPDFPrompt(message) {
     let sentSuccessfully = false;
     
     try {
-      // Intentar importar handleSendMessage de chat-controller
       const chatController = await import('../core/chat-controller-pdf.js');
       
       if (chatController && chatController.handleSendMessage) {
-        // Configurar mensaje en el textarea
         const textarea = document.getElementById('messageInput');
         if (textarea) {
           textarea.value = message;
           
-          // Disparar evento para avisarle al sistema de chat
           const event = new CustomEvent('sendMessageRequest');
           window.dispatchEvent(event);
           
@@ -746,27 +698,22 @@ async function sendPDFPrompt(message) {
  */
 async function sendTextToChat(text) {
   try {
-    // Verificar si podemos usar handleSendMessage
     let sentSuccessfully = false;
     
     try {
-      // Usar sistema de chat-controller si está disponible
       const chatController = await import('../core/chat-controller-pdf.js');
       
       if (chatController && chatController.handleSendMessage) {
-        // Configurar mensaje en textarea
         const textarea = document.getElementById('messageInput');
         if (textarea) {
           textarea.value = text;
           
-          // Disparar evento para enviar mensaje
           const event = new CustomEvent('sendMessageRequest');
           window.dispatchEvent(event);
           
           sentSuccessfully = true;
         }
       } else if (window.handleSendMessage) {
-        // Usar versión global si está disponible
         const textarea = document.getElementById('messageInput');
         if (textarea) {
           textarea.value = text;
@@ -810,7 +757,6 @@ function hideSelectionToolbar() {
 export function renderMarkdownContent(content) {
   if (!contentElement) return;
   
-  // Limpiar selección actual
   hideSelectionToolbar();
   
   // IMPORTANTE: En el visor de markdown (PDF), siempre activamos modo PDF
@@ -821,10 +767,8 @@ export function renderMarkdownContent(content) {
   // Utilizar la función parseMarkdownToHTML de markdown.js
   const htmlContent = parseMarkdownToHTML(content);
   
-  // Renderizar el contenido
   contentElement.innerHTML = htmlContent;
   
-  // Añadir clases para formatear correctamente
   formatMarkdownContent();
   
   // Si hay una búsqueda activa, volver a aplicarla
@@ -840,7 +784,6 @@ export function renderMarkdownContent(content) {
     // Forzar clase math-content en el contenedor para ayudar a MathJax
     contentElement.classList.add('math-content');
     
-    // Intentar primero con mathjax-config.js
     import('../../../matematico/math/mathjax-config.js')
       .then(module => {
         console.log('Módulo mathjax-config importado correctamente');
@@ -850,11 +793,9 @@ export function renderMarkdownContent(content) {
             .then(() => console.log('Matemáticas renderizadas correctamente'))
             .catch(err => {
               console.warn('Error al renderizar matemáticas (1):', err);
-              // Fallback a renderización directa con MathJax global
               tryDirectMathJaxRendering();
             });
         } else if (typeof module.default?.renderMath === 'function') {
-          // Intentar con export default
           console.log('Llamando a default.renderMath');
           module.default.renderMath(contentElement)
             .catch(err => {
@@ -875,7 +816,6 @@ export function renderMarkdownContent(content) {
       })
       .catch(err => {
         console.warn('Error al importar mathjax-config.js:', err);
-        // Intentar alternativas
         tryDirectMathJaxRendering();
       });
   }
@@ -916,14 +856,12 @@ function tryDirectMathJaxRendering() {
  * Aplica formato adicional al contenido markdown renderizado
  */
 function formatMarkdownContent() {
-  // Crear IDs únicos para todos los encabezados
   const headers = contentElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
   headers.forEach((header, index) => {
     const id = `header-${index}-${Date.now()}`;
     header.id = id;
   });
   
-  // Agregar clases a elementos específicos
   contentElement.querySelectorAll('table').forEach(table => {
     addClass(table, 'markdown-table');
     
@@ -935,7 +873,6 @@ function formatMarkdownContent() {
     }
   });
   
-  // Aplicar clases a listas
   contentElement.querySelectorAll('ul, ol').forEach(list => {
     addClass(list, 'markdown-list');
   });
@@ -944,23 +881,19 @@ function formatMarkdownContent() {
   contentElement.querySelectorAll('pre code').forEach(code => {
     addClass(code, 'markdown-code');
     
-    // Intentar aplicar resaltado si está disponible
     if (window.hljs) {
       window.hljs.highlightElement(code);
     }
   });
   
-  // Añadir clases a imágenes
   contentElement.querySelectorAll('img').forEach(img => {
     addClass(img, 'markdown-image');
     
-    // Añadir lightbox para imágenes
     addEvent(img, 'click', () => {
       showImageLightbox(img.src, img.alt);
     });
   });
   
-  // Añadir clases a blockquotes
   contentElement.querySelectorAll('blockquote').forEach(quote => {
     addClass(quote, 'markdown-blockquote');
   });
@@ -972,7 +905,6 @@ function formatMarkdownContent() {
  * @param {boolean} isError - Si es un mensaje de error
  */
 function showTemporaryMessage(message, isError = false) {
-  // Verificar si ya existe un mensaje
   let messageElement = document.querySelector('.temporary-message');
   
   if (!messageElement) {
@@ -980,7 +912,6 @@ function showTemporaryMessage(message, isError = false) {
     document.body.appendChild(messageElement);
   }
   
-  // Configurar mensaje
   messageElement.textContent = sanitizeText(message);
   
   if (isError) {
@@ -991,7 +922,6 @@ function showTemporaryMessage(message, isError = false) {
   
   addClass(messageElement, 'active');
   
-  // Ocultar después de un tiempo
   setTimeout(() => {
     removeClass(messageElement, 'active');
   }, 3000);
@@ -1003,7 +933,6 @@ function showTemporaryMessage(message, isError = false) {
  * @param {string} alt - Texto alternativo
  */
 function showImageLightbox(src, alt) {
-  // Crear lightbox si no existe
   let lightbox = document.querySelector('.markdown-image-lightbox');
   
   if (!lightbox) {
@@ -1018,7 +947,6 @@ function showImageLightbox(src, alt) {
     
     document.body.appendChild(lightbox);
     
-    // Agregar evento para cerrar
     addEvent(lightbox, 'click', (e) => {
       if (e.target === lightbox || e.target.classList.contains('lightbox-close') || e.target.parentElement.classList.contains('lightbox-close')) {
         removeClass(lightbox, 'active');
@@ -1026,12 +954,10 @@ function showImageLightbox(src, alt) {
     });
   }
   
-  // Configurar imagen
   const img = lightbox.querySelector('img');
   img.src = src;
   img.alt = sanitizeText(alt) || 'Imagen';
   
-  // Mostrar
   addClass(lightbox, 'active');
 }
 

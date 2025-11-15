@@ -13,7 +13,6 @@ let currentView = 'grid';
 let currentTypeFilter = 'all';
 let currentSourceFilter = 'all';
 
-// 🆕 NUEVA FUNCIÓN: Detectar si es una simulación de campaña
 function isScreenSimulation(content) {
   return (
     content.results || 
@@ -25,12 +24,10 @@ function isScreenSimulation(content) {
   );
 }
 
-// 🆕 NUEVA FUNCIÓN: Extraer insight enriquecido para simulaciones de campaña
 function extractSimulationInsight(content) {
   let simulationData = null;
   let resultsData = null;
   
-  // Detectar estructura de datos de simulación
   if (content.results && content.results.predicciones) {
     resultsData = content.results;
     simulationData = content.simulationData || content;
@@ -46,23 +43,18 @@ function extractSimulationInsight(content) {
   
   const predicciones = resultsData.predicciones || {};
   
-  // Extraer métricas clave
   const metricas = predicciones.metricas_clave || {};
   const ctr = metricas.CTR || 'N/A';
   const engagement = metricas.engagement || 'N/A';
   const conversion = metricas.tasa_conversion || 'N/A';
   const confianza = predicciones.nivel_confianza || 0;
   
-  // Extraer factores de éxito
   const factoresExito = predicciones.factores_exito || [];
   
-  // Extraer recomendaciones
   const recomendaciones = predicciones.recomendaciones || [];
   
-  // Extraer riesgos
   const riesgos = predicciones.riesgos_desafios || [];
   
-  // Extraer información de campaña
   const campaign = simulationData.campaign || {};
   const audience = simulationData.audience || {};
   
@@ -70,7 +62,6 @@ function extractSimulationInsight(content) {
   const objetivos = campaign.objectives || campaign.objetivos || '';
   const audienciaSegmentos = audience.segments || audience.segmentos || '';
   
-  // Crear insight enriquecido
   let insight = `🎯 Simulación de Campaña: "${concepto}"`;
   
   if (confianza > 0) {
@@ -114,7 +105,6 @@ function extractSimulationInsight(content) {
   };
 }
 
-// 🆕 NUEVA FUNCIÓN: Detectar si es un análisis de tendencias
 function isTrendAnalysis(content) {
   return (
     content.trend || 
@@ -125,12 +115,10 @@ function isTrendAnalysis(content) {
   );
 }
 
-// 🆕 NUEVA FUNCIÓN: Extraer insight enriquecido para análisis de tendencias
 function extractTrendInsight(content) {
   let trendData = null;
   let analysisData = null;
   
-  // Detectar estructura de datos
   if (content.trend && content.analysis) {
     trendData = content.trend;
     analysisData = content.analysis;
@@ -147,11 +135,9 @@ function extractTrendInsight(content) {
   const theme = trendData.theme || trendData.nombre || 'Análisis de tendencia';
   const popularity = trendData.popularity || trendData.popularidad || 0;
   
-  // Extraer oportunidades de marketing
   let marketingOpportunities = [];
   
   if (analysisData) {
-    // Buscar en diferentes estructuras posibles
     const searchPaths = [
       'oportunidades_de_marketing_especificas',
       'oportunidades_de_marketing_específicas', 
@@ -174,7 +160,6 @@ function extractTrendInsight(content) {
     }
   }
   
-  // Extraer canales recomendados
   let recommendedChannels = [];
   
   if (analysisData) {
@@ -197,7 +182,6 @@ function extractTrendInsight(content) {
     }
   }
   
-  // Crear insight enriquecido
   let insight = `📊 Análisis de Tendencia: "${theme}"`;
   
   if (popularity > 0) {
@@ -216,7 +200,6 @@ function extractTrendInsight(content) {
     insight += `\n\n📱 Canales recomendados:`;
     recommendedChannels.forEach((channel, index) => {
       let channelText = typeof channel === 'string' ? channel : JSON.stringify(channel);
-      // Limpiar el texto del canal
       channelText = channelText.replace(/^\d+\.\s*/, '').replace(/^"\d+":\s*"/, '').replace(/"$/, '');
       insight += `\n• ${channelText.substring(0, 60)}${channelText.length > 60 ? '...' : ''}`;
     });
@@ -232,14 +215,12 @@ function extractTrendInsight(content) {
   };
 }
 
-// 🆕 FUNCIÓN AUXILIAR: Obtener valor anidado de objeto
 function getNestedValue(obj, path) {
   return path.split('.').reduce((current, key) => {
     return current && current[key] !== undefined ? current[key] : null;
   }, obj);
 }
 
-// Procesar datos de memoria individuales - MEJORADO
 function processMemoryData(memory) {
   let content = {};
   
@@ -254,7 +235,6 @@ function processMemoryData(memory) {
     content = memory.content;
   }
   
-  // 🆕 MEJORADO: Detectar y procesar simulaciones Y análisis de tendencias
   let processedInsight = null;
   let enrichedData = null;
   let isSimulation = false;
@@ -299,7 +279,6 @@ function processMemoryData(memory) {
     originalContent: content,
     additionalInfo: extractAdditionalMemoryInfo(content),
     
-    // 🆕 NUEVO: Datos enriquecidos para simulaciones y análisis de tendencias
     enrichedData: enrichedData,
     isScreenSimulation: isSimulation,
     isTrendAnalysis: isTrend
@@ -308,11 +287,9 @@ function processMemoryData(memory) {
   return processedMemory;
 }
 
-// Renderizar tarjeta de memoria - MEJORADO PARA SIMULACIONES Y TENDENCIAS
 function renderMemoryCard(memory) {
   const importancePercentage = memory.importance * 100;
   
-  // 🆕 NUEVO: Clase especial para simulaciones y análisis de tendencias
   let cardClass = 'memory-card';
   if (memory.isScreenSimulation) {
     cardClass += ' simulation-card';
@@ -320,13 +297,11 @@ function renderMemoryCard(memory) {
     cardClass += ' trend-analysis-card';
   }
   
-  // 🆕 NUEVO: Información adicional para simulaciones
   let enrichedInfo = '';
   if (memory.enrichedData && memory.enrichedData.isEnriched) {
     if (memory.isScreenSimulation) {
       const { concepto, objetivos, audienciaSegmentos, metricas, confianza, factoresExito, recomendaciones, riesgos } = memory.enrichedData;
       
-      // Información específica de simulación
       let metricsPreview = '';
       if (metricas.ctr !== 'N/A' || metricas.engagement !== 'N/A' || metricas.conversion !== 'N/A') {
         metricsPreview = `
@@ -423,10 +398,8 @@ function renderMemoryCard(memory) {
         </div>
       `;
     } else if (memory.isTrendAnalysis) {
-      // Lógica existente para análisis de tendencias
       const { theme, popularity, marketingOpportunities, recommendedChannels } = memory.enrichedData;
       
-      // Mostrar información más detallada y útil
       let opportunitiesPreview = '';
       if (marketingOpportunities.length > 0) {
         const firstThreeOpportunities = marketingOpportunities.slice(0, 3);
@@ -502,7 +475,6 @@ function renderMemoryCard(memory) {
     }
   }
   
-  // 🆕 NUEVO: Badge específico según el tipo
   let typeBadgeClass = '';
   if (memory.isScreenSimulation) {
     typeBadgeClass = 'simulation-type-badge';
@@ -561,7 +533,6 @@ function renderMemoryCard(memory) {
   `;
 }
 
-// Inicializar la modal de memoria
 export function initMemoryModal() {
   console.log('🧠 Inicializando modal de memoria...');
   
@@ -586,7 +557,6 @@ export function initMemoryModal() {
   console.log('✅ Modal de memoria inicializada correctamente');
 }
 
-// Cargar el dashboard completo de memoria
 async function loadMemoryDashboard() {
   const modalBody = document.querySelector('#memoryModal .modal-body');
   if (!modalBody) return;
@@ -608,7 +578,6 @@ async function loadMemoryDashboard() {
   }
 }
 
-// Cargar datos de memoria desde la API
 async function loadMemoryData() {
   try {
     console.log('🧠 Cargando datos de memoria desde API...');
@@ -620,7 +589,6 @@ async function loadMemoryData() {
       filteredMemoryData = [...memoryData];
       console.log(`✅ ${memoryData.length} insights de memoria cargados exitosamente`);
       
-      // 🆕 NUEVO: Log de análisis de tendencias detectados
       const trendAnalyses = memoryData.filter(m => m.isTrendAnalysis);
       if (trendAnalyses.length > 0) {
         console.log(`📊 ${trendAnalyses.length} análisis de tendencias detectados y enriquecidos`);
@@ -641,7 +609,6 @@ async function loadMemoryData() {
 // [El resto de las funciones permanecen igual que en el código original...]
 // Copiando solo las funciones que cambiaron arriba, las demás permanecen iguales
 
-// Extraer información adicional del contenido
 function extractAdditionalMemoryInfo(content) {
   const additionalInfo = {};
   const knownFields = [
@@ -659,12 +626,10 @@ function extractAdditionalMemoryInfo(content) {
   return additionalInfo;
 }
 
-// Renderizar el dashboard completo
 function renderMemoryDashboard() {
   const modalBody = document.querySelector('#memoryModal .modal-body');
   if (!modalBody) return;
   
-  // 🆕 MEJORADO: Estadísticas que incluyan simulaciones y análisis de tendencias
   const simulationsCount = memoryData.filter(m => m.isScreenSimulation).length;
   const trendAnalysesCount = memoryData.filter(m => m.isTrendAnalysis).length;
   
@@ -896,7 +861,6 @@ function renderModals() {
   `;
 }
 
-// Renderizar contenido de memoria
 function renderMemoryContent() {
   if (filteredMemoryData.length === 0) {
     return `
@@ -934,13 +898,11 @@ function renderMemoryContent() {
   }
 }
 
-// Renderizar fila de tabla - MEJORADO
 function renderMemoryRow(memory) {
   let rowIndicator = '';
   let rowClass = 'memory-row';
   let badgeClass = '';
   
-  // 🆕 NUEVO: Indicadores específicos para simulaciones y tendencias
   if (memory.isScreenSimulation) {
     rowIndicator = '<i class="bx bx-target-lock simulation-row-indicator" title="Simulación de Campaña"></i> ';
     rowClass += ' simulation-row';
@@ -982,7 +944,6 @@ function renderMemoryRow(memory) {
   `;
 }
 
-// 🆕 MEJORADO: Función de ordenamiento que incluye análisis de tendencias
 function handleMemorySort(e) {
   const sortValue = e.target.value;
   
@@ -1050,7 +1011,6 @@ function formatTypeName(type) {
     'profile_creation': 'Creación de Perfil',
     'agent_insight': 'Insight de Agente',
     
-    // 🆕 NUEVOS: Tipos específicos para simulaciones
     'screen_simulation': 'Simulación de Pantalla',
     'simulation_results': 'Resultados de Simulación',
     'campaign_metrics': 'Métricas de Campaña',
@@ -1118,7 +1078,6 @@ function formatFieldName(fieldName) {
     .join(' ');
 }
 
-// Configurar eventos de la modal
 function setupMemoryEvents() {
   const modalBody = document.querySelector('#memoryModal .modal-body');
   if (!modalBody) return;
@@ -1190,7 +1149,6 @@ function setupMemoryEvents() {
       showEditMemoryModal(memoryId);
     }
     
-    // Eliminar
     if (e.target.closest('.memory-card-delete') || e.target.closest('.memory-delete-btn')) {
       e.preventDefault();
       e.stopPropagation();
@@ -1275,7 +1233,6 @@ function updateSummaryCards() {
     summaryCards[1].querySelector('.memory-card-value').textContent = 
       formatNumber(filteredMemoryData.filter(m => m.importance > 0.7).length);
     
-    // 🆕 MEJORADO: Actualizar conteo de análisis de tendencias
     const trendAnalysesFiltered = filteredMemoryData.filter(m => m.isTrendAnalysis).length;
     summaryCards[2].querySelector('.memory-card-value').textContent = formatNumber(trendAnalysesFiltered);
     
@@ -1309,7 +1266,6 @@ async function handleMemoryRefresh() {
   }
 }
 
-// Modales auxiliares
 function showResetMemoryModal() {
   console.log('🚀 Mostrando modal de reseteo de memoria...');
   
@@ -1319,7 +1275,6 @@ function showResetMemoryModal() {
     return;
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = resetModal.querySelector('.memory-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, reiniciar memoria';
@@ -1328,7 +1283,6 @@ function showResetMemoryModal() {
     confirmBtn.style.cursor = 'pointer';
   }
   
-  // ✅ LIMPIAR EVENT LISTENERS ANTERIORES
   if (resetModal._handlers) {
     const { closeHandler, confirmHandler, handleResetEsc } = resetModal._handlers;
     const closeBtn = resetModal.querySelector('.memory-reset-close');
@@ -1363,7 +1317,6 @@ function showResetMemoryModal() {
   resetModal.addEventListener('click', backdropHandler);
   resetModal._backdropHandler = backdropHandler;
   
-  // ✅ AGREGADO: Handler específico de ESC para resetModal
   const handleResetEsc = (e) => {
     if (e.key === 'Escape' && resetModal.classList.contains('active')) {
       e.preventDefault();
@@ -1375,7 +1328,6 @@ function showResetMemoryModal() {
   
   document.addEventListener('keydown', handleResetEsc, true);
   
-  // ✅ Guardar handlers para limpieza
   resetModal._handlers = { 
     closeHandler, 
     confirmHandler,
@@ -1388,7 +1340,6 @@ function showResetMemoryModal() {
 function closeResetModal(resetModal) {
   console.log('🚪 Cerrando modal de reseteo de memoria...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = resetModal.querySelector('.memory-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, reiniciar memoria';
@@ -1399,7 +1350,6 @@ function closeResetModal(resetModal) {
   
   resetModal.classList.remove('active');
   
-  // ✅ Limpiar event listeners (incluyendo ESC handler)
   if (resetModal._handlers) {
     const { closeHandler, confirmHandler, handleResetEsc } = resetModal._handlers;
     const closeBtn = resetModal.querySelector('.memory-reset-close');
@@ -1409,7 +1359,6 @@ function closeResetModal(resetModal) {
     if (cancelBtn) cancelBtn.removeEventListener('click', closeHandler);
     if (confirmBtn) confirmBtn.removeEventListener('click', confirmHandler);
     
-    // ✅ Remover ESC handler
     document.removeEventListener('keydown', handleResetEsc, true);
     resetModal.removeEventListener('click', resetModal._backdropHandler);
     
@@ -1425,14 +1374,12 @@ async function handleResetMemory(resetModal) {
   
   const confirmBtn = resetModal.querySelector('.memory-reset-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, reiniciar memoria',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Reiniciando...';
       confirmBtn.disabled = true;
@@ -1443,7 +1390,6 @@ async function handleResetMemory(resetModal) {
     const response = await resetAllMemory();
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -1469,7 +1415,6 @@ async function handleResetMemory(resetModal) {
   } catch (error) {
     console.error('❌ Error reiniciando memoria:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1518,7 +1463,6 @@ function showEditMemoryModal(memoryId) {
     }
   });
   
-  // ✅ Handler específico de ESC con máxima prioridad
   const handleEditEsc = (e) => {
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -1530,7 +1474,6 @@ function showEditMemoryModal(memoryId) {
   
   document.addEventListener('keydown', handleEditEsc, true);
   
-  // Guardar handlers para limpieza
   editModal._handlers = { 
     closeHandler, 
     saveHandler, 
@@ -1544,7 +1487,6 @@ function showEditMemoryModal(memoryId) {
 function closeEditModal(editModal) {
   editModal.classList.remove('active');
   
-  // Limpiar event listeners
   if (editModal._handlers) {
     const { closeHandler, saveHandler, sliderHandler, handleEditEsc } = editModal._handlers;
     const closeBtn = editModal.querySelector('.memory-edit-close');
@@ -1557,7 +1499,6 @@ function closeEditModal(editModal) {
     saveBtn.removeEventListener('click', saveHandler);
     importanceSlider.removeEventListener('input', sliderHandler);
     
-    // Remover ESC handler
     document.removeEventListener('keydown', handleEditEsc, true);
     
     delete editModal._handlers;
@@ -1569,14 +1510,12 @@ async function handleSaveMemory(memoryId, editModal) {
   
   const saveBtn = editModal.querySelector('.memory-edit-save');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: saveBtn ? saveBtn.textContent : 'Guardar Cambios',
     disabled: saveBtn ? saveBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (saveBtn) {
       saveBtn.textContent = 'Guardando...';
       saveBtn.disabled = true;
@@ -1594,7 +1533,6 @@ async function handleSaveMemory(memoryId, editModal) {
     const response = await updateMemoryInsight(memoryId, updateData);
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (saveBtn) {
         saveBtn.textContent = originalButtonState.text;
         saveBtn.disabled = originalButtonState.disabled;
@@ -1619,7 +1557,6 @@ async function handleSaveMemory(memoryId, editModal) {
   } catch (error) {
     console.error('❌ Error guardando memoria:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (saveBtn) {
       saveBtn.textContent = originalButtonState.text;
       saveBtn.disabled = originalButtonState.disabled;
@@ -1660,7 +1597,6 @@ function showDeleteMemoryModal(memory) {
   
   console.log('✅ Modal encontrada, configurando contenido...');
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = deleteModal.querySelector('.memory-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -1676,7 +1612,6 @@ function showDeleteMemoryModal(memory) {
     return;
   }
   
-  // 🆕 MEJORADO: Preview especial para análisis de tendencias
   const trendBadge = memory.isTrendAnalysis ? 
     `<div class="memory-card-type-badge trend-type-badge">${formatTypeName(memory.type)}</div>` :
     `<div class="memory-card-type-badge">${formatTypeName(memory.type)}</div>`;
@@ -1690,7 +1625,6 @@ function showDeleteMemoryModal(memory) {
     </div>
   `;
   
-  // ✅ LIMPIAR EVENT LISTENERS ANTERIORES
   if (deleteModal._handlers) {
     const { closeHandler, confirmHandler, handleDeleteEsc } = deleteModal._handlers;
     const closeBtn = deleteModal.querySelector('.memory-delete-close');
@@ -1707,7 +1641,6 @@ function showDeleteMemoryModal(memory) {
     delete deleteModal._backdropHandler;
   }
   
-  // Configurar eventos
   const closeBtn = deleteModal.querySelector('.memory-delete-close');
   const cancelBtn = deleteModal.querySelector('.memory-delete-cancel');
   
@@ -1737,7 +1670,6 @@ function showDeleteMemoryModal(memory) {
   deleteModal.addEventListener('click', backdropHandler);
   deleteModal._backdropHandler = backdropHandler;
   
-  // ✅ Handler específico de ESC con máxima prioridad
   const handleDeleteEsc = (e) => {
     if (e.key === 'Escape' && deleteModal.classList.contains('active')) {
       e.preventDefault();
@@ -1749,7 +1681,6 @@ function showDeleteMemoryModal(memory) {
   
   document.addEventListener('keydown', handleDeleteEsc, true);
   
-  // Guardar handlers para limpieza
   deleteModal._handlers = { 
     closeHandler, 
     confirmHandler,
@@ -1759,7 +1690,6 @@ function showDeleteMemoryModal(memory) {
   console.log('🎯 Activando modal de eliminar...');
   deleteModal.classList.add('active');
   
-  // Verificar que se activó correctamente
   setTimeout(() => {
     if (deleteModal.classList.contains('active')) {
       console.log('✅ Modal de eliminar activada correctamente');
@@ -1772,7 +1702,6 @@ function showDeleteMemoryModal(memory) {
 function closeDeleteModal(deleteModal) {
   console.log('🚪 Cerrando modal de eliminar insight...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = deleteModal.querySelector('.memory-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -1783,7 +1712,6 @@ function closeDeleteModal(deleteModal) {
   
   deleteModal.classList.remove('active');
   
-  // Limpiar event listeners
   if (deleteModal._handlers) {
     const { closeHandler, confirmHandler, handleDeleteEsc } = deleteModal._handlers;
     const closeBtn = deleteModal.querySelector('.memory-delete-close');
@@ -1793,7 +1721,6 @@ function closeDeleteModal(deleteModal) {
     if (cancelBtn) cancelBtn.removeEventListener('click', closeHandler);
     if (confirmBtn) confirmBtn.removeEventListener('click', confirmHandler);
     
-    // Remover ESC handler
     document.removeEventListener('keydown', handleDeleteEsc, true);
     deleteModal.removeEventListener('click', deleteModal._backdropHandler);
     
@@ -1809,14 +1736,12 @@ async function confirmDeleteMemory(memoryId, deleteModal) {
   
   const confirmBtn = deleteModal.querySelector('.memory-delete-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Mostrar feedback visual
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -1832,7 +1757,6 @@ async function confirmDeleteMemory(memoryId, deleteModal) {
     if (response && response.success) {
       console.log('✅ Eliminación exitosa, cerrando modal...');
       
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -1858,7 +1782,6 @@ async function confirmDeleteMemory(memoryId, deleteModal) {
   } catch (error) {
     console.error('❌ Error eliminando memoria:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1878,11 +1801,9 @@ function setupMemoryDetailTitle(titleElement, fullText) {
     return;
   }
   
-  // Limpiar título anterior
   titleElement.textContent = '';
   titleElement.removeAttribute('data-full-title');
   
-  // Configurar texto completo
   titleElement.textContent = fullText;
   
   // Siempre configurar el atributo data-full-title para el tooltip
@@ -1891,7 +1812,6 @@ function setupMemoryDetailTitle(titleElement, fullText) {
   console.log(`📝 Título configurado: "${fullText}"`);
   console.log(`📏 Longitud del título: ${fullText.length} caracteres`);
   
-  // 🆕 NUEVO: Verificar si el texto se está truncando visualmente
   setTimeout(() => {
     const isOverflowing = titleElement.scrollWidth > titleElement.clientWidth;
     if (isOverflowing) {
@@ -1903,7 +1823,6 @@ function setupMemoryDetailTitle(titleElement, fullText) {
   }, 100);
 }
 
-// 🆕 FUNCIÓN MEJORADA: showMemoryDetails actualizada
 function showMemoryDetails(memoryId) {
   const memory = memoryData.find(m => m.id === memoryId);
   if (!memory) {
@@ -1919,7 +1838,6 @@ function showMemoryDetails(memoryId) {
   
   console.log('🔍 Mostrando detalles de memoria:', memoryId);
   
-  // 🆕 ARREGLADO: Configurar título con manejo mejorado
   const titleElement = detailModal.querySelector('.memory-detail-title');
   if (titleElement) {
     setupMemoryDetailTitle(titleElement, memory.insight);
@@ -1927,7 +1845,6 @@ function showMemoryDetails(memoryId) {
     console.error('❌ Elemento .memory-detail-title no encontrado');
   }
   
-  // Configurar otros elementos del modal
   const importanceFill = detailModal.querySelector('.memory-detail-importance-fill');
   const importanceText = detailModal.querySelector('.memory-detail-importance-text');
   const dateElement = detailModal.querySelector('.memory-detail-date');
@@ -1951,7 +1868,6 @@ function showMemoryDetails(memoryId) {
   
   const detailBody = detailModal.querySelector('.memory-detail-body');
   if (detailBody) {
-    // 🆕 MEJORADO: Información enriquecida para simulaciones y análisis de tendencias
     let enrichedSection = '';
     
     if (memory.isScreenSimulation && memory.enrichedData && memory.enrichedData.isEnriched) {
@@ -2173,7 +2089,6 @@ function showMemoryDetails(memoryId) {
       `;
     }
     
-    // Configurar el contenido completo del modal
     detailBody.innerHTML = `
       ${enrichedSection}
       
@@ -2288,7 +2203,6 @@ function showMemoryDetails(memoryId) {
     `;
   }
   
-  // 🆕 MEJORADO: Configurar eventos con el sistema de stack
   setupMemoryDetailEvents(detailModal);
   detailModal.classList.add('active');
   
@@ -2403,11 +2317,9 @@ function showMemoryError(message) {
   `;
 }
 
-// 🆕 FUNCIÓN DE RESET PARA MEMORY MODAL
 function resetMemoryModalState() {
   console.log('🔄 Reiniciando estado de memory modal...');
   
-  // Limpiar variables globales del módulo
   if (typeof memoryData !== 'undefined') {
     memoryData = [];
   }
@@ -2431,7 +2343,6 @@ function resetMemoryModalState() {
 if (typeof window !== 'undefined') {
   window.initMemoryModal = initMemoryModal;
   
-  // Actualizar objeto memoryModal
   if (!window.memoryModal) {
     window.memoryModal = {};
   }

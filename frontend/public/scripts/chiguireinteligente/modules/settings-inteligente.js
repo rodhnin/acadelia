@@ -59,13 +59,10 @@ export class SettingsModule {
   async init() {
     console.log('Inicializando módulo de configuración');
     
-    // Cargar configuración guardada
     await this.loadSettings();
     
-    // Configurar event listeners
     this.setupEventListeners();
     
-    // Inicializar formularios con valores actuales
     this.populateSettingsForms();
     
     return true;
@@ -103,22 +100,18 @@ export class SettingsModule {
    */
   async loadSettings() {
     try {
-      // Intentar cargar desde localStorage
       const savedSettings = localStorage.getItem('financeAdmin_settings');
       
       if (savedSettings) {
         try {
           const parsedSettings = JSON.parse(savedSettings);
           
-          // Combinar configuración guardada con valores por defecto usando merge profundo
           this.settings = this.deepMerge(this.settings, parsedSettings);
           
-          // Validar valores específicos para asegurar integridad
           this.validateSettings();
           
           console.log('Configuración cargada correctamente:', this.settings);
           
-          // Registrar específicamente el separador CSV para diagnóstico
           console.log('Separador CSV cargado (valor descriptivo):', this.settings.export.csvDelimiter);
           console.log('Separador CSV cargado (carácter real):', this.getDelimiterChar());
         } catch (parseError) {
@@ -129,10 +122,8 @@ export class SettingsModule {
         console.log('No se encontró configuración guardada, usando valores por defecto');
       }
       
-      // Marcar como cargada
       this.settingsLoaded = true;
       
-      // Sincronizar con módulos que dependen de la configuración
       this.syncSettingsWithModules();
       
       return true;
@@ -181,7 +172,6 @@ export class SettingsModule {
    * Valida valores de configuración para asegurar integridad
    */
   validateSettings() {
-    // Validar separador CSV
     if (!this.settings.export.csvDelimiter || 
         !['comma', 'semicolon', 'tab'].includes(this.settings.export.csvDelimiter)) {
       console.warn('Separador CSV inválido, restaurando valor por defecto');
@@ -199,11 +189,9 @@ export class SettingsModule {
       // Realizar validación antes de guardar
       this.validateSettings();
       
-      // Guardar en localStorage
       localStorage.setItem('financeAdmin_settings', JSON.stringify(this.settings));
       console.log('Configuración guardada correctamente en localStorage');
       
-      // Sincronizar con módulos
       this.syncSettingsWithModules();
       
       return true;
@@ -219,21 +207,17 @@ export class SettingsModule {
  * Versión mejorada con mejor control para temas
  */
 syncSettingsWithModules() {
-  // Notificar de cambios en configuración
   this.eventBus.emit('settingsChanged', this.settings);
   
   // Traducir valor descriptivo del separador CSV al carácter real para ExportManager
   const exportSettings = { ...this.settings.export };
   
-  // Añadir el separador CSV real basado en el valor descriptivo
   if (this.delimiterMap && this.settings.export.csvDelimiter) {
     exportSettings.actualDelimiter = this.delimiterMap[this.settings.export.csvDelimiter] || ';';
   }
   
-  // Emitir evento específico para cambios en configuración de exportación
   this.eventBus.emit('exportSettingsChanged', exportSettings);
   
-  // Sincronizar tema oscuro/claro con evento detallado
   document.dispatchEvent(new CustomEvent('themePreferenceChanged', {
     detail: {
       darkMode: this.settings.general.darkMode,
@@ -266,7 +250,6 @@ syncSettingsWithModules() {
         this.saveExportSettings();
       });
       
-      // Añadir listener específico para cambios en el selector de separador CSV
       const csvDelimiterSelect = document.getElementById('csv-delimiter');
       if (csvDelimiterSelect) {
         csvDelimiterSelect.addEventListener('change', (e) => {
@@ -329,7 +312,6 @@ syncSettingsWithModules() {
     // Configuración específica para el selector de separador CSV
     const csvDelimiterSelect = document.getElementById('csv-delimiter');
     if (csvDelimiterSelect) {
-      // Usar directamente el valor descriptivo que ya está en la configuración
       csvDelimiterSelect.value = this.settings.export.csvDelimiter;
       console.log('Formulario actualizado - Separador CSV:', csvDelimiterSelect.value);
     }
@@ -369,23 +351,19 @@ syncSettingsWithModules() {
     this.ui.updateFormField('paddle-mode', this.settings.paddle.mode);
     this.ui.updateFormField('paddle-webhook-url', this.settings.paddle.webhookUrl);
     this.ui.updateFormField('paddle-api-key', this.settings.paddle.apiKey);
-  // Deshabilitar campos específicos
   const fieldsToDisable = ['default-currency', 'date-format', 'timezone'];
   fieldsToDisable.forEach(fieldId => {
     const field = document.getElementById(fieldId);
     if (field) {
-      // Deshabilitar
       field.disabled = true;
       field.style.opacity = '0.6';
       field.style.cursor = 'not-allowed';
       
-      // Añadir tooltip
       field.setAttribute('title', 'Este campo no se puede modificar');
       
     }
   });
   
-  // Añadir mensaje informativo si no existe ya
   const formElement = document.getElementById('general-settings-form');
   if (formElement && !formElement.querySelector('.settings-disabled-info')) {
     const infoAlert = document.createElement('div');
@@ -407,10 +385,8 @@ saveGeneralSettings() {
       timezone: this.settings.general.timezone,               // Mantener el valor original
     };
 
-    // Guardar configuración
     this.saveSettings();
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage('Configuración general guardada correctamente');
     
     return true;
@@ -426,23 +402,19 @@ saveGeneralSettings() {
    */
   saveExportSettings() {
     try {
-      // Obtener elemento del selector de separador CSV
       const csvDelimiterSelect = document.getElementById('csv-delimiter');
       
-      // Verificar que el elemento existe
       if (!csvDelimiterSelect) {
         console.error('No se encontró el elemento selector de separador CSV');
         this.ui.showErrorMessage('Error', 'No se pudo guardar la configuración de exportación');
         return false;
       }
       
-      // Obtener valores del formulario - usando valores descriptivos directamente
       const defaultFormat = document.getElementById('default-export-format').value;
       const csvDelimiter = csvDelimiterSelect.value; // Valor descriptivo (comma, semicolon, tab)
       const includeHeaders = document.getElementById('include-headers').checked;
       const autoFilename = document.getElementById('auto-filename').checked;
       
-      // Validar el separador CSV (debe ser uno de los valores permitidos)
       if (!['comma', 'semicolon', 'tab'].includes(csvDelimiter)) {
         console.warn(`Separador CSV inválido: "${csvDelimiter}", usando valor por defecto: "semicolon"`);
         csvDelimiterSelect.value = 'semicolon';
@@ -455,7 +427,6 @@ saveGeneralSettings() {
         autoFilename
       });
       
-      // Actualizar estado manteniendo los valores descriptivos
       this.settings.export = {
         defaultFormat,
         csvDelimiter,  // Guardar el valor descriptivo
@@ -463,18 +434,14 @@ saveGeneralSettings() {
         autoFilename
       };
       
-      // Guardar configuración
       const success = this.saveSettings();
       
       if (success) {
-        // Mostrar mensaje de éxito
         this.ui.showSuccessMessage('Configuración de exportación guardada correctamente');
         
-        // Verificar que se guardó correctamente
         const savedSettings = JSON.parse(localStorage.getItem('financeAdmin_settings') || '{}');
         console.log('Configuración guardada en localStorage:', savedSettings);
         
-        // Verificar específicamente el separador CSV
         if (savedSettings.export && savedSettings.export.csvDelimiter) {
           console.log('Valor descriptivo del separador CSV guardado:', savedSettings.export.csvDelimiter);
           console.log('Carácter real del separador CSV:', this.translateDelimiterToChar(savedSettings.export.csvDelimiter));
@@ -501,10 +468,8 @@ saveGeneralSettings() {
         reportReady: document.getElementById('report-ready-notify').checked
       };
       
-      // Guardar configuración
       this.saveSettings();
       
-      // Mostrar mensaje de éxito
       this.ui.showSuccessMessage('Configuración de notificaciones guardada correctamente');
       
       return true;
@@ -543,10 +508,8 @@ saveGeneralSettings() {
       return false;
     }
     
-    // Actualizar valor
     this.settings[category][key] = value;
     
-    // Guardar configuración
     this.saveSettings();
     
     return true;
@@ -599,13 +562,10 @@ saveGeneralSettings() {
         this.settings = { ...defaultSettings };
       }
       
-      // Guardar configuración
       this.saveSettings();
       
-      // Actualizar formularios
       this.populateSettingsForms();
       
-      // Mostrar mensaje de éxito
       this.ui.showSuccessMessage(`Configuración ${category ? category : 'completa'} restablecida`);
       
       return true;
@@ -622,18 +582,14 @@ saveGeneralSettings() {
    */
   exportSettings() {
     try {
-      // Crear copia profunda de la configuración para eliminar datos sensibles
       const exportableSettings = JSON.parse(JSON.stringify(this.settings));
       
-      // Eliminar datos sensibles
       if (exportableSettings.paddle) {
         exportableSettings.paddle.apiKey = '[REDACTED]';
       }
       
-      // Convertir a JSON formateado
       const jsonSettings = JSON.stringify(exportableSettings, null, 2);
       
-      // Crear blob y descargar
       const blob = new Blob([jsonSettings], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       
@@ -643,7 +599,6 @@ saveGeneralSettings() {
       document.body.appendChild(link);
       link.click();
       
-      // Limpiar
       setTimeout(() => {
         URL.revokeObjectURL(url);
         document.body.removeChild(link);
@@ -669,10 +624,8 @@ saveGeneralSettings() {
         
         reader.onload = (e) => {
           try {
-            // Parsear JSON
             const importedSettings = JSON.parse(e.target.result);
             
-            // Validar estructura básica
             if (!importedSettings.general || !importedSettings.export) {
               this.ui.showErrorMessage('Error', 'El archivo no contiene una configuración válida');
               resolve(false);
@@ -682,7 +635,6 @@ saveGeneralSettings() {
             // Fusionar con la configuración actual usando deep merge
             this.settings = this.deepMerge(this.settings, importedSettings);
             
-            // Validar configuración importada
             this.validateSettings();
             
             // No importar la API key por seguridad
@@ -690,11 +642,9 @@ saveGeneralSettings() {
               this.settings.paddle.apiKey = this.settings.paddle.apiKey;
             }
             
-            // Guardar y actualizar UI
             this.saveSettings();
             this.populateSettingsForms();
             
-            // Mostrar mensaje de éxito
             this.ui.showSuccessMessage('Configuración importada correctamente');
             
             resolve(true);

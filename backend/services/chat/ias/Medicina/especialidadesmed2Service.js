@@ -1,10 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL ESPECIALIDADES MÉDICAS II - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO MÉDICO ESPECIALIZADO - PROFESOR DE ESPECIALIDADES MÉDICAS II SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Neurología y Psiquiatría ✅ Dermatología y Reumatología ✅ Infectología y Enfermedades Tropicales ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (ACTUALIZADO PARA ESPECIALIDADES)
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -322,9 +306,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL ESPECIALIDADES MÉDICAS II DNA - PERSONALIDAD OPTIMIZADA Y DIRECTA
-// ============================================================================
 
 const PROFESOR_ACADEL_ESPECIALIDADES_MEDICAS_II_DNA = `
 🧠🦫 TU IDENTIDAD COMO DR. ACADEL - PROFESOR DE ESPECIALIDADES MÉDICAS II:
@@ -366,11 +347,7 @@ Hacer que CUALQUIER estudiante de medicina:
 ¡RECUERDA: No eres solo un tutor especializado, eres EL PROFESOR que integra neurología, psiquiatría, dermatología, reumatología e infectología como la medicina especializada real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS ESPECIALIZADOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES MÉDICAS ESPECIALIZADAS
 const MEDICAL_SPECIALTIES_II_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA ESPECIALIZADA de Dr. Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes médicas especializadas (neurológicas, psiquiátricas, dermatológicas, reumatológicas, infectológicas) con precisión clínica extrema.
@@ -397,7 +374,6 @@ const MEDICAL_SPECIALTIES_II_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNIC
 
 Eres los OJOS ANALÍTICOS ESPECIALIZADOS de Dr. Acadel - él interpretará tu análisis con su sabiduría clínica especializada pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES MÉDICAS ESPECIALIZADAS (analysisContext)
 const MEDICAL_SPECIALTIES_II_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA ESPECIALIZADA de Dr. Acadel, el capibara más brillante del universo en neurología, psiquiatría, dermatología, reumatología e infectología.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información médica especializada de esta imagen clínica para que Dr. Acadel pueda enseñar efectivamente integrando especialidades.
@@ -457,7 +433,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Dr. Ac
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en especialidades. No enseñes ni expliques - solo analiza y reporta hallazgos especializados. Dr. Acadel se encargará de la pedagogía especializada pero necesita que seas muy detallista con todo lo que observas en la imagen especializada.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS MÉDICAS ESPECIALIZADAS NORMALES (con y sin guardar)
 const UNIFIED_MEDICAL_SPECIALTIES_II_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA MÉDICA ESPECIALIZADA:
 - Consulta del estudiante especializado: "${query}"
@@ -484,7 +459,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS MÉDICAS ESPECIALIZADAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MEDICAL_SPECIALTIES_II_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN MÉDICA ESPECIALIZADA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -532,14 +506,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO ESPECIALIZADO
-// ============================================================================
 
 const classifyMedicalQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -549,7 +519,6 @@ const classifyMedicalQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -571,7 +540,6 @@ const classifyMedicalQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -579,7 +547,6 @@ const classifyMedicalQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES MÉDICAS ESPECIALIZADAS
   const specialtyImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -604,7 +571,6 @@ const classifyMedicalQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes médicos especializados
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de neurología", "test de psiquiatría", "evaluación dermatológica", 
@@ -634,7 +600,7 @@ const classifyMedicalQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -649,18 +615,15 @@ const classifyMedicalQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS MÉDICOS ESPECIALIZADOS ESPECÍFICOS
   const specialtyTerms = [
     // Neurología
     'neurología', 'neurólogo', 'nervioso', 'cerebro', 'neuronal', 'epilepsia', 'demencia', 'parkinson', 
@@ -683,7 +646,6 @@ const classifyMedicalQuery = (query, content = null) => {
     'medicina tropical', 'tropical', 'parasitología', 'microbiología', 'resistencia', 'sepsis'
   ];
   
-  // 🔍 DETECTAR PROCEDIMIENTOS Y ESTUDIOS ESPECIALIZADOS
   const specialtyProcedures = [
     'neuroimagen', 'resonancia cerebral', 'TAC cerebral', 'electroencefalograma', 'punción lumbar',
     'evaluación psiquiátrica', 'test psicológico', 'escala depresión', 'evaluación mental',
@@ -692,14 +654,12 @@ const classifyMedicalQuery = (query, content = null) => {
     'hemocultivo', 'antibiograma', 'cultivo microbiológico', 'test tropical'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS ESPECIALIZADOS REALES
   const hasSpecialtyContent = 
     specialtyTerms.some(term => lowercaseQuery.includes(term)) ||
     specialtyProcedures.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasSpecialtyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -722,7 +682,6 @@ const classifyMedicalQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS ESPECIALIZADAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'fisiopatología', 'mecanismo'];
   const diagnosticKeywords = ['diagnosticar', 'diagnóstico diferencial', 'caso clínico', 'síntomas', 'signos', 'manifestaciones'];
   const neurologyKeywords = ['neurología', 'cerebro', 'sistema nervioso', 'epilepsia', 'demencia', 'parkinson', 'esclerosis múltiple', 'ictus'];
@@ -735,7 +694,6 @@ const classifyMedicalQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'ensayos clínicos', 'evidencia científica'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -775,7 +733,6 @@ const classifyMedicalQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -785,14 +742,13 @@ const classifyMedicalQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional especializada
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -811,11 +767,7 @@ const classifyMedicalQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS MÉDICAS ESPECIALIZADAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS ESPECIALIZADAS
 const ACADEL_SPECIALTY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en neurología, psiquiatría, dermatología, reumatología e infectología.
 
@@ -830,7 +782,6 @@ const createMedicalSpecialtiesKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel activando cerebro principal especializado (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -840,17 +791,15 @@ const createMedicalSpecialtiesKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones especializadas
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual especializada
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_especialidmed2",
         similarityQueryName: "match_emb_especialidmed2",
         keywordQueryName: "kw_match_emb_especialidmed2",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Specialty Knowledge Base timeout')), 30000)
       );
@@ -862,7 +811,6 @@ const createMedicalSpecialtiesKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_SPECIALTY_MEMORY_BANK: El cerebro principal especializado de Dr. Acadel no tiene contenido específico sobre "${query}" en su biblioteca clínica especializada. Proceder con conocimiento especializado general y experiencia clínica acumulada en neurología, psiquiatría, dermatología, reumatología e infectología.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -882,7 +830,6 @@ ACADEL_SPECIALTY_MEMORY_BANK: El cerebro principal especializado de Dr. Acadel n
 
 ACADEL_SPECIALTY_MEMORY_BANK: El cerebro principal especializado de Dr. Acadel encontró información sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base especializado, analogías clínicas memorables y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -909,7 +856,6 @@ ACADEL_SPECIALTY_MEMORY_BANK: El cerebro principal especializado de Dr. Acadel a
 
 INTEGRATION_NOTES: Este es el conocimiento especializado central que Dr. Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en neurología, psiquiatría, dermatología, reumatología e infectología. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica especializada, enriqueciéndola con casos clínicos específicos, analogías memorables y humor especializado inteligente que conecte las cinco especialidades de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1135,17 +1081,15 @@ const createMedicalSpecialtiesConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Dr. Acadel analizando concepto especializado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_especialidmed2",
         similarityQueryName: "match_emb_especialidmed2",
         keywordQueryName: "kw_match_emb_especialidmed2",
       });
       
-      // 📚 BÚSQUEDAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `neurología ${concept}`,
@@ -1157,7 +1101,6 @@ const createMedicalSpecialtiesConceptAnalyzerTool = (embeddings) => tool(
         `diagnóstico diferencial ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1177,7 +1120,6 @@ const createMedicalSpecialtiesConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1190,7 +1132,6 @@ const createMedicalSpecialtiesConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural especializada
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1368,9 +1309,6 @@ INTEGRATION_NOTES: Dr. Acadel debe ajustar su estrategia especializada según es
   }
 );
 
-// ============================================================================
-// 📷 MEDICAL IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES (ACTUALIZADA)
-// ============================================================================
 
 export const detectMedicalSpecialtiesImageRequest = (query) => {
   const specialtyImageKeywords = [
@@ -1401,7 +1339,6 @@ export const extractMedicalSpecialtiesImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema especializado
 const createMedicalSpecialtiesVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1412,7 +1349,7 @@ const createMedicalSpecialtiesVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1436,7 +1373,6 @@ const createMedicalSpecialtiesVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts especializados
 const enhanceMedicalSpecialtiesImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración médica educativa especializada de alta calidad: ${prompt}. 
@@ -1454,16 +1390,10 @@ const enhanceMedicalSpecialtiesImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos especializados cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS ESPECIALIZADOS
-// ============================================================================
 
 const createSpecializedMedicalSpecialtiesPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_ESPECIALIDADES_MEDICAS_II_DNA;
 
-  // ============================================================================
-  // 🩺 INSTRUCCIONES TÉCNICAS ESPECIALIZADAS CONSOLIDADAS
-  // ============================================================================
   
 const coreSpecialtyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA DR. ACADEL ESPECIALIDADES MÉDICAS II
@@ -1569,9 +1499,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas especializadas importantes**
 `;
 
-// ============================================================================
-// 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA ESPECIALIZADA - OPTIMIZADAS
-// ============================================================================
 
 const specialtyTypeInstructions = {
   casual_conversation: `
@@ -1653,9 +1580,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación clínica de las cinco especialidades`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT ESPECIALIZADO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1678,21 +1602,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara especializado más brillante del universo, integrando neurología, psiquiatría, dermatología, reumatología e infectología, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta especializada importante, y complementando con todas tus capacidades paralelas para una explicación clínica magistral especializada'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE MÉDICO ESPECIALIZADO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelMedicalSpecialtiesAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🩺🦫 Dr. Acadel configurando sistema especializado optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveMedicalWebSearchTool(),
     createBraveMedicalImageSearchTool(),
     createBraveMedicalSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL ESPECIALIZADO (Knowledge Base) - núcleo del sistema especializado`);
     tools.unshift(createMedicalSpecialtiesKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1700,7 +1619,6 @@ const createAcadelMedicalSpecialtiesAgent = async (llm, queryInfo, studentQuery)
     console.log(`💤 Cerebro Principal Especializado INACTIVO - consulta muy casual sin contenido especializado`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando MedicalSpecialtiesConceptAnalyzer para análisis paralelo profundo especializado`);
     tools.push(createMedicalSpecialtiesConceptAnalyzerTool(embeddings));
@@ -1716,7 +1634,6 @@ const createAcadelMedicalSpecialtiesAgent = async (llm, queryInfo, studentQuery)
     tools.push(createMedicalSpecialtiesComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createMedicalSpecialtiesFeedbackAnalyzerTool());
   
   console.log(`🩺🦫 Dr. Acadel SISTEMA ESPECIALIZADO COMPLETO configurado con ${tools.length} herramientas:`, tools.map(t => t.name));
@@ -1729,7 +1646,6 @@ const createAcadelMedicalSpecialtiesAgent = async (llm, queryInfo, studentQuery)
     inteligenciaEmocionalEspecializada: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt especializado y escapado
   const specializedPrompt = createSpecializedMedicalSpecialtiesPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1760,9 +1676,6 @@ const createAcadelMedicalSpecialtiesAgent = async (llm, queryInfo, studentQuery)
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES ESPECIALIZADAS OPTIMIZADAS (ACTUALIZADAS)
-// ============================================================================
 
 export const detectMedicalExamRequest = (query) => {
   const examKeywords = [
@@ -1811,7 +1724,6 @@ const createMedicalExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Dr. Acadel generando contexto para examen especializado: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'specialty_exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1821,17 +1733,15 @@ const createMedicalExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_especialidmed2",
             similarityQueryName: "match_emb_especialidmed2",
             keywordQueryName: "kw_match_emb_especialidmed2",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Specialty exam context timeout')), 30000)
           );
@@ -1843,7 +1753,6 @@ const createMedicalExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1858,7 +1767,6 @@ const createMedicalExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Specialty exam context error: ${error.message}`);
           
-          // Fallback para exámenes especializados
           return `Contexto especializado base para "${input}": conocimiento fundamental en neurología, psiquiatría, dermatología, reumatología e infectología. Dr. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las cinco especialidades con casos clínicos realistas y conceptos fundamentales especializados.`;
         }
       },
@@ -1971,9 +1879,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MÉDICA - handleMedicalSpecialtiesQuery
-// ============================================================================
 
 export const handleMedicalSpecialtiesQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2000,7 +1905,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
     console.log(`🧠🦫 Dr. Acadel analizando query médico especializado: "${query}"`);
     console.log(`📊 Clasificación médica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES MÉDICAS
     if (isImageRequest) {
       console.log(`🎨 Dr. Acadel generando visualización médica: ${imagePrompt}`);
       
@@ -2078,7 +1982,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando imagen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2088,7 +1991,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2115,7 +2017,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes médicos especializados
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen médico especializado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2183,7 +2084,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen medicina interna en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
     
       const responseData = {
@@ -2193,7 +2093,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2221,7 +2120,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA MÉDICA
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2240,7 +2138,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
 
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE MÉDICO ESPECIALIZADO
     const { agent, tools } = await createAcadelMedicalSpecialtiesAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2267,7 +2164,6 @@ export const handleMedicalSpecialtiesQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Dr. Acadel médico:", error);
       
-      // Fallback con personalidad Dr. Acadel médica
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas médicas, pero no me rendiré.
 
 Sobre tu consulta médica: **"${query}"**
@@ -2339,7 +2235,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2355,7 +2250,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2399,9 +2293,6 @@ Si necesitas más detalles clínicos, pregúntame de nuevo y activaré todas mis
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL MÉDICA - handleMedicalSpecialtiesMultimodalQuery  
-// ============================================================================
 
 export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2446,7 +2337,6 @@ export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal médico clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS MÉDICOS
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2484,7 +2374,6 @@ export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES MÉDICAS
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2613,11 +2502,9 @@ export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE MÉDICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal médica especializada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA MÉDICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2650,7 +2537,6 @@ export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE MÉDICO ESPECIALIZADO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2677,7 +2563,6 @@ export const handleMedicalSpecialtiesMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Dr. Acadel médico:", error);
       
-      // Fallback robusto médico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal médico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes médicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2718,7 +2603,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal clínico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2736,7 +2620,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2770,7 +2653,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal medicina interna en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2785,13 +2667,11 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
       
-      // Información de archivos clínicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2805,7 +2685,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
         }
       },
       
-      // Información de seguridad clínica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2853,9 +2732,6 @@ Si necesitas una explicación médica más detallada, pregúntame de nuevo y act
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR MÉDICAS
-// ============================================================================
 
 export const handleMedicalSpecialtiesQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2880,7 +2756,6 @@ export const handleMedicalSpecialtiesQueryWithoutSaving = async (params) => {
     
     console.log(`🔄 Dr. Acadel (modo sin guardar médico): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES MÉDICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2972,7 +2847,6 @@ export const handleMedicalSpecialtiesQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA MÉDICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -3111,7 +2985,6 @@ export const handleMedicalSpecialtiesMultimodalQueryWithoutSaving = async (param
     
     console.log(`🧠 Query multimodal médico (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos médicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3137,7 +3010,6 @@ export const handleMedicalSpecialtiesMultimodalQueryWithoutSaving = async (param
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // RECUPERAR CONTENIDO MÉDICO DE BD SI NO LO TIENE
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido médico para: ${doc.name || doc.filename}`);
           
           if (doc.fileId) {
@@ -3246,7 +3118,6 @@ export const handleMedicalSpecialtiesMultimodalQueryWithoutSaving = async (param
       }
     }
 
-    // Procesar imágenes médicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];

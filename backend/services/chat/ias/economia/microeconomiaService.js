@@ -1,10 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO V3.0
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MICROECONOMÍA SUPREMO TÉCNICO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Teoría del Consumidor ✅ Teoría de la Producción ✅ Conducta/Mercados ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -27,14 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -100,7 +88,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -174,7 +161,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +181,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -264,7 +249,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -331,9 +315,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_MICROECONOMIA_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN MICROECONOMÍA:
@@ -377,11 +358,7 @@ Hacer que CUALQUIER estudiante de economía:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra teoría económica con aplicaciones reales de mercado!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS TÉCNICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES TÉCNICAS ECONÓMICAS
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel especializada en MICROECONOMÍA.
 
 🎯 FUNCIÓN: Analizar imágenes económicas/académicas de MICROECONOMÍA con precisión técnica extrema.
@@ -408,7 +385,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Aca
 
 Eres los OJOS ANALÍTICOS TÉCNICOS de Profesor Acadel - él interpretará tu análisis con su sabiduría económica científica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES TÉCNICAS ECONÓMICAS
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel, el capibara académico más brillante del universo en MICROECONOMÍA TÉCNICA.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información técnica de esta imagen económica para que Profesor Acadel pueda enseñar efectivamente microeconomía científica.
@@ -453,7 +429,6 @@ Proporciona un análisis técnico estructurado, preciso y exhaustivo que permita
 
 **IMPORTANTE:** Sé OBSERVADOR TÉCNICO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta contenido económico técnico. Profesor Acadel se encargará de la pedagogía económica técnica.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS NORMALES (con y sin guardar)
 const UNIFIED_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA ECONÓMICA TÉCNICA:
 - Consulta del estudiante de microeconomía: "${query}"
@@ -480,7 +455,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN TÉCNICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO ECONÓMICO:
 
@@ -528,14 +502,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO ECONÓMICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -545,7 +515,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -567,7 +536,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -575,7 +543,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // Detectar exámenes
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -604,7 +571,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -621,19 +588,16 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS ECONÓMICOS ESPECÍFICOS
   const economicsTerms = [
     // Teoría del Consumidor
     'utilidad', 'preferencias', 'curvas de indiferencia', 'restricción presupuestaria',
@@ -651,28 +615,24 @@ const classifyQuery = (query, content = null) => {
     'función', 'derivada', 'marginal', 'optimización', 'lagrange', 'constraint'
   ];
   
-  // 🔍 DETECTAR MODELOS Y CONCEPTOS ECONÓMICOS
   const economicConcepts = [
     'cobb douglas', 'slutsky', 'hicks', 'pareto', 'nash', 'edgeworth',
     'kuhn tucker', 'elasticidad precio', 'elasticidad ingreso', 'elasticidad cruzada',
     'costo marginal', 'ingreso marginal', 'beneficio', 'ganancia', 'pérdida'
   ];
   
-  // 🔍 DETECTAR UNIDADES Y TÉRMINOS ECONÓMICOS
   const economicUnits = [
     'pesos', 'dólares', 'euros', 'unidades', 'cantidad', 'precio',
     'porcentaje', 'tasa', 'nivel', 'índice', 'coeficiente'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS ECONÓMICOS REALES
   const hasEconomicsContent = 
     economicsTerms.some(term => lowercaseQuery.includes(term)) ||
     economicConcepts.some(term => lowercaseQuery.includes(term)) ||
     economicUnits.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasEconomicsContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -696,7 +656,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'principio', 'teoría de'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'optimizar'];
   const theoryKeywords = ['teoría', 'modelo', 'principio', 'demostrar', 'derivar', 'fundamento', 'ecuación de'];
@@ -705,7 +664,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos estudios', 'nuevos papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -742,14 +700,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar nivel de matemáticas económicas
   const mathKeywords = ['función', 'derivada', 'integral', 'optimización', 'lagrange', 'matriz', 'ecuación'];
   if (mathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -759,7 +715,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
@@ -767,7 +722,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -786,11 +741,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS TÉCNICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS ECONÓMICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en microeconomía técnica.
 
@@ -805,7 +756,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel activando cerebro principal técnico (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -815,17 +765,15 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_microeconomia",
         similarityQueryName: "match_emb_microeconomia",
         keywordQueryName: "kw_match_emb_microeconomia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -837,7 +785,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_TECHNICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel no tiene contenido técnico específico sobre "${query}" en su biblioteca económica. Proceder con conocimiento técnico general y experiencia económica acumulada en microeconomía.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -857,7 +804,6 @@ ACADEL_TECHNICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel no tiene c
 
 ACADEL_TECHNICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel encontró información técnica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base técnico económico, analogías económicas precisas y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -884,7 +830,6 @@ ACADEL_TECHNICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel activó la
 
 INTEGRATION_NOTES: Este es el conocimiento técnico económico central que Profesor Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en microeconomía técnica. Debe integrar esta información naturalmente como si fuera su propia sabiduría económica científica, enriqueciéndola con casos técnicos específicos, analogías económicas precisas y metodología pedagógica rigurosa.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1210,17 +1155,15 @@ const createConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel analizando concepto técnico económico: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_microeconomia",
         similarityQueryName: "match_emb_microeconomia",
         keywordQueryName: "kw_match_emb_microeconomia",
       });
       
-      // 📚 BÚSQUEDAS TÉCNICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto técnico ${concept}`,
         `principios microeconómicos ${concept}`,
@@ -1230,7 +1173,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         `modelos económicos ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1250,7 +1192,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1263,7 +1204,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural técnica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1451,16 +1391,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia técnica según es
   }
 );
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS TÉCNICOS
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_MICROECONOMIA_DNA;
 
-  // ============================================================================
-  // 👷 INSTRUCCIONES TÉCNICAS CONSOLIDADAS
-  // ============================================================================
   
 const coreInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA PROFESOR ACADEL DE MICROECONOMÍA
@@ -1627,9 +1561,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) ES OBLIGATORIO para consultas económicas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA TÉCNICA - OPTIMIZADAS
-  // ============================================================================
   
   const typeSpecificInstructions = {
     casual_conversation: `
@@ -1716,9 +1647,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión técnica real y aplicación práctica económica`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT FINAL OPTIMIZADO PARA MICROECONOMÍA
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1741,21 +1669,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Bas
   'Enseña MICROECONOMÍA como el capibara economista más brillante del universo, usando tu CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) para fundamentar toda respuesta económica importante, y complementando con todas tus capacidades paralelas para una explicación magistral.'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE CORREGIDO Y ESTABILIZADO PARA MICROECONOMÍA
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`👷🦫 Profesor Acadel configurando sistema técnico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Técnico: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL TÉCNICO (Knowledge Base) - núcleo del sistema económico`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1763,14 +1686,12 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Técnico INACTIVO - consulta muy casual sin contenido económico`);
   }
   
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS (MANTENER LÓGICA MATEMÁTICA)
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
     tools.push(createCalculatorTool());
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis técnico paralelo profundo`);
     tools.push(createConceptAnalyzerTool(embeddings));
@@ -1786,7 +1707,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL TÉCNICA SIEMPRE DISPONIBLE
   tools.push(createFeedbackAnalyzerTool());
   
   console.log(`👷🦫 Profesor Acadel SISTEMA TÉCNICO COMPLETO configurado con ${tools.length} herramientas económicas:`, tools.map(t => t.name));
@@ -1800,7 +1720,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocionalTecnica: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt especializado y escapado
   const specializedPrompt = createSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1831,9 +1750,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES CORREGIDAS PARA MICROECONOMÍA
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1881,7 +1797,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Profesor Acadel generando contexto técnico para examen: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1891,17 +1806,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_microeconomia",
             similarityQueryName: "match_emb_microeconomia",
             keywordQueryName: "kw_match_emb_microeconomia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1913,7 +1826,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1928,7 +1840,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes técnicos
           return `Contexto técnico base para "${input}": conocimiento fundamental en microeconomía. Profesor Acadel debe generar preguntas desde su experiencia técnica consolidada, con casos prácticos realistas y conceptos fundamentales técnicos económicos.`;
         }
       },
@@ -2071,9 +1982,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA - handleMicroeconomicsQuery
-// ============================================================================
 
 export const handleMicroeconomicsQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2082,7 +1990,6 @@ export const handleMicroeconomicsQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2101,7 +2008,6 @@ export const handleMicroeconomicsQuery = async (params) => {
     console.log(`🦫 Acadel analizando query (Microeconomía): "${query}"`);
     console.log(`📊 Clasificación: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
     
-    // Manejar exámenes
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2123,7 +2029,6 @@ export const handleMicroeconomicsQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES  (AVA)
       let userMessageId = null;
       let assistantMessageId = null;
       
@@ -2170,7 +2075,6 @@ export const handleMicroeconomicsQuery = async (params) => {
         
       } catch (saveError) {
         console.error('❌ Error guardando examen  (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2180,7 +2084,6 @@ export const handleMicroeconomicsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2208,7 +2111,6 @@ export const handleMicroeconomicsQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2225,10 +2127,8 @@ export const handleMicroeconomicsQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2291,11 +2191,9 @@ export const handleMicroeconomicsQuery = async (params) => {
       };
     }
 
-    // Procesar respuesta con mejoras de LaTeX
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
     
@@ -2339,7 +2237,6 @@ export const handleMicroeconomicsQuery = async (params) => {
       
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2354,7 +2251,6 @@ export const handleMicroeconomicsQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2398,9 +2294,6 @@ export const handleMicroeconomicsQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA - handleMicroeconomicsMultimodalQuery  
-// ============================================================================
 
 export const handleMicroeconomicsMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2425,7 +2318,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2437,7 +2329,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2448,7 +2339,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2486,7 +2376,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2546,7 +2435,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2616,11 +2504,9 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica microeconomía");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2653,7 +2539,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2680,7 +2565,6 @@ export const handleMicroeconomicsMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
       
-      // Fallback robusto
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2706,11 +2590,9 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
       };
     }
 
-    // PROCESAR RESPUESTA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
     
@@ -2723,7 +2605,6 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2741,7 +2622,6 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2775,7 +2655,6 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
       
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2790,13 +2669,11 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2810,7 +2687,6 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2858,9 +2734,6 @@ Si necesitas una explicación más detallada en teoría del consumidor, teoría 
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PARA MICROECONOMÍA
-// ============================================================================
 
 export const handleMicroeconomicsQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2916,7 +2789,6 @@ export const handleMicroeconomicsQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2935,7 +2807,6 @@ export const handleMicroeconomicsQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE CORREGIDO
       const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3048,7 +2919,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido en modo sin guardar:", content);
       return {
@@ -3067,7 +2937,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
     
     console.log(`🧠 Query multimodal (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3080,7 +2949,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DE MICROECONOMÍA: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3094,7 +2962,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3155,7 +3022,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
                 console.log(`✅ [RETRY/EDIT] Contenido recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3175,10 +3041,8 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
           return `${fileInfo} ${typeInfo}\n[Contenido no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3212,7 +3076,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
       }
     }
 
-    // Procesar imágenes en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3272,7 +3135,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3357,11 +3219,9 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Cargar historial relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica microeconomía");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3392,7 +3252,6 @@ export const handleMicroeconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Crear agente especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, combinedQuery);
 

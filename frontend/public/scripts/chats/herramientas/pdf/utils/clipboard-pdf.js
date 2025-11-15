@@ -11,7 +11,6 @@ import {
   getAttribute
 } from '../../../shared/dom-helpers.js';
 
-// ⭐ NUEVA IMPORTACIÓN: Modal de copia manual de Acadel
 import { showAcadelManualCopyModal } from '../ui/modals-pdf.js';
 
 // Constante para identificar timeouts de botones de copia
@@ -26,30 +25,25 @@ const CLIPBOARD_TIMEOUT_PREFIX = 'clipboard_btn_';
 export async function copyToClipboard(text, options = {}) {
   const { button, showNotification = true } = options;
   
-  // Guardar el contenido original del botón si existe
   let originalButtonContent = '';
   if (button) {
     originalButtonContent = button.innerHTML;
   }
   
-  // Intentar usar la API moderna de portapapeles
   if (navigator.clipboard && navigator.clipboard.writeText) {
     try {
       await navigator.clipboard.writeText(text);
       
-      // Actualizar el botón si se proporcionó
       if (button) {
         updateButtonState(button, 'success', originalButtonContent);
       }
       
-      // Mostrar notificación si está habilitado
       if (showNotification) {
         acadelExito("📋 ¡Texto copiado!", "Acadel guardó todo en tu portapapeles como un profesional");
       }
       
       return true;
     } catch (error) {
-      // Actualizar el botón con estado de error si se proporcionó
       if (button) {
         updateButtonState(button, 'error', originalButtonContent);
       }
@@ -63,16 +57,9 @@ export async function copyToClipboard(text, options = {}) {
   return copyToClipboardFallback(text, { button, showNotification });
 }
 
-/**
- * ⭐ ACTUALIZADO: Manejador de fallback usando la modal de Acadel
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve o rechaza según el resultado
- */
 async function copyToClipboardFallback(text, options = {}) {
   const { button, showNotification = true } = options;
   
-  // Guardar el contenido original del botón si existe
   let originalButtonContent = '';
   if (button) {
     originalButtonContent = button.innerHTML;
@@ -81,12 +68,10 @@ async function copyToClipboardFallback(text, options = {}) {
   try {
     console.log('🦫 Acadel: Usando método de copia manual con modal académica');
     
-    // Actualizar botón para mostrar que se está procesando
     if (button) {
       updateButtonState(button, 'processing', originalButtonContent);
     }
     
-    // ⭐ NUEVO: Usar la modal de Acadel para copia manual
     const userInteracted = await showAcadelManualCopyModal(text, options);
     
     if (userInteracted) {
@@ -131,12 +116,6 @@ async function copyToClipboardFallback(text, options = {}) {
   }
 }
 
-/**
- * ⭐ MEJORADO: Actualiza el estado visual de un botón de copia
- * @param {HTMLElement} button - Elemento botón
- * @param {string} state - Estado ('success', 'error', 'processing', 'default')
- * @param {string} originalContent - Contenido original para restaurar
- */
 export function updateButtonState(button, state, originalContent) {
   if (!button) return;
   
@@ -154,7 +133,7 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.add('error');
       button.classList.remove('copied', 'processing');
       break;
-    case 'processing':  // ⭐ NUEVO ESTADO
+    case 'processing':
       newContent = '<i class="bx bx-loader-alt bx-spin"></i> Acadel...';
       button.classList.add('processing');
       button.classList.remove('copied', 'error');
@@ -164,11 +143,9 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.remove('copied', 'error', 'processing');
   }
   
-  // Usar createElementWithHTML para mayor seguridad
   const tempElement = createElementWithHTML('div', {}, newContent);
   button.innerHTML = tempElement.innerHTML;
   
-  // Restaurar el estado original después de un tiempo usando el sistema centralizado de timeouts
   if (state !== 'default') {
     const restoreDelay = state === 'processing' ? 5000 : 2000; // Más tiempo para processing
     
@@ -190,10 +167,8 @@ export function attachCopyEvents(container) {
   const copyButtons = container.querySelectorAll('.copy-button');
   
   copyButtons.forEach(button => {
-    // Eliminar eventos anteriores para evitar duplicados
     removeAllEvents(button);
     
-    // Añadir nuevo evento con sistema de registro
     addEvent(button, 'click', () => {
       const blockId = getAttribute(button, 'data-target');
       const codeBlock = blockId ? document.getElementById(blockId) : button.closest('.code-block');
@@ -219,10 +194,8 @@ export function copyElementContent(container, options = {}) {
     return Promise.reject(new Error('Contenedor no válido'));
   }
   
-  // Extraer el contenido en texto plano
   let textContent = '';
   
-  // Verificar bloques de código primero
   const codeBlocks = container.querySelectorAll('pre code');
   
   if (codeBlocks.length > 0) {
@@ -230,7 +203,6 @@ export function copyElementContent(container, options = {}) {
     codeBlocks.forEach((block, index) => {
       if (index > 0) textContent += '\n\n';
       
-      // Intentar obtener el lenguaje
       const className = block.className || '';
       const language = className.replace('language-', '').trim();
       
@@ -243,14 +215,11 @@ export function copyElementContent(container, options = {}) {
       textContent += block.textContent;
     });
   } else {
-    // Extraer texto usando una versión optimizada del algoritmo recursivo
     textContent = extractTextContent(container);
   }
   
-  // Limpiar el texto (eliminar múltiples saltos de línea y espacios en blanco)
   textContent = textContent.replace(/\n{3,}/g, '\n\n').trim();
   
-  // Copiar al portapapeles
   return copyToClipboard(textContent, options);
 }
 
@@ -266,7 +235,6 @@ function extractTextContent(node) {
   const needsLineBreak = ['DIV', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'TR', 'LI'];
   const needsDoubleLineBreak = ['DIV', 'P', 'TABLE'];
   
-  // Usar textContent para casos simples que no requieren formato especial
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent;
   } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -279,7 +247,6 @@ function extractTextContent(node) {
       return '\n';
     }
     
-    // Para el resto de nodos, recorrer hijos
     let result = '';
     const childNodes = Array.from(node.childNodes);
     
@@ -291,12 +258,10 @@ function extractTextContent(node) {
       }
     });
     
-    // Construir resultado de manera eficiente
     childNodes.forEach(child => {
       result += extractTextContent(child);
     });
     
-    // Añadir saltos de línea después del elemento según corresponda
     if (needsLineBreak.includes(node.tagName)) {
       result += '\n';
     }

@@ -9,7 +9,6 @@ export class UiManager {
       this.modals = {};
       this.tooltips = [];
       
-      // Sistema de notificaciones rediseñado
       this.notifications = []; // Array simple para almacenar todas las notificaciones
       this.maxVisibleNotifications = 4;
       this.notificationContainer = null;
@@ -26,13 +25,10 @@ export class UiManager {
       this.mainContent = document.getElementById('main-content');
       this.contentBackdrop = document.getElementById('content-backdrop');
       
-      // Inicializar el sistema de notificaciones
       this.initNotifications();
       
-      // Inicializar modales Bootstrap si existen
       this.initModals();
       
-      // Inicializar tooltips si se necesitan
       this.initTooltips();
       
       // Estado inicial según tamaño de pantalla
@@ -43,7 +39,6 @@ export class UiManager {
      * Inicializa el contenedor de notificaciones
      */
     initNotifications() {
-      // Crear el contenedor de notificaciones si no existe
       if (!document.getElementById('notifications-container')) {
         this.notificationContainer = document.createElement('div');
         this.notificationContainer.id = 'notifications-container';
@@ -58,7 +53,6 @@ export class UiManager {
      * Inicializa modales de Bootstrap
      */
     initModals() {
-      // Obtener todas las referencias a modales
       document.querySelectorAll('.modal').forEach(modalEl => {
         const modalId = modalEl.id;
         this.modals[modalId] = new bootstrap.Modal(modalEl);
@@ -82,25 +76,20 @@ export class UiManager {
     showSection(sectionId) {
       if (!sectionId) return;
       
-      // Ocultar todas las secciones
       const sections = document.querySelectorAll('.content-section');
       sections.forEach(section => {
         section.classList.remove('active');
       });
       
-      // Mostrar la sección solicitada
       const targetSection = document.getElementById(`${sectionId}-section`);
       if (targetSection) {
         targetSection.classList.add('active');
         this.currentSection = sectionId;
         
-        // Actualizar titulo de la página
         this.updatePageTitle(sectionId);
         
-        // Actualizar clase activa en navegación
         this.updateNavigation(sectionId);
         
-        // Disparar evento de cambio de sección
         this.dispatchSectionChangeEvent(sectionId);
         
         console.log(`Sección cambiada a: ${sectionId}`);
@@ -169,7 +158,6 @@ export class UiManager {
       // Eliminamos cualquier spinner existente antes de crear uno nuevo
       this.hideLoading();
       
-      // Crear un spinner overlay en lugar de un modal Bootstrap
       const spinnerHTML = `
         <div class="spinner-overlay" id="spinner-overlay">
           <div class="spinner-container">
@@ -181,7 +169,6 @@ export class UiManager {
         </div>
       `;
       
-      // Insertar en el body (al final)
       document.body.insertAdjacentHTML('beforeend', spinnerHTML);
       
       // Asegurar que tiene un z-index más alto que cualquier modal
@@ -228,7 +215,6 @@ export class UiManager {
      * @returns {HTMLElement} - El botón creado
      */
     addResetFiltersButton(containerId, btnId, resetCallback, targetSelector = '#apply-user-filters, #apply-transaction-filters, #apply-expense-filters') {
-      // Verificar si el botón ya existe
       if (document.getElementById(btnId)) {
         return document.getElementById(btnId);
       }
@@ -246,16 +232,13 @@ export class UiManager {
         return null;
       }
       
-      // Crear el botón
       const resetButton = document.createElement('button');
       resetButton.className = 'btn btn-outline-secondary ms-2';
       resetButton.id = btnId;
       resetButton.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i> Reiniciar';
       
-      // Añadir event listener
       resetButton.addEventListener('click', resetCallback);
       
-      // Insertar después del elemento objetivo
       targetElement.parentNode.insertBefore(resetButton, targetElement.nextSibling);
       
       return resetButton;
@@ -277,7 +260,6 @@ export class UiManager {
         
         // Si se especifica una etiqueta de filtro específico
         if (options.filterLabel) {
-          // Verificar si el badge ya existe
           let badge = document.getElementById(`${btnId}-badge`);
           if (!badge) {
             badge = document.createElement('span');
@@ -291,7 +273,6 @@ export class UiManager {
         resetButton.classList.add('btn-outline-secondary');
         resetButton.classList.remove('btn-secondary');
         
-        // Eliminar badge si existe
         const badge = document.getElementById(`${btnId}-badge`);
         if (badge) {
           badge.remove();
@@ -325,7 +306,6 @@ export class UiManager {
         this.initNotifications();
       }
       
-      // Crear el elemento de notificación
       const notification = document.createElement('div');
       notification.className = `notification notification-${type}`;
       notification.setAttribute('role', 'alert');
@@ -349,10 +329,8 @@ export class UiManager {
         </div>
       `;
       
-      // Añadir al DOM (oculto inicialmente)
       this.notificationContainer.appendChild(notification);
       
-      // Crear objeto de notificación para nuestro control
       const notificationObj = {
         element: notification,
         timer: null,
@@ -360,10 +338,8 @@ export class UiManager {
         removing: false
       };
       
-      // Añadir a nuestro array de notificaciones
       this.notifications.push(notificationObj);
       
-      // Configurar cierre manual
       const closeButton = notification.querySelector('.notification-close');
       closeButton.addEventListener('click', () => {
         this.closeNotification(notificationObj);
@@ -374,7 +350,6 @@ export class UiManager {
         this.closeNotification(notificationObj);
       }, duration);
       
-      // Pausar la animación al pasar el ratón
       notification.addEventListener('mouseenter', () => {
         const progressBar = notification.querySelector('.notification-progress-bar');
         if (progressBar && !notificationObj.removing) {
@@ -386,7 +361,6 @@ export class UiManager {
         }
       });
       
-      // Reanudar la animación al quitar el ratón
       notification.addEventListener('mouseleave', () => {
         const progressBar = notification.querySelector('.notification-progress-bar');
         if (progressBar && !notificationObj.removing) {
@@ -401,7 +375,6 @@ export class UiManager {
         }
       });
       
-      // Intentar mostrar inmediatamente
       this.updateNotificationsDisplay();
     }
 
@@ -409,25 +382,20 @@ export class UiManager {
      * Actualiza qué notificaciones se muestran según la capacidad máxima
      */
     updateNotificationsDisplay() {
-      // Contar notificaciones actualmente visibles
       const visibleCount = this.notifications.filter(n => n.visible).length;
       
       // Si podemos mostrar más notificaciones
       if (visibleCount < this.maxVisibleNotifications) {
-        // Obtener notificaciones pendientes (no visibles y no en proceso de eliminación)
         const pendingNotifications = this.notifications.filter(n => !n.visible && !n.removing);
         
-        // Determinar cuántas podemos mostrar
         const showCount = Math.min(this.maxVisibleNotifications - visibleCount, pendingNotifications.length);
         
-        // Mostrar las pendientes
         for (let i = 0; i < showCount; i++) {
           const notification = pendingNotifications[i];
           
           // Forzar un reflow para asegurar la transición
           void notification.element.offsetWidth;
           
-          // Marcar como visible y mostrar
           notification.visible = true;
           notification.element.classList.add('show');
         }
@@ -443,20 +411,16 @@ export class UiManager {
       
       notification.removing = true;
       
-      // Cancelar timer si existe
       if (notification.timer) {
         clearTimeout(notification.timer);
         notification.timer = null;
       }
       
-      // Añadir clase para ocultar con animación
       notification.element.classList.remove('show');
       notification.element.classList.add('hide');
       
-      // Actualizar estado
       notification.visible = false;
       
-      // Eliminar después de la animación
       setTimeout(() => {
         this.removeNotification(notification);
       }, 400); // Duración de la transición CSS
@@ -513,7 +477,6 @@ export class UiManager {
         this.initNotifications();
       }
       
-      // Crear el elemento de notificación
       const notification = document.createElement('div');
       notification.className = `notification notification-${options.type}`;
       notification.setAttribute('role', 'alert');
@@ -537,20 +500,16 @@ export class UiManager {
         </div>
       `;
       
-      // Añadir al DOM (oculto inicialmente)
       this.notificationContainer.appendChild(notification);
       
-      // Configurar cierre manual
       const closeButton = notification.querySelector('.notification-close');
       closeButton.addEventListener('click', () => this.removeNotification(notification));
       
-      // Gestionar cola de notificaciones
       this.notificationQueue.push({
         element: notification,
         timer: null
       });
       
-      // Mostrar notificaciones (respetando el máximo)
       this.processNotificationQueue();
       
       // Auto-eliminar después del tiempo especificado
@@ -558,42 +517,33 @@ export class UiManager {
         this.removeNotification(notification);
       }, options.duration);
       
-      // Guardar referencia al timer
       notification.dataset.timerId = this.notificationQueue.length - 1;
       this.notificationQueue[this.notificationQueue.length - 1].timer = timer;
       
-      // Pausar la animación al pasar el ratón
       notification.addEventListener('mouseenter', () => {
         const progressBar = notification.querySelector('.notification-progress-bar');
         if (progressBar) {
-          // Guardar el tiempo restante de la animación
           const computedStyle = window.getComputedStyle(progressBar);
           const animationName = computedStyle.animationName;
           
           if (animationName !== 'none') {
-            // Pausar la animación
             progressBar.style.animationPlayState = 'paused';
             
-            // Cancelar el timer
             clearTimeout(this.notificationQueue[notification.dataset.timerId].timer);
           }
         }
       });
       
-      // Reanudar la animación al quitar el ratón
       notification.addEventListener('mouseleave', () => {
         const progressBar = notification.querySelector('.notification-progress-bar');
         if (progressBar) {
-          // Reanudar la animación
           progressBar.style.animationPlayState = 'running';
           
-          // Calcular tiempo restante aproximado
           const computedStyle = window.getComputedStyle(progressBar);
           const width = parseFloat(computedStyle.width);
           const totalWidth = parseFloat(window.getComputedStyle(notification.querySelector('.notification-progress')).width);
           const timeRemaining = (width / totalWidth) * options.duration;
           
-          // Crear nuevo timer
           const newTimer = setTimeout(() => {
             this.removeNotification(notification);
           }, timeRemaining);
@@ -608,24 +558,19 @@ export class UiManager {
      * las que quepan según el límite establecido
      */
     processNotificationQueue() {
-      // Contar notificaciones actualmente visibles
       const visibleCount = this.notificationContainer.querySelectorAll('.notification.show').length;
       
-      // Determinar cuántas notificaciones nuevas podemos mostrar
       const availableSlots = this.maxNotifications - visibleCount;
       
-      // Obtener notificaciones pendientes de mostrar
       const pendingNotifications = this.notificationQueue.filter(item => 
         !item.element.classList.contains('show') && 
         !item.element.classList.contains('hide')
       );
       
-      // Mostrar hasta llenar slots disponibles
       pendingNotifications.slice(0, availableSlots).forEach(item => {
         // Forzar un reflow para asegurar la transición
         void item.element.offsetWidth;
         
-        // Añadir clase para mostrar con animación
         item.element.classList.add('show');
       });
     }
@@ -635,18 +580,15 @@ export class UiManager {
      * @param {HTMLElement} notification - Elemento de notificación a eliminar
      */
     removeNotification(notification) {
-      // Eliminar del DOM
       if (notification.element && notification.element.parentNode) {
         notification.element.parentNode.removeChild(notification.element);
       }
       
-      // Eliminar de nuestro array
       const index = this.notifications.indexOf(notification);
       if (index !== -1) {
         this.notifications.splice(index, 1);
       }
       
-      // Actualizar display para mostrar notificaciones en espera
       this.updateNotificationsDisplay();
     }
     
@@ -664,7 +606,6 @@ export class UiManager {
         return;
       }
       
-      // Limpiar tabla
       tableBody.innerHTML = '';
       
       // Si no hay datos, mostrar mensaje
@@ -675,7 +616,6 @@ export class UiManager {
         return;
       }
       
-      // Renderizar filas
       data.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = rowRenderer(item);
@@ -699,7 +639,6 @@ export class UiManager {
       if (endEl) endEl.textContent = end;
       if (totalEl) totalEl.textContent = total;
       
-      // Actualizar estado de botones de paginación
       const prevBtn = document.getElementById(`${prefix}-prev-page`);
       const nextBtn = document.getElementById(`${prefix}-next-page`);
       
@@ -738,13 +677,11 @@ export class UiManager {
       const modal = document.getElementById(modalId);
       if (!modal) return;
       
-      // Configurar título si existe
       if (data.title) {
         const titleEl = modal.querySelector('.modal-title');
         if (titleEl) titleEl.textContent = data.title;
       }
       
-      // Configurar campos de formulario si existen
       if (data.fields) {
         Object.keys(data.fields).forEach(fieldId => {
           const field = modal.querySelector(`#${fieldId}`);
@@ -754,16 +691,13 @@ export class UiManager {
         });
       }
       
-      // Configurar callbacks para botones si existen
       if (data.callbacks) {
         Object.keys(data.callbacks).forEach(buttonId => {
           const button = modal.querySelector(`#${buttonId}`);
           if (button) {
-            // Eliminar listeners previos
             const newButton = button.cloneNode(true);
             button.parentNode.replaceChild(newButton, button);
             
-            // Añadir nuevo listener
             newButton.addEventListener('click', data.callbacks[buttonId]);
           }
         });
@@ -838,7 +772,6 @@ export class UiManager {
         }
       }
       
-      // Añadir nuevas opciones
       options.forEach(option => {
         const optionEl = document.createElement('option');
         optionEl.value = option.value;

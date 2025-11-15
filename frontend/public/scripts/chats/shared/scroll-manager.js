@@ -37,7 +37,6 @@ const timeoutRegistry = {};
  * @returns {number} ID del timeout
  */
 function setManagedTimeout(callback, delay, key) {
-  // Limpiar timeout previo si existe con la misma clave
   if (key && timeoutRegistry[key]) {
     clearTimeout(timeoutRegistry[key]);
   }
@@ -104,10 +103,8 @@ class ScrollManager {
     if (config.delays) this.config.delays = { ...this.config.delays, ...config.delays };
     if (config.behavior) this.config.behavior = { ...this.config.behavior, ...config.behavior };
     
-    // Inicializar timestamp para la última interacción con examen
     this._lastExamInteractionTime = null;
     
-    // Obtener el contenedor de chat
     this.chatContainer = document.querySelector('.chat-messages');
     
     if (!this.chatContainer) {
@@ -115,16 +112,13 @@ class ScrollManager {
         console.warn('ScrollManager: No se encontró el contenedor de chat. El scroll podría no funcionar correctamente.');
       }
     } else {
-      // Configurar observador de mutación para detectar cambios en los mensajes
       this.setupMutationObserver();
       
-      // Configurar observador de resize para manejar cambios de tamaño
       this.setupResizeObserver();
       
       // Observador específico para el indicador de carga
       this.setupTypingLoaderObserver();
       
-      // Configurar observador específico para interacciones con exámenes
       this.setupExamInteractionObserver();
       
       this.isInitialized = true;
@@ -143,7 +137,6 @@ class ScrollManager {
           this.log('Seguridad: Desbloqueando scroll bloqueado por examen por más de 5 segundos');
           this.unlockScrollWithReason('safety-timeout');
           
-          // Limpiar cualquier atributo de interacción de examen
           const examContainers = document.querySelectorAll('[data-exam-interaction-active], [data-exam-navigation]');
           examContainers.forEach(container => {
             container.removeAttribute('data-exam-interaction-active');
@@ -153,7 +146,6 @@ class ScrollManager {
       }
     }, 1000); // Verificar cada segundo
     
-    // Guardar para limpieza en destroy()
     this.observers.push({ disconnect: () => clearInterval(this._safetyInterval) });
     
     if (this.chatContainer) {
@@ -173,7 +165,6 @@ setupImageObserver() {
   const imageObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-        // Buscar nuevas imágenes en nodos añadidos
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const container = node.classList?.contains('message') ? node : null;
@@ -188,13 +179,11 @@ setupImageObserver() {
     }
   });
   
-  // Observar cambios en el contenedor de chat
   imageObserver.observe(this.chatContainer, {
     childList: true,
     subtree: true
   });
   
-  // Guardar referencia al observador
   this.observers.push(imageObserver);
   
   this.log('Observador de imágenes configurado');
@@ -207,7 +196,6 @@ setupImageObserver() {
     if (!this.chatContainer) return;
     
     const examClickHandler = (e) => {
-      // Verificar si el click fue en una opción de examen
       if (e.target.closest('[data-exam-option]') || 
           e.target.closest('.option') ||
           e.target.closest('[data-exam-navigation]') ||
@@ -216,15 +204,12 @@ setupImageObserver() {
         this._lastExamInteractionTime = Date.now();
         this.log('Click detectado en elemento de examen, bloqueando scroll');
         
-        // Bloquear scroll temporalmente
         this.lockScrollWithReason('exam-interaction-click', 2000);
       }
     };
     
-    // Agregar listener de click al contenedor principal
     this.chatContainer.addEventListener('click', examClickHandler);
     
-    // Guardar referencia para poder removerlo después
     this._examClickHandler = examClickHandler;
     
     this.log('Observador de interacciones con exámenes configurado');
@@ -235,13 +220,11 @@ setupImageObserver() {
  * @returns {boolean} - true si hay un cambio de tema activo
  */
 isThemeChanging() {
-  // Verificar el atributo específico en documentElement
   if (document.documentElement && document.documentElement.getAttribute('data-theme-changing') === 'true') {
     this.log('Detectado cambio de tema en progreso');
     return true;
   }
   
-  // Verificar si hay un bloqueo de scroll por razón de cambio de tema
   if (this.scrollLocked && this.lockReason === 'theme-toggle-operation') {
     this.log('Bloqueo de scroll por cambio de tema activo');
     return true;
@@ -263,7 +246,6 @@ isThemeChanging() {
       let loadingMessageAdded = false;
       let targetElement = null;
       
-      // Verificar si la mutación está relacionada con response-interaction
       const isResponseInteractionMutation = (mutation) => {
         // Caso 1: Añadiendo botones de interacción a un mensaje
         if (mutation.addedNodes.length > 0) {
@@ -300,7 +282,6 @@ isThemeChanging() {
         return false;
       };
       
-      // Analizar las mutaciones para determinar si debemos hacer scroll
       for (const mutation of mutations) {
         // Omitir mutaciones relacionadas con response-interaction
         if (isResponseInteractionMutation(mutation)) {
@@ -331,12 +312,10 @@ isThemeChanging() {
                 }
               }
               
-              // Buscar anidados también (por ejemplo, un loader dentro de un mensaje)
               const typingLoader = node.querySelector('.typing-loader');
               if (typingLoader) {
                 loadingMessageAdded = true;
                 shouldScroll = true;
-                // Priorizar el contenedor del loader si lo encontramos
                 targetElement = node.closest('.message') || node;
               }
             }
@@ -365,7 +344,6 @@ isThemeChanging() {
       }
     });
     
-    // Observar cambios en el contenedor de chat y sus hijos
     mutationObserver.observe(this.chatContainer, {
       childList: true,
       subtree: true,
@@ -375,7 +353,6 @@ isThemeChanging() {
       attributeOldValue: true // Importante para comparar valores anteriores
     });
     
-    // Observar cambios en el body para preview-panel-active
     mutationObserver.observe(document.body, {
       attributes: true,
       attributeFilter: ['class'],
@@ -395,19 +372,14 @@ maintainPositionDuringImageLoad(imageElement) {
   const messageElement = imageElement.closest('.message');
   if (!messageElement) return;
   
-  // Calcular posición relativa del mensaje antes de la carga
   const messageTopPosition = messageElement.offsetTop - this.chatContainer.scrollTop;
   
   // Evento para cuando la imagen termina de cargar
   const handleImageLoad = () => {
-    // Solo ajustar si el usuario no ha scrolleado manualmente mientras tanto
     if (!this._userScrolled) {
-      // Calcular la nueva posición manteniendo la posición relativa del mensaje
       const newScrollTop = messageElement.offsetTop - messageTopPosition;
       
-      // Solo aplicar si la diferencia es significativa para evitar micro-ajustes
       if (Math.abs(this.chatContainer.scrollTop - newScrollTop) > 5) {
-        // Usar scrollTo con behavior auto para evitar animación
         this.chatContainer.scrollTo({
           top: newScrollTop,
           behavior: 'auto'
@@ -417,16 +389,13 @@ maintainPositionDuringImageLoad(imageElement) {
       }
     }
     
-    // Limpiar listeners
     imageElement.removeEventListener('load', handleImageLoad);
     this.chatContainer.removeEventListener('wheel', markUserScrolled);
     this.chatContainer.removeEventListener('touchmove', markUserScrolled);
   };
   
-  // Función para detectar si el usuario scrollea manualmente
   const markUserScrolled = () => {
     this._userScrolled = true;
-    // Limpiar después de un tiempo
     setTimeout(() => {
       this._userScrolled = false;
     }, 1000);
@@ -437,7 +406,6 @@ maintainPositionDuringImageLoad(imageElement) {
     return;
   }
   
-  // Registrar eventos
   this._userScrolled = false;
   imageElement.addEventListener('load', handleImageLoad);
   this.chatContainer.addEventListener('wheel', markUserScrolled);
@@ -456,7 +424,6 @@ setupImagePositionMaintenance(container) {
   
   if (images.length === 0) return;
   
-  // Configurar mantenimiento de posición para cada imagen
   for (const image of images) {
     this.maintainPositionDuringImageLoad(image);
   }
@@ -543,7 +510,6 @@ setupImagePositionMaintenance(container) {
     
     // 2. Verificar atributos de actualización huérfanos
     if (document.body.getAttribute('data-updating-diagrams') === 'true') {
-      // Verificar si realmente hay elementos actualizándose
       const updatingElements = document.querySelectorAll('[data-updating="true"]');
       if (updatingElements.length === 0) {
         // No hay elementos actualizándose, podría ser un atributo huérfano
@@ -556,7 +522,6 @@ setupImagePositionMaintenance(container) {
     // 3. Verificar y limpiar atributos de zoom activo huérfanos
     const zoomActiveElements = document.querySelectorAll('[data-zoom-active="true"]');
     zoomActiveElements.forEach(el => {
-      // Verificar si el elemento está realmente en el DOM
       if (!document.body.contains(el)) {
         el.removeAttribute('data-zoom-active');
         repaired = true;
@@ -573,7 +538,6 @@ setupImagePositionMaintenance(container) {
     if (!this.chatContainer || !window.ResizeObserver) return;
     
     const resizeObserver = new ResizeObserver((entries) => {
-      // Solo hacer scroll si estamos cerca del final (para no interrumpir lectura)
       if (this.isNearBottom()) {
         this.scrollToBottom({ 
           priority: 'low', 
@@ -606,7 +570,6 @@ setupImagePositionMaintenance(container) {
                 continue;
               }
               
-              // Buscar loaders tanto directamente como anidados
               const isLoader = node.classList?.contains('typing-loader');
               const hasLoader = node.querySelector?.('.typing-loader');
               
@@ -644,25 +607,18 @@ setupImagePositionMaintenance(container) {
    */
   isResponseInteractionActive() {
     return (
-      // Detectar mensaje en edición
       document.querySelector('.message.editing-message') !== null ||
       
-      // Detectar modal de feedback
       document.querySelector('.feedback-modal') !== null ||
       
-      // Detectar overlay de edición
       document.querySelector('.edit-overlay') !== null ||
       
-      // Detectar atributos de data-response-interaction
       document.querySelector('[data-response-interaction="true"]') !== null ||
       
-      // Detectar mensajes en proceso de retry
       document.querySelector('[data-response-interaction-processing="true"]') !== null ||
       
-      // Detectar botones específicos en acción
       document.querySelector('.edit-confirm-btn, .edit-cancel-btn, .retry-btn.processing') !== null ||
       
-      // Detectar interacciones con exámenes
       this.isExamInteractionActive()
     );
   }
@@ -672,21 +628,18 @@ setupImagePositionMaintenance(container) {
    * @returns {boolean} - true si hay una interacción activa con un examen
    */
   isExamInteractionActive() {
-    // Verificar si hay interacciones EXPLÍCITAS con exámenes
     const activeExamInteraction = document.querySelector('[data-exam-interaction-active="true"]');
     if (activeExamInteraction) {
       this.log('Detectada interacción activa con examen');
       return true;
     }
     
-    // Verificar si hay navegación entre preguntas de examen
     const examNavigation = document.querySelector('[data-exam-navigation="true"]');
     if (examNavigation) {
       this.log('Detectada navegación entre preguntas de examen');
       return true;
     }
     
-    // Reducir el tiempo de bloqueo después de un clic
     if (this._lastExamInteractionTime && (Date.now() - this._lastExamInteractionTime < 1000)) {
       this.log('Interacción reciente con examen (hace menos de 1s)');
       return true;
@@ -706,18 +659,15 @@ setupImagePositionMaintenance(container) {
         (mutation.attributeName === 'class' || mutation.attributeName === 'disabled')) {
       const target = mutation.target;
       
-      // Solo detectar interacciones con opciones/botones existentes, no el renderizado inicial
       if ((target.classList?.contains('option') && target.classList.contains('correct')) || 
           (target.classList?.contains('option') && target.classList.contains('incorrect')) ||
           (target.hasAttribute('data-exam-option') && target.disabled)) {
         
-        // Registrar el momento de la interacción
         this._lastExamInteractionTime = Date.now();
         this.log('Detectada interacción con opción de examen (click en opción)');
         return true;
       }
       
-      // Verificar si es un botón de navegación que ha sido activado
       if (target.closest('[data-exam-navigation]') || 
           target.hasAttribute('data-exam-navigation') ||
           target.classList?.contains('next-question')) {
@@ -746,7 +696,6 @@ setupImagePositionMaintenance(container) {
     if (mutation.type === 'attributes' && 
         (mutation.attributeName === 'data-exam-interaction-active' || 
          mutation.attributeName === 'data-exam-navigation')) {
-      // Solo cuando el valor es "true"
       if (mutation.target.getAttribute(mutation.attributeName) === 'true') {
         this.log('Detectado cambio en atributo de interacción de examen');
         return true;
@@ -765,7 +714,6 @@ setupImagePositionMaintenance(container) {
   isNearBottom(threshold = 100) {
     if (!this.chatContainer) return true;
     
-    // Usar el método central para verificar interacciones de respuesta
     if (this.isResponseInteractionActive()) {
       this.log('isNearBottom: Interacción de respuesta activa, evitando scroll automático');
       return false;
@@ -806,7 +754,6 @@ setupImagePositionMaintenance(container) {
 restoreScrollPosition(force = false) {
   if (!this.chatContainer || !this._savedScrollPosition) return;
   
-  // Verificar si la posición guardada es reciente (menos de 3 segundos)
   const elapsedTime = Date.now() - this._savedScrollPosition.timestamp;
   if (!force && elapsedTime > 3000) {
     this.log(`Posición de scroll descartada por antigüedad (${elapsedTime}ms)`);
@@ -814,16 +761,13 @@ restoreScrollPosition(force = false) {
     return;
   }
   
-  // Calcular ajuste si la altura del contenido ha cambiado
   const heightDiff = this.chatContainer.scrollHeight - this._savedScrollPosition.height;
   
-  // Aplicar la posición guardada con posible ajuste
   this.chatContainer.scrollTop = this._savedScrollPosition.top + (heightDiff > 0 ? heightDiff : 0);
   this.chatContainer.scrollLeft = this._savedScrollPosition.left;
   
   this.log(`Posición de scroll restaurada a: ${this.chatContainer.scrollTop}px (ajuste: ${heightDiff}px)`);
   
-  // Limpiar posición guardada después de usarla
   this._savedScrollPosition = null;
 }
     
@@ -854,10 +798,8 @@ restoreScrollPosition(force = false) {
     
     this.log(`Ejecutando scrollToBottom (prioridad: ${opts.priority}, razón: ${opts.reason})`);
     
-    // Ejecutar scroll inmediato
     this.executeScroll(null, opts);
     
-    // Configurar múltiples intentos si está habilitado
     if (this.config.behavior.useMultipleAttempts && !opts.isRetry) {
       this.scheduleMultipleScrollAttempts(null, opts);
     }
@@ -894,13 +836,10 @@ restoreScrollPosition(force = false) {
     
     this.log(`Ejecutando scrollToElement (prioridad: ${opts.priority}, razón: ${opts.reason})`);
     
-    // Guardar referencia al último elemento objetivo
     this.lastScrollTarget = element;
     
-    // Ejecutar scroll inmediato
     this.executeScroll(element, opts);
     
-    // Configurar múltiples intentos si está habilitado
     if (this.config.behavior.useMultipleAttempts && !opts.isRetry) {
       this.scheduleMultipleScrollAttempts(element, opts);
     }
@@ -957,13 +896,11 @@ restoreScrollPosition(force = false) {
   executeScroll(element, options) {
     if (!this.chatContainer) return;
     
-    // Usar el método central para verificar interacciones de respuesta
     if (this.isResponseInteractionActive()) {
       this.log('executeScroll: Omitiendo scroll debido a una interacción de respuesta activa');
       return;
     }
     
-    // Incrementar contador de operaciones pendientes
     this.pendingScrollOperations++;
     
     try {
@@ -988,10 +925,8 @@ restoreScrollPosition(force = false) {
         // Forzar otro reflow
         const forceReflow = this.chatContainer.offsetHeight;
         
-        // Intentar mover el viewport también
         window.scrollTo(0, document.body.scrollHeight);
         
-        // Combinar todas las técnicas de scroll
         if (element) {
           element.scrollIntoView({ behavior: 'auto', block: 'end' });
         }
@@ -1002,7 +937,6 @@ restoreScrollPosition(force = false) {
         console.error('Error durante la operación de scroll:', error);
       }
     } finally {
-      // Decrementar contador de operaciones pendientes
       this.pendingScrollOperations--;
     }
   }
@@ -1078,7 +1012,6 @@ restoreScrollPosition(force = false) {
       }
     }, interval);
     
-    // Guardar referencia al intervalo para poder cancelarlo si es necesario
     timeoutRegistry[monitorTimeoutKey] = checkInterval;
     
     return {
@@ -1124,7 +1057,6 @@ restoreScrollPosition(force = false) {
     this.lockReason = reason || 'manual';
     this._lockStartTime = Date.now();
     
-    // Registrar razones de bloqueo con timestamps
     if (!this._lockHistory) this._lockHistory = [];
     this._lockHistory.push({
       reason: this.lockReason,
@@ -1138,7 +1070,6 @@ restoreScrollPosition(force = false) {
     }
     
     if (duration > 0) {
-      // Limpiar timeout anterior si existe
       if (this.lockTimeout) {
         clearTimeout(this.lockTimeout);
       }
@@ -1149,7 +1080,6 @@ restoreScrollPosition(force = false) {
         this.lockReason = null;
         this._lockStartTime = null;
         
-        // Registrar desbloqueo en historial
         if (this._lockHistory) {
           this._lockHistory.push({
             reason: `${reason}-auto-timeout`,
@@ -1175,7 +1105,6 @@ restoreScrollPosition(force = false) {
       return;
     }
     
-    // Limpiar timeout si existe
     if (this.lockTimeout) {
       clearTimeout(this.lockTimeout);
       this.lockTimeout = null;
@@ -1188,7 +1117,6 @@ restoreScrollPosition(force = false) {
     this.lockReason = null;
     this._lockStartTime = null;
     
-    // Registrar en historial
     if (this._lockHistory) {
       this._lockHistory.push({
         previousReason: previousReason,
@@ -1233,20 +1161,17 @@ restoreScrollPosition(force = false) {
    * Limpia todos los observadores y recursos
    */
   destroy() {
-    // Detener todos los observadores
     this.observers.forEach(observer => {
       if (observer && typeof observer.disconnect === 'function') {
         observer.disconnect();
       }
     });
     
-    // Eliminar event listener de exámenes
     if (this.chatContainer && this._examClickHandler) {
       this.chatContainer.removeEventListener('click', this._examClickHandler);
       this._examClickHandler = null;
     }
     
-    // Limpiar todas las referencias y timeouts
     clearAllManagedTimeouts();
     this.observers = [];
     this.lastScrollTarget = null;
@@ -1260,7 +1185,6 @@ restoreScrollPosition(force = false) {
    * Configura detector de zoom del navegador
    */
   setupBrowserZoomHandler() {
-    // Verificar que scrollManager existe
     if (!window.scrollManager) {
       if (this.config.behavior.debugMode) {
         console.warn('ScrollManager no está disponible, no se puede configurar el detector de zoom');
@@ -1268,13 +1192,11 @@ restoreScrollPosition(force = false) {
       return;
     }
     
-    // Variables para detectar zoom
     let lastWidth = window.innerWidth;
     let lastHeight = window.innerHeight;
     let lastRatio = lastWidth / lastHeight;
     let isHandlingZoom = false;
     
-    // Función para detectar si un cambio de tamaño es probablemente debido al zoom del navegador
     function isLikelyZoom(newWidth, newHeight) {
       // Si el tamaño cambia pero la relación de aspecto se mantiene (o cambia muy poco),
       // es probable que sea zoom del navegador en lugar de un redimensionamiento de ventana
@@ -1290,12 +1212,9 @@ restoreScrollPosition(force = false) {
       const newWidth = window.innerWidth;
       const newHeight = window.innerHeight;
       
-      // Verificar si este evento parece un zoom
       if (isLikelyZoom(newWidth, newHeight) && !isHandlingZoom) {
-        // Marcar que estamos manejando un zoom
         isHandlingZoom = true;
         
-        // Bloquear el scroll
         window.scrollManager.lockScrollWithReason('browser-zoom-detected');
         
         if (this.config.behavior.debugMode) {
@@ -1303,10 +1222,8 @@ restoreScrollPosition(force = false) {
         }
       }
       
-      // Establecer un timeout para desbloquear el scroll después de un breve retraso
       setManagedTimeout(() => {
         if (isHandlingZoom) {
-          // Desbloquear el scroll
           window.scrollManager.unlockScrollWithReason('browser-zoom-complete');
           isHandlingZoom = false;
           
@@ -1315,7 +1232,6 @@ restoreScrollPosition(force = false) {
           }
         }
         
-        // Actualizar los valores de referencia para la próxima detección
         lastWidth = window.innerWidth;
         lastHeight = window.innerHeight;
         lastRatio = lastWidth / lastHeight;
@@ -1325,9 +1241,7 @@ restoreScrollPosition(force = false) {
     
     // También detectar eventos de zoom con la rueda del ratón cuando se mantiene Ctrl
     window.addEventListener('wheel', (e) => {
-      // Verificar si se está presionando Ctrl (común para zoom del navegador)
       if (e.ctrlKey) {
-        // Bloquear el scroll durante el zoom con la rueda
         if (!isHandlingZoom) {
           isHandlingZoom = true;
           window.scrollManager.lockScrollWithReason('browser-wheel-zoom');
@@ -1337,7 +1251,6 @@ restoreScrollPosition(force = false) {
           }
         }
         
-        // Establecer un timeout para desbloquear después del zoom
         setManagedTimeout(() => {
           window.scrollManager.unlockScrollWithReason('browser-wheel-zoom-complete');
           isHandlingZoom = false;
@@ -1349,10 +1262,8 @@ restoreScrollPosition(force = false) {
       }
     }, { passive: false });
     
-    // Detectar gestos de pinch en trackpads/touchpads (principalmente para MacOS)
     let lastDistance = 0;
     
-    // Función para calcular la distancia entre dos puntos de toque
     function getTouchDistance(touches) {
       if (touches.length < 2) return 0;
       
@@ -1383,7 +1294,6 @@ restoreScrollPosition(force = false) {
             }
           }
           
-          // Establecer timeout para desbloquear
           setManagedTimeout(() => {
             window.scrollManager.unlockScrollWithReason('touch-pinch-zoom-complete');
             isHandlingZoom = false;
@@ -1404,7 +1314,6 @@ restoreScrollPosition(force = false) {
   }
 }
 
-// Exportar una única instancia para toda la aplicación
 const scrollManager = new ScrollManager();
 
 export default scrollManager;
@@ -1420,7 +1329,6 @@ function isSidebarOrPreviewPanelMutation(mutation) {
   if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
     // Cambios en main-content
     if (mutation.target.classList?.contains('main-content')) {
-      // Verificar si se añadió o quitó la clase 'sidebar-pinned'
       if (mutation.oldValue && 
           (mutation.oldValue.includes('sidebar-pinned') !== mutation.target.classList.contains('sidebar-pinned'))) {
         this.log('Ignorando mutación relacionada con sidebar-pinned en main-content');
@@ -1430,7 +1338,6 @@ function isSidebarOrPreviewPanelMutation(mutation) {
     
     // Cambios en sidebar
     if (mutation.target.classList?.contains('sidebar')) {
-      // Verificar si se añadió o quitó la clase 'pinned' o 'collapsed'
       if (mutation.oldValue && 
           (mutation.oldValue.includes('pinned') !== mutation.target.classList.contains('pinned') ||
            mutation.oldValue.includes('collapsed') !== mutation.target.classList.contains('collapsed'))) {
@@ -1455,9 +1362,7 @@ function isSidebarOrPreviewPanelMutation(mutation) {
     const styleChanges = ['transform', 'width', 'max-width'];
     const target = mutation.target;
     
-    // Verificar si el estilo contiene propiedades relevantes
     if (target.style && styleChanges.some(prop => target.style[prop])) {
-      // Verificar si el elemento está relacionado con sidebar o preview
       if (target.classList?.contains('main-content') || 
           target.classList?.contains('sidebar') ||
           target.closest('.sidebar') ||
@@ -1479,22 +1384,18 @@ function isSidebarOrPreviewPanelMutation(mutation) {
 function setupAdvancedZoomGestures(wrapper, svgElement) {
   if (!wrapper || !svgElement) return;
   
-  // Crear o recuperar estado de zoom
   const zoomState = wrapper._zoomState || {
     currentScale: 1,
     translateX: 0,
     translateY: 0
   };
   
-  // Guardar estado para referencia futura
   wrapper._zoomState = zoomState;
   
-  // Función para aplicar transformación
   function applyTransform() {
     svgElement.style.transform = `translate(${zoomState.translateX}px, ${zoomState.translateY}px) scale(${zoomState.currentScale})`;
   }
   
-  // Configurar manejadores
   setupAdvancedWheelHandler(wrapper, svgElement, zoomState, applyTransform);
   setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransform);
   
@@ -1518,7 +1419,6 @@ function setupAdvancedWheelHandler(wrapper, svgElement, zoomState, applyTransfor
     return;
   }
   
-  // Verificar si tenemos acceso al ScrollManager
   const scrollManager = window.scrollManager;
   const canLockScroll = scrollManager && typeof scrollManager.lockScrollWithReason === 'function';
   
@@ -1542,31 +1442,25 @@ function setupAdvancedWheelHandler(wrapper, svgElement, zoomState, applyTransfor
     lockId: null
   };
   
-  // Función para bloquear el scroll durante zoom con rueda
   function lockScrollForWheelZoom() {
     if (!canLockScroll) return false;
     
-    // Generar un ID único para este bloqueo si no existe
     if (!wheelState.lockId) {
       wheelState.lockId = `mermaid-wheel-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     }
     
-    // Calcular la duración del bloqueo basada en la actividad reciente
     const lockDuration = Math.max(
       wheelConfig.minLockDuration,
       wheelConfig.continuousThreshold * Math.min(wheelState.continuousEvents, 5) + 
       wheelConfig.extraLockTime
     );
     
-    // Bloquear o renovar el bloqueo
     scrollManager.lockScrollWithReason(wheelState.lockId, lockDuration);
     
     return true;
   }
   
-  // Función para determinar si un evento es probablemente un zoom de gesto de touchpad
   function isProbablyGestureZoom(e) {
-    // Detectar características típicas de gestos de pinch-zoom en touchpads
     return (
       // Chrome y Firefox en macOS suelen enviar eventos con ctrlKey para gestos de pinch
       (e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) ||
@@ -1582,62 +1476,47 @@ function setupAdvancedWheelHandler(wrapper, svgElement, zoomState, applyTransfor
     e.preventDefault();
     e.stopPropagation();
     
-    // Registrar tiempo del evento
     const now = Date.now();
     const timeSinceLastWheel = now - wheelState.lastWheelTime;
     wheelState.lastWheelTime = now;
     
-    // Determinar si es parte de una serie continua de eventos
     if (timeSinceLastWheel < wheelConfig.continuousThreshold) {
       wheelState.continuousEvents++;
     } else {
       wheelState.continuousEvents = 1;
     }
     
-    // Marcar inicio de zoom con rueda si es el primer evento
     if (!wheelState.isWheelZooming) {
       wheelState.isWheelZooming = true;
       
-      // Actualizar estado global si existe
       if (typeof window._activeZoomOperations !== 'undefined') {
         window._activeZoomOperations++;
       }
       
-      // Aplicar cursor de zoom
       svgElement.style.cursor = 'zoom-in';
     }
     
-    // Bloquear o renovar bloqueo de scroll
     lockScrollForWheelZoom();
     
-    // Determinar factor de zoom basado en evento
     let zoomFactor;
     
     if (isProbablyGestureZoom(e)) {
-      // Para gestos de pinch, usar deltaY directamente pero con más suavidad
       zoomFactor = -e.deltaY / (wheelConfig.dampingFactor * 200);
     } else {
-      // Para rueda normal, valor discreto con signo
       zoomFactor = e.deltaY > 0 ? -0.1 : 0.1;
     }
     
-    // Aplicar zoom al estado
     zoomState.currentScale = Math.max(0.5, Math.min(zoomState.currentScale + zoomFactor, 3));
     
-    // Aplicar transformación
     applyTransform();
     
-    // Configurar timeout para finalizar el zoom
     setManagedTimeout(() => {
-      // Finalizar el zoom
       wheelState.isWheelZooming = false;
       wheelState.continuousEvents = 0;
       wheelState.lockId = null;
       
-      // Restaurar cursor
       svgElement.style.cursor = 'grab';
       
-      // Actualizar estado global si existe
       if (typeof window._activeZoomOperations !== 'undefined') {
         window._activeZoomOperations = Math.max(0, window._activeZoomOperations - 1);
       }
@@ -1663,7 +1542,6 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     return;
   }
   
-  // Verificar si tenemos acceso al ScrollManager
   const scrollManager = window.scrollManager;
   const canLockScroll = scrollManager && typeof scrollManager.lockScrollWithReason === 'function';
   
@@ -1677,7 +1555,6 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     lockId: null
   };
   
-  // Función para calcular distancia entre dos puntos de toque
   function getTouchDistance(touches) {
     if (touches.length < 2) return 0;
     
@@ -1686,7 +1563,6 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     return Math.sqrt(dx * dx + dy * dy);
   }
   
-  // Función para calcular el centro de dos puntos de toque
   function getTouchCenter(touches) {
     if (touches.length < 2) return { x: touches[0].clientX, y: touches[0].clientY };
     
@@ -1696,16 +1572,13 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     };
   }
   
-  // Función para bloquear el scroll durante gestos
   function lockScrollForGesture() {
     if (!canLockScroll) return false;
     
-    // Generar un ID único para este bloqueo si no existe
     if (!touchState.lockId) {
       touchState.lockId = `mermaid-touch-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     }
     
-    // Bloquear por al menos 1 segundo para gestos táctiles
     scrollManager.lockScrollWithReason(touchState.lockId, 1000);
     
     return true;
@@ -1716,7 +1589,6 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     if (e.touches.length >= 2) {
       e.preventDefault();
       
-      // Registrar posiciones iniciales
       touchState.touchStartPositions = [];
       for (let i = 0; i < e.touches.length; i++) {
         touchState.touchStartPositions.push({
@@ -1725,16 +1597,13 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
         });
       }
       
-      // Registrar distancia y escala inicial
       touchState.startDistance = getTouchDistance(e.touches);
       touchState.startScale = zoomState.currentScale;
       touchState.lastTouchTime = Date.now();
       touchState.isGestureActive = true;
       
-      // Bloquear scroll
       lockScrollForGesture();
       
-      // Actualizar estado global si existe
       if (typeof window._activeZoomOperations !== 'undefined') {
         window._activeZoomOperations++;
       }
@@ -1746,18 +1615,14 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
     if (touchState.isGestureActive && e.touches.length >= 2) {
       e.preventDefault();
       
-      // Calcular nueva distancia
       const currentDistance = getTouchDistance(e.touches);
       
-      // Solo procesar si hay cambio significativo
       if (Math.abs(currentDistance - touchState.startDistance) > 5) {
-        // Actualizar tiempo de último toque
         touchState.lastTouchTime = Date.now();
         
         // Renovar bloqueo de scroll
         lockScrollForGesture();
         
-        // Calcular y aplicar nueva escala
         const scaleFactor = currentDistance / touchState.startDistance;
         zoomState.currentScale = Math.max(0.5, Math.min(touchState.startScale * scaleFactor, 3));
         
@@ -1771,19 +1636,16 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
           zoomState.translateY += (touchCenter.y - startCenter.y);
         }
         
-        // Aplicar transformación
         applyTransform();
       }
     }
   }, { passive: false });
   
-  // Función para finalizar el gesto
   function finishGesture() {
     // Restablecer el estado
     touchState.isGestureActive = false;
     touchState.lockId = null;
     
-    // Actualizar estado global si existe
     if (typeof window._activeZoomOperations !== 'undefined') {
       window._activeZoomOperations = Math.max(0, window._activeZoomOperations - 1);
     }
@@ -1807,5 +1669,4 @@ function setupTouchGestureHandlers(wrapper, svgElement, zoomState, applyTransfor
   }, { passive: false });
 }
 
-// Exportar función principal
 export { setupAdvancedZoomGestures };

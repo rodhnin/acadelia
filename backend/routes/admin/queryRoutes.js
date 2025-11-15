@@ -18,7 +18,6 @@ router.post(
   isAdmin,
   async (req, res) => {
     try {
-      // Obtener parámetros de la solicitud
       const { query, avaId } = req.body;
       
       if (!query) {
@@ -35,7 +34,6 @@ router.post(
         });
       }
       
-      // Verificar que el AVA tiene una tabla de embeddings
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -45,7 +43,6 @@ router.post(
         });
       }
       
-      // Validar que la consulta es segura
       if (!isQuerySafe(query, avaInfo.tableName)) {
         return res.status(400).json({
           success: false,
@@ -53,10 +50,8 @@ router.post(
         });
       }
       
-      // Ejecutar la consulta
       const { rows } = await pool.query(query);
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         data: rows
@@ -80,7 +75,6 @@ router.post(
   isAdmin,
   async (req, res) => {
     try {
-      // Obtener parámetros de la solicitud
       const { avaId, filename } = req.body;
       
       if (!avaId) {
@@ -97,7 +91,6 @@ router.post(
         });
       }
       
-      // Verificar que el AVA tiene una tabla de embeddings
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -117,10 +110,8 @@ router.post(
         ORDER BY (metadata->>'page')::int ASC
       `;
       
-      // Ejecutar la consulta con parámetros seguros
       const { rows } = await pool.query(query, [filename]);
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         avaId,
@@ -147,7 +138,6 @@ router.post(
   isAdmin,
   async (req, res) => {
     try {
-      // Obtener parámetros de la solicitud
       const { avaId, filename, pageNumber } = req.body;
       
       if (!avaId || !filename || pageNumber === undefined) {
@@ -157,7 +147,6 @@ router.post(
         });
       }
       
-      // Verificar que el AVA tiene una tabla de embeddings
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -177,7 +166,6 @@ router.post(
         LIMIT 1
       `;
       
-      // Ejecutar la consulta con parámetros seguros
       const { rows } = await pool.query(query, [filename, pageNumber]);
       
       if (rows.length === 0) {
@@ -187,7 +175,6 @@ router.post(
         });
       }
       
-      // Responder con los resultados
       res.status(200).json({
         success: true,
         data: rows[0]
@@ -211,36 +198,30 @@ router.post(
  * @returns {boolean} - true si la consulta es segura
  */
 function isQuerySafe(query, tableName) {
-  // Validación básica de seguridad
   
-  // Convertir consulta a minúsculas para facilitar validación
   const lowerQuery = query.toLowerCase().trim();
   const lowerTableName = tableName.toLowerCase().trim();
   
   console.log("Validando consulta:", lowerQuery);
   console.log("Tabla permitida:", lowerTableName);
   
-  // Verificar que la consulta es solo de lectura (SELECT)
   if (!lowerQuery.startsWith('select')) {
     console.log("Rechazada: No es una consulta SELECT");
     return false;
   }
   
-  // Verificar que solo se accede a la tabla permitida
   // Nota: usamos una verificación menos estricta aquí
   if (!lowerQuery.includes(lowerTableName)) {
     console.log("Rechazada: No incluye la tabla permitida");
     return false;
   }
   
-  // Verificar que no hay intentos de modificar datos
   const forbiddenKeywords = ['insert', 'update', 'delete', 'drop', 'alter', 'truncate', 'create'];
   if (forbiddenKeywords.some(keyword => lowerQuery.includes(` ${keyword} `))) {
     console.log("Rechazada: Contiene palabra clave prohibida");
     return false;
   }
   
-  // Permitir el operador de PostgreSQL ->> para acceder a JSONB
   if (lowerQuery.includes('->>') && !lowerQuery.includes('metadata->>')) {
     console.log("Rechazada: Uso sospechoso del operador ->>");
     return false;

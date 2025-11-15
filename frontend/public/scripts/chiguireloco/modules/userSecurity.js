@@ -24,7 +24,6 @@ const userSecurity = {
      * Inicializa el módulo de seguridad por usuario
      */
     async init() {
-        // Configurar event listeners
         this.setupEventListeners();
     },
 
@@ -74,11 +73,9 @@ const userSecurity = {
         }
         
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Guardar término de búsqueda
             this.state.currentUser = searchTerm;
             
             // En una implementación real, aquí se resolvería el ID de usuario si se introduce un correo
@@ -91,19 +88,14 @@ const userSecurity = {
                 return;
             }
             
-            // Obtener información de seguridad del usuario
             const userInfo = await getUserSecurityInfo(userId);
             
-            // Actualizar estado
             this.state.userInfo = userInfo;
             
-            // Mostrar información del usuario
             this.displayUserInfo(userInfo);
             
-            // Inicializar gráficos
             this.initCharts(userInfo);
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -122,7 +114,6 @@ const userSecurity = {
      */
     async resolveUserIdFromEmail(email) {
         // En una implementación real, esto haría una llamada a la API
-        // Para el demo, simulamos que funciona correctamente
         
         // Simular búsqueda del usuario (en la implementación real esto sería una llamada a la API)
         if (email.includes('@')) {
@@ -137,13 +128,10 @@ const userSecurity = {
      * @param {Object} userInfo - Información de seguridad del usuario
      */
     displayUserInfo(userInfo) {
-        // Ocultar mensaje de no encontrado
         document.getElementById('user-not-found').style.display = 'none';
         
-        // Mostrar sección de información
         document.getElementById('user-security-info').style.display = 'block';
         
-        // Actualizar información básica
         document.getElementById('user-id').textContent = userInfo.userId;
         document.getElementById('user-email').textContent = this.getUserEmail(userInfo.userId);
         document.getElementById('user-role').textContent = this.getUserRole(userInfo.userId);
@@ -151,7 +139,6 @@ const userSecurity = {
         document.getElementById('user-last-login').textContent = this.getLastLogin(userInfo);
         document.getElementById('user-event-count').textContent = this.getTotalEvents(userInfo);
         
-        // Renderizar tabla de intentos de login
         this.renderLoginAttemptsTable(userInfo.recentLoginAttempts || []);
     },
 
@@ -170,12 +157,10 @@ const userSecurity = {
     initCharts(userInfo) {
         const colors = getChartColors();
         
-        // Preparar datos para el gráfico
         const eventSummary = userInfo.eventSummary || [];
         const labels = eventSummary.map(e => e.eventType);
         const data = eventSummary.map(e => e.count);
         
-        // Asignar colores según el tipo de evento
         const backgroundColors = labels.map(type => {
             if (type.includes('LOGIN_SUCCESS')) return colors.success;
             if (type.includes('LOGIN_FAILURE')) return colors.danger;
@@ -185,15 +170,12 @@ const userSecurity = {
             return colors.secondary;
         });
         
-        // Crear o actualizar gráfico
         if (this.state.charts.userEvents) {
-            // Actualizar gráfico existente
             this.state.charts.userEvents.data.labels = labels;
             this.state.charts.userEvents.data.datasets[0].data = data;
             this.state.charts.userEvents.data.datasets[0].backgroundColor = backgroundColors;
             this.state.charts.userEvents.update();
         } else {
-            // Crear nuevo gráfico
             this.state.charts.userEvents = createPieChart('user-events-chart', {
                 labels,
                 datasets: [{
@@ -213,11 +195,9 @@ const userSecurity = {
         const tableBody = document.getElementById('user-login-attempts-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         if (!attempts || attempts.length === 0) {
-            // Mostrar mensaje si no hay intentos
             const emptyRow = createTableRow([
                 { colspan: 6, className: 'text-center', text: 'No hay intentos de login recientes para este usuario' }
             ]);
@@ -225,9 +205,7 @@ const userSecurity = {
             return;
         }
         
-        // Añadir filas de intentos
         attempts.forEach(attempt => {
-            // Determinar clase según estado
             let statusClass = 'primary';
             switch (attempt.status) {
                 case 'approved': statusClass = 'success'; break;
@@ -236,7 +214,6 @@ const userSecurity = {
                 case 'completed': statusClass = 'info'; break;
             }
             
-            // Crear fila
             const row = createTableRow([
                 { text: attempt.id, className: 'text-nowrap' },
                 { text: attempt.ipAddress, className: 'text-nowrap' },
@@ -262,7 +239,6 @@ const userSecurity = {
             return;
         }
         
-        // Preparar modal de revocación de tokens
         modals.prepareRevokeTokens(
             this.state.userInfo.userId,
             `Revocación manual desde el panel de seguridad`
@@ -279,14 +255,12 @@ const userSecurity = {
         }
         
         // En una implementación real, aquí se mostraría una vista detallada o modal
-        // Para el demo, mostramos una notificación
         showNotification(
             'Historial de Login',
             `Mostrando historial para el usuario ${this.state.userInfo.userId}`,
             'info'
         );
         
-        // Disparar evento para cambiar a la pestaña de intentos de login con filtro por usuario
         window.dispatchEvent(new CustomEvent('viewUserLoginHistory', {
             detail: { userId: this.state.userInfo.userId }
         }));
@@ -301,7 +275,6 @@ const userSecurity = {
             return;
         }
         
-        // Disparar evento para cambiar a la pestaña de eventos con filtro por usuario
         window.dispatchEvent(new CustomEvent('viewUserSecurityLog', {
             detail: { userId: this.state.userInfo.userId }
         }));
@@ -317,19 +290,16 @@ const userSecurity = {
         }
         
         try {
-            // Crear blob
             const blob = new Blob([JSON.stringify(this.state.userInfo, null, 2)], {
                 type: 'application/json;charset=utf-8;'
             });
             
-            // Generar nombre de archivo
             const date = new Date().toISOString().split('T')[0];
             const filename = `seguridad_usuario_${this.state.userInfo.userId}_${date}.json`;
             
             // Descargar archivo
             downloadBlob(blob, filename);
             
-            // Mostrar notificación
             showNotification('Éxito', 'Exportación completada', 'success');
         } catch (error) {
             console.error('Error exportando datos de usuario:', error);
@@ -344,7 +314,6 @@ const userSecurity = {
      */
     getUserEmail(userId) {
         // En una implementación real, esto vendría en la respuesta de la API
-        // Para el demo, generamos un correo simulado
         return `usuario${userId}@acadelia.com`;
     },
 
@@ -355,7 +324,6 @@ const userSecurity = {
      */
     getUserRole(userId) {
         // En una implementación real, esto vendría en la respuesta de la API
-        // Para el demo, asignamos roles simulados
         const roleMap = {
             '1': 'Administrador',
             '2': 'Profesor',
@@ -375,7 +343,6 @@ const userSecurity = {
             return 'No disponible';
         }
         
-        // Filtrar intentos completados/aprobados
         const successfulAttempts = userInfo.recentLoginAttempts.filter(a => 
             a.status === 'completed' || a.status === 'approved'
         );
@@ -384,7 +351,6 @@ const userSecurity = {
             return 'No disponible';
         }
         
-        // Ordenar por fecha (más reciente primero)
         successfulAttempts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         
         return formatDateTime(successfulAttempts[0].createdAt);
@@ -411,7 +377,6 @@ const userSecurity = {
     formatUserAgent(userAgent) {
         if (!userAgent) return 'Desconocido';
         
-        // Extraer información relevante
         let formattedUA = userAgent;
         
         // Simplificar cadenas comunes de User-Agent
@@ -469,7 +434,6 @@ const userSecurity = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners
         document.getElementById('search-user-btn')?.removeEventListener('click', () => this.searchUser());
         document.getElementById('user-search')?.removeEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.searchUser();

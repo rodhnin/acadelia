@@ -49,13 +49,11 @@ export const PDFUtils = {
     for (const [filePath, expirationTime] of this._tempFiles.entries()) {
       if (now >= expirationTime) {
         try {
-          // Verificar si el archivo existe antes de intentar eliminarlo
           if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
             cleanedCount++;
           }
           
-          // Eliminar del registro
           this._tempFiles.delete(filePath);
         } catch (error) {
           errorCount++;
@@ -112,23 +110,18 @@ export const PDFUtils = {
         fs.mkdirSync(tmpDir, { recursive: true });
       }
 
-      // Generar nombre único para el archivo temporal
       const timestamp = Date.now();
       const randomStr = Math.random().toString(36).substr(2, 9);
       const tempFilePath = path.join(tmpDir, `temp_${timestamp}_${randomStr}.pdf`);
       
-      // Guardar el archivo
       await fs.promises.writeFile(tempFilePath, fileBuffer);
       
-      // Calcular tiempo de expiración
       const expirationTime = Date.now() + this.CONFIG.TEMP_FILE_TIMEOUT;
       
-      // Registrar archivo temporal con su tiempo de expiración
       this._tempFiles.set(tempFilePath, expirationTime);
       
       // Control de límite de archivos temporales en memoria
       if (this._tempFiles.size > this.CONFIG.MAX_TEMP_FILES) {
-        // Eliminar el archivo más antiguo si se supera el límite
         const oldestKey = this._tempFiles.keys().next().value;
         if (oldestKey) {
           this.cleanupTempFile(oldestKey);
@@ -154,11 +147,9 @@ export const PDFUtils = {
     }
     
     try {
-      // Actualizar tiempo de expiración
       const newExpiration = Date.now() + this.CONFIG.TEMP_FILE_TIMEOUT;
       this._tempFiles.set(filePath, newExpiration);
       
-      // Actualizar fecha de modificación del archivo para facilitar limpieza externa
       if (fs.existsSync(filePath)) {
         const time = new Date();
         fs.utimesSync(filePath, time, time);
@@ -178,9 +169,7 @@ export const PDFUtils = {
   async cleanupTempFile(filePath) {
     try {
       if (filePath && fs.existsSync(filePath)) {
-        // Eliminar archivo físicamente
         await fs.promises.unlink(filePath);
-        // Eliminar del registro de archivos temporales
         this._tempFiles.delete(filePath);
         console.log(`Archivo temporal eliminado: ${filePath}`);
       }
@@ -232,7 +221,6 @@ export const PDFUtils = {
       const now = Date.now();
       
       for (const file of files) {
-        // Solo procesar archivos que parezcan temporales de PDF
         if (!file.startsWith('temp_') || !file.endsWith('.pdf')) {
           continue;
         }
@@ -242,7 +230,6 @@ export const PDFUtils = {
           const stats = await fs.promises.stat(filePath);
           const fileAge = now - stats.mtimeMs;
           
-          // Eliminar archivos más viejos que maxAge
           if (fileAge > maxAge) {
             await fs.promises.unlink(filePath);
             deletedCount++;
@@ -271,7 +258,6 @@ export const PDFUtils = {
    * @returns {Object} - Estadísticas de archivos temporales
    */
   getTempFileStats() {
-    // Contar archivos por tiempo restante
     const now = Date.now();
     const stats = {
       totalFiles: this._tempFiles.size,
@@ -315,7 +301,6 @@ export const PDFUtils = {
     
     const scale = region.scale || 1.0;
     
-    // Normalizar coordenadas según escala
     const normalizedRegion = {
       x1: region.x1 / scale,
       y1: region.y1 / scale,

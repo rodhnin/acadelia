@@ -1,14 +1,11 @@
-// backend/utils/shared/logger.js - VERSIÓN MEJORADA
 import winston from 'winston';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-// Para obtener __dirname en ES6 modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Crear directorio de logs si no existe
 const logsDir = path.join(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
@@ -40,7 +37,6 @@ const logger = winston.createLogger({
   ]
 });
 
-// Solo agregar consola en desarrollo
 if (!IS_PRODUCTION) {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
@@ -92,7 +88,6 @@ class Logger {
     logger.info(`[DATABASE] ${message}`, metadata);
   }
 
-  // Función para logging de desarrollo (solo se ejecuta en desarrollo)
   static dev(message, metadata = {}) {
     if (!IS_PRODUCTION) {
       console.log(`[DEV] ${message}`, metadata);

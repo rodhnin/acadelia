@@ -17,11 +17,9 @@ class AcadelEmojiIntegration {
     console.log('🎨 Inicializando sistema Acadel emoji...');
     
     try {
-      // Inicializar el gestor Acadel
       const success = await acadelEmojiManager.init();
       
       if (success) {
-        // Mejorar el renderizador de mensajes si existe
         this.enhanceAcadelMessageRenderer();
         
         this.initialized = true;
@@ -56,9 +54,7 @@ class AcadelEmojiIntegration {
         window[funcName] = function(...args) {
           const result = originalFunction.apply(this, args);
           
-          // Procesar emojis con Acadel después del renderizado
           setTimeout(() => {
-            // Buscar el último mensaje agregado de forma universal
             const possibleSelectors = [
               '.chat-messages .message:last-child',
               '.messages .message:last-child',
@@ -118,7 +114,6 @@ export function enhanceAcadelMessageRenderer() {
   integration.enhanceAcadelMessageRenderer();
 }
 
-// Crear y exportar instancia Acadel
 const acadelEmojiIntegration = new AcadelEmojiIntegration();
 
 // Hacer disponible globalmente

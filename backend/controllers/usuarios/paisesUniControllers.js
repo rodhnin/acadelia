@@ -2,7 +2,6 @@
 
 import pool from "../../lib/dbPool.js"; // Importa el pool de conexión
 
-// Controlador para obtener todos los países
 export const getAllPaises = async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM pais ORDER BY nombre_pais");
@@ -20,7 +19,6 @@ export const getAllPaises = async (req, res) => {
   }
 };
 
-// Controlador para obtener un país por ID
 export const getPaisById = async (req, res) => {
   const { idPais } = req.params;
 
@@ -50,7 +48,6 @@ export const getPaisById = async (req, res) => {
   }
 };
 
-// Controlador para obtener universidades por id de país
 export const getUniversidadesByPais = async (req, res) => {
   const { idPais } = req.params;
 
@@ -73,7 +70,6 @@ export const getUniversidadesByPais = async (req, res) => {
   }
 };
 
-// Controlador para obtener una universidad por ID
 export const getUniversidadById = async (req, res) => {
   const { idUniversidad } = req.params;
 
@@ -107,7 +103,6 @@ export const getUniversidadById = async (req, res) => {
   }
 };
 
-// Controlador para obtener usuarios por país
 export const getUsersByPais = async (req, res) => {
   const { idPais } = req.params;
   const { page = 1, limit = 20 } = req.query;
@@ -166,7 +161,6 @@ export const getUsersByPais = async (req, res) => {
   }
 };
 
-// Controlador para obtener usuarios por universidad
 export const getUsersByUniversidad = async (req, res) => {
   const { idUniversidad } = req.params;
   const { page = 1, limit = 20 } = req.query;
@@ -224,7 +218,6 @@ export const getUsersByUniversidad = async (req, res) => {
   }
 };
 
-// Controlador para obtener universidades con conteo de usuarios
 export const getUniversidadesWithUserCount = async (req, res) => {
   try {
     const query = `

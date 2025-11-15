@@ -163,14 +163,12 @@ function detectBrowser(userAgent) {
     }
 
     for (const [browserName, config] of Object.entries(BROWSER_PATTERNS)) {
-        // Verificar exclusiones primero
         const hasExclusion = config.exclude.some(exclusion => 
             userAgent.includes(exclusion)
         );
         
         if (hasExclusion) continue;
 
-        // Buscar patrón del navegador
         const match = userAgent.match(config.pattern);
         if (match) {
             return {
@@ -205,7 +203,6 @@ function detectOS(userAgent) {
     }
 
     for (const [osName, config] of Object.entries(OS_PATTERNS)) {
-        // Verificar exclusiones si existen
         if (config.exclude) {
             const hasExclusion = config.exclude.some(exclusion => 
                 userAgent.includes(exclusion)
@@ -213,7 +210,6 @@ function detectOS(userAgent) {
             if (hasExclusion) continue;
         }
 
-        // Buscar patrón del OS
         if (config.pattern.test(userAgent)) {
             return {
                 name: osName,
@@ -245,7 +241,6 @@ function detectDevice(userAgent) {
     }
 
     for (const [deviceName, config] of Object.entries(DEVICE_PATTERNS)) {
-        // Verificar exclusiones si existen
         if (config.exclude) {
             const hasExclusion = config.exclude.some(exclusion => 
                 new RegExp(exclusion, 'i').test(userAgent)
@@ -253,7 +248,6 @@ function detectDevice(userAgent) {
             if (hasExclusion) continue;
         }
 
-        // Buscar patrón del dispositivo
         if (config.pattern.test(userAgent)) {
             return {
                 type: config.type,
@@ -373,7 +367,6 @@ export function getSecurityAlertInfo(userAgent) {
         format: 'full' 
     });
 
-    // Determinar nivel de riesgo basado en el navegador y OS
     let riskLevel = 'low';
     
     if (parsed.browser.name === 'Desconocido' || parsed.os.name === 'Desconocido') {
@@ -447,7 +440,6 @@ export function validateUserAgent(userAgent) {
     };
 }
 
-// Función de utilidad para debugging
 export function debugUserAgent(userAgent) {
     console.group('🔍 User-Agent Debug');
     console.log('Raw:', userAgent);

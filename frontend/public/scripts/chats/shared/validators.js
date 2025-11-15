@@ -89,7 +89,6 @@ export function isValidEmail(email) {
  */
 export function isUrlSafe(str) {
   if (typeof str !== 'string') return false;
-  // Verificar caracteres no seguros en URLs
   return !/[<>{}[\]`^\\]/.test(str);
 }
 
@@ -101,7 +100,6 @@ export function isUrlSafe(str) {
 export function isValidUrl(url) {
   if (typeof url !== 'string') return false;
   try {
-    // Usar el constructor URL para validar
     new URL(url);
     return true;
   } catch (e) {

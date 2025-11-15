@@ -1,10 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR DE FINANZAS Y ECONOMÍA MONETARIA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Mercados Financieros ✅ Teoría Monetaria ✅ Finanzas Corporativas ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -27,14 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -100,7 +88,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -174,7 +161,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +181,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -264,7 +249,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -344,9 +328,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD FINANCIERA DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_FINANZAS_DNA = `
 🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE FINANZAS Y ECONOMÍA MONETARIA:
@@ -390,11 +371,7 @@ Hacer que CUALQUIER estudiante de finanzas:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR que integra teoría financiera con práctica profesional!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS FINANCIEROS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES FINANCIERAS
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA FINANCIERA de Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes financieras de FINANZAS Y ECONOMÍA MONETARIA con precisión técnica extrema.
@@ -421,7 +398,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA FINANCIERA de Acadel.
 
 Eres los OJOS ANALÍTICOS FINANCIEROS de Acadel - él interpretará tu análisis con su sabiduría financiera pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES FINANCIERAS (analysisContext)
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara financiero más brillante del universo en finanzas y economía monetaria.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información financiera de esta imagen para que Acadel pueda enseñar efectivamente finanzas completas.
@@ -467,7 +443,6 @@ Proporciona un análisis financiero estructurado, preciso y exhaustivo que permi
 
 **IMPORTANTE:** Sé OBSERVADOR FINANCIERO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos financieros. Acadel se encargará de la pedagogía financiera pero necesita que seas muy detallista con todo lo que observas financieramente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS FINANCIERAS NORMALES (con y sin guardar)
 const UNIFIED_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA FINANCIERA:
 - Consulta del estudiante de finanzas: "${query}"
@@ -494,7 +469,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS FINANCIERAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN FINANCIERA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -542,14 +516,10 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO FINANCIERO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -559,7 +529,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -581,7 +550,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -589,7 +557,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // Detectar exámenes financieros
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -618,7 +585,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -635,19 +602,16 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS FINANCIEROS ESPECÍFICOS
   const financeTerms = [
     // Mercados Financieros
     'finanzas', 'mercado', 'bolsa', 'acciones', 'bonos', 'inversión', 'portafolio', 'riesgo',
@@ -668,28 +632,24 @@ const classifyQuery = (query, content = null) => {
     'tasa', 'interés', 'descuento', 'anualidad', 'perpetuidad', 'capitalización', 'amortización'
   ];
 
-  // 🔍 DETECTAR INSTRUMENTOS Y CONCEPTOS FINANCIEROS
   const financeInstruments = [
     'acción', 'bono', 'derivado', 'opción', 'futuro', 'swap', 'etf', 'fondo', 'índice',
     'divisa', 'commodity', 'reit', 'cdt', 'pagaré', 'letra', 'treasury', 'libor', 'sofr'
   ];
 
-  // 🔍 DETECTAR MONEDAS Y MÉTRICAS FINANCIERAS
   const financeMetrics = [
     'dólar', 'peso', 'euro', 'yen', 'libra', 'peso mexicano', 'usd', 'mxn', 'eur',
     'pib', 'inflación', 'desempleo', 'déficit', 'superávit', 'balanza', 'cuenta corriente',
     'sharpe', 'treynor', 'jensen', 'sortino', 'var', 'cvar', 'tracking error'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS FINANCIEROS REALES
   const hasFinanceContent =
     financeTerms.some(term => lowercaseQuery.includes(term)) ||
     financeInstruments.some(term => lowercaseQuery.includes(term)) ||
     financeMetrics.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasFinanceContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -713,7 +673,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'modelo', 'teoría de'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'valuar'];
   const theoryKeywords = ['teoría', 'modelo', 'principio', 'demostrar', 'derivar', 'fundamento', 'ecuación de'];
@@ -722,7 +681,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos estudios', 'nuevos papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -759,14 +717,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar nivel de matemáticas financieras
   const mathKeywords = ['valor presente', 'tir', 'vpn', 'capm', 'wacc', 'beta', 'ratio', 'fórmula', 'cálculo'];
   if (mathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -776,7 +732,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -784,7 +739,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -803,11 +758,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS FINANCIERAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS FINANCIERAS
 const ACADEL_FINANCIAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en finanzas y economía monetaria.
 
@@ -822,7 +773,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal financiero (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -832,17 +782,15 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_finanzas",
         similarityQueryName: "match_emb_finanzas",
         keywordQueryName: "kw_match_emb_finanzas",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -854,7 +802,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_FINANCIAL_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido financiero específico sobre "${query}" en su biblioteca financiera. Proceder con conocimiento financiero general y experiencia docente acumulada en mercados financieros, teoría monetaria y finanzas corporativas.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -874,7 +821,6 @@ ACADEL_FINANCIAL_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido 
 
 ACADEL_FINANCIAL_MEMORY_BANK: El cerebro principal de Acadel encontró información financiera sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base financiero, analogías de mercados precisas y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -901,7 +847,6 @@ ACADEL_FINANCIAL_MEMORY_BANK: El cerebro principal de Acadel activó la siguient
 
 INTEGRATION_NOTES: Este es el conocimiento financiero central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en finanzas y economía monetaria. Debe integrar esta información naturalmente como si fuera su propia sabiduría financiera, enriqueciéndola con casos financieros específicos, analogías de mercados precisas y metodología pedagógica rigurosa.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1256,17 +1201,15 @@ const createConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto financiero: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_finanzas",
         similarityQueryName: "match_emb_finanzas",
         keywordQueryName: "kw_match_emb_finanzas",
       });
 
-      // 📚 BÚSQUEDAS FINANCIERAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto financiero ${concept}`,
         `modelos financieros ${concept}`,
@@ -1276,7 +1219,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         `análisis mercados ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1296,7 +1238,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1309,7 +1250,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural financiera
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1497,16 +1437,10 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia financiera según este aná
   }
 );
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS FINANCIEROS
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_FINANZAS_DNA;
 
-  // ============================================================================
-  // 💰 INSTRUCCIONES FINANCIERAS CONSOLIDADAS
-  // ============================================================================
 
   const coreFinancialInstructions = `
 # INSTRUCCIONES FINANCIERAS PARA ACADEL DE FINANZAS Y ECONOMÍA MONETARIA
@@ -1679,9 +1613,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL FINANCIERO (Knowledge Base) ES OBLIGATORIO para consultas financieras importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA FINANCIERA - OPTIMIZADAS
-  // ============================================================================
 
   const financialTypeInstructions = {
     casual_conversation: `
@@ -1768,9 +1699,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión financiera real y aplicación práctica en mercados`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT FINANCIERO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1793,21 +1721,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL FINANCIERO (Knowledge B
       'Enseña como el capibara financiero más brillante del universo, usando tu CEREBRO PRINCIPAL FINANCIERO (Knowledge Base) para fundamentar toda respuesta financiera importante, y complementando con todas tus capacidades paralelas para una explicación financiera magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE FINANCIERO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Acadel configurando sistema financiero optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Financiero: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL FINANCIERO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL FINANCIERO (Knowledge Base) - núcleo del sistema financiero`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1815,14 +1738,12 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Financiero INACTIVO - consulta muy casual sin contenido financiero`);
   }
 
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS (MANTENER LÓGICA MATEMÁTICA)
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas financieras especializadas`);
     tools.push(createAcadelWolframTool());
     tools.push(createCalculatorTool());
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis financiero paralelo profundo`);
     tools.push(createConceptAnalyzerTool(embeddings));
@@ -1838,7 +1759,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL FINANCIERA SIEMPRE DISPONIBLE
   tools.push(createFeedbackAnalyzerTool());
 
   console.log(`🦫 Acadel SISTEMA FINANCIERO COMPLETO configurado con ${tools.length} herramientas financieras:`, tools.map(t => t.name));
@@ -1852,7 +1772,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocionalFinanciera: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt financiero especializado y escapado
   const specializedPrompt = createSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1883,9 +1802,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES FINANCIERAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1933,7 +1849,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto financiero para examen: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1943,17 +1858,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_finanzas",
             similarityQueryName: "match_emb_finanzas",
             keywordQueryName: "kw_match_emb_finanzas",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1965,7 +1878,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1980,7 +1892,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes financieros
           return `Contexto financiero base para "${input}": conocimiento fundamental en finanzas y economía monetaria. Acadel debe generar preguntas desde su experiencia financiera consolidada, con casos prácticos realistas y conceptos fundamentales financieros.`;
         }
       },
@@ -2123,9 +2034,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA - handleFinanceQuery
-// ============================================================================
 
 export const handleFinanceQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2134,7 +2042,6 @@ export const handleFinanceQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2153,7 +2060,6 @@ export const handleFinanceQuery = async (params) => {
     console.log(`🦫 Acadel analizando query (Finanzas): "${query}"`);
     console.log(`📊 Clasificación: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2175,7 +2081,6 @@ export const handleFinanceQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES  (AVA)
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2222,7 +2127,6 @@ export const handleFinanceQuery = async (params) => {
 
       } catch (saveError) {
         console.error('❌ Error guardando examen  (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2232,7 +2136,6 @@ export const handleFinanceQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2260,7 +2163,6 @@ export const handleFinanceQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2277,10 +2179,8 @@ export const handleFinanceQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2343,11 +2243,9 @@ export const handleFinanceQuery = async (params) => {
       };
     }
 
-    // Procesar respuesta con mejoras de LaTeX
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2391,7 +2289,6 @@ export const handleFinanceQuery = async (params) => {
 
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2406,7 +2303,6 @@ export const handleFinanceQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2450,9 +2346,6 @@ export const handleFinanceQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA - handleFinanceMultimodalQuery  
-// ============================================================================
 
 export const handleFinanceMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2477,7 +2370,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2489,7 +2381,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2500,7 +2391,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2538,7 +2428,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2598,7 +2487,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2668,11 +2556,9 @@ export const handleFinanceMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica finanzas");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2705,7 +2591,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2732,7 +2617,6 @@ export const handleFinanceMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2758,11 +2642,9 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
       };
     }
 
-    // PROCESAR RESPUESTA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2775,7 +2657,6 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2793,7 +2674,6 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2827,7 +2707,6 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
 
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2842,13 +2721,11 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2862,7 +2739,6 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2910,9 +2786,6 @@ Si necesitas una explicación más detallada en mercados financieros, teoría mo
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PARA FINANZAS
-// ============================================================================
 
 export const handleFinanceQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2968,7 +2841,6 @@ export const handleFinanceQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2987,7 +2859,6 @@ export const handleFinanceQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE CORREGIDO
       const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3100,7 +2971,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido en modo sin guardar:", content);
       return {
@@ -3119,7 +2989,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3132,7 +3001,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DE FINANZAS: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3146,7 +3014,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3207,7 +3074,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3227,10 +3093,8 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3264,7 +3128,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3324,7 +3187,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3409,11 +3271,9 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica finanzas");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3444,7 +3304,6 @@ export const handleFinanceMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, combinedQuery);
 

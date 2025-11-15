@@ -1,33 +1,26 @@
-// frontend/public/scripts/cookie-consent.js
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar sistema de consentimiento de cookies (solo una vez)
   if (!window.cookieConsentInitialized) {
     window.cookieConsentInitialized = true;
     initCookieConsent();
   }
 });
 
-// Variables para evitar solicitudes múltiples
 let isSavingConsent = false;
 let lastSaveTime = 0;
 let currentUserId = null;
 let userChanged = false;
 
-// Variables para controlar botones de cookies
 let isAcceptingAllCookies = false;
 let isSavingCookiePreferences = false;
 
-// Función principal de inicialización
 async function initCookieConsent() {
   // No mostrar banner en la página de política de cookies
   if (window.location.pathname === '/cookie_privacy') {
     return;
   }
   
-  // Verificar si ya existe consentimiento
   const consent = await checkConsentStatus();
   
-  // Guardar el userId actual para comparar si cambia después
   currentUserId = consent.currentUserId || null;
   
   // Si no existe consentimiento, el API indica que debemos mostrar el banner, 
@@ -40,23 +33,19 @@ async function initCookieConsent() {
     });
     showConsentBanner();
   } else {
-    // Aplicar preferencias de consentimiento existentes
     applyConsentPreferences(consent.preferences);
     
-    // Registrar para fines de debugging el país donde se estableció el consentimiento
     if (consent.pais || (consent.geoData && consent.geoData.country)) {
       console.log(`Consentimiento existente desde: ${consent.pais || consent.geoData.country}`);
     }
   }
   
-// Exportar funciones al objeto window para que initializer.js pueda usarlas
   window.acceptAllCookies = function() {
     // Prevenir múltiples ejecuciones
     if (isAcceptingAllCookies) {
       return;
     }
     
-    // Deshabilitar botón inmediatamente
     disableAcceptAllButton();
     
     saveConsent({
@@ -85,7 +74,6 @@ async function initCookieConsent() {
       return;
     }
     
-    // Deshabilitar botón inmediatamente
     disableSavePreferencesButton();
     
     const preferences = {
@@ -101,19 +89,14 @@ async function initCookieConsent() {
     });
   };
   
-  // Añadir event listeners a los botones del banner (como respaldo)
   setupConsentEventListeners();
   
-  // Añadir listener para detectar cambios de autenticación
   document.addEventListener('userLoggedIn', handleUserStateChange);
   document.addEventListener('userLoggedOut', handleUserStateChange);
 }
 
-// Manejar cambios en el estado de autenticación del usuario
 async function handleUserStateChange(event) {
-  // Esperar un poco para que el sistema de autenticación se actualice completamente
   setTimeout(async () => {
-    // Verificar si ha cambiado el usuario
     const consentStatus = await checkConsentStatus();
     const newUserId = consentStatus?.currentUserId || null;
     
@@ -129,20 +112,17 @@ async function handleUserStateChange(event) {
       currentUserId = newUserId;
       userChanged = true;
       
-      // Verificar si necesitamos mostrar el banner para este usuario
       if (consentStatus.shouldShowBanner) {
         console.log('Mostrando banner debido a cambio de usuario');
         showConsentBanner();
       } else {
         console.log('Usuario cambió pero ya tiene consentimiento');
-        // Aplicar preferencias del nuevo usuario
         applyConsentPreferences(consentStatus.preferences);
       }
     }
   }, 500);
 }
 
-// Intentar vincular el consentimiento actual al usuario recién autenticado
 async function tryLinkConsent(userId) {
   try {
     if (!userId) return;
@@ -174,7 +154,6 @@ async function tryLinkConsent(userId) {
     if (result.success) {
       console.log('Consentimiento vinculado exitosamente al usuario');
       
-      // Actualizar metadata en localStorage
       try {
         const cookieMetadata = localStorage.getItem('cookieConsentMetadata');
         if (cookieMetadata) {
@@ -196,13 +175,11 @@ async function tryLinkConsent(userId) {
   }
 }
 
-// Obtener valor de una cookie por su nombre
 function getCookieValue(name) {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   return match ? match[2] : null;
 }
 
-// Función para deshabilitar botón de aceptar todas las cookies
 const disableAcceptAllButton = () => {
     const acceptButton = document.getElementById('accept-all-cookies');
     
@@ -212,14 +189,12 @@ const disableAcceptAllButton = () => {
         acceptButton.style.opacity = '0.7';
         acceptButton.style.cursor = 'not-allowed';
         
-        // Cambiar el texto y agregar spinner
         const originalText = acceptButton.textContent;
         acceptButton.setAttribute('data-original-text', originalText);
         acceptButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Procesando...';
     }
 };
 
-// Función para rehabilitar botón de aceptar todas las cookies
 const enableAcceptAllButton = () => {
     const acceptButton = document.getElementById('accept-all-cookies');
     
@@ -229,13 +204,11 @@ const enableAcceptAllButton = () => {
         acceptButton.style.opacity = '1';
         acceptButton.style.cursor = 'pointer';
         
-        // Restaurar el texto original
         const originalText = acceptButton.getAttribute('data-original-text') || 'Aceptar todas';
         acceptButton.textContent = originalText;
     }
 };
 
-// Función para deshabilitar botón de guardar preferencias
 const disableSavePreferencesButton = () => {
     const saveButton = document.getElementById('save-cookie-preferences');
     
@@ -245,14 +218,12 @@ const disableSavePreferencesButton = () => {
         saveButton.style.opacity = '0.7';
         saveButton.style.cursor = 'not-allowed';
         
-        // Cambiar el texto y agregar spinner
         const originalText = saveButton.textContent;
         saveButton.setAttribute('data-original-text', originalText);
         saveButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Guardando...';
     }
 };
 
-// Función para rehabilitar botón de guardar preferencias
 const enableSavePreferencesButton = () => {
     const saveButton = document.getElementById('save-cookie-preferences');
     
@@ -262,18 +233,15 @@ const enableSavePreferencesButton = () => {
         saveButton.style.opacity = '1';
         saveButton.style.cursor = 'pointer';
         
-        // Restaurar el texto original
         const originalText = saveButton.getAttribute('data-original-text') || 'Guardar preferencias';
         saveButton.textContent = originalText;
     }
 };
 
-// Verificar si el usuario ya ha dado consentimiento
 async function checkConsentStatus() {
   try {
     const fetcher = window.csrfUtils?.fetch || window.fetch;
     
-    // Usar la ruta que siempre devuelve 200
     const response = await fetcher('/api/cookie-consent/status', {
       method: 'GET',
       credentials: 'include'
@@ -308,15 +276,12 @@ async function checkConsentStatus() {
   }
 }
 
-// Mostrar el banner de consentimiento de cookies
 function showConsentBanner() {
   const banner = document.getElementById('cookie-consent-banner');
   if (banner) {
-    // Cargar las preferencias actuales en los toggles si existen
     try {
       const preferences = JSON.parse(localStorage.getItem('cookiePreferences')) || {};
       
-      // Actualizar toggles
       if (document.getElementById('functional-cookies-toggle')) {
         document.getElementById('functional-cookies-toggle').checked = !!preferences.functional;
       }
@@ -336,7 +301,6 @@ function showConsentBanner() {
   }
 }
 
-// Ocultar el banner de consentimiento de cookies
 function hideConsentBanner() {
   const banner = document.getElementById('cookie-consent-banner');
   if (banner) {
@@ -344,7 +308,6 @@ function hideConsentBanner() {
   }
 }
 
-// Guardar preferencias de consentimiento con control de duplicados
 async function saveConsent(preferences) {
   // Evitar múltiples solicitudes simultáneas o muy cercanas
   const now = Date.now();
@@ -354,13 +317,11 @@ async function saveConsent(preferences) {
   }
   
   try {
-    // Marcar como en proceso
     isSavingConsent = true;
     lastSaveTime = now;
     
     const csrfToken = window.CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
-    // Intentar usar csrfUtils si está disponible
     const fetcher = window.csrfUtils?.fetch || window.fetch;
     
     console.log('Enviando solicitud de consentimiento:', preferences);
@@ -381,16 +342,12 @@ async function saveConsent(preferences) {
     
     const result = await response.json();
     
-    // Resetear el flag de cambio de usuario después de guardar
     userChanged = false;
     
-    // Aplicar las preferencias a la sesión actual
     applyConsentPreferences(preferences);
     
-    // Ocultar el banner INMEDIATAMENTE después de aplicar preferencias
     hideConsentBanner();
     
-    // Registrar información de país/ubicación
     if (result.pais || result.ubicacion) {
       console.log(`Consentimiento registrado desde: ${result.pais || 'País desconocido'}`);
       if (result.ubicacion) {
@@ -398,7 +355,6 @@ async function saveConsent(preferences) {
       }
     }
     
-    // Guardar información de país y ubicación en localStorage
     try {
       const cookieMetadata = {
         pais: result.pais || (result.geoData ? result.geoData.country : 'Desconocido'),
@@ -419,33 +375,27 @@ async function saveConsent(preferences) {
     hideConsentBanner();
     return null;
   } finally {
-    // Marcar como finalizado después de un breve delay para evitar rebotes
     setTimeout(() => {
       isSavingConsent = false;
     }, 300);
   }
 }
 
-// Aplicar preferencias de consentimiento a la sesión actual
 function applyConsentPreferences(preferences) {
-  // Guardar preferencias en localStorage para fácil acceso
   localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
   
-  // Para cookies funcionales:
   if (preferences.functional) {
     enableFunctionalCookies();
   } else {
     disableFunctionalCookies();
   }
   
-  // Para cookies analíticas:
   if (preferences.analytics) {
     enableAnalyticsCookies();
   } else {
     disableAnalyticsCookies();
   }
   
-  // Para cookies de marketing:
   if (preferences.marketing) {
     enableMarketingCookies();
   } else {
@@ -453,9 +403,7 @@ function applyConsentPreferences(preferences) {
   }
 }
 
-// Habilitar cookies funcionales
 function enableFunctionalCookies() {
-  // Implementación para habilitar cookies funcionales
   document.cookie = "functional_enabled=true; path=/; max-age=31536000; SameSite=Lax";
   
   // Guardado de tema oscuro/claro (ejemplo)
@@ -471,17 +419,14 @@ function enableFunctionalCookies() {
       }
     }
     
-    // Permitir cambios de tema
     const themeTogglers = document.querySelectorAll('.theme-toggle');
     themeTogglers.forEach(toggler => {
       toggler.addEventListener('click', function() {
         const currentTheme = localStorage.getItem('theme') || 'light';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         
-        // Guardar tema en localStorage
         localStorage.setItem('theme', newTheme);
         
-        // Aplicar el tema
         document.documentElement.setAttribute('data-theme', newTheme);
         if (newTheme === 'dark') {
           document.body.classList.add('dark-theme');
@@ -492,25 +437,18 @@ function enableFunctionalCookies() {
     });
   };
   
-  // Activar almacenamiento de tema
   enableThemeStorage();
 }
 
-// Deshabilitar cookies funcionales
 function disableFunctionalCookies() {
-  // Eliminar cookies funcionales, excepto las esenciales
   document.cookie = "functional_enabled=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
   
-  // Eliminar preferencias de tema en localStorage
   localStorage.removeItem('theme');
 }
 
-// Habilitar cookies analíticas
 function enableAnalyticsCookies() {
-  // Implementación para habilitar servicios analíticos
   document.cookie = "analytics_enabled=true; path=/; max-age=31536000; SameSite=Lax";
   
-  // Inicializar Google Analytics si está disponible
   if (typeof ga === 'function') {
     ga('consent', 'update', {
       'analytics_storage': 'granted'
@@ -518,12 +456,9 @@ function enableAnalyticsCookies() {
   }
 }
 
-// Deshabilitar cookies analíticas
 function disableAnalyticsCookies() {
-  // Eliminar cookies analíticas
   document.cookie = "analytics_enabled=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
   
-  // Desactivar Google Analytics si está disponible
   if (typeof ga === 'function') {
     ga('consent', 'update', {
       'analytics_storage': 'denied'
@@ -531,21 +466,15 @@ function disableAnalyticsCookies() {
   }
 }
 
-// Habilitar cookies de marketing
 function enableMarketingCookies() {
-  // Implementación para habilitar cookies de marketing
   document.cookie = "marketing_enabled=true; path=/; max-age=31536000; SameSite=Lax";
 }
 
-// Deshabilitar cookies de marketing
 function disableMarketingCookies() {
-  // Eliminar cookies de marketing
   document.cookie = "marketing_enabled=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
 }
 
-// Configurar event listeners para el banner (cada botón con control de click único)
 function setupConsentEventListeners() {
-  // Aceptar todas las cookies
   const acceptAllBtn = document.getElementById('accept-all-cookies');
   if (acceptAllBtn && !acceptAllBtn._hasClickListener) {
     acceptAllBtn._hasClickListener = true;
@@ -555,7 +484,6 @@ function setupConsentEventListeners() {
     });
   }
   
-  // Rechazar todas las cookies (excepto esenciales)
   const rejectAllBtn = document.getElementById('reject-all-cookies');
   if (rejectAllBtn && !rejectAllBtn._hasClickListener) {
     rejectAllBtn._hasClickListener = true;
@@ -565,7 +493,6 @@ function setupConsentEventListeners() {
     });
   }
   
-  // Mostrar/ocultar sección de configuración
   const customizeBtn = document.getElementById('customize-cookies');
   if (customizeBtn && !customizeBtn._hasClickListener) {
     customizeBtn._hasClickListener = true;
@@ -588,7 +515,6 @@ function setupConsentEventListeners() {
   }
 }
 
-// Función auxiliar para verificar si una categoría específica de cookies está habilitada
 window.isCookieCategoryEnabled = function(category) {
   try {
     const preferences = JSON.parse(localStorage.getItem('cookiePreferences'));
@@ -598,7 +524,6 @@ window.isCookieCategoryEnabled = function(category) {
   }
 };
 
-// Función para obtener la información del país desde donde se dio consentimiento
 window.getCookieConsentCountry = function() {
   try {
     const metadata = JSON.parse(localStorage.getItem('cookieConsentMetadata'));
@@ -608,7 +533,6 @@ window.getCookieConsentCountry = function() {
   }
 };
 
-// Función para obtener la ubicación completa desde donde se dio consentimiento
 window.getCookieConsentLocation = function() {
   try {
     const metadata = JSON.parse(localStorage.getItem('cookieConsentMetadata'));
@@ -630,7 +554,6 @@ window.revokeCookieConsent = async function() {
     
     const csrfToken = window.CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     
-    // Intentar usar csrfUtils si está disponible
     const fetcher = window.csrfUtils?.fetch || window.fetch;
     
     const response = await fetcher('/api/cookie-consent/revoke', {
@@ -648,7 +571,6 @@ window.revokeCookieConsent = async function() {
     
     const result = await response.json();
     
-    // Aplicar preferencias predeterminadas (solo esenciales)
     applyConsentPreferences({
       essential: true,
       functional: false,
@@ -656,7 +578,6 @@ window.revokeCookieConsent = async function() {
       marketing: false
     });
     
-    // Actualizar información de país en localStorage
     if (result.pais || result.ubicacion) {
       try {
         const cookieMetadata = {
@@ -671,7 +592,6 @@ window.revokeCookieConsent = async function() {
       }
     }
     
-    // Mostrar el banner nuevamente para informar al usuario
     showConsentBanner();
     
     return true;

@@ -100,20 +100,17 @@ export class UserService {
 
             const currentEmail = currentUserResult.rows[0].correo;
 
-            // Construir query de actualización
             let query = "UPDATE usuario SET ";
             let values = [];
             let setClauses = [];
             let paramIndex = 1;
 
-            // Actualizar correo si se proporciona
             if (correo && correo.trim() !== '') {
                 setClauses.push(`correo = LOWER($${paramIndex})`);
                 values.push(correo.trim());
                 paramIndex++;
             }
 
-            // Actualizar contraseña si se proporciona
             if (contraseña && contraseña.trim() !== '') {
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(contraseña, salt);
@@ -131,12 +128,10 @@ export class UserService {
                 };
             }
 
-            // Completar query
             query += setClauses.join(', ');
             query += ` WHERE id_user = $${paramIndex} RETURNING id_user, correo`;
             values.push(userId);
 
-            // Ejecutar actualización
             const { rows } = await pool.query(query, values);
 
             if (rows.length === 0) {
@@ -149,12 +144,11 @@ export class UserService {
 
             const updatedUser = rows[0];
 
-            // Retornar resultado exitoso con correo actual para notificaciones
             return {
                 success: true,
                 user: {
                     id_user: updatedUser.id_user,
-                    correo: currentEmail, // 🔧 FIX: Usar correo actual para notificaciones
+                    correo: currentEmail,
                     updatedEmail: updatedUser.correo // Nuevo correo si se actualizó
                 }
             };
@@ -162,7 +156,6 @@ export class UserService {
         } catch (error) {
             console.error('Error en updateUserWithEmail:', error);
 
-            // Manejar error de correo duplicado
             if (error.code === '23505' && error.constraint === 'usuario_correo_key') {
                 return {
                     success: false,
@@ -179,9 +172,7 @@ export class UserService {
         }
     }
 
-    // ========================================
     // MÉTODOS PRIVADOS - LÓGICA DE NEGOCIO
-    // ========================================
 
     /**
      * Verificar disponibilidad de correo
@@ -232,7 +223,6 @@ export class UserService {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(contraseña, salt);
 
-            // Generar token de verificación
             const verificationToken = crypto.randomBytes(32).toString('hex');
             const expiryDate = new Date();
             expiryDate.setHours(expiryDate.getHours() + 24);
@@ -374,7 +364,6 @@ export class UserService {
             };
         }
 
-        // Log de error general
         logSecurityEvent('USER_REGISTRATION_ERROR', 'Error general al registrar usuario', {
             email: correo,
             error: error.message,
@@ -389,9 +378,7 @@ export class UserService {
         };
     }
 
-    // ========================================
     // MÉTODOS EXISTENTES (mantener compatibilidad)
-    // ========================================
 
     static async createUser(correo, contraseña) {
         const salt = await bcrypt.genSalt(10);
@@ -566,7 +553,6 @@ export class UserService {
 
             const userData = rows[0];
 
-            // 🆕 NUEVO: Log para depuración
             console.log("Información de autenticación del usuario:", {
                 id: userData.id_user,
                 isGoogleUser: userData.isGoogleUser,
@@ -611,7 +597,6 @@ export class UserService {
             const userIds = usersToDelete.map(user => user.id_user);
             console.log(`Preparando eliminación de ${userIds.length} usuarios: ${userIds.join(', ')}`);
 
-            // 2. ✅ NUEVO: Eliminar terms_acceptance_tokens primero
             const deleteTokensQuery = `
             DELETE FROM terms_acceptance_tokens
             WHERE user_id = ANY($1::int[])
@@ -619,7 +604,6 @@ export class UserService {
             const tokensResult = await client.query(deleteTokensQuery, [userIds]);
             console.log(`Eliminados ${tokensResult.rowCount} tokens de términos`);
 
-            // 3. ✅ NUEVO: Eliminar terms_acceptances
             const deleteAcceptancesQuery = `
             DELETE FROM terms_acceptances
             WHERE user_id = ANY($1::int[])

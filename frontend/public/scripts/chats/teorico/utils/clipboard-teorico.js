@@ -11,7 +11,6 @@ import {
   getAttribute
 } from '../../shared/dom-helpers.js';
 
-// ⭐ NUEVA IMPORTACIÓN: Modal de copia manual de Acadel
 import { showAcadelManualCopyModal } from '../ui/modals-teorico.js';
 
 // Constante para identificar timeouts de botones de copia
@@ -26,28 +25,23 @@ const CLIPBOARD_TIMEOUT_PREFIX = 'clipboard_btn_';
 export async function copyToClipboard(text, options = {}) {
   const { button, showNotification = true } = options;
   
-  // Guardar el contenido original del botón si existe
   let originalButtonContent = '';
   if (button) {
     originalButtonContent = button.innerHTML;
   }
   
-  // Intentar usar la API moderna de portapapeles
   if (navigator.clipboard && navigator.clipboard.writeText) {
     try {
       await navigator.clipboard.writeText(text);
       
-      // ⭐ MEJORADO: Notificación más académica y amigable
       if (showNotification) {
         if (window.acadelExito) {
           window.acadelExito("🦫📋 ¡Copiado por Acadel!", "Tu chigüire académico favorito guardó todo perfectamente en el portapapeles");
         } else {
-          // Fallback si no existe la función de notificaciones
           console.log('✅ Texto copiado exitosamente al portapapeles');
         }
       }
       
-      // Actualizar botón con estado de éxito
       if (button) {
         updateButtonState(button, 'success', originalButtonContent);
       }
@@ -56,7 +50,6 @@ export async function copyToClipboard(text, options = {}) {
     } catch (error) {
       console.warn('Error al copiar con API moderna:', error);
       
-      // Actualizar el botón con estado de error si se proporcionó
       if (button) {
         updateButtonState(button, 'error', originalButtonContent);
       }
@@ -70,31 +63,21 @@ export async function copyToClipboard(text, options = {}) {
   return copyToClipboardFallback(text, { button, showNotification });
 }
 
-/**
- * ⭐ COMPLETAMENTE RENOVADO: Manejador de fallback usando la modal de Acadel
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve según el resultado
- */
 async function copyToClipboardFallback(text, options = {}) {
   const { button, showNotification = true } = options;
   
-  // Guardar el contenido original del botón si existe
   let originalButtonContent = '';
   if (button) {
     originalButtonContent = button.innerHTML;
   }
   
   try {
-    // ⭐ NUEVO: Usar la modal académica de Acadel en lugar de window.prompt
     console.log('🦫 Acadel: Usando método de copia manual con modal académica');
     
-    // Actualizar botón para mostrar que se está procesando
     if (button) {
       updateButtonState(button, 'processing', originalButtonContent);
     }
     
-    // Mostrar la modal de Acadel para copia manual
     const userInteracted = await showAcadelManualCopyModal(text, options);
     
     if (userInteracted) {
@@ -103,7 +86,6 @@ async function copyToClipboardFallback(text, options = {}) {
         updateButtonState(button, 'success', originalButtonContent);
       }
       
-      // ⭐ NUEVA NOTIFICACIÓN: Mensaje académico personalizado
       if (showNotification) {
         if (window.acadelInfo) {
           window.acadelInfo(
@@ -122,7 +104,6 @@ async function copyToClipboardFallback(text, options = {}) {
   } catch (error) {
     console.error('Error en fallback de copia:', error);
     
-    // ⭐ ÚLTIMO RECURSO: Solo si la modal también falla
     if (button) {
       updateButtonState(button, 'error', originalButtonContent);
     }
@@ -141,12 +122,6 @@ async function copyToClipboardFallback(text, options = {}) {
   }
 }
 
-/**
- * ⭐ MEJORADO: Actualiza el estado visual de un botón de copia con nuevos estados
- * @param {HTMLElement} button - Elemento botón
- * @param {string} state - Estado ('success', 'error', 'processing', 'default')
- * @param {string} originalContent - Contenido original para restaurar
- */
 export function updateButtonState(button, state, originalContent) {
   if (!button) return;
   
@@ -164,7 +139,7 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.add('error');
       button.classList.remove('copied', 'processing');
       break;
-    case 'processing':  // ⭐ NUEVO ESTADO
+    case 'processing':
       newContent = '<i class="bx bx-loader-alt bx-spin"></i> Acadel...';
       button.classList.add('processing');
       button.classList.remove('copied', 'error');
@@ -174,11 +149,9 @@ export function updateButtonState(button, state, originalContent) {
       button.classList.remove('copied', 'error', 'processing');
   }
   
-  // Usar createElementWithHTML para mayor seguridad
   const tempElement = createElementWithHTML('div', {}, newContent);
   button.innerHTML = tempElement.innerHTML;
   
-  // Restaurar el estado original después de un tiempo usando el sistema centralizado de timeouts
   if (state !== 'default') {
     const restoreDelay = state === 'processing' ? 5000 : 2000; // Más tiempo para processing
     
@@ -200,10 +173,8 @@ export function attachCopyEvents(container) {
   const copyButtons = container.querySelectorAll('.copy-button');
   
   copyButtons.forEach(button => {
-    // Eliminar eventos anteriores para evitar duplicados
     removeAllEvents(button);
     
-    // Añadir nuevo evento con sistema de registro
     addEvent(button, 'click', async () => {
       const blockId = getAttribute(button, 'data-target');
       const codeBlock = blockId ? document.getElementById(blockId) : button.closest('.code-block');
@@ -211,7 +182,6 @@ export function attachCopyEvents(container) {
       if (codeBlock) {
         const codeElement = codeBlock.querySelector('code');
         if (codeElement) {
-          // ⭐ MEJORADO: Mejor manejo de errores y feedback
           try {
             await copyToClipboard(codeElement.textContent, { button });
           } catch (error) {
@@ -235,10 +205,8 @@ export function copyElementContent(container, options = {}) {
     return Promise.reject(new Error('Contenedor no válido'));
   }
   
-  // Extraer el contenido en texto plano
   let textContent = '';
   
-  // Verificar bloques de código primero
   const codeBlocks = container.querySelectorAll('pre code');
   
   if (codeBlocks.length > 0) {
@@ -246,7 +214,6 @@ export function copyElementContent(container, options = {}) {
     codeBlocks.forEach((block, index) => {
       if (index > 0) textContent += '\n\n';
       
-      // Intentar obtener el lenguaje
       const className = block.className || '';
       const language = className.replace('language-', '').trim();
       
@@ -259,19 +226,15 @@ export function copyElementContent(container, options = {}) {
       textContent += block.textContent;
     });
   } else {
-    // Extraer texto usando una versión optimizada del algoritmo recursivo
     textContent = extractTextContent(container);
   }
   
-  // Limpiar el texto (eliminar múltiples saltos de línea y espacios en blanco)
   textContent = textContent.replace(/\n{3,}/g, '\n\n').trim();
   
-  // ⭐ NUEVO: Añadir firma académica de Acadel si el texto es largo
   if (textContent.length > 500) {
     textContent += '\n\n---\n📚 Contenido copiado con Acadel - Tu asistente académico favorito 🦫';
   }
   
-  // Copiar al portapapeles
   return copyToClipboard(textContent, options);
 }
 
@@ -287,7 +250,6 @@ function extractTextContent(node) {
   const needsLineBreak = ['DIV', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'TR', 'LI'];
   const needsDoubleLineBreak = ['DIV', 'P', 'TABLE'];
   
-  // Usar textContent para casos simples que no requieren formato especial
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent;
   } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -300,7 +262,6 @@ function extractTextContent(node) {
       return '\n';
     }
     
-    // Para el resto de nodos, recorrer hijos
     let result = '';
     const childNodes = Array.from(node.childNodes);
     
@@ -312,12 +273,10 @@ function extractTextContent(node) {
       }
     });
     
-    // Construir resultado de manera eficiente
     childNodes.forEach(child => {
       result += extractTextContent(child);
     });
     
-    // Añadir saltos de línea después del elemento según corresponda
     if (needsLineBreak.includes(node.tagName)) {
       result += '\n';
     }
@@ -331,10 +290,6 @@ function extractTextContent(node) {
   return '';
 }
 
-/**
- * ⭐ MEJORADO: Verifica si es posible copiar al portapapeles y proporciona información útil
- * @returns {Object} - Objeto con información sobre las capacidades de copia
- */
 export function canCopyToClipboard() {
   const hasModernAPI = !!(navigator.clipboard && navigator.clipboard.writeText);
   const hasSecureContext = window.isSecureContext;
@@ -345,23 +300,15 @@ export function canCopyToClipboard() {
     secure: hasSecureContext,
     fallback: hasFallback,
     available: hasModernAPI || hasFallback,
-    // ⭐ NUEVO: Mensaje académico sobre el estado
     acadelMessage: hasModernAPI ? 
       "🦫✨ Acadel tiene acceso completo al portapapeles" : 
       "🦫📋 Acadel usará el método manual académico para copiar"
   };
 }
 
-/**
- * ⭐ NUEVA FUNCIÓN: Copia inteligente que decide automáticamente el mejor método
- * @param {string} text - Texto a copiar
- * @param {Object} options - Opciones adicionales
- * @returns {Promise} - Promesa que se resuelve cuando se completa la copia
- */
 export function smartCopyToClipboard(text, options = {}) {
   const capabilities = canCopyToClipboard();
   
-  // Log académico para debugging
   console.log('🦫 Acadel Smart Copy:', capabilities.acadelMessage);
   
   return copyToClipboard(text, {
@@ -372,7 +319,7 @@ export function smartCopyToClipboard(text, options = {}) {
 
 export default {
   copyToClipboard,
-  smartCopyToClipboard,  // ⭐ NUEVA EXPORTACIÓN
+  smartCopyToClipboard,
   updateButtonState,
   attachCopyEvents,
   copyElementContent,

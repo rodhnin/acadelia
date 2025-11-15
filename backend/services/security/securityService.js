@@ -17,7 +17,6 @@ class SecurityService {
    */
   async registerSecurityEvent(eventType, message, data = {}, severity = 'info', userId = null, ip = null) {
     try {
-      // Almacenar en base de datos para consulta desde frontend
       const query = `
         INSERT INTO security_events (
           event_type, 
@@ -57,16 +56,13 @@ class SecurityService {
         console.warn('⚠️ Evento guardado pero sin ID retornado');
       }
       
-      // Para eventos severos, notificar en tiempo real
       if (severity === 'high' || severity === 'critical') {
-        // Enviar a canal de Redis para notificaciones en tiempo real
         await this.notifyRealtime(eventType, message, data, severity, userId);
       }
       
       return true;
     } catch (error) {
       console.error('❌ Error registrando evento de seguridad en BD:', error);
-      // Agregar detalles para diagnóstico
       console.error('Datos que se intentaron guardar:', {
         eventType, message, data: typeof data, severity, userId, ip
       });
@@ -88,7 +84,6 @@ class SecurityService {
         timestamp: new Date().toISOString()
       };
       
-      // Verificar que Redis está disponible
       if (redisService.client && redisService.isConnected) {
         // Canal general de seguridad
         await redisService.client.publish(
@@ -122,7 +117,6 @@ class SecurityService {
       const values = [];
       let paramCount = 1;
       
-      // Construir WHERE dinámicamente según filtros
       if (Object.keys(filters).length > 0) {
         const conditions = [];
         
@@ -162,7 +156,6 @@ class SecurityService {
           values.push(filters.endDate);
         }
         
-        // Combinar condiciones
         if (conditions.length > 0) {
           whereClause = `WHERE ${conditions.join(' AND ')}`;
         }
@@ -189,7 +182,6 @@ class SecurityService {
       
       const { rows } = await pool.query(query, values);
       
-      // Obtener total de registros para paginación
       const countQuery = `
         SELECT COUNT(*) as total
         FROM security_events
@@ -234,13 +226,11 @@ class SecurityService {
       let blockedIPs = [];
       let failedLogins = [];
       
-      // Verificar que Redis está disponible
       if (redisService.client && redisService.isConnected) {
         blockedIPs = await redisService.client.keys('security:blacklist:*');
         failedLogins = await redisService.client.keys('security:failed-login:*');
       }
       
-      // Combinar métricas
       return {
         events24h: parseInt(dbMetrics[0].events_24h) || 0,
         highSeverity24h: parseInt(dbMetrics[0].high_severity_24h) || 0,
@@ -262,7 +252,6 @@ class SecurityService {
    */
   async revokeUserTokens(userId, reason) {
     try {
-      // Registrar evento de seguridad directamente
       await this.registerSecurityEvent(
         'TOKEN_REVOCATION',
         `Tokens revocados por razones de seguridad: ${reason}`,
@@ -293,10 +282,8 @@ class SecurityService {
    */
   async blockIP(ip, reason, duration = 3600) {
     try {
-      // Añadir a lista negra
       await redisService.set(`security:blacklist:${ip}`, 'blocked', duration);
       
-      // Registrar evento
       await this.registerSecurityEvent(
         'MANUAL_IP_BLOCK',
         `IP bloqueada manualmente: ${reason}`,
@@ -319,10 +306,8 @@ class SecurityService {
    */
   async unblockIP(ip) {
     try {
-      // Eliminar de lista negra
       await redisService.delete(`security:blacklist:${ip}`);
       
-      // Registrar evento
       await this.registerSecurityEvent(
         'MANUAL_IP_UNBLOCK',
         `IP desbloqueada manualmente`,
@@ -346,7 +331,6 @@ class SecurityService {
     try {
       const blockedIPs = [];
       
-      // Verificar que Redis está disponible
       if (redisService.client && redisService.isConnected) {
         const blockedKeys = await redisService.client.keys('security:blacklist:*');
         
@@ -376,7 +360,6 @@ class SecurityService {
     try {
       const failedAttempts = [];
       
-      // Verificar que Redis está disponible
       if (redisService.client && redisService.isConnected) {
         const failedKeys = await redisService.client.keys('security:failed-login:*');
         
@@ -410,7 +393,6 @@ class SecurityService {
    */
   async getSuspiciousActivity() {
     try {
-      // Obtener eventos de actividad sospechosa de la base de datos
       const query = `
         SELECT 
           id,
@@ -430,10 +412,8 @@ class SecurityService {
       
       const { rows } = await pool.query(query);
       
-      // Obtener también información de Redis para tener datos más recientes
       const redisActivity = [];
       
-      // Verificar que Redis está disponible
       if (redisService.client && redisService.isConnected) {
         const suspiciousIPs = await redisService.client.keys('security:suspicious:*');
         
@@ -467,7 +447,6 @@ class SecurityService {
    */
   async getUserSecurityInfo(userId) {
     try {
-      // Información de eventos de seguridad asociados al usuario
       const eventsQuery = `
         SELECT 
           event_type as "eventType",
@@ -480,7 +459,6 @@ class SecurityService {
       
       const { rows: eventCounts } = await pool.query(eventsQuery, [userId]);
       
-      // Obtener de Redis los intentos de login recientes
       const loginAttemptsQuery = `
         SELECT 
           id,
@@ -497,7 +475,6 @@ class SecurityService {
       
       const { rows: loginAttempts } = await pool.query(loginAttemptsQuery, [userId]);
       
-      // Obtener IP actual o última conocida
       const userIpKey = `security:user-ip:${userId}`;
       const lastKnownIp = await redisService.get(userIpKey);
       
@@ -512,7 +489,6 @@ class SecurityService {
       throw error;
     }
   }
-  // Agregar estos métodos a la clase SecurityService
 
 /**
  * Obtiene la configuración del sistema de seguridad
@@ -539,16 +515,13 @@ async getSecurityConfig() {
     if (rows.length === 0) {
       const defaultConfig = this.getDefaultSecurityConfig();
       
-      // Guardar configuración por defecto en Redis
       await redisService.set('security:config', defaultConfig, 3600); // 1 hora
       
       return defaultConfig;
     }
     
-    // Parsear la configuración almacenada
     const config = JSON.parse(rows[0].config_value);
     
-    // Guardar en caché para futuras consultas
     await redisService.set('security:config', config, 3600); // 1 hora
     
     return config;
@@ -600,10 +573,8 @@ getDefaultSecurityConfig() {
  */
 async saveSecurityConfig(config) {
   try {
-    // Validar y sanitizar la configuración
     const sanitizedConfig = this.sanitizeConfig(config);
     
-    // Guardar en la base de datos
     const query = `
       INSERT INTO system_config (config_key, config_value, updated_at)
       VALUES ('security_config', $1, NOW())
@@ -613,7 +584,6 @@ async saveSecurityConfig(config) {
     
     await pool.query(query, [JSON.stringify(sanitizedConfig)]);
     
-    // Actualizar también en Redis
     await redisService.set('security:config', sanitizedConfig, 3600); // 1 hora
     
     return { success: true, config: sanitizedConfig };
@@ -630,7 +600,6 @@ async saveSecurityConfig(config) {
 sanitizeConfig(config) {
   const defaultConfig = this.getDefaultSecurityConfig();
   
-  // Crear copia limpia
   const sanitized = {
     thresholds: {
       failedLogins: this.validateNumber(config.thresholds?.failedLogins, defaultConfig.thresholds.failedLogins, 1, 20),
@@ -697,13 +666,11 @@ async resetSecurityCounters() {
       throw new Error('Servicio Redis no disponible');
     }
     
-    // Obtener todas las claves de contadores
     const failedLoginKeys = await redisService.client.keys('security:failed-login:*');
     const suspiciousKeys = await redisService.client.keys('security:suspicious:*');
     const sensitiveKeys = await redisService.client.keys('security:sensitive:*');
     const navigationKeys = await redisService.client.keys('security:navigation:*');
     
-    // Eliminar todas las claves encontradas
     const allKeys = [
       ...failedLoginKeys,
       ...suspiciousKeys,
@@ -842,7 +809,6 @@ async runSecurityDiagnostic() {
         message: 'Tabla de eventos de seguridad accesible'
       });
       
-      // Comprobar si hay muchos eventos (posible necesidad de limpieza)
       if (eventCount > 10000) {
         results.recommendations.push(
           'Gran cantidad de eventos de seguridad. Considere ejecutar la limpieza programada'
@@ -903,7 +869,6 @@ async runSecurityDiagnostic() {
       );
     }
     
-    // Retornar resultados completos
     return results;
   } catch (error) {
     console.error('Error ejecutando diagnóstico de seguridad:', error);
@@ -923,7 +888,6 @@ async runSecurityDiagnostic() {
  */
 async getSecurityLogs(type = 'security', lines = 100) {
   try {
-    // Mapear tipo a archivo
     const logFilePath = this.getLogFilePath(type);
     
     // Leer últimas líneas del archivo
@@ -971,7 +935,6 @@ async readLastLines(filePath, lines) {
     // Importación dinámica de fs
     const fs = await import('fs');
     
-    // Verificar si el archivo existe
     if (!fs.existsSync(filePath)) {
       return [`Archivo de log no encontrado: ${filePath}`];
     }
@@ -980,7 +943,6 @@ async readLastLines(filePath, lines) {
     const data = await fs.promises.readFile(filePath, 'utf8');
     const allLines = data.split('\n').filter(line => line.trim() !== '');
     
-    // Retornar últimas líneas
     return allLines.slice(-lines);
   } catch (error) {
     console.error('Error leyendo archivo de log:', error);
@@ -990,14 +952,12 @@ async readLastLines(filePath, lines) {
 
 async exportSecurityEvents(filters = {}, format = 'csv') {
   try {
-    // Obtener eventos aplicando filtros
     const { events } = await this.getSecurityEvents(filters, 1, 10000);
     
     // Fecha actual para el nombre del archivo
     const date = new Date().toISOString().split('T')[0];
     const filename = `eventos_seguridad_${date}.${format}`;
     
-    // Generar contenido según formato
     let fileContent;
     
     if (format === 'json') {
@@ -1032,16 +992,12 @@ convertToCSV(data) {
     return '';
   }
   
-  // Obtener encabezados
   const headers = Object.keys(data[0]);
   
-  // Generar línea de encabezados
   const headerRow = headers.join(',');
   
-  // Generar líneas de datos
   const rows = data.map(obj => {
     return headers.map(header => {
-      // Manejar valores especiales (null, undefined, objetos)
       const val = obj[header];
       
       if (val === null || val === undefined) {
@@ -1049,7 +1005,6 @@ convertToCSV(data) {
       }
       
       if (typeof val === 'object') {
-        // Convertir objetos a JSON y escapar comillas
         return `"${JSON.stringify(val).replace(/"/g, '""')}"`;
       }
       
@@ -1062,7 +1017,6 @@ convertToCSV(data) {
     }).join(',');
   });
   
-  // Unir encabezados y filas
   return [headerRow, ...rows].join('\n');
 }
 }

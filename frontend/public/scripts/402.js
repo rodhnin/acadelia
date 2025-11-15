@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const featureItems = document.querySelectorAll('.feature-item');
   
   featureItems.forEach((item, index) => {
-    // Agregar delay escalonado para la animación inicial
     item.style.animationDelay = `${index * 0.1}s`;
     
     // Efecto hover mejorado
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Detectar si viene de una página específica y personalizar el mensaje
   const urlParams = new URLSearchParams(window.location.search);
   const fromPage = urlParams.get('from');
   
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Función para personalizar el mensaje basado en la página de origen
 function personalizeMessage(fromPage) {
   const description = document.querySelector('.auth-description');
   const badge = document.querySelector('.auth-badge');
@@ -99,7 +96,6 @@ function personalizeMessage(fromPage) {
   }
 }
 
-// Función para mostrar información adicional sobre beneficios premium
 function showPremiumBenefits() {
   const benefits = [
     'Acceso completo a todos los AVAs de la carrera',
@@ -114,7 +110,6 @@ function showPremiumBenefits() {
   console.log('Beneficios premium disponibles:', benefits);
 }
 
-// Tracking de interacciones para analytics (opcional)
 function trackUserInteraction(action, element) {
   // Aquí podrías enviar datos a tu sistema de analytics
   console.log(`User interaction: ${action} on ${element}`);
@@ -137,15 +132,12 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Función para manejar redirección inteligente a tienda
 function redirectToStore() {
-  // Detectar la página de origen para redirigir a la carrera específica
   const urlParams = new URLSearchParams(window.location.search);
   const fromPage = urlParams.get('from');
   
   let storeUrl = '/tienda';
   
-  // Agregar parámetros para mostrar carrera específica
   if (fromPage) {
     storeUrl += `?highlight=${fromPage}`;
   }

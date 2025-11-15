@@ -1,13 +1,10 @@
-// backend/lib/queueService.js
 import { Queue, Worker } from 'bullmq';
 
-// ⭐ CONFIGURACIÓN PARA FLY.IO + UPSTASH (igual que redis.js)
 function getRedisConnection() {
   if (process.env.REDIS_URL) {
     const isUpstash = process.env.REDIS_URL.includes('upstash.io');
     
     if (isUpstash) {
-      // Para Upstash en Fly.io - SIN TLS, con IPv6
       return {
         host: process.env.REDIS_URL.match(/@([^:/?]+)/)?.[1],
         port: parseInt(process.env.REDIS_URL.match(/:(\d+)(?:[/?]|$)/)?.[1]) || 6379,
@@ -17,11 +14,9 @@ function getRedisConnection() {
         maxRetriesPerRequest: null
       };
     } else {
-      // Para otros proveedores
       return process.env.REDIS_URL;
     }
   } else {
-    // Para desarrollo local
     return {
       host: process.env.REDIS_HOST || 'localhost',
       port: process.env.REDIS_PORT || 6379,
@@ -93,7 +88,6 @@ export async function closeAllConnections() {
   console.log('Todas las conexiones han sido cerradas');
 }
 
-// Manejar cierre de aplicación
 process.on('SIGINT', async () => {
   console.log('SIGINT recibido, cerrando conexiones...');
   await closeAllConnections();

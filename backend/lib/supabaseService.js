@@ -8,7 +8,6 @@ const supabaseUrl = process.env.SUPABASE_URL || `https://${process.env.SUPABASE_
 // Esta clave permite operaciones de lectura/escritura según los permisos configurados en Supabase
 const supabaseAnon = process.env.SUPABASE_ANON_KEY;
 
-// Verificar que las variables de entorno estén configuradas
 if (!supabaseUrl || !supabaseAnon) {
   console.error("Error: SUPABASE_URL y SUPABASE_ANON_KEY deben estar definidas en el archivo .env");
   process.exit(1);

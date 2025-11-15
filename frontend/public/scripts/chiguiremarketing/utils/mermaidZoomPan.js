@@ -9,11 +9,9 @@ export class MermaidZoomPan {
       return;
     }
     
-    // Detectar contexto
     this.isExplanation = container.closest('.explanation-container') !== null ||
                         container.closest('.visualization-container') !== null;
     
-    // Guardar información del contenedor original
     this.originalParent = container.parentElement;
     this.originalNextSibling = container.nextElementSibling;
     this.originalPosition = {
@@ -45,7 +43,6 @@ export class MermaidZoomPan {
     this.lastTouchDistance = 0;
     this.isFullscreen = false;
     
-    // Guardar referencias para limpieza
     this.boundHandlers = {
       mouseDown: this.handleMouseDown.bind(this),
       mouseMove: this.handleMouseMove.bind(this),
@@ -59,19 +56,14 @@ export class MermaidZoomPan {
       fullscreenChange: this.handleFullscreenChange.bind(this)
     };
     
-    // Crear wrapper para el SVG de forma segura
     this.createWrapperSafely();
     
-    // Crear controles
     this.createControls();
     
-    // Configurar eventos
     this.setupEvents();
     
-    // Aplicar estilos iniciales
     this.applyTransform();
     
-    // Marcar como inicializado
     this.container.setAttribute('data-zoom-enabled', 'true');
     
     // Ajustar para componente de explicación si es necesario
@@ -86,13 +78,11 @@ export class MermaidZoomPan {
    * Creación segura del wrapper manteniendo la estructura del contenedor
    */
   createWrapperSafely() {
-    // Verificar que el SVG esté realmente dentro del contenedor
     if (!this.container.contains(this.svg)) {
       console.error('SVG no está dentro del contenedor especificado');
       return;
     }
     
-    // Crear wrapper interno sin alterar la estructura externa
     const wrapper = document.createElement('div');
     wrapper.className = 'mermaid-svg-wrapper';
     
@@ -115,7 +105,6 @@ export class MermaidZoomPan {
       background: transparent;
     `;
     
-    // Mover SOLO el SVG al wrapper, manteniendo otros elementos del contenedor
     const svgParent = this.svg.parentElement;
     svgParent.insertBefore(wrapper, this.svg);
     wrapper.appendChild(this.svg);
@@ -123,7 +112,6 @@ export class MermaidZoomPan {
     this.wrapper = wrapper;
     this.svgOriginalParent = svgParent; // Guardar referencia al padre original del SVG
     
-    // Configurar SVG con transform-origin centrado
     this.svg.style.cssText = `
       width: 100%;
       height: auto;
@@ -166,7 +154,6 @@ export class MermaidZoomPan {
     controls.appendChild(resetBtn);
     controls.appendChild(fullscreenBtn);
     
-    // Añadir controles AL CONTENEDOR PRINCIPAL, no al wrapper
     this.container.appendChild(controls);
     this.controls = controls;
   }
@@ -240,7 +227,6 @@ export class MermaidZoomPan {
       this.container.classList.remove('fullscreen-mode');
       console.log('📱 Saliendo de modo fullscreen - restaurando posición');
       
-      // Restaurar posición original
       setTimeout(() => {
         this.restoreOriginalPosition();
       }, 100);
@@ -252,7 +238,6 @@ export class MermaidZoomPan {
    */
   adjustForFullscreen(entering) {
     if (entering) {
-      // Guardar estado actual
       this.preFullscreenState = {
         scale: this.scale,
         translateX: this.translateX,
@@ -273,11 +258,9 @@ export class MermaidZoomPan {
    */
   restoreOriginalPosition() {
     try {
-      // Verificar que el contenedor esté en su lugar correcto
       if (this.originalParent && !this.originalParent.contains(this.container)) {
         console.log('🔄 Restaurando contenedor a su posición original');
         
-        // Restaurar el contenedor a su posición original
         if (this.originalNextSibling) {
           this.originalParent.insertBefore(this.container, this.originalNextSibling);
         } else {
@@ -285,14 +268,12 @@ export class MermaidZoomPan {
         }
       }
       
-      // Restaurar estilos del wrapper
       if (this.wrapper) {
         this.wrapper.style.width = '100%';
         this.wrapper.style.height = '100%';
         this.wrapper.style.minHeight = `${Math.max(this.originalPosition.height, 200)}px`;
       }
       
-      // Restaurar estado de zoom si existe
       if (this.preFullscreenState) {
         this.scale = this.preFullscreenState.scale;
         this.translateX = this.preFullscreenState.translateX;
@@ -549,13 +530,11 @@ export class MermaidZoomPan {
     try {
       console.log('🧹 Destruyendo MermaidZoomPan...');
       
-      // Limpiar eventos de fullscreen
       document.removeEventListener('fullscreenchange', this.boundHandlers.fullscreenChange);
       document.removeEventListener('webkitfullscreenchange', this.boundHandlers.fullscreenChange);
       document.removeEventListener('mozfullscreenchange', this.boundHandlers.fullscreenChange);
       document.removeEventListener('MSFullscreenChange', this.boundHandlers.fullscreenChange);
       
-      // Limpiar eventos del wrapper
       if (this.wrapper) {
         this.wrapper.removeEventListener('mousedown', this.boundHandlers.mouseDown);
         this.wrapper.removeEventListener('touchstart', this.boundHandlers.touchStart);
@@ -565,11 +544,9 @@ export class MermaidZoomPan {
         this.wrapper.removeEventListener('dblclick', this.boundHandlers.dblclick);
       }
       
-      // Limpiar eventos del documento
       document.removeEventListener('mousemove', this.boundHandlers.mouseMove);
       document.removeEventListener('mouseup', this.boundHandlers.mouseUp);
       
-      // Limpiar eventos del contenedor
       if (this.container) {
         this.container.removeEventListener('keydown', this.boundHandlers.keydown);
       }
@@ -577,15 +554,12 @@ export class MermaidZoomPan {
       // RESTAURACIÓN MEJORADA DEL SVG
       if (this.wrapper && this.svg && this.svgOriginalParent) {
         try {
-          // Restaurar SVG a su padre original (que debería ser el contenedor principal)
           this.svgOriginalParent.insertBefore(this.svg, this.wrapper);
           
-          // Limpiar estilos del SVG
           this.svg.style.transform = '';
           this.svg.style.transition = '';
           this.svg.style.transformOrigin = '';
           
-          // Remover el wrapper
           if (this.wrapper.parentNode) {
             this.wrapper.remove();
           }
@@ -595,26 +569,22 @@ export class MermaidZoomPan {
         } catch (domError) {
           console.warn('⚠️ Error restaurando estructura DOM:', domError);
           
-          // Fallback: asegurar que el SVG esté en el contenedor
           if (this.svg && this.container && !this.container.contains(this.svg)) {
             this.container.appendChild(this.svg);
           }
         }
       }
       
-      // Eliminar controles
       if (this.controls && this.controls.parentNode) {
         this.controls.remove();
       }
       
-      // Limpiar atributos y referencias
       if (this.container) {
         this.container.removeAttribute('data-zoom-enabled');
         this.container.classList.remove('fullscreen-mode');
         delete this.container._zoomPanInstance;
       }
       
-      // Limpiar todas las referencias
       this.svg = null;
       this.wrapper = null;
       this.controls = null;

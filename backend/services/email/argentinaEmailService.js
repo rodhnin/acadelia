@@ -1,4 +1,3 @@
-// backend/services/email/argentinaEmailService.js
 import nodemailer from 'nodemailer';
 import path from 'path';
 import pool from '../../lib/dbPool.js';
@@ -60,7 +59,6 @@ class ArgentinaEmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorFelizUrl = this.imageUrls.profesorFeliz;
     
-    // Formatear fechas
     const startDate = new Date(subscriptionData.start_date);
     const endDate = new Date(subscriptionData.end_date);
     const dateOptions = { 
@@ -72,7 +70,6 @@ class ArgentinaEmailService {
     const formattedStartDate = startDate.toLocaleDateString('es-AR', dateOptions);
     const formattedEndDate = endDate.toLocaleDateString('es-AR', dateOptions);
     
-    // Formatear monto
     const formattedAmount = new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
@@ -334,7 +331,6 @@ class ArgentinaEmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorCapibaraUrl = this.imageUrls.profesorCapibara;
     
-    // Formatear monto
     const formattedAmount = new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
@@ -728,17 +724,14 @@ class ArgentinaEmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorTristeUrl = this.imageUrls.profesorTriste;
     
-    // Formatear monto
     const formattedAmount = new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
     }).format(paymentData.amount);
     
-    // Extraer la razón del rechazo del admin_notes
     const adminNotes = paymentData.admin_notes || '';
     let rejectionReason = 'No se especificó una razón';
     
-    // Buscar patrón: "Razón: [texto]"
     const reasonMatch = adminNotes.match(/Razón:\s*(.+?)(?:\s*$|,|\||;)/);
     if (reasonMatch) {
       rejectionReason = reasonMatch[1].trim();
@@ -976,7 +969,6 @@ class ArgentinaEmailService {
     const logoUrl = this.imageUrls.logo;
     const profesorTristeUrl = this.imageUrls.profesorTriste;
     
-    // Formatear monto
     const formattedAmount = new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
@@ -1399,9 +1391,6 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // 🔗 FUNCIONES DE INTEGRACIÓN CON BASE DE DATOS
-  // ====================================================================
 
   /**
    * Obtiene datos completos de usuario desde la BD
@@ -1494,24 +1483,14 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // 📧 FUNCIONES DE INTEGRACIÓN PARA ENVÍO DE EMAILS
-  // ====================================================================
 
-  /**
-   * 🎉 Envía email de nueva suscripción activa (cuando se aprueba transferencia)
-   * @param {number} subscriptionId - ID de la suscripción creada
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendNewSubscriptionFromId(subscriptionId) {
     try {
       console.log(`📧 Enviando email de nueva suscripción activa para suscripción ${subscriptionId}`);
 
-      // Obtener datos completos de la suscripción
       const subscriptionData = await this.getSubscriptionData(subscriptionId);
       const userData = await this.getUserData(subscriptionData.user_id);
 
-      // Enviar el email
       const result = await this.sendNewSubscriptionEmail(
         userData.correo,
         subscriptionData,
@@ -1527,20 +1506,13 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ⏳ Envía email de pago en revisión (cuando se envía transferencia)
-   * @param {number} paymentId - ID del pago en revisión
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendPaymentUnderReviewFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de pago en revisión para pago ${paymentId}`);
 
-      // Obtener datos completos del pago
       const paymentData = await this.getPaymentData(paymentId);
       const userData = await this.getUserData(paymentData.user_id);
 
-      // Enviar el email
       const result = await this.sendPaymentUnderReviewEmail(
         userData.correo,
         paymentData,
@@ -1556,20 +1528,13 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ⌛ Envía email de suscripción expirada (desde job automático)
-   * @param {number} subscriptionId - ID de la suscripción expirada
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendSubscriptionExpiredFromId(subscriptionId) {
     try {
       console.log(`📧 Enviando email de suscripción expirada para suscripción ${subscriptionId}`);
 
-      // Obtener datos completos de la suscripción
       const subscriptionData = await this.getSubscriptionData(subscriptionId);
       const userData = await this.getUserData(subscriptionData.user_id);
 
-      // Enviar el email
       const result = await this.sendSubscriptionExpiredEmail(
         userData.correo,
         subscriptionData,
@@ -1585,25 +1550,17 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * ❌ Envía email de transferencia rechazada (cuando admin rechaza)
-   * @param {number} paymentId - ID del pago rechazado
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendTransferRejectedFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de transferencia rechazada para pago ${paymentId}`);
 
-      // Obtener datos completos del pago
       const paymentData = await this.getPaymentData(paymentId);
       const userData = await this.getUserData(paymentData.user_id);
 
-      // Verificar que realmente esté rechazado
       if (paymentData.payment_status !== 'rechazado') {
         throw new Error(`El pago ${paymentId} no está en estado rechazado (estado actual: ${paymentData.payment_status})`);
       }
 
-      // Enviar el email
       const result = await this.sendTransferRejectedEmail(
         userData.correo,
         paymentData,
@@ -1619,20 +1576,13 @@ class ArgentinaEmailService {
     }
   }
 
-  /**
-   * 💳 Envía email de pago Ualá fallido (cuando falla pago con tarjeta)
-   * @param {number} paymentId - ID del pago fallido
-   * @returns {Promise<boolean>} - Resultado del envío
-   */
   async sendUalaPaymentFailedFromId(paymentId) {
     try {
       console.log(`📧 Enviando email de pago Ualá fallido para pago ${paymentId}`);
 
-      // Obtener datos completos del pago
       const paymentData = await this.getPaymentData(paymentId);
       const userData = await this.getUserData(paymentData.user_id);
 
-      // Verificar que sea un pago Ualá fallido
       if (paymentData.payment_method !== 'uala_bis') {
         throw new Error(`El pago ${paymentId} no es de Ualá Bis (método actual: ${paymentData.payment_method})`);
       }
@@ -1641,7 +1591,6 @@ class ArgentinaEmailService {
         throw new Error(`El pago ${paymentId} no está en estado fallido/expirado (estado actual: ${paymentData.payment_status})`);
       }
 
-      // Enviar el email
       const result = await this.sendUalaPaymentFailedEmail(
         userData.correo,
         paymentData,
@@ -1657,16 +1606,7 @@ class ArgentinaEmailService {
     }
   }
 
-  // ====================================================================
-  // 🔄 FUNCIÓN PARA PROCESAR SUSCRIPCIONES EXPIRADAS DESDE JOB
-  // ====================================================================
 
-  /**
-   * 📬 Envía emails masivos a usuarios con suscripciones expiradas
-   * Esta función se llama desde el job automático de actualización
-   * @param {Array} expiredSubscriptionIds - Array de IDs de suscripciones expiradas
-   * @returns {Promise<Object>} - Resumen de envíos
-   */
   async sendExpiredSubscriptionEmails(expiredSubscriptionIds) {
     if (!Array.isArray(expiredSubscriptionIds) || expiredSubscriptionIds.length === 0) {
       console.log('ℹ️ No hay suscripciones expiradas para notificar');
@@ -1709,9 +1649,6 @@ class ArgentinaEmailService {
     return results;
   }
 
-  // ====================================================================
-  // 🔧 FUNCIONES DE UTILIDAD PARA INTEGRACIÓN
-  // ====================================================================
 
   /**
    * Obtiene suscripciones que vencen pronto para notificación preventiva

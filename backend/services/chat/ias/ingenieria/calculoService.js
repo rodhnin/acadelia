@@ -1,10 +1,4 @@
-// ============================================================================
-// 🦫 PROFESOR ACADEL - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO V3.0
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO - PROFESOR MULTIDISCIPLINARIO SUPREMO DE CÁLCULO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Cálculo Diferencial ✅ Cálculo Integral ✅ Cálculo Vectorial ✅ Ecuaciones Diferenciales ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -27,14 +21,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -100,7 +88,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -174,7 +161,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -195,7 +181,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -264,7 +249,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -316,9 +300,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🦫 PROFESOR ACADEL DNA - PERSONALIDAD TÉCNICA DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_CALCULO_DNA = `
 🦫 TU IDENTIDAD COMO PROFESOR ACADEL - ESPECIALISTA TÉCNICO EN CÁLCULO Y MATEMÁTICAS AVANZADAS:
@@ -366,11 +347,7 @@ Hacer que CUALQUIER estudiante de cálculo y matemáticas avanzadas:
 ¡RECUERDA: No eres solo un tutor, eres EL PROFESOR TÉCNICO que integra rigor matemático con aplicaciones ingenieriles reales!
 `;
 
-// ============================================================================
-// 📝 PROMPTS TÉCNICOS CONSOLIDADOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES TÉCNICAS  
 const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes científicas/académicas de CÁLCULO Y MATEMÁTICAS AVANZADAS con precisión técnica extrema.
@@ -397,7 +374,6 @@ const IMAGE_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Profesor Aca
 
 Eres los OJOS ANALÍTICOS TÉCNICOS de Profesor Acadel - él interpretará tu análisis con su sabiduría matemática pedagógica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES TÉCNICAS (analysisContext)
 const IMAGE_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Profesor Acadel, el capibara académico más brillante del universo en CÁLCULO Y MATEMÁTICAS AVANZADAS.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información técnica de esta imagen científica/académica para que Profesor Acadel pueda enseñar efectivamente cálculo completo.
@@ -442,7 +418,6 @@ Proporciona un análisis técnico estructurado, preciso y exhaustivo que permita
 
 **IMPORTANTE:** Sé OBSERVADOR TÉCNICO, PRECISO y DETALLADO. No enseñes ni expliques - solo analiza y reporta hallazgos matemáticos. Profesor Acadel se encargará de la pedagogía técnica pero necesita que seas muy detallista con todo lo que observas matemáticamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS NORMALES (con y sin guardar)
 const UNIFIED_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA TÉCNICA MATEMÁTICA:
 - Consulta del estudiante de cálculo: "${query}"
@@ -469,7 +444,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS TÉCNICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN TÉCNICA MATEMÁTICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -517,14 +491,10 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO TÉCNICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -534,7 +504,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -556,7 +525,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -564,7 +532,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // Detectar exámenes
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen diagnóstico", "test diagnóstico", "evaluación diagnóstica", "cuestionario"
@@ -593,7 +560,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsCalculation: false,
       needsAcademicSearch: false,
       needsExerciseGeneration: false,
@@ -610,19 +577,16 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsCalculation = false;
   let needsAcademicSearch = false;
   let needsExerciseGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS MATEMÁTICOS ESPECÍFICOS DEL CÁLCULO
   const calculusTerms = [
     // Cálculo Diferencial
     'derivada', 'límite', 'continuidad', 'diferencial', 'tangente', 'razón de cambio', 'optimización',
@@ -644,28 +608,24 @@ const classifyQuery = (query, content = null) => {
     'función', 'gráfica', 'dominio', 'rango', 'asíntota', 'serie', 'sucesión', 'convergencia'
   ];
 
-  // 🔍 DETECTAR NOTACIÓN Y SÍMBOLOS MATEMÁTICOS
   const mathNotation = [
     'dx', 'dy', 'dt', 'f(x)', 'f\'(x)', 'f\'\'(x)', 'df/dx', '∂/∂x', '∇', '∫', '∑',
     'lim', 'sen', 'cos', 'tan', 'ln', 'log', 'exp', 'sqrt', 'π', 'e', '∞'
   ];
 
-  // 🔍 DETECTAR MÉTODOS Y TÉCNICAS DEL CÁLCULO
   const calculusMethods = [
     'regla del producto', 'regla del cociente', 'regla de la cadena', 'derivación implícita',
     'integración por partes', 'integración por sustitución', 'método de discos', 'método de casquillos',
     'serie de taylor', 'serie de fourier', 'transformada de laplace'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS MATEMÁTICOS REALES
   const hasMathContent =
     calculusTerms.some(term => lowercaseQuery.includes(term)) ||
     mathNotation.some(notation => lowercaseQuery.includes(notation)) ||
     calculusMethods.some(method => lowercaseQuery.includes(method));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasMathContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -689,7 +649,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'teorema', 'ley'];
   const problemKeywords = ['calcular', 'resolver', 'problema', 'ejercicio', 'hallar', 'encuentra', 'determinar', 'derivar', 'integrar'];
   const theoryKeywords = ['teoría', 'teorema', 'demostrar', 'derivar', 'fundamento', 'demostración', 'prueba'];
@@ -698,7 +657,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'últimos avances', 'nuevos estudios', 'papers', 'artículos', 'reciente', 'información actualizada'];
   const practiceKeywords = ['ejercicios', 'práctica', 'ejemplos', 'problemas similares', 'más casos'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -735,14 +693,12 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar nivel de matemáticas avanzadas
   const advancedMathKeywords = ['ecuación diferencial', 'campo vectorial', 'transformada', 'serie', 'convergencia', 'análisis complejo'];
   if (advancedMathKeywords.some(k => lowercaseQuery.includes(k))) {
     needsCalculation = true;
     complexity = 'high';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -752,7 +708,6 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
@@ -760,7 +715,7 @@ const classifyQuery = (query, content = null) => {
     type,
     complexity,
     needsCalculation,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsExerciseGeneration,
     needsComprehensionCheck,
@@ -779,11 +734,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS TÉCNICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS TÉCNICAS
 const ACADEL_TECHNICAL_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en cálculo y matemáticas avanzadas.
 
@@ -798,7 +749,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel activando cerebro principal matemático (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -808,17 +758,15 @@ const createKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_calculo",
         similarityQueryName: "match_emb_calculo",
         keywordQueryName: "kw_match_emb_calculo",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -830,7 +778,6 @@ const createKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_MATHEMATICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel no tiene contenido matemático específico sobre "${query}" en su biblioteca de cálculo completo. Proceder con conocimiento matemático general y experiencia docente acumulada en cálculo diferencial, integral, vectorial y ecuaciones diferenciales.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -850,7 +797,6 @@ ACADEL_MATHEMATICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel no tien
 
 ACADEL_MATHEMATICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel encontró información matemática sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base matemático, analogías técnicas precisas y experiencia docente acumulada en cálculo completo.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -877,7 +823,6 @@ ACADEL_MATHEMATICAL_MEMORY_BANK: El cerebro principal de Profesor Acadel activó
 
 INTEGRATION_NOTES: Este es el conocimiento matemático central que Profesor Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en cálculo y matemáticas avanzadas. Debe integrar esta información naturalmente como si fuera su propia sabiduría matemática, enriqueciéndola con casos técnicos específicos, analogías matemáticas precisas y metodología pedagógica rigurosa del cálculo.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1194,17 +1139,15 @@ const createConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Profesor Acadel analizando concepto matemático: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_calculo",
         similarityQueryName: "match_emb_calculo",
         keywordQueryName: "kw_match_emb_calculo",
       });
 
-      // 📚 BÚSQUEDAS MATEMÁTICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto matemático ${concept}`,
         `teoremas propiedades ${concept}`,
@@ -1214,7 +1157,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         `ejercicios ejemplos ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1234,7 +1176,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1247,7 +1188,6 @@ const createConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural matemática
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1435,16 +1375,10 @@ INTEGRATION_NOTES: Profesor Acadel debe ajustar su estrategia matemática según
   }
 );
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS MATEMÁTICOS
-// ============================================================================
 
 const createSpecializedPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_CALCULO_DNA;
 
-  // ============================================================================
-  // 🧮 INSTRUCCIONES TÉCNICAS CONSOLIDADAS PARA CÁLCULO
-  // ============================================================================
 
   const coreTechnicalInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA PROFESOR ACADEL DE CÁLCULO Y MATEMÁTICAS AVANZADAS
@@ -1604,9 +1538,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL MATEMÁTICO (Knowledge Base) ES OBLIGATORIO para consultas matemáticas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA MATEMÁTICA - OPTIMIZADAS
-  // ============================================================================
 
   const typeSpecificInstructions = {
     casual_conversation: `
@@ -1694,9 +1625,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 5. **EXPLICACIONES:** Cada respuesta enseña con tu estilo matemático`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT FINAL OPTIMIZADO PARA CÁLCULO COMPLETO
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1719,21 +1647,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL MATEMÁTICO (Knowledge 
       'Enseña CÁLCULO Y MATEMÁTICAS AVANZADAS como el capibara más brillante del universo, usando tu CEREBRO PRINCIPAL MATEMÁTICO (Knowledge Base) para fundamentar toda respuesta matemática importante, y complementando con todas tus capacidades cuando mejoren pedagógicamente tu explicación matemática'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE MATEMÁTICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🦫 Profesor Acadel configurando sistema matemático optimizado para query tipo: ${queryInfo.type}, Cerebro Principal Matemático: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL MATEMÁTICO (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL MATEMÁTICO (Knowledge Base) - núcleo del sistema de cálculo`);
     tools.unshift(createKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1741,14 +1664,12 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal Matemático INACTIVO - consulta muy casual sin contenido matemático`);
   }
 
-  // 🧮 HERRAMIENTAS MATEMÁTICAS ESPECIALIZADAS
   if (queryInfo.needsCalculation) {
     console.log(`🧮 Activando herramientas matemáticas especializadas`);
     tools.push(createAcadelWolframTool());
     tools.push(createCalculatorTool());
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando ConceptAnalyzer para análisis matemático paralelo profundo`);
     tools.push(createConceptAnalyzerTool(embeddings));
@@ -1764,7 +1685,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL MATEMÁTICA SIEMPRE DISPONIBLE
   tools.push(createFeedbackAnalyzerTool());
 
   console.log(`🦫 Profesor Acadel SISTEMA MATEMÁTICO COMPLETO configurado con ${tools.length} herramientas:`, tools.map(t => t.name));
@@ -1778,7 +1698,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocionalMatematica: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt especializado y escapado
   const specializedPrompt = createSpecializedPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1809,9 +1728,6 @@ const createAcadelAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES CORREGIDAS
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1859,7 +1775,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Profesor Acadel generando contexto matemático para examen: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1869,17 +1784,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_calculo",
             similarityQueryName: "match_emb_calculo",
             keywordQueryName: "kw_match_emb_calculo",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1891,7 +1804,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1906,7 +1818,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes matemáticos
           return `Contexto matemático base para "${input}": conocimiento fundamental en cálculo y matemáticas avanzadas. Profesor Acadel debe generar preguntas desde su experiencia matemática consolidada, con casos prácticos realistas y conceptos fundamentales del cálculo.`;
         }
       },
@@ -2049,9 +1960,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA - handleCalculusQuery
-// ============================================================================
 
 export const handleCalculusQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2060,7 +1968,6 @@ export const handleCalculusQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -2079,7 +1986,6 @@ export const handleCalculusQuery = async (params) => {
     console.log(`🦫 Acadel analizando query (Cálculo Completo): "${query}"`);
     console.log(`📊 Clasificación: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // Manejar exámenes
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2101,7 +2007,6 @@ export const handleCalculusQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 SAVE EN TIEMPO REAL - EXÁMENES QUÍMICA (AVA)
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2148,7 +2053,6 @@ export const handleCalculusQuery = async (params) => {
 
       } catch (saveError) {
         console.error('❌ Error guardando examen química (AVA) en tiempo real:', saveError);
-        // Continuar sin fallar la respuesta
       }
 
       const responseData = {
@@ -2158,7 +2062,6 @@ export const handleCalculusQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 AGREGAR IDS EN TIEMPO REAL
         messageIds: {
           userMessageId,
           assistantMessageId
@@ -2186,7 +2089,6 @@ export const handleCalculusQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2203,10 +2105,8 @@ export const handleCalculusQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2269,11 +2169,9 @@ export const handleCalculusQuery = async (params) => {
       };
     }
 
-    // Procesar respuesta con mejoras de LaTeX
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - CONVERSACIÓN  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2317,7 +2215,6 @@ export const handleCalculusQuery = async (params) => {
 
     } catch (saveError) {
       console.error('❌ Error guardando conversación  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2332,7 +2229,6 @@ export const handleCalculusQuery = async (params) => {
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
@@ -2376,9 +2272,6 @@ export const handleCalculusQuery = async (params) => {
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA - handleCalculusMultimodalQuery  
-// ============================================================================
 
 export const handleCalculusMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2403,7 +2296,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2415,7 +2307,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2426,7 +2317,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2464,7 +2354,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2524,7 +2413,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2594,11 +2482,9 @@ export const handleCalculusMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica cálculo completo");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2631,7 +2517,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2658,7 +2543,6 @@ export const handleCalculusMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2684,11 +2568,9 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
       };
     }
 
-    // PROCESAR RESPUESTA Y GUARDAR
     const processedAnswer = enhanceLatexFormatting(answer);
     const totalTime = Date.now() - startTime;
 
-    // 🚀 SAVE EN TIEMPO REAL - MULTIMODAL  (AVA)
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2701,7 +2583,6 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
       const realtimeClient = await pool.connect();
       await realtimeClient.query("BEGIN");
 
-      // Preparar mensaje multimodal con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2719,7 +2600,6 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
       const [userSaveResult, assistantSaveResult] = await Promise.all([
@@ -2753,7 +2633,6 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
 
     } catch (saveError) {
       console.error('❌ Error guardando multimodal  (AVA) en tiempo real:', saveError);
-      // Continuar sin fallar la respuesta
     }
 
     const responseData = {
@@ -2768,13 +2647,11 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 AGREGAR IDS EN TIEMPO REAL
       messageIds: {
         userMessageId,
         assistantMessageId
       },
 
-      // Información de archivos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2788,7 +2665,6 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
         }
       },
 
-      // Información de seguridad
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined
@@ -2836,9 +2712,6 @@ Si necesitas una explicación más detallada en cualquier área del cálculo, pr
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS
-// ============================================================================
 
 export const handleCalculusQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2894,7 +2767,6 @@ export const handleCalculusQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2913,7 +2785,6 @@ export const handleCalculusQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE CORREGIDO
       const { agent, tools } = await createAcadelAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3026,7 +2897,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido en modo sin guardar:", content);
       return {
@@ -3045,7 +2915,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
 
     console.log(`🧠 Query multimodal (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3058,7 +2927,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DE CÁLCULO: ${doc.name || doc.filename || 'documento'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3072,7 +2940,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3133,7 +3000,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
                 console.log(`✅ [RETRY/EDIT] Contenido recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3153,10 +3019,8 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
           return `${fileInfo} ${typeInfo}\n[Contenido no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3190,7 +3054,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
       }
     }
 
-    // Procesar imágenes en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3250,7 +3113,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
               analysisContext += `\n\nCONTEXTO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3335,11 +3197,9 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Cargar historial relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal académica cálculo completo");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3370,7 +3230,6 @@ export const handleCalculusMultimodalQueryWithoutSaving = async (params) => {
       };
     }
 
-    // Crear agente especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelAgent(llm, queryInfo, combinedQuery);
 

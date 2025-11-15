@@ -20,12 +20,10 @@ constructor(options = {}) {
   
   // CORREGIDO: Calcular la circunferencia correctamente basada en los atributos reales del SVG
   if (this.progressRing) {
-    // Intentar obtener el radio del atributo r del SVG
     const radius = parseFloat(this.progressRing.getAttribute('r') || 90);
     this.circumference = 2 * Math.PI * radius;
     console.log(`Circunferencia inicializada: ${this.circumference} (radio: ${radius})`);
     
-    // Inicializar el dasharray y dashoffset
     this.progressRing.style.strokeDasharray = `${this.circumference} ${this.circumference}`;
     this.progressRing.style.strokeDashoffset = this.circumference; // Inicia en 0%
   } else {
@@ -51,7 +49,6 @@ constructor(options = {}) {
   init() {
     if (!this.container) return;
     
-    // Crear contenedor de partículas si no existe
     if (!this.particlesContainer) {
       this.particlesContainer = document.querySelector('.particles-container');
       if (!this.particlesContainer) {
@@ -61,7 +58,6 @@ constructor(options = {}) {
       }
     }
     
-    // Crear gradiente SVG dinámicamente si no existe
     this.createGradientDefinition();
   }
   
@@ -70,7 +66,6 @@ constructor(options = {}) {
  * Nuevo método para evitar el reseteo del progreso al completar
  */
   pause() {
-    // Detener intervalos de animación pero mantener el estado visual
     if (this.walkingInterval) {
       clearInterval(this.walkingInterval);
     }
@@ -89,16 +84,13 @@ constructor(options = {}) {
    * Crea la definición de gradiente para el anillo de progreso
    */
   createGradientDefinition() {
-    // Verificar si ya existe
     if (document.getElementById('chiguire-progress-gradient')) return;
     
-    // Crear elemento defs para el SVG
     const svgElement = document.querySelector('.chiguire-progress-ring');
     if (!svgElement) return;
     
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     
-    // Crear gradiente lineal
     const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
     gradient.setAttribute('id', 'chiguire-progress-gradient');
     gradient.setAttribute('gradientUnits', 'userSpaceOnUse');
@@ -107,7 +99,6 @@ constructor(options = {}) {
     gradient.setAttribute('x2', '100%');
     gradient.setAttribute('y2', '0%');
     
-    // Definir los stops del gradiente
     const stops = [
       { offset: '0%', color: '#a4ac86' },
       { offset: '50%', color: '#7f4f24' },
@@ -121,7 +112,6 @@ constructor(options = {}) {
       gradient.appendChild(stopElement);
     });
     
-    // Añadir animación de rotación al gradiente
     const animateTransform = document.createElementNS('http://www.w3.org/2000/svg', 'animateTransform');
     animateTransform.setAttribute('attributeName', 'gradientTransform');
     animateTransform.setAttribute('type', 'rotate');
@@ -143,13 +133,11 @@ constructor(options = {}) {
 updateProgress(progress, statusText = null) {
   if (!this.container) return;
   
-  // Convertir progress a número y asegurar que esté entre 0-100
   const newProgress = Math.min(100, Math.max(0, Number(progress) || 0));
   
   // IMPORTANTE: No permitir reducir el progreso una vez alcanzado 100%
   if (this._progressLocked || this.progress === 100) {
     // Si ya alcanzamos 100%, no permitimos retrocesos
-    // Solo actualizamos texto si es necesario
     if (statusText && this.progressText && statusText !== this.progressText.textContent) {
       console.log(`Actualizando solo texto (progreso bloqueado): ${statusText}`);
       this.progressText.textContent = statusText;
@@ -171,7 +159,6 @@ updateProgress(progress, statusText = null) {
   // MODIFICADO: No permitir NINGÚN retroceso en el progreso, siempre hacia adelante
   if (newProgress < this.progress) {
     console.warn(`Intento de reducir progreso: ${this.progress}% -> ${newProgress}%, ignorando cambio de progreso`);
-    // Permitir avanzar el texto pero mantener el progreso visual
     if (statusText && this.progressText) {
       this.progressText.textContent = statusText;
       this.lastStatusText = statusText;
@@ -186,19 +173,16 @@ updateProgress(progress, statusText = null) {
   this.progress = newProgress;
   this.lastStatusText = statusText || this.lastStatusText;
   
-  // Log para debugging (solo cambios significativos)
   if (Math.abs(newProgress - oldProgress) >= 2 || statusText !== this.lastStatusText) {
     console.log(`Actualizando progreso: ${oldProgress}% -> ${newProgress}%, texto: "${statusText || 'sin cambios'}"`);
   }
   
   // CORREGIDO: Ajustar la forma de calcular el offset para garantizar distribución correcta
-  // Usar un valor máximo de 100 en lugar de 90 para el progreso visual
   if (this.progressRing) {
     // Si el progreso es 100, asegurarnos que el círculo esté completamente cerrado
     if (this.progress >= 100) {
       this.progressRing.style.strokeDashoffset = '0';
     } else {
-      // Calcular el offset usando una distribución lineal mejorada que cierre el círculo correctamente
       // La escala del 0-90 debe mapear a 0-100 para el progreso visual
       const visualProgress = this.progress;
       const offset = this.circumference - (visualProgress / 100) * this.circumference;
@@ -209,20 +193,17 @@ updateProgress(progress, statusText = null) {
   
   // MODIFICADO: Siempre actualizar el texto de progreso si se proporciona uno nuevo
   if (this.progressText && statusText) {
-    // Comprobar si realmente ha cambiado para evitar reflow innecesarios
     if (statusText !== this.progressText.textContent) {
       this.progressText.textContent = statusText;
     }
   }
   
-  // Actualizar porcentaje explícitamente
   if (this.progressPercentage) {
     const percentageText = `${Math.round(this.progress)}%`;
     if (this.progressPercentage.textContent !== percentageText) {
       this.progressPercentage.textContent = percentageText;
     }
     
-    // Cambiar color según el progreso
     if (this.progress < 30) {
       this.progressPercentage.style.color = 'var(--pdf-primary-dark)';
     } else if (this.progress < 70) {
@@ -244,10 +225,8 @@ updateProgress(progress, statusText = null) {
     // Asegurar que el progreso sea exactamente 100%
     this.progress = 100;
     
-    // Bloquear futuras actualizaciones de progreso
     this._progressLocked = true;
     
-    // Actualizar también visualmente para asegurar consistencia
     if (this.progressPercentage) {
       this.progressPercentage.textContent = "100%";
       this.progressPercentage.style.color = '#4caf50';
@@ -256,9 +235,7 @@ updateProgress(progress, statusText = null) {
     this.celebrate();
     
     // No detenemos la animación, solo bloqueamos actualizaciones de progreso
-    // Para permitir que la celebración siga ocurriendo
     
-    // Añadir clase para efectos especiales al completar
     if (this.container) {
       this.container.classList.add('completed');
     }
@@ -273,13 +250,10 @@ updateProgress(progress, statusText = null) {
     
     this.isAnimating = true;
     
-    // Limpiar contenedor de partículas
     this.clearParticles();
     
-    // Crear partículas iniciales
     this.createInitialParticles();
     
-    // Iniciar animación de efectos
     this.walkingInterval = setInterval(() => {
       if (!this.isAnimating) {
         clearInterval(this.walkingInterval);
@@ -314,7 +288,6 @@ updateProgress(progress, statusText = null) {
       clearInterval(this.orbitalInterval);
     }
     
-    // Quitar clase de completado si existe
     if (this.container) {
       this.container.classList.remove('completed');
     }
@@ -379,17 +352,14 @@ updateProgress(progress, statusText = null) {
       easing: 'ease-in-out'
     });
     
-    // Añadir al contenedor
     this.particlesContainer.appendChild(particle);
     this.particles.push(particle);
     
-    // Eliminar después de la animación
     setTimeout(() => {
       if (particle.parentNode) {
         particle.parentNode.removeChild(particle);
       }
       
-      // Eliminar de la lista
       const index = this.particles.indexOf(particle);
       if (index > -1) {
         this.particles.splice(index, 1);
@@ -417,7 +387,6 @@ updateProgress(progress, statusText = null) {
     const progressAngle = (this.progress / 100) * 360 + angleOffset; // Ángulo según progreso (0-360°)
     const angle = (progressAngle - 90) * (Math.PI / 180); // Convertir a radianes, -90° para comenzar desde arriba
     
-    // Calcular posición en el círculo
     const posX = 50 + Math.cos(angle) * 1.05; // 50% es el centro, 1.05 para estar justo fuera del anillo
     const posY = 50 + Math.sin(angle) * 1.05; // 50% es el centro
     
@@ -428,7 +397,6 @@ updateProgress(progress, statusText = null) {
     const directionX = Math.cos(angle) * (Math.random() * 40 + 20);
     const directionY = Math.sin(angle) * (Math.random() * 40 + 20);
     
-    // Establecer variables CSS para la animación
     particle.style.setProperty('--x', `${directionX}px`);
     particle.style.setProperty('--y', `${directionY}px`);
     
@@ -436,14 +404,11 @@ updateProgress(progress, statusText = null) {
     const colorIndex = Math.floor(Math.random() * this.options.particleColors.length);
     particle.style.backgroundColor = this.options.particleColors[colorIndex];
     
-    // Añadir regla de animación
     particle.style.animation = 'processingParticle 1.5s ease-out forwards';
     
-    // Añadir al contenedor
     this.particlesContainer.appendChild(particle);
     this.particles.push(particle);
     
-    // Eliminar después de la animación
     setTimeout(() => {
       if (particle.parentNode) {
         particle.parentNode.removeChild(particle);
@@ -491,14 +456,11 @@ updateProgress(progress, statusText = null) {
     const duration = Math.random() * 2 + 3;
     particle.style.setProperty('--duration', `${duration}s`);
     
-    // Añadir animación personalizada via CSS
     particle.style.animation = `orbitParticle var(--duration) linear forwards`;
     
-    // Añadir al contenedor
     this.particlesContainer.appendChild(particle);
     this.particles.push(particle);
     
-    // Eliminar después de la animación
     setTimeout(() => {
       if (particle.parentNode) {
         particle.parentNode.removeChild(particle);
@@ -517,21 +479,17 @@ updateProgress(progress, statusText = null) {
   reset(preserveProgress = false) {
     this.isAnimating = false;
     
-    // Solo resetear progreso si no se debe preservar
     if (!preserveProgress) {
       this.progress = 0;
       this._progressLocked = false; // MODIFICADO: Asegurarnos de desbloquear el progreso
     }
     
-    // Limpiar partículas
     this.clearParticles();
     
-    // Resetear círculo de progreso solo si no se debe preservar
     if (!preserveProgress && this.progressRing) {
       this.progressRing.style.strokeDashoffset = this.circumference;
     }
     
-    // Resetear texto e información solo si no se debe preservar
     if (!preserveProgress) {
       if (this.progressText) {
         this.progressText.textContent = 'Preparando PDF...';
@@ -543,7 +501,6 @@ updateProgress(progress, statusText = null) {
         this.progressPercentage.style.color = 'var(--pdf-primary-dark)';
       }
       
-      // Quitar clase de completado
       if (this.container) {
         this.container.classList.remove('completed');
       }
@@ -567,19 +524,16 @@ updateProgress(progress, statusText = null) {
    * Celebración al completar
    */
   celebrate() {
-    // Crear partículas de celebración
     for (let i = 0; i < 30; i++) {
       setTimeout(() => {
         this.createCelebrationParticle();
       }, i * 50);
     }
     
-    // Aplicar efecto de bounce al contenedor del chigüire
     const chiguireContainer = document.querySelector('.chiguire-gif-container');
     if (chiguireContainer) {
       chiguireContainer.style.animation = 'bounce 0.5s 3';
       
-      // Quitar animación después
       setTimeout(() => {
         chiguireContainer.style.animation = 'subtle-glow 3s infinite alternate';
       }, 1500);
@@ -611,7 +565,6 @@ updateProgress(progress, statusText = null) {
     const y = Math.sin(angle) * distance;
     const rotation = Math.random() * 360;
     
-    // Establecer variables CSS para la animación
     particle.style.setProperty('--x', `${x}px`);
     particle.style.setProperty('--y', `${y}px`);
     particle.style.setProperty('--r', `${rotation}deg`);
@@ -620,13 +573,10 @@ updateProgress(progress, statusText = null) {
     const colorIndex = Math.floor(Math.random() * this.options.celebrationColors.length);
     particle.style.backgroundColor = this.options.celebrationColors[colorIndex];
     
-    // Añadir regla de animación
     particle.style.animation = 'celebrationParticle 1.5s ease-out forwards';
     
-    // Añadir al contenedor
     this.particlesContainer.appendChild(particle);
     
-    // Eliminar después de la animación
     setTimeout(() => {
       if (particle.parentNode) {
         particle.parentNode.removeChild(particle);

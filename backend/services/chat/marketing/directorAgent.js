@@ -17,12 +17,10 @@ export const directorAgent = {
     try {
       console.log("Director evaluando consulta:", query);
       
-      // Para consultas muy cortas o simples, podemos usar reglas básicas sin llamar a la API
       if (query.length < 20) {
         return this.determineAgentsWithRules(query);
       }
       
-      // Usar un modelo más pequeño y económico para esta decisión inicial
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18", // O un modelo todavía más simple si está disponible
         messages: [
@@ -54,13 +52,11 @@ export const directorAgent = {
         response_format: { type: "json_object" }
       });
       
-      // Extraer resultado
       const decision = JSON.parse(completion.choices[0].message.content);
       
       // Asegurar que strategist siempre es true (medida de seguridad)
       decision.strategist = true;
       
-      // Registrar decisión
       console.log("Decisión del director:", decision);
       
       return decision;

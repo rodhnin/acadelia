@@ -37,7 +37,6 @@ export const validatePDFSecurity = async (req, res, next) => {
       }
     } catch (typeError) {
       console.warn("Error al detectar tipo de archivo:", typeError);
-      // Continuar con otras validaciones si esta falla
     }
     
     // 3. Realizar validación estructural del PDF
@@ -57,7 +56,6 @@ export const validatePDFSecurity = async (req, res, next) => {
       });
     }
     
-    // Continuar con el siguiente middleware si todas las validaciones son exitosas
     next();
   } catch (error) {
     console.error('Error en validación de seguridad de PDF:', error);
@@ -73,16 +71,13 @@ export const validatePDFSecurity = async (req, res, next) => {
  */
 export async function validatePDFStructure(fileBuffer) {
   try {
-    // Intentar cargar el PDF con pdf-lib para validación estructural
     await PDFDocument.load(fileBuffer, { 
       ignoreEncryption: false,
       throwOnInvalidObject: true 
     });
     
-    // Validar contenido de objetos peligrosos
-    const fileContent = fileBuffer.toString('utf-8', 0, Math.min(fileBuffer.length, 5000)); // Solo revisar primeros 5000 bytes
+    const fileContent = fileBuffer.toString('utf-8', 0, Math.min(fileBuffer.length, 5000));
     
-    // Buscar JavaScript embebido u otros objetos peligrosos
     if (/\/JS |\/JavaScript |\/Launch |\/RichMedia |\/SubmitForm |\/GoTo/i.test(fileContent)) {
       return { valid: false, reason: "PDF contiene objetos potencialmente maliciosos" };
     }

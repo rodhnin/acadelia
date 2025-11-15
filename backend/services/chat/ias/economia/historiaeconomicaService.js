@@ -1,10 +1,4 @@
-// ============================================================================
-// 📚🦫 PROFESOR ACADEL HISTORIA ECONÓMICA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO EN HISTORIA ECONÓMICA - PROFESOR SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Historia del Pensamiento Económico ✅ Historia Económica Mundial ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO (MANTENIDO ORIGINAL)
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -323,9 +307,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 📚🦫 PROFESOR ACADEL HISTORIA ECONÓMICA DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 📚🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE HISTORIA ECONÓMICA:
@@ -363,11 +344,7 @@ Hacer que CUALQUIER estudiante de historia económica:
 ¡RECUERDA: No eres solo un tutor de historia, eres EL PROFESOR que integra pensamiento económico e historia mundial como la historia económica real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS HISTÓRICO-ECONÓMICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES HISTÓRICO-ECONÓMICAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA HISTÓRICO-ECONÓMICA de Acadel.
 
 🎯 FUNCIÓN: Analizar imágenes histórico-económicas (documentos históricos, gráficas temporales, mapas económicos) con precisión académica extrema.
@@ -394,7 +371,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA HISTÓRICO-ECON
 
 Eres los OJOS ANALÍTICOS HISTÓRICOS de Acadel - él interpretará tu análisis con su sabiduría histórico-económica pedagógica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES HISTÓRICO-ECONÓMICAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA HISTÓRICO-ECONÓMICA de Acadel, el capibara historiador económico más brillante del universo en pensamiento económico e historia mundial.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información histórico-económica de esta imagen para que Acadel pueda enseñar efectivamente integrando las dos disciplinas.
@@ -440,7 +416,6 @@ Proporciona un análisis histórico estructurado, preciso y exhaustivo que permi
 
 **IMPORTANTE:** Sé OBSERVADOR HISTÓRICO, PRECISO y DETALLADO en las dos disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos históricos. Acadel se encargará de la pedagogía histórica integrada pero necesita que seas muy detallista con todo lo que observas históricamente en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS HISTÓRICO-ECONÓMICAS NORMALES (con y sin guardar)
 const UNIFIED_ECONOMIC_HISTORY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA HISTÓRICO-ECONÓMICA INTEGRADA:
 - Consulta del estudiante de historia económica: "${query}"
@@ -467,7 +442,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS HISTÓRICO-ECONÓMICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_ECONOMIC_HISTORY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN HISTÓRICO-ECONÓMICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -515,14 +489,10 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO HISTÓRICO-ECONÓMICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -532,7 +502,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -554,7 +523,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -562,7 +530,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // DETECTAR GENERACIÓN DE IMÁGENES HISTÓRICO-ECONÓMICAS
   const historicalEconomicImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -587,7 +554,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar exámenes histórico-económicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de historia económica", "test de pensamiento económico", "evaluación histórica", "cuestionario"
@@ -616,7 +582,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsHistoricalSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -631,18 +597,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsHistoricalSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS HISTÓRICO-ECONÓMICOS ESPECÍFICOS
   const historicalEconomicTerms = [
     // Historia del Pensamiento Económico
     'mercantilismo', 'fisiocracia', 'adam smith', 'david ricardo', 'karl marx',
@@ -660,29 +623,25 @@ const classifyQuery = (query, content = null) => {
     'época', 'período', 'siglo', 'cronología', 'línea de tiempo', 'análisis histórico'
   ];
 
-  // 🔍 DETECTAR PAÍSES Y REGIONES RELEVANTES PARA HISTORIA ECONÓMICA
   const economicRegions = [
     'europa', 'américa', 'asia', 'áfrica', 'inglaterra', 'francia', 'alemania',
     'estados unidos', 'japón', 'china', 'india', 'rusia', 'latinoamérica',
     'mediterráneo', 'atlántico', 'pacífico', 'oriental', 'occidental'
   ];
 
-  // 🔍 DETECTAR PERÍODOS Y FECHAS HISTÓRICAS
   const historicalPeriods = [
     'medieval', 'renacimiento', 'moderno', 'contemporáneo', 'actual',
     'siglo xviii', 'siglo xix', 'siglo xx', 'siglo xxi',
     '1776', '1848', '1929', '1936', '1944', '1971', '1989', '2008'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS HISTÓRICO-ECONÓMICOS REALES
   const hasHistoricalEconomicContent =
     historicalEconomicTerms.some(term => lowercaseQuery.includes(term)) ||
     economicRegions.some(term => lowercaseQuery.includes(term)) ||
     historicalPeriods.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasHistoricalEconomicContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -705,7 +664,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'escuela de', 'teoría de', 'pensamiento de'];
   const diagnosticKeywords = ['analizar', 'evaluar', 'interpretar', 'diagnosticar', 'caso histórico', 'situación', 'problema'];
   const thoughtKeywords = ['pensamiento', 'thought', 'escuela', 'economista', 'smith', 'marx', 'keynes', 'ricardo', 'mill', 'austríaca', 'clásica', 'neoclásica'];
@@ -714,7 +672,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'papers históricos', 'investigaciones', 'evidencia', 'información actualizada'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos históricos', 'ejercicios', 'más casos'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -747,7 +704,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -757,14 +713,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional histórica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsHistoricalSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -783,11 +738,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS HISTÓRICO-ECONÓMICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS HISTÓRICO-ECONÓMICAS
 const ACADEL_ECONOMIC_HISTORY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara historiador económico más brillante del universo en pensamiento económico e historia mundial.
 
@@ -802,7 +753,6 @@ const createEconomicHistoryKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal histórico (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -812,17 +762,15 @@ const createEconomicHistoryKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_historiaeconomica",
         similarityQueryName: "match_emb_historiaeconomica",
         keywordQueryName: "kw_match_emb_historiaeconomica",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -834,7 +782,6 @@ const createEconomicHistoryKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_HISTORICAL_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido histórico específico sobre "${query}" en su biblioteca histórico-económica. Proceder con conocimiento histórico general integrado y experiencia docente acumulada en pensamiento económico e historia mundial.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -854,7 +801,6 @@ ACADEL_HISTORICAL_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido
 
 ACADEL_HISTORICAL_MEMORY_BANK: El cerebro principal de Acadel encontró información histórica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base histórico integrado, analogías históricas memorables y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -881,7 +827,6 @@ ACADEL_HISTORICAL_MEMORY_BANK: El cerebro principal de Acadel activó la siguien
 
 INTEGRATION_NOTES: Este es el conocimiento histórico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en pensamiento económico e historia mundial. Debe integrar esta información naturalmente como si fuera su propia sabiduría histórica, enriqueciéndola con casos históricos específicos, analogías memorables y humor histórico inteligente que conecte las dos disciplinas de manera pedagógica magistral.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1107,17 +1052,15 @@ const createEconomicHistoryConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto histórico integrado: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_historiaeconomica",
         similarityQueryName: "match_emb_historiaeconomica",
         keywordQueryName: "kw_match_emb_historiaeconomica",
       });
 
-      // 📚 BÚSQUEDAS HISTÓRICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `pensamiento económico ${concept}`,
@@ -1127,7 +1070,6 @@ const createEconomicHistoryConceptAnalyzerTool = (embeddings) => tool(
         `contexto histórico ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1147,7 +1089,6 @@ const createEconomicHistoryConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1160,7 +1101,6 @@ const createEconomicHistoryConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural histórica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1338,9 +1278,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia histórica según este aná
   }
 );
 
-// ============================================================================
-// 📷 HISTORICAL IMAGE API - ESPECIALIZADA PARA GENERAR IMAGENES (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectEconomicHistoryImageRequest = (query) => {
   const historicalImageKeywords = [
@@ -1370,7 +1307,6 @@ export const extractEconomicHistoryImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema histórico
 const createEconomicHistoryVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1381,7 +1317,7 @@ const createEconomicHistoryVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
 
       const imageUrl = await dalle.invoke(prompt);
@@ -1405,7 +1341,6 @@ const createEconomicHistoryVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts históricos
 const enhanceEconomicHistoryImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración histórico-económica educativa de alta calidad integrando pensamiento económico e historia mundial: ${prompt}. 
@@ -1423,16 +1358,10 @@ const enhanceEconomicHistoryImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS HISTÓRICOS
-// ============================================================================
 
 const createSpecializedEconomicHistoryPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 📚 INSTRUCCIONES TÉCNICAS HISTÓRICO-ECONÓMICAS CONSOLIDADAS
-  // ============================================================================
 
   const coreHistoricalInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE HISTORIA ECONÓMICA INTEGRADO
@@ -1536,9 +1465,6 @@ Tipos de diagramas: timeline, graph, flowchart, sequenceDiagram, classDiagram, p
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas históricas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA HISTÓRICA - OPTIMIZADAS
-  // ============================================================================
 
   const historicalTypeInstructions = {
     casual_conversation: `
@@ -1610,9 +1536,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación histórica de las dos disciplinas`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT HISTÓRICO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1635,21 +1558,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
       'Enseña como el capibara historiador más brillante del universo, integrando pensamiento económico e historia mundial, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta histórica importante, y complementando con todas tus capacidades paralelas para una explicación histórica magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE HISTÓRICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelEconomicHistoryAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`📚🦫 Acadel configurando sistema histórico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveHistoricalWebSearchTool(),
     createBraveHistoricalImageSearchTool(),
     createBraveHistoricalSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL HISTÓRICO (Knowledge Base) - núcleo del sistema histórico`);
     tools.unshift(createEconomicHistoryKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1657,7 +1575,6 @@ const createAcadelEconomicHistoryAgent = async (llm, queryInfo, studentQuery) =>
     console.log(`💤 Cerebro Principal Histórico INACTIVO - consulta muy casual sin contenido histórico`);
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsHistoricalSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando EconomicHistoryConceptAnalyzer para análisis histórico paralelo profundo`);
     tools.push(createEconomicHistoryConceptAnalyzerTool(embeddings));
@@ -1673,7 +1590,6 @@ const createAcadelEconomicHistoryAgent = async (llm, queryInfo, studentQuery) =>
     tools.push(createEconomicHistoryComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createEconomicHistoryFeedbackAnalyzerTool());
 
   console.log(`📚🦫 Acadel SISTEMA HISTÓRICO COMPLETO configurado con ${tools.length} herramientas históricas:`, tools.map(t => t.name));
@@ -1686,7 +1602,6 @@ const createAcadelEconomicHistoryAgent = async (llm, queryInfo, studentQuery) =>
     inteligenciaEmocionalHistorica: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt histórico especializado y escapado
   const specializedPrompt = createSpecializedEconomicHistoryPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1717,9 +1632,6 @@ const createAcadelEconomicHistoryAgent = async (llm, queryInfo, studentQuery) =>
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES HISTÓRICO-ECONÓMICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1767,7 +1679,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen histórico: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1777,17 +1688,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_historiaeconomica",
             similarityQueryName: "match_emb_historiaeconomica",
             keywordQueryName: "kw_match_emb_historiaeconomica",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1799,7 +1708,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1814,7 +1722,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes
           return `Contexto histórico base para "${input}": conocimiento fundamental en pensamiento económico e historia mundial. Acadel debe generar preguntas desde su experiencia histórica consolidada, integrando las dos disciplinas con casos históricos realistas y conceptos fundamentales.`;
         }
       },
@@ -1922,9 +1829,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA HISTÓRICA - handleEconomicHistoryQuery
-// ============================================================================
 
 export const handleEconomicHistoryQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1933,7 +1837,6 @@ export const handleEconomicHistoryQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1949,13 +1852,11 @@ export const handleEconomicHistoryQuery = async (params) => {
     // CLASIFICAR EL QUERY HISTÓRICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES HISTÓRICAS
     const { isImageRequest, prompt: imagePrompt } = detectEconomicHistoryImageRequest(query);
 
     console.log(`📚🦫 Acadel analizando query histórico integrado: "${query}"`);
     console.log(`📊 Clasificación histórica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES HISTÓRICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización histórica integrada: ${imagePrompt}`);
 
@@ -1964,7 +1865,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       const historicalVisualizationTool = createEconomicHistoryVisualizationTool();
       const imageResponse = await historicalVisualizationTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1977,7 +1877,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         };
       }
 
-      // Guardar la imagen histórica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -1992,7 +1891,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2004,7 +1902,6 @@ export const handleEconomicHistoryQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2016,7 +1913,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2030,7 +1926,6 @@ export const handleEconomicHistoryQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para generación de imágenes
         if (isCacheable(query, 'historia_economica')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2042,7 +1937,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2052,7 +1946,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2063,7 +1956,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes históricos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen histórico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2085,7 +1977,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2097,7 +1988,6 @@ export const handleEconomicHistoryQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2109,7 +1999,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2126,7 +2015,6 @@ export const handleEconomicHistoryQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para exámenes
         if (isCacheable(query, 'historia_economica')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2139,7 +2027,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2149,7 +2036,6 @@ export const handleEconomicHistoryQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2160,7 +2046,6 @@ export const handleEconomicHistoryQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA HISTÓRICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2177,10 +2062,8 @@ export const handleEconomicHistoryQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico histórico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE HISTÓRICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelEconomicHistoryAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2207,7 +2090,6 @@ export const handleEconomicHistoryQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
 
-      // Fallback con personalidad Acadel histórica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas históricas, pero no me rendiré.
 
 Sobre tu pregunta histórica: **"${query}"**
@@ -2233,11 +2115,9 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
       };
     }
 
-    // Procesar respuesta histórica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2249,7 +2129,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2261,7 +2140,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2275,7 +2153,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
 
       await client.query("COMMIT");
 
-      // Cache inteligente
       if (isCacheable(query, 'historia_economica')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2289,7 +2166,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2305,7 +2181,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2331,9 +2206,6 @@ Si necesitas más detalles históricos, pregúntame de nuevo y activaré todas m
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA HISTÓRICA - handleEconomicHistoryMultimodalQuery  
-// ============================================================================
 
 export const handleEconomicHistoryMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2358,7 +2230,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2370,7 +2241,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación histórica
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto histórico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2381,7 +2251,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal histórico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS HISTÓRICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2419,7 +2288,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES HISTÓRICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2479,7 +2347,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS HISTÓRICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes históricas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2549,11 +2416,9 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE HISTÓRICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal histórica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA HISTÓRICA
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2586,7 +2451,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE HISTÓRICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2613,7 +2477,6 @@ export const handleEconomicHistoryMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto histórico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal histórico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes históricas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2639,11 +2502,9 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
       };
     }
 
-    // PROCESAR RESPUESTA HISTÓRICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO MULTIMODAL INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2655,7 +2516,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal de desarrollo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2673,10 +2533,8 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
         client,
         userId,
@@ -2688,7 +2546,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2702,7 +2559,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
 
       await client.query("COMMIT");
 
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'historia_economica')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2716,7 +2572,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2733,7 +2588,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
       chatId,
       timestamp: new Date().toISOString(),
 
-      // Información de archivos de desarrollo procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2747,12 +2601,10 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
         }
       },
 
-      // Información de seguridad de desarrollo
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
 
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2783,9 +2635,6 @@ Si necesitas una explicación histórica más detallada, pregúntame de nuevo y 
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS HISTÓRICAS
-// ============================================================================
 
 export const handleEconomicHistoryQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2807,12 +2656,10 @@ export const handleEconomicHistoryQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES HISTÓRICAS
     const { isImageRequest, prompt: imagePrompt } = detectEconomicHistoryImageRequest(query);
 
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES HISTÓRICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2845,7 +2692,6 @@ export const handleEconomicHistoryQueryWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen histórica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2905,7 +2751,6 @@ export const handleEconomicHistoryQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA HISTÓRICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2924,7 +2769,6 @@ export const handleEconomicHistoryQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE HISTÓRICO CORREGIDO
       const { agent, tools } = await createAcadelEconomicHistoryAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3027,7 +2871,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content histórico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content histórico no es un array válido en modo sin guardar:", content);
       return {
@@ -3046,7 +2889,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
 
     console.log(`🧠 Query multimodal histórico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos históricos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3059,7 +2901,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido histórico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO HISTÓRICO INTEGRADO: ${doc.name || doc.filename || 'documento histórico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3073,7 +2914,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO HISTÓRICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido histórico para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3134,7 +2974,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
                 console.log(`✅ [RETRY/EDIT] Contenido histórico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3154,10 +2993,8 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
           return `${fileInfo} ${typeInfo}\n[Contenido histórico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto histórico
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos históricos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido histórico no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3191,7 +3028,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
       }
     }
 
-    // Procesar imágenes históricas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3251,7 +3087,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
               analysisContext += `\n\nCONTEXTO HISTÓRICO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes históricas convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3336,11 +3171,9 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Cargar historial histórico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal histórica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada histórica
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3371,7 +3204,6 @@ export const handleEconomicHistoryMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Crear agente histórico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelEconomicHistoryAgent(llm, queryInfo, combinedQuery);
 

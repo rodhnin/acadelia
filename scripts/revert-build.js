@@ -15,7 +15,6 @@ const htmlBackupDir = path.join(rootDir, '.html-originals'); // Donde tu build g
 console.log('🔄 REVERT COMPLETO - Restaura TODO al estado original');
 console.log('=' .repeat(60));
 
-// ✅ FUNCIÓN PRINCIPAL PARA RESTAURAR HTML DESDE BACKUPS
 function restoreHtmlFromBackups() {
   console.log('\n📥 Restaurando HTML desde backups originales...');
   
@@ -74,7 +73,6 @@ function restoreHtmlFromBackups() {
   return restoredCount > 0;
 }
 
-// ✅ FUNCIÓN PARA LIMPIAR DIRECTORIO DIST
 function cleanupDistDirectory() {
   console.log('\n🧹 Limpiando directorio /dist/...');
   
@@ -101,7 +99,6 @@ function cleanupDistDirectory() {
   }
 }
 
-// ✅ FUNCIÓN PARA LIMPIAR ARCHIVOS DE PROTECCIÓN API
 function cleanupApiFiles() {
   console.log('\n🛡️ Limpiando archivos de protección API...');
   
@@ -135,7 +132,6 @@ function cleanupApiFiles() {
   return { success: true, deletedFiles: deletedCount };
 }
 
-// ✅ FUNCIÓN PARA VERIFICAR ESTADO FINAL
 function verifyFinalState() {
   console.log('\n🔍 Verificando estado final...');
   
@@ -176,7 +172,6 @@ function verifyFinalState() {
   return { isClean, ...checks };
 }
 
-// ✅ FUNCIÓN PRINCIPAL
 async function main() {
   const startTime = Date.now();
   

@@ -57,10 +57,8 @@ export async function cleanupAllProblematicChats(silent = false) {
     const chatIdsToProcess = [...problematicChatIds];
     let processedCount = 0;
     
-    // Procesar cada chat problemático en serie para evitar sobrecargar el servidor
     for (const chatId of chatIdsToProcess) {
       try {
-        // Intentar eliminar el chat
         await removeProblematicChat(chatId);
         processedCount++;
       } catch (error) {
@@ -73,10 +71,8 @@ export async function cleanupAllProblematicChats(silent = false) {
       await new Promise(resolve => setTimeout(resolve, 50));
     }
     
-    // Actualizar localStorage con los cambios
     saveProblematicChatsToStorage(problematicChatIds);
     
-    // Mostrar una notificación si se procesaron chats y no es silencioso
     if (processedCount > 0 && !silent) {
       if (typeof window.acadelExito === 'function') {
         window.acadelExito(
@@ -102,9 +98,7 @@ export function markChatAsProblem(chatId) {
   
   problematicChatIds.add(chatId);
   
-  // Almacenar en localStorage con implementación mejorada
   try {
-    // Usar Set para evitar duplicados y mantener consistencia
     const storedProblems = new Set(JSON.parse(localStorage.getItem('problematicChats') || '[]'));
     storedProblems.add(chatId);
     localStorage.setItem('problematicChats', JSON.stringify([...storedProblems]));
@@ -112,11 +106,9 @@ export function markChatAsProblem(chatId) {
     // Forzar actualización del sidebar si está disponible
     import('../ui/sidebar-matematico.js').then(module => {
       if (typeof module.removeChatFromSidebar === 'function') {
-        // Eliminar chat del sidebar inmediatamente
         module.removeChatFromSidebar(chatId);
       }
       
-      // Actualizar historial de chats si es necesario
       import('../api/chat-matematico.js').then(chatModule => {
         if (typeof chatModule.loadChatHistory === 'function') {
           chatModule.loadChatHistory().then(updatedChats => {
@@ -148,20 +140,16 @@ export function loadProblematicChats() {
   try {
     const storedProblems = JSON.parse(localStorage.getItem('problematicChats') || '[]');
     
-    // Limpiar primero el Set para evitar datos duplicados o desactualizados
     problematicChatIds.clear();
     
-    // Añadir solo IDs válidos
     storedProblems.forEach(chatId => {
       if (validateUUID(chatId)) {
         problematicChatIds.add(chatId);
       }
     });
     
-    // Sincronizar de vuelta con localStorage para eliminar IDs inválidos
     localStorage.setItem('problematicChats', JSON.stringify([...problematicChatIds]));
     
-    // Devolver el número de chats problemáticos cargados para diagnóstico
     return problematicChatIds.size;
   } catch (e) {
     console.warn('Error al cargar chats problemáticos:', e);
@@ -175,7 +163,6 @@ export function loadProblematicChats() {
  */
 function closeActiveModals() {
   return new Promise(resolve => {
-    // Buscar todos los modales que podrían estar abiertos
     const activeModals = document.querySelectorAll('.modal, .custom-modal, .modal-backdrop, .empty-chat-modal');
     
     if (activeModals.length === 0) {
@@ -183,7 +170,6 @@ function closeActiveModals() {
     }
     
     activeModals.forEach(modal => {
-      // Intentar cerrar con botones primero
       const closeButtons = modal.querySelectorAll('.close-modal, .modal-close, #emptyModalClose, .btn-close, .close');
       
       let closed = false;
@@ -199,11 +185,9 @@ function closeActiveModals() {
         removeClass(modal, 'in');
         modal.style.display = 'none';
         
-        // Eliminar después de una breve animación usando timeout gestionado
         const modalId = modal.id || `modal_${Math.random().toString(36).substring(2, 9)}`;
         setManagedTimeout(() => {
           if (modal.parentNode) {
-            // Eliminar eventos antes de quitar del DOM
             removeAllEvents(modal);
             modal.parentNode.removeChild(modal);
           }
@@ -211,7 +195,6 @@ function closeActiveModals() {
       }
     });
     
-    // Limpiar también cualquier clase de modal en el body
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     
@@ -238,7 +221,6 @@ export async function removeProblematicChat(chatId) {
     try {
       await deleteChat(chatId, true); // forceDelete=true
     } catch (dbError) {
-      // Manejar errores específicos silenciosamente
       console.warn(`Error al eliminar chat ${chatId} del servidor:`, dbError.message);
     }
     
@@ -283,7 +265,7 @@ export async function removeProblematicChat(chatId) {
  * Versión corregida que evita el problema de sanitización en selectores CSS
  */
 function removeChatFromDOM(chatId) {
-  if (!validateUUID(chatId)) return; // Validación adicional
+  if (!validateUUID(chatId)) return;
   
   // Método 1: Usando selectores DOM directos (CORREGIDO)
   try {
@@ -291,16 +273,13 @@ function removeChatFromDOM(chatId) {
     // que no funcionan en selectores CSS
     const chatItem = document.querySelector(`[data-chat-id="${chatId}"]`);
     if (chatItem) {
-      // Eliminar eventos antes de quitar del DOM
       if (typeof removeAllEvents === 'function') {
         removeAllEvents(chatItem);
       }
       
-      // Aplicar desvanecimiento visual
       chatItem.style.opacity = '0.5';
       chatItem.style.transition = 'opacity 0.2s ease-out';
       
-      // Eliminar después de la transición
       setTimeout(() => {
         if (chatItem && chatItem.parentNode) {
           chatItem.remove();
@@ -310,7 +289,6 @@ function removeChatFromDOM(chatId) {
   } catch (e) {
     console.warn('Error al remover chat del DOM:', e);
     
-    // Fallback: intentar con un enfoque más simple
     try {
       const items = document.querySelectorAll('.sidebar-item');
       for (const item of items) {
@@ -373,7 +351,6 @@ export async function showCleanupDialog(chatId) {
             window.acadelExito("¡Chat eliminado! 🗑️", "Acadel mantuvo todo ordenado en tu espacio académico");            }
           });
         },
-        // Función al cancelar que también crea un nuevo chat
         () => {
           // Si era el chat actual, crear uno nuevo incluso si se cancela
           if (getState('currentChatId') === chatId) {
@@ -382,7 +359,6 @@ export async function showCleanupDialog(chatId) {
         }
       );
     } else {
-      // Fallback si showConfirmation no está disponible
       if (confirm('Este chat tiene problemas técnicos. ¿Quieres que Acadel lo elimine por ti?')) {
         removeProblematicChat(chatId).then(success => {
           if (getState('currentChatId') === chatId) {
@@ -419,7 +395,6 @@ export async function showCleanupDialog(chatId) {
 export async function handleChatError(chatId, error, action = 'acceso') {
   if (!validateUUID(chatId)) return;
   
-  // Verificar si es un error de "no encontrado" o "acceso no autorizado"
   const errorMsg = error?.message || '';
   const isCriticalError = errorMsg.includes('no encontrado') || 
                          errorMsg.includes('no autorizado') ||
@@ -469,16 +444,13 @@ export async function safeChatAction(chatId, action, actionName = 'operación') 
   }
   
   try {
-    // Intentar ejecutar la acción
     return await action();
   } catch (error) {
-    // Manejar el error y marcar como problemático si corresponde
     handleChatError(chatId, error, actionName);
     return Promise.reject(error);
   }
 }
 
-// Inicializar al cargar
 loadProblematicChats();
 
 export default {

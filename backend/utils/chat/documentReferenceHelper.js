@@ -1,4 +1,3 @@
-// backend/utils/chat/documentReferenceHelper.js
 
 /**
  * Genera una referencia JSON para documentos que se guarda en chat_history
@@ -94,7 +93,6 @@ export const createMultimodalMessageReference = ({
             }))
         ],
         
-        // Información de seguridad
         securityInfo: imagesWithVirusCount > 0 ? {
             blockedByAntivirus: imagesWithVirusCount
         } : undefined,
@@ -180,7 +178,7 @@ export const generateAttachmentsSummaryFromMessage = (messageJson) => {
                 count: documents.length,
                 types: [...new Set(documents.map(doc => doc.attachmentType))],
                 languages: [...new Set(documents.map(doc => doc.language).filter(Boolean))],
-                names: documents.slice(0, 3).map(doc => doc.originalName) // Solo primeros 3
+                names: documents.slice(0, 3).map(doc => doc.originalName)
             } : null,
             
             // Resumen de imágenes

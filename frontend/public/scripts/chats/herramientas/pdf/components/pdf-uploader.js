@@ -55,13 +55,10 @@ export function initPDFUploader() {
   createDOMElements();
   attachEventListeners();
 
-  // Obtener referencia al botón del panel (puede estar null al inicio)
   const panelTriggerButton = document.querySelector('.pdf-panel-trigger');
 
-  // Inicializar controlador con las referencias disponibles
   initPDFButtonController(uploaderButton, panelTriggerButton);
 
-  // Comprobar estado inicial del PDF para el chat actual
   checkInitialPDFState();
 }
 
@@ -186,7 +183,6 @@ function initChiguireAnimation() {
     celebrationColors: ['#FFD700', '#FF6B6B', '#4CAF50', '#42A5F5', '#FFA726']
   };
 
-  // Crear instancia de ChiguireAnimation
   chiguireAnimation = new ChiguireAnimation(options);
 }
 
@@ -233,18 +229,16 @@ function attachEventListeners() {
     if (e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
 
-      // Validar tipo
       if (file.type !== 'application/pdf') {
-        hideUploadModal(); // ✅ CERRAR MODAL PRIMERO
+        hideUploadModal();
         acadelWarning("Formato incorrecto", "Acadel necesita que sea un archivo PDF para poder analizarlo");
         return;
       }
 
-      // ✅ VALIDACIÓN DE TAMAÑO
       if (file.size > MAX_FILE_SIZE) {
         const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
 
-        hideUploadModal(); // ✅ CERRAR MODAL PRIMERO
+        hideUploadModal();
 
         acadelWarning(
           "Archivo demasiado grande",
@@ -276,10 +270,8 @@ function attachEventListeners() {
  * Muestra el modal de selección de archivo
  */
 export function showUploadModal() {
-  // Resetear el estado para asegurar una inicialización limpia
   resetUploadState();
 
-  // Mostrar modal
   state.showModal = true;
   uploaderModal.classList.add('show');
 }
@@ -299,7 +291,6 @@ export function hideUploadModal() {
   state.showModal = false;
   uploaderModal.classList.remove('show');
 
-  // Resetear estado
   resetUploadState();
 }
 
@@ -309,13 +300,10 @@ export function hideUploadModal() {
 function showFullscreenLoader() {
   console.log('Mostrando fullscreen loader con progreso 0%');
 
-  // Actualizar el tema del GIF del chigüire
   updateChiguireTheme();
 
-  // Resetear estado visual de forma completa
   resetProgressCircle();
 
-  // Eliminar cualquier clase de estado anterior
   loaderChiguire.classList.remove('completed');
   loaderChiguire.classList.remove('cancelling');
 
@@ -339,22 +327,18 @@ function showFullscreenLoader() {
 
   // NUEVO: Forzar actualización UI para que se refleje el 0%
   if (chiguireAnimation) {
-    // Resetear completamente
     chiguireAnimation.reset(false);
 
     // Forzar explícitamente progreso en 0%
     setTimeout(() => {
       chiguireAnimation.updateProgress(0, 'Preparando PDF...');
 
-      // Iniciar animación después de asegurar que estamos en 0%
       chiguireAnimation.start();
     }, 50);
   }
 
-  // Mostrar el loader
   fullscreenLoader.classList.add('active');
 
-  // Bloquear scroll
   document.body.style.overflow = 'hidden';
 }
 
@@ -371,7 +355,6 @@ function hideFullscreenLoader() {
     chiguireAnimation.pause(); // <-- NUEVO MÉTODO QUE HAY QUE CREAR
   }
 
-  // Restaurar scroll
   document.body.style.overflow = '';
 }
 
@@ -381,11 +364,9 @@ function hideFullscreenLoader() {
 function resetProgressCircle() {
   // MEJORADO: Reseteo más robusto del círculo SVG
   if (loaderProgressBar) {
-    // Determinar la circunferencia basada en el elemento SVG
     const radius = parseFloat(loaderProgressBar.getAttribute('r') || 90);
     const circumference = 2 * Math.PI * radius;
 
-    // Aplicar valores iniciales
     loaderProgressBar.style.strokeDasharray = `${circumference} ${circumference}`;
     loaderProgressBar.style.strokeDashoffset = circumference; // Estado inicial (0%)
 
@@ -395,7 +376,6 @@ function resetProgressCircle() {
     console.log(`Círculo SVG reseteado: r=${radius}, circumference=${circumference}`);
   }
 
-  // Usar ChiguireAnimation para resetear (si está disponible)
   if (chiguireAnimation) {
     chiguireAnimation.reset(false); // Reseteo completo
   }
@@ -409,13 +389,10 @@ function resetProgressCircle() {
 function updateProgressCircle(progress, statusText = null) {
   if (!loaderProgressBar) return;
 
-  // Usar ChiguireAnimation para actualizar el progreso (si está disponible)
   if (chiguireAnimation) {
     // MODIFICADO: Asegurar que siempre se use un mensaje descriptivo estándar
-    // Solo usar el statusText proporcionado si coincide con el patrón esperado
     const standardMessage = getProcessingMessage(progress);
 
-    // Verificar si el texto proporcionado coincide con alguno de los mensajes estándar
     const isStandardMessage = [
       "Iniciando procesamiento...",
       "Extrayendo texto...",
@@ -428,28 +405,23 @@ function updateProgressCircle(progress, statusText = null) {
     // Preferir el mensaje estándar de getProcessingMessage si el proporcionado no es estándar
     const finalMessage = isStandardMessage ? statusText : standardMessage;
 
-    // Actualizar con el mensaje adecuado
     chiguireAnimation.updateProgress(progress, finalMessage);
     return;
   }
 
-  // Fallback al método tradicional si no está disponible chiguireAnimation
   const circumference = 2 * Math.PI * 90; // r=90
   const offset = circumference - (progress / 100) * circumference;
   loaderProgressBar.style.strokeDashoffset = offset;
 
-  // Actualizar texto si se proporciona
   if (loaderProgressText) {
     const standardMessage = getProcessingMessage(progress);
     loaderProgressText.textContent = standardMessage; // Siempre usar el mensaje estándar
   }
 
-  // Actualizar porcentaje
   if (loaderPercentage) {
     loaderPercentage.textContent = `${Math.round(progress)}%`;
   }
 
-  // Cambiar color cuando está completo
   if (progress >= 100) {
     loaderChiguire.classList.add('completed');
   }
@@ -466,15 +438,12 @@ function resetUploadState() {
   state.isUploading = false;
   state.abortController = null;
 
-  // Limpiar input de archivo
   if (uploadInput) {
     uploadInput.value = '';
   }
 
-  // Resetear UI
   updateSelectedFileDisplay('');
 
-  // Eliminar cualquier clase de cancelación o error
   if (loaderProgressText) {
     loaderProgressText.classList.remove('cancelling', 'error');
     loaderProgressText.textContent = 'Preparando PDF...';
@@ -509,15 +478,12 @@ function resetUploadState() {
     progressRing.style.removeProperty('stroke'); // Eliminar el estilo de color de cancelación o error
   }
 
-  // Resetear visualmente el círculo
   resetProgressCircle();
 
-  // Ocultar errores
   errorMessage.style.display = 'none';
   errorMessage.textContent = '';
   submitButton.disabled = true;
 
-  // Resetear animación del chigüire de manera completa
   if (chiguireAnimation) {
     chiguireAnimation.reset(false); // reseteo completo
   }
@@ -583,7 +549,6 @@ function showError(message) {
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
 
-  // Ocultar después de 5 segundos
   setTimeout(() => {
     errorMessage.style.display = 'none';
   }, 5000);
@@ -612,10 +577,8 @@ async function handleFileUpload() {
 
   state.isUploading = true;
 
-  // Ocultar el modal de selección y mostrar el loader a pantalla completa
   uploaderModal.classList.remove('show');
 
-  // Resetear primero para asegurar un inicio limpio
   resetProgressCircle();
   if (chiguireAnimation) {
     chiguireAnimation.reset(false); // Reset completo
@@ -624,16 +587,13 @@ async function handleFileUpload() {
   // Ahora mostramos el loader
   showFullscreenLoader();
 
-  // Crear nuevo AbortController para esta subida
   state.abortController = new AbortController();
 
   try {
-    // Verificar si estamos en pantalla de bienvenida
     const isWelcomeScreen = document.querySelector('.welcome-message, .centered-input-container, .suggestions-container') !== null;
     let currentChatId = getState('currentChatId');
     let isNewChat = false; // Nueva bandera para rastrear si el chat es nuevo
 
-    // Crear nuevo chat si es necesario
     if (isWelcomeScreen || !currentChatId) {
       isNewChat = true; // Marcar que estamos creando un chat nuevo
 
@@ -643,7 +603,6 @@ async function handleFileUpload() {
         const { renderChatHistory, updateActiveSidebarItem } = await import('../ui/sidebar-pdf.js');
         const { updateHeaderForChat } = await import('../ui/header-manager-pdf.js');
 
-        // Crear chat con título basado en nombre del PDF
         const pdfName = state.selectedFile.name || 'Documento PDF';
         const chatTitle = `Análisis de ${pdfName}`;
 
@@ -680,7 +639,6 @@ async function handleFileUpload() {
     const result = await uploadPDF(
       state.selectedFile,
       (progress, statusText) => {
-        // Usar directamente los valores que provienen del backend, sin intermediarios
         updateProgressCircle(progress, statusText);
       },
       state.abortController.signal
@@ -691,7 +649,6 @@ async function handleFileUpload() {
       chiguireAnimation.celebrate();
     }
 
-    // Esperar un momento para mostrar la celebración
     setTimeout(() => {
       // Mantener esta línea - elimina el loader
       hideFullscreenLoader();
@@ -714,7 +671,6 @@ async function handleFileUpload() {
 
         // 2.1 Restaurar fixedSpace pero conservar layout
         if (fixedSpace) {
-          // Remover solo propiedades que ocultan, sin alterar el display o flex
           fixedSpace.style.removeProperty('opacity');
           fixedSpace.style.removeProperty('display');
           fixedSpace.style.removeProperty('pointer-events');
@@ -786,7 +742,6 @@ async function handleFileUpload() {
         if (!currentChatId) return;
 
         try {
-          // Importar módulos necesarios
           const chatModule = await import('../api/chat-pdf.js');
           const rendererModule = await import('../ui/message-renderer-pdf.js');
 
@@ -796,7 +751,6 @@ async function handleFileUpload() {
             return;
           }
 
-          // Cargar mensajes del chat actual
           const messages = await chatModule.loadChatMessages(currentChatId);
 
           if (!Array.isArray(messages)) {
@@ -808,7 +762,6 @@ async function handleFileUpload() {
           if (!isNewChat) {
             console.log(`Actualizando mensajes en chat existente: ${currentChatId}`);
 
-            // Eliminar mensajes de carga si los hay
             const loadingMessages = document.querySelectorAll('.chat-messages .ai-message.processing');
             loadingMessages.forEach(loadingMsg => {
               if (loadingMsg && loadingMsg.parentNode) {
@@ -818,15 +771,12 @@ async function handleFileUpload() {
 
             const existingMessages = document.querySelectorAll('.chat-messages .message');
             if (existingMessages.length > 0 && existingMessages.length < messages.length) {
-              // Solo renderizar mensajes nuevos
               const newMessages = messages.slice(existingMessages.length);
               console.log(`Renderizando ${newMessages.length} mensajes nuevos`);
 
-              // Reemplazar función para usarla con subconjunto de mensajes
               if (typeof rendererModule.appendChatMessages === 'function') {
                 rendererModule.appendChatMessages(newMessages);
               } else {
-                // Fallback: renderizar todos
                 rendererModule.renderChatMessages(messages);
               }
             } else {
@@ -834,12 +784,9 @@ async function handleFileUpload() {
               rendererModule.renderChatMessages(messages);
             }
           }
-          // Para chat nuevo, usar la lógica original
           else if (messages.length > 0 && !hasRenderedMessages) {
-            // Marcar como renderizado ANTES de comenzar
             hasRenderedMessages = true;
 
-            // Eliminar cualquier mensaje de carga
             const loadingMessages = document.querySelectorAll('.chat-messages .ai-message.processing');
             loadingMessages.forEach(loadingMsg => {
               if (loadingMsg && loadingMsg.parentNode) {
@@ -847,7 +794,6 @@ async function handleFileUpload() {
               }
             });
 
-            // Renderizar mensajes
             rendererModule.renderChatMessages(messages);
 
             console.log('Mensajes cargados en chat nuevo:', messages.length);
@@ -872,11 +818,9 @@ async function handleFileUpload() {
         }
       };
 
-      // Intentar actualizar mensajes dos veces para asegurar que todos los cambios del backend se reflejen
       // Primera actualización rápida
       updateChatMessages();
 
-      // Mostrar panel PDF y actualizar botones
       setTimeout(() => {
         togglePDFPanel(true);
         updatePDFButtonsVisibility(true);
@@ -895,7 +839,6 @@ async function handleFileUpload() {
         import('../ui/header-manager-pdf.js').catch(() => null),
         import('../core/state-pdf.js').catch(() => null)
       ]).then(modules => {
-        // Actualizar header en cualquier caso
         if (modules[0] && typeof modules[0].updateHeaderForChat === 'function' && currentChatId) {
           modules[0].updateHeaderForChat(currentChatId);
         }
@@ -907,7 +850,6 @@ async function handleFileUpload() {
 
         // Si es un chat nuevo, inicializar componentes adicionales
         if (isNewChat && currentChatId) {
-          // Sincronizar estado con backend para chat nuevo
           import('../api/chat-pdf.js').then(module => {
             if (typeof module.syncChatState === 'function') {
               module.syncChatState(currentChatId).catch(e =>
@@ -924,14 +866,12 @@ async function handleFileUpload() {
   } catch (error) {
     console.error('Error subiendo PDF:', error);
 
-    // Verificar si fue cancelación
     if (error.name === 'AbortError') {
       acadelInfo("Subida cancelada", "Acadel detuvo la subida como solicitaste");
     } else {
       // NUEVO: Mostrar interfaz de error similar a la cancelación
       console.log('Mostrando interfaz de error para la subida de PDF');
 
-      // Obtener información del chat actual
       const chatId = getState('currentChatId');
       const isNewChat = document.body.hasAttribute('data-from-welcome') ||
         window.hasOwnProperty('newlyCreatedChat') ||
@@ -987,7 +927,6 @@ async function handleFileUpload() {
       errorMessageEl.className = 'loader-error-message';
       errorMessageEl.textContent = "Acadel necesita un momento para recuperarse";
 
-      // Agregar el mensaje después del porcentaje
       if (loaderPercentage && loaderPercentage.parentNode) {
         loaderPercentage.parentNode.insertBefore(errorMessageEl, loaderPercentage.nextSibling);
       }
@@ -998,23 +937,19 @@ async function handleFileUpload() {
       // 5. CLAVE: Esperar 2 segundos completos mostrando la animación de error
       console.log('Esperando 2 segundos para mostrar animación de error...');
 
-      // Bloquear el ocultar loader durante los 2 segundos
       const originalHideLoader = hideFullscreenLoader;
       hideFullscreenLoader = function () {
         console.log('Intento de ocultar loader bloqueado durante visualización de error');
         // No hace nada - bloqueamos el ocultamiento
       };
 
-      // Pausar animación pero mantener visual
       if (chiguireAnimation) {
         chiguireAnimation.pause();
       }
 
-      // Esperar un tiempo mínimo antes de comenzar la lógica de limpieza
       setTimeout(() => {
         console.log('Iniciando proceso de limpieza por error mientras se muestra la pantalla de error');
 
-        // Mostrar notificación de error
         acadelError("¡Vaya! Algo salió mal", "Acadel se tropezó procesando tu PDF. Inténtalo de nuevo");
 
         // NUEVO: Actualizar texto para indicar que se está limpiando
@@ -1022,10 +957,8 @@ async function handleFileUpload() {
           loaderProgressText.textContent = "Acadel está ordenando sus cosas...";
         }
 
-        // Procesar la eliminación del chat si es un chat nuevo
         if (isNewChat && chatId) {
           try {
-            // Crear una secuencia encadenada de promesas para asegurar que todo ocurra en orden
             let cleanupPromise = Promise.resolve();
 
             // Paso 1: Marcar el chat como problemático
@@ -1073,7 +1006,6 @@ async function handleFileUpload() {
 
             // Paso 4: Preparar la pantalla de bienvenida
             cleanupPromise = cleanupPromise.then(() => {
-              // Limpiar variables globales
               if (window.newlyCreatedChat === chatId) {
                 delete window.newlyCreatedChat;
                 document.body.removeAttribute('data-from-welcome');
@@ -1095,14 +1027,12 @@ async function handleFileUpload() {
               if (typeof stateModule.setCurrentChat === 'function') {
                 stateModule.setCurrentChat(null);
 
-                // Actualizar URL
                 if (typeof URL_CONFIG !== 'undefined' && URL_CONFIG.basePath) {
                   history.pushState({}, '', URL_CONFIG.basePath);
                 } else {
                   history.pushState({}, '', '/pdf');
                 }
 
-                // Ocultar textarea explícitamente
                 const fixedSpace = document.querySelector('.fixed-space');
                 if (fixedSpace) {
                   fixedSpace.style.opacity = '0';
@@ -1114,14 +1044,11 @@ async function handleFileUpload() {
 
                 console.log('Preparado para mostrar pantalla de bienvenida');
 
-                // Restaurar la función original de ocultamiento
                 hideFullscreenLoader = originalHideLoader;
 
-                // Ocultar loader
                 hideFullscreenLoader();
                 resetUploadState();
 
-                // Mostrar mensaje de bienvenida
                 if (typeof welcomeModule.showWelcomeMessage === 'function') {
                   welcomeModule.showWelcomeMessage();
                   console.log('Pantalla de bienvenida mostrada después de la limpieza');
@@ -1129,7 +1056,6 @@ async function handleFileUpload() {
               }
             });
 
-            // Manejo de errores en la cadena completa
             cleanupPromise.catch(e => {
               console.error('Error durante el proceso de limpieza:', e);
 
@@ -1138,7 +1064,6 @@ async function handleFileUpload() {
               hideFullscreenLoader();
               resetUploadState();
 
-              // Intentar mostrar bienvenida de todos modos
               import('../ui/welcome-message-pdf.js').then(module => {
                 if (typeof module.showWelcomeMessage === 'function') {
                   module.showWelcomeMessage();
@@ -1156,10 +1081,8 @@ async function handleFileUpload() {
         } else {
           // Si no es un chat nuevo, simplemente ocultamos después de un tiempo total
           setTimeout(() => {
-            // Restaurar la función original de ocultamiento
             hideFullscreenLoader = originalHideLoader;
 
-            // Ocultar loader
             hideFullscreenLoader();
             resetUploadState();
           }, 1000); // 1 segundo adicional después de los 2 segundos iniciales
@@ -1197,20 +1120,17 @@ async function handleCancelUpload() {
   // Variable para controlar si ya se ocultó el loader
   let loaderHidden = false;
 
-  // Obtener información del chat actual
   const chatId = getState('currentChatId');
   const userId = getState('userId');
   const wasInWelcomeScreen = document.body.hasAttribute('data-from-welcome') ||
     window.hasOwnProperty('newlyCreatedChat');
 
-  // CRÍTICO: Mostrar el loader si no está visible
   if (!fullscreenLoader.classList.contains('active')) {
     console.log('Forzando visibilidad del loader para cancelación');
     fullscreenLoader.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
-  // Cambiar la interfaz para mostrar que estamos cancelando
   console.log('Aplicando estilos de cancelación al loader');
 
   // 1. Actualizar texto descriptivo
@@ -1248,13 +1168,11 @@ async function handleCancelUpload() {
   state.isUploading = false;
 
   try {
-    // Abortar la petición en curso
     state.abortController.abort();
   } catch (abortError) {
     console.warn('Error al abortar la petición:', abortError);
   }
 
-  // Notificar al servidor sobre la cancelación
   let cancelResult = { success: false };
   if (chatId && userId) {
     try {
@@ -1273,7 +1191,6 @@ async function handleCancelUpload() {
 
   console.log('Terminó espera, procediendo con limpieza');
 
-  // Restaurar la función original de ocultamiento
   hideFullscreenLoader = originalHideLoader;
 
   try {
@@ -1281,12 +1198,10 @@ async function handleCancelUpload() {
     if (wasInWelcomeScreen || window.newlyCreatedChat === chatId) {
       try {
         console.log('Eliminando chat temporal:', chatId);
-        // Actualizar mensaje visual mientras se elimina el chat
         if (loaderProgressText) {
           loaderProgressText.textContent = "Eliminando chat temporal...";
         }
 
-        // Importar módulos necesarios y eliminar chat
         const { deleteChat, loadChatHistory } = await import('../api/chat-pdf.js');
         const { setCurrentChat } = await import('../core/state-pdf.js');
         const { renderChatHistory } = await import('../ui/sidebar-pdf.js');
@@ -1294,14 +1209,12 @@ async function handleCancelUpload() {
         await deleteChat(chatId);
         setCurrentChat(null);
 
-        // Actualizar URL
         if (typeof URL_CONFIG !== 'undefined' && URL_CONFIG.basePath) {
           history.pushState({}, '', URL_CONFIG.basePath);
         } else {
           history.pushState({}, '', '/pdf');
         }
 
-        // Actualizar lista de chats
         const updatedChats = await loadChatHistory();
         renderChatHistory(updatedChats);
 
@@ -1310,7 +1223,6 @@ async function handleCancelUpload() {
         hideFullscreenLoader();
         resetUploadState();
 
-        // Limpiar mensajes y variables globales
         const uiManager = await import('../ui/ui-manager-pdf.js');
         if (typeof uiManager.clearChatMessages === 'function') {
           uiManager.clearChatMessages();
@@ -1319,9 +1231,7 @@ async function handleCancelUpload() {
         delete window.newlyCreatedChat;
         document.body.removeAttribute('data-from-welcome');
 
-        // Mostrar notificación
         acadelInfo("Subida cancelada", "Acadel canceló la subida y limpió el chat temporal");
-        // Preparar elementos para pantalla de bienvenida
         const fixedSpace = document.querySelector('.fixed-space');
         if (fixedSpace) {
           fixedSpace.style.opacity = '0';
@@ -1332,7 +1242,6 @@ async function handleCancelUpload() {
           void fixedSpace.offsetHeight;
         }
 
-        // Mostrar pantalla de bienvenida
         console.log('Preparando para mostrar pantalla de bienvenida');
         const welcomeModule = await import('../ui/welcome-message-pdf.js');
         if (typeof welcomeModule.showWelcomeMessage === 'function') {
@@ -1348,7 +1257,6 @@ async function handleCancelUpload() {
         acadelWarning("Cancelado con detalles", "Acadel canceló la subida, aunque tuvo pequeñas dificultades técnicas");
       }
     } else {
-      // Para chats existentes, ocultar loader y mostrar notificación
       console.log('Finalizando cancelación de chat existente');
       hideFullscreenLoader();
       resetUploadState();

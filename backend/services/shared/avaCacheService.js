@@ -1,11 +1,6 @@
-// backend/services/shared/avaCacheService.js - CORREGIDO
 
 import pool from "../../lib/dbPool.js";
 
-/**
- * 🔧 SERVICIO DE CACHE PARA AVAs - CORREGIDO
- * ✅ SOLUCIONADO: Logging detallado y verificación robusta de slugs
- */
 class AvaCacheService {
   constructor() {
     this.avaCache = new Set();
@@ -27,16 +22,12 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔍 VERIFICAR SI UNA RUTA ES UN AVA - CON LOGGING DETALLADO
-   */
   async isAvaRoute(slug) {
     try {
       console.log(`🔍 [AVA-CACHE] === VERIFICANDO RUTA: "${slug}" ===`);
       
       await this.updateCacheIfNeeded();
       
-      // Normalizar slug para comparación
       const normalizedSlug = slug.toLowerCase().trim();
       const originalSlug = slug.trim();
       
@@ -44,15 +35,12 @@ class AvaCacheService {
       console.log(`🔍 [AVA-CACHE] Slug normalizado: "${normalizedSlug}"`);
       console.log(`🔍 [AVA-CACHE] Cache size: ${this.avaCache.size}`);
       
-      // Verificar con slug original
       const foundOriginal = this.avaCache.has(originalSlug);
       console.log(`🔍 [AVA-CACHE] ¿Encontrado con slug original? ${foundOriginal}`);
       
-      // Verificar con slug normalizado
       const foundNormalized = this.avaCache.has(normalizedSlug);
       console.log(`🔍 [AVA-CACHE] ¿Encontrado con slug normalizado? ${foundNormalized}`);
       
-      // Verificar si existe algún slug similar (case-insensitive)
       let foundSimilar = false;
       for (const cachedSlug of this.avaCache) {
         if (cachedSlug.toLowerCase() === normalizedSlug) {
@@ -66,7 +54,6 @@ class AvaCacheService {
       
       console.log(`🔍 [AVA-CACHE] RESULTADO FINAL para "${slug}": ${result ? 'ES AVA' : 'NO ES AVA'}`);
       
-      // Log adicional para debugging
       if (!result) {
         console.log(`🔍 [AVA-CACHE] Slugs disponibles:`, Array.from(this.avaCache).slice(0, 10));
         console.log(`🔍 [AVA-CACHE] Total slugs en cache: ${this.avaCache.size}`);
@@ -80,16 +67,12 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔍 OBTENER DATOS COMPLETOS DE UN AVA POR SLUG - OPTIMIZADO
-   */
   async getAvaBySlug(slug) {
     try {
       console.log(`🔍 [AVA-CACHE] === OBTENIENDO DATOS COMPLETOS PARA: "${slug}" ===`);
       
       const normalizedSlug = slug.toLowerCase().trim();
       
-      // Verificar cache de datos completos primero
       if (this.avaDataCache.has(normalizedSlug)) {
         console.log(`✅ [AVA-CACHE] Datos encontrados en cache para: "${slug}"`);
         return this.avaDataCache.get(normalizedSlug);
@@ -130,7 +113,6 @@ class AvaCacheService {
             carrera_nombre: avaData.carrera_nombre
           });
           
-          // Guardar en cache de datos completos
           this.avaDataCache.set(normalizedSlug, avaData);
           
           return avaData;
@@ -149,9 +131,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔄 ACTUALIZAR CACHE SI ES NECESARIO
-   */
   async updateCacheIfNeeded() {
     const now = Date.now();
     const cacheAge = now - this.cacheLastUpdate;
@@ -166,9 +145,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🔄 ACTUALIZAR CACHE DESDE BD - CON LOGGING DETALLADO
-   */
   async refreshCache() {
     console.log(`🔧 [AVA-CACHE] === ACTUALIZANDO CACHE DESDE BD ===`);
     
@@ -195,7 +171,6 @@ class AvaCacheService {
         
         console.log(`🔧 [AVA-CACHE] Query resultado: ${result.rows.length} AVAs encontrados`);
         
-        // Limpiar caches anteriores
         this.avaCache.clear();
         this.avaDataCache.clear();
         
@@ -204,10 +179,8 @@ class AvaCacheService {
           const slug = row.slug;
           const normalizedSlug = slug.toLowerCase().trim();
           
-          // Cache de slugs (para verificación rápida)
           this.avaCache.add(slug);
           
-          // Cache de datos completos (para evitar queries adicionales)
           this.avaDataCache.set(normalizedSlug, {
             id_ava: row.id_ava,
             nom_ava: row.nom_ava,
@@ -223,11 +196,9 @@ class AvaCacheService {
         console.log(`   📊 Slugs en cache: ${this.avaCache.size}`);
         console.log(`   📊 Datos completos en cache: ${this.avaDataCache.size}`);
         
-        // Log de algunos ejemplos para debugging
         const exampleSlugs = Array.from(this.avaCache).slice(0, 5);
         console.log(`   📋 Ejemplos de slugs:`, exampleSlugs);
         
-        // Verificar slugs específicos importantes
         const importantSlugs = ['fisica', 'patologia', 'Semiologia', 'CienciasBasicas'];
         for (const slug of importantSlugs) {
           const found = this.avaCache.has(slug);
@@ -244,9 +215,6 @@ class AvaCacheService {
     }
   }
 
-  /**
-   * 🧹 LIMPIAR CACHE MANUALMENTE
-   */
   clearCache() {
     this.avaCache.clear();
     this.avaDataCache.clear();
@@ -254,9 +222,6 @@ class AvaCacheService {
     console.log('🧹 [AVA-CACHE] Cache limpiado manualmente');
   }
 
-  /**
-   * ➕ AÑADIR SLUG AL CACHE
-   */
   addToCache(slug, avaData = null) {
     this.avaCache.add(slug);
     
@@ -268,9 +233,6 @@ class AvaCacheService {
     console.log(`➕ [AVA-CACHE] AVA "${slug}" añadido al cache`);
   }
 
-  /**
-   * ➖ REMOVER SLUG DEL CACHE
-   */
   removeFromCache(slug) {
     this.avaCache.delete(slug);
     
@@ -280,9 +242,6 @@ class AvaCacheService {
     console.log(`➖ [AVA-CACHE] AVA "${slug}" removido del cache`);
   }
 
-  /**
-   * 📊 OBTENER ESTADÍSTICAS DEL CACHE
-   */
   getCacheStats() {
     return {
       slugsCount: this.avaCache.size,
@@ -295,9 +254,6 @@ class AvaCacheService {
     };
   }
 
-  /**
-   * 🔍 DEBUGGING: BUSCAR SLUG SIMILAR
-   */
   findSimilarSlugs(searchSlug) {
     const normalizedSearch = searchSlug.toLowerCase().trim();
     const similar = [];
@@ -313,5 +269,4 @@ class AvaCacheService {
   }
 }
 
-// Exportar singleton
 export const avaCacheService = new AvaCacheService();

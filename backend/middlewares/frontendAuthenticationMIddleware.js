@@ -1,7 +1,5 @@
-// backend/middlewares/frontendAuthenticationMIddleware.js - REFACTORIZADO
 import pool from "../lib/dbPool.js";
 import { logSecurityEvent } from '../utils/securityLogger.js';
-// 🔑 IMPORTAR EL SISTEMA PRINCIPAL DE AUTH CON RENOVACIÓN
 import { authenticateUser, optionalAuthenticateUser } from './authMiddleware.js';
 
 /**
@@ -38,17 +36,6 @@ const checkAdminRole = async (userId) => {
   }
 };
 
-/**
- * 🔒 MIDDLEWARE UNIFICADO DE AUTENTICACIÓN Y ROLES - CORREGIDO
- * 
- * NUEVO: Maneja redirecciones a /login correctamente
- * 
- * Maneja:
- * - Verificación del token JWT CON RENOVACIÓN AUTOMÁTICA
- * - Redirección obligatoria a /login para páginas HTML
- * - Verificación de rol admin para rutas admin
- * - Respuestas JSON apropiadas para APIs
- */
 export const requireAuthentication = (options = {}) => {
   const { 
     requireAdmin = false,
@@ -62,11 +49,9 @@ export const requireAuthentication = (options = {}) => {
       console.log(`🔐 requireAuthentication ejecutándose para: ${req.path}`);
       console.log(`📋 Opciones: requireAdmin=${requireAdmin}, category=${category}`);
 
-      // 🔍 VERIFICAR PRIMERO SI ES SOLICITUD HTML
       const isHtmlRequest = isHtmlPageRequest(req);
       console.log(`🌐 Es solicitud HTML: ${isHtmlRequest}`);
 
-      // 🔑 INTERCEPTAR RESPUESTAS DE authenticateUser PARA MANEJAR REDIRECCIONES
       let authenticationComplete = false;
       let originalJson = res.json;
       let originalSend = res.send;
@@ -94,9 +79,7 @@ export const requireAuthentication = (options = {}) => {
         };
       }
 
-      // 🔑 USAR AUTHMIDDLEWARE COMO BASE
       return authenticateUser(req, res, async (authError) => {
-        // Restaurar métodos originales
         res.json = originalJson;
         res.send = originalSend;
         res.status = originalStatus;
@@ -126,7 +109,6 @@ export const requireAuthentication = (options = {}) => {
           }
         }
 
-        // ✅ AUTENTICACIÓN EXITOSA - req.user ya está establecido por authMiddleware
         console.log(`✅ Usuario autenticado: ${req.user.id_user} (${req.user.correo || 'sin email'})`);
         
         // Si se renovó el token, loggear
@@ -233,10 +215,6 @@ export const requireAuthentication = (options = {}) => {
   };
 };
 
-/**
- * 🔄 NUEVA FUNCIÓN: Middleware opcional que USA authMiddleware como base
- * Para rutas que pueden o no requerir autenticación pero quieren renovación
- */
 export const optionalAuthentication = (options = {}) => {
   const { 
     category = null 
@@ -246,7 +224,6 @@ export const optionalAuthentication = (options = {}) => {
     try {
       console.log(`🔍 optionalAuthentication REFACTORIZADO ejecutándose para: ${req.path}`);
 
-      // 🔑 USAR optionalAuthenticateUser que SÍ maneja renovaciones
       return optionalAuthenticateUser(req, res, (authError) => {
         // optionalAuthenticateUser nunca debería fallar, pero por si acaso
         if (authError) {
@@ -254,7 +231,6 @@ export const optionalAuthentication = (options = {}) => {
           req.user = null; // Asegurar que no hay usuario parcial
         }
 
-        // Loggear resultado
         if (req.user) {
           console.log(`✅ Usuario opcional autenticado: ${req.user.id_user}${req.tokenWasRenewed ? ' (token renovado)' : ''}`);
           
@@ -282,10 +258,6 @@ export const optionalAuthentication = (options = {}) => {
   };
 };
 
-/**
- * 🎯 HELPERS PRE-CONFIGURADOS - MEJORADOS
- * Funciones de conveniencia para casos comunes usando el sistema refactorizado
- */
 
 /**
  * Middleware para vistas que requieren autenticación (dashboard, payments)
@@ -346,12 +318,7 @@ export const requireAuthForCategory = (category) => {
   return requireAuthentication(config[category] || {});
 };
 
-// ===== AGREGAR AL FINAL DEL ARCHIVO frontendAuthenticationMIddleware.js =====
 
-/**
- * 🔄 NUEVO: Middleware para redirigir usuarios YA autenticados
- * Útil para páginas como /login que no deberían ser accesibles si ya estás logueado
- */
 export const redirectIfAuthenticated = (options = {}) => {
   const { 
     redirectTo = '/principal',
@@ -360,7 +327,6 @@ export const redirectIfAuthenticated = (options = {}) => {
 
   return async (req, res, next) => {
     try {
-      // Solo aplicar a rutas específicas de autenticación
       const currentView = req.params.view || req.path.replace('/', '');
       
       if (!authRoutes.includes(currentView)) {
@@ -369,7 +335,6 @@ export const redirectIfAuthenticated = (options = {}) => {
 
       console.log(`🔍 redirectIfAuthenticated verificando: ${currentView}`);
 
-      // Usar optionalAuthenticateUser para verificar sin forzar login
       return optionalAuthenticateUser(req, res, (authError) => {
         // Si hay error de autenticación, continuar normalmente (mostrar login)
         if (authError) {
@@ -381,7 +346,6 @@ export const redirectIfAuthenticated = (options = {}) => {
         if (req.user && req.user.id_user) {
           console.log(`🔄 Usuario ${req.user.id_user} ya autenticado, redirigiendo desde ${currentView} a ${redirectTo}`);
           
-          // Log de seguridad
           logSecurityEvent('AUTH_REDIRECT', 'Usuario autenticado redirigido desde página de auth', {
             userId: req.user.id_user,
             fromPath: req.path,
@@ -406,9 +370,6 @@ export const redirectIfAuthenticated = (options = {}) => {
   };
 };
 
-/**
- * 🎯 HELPER PRE-CONFIGURADO: Middleware para páginas de login/registro
- */
 export const redirectAuthenticatedUsers = redirectIfAuthenticated({
   redirectTo: '/principal',
   authRoutes: ['login', 'registro', '']

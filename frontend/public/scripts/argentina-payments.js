@@ -4,7 +4,6 @@
     
     console.log('🇦🇷 Sistema de Pagos Argentina (CORREGIDO) inicializando...');
     
-    // 🦫 ACADEL DNA para mensajes
     const ACADEL_MESSAGES = {
         loading: "🦫 Procesando tu pago como un capibara experto... ¡paciencia!",
         success: "🦫 ¡Exitazo total! Tu compra está lista, como mi pelaje después del spa",
@@ -16,7 +15,6 @@
         fileUploaded: "🦫 ¡Archivo subido! Más rápido que yo saltando al agua"
     };
 
-    // ===== CONFIGURACIÓN =====
     const CONFIG = {
         endpoints: {
             createUala: '/api/payments-arg/uala/create-order',
@@ -31,7 +29,6 @@
         userId: null
     };
 
-    // ===== ESTADO GLOBAL =====
     let isPaymentProcessing = false;
     let currentPaymentModal = null;
     let loadingModal = null;
@@ -39,7 +36,6 @@
     let notificationModal = null;
     let uploadedFile = null;
 
-    // ===== DATOS BANCARIOS =====
     const BANK_DATA = {
         bank: "Banco de la Nación Argentina",
         cbu: "0110593930009310123456",
@@ -47,7 +43,6 @@
         holder: "Acadelia Argentina S.A."
     };
 
-    // ===== INICIALIZACIÓN =====
     async function initialize() {
         try {
             console.log('🦫 Inicializando sistema de pagos Argentina corregido...');
@@ -57,7 +52,6 @@
             updatePricesDisplay();
             setupArgentinaSelector();
             
-            // ✅ NUEVO: Verificar suscripciones en procesamiento al cargar
             setTimeout(() => {
                 checkProcessingSubscriptions();
             }, 2000); // Esperar 2 segundos después de cargar
@@ -71,7 +65,6 @@
         }
     }
 
-    // ===== MOSTRAR NOTIFICACIÓN BONITA =====
     function showBeautifulNotification(type, message, title = null) {
         if (notificationModal) {
             closeBeautifulNotification();
@@ -133,7 +126,6 @@
         }
     }
 
-    // ===== OBTENER USUARIO ACTUAL =====
     async function getCurrentUser() {
         try {
             const response = await fetch('/api/usuarios/authenticate', {
@@ -152,7 +144,6 @@
         }
     }
 
-    // ===== CARGAR PRECIOS DESDE BASE DE DATOS =====
     async function loadPricesFromDatabase() {
         try {
             const response = await fetch(CONFIG.endpoints.getCarrerasPrices, {
@@ -184,7 +175,6 @@
         }
     }
 
-    // ===== CONFIGURAR ARGENTINA COMO PAÍS FIJO =====
     function setupArgentinaSelector() {
         const countrySelect = document.getElementById('countrySelect');
         const customSelect = document.querySelector('.custom-select');
@@ -216,7 +206,6 @@
         }
     }
 
-    // ===== CONFIGURAR EVENT LISTENERS =====
     function setupEventListeners() {
         const monthlyBtn = document.getElementById('monthlyBtn');
         const yearlyBtn = document.getElementById('yearlyBtn');
@@ -254,7 +243,6 @@
         });
     }
 
-    // ===== MANEJAR CLICK EN BOTÓN COMPRAR =====
     function handleComprarClick(e) {
         const comprarBtn = e.target.closest('.comprar-btn');
         if (!comprarBtn || isPaymentProcessing) return;
@@ -270,13 +258,11 @@
             return;
         }
         
-        // ✅ VERIFICAR SI YA TIENE ESTA CARRERA EN PROCESAMIENTO
         checkCarreraProcessingStatus(carreraId, carreraNombre);
     }
 
 async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
     try {
-        // ✅ CORREGIDO: Usar /api/compra en lugar de /api/user-data
         const response = await fetch(`/api/compra/carrera/status/${CONFIG.userId}`, {
             credentials: 'include'
         });
@@ -285,7 +271,6 @@ async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
         
         const data = await response.json();
         
-        // Verificar si la carrera específica está en procesamiento
         const isProcessing = data.data.processing.carreras.some(c => c.id_carrera == carreraId);
         
         if (isProcessing) {
@@ -315,7 +300,6 @@ async function checkCarreraProcessingStatus(carreraId, carreraNombre) {
     }
 }
 
-// ===== NUEVA FUNCIÓN: Modal cuando la carrera ya está en procesamiento =====
 function showCarreraAlreadyProcessingModal(carreraNombre) {
     const modal = document.createElement('div');
     modal.className = 'payment-modal-overlay';
@@ -363,7 +347,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         </div>
     `;
     
-    // ✅ CORRECCIÓN CSP: Usar addEventListener en lugar de onclick
     const closeBtn = modal.querySelector('.close-btn');
     const closePrimaryBtn = modal.querySelector('.close-modal-btn');
     const contactSupportBtn = modal.querySelector('.contact-support-btn-alt');
@@ -381,7 +364,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
     closeBtn?.addEventListener('click', closeModal);
     closePrimaryBtn?.addEventListener('click', closeModal);
     
-    // ✅ NUEVO: Event listener para contactar soporte
     contactSupportBtn?.addEventListener('click', () => {
         window.location.href = '/contact';
     });
@@ -400,7 +382,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
     setTimeout(() => modal.classList.add('show'), 10);
 }
 
-    // ===== CAMBIAR CICLO DE FACTURACIÓN =====
     function setCycle(cycle) {
         if (CONFIG.currentCycle === cycle) return;
         
@@ -418,7 +399,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         console.log('🔄 Ciclo cambiado a:', cycle);
     }
 
-    // ===== ACTUALIZAR PRECIOS EN LA UI =====
     function updatePricesDisplay() {
         Object.values(CONFIG.prices).forEach(carrera => {
             const priceElement = document.querySelector(`[data-product="${carrera.nombre}"] .price`);
@@ -433,7 +413,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         });
     }
 
-    // ===== ABRIR MODAL DE SELECCIÓN DE PAGO - CORREGIDO =====
     function openPaymentModal() {
         if (!CONFIG.selectedCarrera) return;
         
@@ -452,7 +431,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         }, 10);
     }
 
-    // ===== CREAR MODAL DE SELECCIÓN DE PAGO - ESTRUCTURA CORREGIDA =====
     function createPaymentModal() {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -513,7 +491,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
         return modal;
     }
 
-    // ===== CONFIGURAR EVENT LISTENERS PARA MODALES - COMPLETAMENTE CORREGIDO =====
     function setupModalEventListeners(modal) {
         console.log('🇦🇷 Configurando event listeners del modal...');
         
@@ -567,7 +544,6 @@ function showCarreraAlreadyProcessingModal(carreraNombre) {
                 e.stopPropagation();
                 console.log('🇦🇷 Click en transferencia bancaria - CORREGIDO');
                 
-                // Cerrar el modal actual y abrir el de transferencia
                 console.log('🇦🇷 Cerrando modal actual...');
                 closePaymentModal();
                 
@@ -587,7 +563,6 @@ async function checkProcessingSubscriptions() {
     try {
         if (!CONFIG.userId) return;
         
-        // ✅ CORREGIDO: Usar /api/compra en lugar de /api/user-data
         const response = await fetch(`/api/compra/carrera/processing/${CONFIG.userId}`, {
             credentials: 'include'
         });
@@ -605,7 +580,6 @@ async function checkProcessingSubscriptions() {
     }
 }
 
-    // ===== NUEVA FUNCIÓN: Modal para mostrar suscripciones en procesamiento =====
     function showProcessingSubscriptionsModal(processingSubscriptions) {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay processing-info-modal';
@@ -689,7 +663,6 @@ async function checkProcessingSubscriptions() {
             </div>
         `;
         
-        // ✅ CORRECCIÓN CSP: Usar addEventListener en lugar de onclick
         const closeBtn = modal.querySelector('.close-btn');
         const closePrimaryBtn = modal.querySelector('.close-processing-modal');
         const contactSupportBtn = modal.querySelector('.contact-support-btn');
@@ -707,7 +680,6 @@ async function checkProcessingSubscriptions() {
         closeBtn?.addEventListener('click', closeModal);
         closePrimaryBtn?.addEventListener('click', closeModal);
         
-        // ✅ NUEVO: Event listener para contactar soporte
         contactSupportBtn?.addEventListener('click', () => {
             window.location.href = '/contact';
         });
@@ -726,7 +698,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    // ===== PROCESAR PAGO CON UALÁ =====
     async function processUalaPayment() {
         if (isPaymentProcessing || !CONFIG.selectedCarrera) return;
         
@@ -771,7 +742,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== MANEJAR ERRORES DE UALÁ =====
     function handleUalaError(errorData) {
         closeLoadingModal();
         isPaymentProcessing = false;
@@ -784,7 +754,6 @@ async function checkProcessingSubscriptions() {
         }, 2000);
     }
 
-    // ===== MOSTRAR MODAL DE OPCIONES ALTERNATIVAS =====
     function showAlternativeOptionsModal(errorData) {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -870,12 +839,10 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => modal.classList.add('show'), 10);
     }
 
-    // ===== REINTENTAR PAGO UALÁ =====
     function retryUalaPayment() {
         setTimeout(() => processUalaPayment(), 500);
     }
 
-    // ===== ABRIR MODAL DE TRANSFERENCIA - COMPLETAMENTE DEBUGEADO =====
     function openTransferModal() {
         console.log('🇦🇷 Abriendo modal de transferencia (DEBUGGING COMPLETO)...');
         
@@ -894,12 +861,10 @@ async function checkProcessingSubscriptions() {
         
         console.log('🇦🇷 Modal agregado al DOM, configurando eventos...');
         
-        // Configurar eventos
         setupTransferModalEvents(modal);
         
         console.log('🇦🇷 Eventos configurados, configurando elementos internos...');
         
-        // Configurar fecha actual y file input - con más tiempo
         setTimeout(() => {
             const transferDateInput = modal.querySelector('#transferDate');
             if (transferDateInput) {
@@ -932,7 +897,6 @@ async function checkProcessingSubscriptions() {
             }
         }, 300); // Aumentamos el tiempo
         
-        // Mostrar modal - con más tiempo para asegurar que todo está listo
         setTimeout(() => {
             console.log('🇦🇷 Mostrando modal de transferencia...');
             modal.classList.add('show');
@@ -946,7 +910,6 @@ async function checkProcessingSubscriptions() {
         }, 100);
     }
 
-    // ===== CREAR MODAL DE TRANSFERENCIA - CON OVERLAY INTERNO =====
     function createTransferModal() {
         const modal = document.createElement('div');
         modal.className = 'payment-modal-overlay';
@@ -1043,7 +1006,6 @@ async function checkProcessingSubscriptions() {
         return modal;
     }
 
-    // ===== CONFIGURAR EVENTOS DEL MODAL DE TRANSFERENCIA =====
     function setupTransferModalEvents(modal) {
         // Prevenir cierre al hacer click dentro del modal
         const paymentModalContent = modal.querySelector('.payment-modal');
@@ -1077,11 +1039,9 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CONFIGURAR INPUT DE ARCHIVO - COMPLETAMENTE CORREGIDO =====
     function setupFileInput(fileInput) {
         console.log('🇦🇷 Iniciando setupFileInput CORREGIDO...', fileInput);
         
-        // Buscar elementos por el contenedor padre
         const container = fileInput.closest('.form-group');
         if (!container) {
             console.error('🇦🇷 No se encontró el contenedor del file input');
@@ -1101,7 +1061,6 @@ async function checkProcessingSubscriptions() {
             return;
         }
         
-        // Crear overlay de loading DENTRO del label para evitar reposicionamiento
         let loadingOverlay = label.querySelector('.file-loading-overlay');
         if (!loadingOverlay) {
             loadingOverlay = document.createElement('div');
@@ -1117,7 +1076,6 @@ async function checkProcessingSubscriptions() {
         
         console.log('🇦🇷 Configurando eventos de drag and drop...');
         
-        // Mejorar drag and drop con animaciones y contador de eventos
         let dragCounter = 0;
         
         label.addEventListener('dragenter', (e) => {
@@ -1175,7 +1133,6 @@ async function checkProcessingSubscriptions() {
         console.log('🇦🇷 setupFileInput completado exitosamente');
     }
 
-    // ===== MANEJAR SELECCIÓN DE ARCHIVO - VERSIÓN CORREGIDA =====
     function handleFileSelect(file, fileInput, label, loading, preview, loadingOverlay) {
         const maxSize = 5 * 1024 * 1024; // 5MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
@@ -1200,20 +1157,17 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => {
             uploadedFile = file;
             
-            // Actualizar preview
             const fileName = preview.querySelector('.file-preview-name');
             const fileSize = preview.querySelector('.file-preview-size');
             
             if (fileName) fileName.textContent = file.name;
             if (fileSize) fileSize.textContent = formatFileSize(file.size);
             
-            // Quitar loading y mostrar preview
             label.classList.remove('uploading');
             label.classList.add('has-file');
             loadingOverlay.classList.remove('show');
             preview.classList.add('show');
             
-            // Actualizar texto del label MANTENIENDO LA ESTRUCTURA
             const labelText = label.querySelector('.file-input-text');
             if (labelText) {
                 labelText.innerHTML = `
@@ -1228,7 +1182,6 @@ async function checkProcessingSubscriptions() {
         }, 1500);
     }
 
-    // ===== MOSTRAR PREVIEW DEL ARCHIVO =====
     function showFilePreview(file) {
         if (!file) return;
         
@@ -1271,7 +1224,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => previewModal.classList.add('show'), 10);
     }
 
-    // ===== CERRAR MODAL DE PREVIEW =====
     function closePreviewModal() {
         if (previewModal) {
             previewModal.classList.remove('show');
@@ -1284,18 +1236,15 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== REMOVER ARCHIVO - VERSIÓN CORREGIDA =====
     function removeFile(fileInput, label, preview, loadingOverlay) {
         console.log('🇦🇷 Removiendo archivo...');
         uploadedFile = null;
         fileInput.value = '';
         
-        // Remover clases y resetear estado
         preview.classList.remove('show');
         label.classList.remove('has-file', 'uploading');
         loadingOverlay.classList.remove('show');
         
-        // Restaurar texto original
         const labelText = label.querySelector('.file-input-text');
         if (labelText) {
             labelText.innerHTML = `
@@ -1306,7 +1255,6 @@ async function checkProcessingSubscriptions() {
         console.log('🇦🇷 Archivo removido exitosamente');
     }
 
-    // ===== FORMATEAR TAMAÑO DE ARCHIVO =====
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -1315,7 +1263,6 @@ async function checkProcessingSubscriptions() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // ===== MANEJAR ENVÍO DE TRANSFERENCIA =====
     async function handleTransferSubmit(e) {
         e.preventDefault();
         
@@ -1375,7 +1322,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== MOSTRAR MODAL DE CARGA =====
     function showLoadingModal(type = 'uala') {
         if (loadingModal) return;
         
@@ -1419,7 +1365,6 @@ async function checkProcessingSubscriptions() {
         setTimeout(() => loadingModal.classList.add('show'), 10);
     }
 
-    // ===== ACTUALIZAR MODAL DE CARGA =====
     function updateLoadingModal(status) {
         if (!loadingModal) return;
         
@@ -1432,7 +1377,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CANCELAR PAGO =====
     async function cancelPayment() {
         if (!loadingModal) return;
         
@@ -1447,7 +1391,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CERRAR MODAL DE CARGA =====
     function closeLoadingModal() {
         if (loadingModal) {
             loadingModal.classList.remove('show');
@@ -1460,7 +1403,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== CERRAR MODAL DE PAGO =====
     function closePaymentModal() {
         console.log('🇦🇷 Cerrando modal de pago...');
         if (currentPaymentModal) {
@@ -1476,7 +1418,6 @@ async function checkProcessingSubscriptions() {
         }
     }
 
-    // ===== API PÚBLICA =====
     window.ArgentinaPagos = {
         initialize,
         processUalaPayment,

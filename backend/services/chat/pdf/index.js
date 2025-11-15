@@ -15,7 +15,6 @@ export { default as PDFProcessor } from './pdfProcessor.js';
 export { default as PDFStorageService } from './pdfStorageService.js';
 export { default as PDFImageRenderer } from './pdfImageRenderer.js';
 
-// Importar componentes de caché
 import redisService from '../../../lib/redis.js';
 export { redisService };
 

@@ -1,10 +1,8 @@
-// backend/utils/chat/toolutil.js
 // Utilidades específicas para validación y manejo de herramientas
 
 
 import { isValidUUID } from "./validators.js";
 
-// ✅ IMPORTAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
 import {
   SUPPORTED_FILES,
   createSupportedMimeTypesConfig,
@@ -25,10 +23,6 @@ export const TOOL_TYPE_MAP = {
  */
 export const VALID_HERRAMIENTA_IDS = [1, 2]; // PDF=1, Agent=2
 
-/**
- * ✅ USAR CONFIGURACIÓN CENTRALIZADA EN LUGAR DE DUPLICAR
- * Obtiene tipos de documento soportados desde backend-file-constants.js
- */
 export const getSupportedDocumentTypes = () => {
   const supportedMimeTypesConfig = createSupportedMimeTypesConfig();
   
@@ -48,19 +42,11 @@ export const getSupportedDocumentTypes = () => {
   };
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- * Verifica si un tipo MIME corresponde a un documento soportado
- */
 export const isSupportedDocumentType = (mimeType) => {
   const supportedTypes = getSupportedDocumentTypes();
   return supportedTypes.mimeTypes.includes(mimeType);
 };
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA QUE USA LA CONFIGURACIÓN CENTRALIZADA
- * Verifica si una extensión corresponde a un documento soportado
- */
 export const isSupportedDocumentExtension = (extension) => {
   const normalizedExt = extension.startsWith('.') ? extension : `.${extension}`;
   const supportedTypes = getSupportedDocumentTypes();
@@ -86,12 +72,10 @@ export const isValidUUIDv4 = (uuid) => {
 export const isDocumentItem = (item) => {
   if (!item || typeof item !== 'object') return false;
   
-  // Verificar tipos explícitos de documento
   if (item.type === 'file' || item.type === 'document' || item.type === 'application') {
     return true;
   }
   
-  // Verificar si tiene propiedades de archivo
   if (item.file_url || item.data_url) {
     // Si tiene información de tipo MIME, verificar que sea documento
     if (item.mime_type || item.mimeType) {
@@ -180,11 +164,6 @@ export const generateAttachmentsSummary = (content) => {
   return parts.join(' y ');
 };
 
-/**
- * ✅ VALIDACIÓN ESPECÍFICA PARA CONSULTAS DE HERRAMIENTAS
- * @param {Object} params - Parámetros de la consulta
- * @returns {Array} - Array de errores (vacío si no hay errores)
- */
 export const validateToolQueryParams = (params) => {
   const { userId, query, herramientaId, chatId } = params;
   const errors = [];
@@ -197,7 +176,6 @@ export const validateToolQueryParams = (params) => {
     queryLength: query?.length
   });
   
-  // ✅ VALIDACIONES OBLIGATORIAS
   
   // 1. Validar userId
   if (!userId) {
@@ -226,7 +204,6 @@ export const validateToolQueryParams = (params) => {
     errors.push(`herramientaId debe ser uno de: ${VALID_HERRAMIENTA_IDS.join(', ')} (1=PDF, 2=Agente)`);
   }
   
-  // ✅ VALIDACIONES OPCIONALES
   
   // 4. Validar chatId (OPCIONAL - puede ser undefined para crear chat automáticamente)
   if (chatId !== undefined && chatId !== null && chatId !== '') {
@@ -242,11 +219,6 @@ export const validateToolQueryParams = (params) => {
   return errors;
 };
 
-/**
- * ✅ VALIDACIÓN ESPECÍFICA PARA CONSULTAS MULTIMODALES DE HERRAMIENTAS (ACTUALIZADA)
- * @param {Object} params - Parámetros de la consulta multimodal
- * @returns {Array} - Array de errores (vacío si no hay errores)
- */
 export const validateToolMultimodalParams = (params) => {
   const { userId, herramientaId, chatId, content } = params;
   const errors = [];
@@ -259,7 +231,6 @@ export const validateToolMultimodalParams = (params) => {
     contentLength: Array.isArray(content) ? content.length : 0
   });
   
-  // ✅ VALIDACIONES OBLIGATORIAS
   
   // 1. Validar userId
   if (!userId) {
@@ -287,7 +258,6 @@ export const validateToolMultimodalParams = (params) => {
   } else if (content.length > 25) { // Aumentado como en pathologyutils
     errors.push("Demasiados elementos en content. Máximo permitido: 25");
   } else {
-    // Validar cada elemento del contenido
     content.forEach((item, index) => {
       if (!item || typeof item !== 'object') {
         errors.push(`El elemento ${index} del contenido debe ser un objeto válido`);
@@ -300,7 +270,6 @@ export const validateToolMultimodalParams = (params) => {
         errors.push(`El elemento ${index} tiene un tipo desconocido: ${item.type}`);
       }
       
-      // Validar contenido de texto
       if (item.type === 'text') {
         if (!item.text || typeof item.text !== 'string') {
           errors.push(`El elemento ${index} de tipo 'text' debe tener un campo 'text' válido`);
@@ -309,14 +278,12 @@ export const validateToolMultimodalParams = (params) => {
         }
       }
       
-      // Validar contenido de imagen
       if (item.type === 'image_url') {
         if (!item.image_url) {
           errors.push(`El elemento ${index} de tipo 'image_url' debe tener un campo 'image_url' válido`);
         } else if (typeof item.image_url === 'object' && !item.image_url.url) {
           errors.push(`El elemento ${index} de tipo 'image_url' debe tener un campo 'image_url.url' válido`);
         } else if (typeof item.image_url === 'string') {
-          // Validar URL si es string
           try {
             const url = new URL(item.image_url);
             if (!['http:', 'https:', 'data:'].includes(url.protocol)) {
@@ -326,7 +293,6 @@ export const validateToolMultimodalParams = (params) => {
             errors.push(`El elemento ${index} tiene una URL inválida`);
           }
         } else if (typeof item.image_url === 'object' && item.image_url.url) {
-          // Validar URL en objeto
           try {
             const url = new URL(item.image_url.url);
             if (!['http:', 'https:', 'data:'].includes(url.protocol)) {
@@ -338,14 +304,12 @@ export const validateToolMultimodalParams = (params) => {
         }
       }
       
-      // ✅ NUEVA VALIDACIÓN: Para elementos de archivo/documento (como en pathologyutils)
       if (['file', 'document', 'application'].includes(item.type)) {
         // Debe tener al menos file_url o data_url
         if (!item.file_url && !item.data_url) {
           errors.push(`El elemento ${index} de tipo '${item.type}' debe tener 'file_url' o 'data_url'`);
         }
         
-        // Validar file_url si existe
         if (item.file_url) {
           if (typeof item.file_url !== 'string') {
             errors.push(`El elemento ${index} tiene un 'file_url' inválido`);
@@ -361,7 +325,6 @@ export const validateToolMultimodalParams = (params) => {
           }
         }
         
-        // Validar data_url si existe
         if (item.data_url) {
           if (typeof item.data_url !== 'string') {
             errors.push(`El elemento ${index} tiene un 'data_url' inválido`);
@@ -370,7 +333,6 @@ export const validateToolMultimodalParams = (params) => {
           }
         }
         
-        // Validar nombre de archivo si se proporciona
         if (item.name && typeof item.name !== 'string') {
           errors.push(`El elemento ${index} tiene un nombre de archivo inválido`);
         }
@@ -379,7 +341,6 @@ export const validateToolMultimodalParams = (params) => {
           errors.push(`El elemento ${index} tiene un nombre de archivo inválido`);
         }
         
-        // Validar tipo MIME si se proporciona
         if (item.mime_type && !isSupportedDocumentType(item.mime_type)) {
           errors.push(`El elemento ${index} tiene un tipo MIME no soportado: ${item.mime_type}`);
         }
@@ -388,7 +349,6 @@ export const validateToolMultimodalParams = (params) => {
           errors.push(`El elemento ${index} tiene un tipo MIME no soportado: ${item.mimeType}`);
         }
         
-        // Validar tamaño si se proporciona
         if (item.size && (!Number.isInteger(item.size) || item.size <= 0)) {
           errors.push(`El elemento ${index} tiene un tamaño de archivo inválido`);
         } else if (item.size && item.size > 10 * 1024 * 1024) { // 10MB
@@ -398,7 +358,6 @@ export const validateToolMultimodalParams = (params) => {
     });
   }
   
-  // ✅ VALIDACIONES OPCIONALES
   
   // 4. Validar chatId (OPCIONAL)
   if (chatId !== undefined && chatId !== null && chatId !== '') {
@@ -414,11 +373,6 @@ export const validateToolMultimodalParams = (params) => {
   return errors;
 };
 
-/**
- * ✅ FUNCIÓN PARA EXTRAER TEXTO DE CONTENIDO MULTIMODAL
- * @param {Array} content - Contenido multimodal
- * @returns {string} - Texto extraído y sanitizado
- */
 export const extractTextFromToolMultimodal = (content) => {
   if (!Array.isArray(content)) {
     console.warn('⚠️ extractTextFromToolMultimodal: content no es un array');
@@ -429,7 +383,6 @@ export const extractTextFromToolMultimodal = (content) => {
     const extractedText = content
       .filter(item => item && item.type === 'text' && typeof item.text === 'string')
       .map(item => {
-        // Truncar textos excesivamente largos por seguridad
         return item.text.substring(0, 10000);
       })
       .join("\n\n")
@@ -449,11 +402,6 @@ export const extractTextFromToolMultimodal = (content) => {
   }
 };
 
-/**
- * ✅ FUNCIÓN PARA VALIDAR TIPO DE HERRAMIENTA
- * @param {string} toolType - Tipo de herramienta ('agent', 'pdf')
- * @returns {number|null} - ID de herramienta o null si es inválido
- */
 export const getToolIdByType = (toolType) => {
   if (!toolType || typeof toolType !== 'string') {
     return null;
@@ -463,51 +411,33 @@ export const getToolIdByType = (toolType) => {
   return TOOL_TYPE_MAP[normalizedType] || null;
 };
 
-/**
- * ✅ FUNCIÓN PARA OBTENER NOMBRE DE HERRAMIENTA POR ID
- * @param {number} toolId - ID de herramienta
- * @returns {string|null} - Nombre de herramienta o null si es inválido
- */
 export const getToolNameById = (toolId) => {
   const typeMap = Object.entries(TOOL_TYPE_MAP).find(([_, id]) => id === Number(toolId));
   return typeMap ? typeMap[0] : null;
 };
 
-/**
- * ✅ FUNCIÓN PARA SANITIZAR CONSULTA DE HERRAMIENTA
- * @param {string} query - Consulta a sanitizar
- * @returns {string} - Consulta sanitizada
- */
 export const sanitizeToolQuery = (query) => {
   if (!query || typeof query !== 'string') {
     return '';
   }
   
   return query
-    // Eliminar caracteres peligrosos pero mantener caracteres útiles para educación
     .replace(/[<>]/g, '') // Eliminar < y >
     .replace(/script/gi, '') // Eliminar "script" (case insensitive)
     .replace(/javascript:/gi, '') // Eliminar javascript:
     .replace(/on\w+=/gi, '') // Eliminar event handlers como onclick=
     // Mantener caracteres educativos: letras, números, espacios, signos matemáticos
     .replace(/[^\w\sáéíóúñüÁÉÍÓÚÑÜ.,;:!?¿¡()\[\]{}+=\-*/%^$€@#&|\\~`'"]/g, '')
-    // Normalizar espacios
     .replace(/\s+/g, ' ')
     .trim()
     // Limitar longitud
     .substring(0, 10000);
 };
 
-/**
- * ✅ FUNCIÓN PARA VALIDAR PARÁMETROS MÍNIMOS DE HERRAMIENTAS
- * @param {Object} params - Parámetros básicos
- * @returns {Object} - Resultado de validación con errores y parámetros normalizados
- */
 export const validateBasicToolParams = (params) => {
   const errors = [];
   const normalized = {};
   
-  // Normalizar userId
   if (params.userId) {
     const userIdNum = Number(params.userId);
     if (Number.isInteger(userIdNum) && userIdNum > 0) {
@@ -519,7 +449,6 @@ export const validateBasicToolParams = (params) => {
     errors.push('userId es requerido');
   }
   
-  // Normalizar herramientaId
   if (params.herramientaId) {
     const herramientaIdNum = Number(params.herramientaId);
     if (Number.isInteger(herramientaIdNum) && VALID_HERRAMIENTA_IDS.includes(herramientaIdNum)) {
@@ -531,7 +460,6 @@ export const validateBasicToolParams = (params) => {
     errors.push('herramientaId es requerido');
   }
   
-  // Normalizar chatId (opcional)
   if (params.chatId && params.chatId !== null && params.chatId !== '') {
     if (isValidUUID(params.chatId)) {
       normalized.chatId = params.chatId;
@@ -549,12 +477,6 @@ export const validateBasicToolParams = (params) => {
   };
 };
 
-/**
- * ✅ FUNCIÓN DE DEBUG PARA LOGGING DE HERRAMIENTAS
- * @param {string} operation - Operación siendo ejecutada
- * @param {Object} params - Parámetros de la operación
- * @param {Object} extra - Información adicional
- */
 export const logToolOperation = (operation, params, extra = {}) => {
   console.log(`🔧 [TOOL-${operation.toUpperCase()}]`, {
     timestamp: new Date().toISOString(),

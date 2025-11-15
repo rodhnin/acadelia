@@ -15,7 +15,6 @@ const router = express.Router();
 // Middleware para procesar la imagen y añadir la ruta al body
 function handleImageUpload(req, res, next) {
   if (req.file) {
-    // Crear la ruta relativa para guardar en la base de datos
     req.body.imagen = `/uploads/herramientas/${req.file.filename}`;
   }
   next();

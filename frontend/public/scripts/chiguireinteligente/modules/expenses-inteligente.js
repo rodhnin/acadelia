@@ -40,23 +40,18 @@ export class ExpensesModule {
   async init() {
     console.log('Inicializando módulo de egresos');
     
-    // Inicializar variables para datos completos
     this.allExpenses = [];
     this.lastApiResponse = null;
     
-    // Configurar event listeners
     this.setupEventListeners();
     
-    // Configurar validación de formularios (IMPORTANTE: llamar aquí para que esté listo desde el inicio)
     this.setupFormValidation();
     
-    // Suscribirse a cambios de fecha - MODIFICADO para usar filtrado local
     this.eventBus.on('dateRangeChanged', (range) => {
       this.dateRange = range;
       this.filterSettings.startDate = range.start;
       this.filterSettings.endDate = range.end;
       
-      // Comprobar si tenemos datos locales para filtrar
       if (this.allExpenses.length > 0) {
         console.log('Usando filtrado local para cambio de fecha en egresos');
         this.refreshWithLocalData();
@@ -66,10 +61,8 @@ export class ExpensesModule {
       }
     });
     
-    // Cargar datos iniciales
     await this.loadExpensesData();
     
-    // Cargar categorías
     await this.loadCategories();
     
     return true;
@@ -86,7 +79,6 @@ export class ExpensesModule {
       this.applyFilters();
     });
 
-    // Añadir botón de reinicio de filtros
 this.resetButton = this.ui.addResetFiltersButton(
   'expenses-section', 
   'reset-expense-filters',
@@ -96,7 +88,6 @@ this.resetButton = this.ui.addResetFiltersButton(
 
 // También puedes escuchar eventos para aplicar filtros
 document.getElementById('apply-expense-filters').addEventListener('click', () => {
-  // Actualizar estado del botón al aplicar filtros
   setTimeout(() => {
     this.updateResetButtonVisibility();
   }, 100);
@@ -151,7 +142,6 @@ document.getElementById('apply-expense-filters').addEventListener('click', () =>
     });
     
     document.getElementById('delete-expense').addEventListener('click', () => {
-      // Obtener el ID del egreso actualmente cargado en el modal de edición
       const expenseId = document.getElementById('edit-expense-id').value;
       if (expenseId) {
         console.log("Solicitando eliminación desde el botón del modal de edición, ID:", expenseId);
@@ -213,21 +203,17 @@ resetFilters() {
   if (categoryFilter) categoryFilter.value = '';
   if (taxFilter) taxFilter.value = '';
   
-  // Eliminar las clases activas de las categorías visuales
   document.querySelectorAll('.category-item').forEach(item => {
     item.classList.remove('active');
   });
   
-  // Resetear paginación
   this.currentPage = 1;
   
-  // Notificar al usuario
   this.ui.showSuccessMessage('Filtros reiniciados');
   
   // Recargar datos
   this.applyFilters();
   
-  // Actualizar estado del botón
   this.updateResetButtonVisibility();
 }
 
@@ -251,17 +237,14 @@ async loadExpensesData() {
   try {
     const response = await this.api.getExpenses();
     if (response && response.data) {
-      // Guardar respuesta completa para referencia
       this.lastApiResponse = response;
       
-      // Guardar datos en la propiedad principal
       this.expenses = response.data;
       
       // NUEVO: Guardar copia completa para filtrado local
       this.allExpenses = [...this.expenses];
       console.log(`Almacenados ${this.allExpenses.length} registros para filtrado local de egresos`);
       
-      // Inicializar filtros aplicando los filtros actuales
       this.filteredExpenses = [...this.expenses];
       this.renderExpenses();
       this.updateSummary();
@@ -350,13 +333,10 @@ async loadExpensesData() {
       return matchesFilter;
     });
     
-    // Ordenar por fecha descendente (más reciente primero)
     this.filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    // Renderizar la lista filtrada
     this.renderExpenses();
     
-    // Actualizar el resumen y gráficos con los datos filtrados
     this.updateSummary();
     this.updateCharts();
     this.updateResetButtonVisibility();
@@ -376,7 +356,6 @@ filterDataByDateRange(expenses, dateRange) {
   
   console.log(`Filtrando ${expenses.length} egresos por rango: ${dateRange.start} a ${dateRange.end}`);
   
-  // Convertir fechas de string a objetos Date
   const startDate = new Date(dateRange.start);
   const endDate = new Date(dateRange.end);
   // Ajustar endDate para incluir todo el día
@@ -393,7 +372,6 @@ filterDataByDateRange(expenses, dateRange) {
  * Refresca los datos de egresos usando filtrado local
  */
 refreshWithLocalData() {
-  // Verificar que tenemos datos locales
   if (!this.allExpenses || this.allExpenses.length === 0) {
     console.warn('No hay datos locales de egresos para filtrar, usando API');
     this.refreshExpenses();
@@ -405,21 +383,17 @@ refreshWithLocalData() {
   try {
     this.ui.showLoading('Actualizando datos de egresos...');
     
-    // Definir rango de fechas para filtrar
     if (!this.dateRange) {
       console.warn('No hay rango de fechas definido para filtrado local de egresos');
       this.ui.hideLoading();
       return;
     }
     
-    // Filtrar datos localmente por fecha
     const filteredByDate = this.filterDataByDateRange(this.allExpenses, this.dateRange);
     console.log(`Filtro local de egresos: ${filteredByDate.length} de ${this.allExpenses.length} egresos`);
     
-    // Aplicar el resultado a la lista principal de egresos
     this.expenses = filteredByDate;
     
-    // Aplicar filtros adicionales (categoría, búsqueda, etc.)
     this.applyFilters();
     
     // Este método ya se encarga de:
@@ -430,7 +404,6 @@ refreshWithLocalData() {
     
     this.ui.hideLoading();
     
-    // Mostrar notificación pequeña
     this.ui.showSuccessMessage('Datos de egresos filtrados por fecha');
   } catch (error) {
     console.error('Error al aplicar filtro local de egresos:', error);
@@ -449,7 +422,6 @@ renderExpenses() {
   const tableBody = document.getElementById('expenses-table');
   if (!tableBody) return;
   
-  // Limpiar tabla
   tableBody.innerHTML = '';
   
   // Si no hay egresos filtrados
@@ -458,21 +430,17 @@ renderExpenses() {
     emptyRow.innerHTML = '<td colspan="8" class="text-center">No se encontraron egresos con los filtros actuales</td>';
     tableBody.appendChild(emptyRow);
     
-    // Actualizar paginación
     this.updatePagination(0, 0, 0);
     return;
   }
   
-  // Calcular índices para paginación
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
   const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredExpenses.length);
   const paginatedExpenses = this.filteredExpenses.slice(startIndex, endIndex);
   
-  // Generar filas para cada egreso
   paginatedExpenses.forEach(expense => {
     const row = document.createElement('tr');
     
-    // Formatear indicador de deducible
     const deductibleIndicator = expense.is_tax_deductible 
       ? '<div class="tax-deductible-indicator tax-deductible-yes"><i class="bi bi-check"></i></div>' 
       : '<div class="tax-deductible-indicator tax-deductible-no"><i class="bi bi-x"></i></div>';
@@ -500,14 +468,11 @@ renderExpenses() {
       </td>
     `;
     
-    // Añadir a la tabla
     tableBody.appendChild(row);
   });
   
-  // Configurar event listeners para acciones después de renderizar
   this.setupTableActions();
   
-  // Actualizar paginación
   this.updatePagination(startIndex + 1, endIndex, this.filteredExpenses.length);
 }
   
@@ -522,7 +487,6 @@ renderExpenses() {
     document.getElementById('expense-pagination-end').textContent = end;
     document.getElementById('expense-pagination-total').textContent = total;
     
-    // Habilitar/deshabilitar botones de paginación
     document.getElementById('expense-prev-page').disabled = this.currentPage <= 1;
     document.getElementById('expense-next-page').disabled = end >= total;
   }
@@ -543,7 +507,6 @@ renderExpenses() {
     document.querySelectorAll('.delete-expense').forEach(button => {
       button.addEventListener('click', () => {
         const expenseId = button.getAttribute('data-id');
-        // Llamar directamente a confirmDeleteExpense con el ID
         this.confirmDeleteExpense(expenseId);
       });
     });
@@ -560,7 +523,6 @@ renderExpenses() {
    * Actualiza el resumen de egresos
    */
   updateSummary() {
-    // Calcular totales
     const totals = {
       total: 0,
       totalVAT: 0,        // Añade esta nueva propiedad para el IVA total
@@ -570,18 +532,14 @@ renderExpenses() {
     };
     
     this.filteredExpenses.forEach(expense => {
-      // Sumar al total general (importe + IVA)
       totals.total += parseFloat(expense.amount || 0) + parseFloat(expense.tax_amount || 0);
       
-      // Sumar al total de IVA (independientemente de si es deducible)
       totals.totalVAT += parseFloat(expense.tax_amount || 0);
       
-      // Calcular los dos valores deducibles
       if (expense.is_tax_deductible) {
         // Total de gastos que son fiscalmente deducibles
         totals.deductibleExpenses += parseFloat(expense.amount || 0);
         
-        // Solo el IVA que es deducible
         totals.deductibleVAT += parseFloat(expense.tax_amount || 0);
       }
       
@@ -602,28 +560,23 @@ renderExpenses() {
       totals.byCategory[categoryId].count += 1;
     });
     
-    // Actualizar los elementos en la UI
     document.getElementById('expenses-total').textContent = formatCurrency(totals.total);
     document.getElementById('expenses-total-vat').textContent = formatCurrency(totals.totalVAT);
     document.getElementById('expenses-deductible').textContent = formatCurrency(totals.deductibleExpenses);
     document.getElementById('expenses-deductible-vat').textContent = formatCurrency(totals.deductibleVAT);
     document.getElementById('expense-amount').textContent = formatCurrency(totals.total);
     
-    // Obtener datos de ingresos para comparación
     this.getIncomeData().then(incomeTotal => {
       document.getElementById('income-amount').textContent = formatCurrency(incomeTotal);
       
-      // Calcular porcentajes para la barra de progreso
       const totalFinance = incomeTotal + totals.total;
       const incomePercentage = totalFinance > 0 ? (incomeTotal / totalFinance) * 100 : 0;
       const expensePercentage = totalFinance > 0 ? (totals.total / totalFinance) * 100 : 0;
       
-      // Actualizar barras de progreso
       document.getElementById('income-bar').style.width = `${incomePercentage}%`;
       document.getElementById('expense-bar').style.width = `${expensePercentage}%`;
     });
     
-    // Actualizar resumen por categoría
     this.updateCategorySummary(totals.byCategory);
   }
   
@@ -639,7 +592,6 @@ renderExpenses() {
       
       console.log('Obteniendo datos de ingresos con filtros:', { startDate, endDate });
       
-      // Definir fechas por defecto si no están configuradas
       let dateFrom = startDate;
       let dateTo = endDate;
       
@@ -650,7 +602,6 @@ renderExpenses() {
         console.log('Usando fechas por defecto:', { dateFrom, dateTo });
       }
       
-      // Intentar obtener datos con la API de totales de transacciones
       try {
         const response = await this.api.getTransactionsTotals({
           date_from: dateFrom,
@@ -671,19 +622,17 @@ renderExpenses() {
         const transactions = await this.api.getTransactions();
         
         if (Array.isArray(transactions)) {
-          // Filtrar por fecha si es necesario
           const filteredTransactions = transactions.filter(tx => {
             if (!dateFrom || !dateTo) return true;
             
             const txDate = new Date(tx.updated_at || tx.created_at);
             const start = new Date(dateFrom);
             const end = new Date(dateTo);
-            end.setHours(23, 59, 59, 999); // Incluir todo el día final
+            end.setHours(23, 59, 59, 999);
             
             return txDate >= start && txDate <= end;
           });
           
-          // Sumar todos los montos (preferir amount_eur para consistencia)
           const totalIncome = filteredTransactions.reduce((sum, tx) => {
             return sum + parseFloat(tx.amount_eur || tx.amount || 0);
           }, 0);
@@ -695,7 +644,6 @@ renderExpenses() {
         console.warn('Error con método alternativo:', err);
       }
       
-      // Si todo falla, al menos mostrar algún dato para testing
       console.warn('No se pudieron obtener datos de ingresos');
       return 0;
     } catch (error) {
@@ -712,7 +660,6 @@ renderExpenses() {
     const categorySummary = document.getElementById('category-summary');
     if (!categorySummary) return;
     
-    // Limpiar contenido actual
     categorySummary.innerHTML = '';
     
     // Si no hay datos
@@ -721,16 +668,12 @@ renderExpenses() {
       return;
     }
     
-    // Convertir a array y ordenar por total (descendente)
     const categoriesArray = Object.values(categoriesData).sort((a, b) => b.total - a.total);
     
-    // Obtener el total general para calcular porcentajes
     const grandTotal = categoriesArray.reduce((sum, cat) => sum + cat.total, 0);
     
-    // Mostrar solo las 5 principales categorías
     const topCategories = categoriesArray.slice(0, 5);
     
-    // Crear elementos para cada categoría
     topCategories.forEach((category, index) => {
       const percentage = grandTotal > 0 ? (category.total / grandTotal) * 100 : 0;
       const colorClass = `category-color-${(index % 10) + 1}`;
@@ -767,7 +710,6 @@ renderExpenses() {
     const ctx = document.getElementById('expenses-category-chart');
     if (!ctx) return;
     
-    // Preparar datos para el gráfico
     const chartData = this.prepareCategoryChartData();
     
     // Configuración del gráfico
@@ -809,7 +751,6 @@ renderExpenses() {
       }
     };
     
-    // Crear o actualizar gráfico
     if (this.charts.category) {
       this.charts.category.data = config.data;
       this.charts.category.update();
@@ -825,7 +766,6 @@ renderExpenses() {
     const ctx = document.getElementById('expenses-monthly-chart');
     if (!ctx) return;
     
-    // Preparar datos para el gráfico
     const chartData = this.prepareMonthlyChartData();
     
     // Configuración del gráfico
@@ -872,7 +812,6 @@ renderExpenses() {
       }
     };
     
-    // Crear o actualizar gráfico
     if (this.charts.monthly) {
       this.charts.monthly.data = config.data;
       this.charts.monthly.update();
@@ -903,7 +842,6 @@ renderExpenses() {
       categoryTotals[categoryId].total += parseFloat(expense.amount);
     });
     
-    // Convertir a arrays para el gráfico
     const categories = Object.values(categoryTotals).sort((a, b) => b.total - a.total);
     
     return {
@@ -917,11 +855,9 @@ renderExpenses() {
    * @returns {Object} Datos formateados para el gráfico
    */
   prepareMonthlyChartData() {
-    // Definir período para el gráfico (últimos 12 meses por defecto)
     const today = new Date();
     const monthsData = {};
     
-    // Inicializar los 12 meses con 0
     for (let i = 11; i >= 0; i--) {
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -938,13 +874,11 @@ renderExpenses() {
       const expenseDate = new Date(expense.date);
       const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
       
-      // Solo añadir si está dentro del rango de los últimos 12 meses
       if (monthsData[monthKey]) {
         monthsData[monthKey].total += parseFloat(expense.amount);
       }
     });
     
-    // Convertir a arrays ordenados por fecha
     const sortedMonths = Object.keys(monthsData).sort();
     
     return {
@@ -995,7 +929,6 @@ async refreshExpenses(forceApi = false) {
     
     // Si no estamos forzando API y tenemos datos locales, usar filtrado local
     if (!forceApi && this.allExpenses.length > 0) {
-      // Verificar si solo es un cambio de fecha o filtros simples
       const hasOnlyDateFilters = !this.filterSettings.category_id && 
                                 !this.filterSettings.search && 
                                 this.filterSettings.is_tax_deductible === null &&
@@ -1010,22 +943,17 @@ async refreshExpenses(forceApi = false) {
     }
     
     // Si llegamos aquí, necesitamos recargar datos desde API
-    // Limpiar caché API
     this.api.clearCache('expenses');
     
-    // Mostrar indicador de carga
     this.ui.showLoading('Actualizando datos de egresos...');
     
     // Recargar datos
     await this.loadExpensesData();
     
-    // Aplicar filtros actuales
     this.applyFilters();
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
-    // Notificar al usuario
     this.ui.showSuccessMessage('Datos de egresos actualizados correctamente');
   } catch (error) {
     console.error('Error al actualizar egresos:', error);
@@ -1056,7 +984,6 @@ async refreshExpenses(forceApi = false) {
         select.appendChild(firstOption);
       }
       
-      // Añadir las categorías
       this.categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category.id;
@@ -1076,7 +1003,6 @@ async refreshExpenses(forceApi = false) {
     const categoryList = document.getElementById('category-list');
     if (!categoryList) return;
     
-    // Limpiar lista actual
     categoryList.innerHTML = '';
     
     // Si no hay categorías
@@ -1085,7 +1011,6 @@ async refreshExpenses(forceApi = false) {
       return;
     }
     
-    // Añadir cada categoría
     this.categories.forEach(category => {
       const categoryItem = document.createElement('div');
       categoryItem.className = 'category-item';
@@ -1096,13 +1021,11 @@ async refreshExpenses(forceApi = false) {
       
       // Event listener para filtrar al hacer clic
       categoryItem.addEventListener('click', () => {
-        // Marcar como activa visualmente
         document.querySelectorAll('.category-item').forEach(item => {
           item.classList.remove('active');
         });
         categoryItem.classList.add('active');
         
-        // Aplicar filtro
         this.filterSettings.category_id = category.id;
         document.getElementById('expense-category-filter').value = category.id;
         this.currentPage = 1;
@@ -1112,7 +1035,6 @@ async refreshExpenses(forceApi = false) {
       categoryList.appendChild(categoryItem);
     });
     
-    // Inicializar tooltips para TODOS los elementos con tooltip
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
       new bootstrap.Tooltip(el);
     });
@@ -1125,19 +1047,16 @@ async saveExpense() {
   try {
     console.log("Iniciando guardado de egreso...");
     
-    // Obtener el formulario completo
     const form = document.getElementById('add-expense-form');
     if (!form) {
       this.ui.showErrorMessage('Error', 'No se encontró el formulario de egresos');
       return;
     }
 
-    // Limpiar validación anterior
     form.querySelectorAll('.is-invalid').forEach(el => {
       el.classList.remove('is-invalid');
     });
     
-    // Obtener todos los elementos del formulario
     const dateEl = form.querySelector('#expense-date');
     const categoryEl = form.querySelector('#expense-category');
     const descriptionEl = form.querySelector('#expense-description');
@@ -1148,7 +1067,6 @@ async saveExpense() {
     const deductibleEl = form.querySelector('#expense-tax-deductible');
     const invoiceFileEl = form.querySelector('#expense-invoice');
     
-    // Verificar elementos críticos
     if (!dateEl || !categoryEl || !descriptionEl || !amountEl || !methodEl || !refEl) {
       console.error("Elementos no encontrados");
       this.ui.showErrorMessage('Error', 'No se pudieron encontrar todos los elementos del formulario');
@@ -1162,78 +1080,66 @@ async saveExpense() {
     const payment_method = methodEl.value ? methodEl.value.trim() : '';
     const reference = refEl.value ? refEl.value.trim() : '';
     
-    // Procesar importe
     let amount = NaN;
     if (amountEl.value !== undefined && amountEl.value !== "") {
       const amountValue = amountEl.value.toString().replace(',', '.');
       amount = parseFloat(amountValue);
     }
     
-    // Procesar IVA
     let tax_amount = 0;
     if (taxEl && taxEl.value) {
       const taxValue = taxEl.value.toString().replace(',', '.');
       tax_amount = parseFloat(taxValue) || 0;
     }
     
-    // Validar datos con feedback visual
     const errors = [];
     
-    // Validar fecha
     if (!date) {
       errors.push('Fecha es requerida');
       dateEl.classList.add('is-invalid');
       this.addInvalidFeedback(dateEl, 'La fecha es obligatoria');
     }
     
-    // Validar categoría
     if (!category_id) {
       errors.push('Categoría es requerida');
       categoryEl.classList.add('is-invalid');
       this.addInvalidFeedback(categoryEl, 'Selecciona una categoría');
     }
     
-    // Validar descripción
     if (!description) {
       errors.push('Descripción es requerida');
       descriptionEl.classList.add('is-invalid');
       this.addInvalidFeedback(descriptionEl, 'La descripción es obligatoria');
     }
     
-    // Validar método de pago
     if (!payment_method) {
       errors.push('Método de pago es requerido');
       methodEl.classList.add('is-invalid');
       this.addInvalidFeedback(methodEl, 'Selecciona un método de pago');
     }
     
-    // Validar referencia
     if (!reference) {
       errors.push('Referencia es requerida');
       refEl.classList.add('is-invalid');
       this.addInvalidFeedback(refEl, 'La referencia es obligatoria');
     }
     
-    // Validar importe
     if (isNaN(amount) || amount <= 0) {
       errors.push('Importe debe ser un número mayor que cero');
       amountEl.classList.add('is-invalid');
       this.addInvalidFeedback(amountEl, 'Por favor ingresa un importe válido mayor que cero');
     }
     
-    // Validar archivo de factura si está seleccionado
     let invoiceFile = null;
     if (invoiceFileEl && invoiceFileEl.files && invoiceFileEl.files.length > 0) {
       invoiceFile = invoiceFileEl.files[0];
       
-      // Validar que sea un PDF
       if (invoiceFile.type !== 'application/pdf') {
         errors.push('La factura debe ser un archivo PDF');
         invoiceFileEl.classList.add('is-invalid');
         this.addInvalidFeedback(invoiceFileEl, 'Por favor selecciona un archivo PDF válido');
       }
       
-      // Validar tamaño (máximo 5MB)
       if (invoiceFile.size > 5 * 1024 * 1024) {
         errors.push('El archivo es demasiado grande (máximo 5MB)');
         invoiceFileEl.classList.add('is-invalid');
@@ -1247,7 +1153,6 @@ async saveExpense() {
       return;
     }
     
-    // Preparar datos del egreso
     const expenseData = {
       date,
       category_id,
@@ -1259,39 +1164,31 @@ async saveExpense() {
       is_tax_deductible: deductibleEl ? deductibleEl.checked : false
     };
     
-    // Mostrar indicador de carga
     if (this.ui.showLoading) {
       this.ui.showLoading('Guardando egreso...');
     }
     
     // Si hay archivo de factura, usar FormData para enviar datos + archivo
     if (invoiceFile) {
-      // Crear FormData y añadir todos los campos
       const formData = new FormData();
       
-      // Añadir datos del egreso
       Object.keys(expenseData).forEach(key => {
         formData.append(key, expenseData[key]);
       });
       
-      // Añadir el archivo
       formData.append('invoice', invoiceFile);
       
       try {
-        // Enviar datos con archivo al API
         const response = await this.api.createExpenseWithInvoice(formData);
         
         if (response && response.success) {
-          // Cerrar modal
           const modal = bootstrap.Modal.getInstance(document.getElementById('addExpenseModal'));
           if (modal) {
             modal.hide();
           }
           
-          // Limpiar formulario
           form.reset();
           
-          // Quitar clases de error
           form.querySelectorAll('.is-invalid').forEach(el => {
             el.classList.remove('is-invalid');
           });
@@ -1299,7 +1196,6 @@ async saveExpense() {
           // Recargar datos
           await this.refreshExpenses();
           
-          // Mostrar mensaje de éxito
           this.ui.showSuccessMessage('Egreso creado correctamente con factura');
         } else {
           throw new Error(response?.message || 'Error al guardar egreso con factura');
@@ -1308,7 +1204,6 @@ async saveExpense() {
         console.error('Error al guardar egreso con factura:', error);
         this.ui.showErrorMessage('Error al guardar', error.message || 'No se pudo guardar el egreso con factura.');
       } finally {
-        // Ocultar indicador de carga
         if (this.ui.hideLoading) {
           this.ui.hideLoading();
         }
@@ -1321,16 +1216,13 @@ async saveExpense() {
         const response = await this.api.createExpense(expenseData);
         
         if (response && response.success) {
-          // Cerrar modal
           const modal = bootstrap.Modal.getInstance(document.getElementById('addExpenseModal'));
           if (modal) {
             modal.hide();
           }
           
-          // Limpiar formulario
           form.reset();
           
-          // Quitar clases de error
           form.querySelectorAll('.is-invalid').forEach(el => {
             el.classList.remove('is-invalid');
           });
@@ -1338,7 +1230,6 @@ async saveExpense() {
           // Recargar datos
           await this.refreshExpenses();
           
-          // Mostrar mensaje de éxito
           this.ui.showSuccessMessage('Egreso creado correctamente');
         } else {
           throw new Error(response?.message || 'Error al guardar egreso');
@@ -1347,7 +1238,6 @@ async saveExpense() {
         console.error('Error al guardar egreso:', error);
         this.ui.showErrorMessage('Error al guardar', error.message || 'No se pudo guardar el egreso.');
       } finally {
-        // Ocultar indicador de carga
         if (this.ui.hideLoading) {
           this.ui.hideLoading();
         }
@@ -1356,7 +1246,6 @@ async saveExpense() {
   } catch (error) {
     console.error('Error general al guardar egreso:', error);
     
-    // Ocultar indicador de carga en caso de error
     if (this.ui.hideLoading) {
       this.ui.hideLoading();
     }
@@ -1377,24 +1266,19 @@ async uploadInvoice(expenseId, file) {
       throw new Error('Por favor selecciona un archivo PDF válido');
     }
     
-    // Crear FormData para enviar el archivo
     const formData = new FormData();
     formData.append('invoice', file);
     
-    // Mostrar indicador de carga
     if (this.ui.showLoading) {
       this.ui.showLoading('Subiendo factura...');
     }
     
-    // Usar el método del API service
     const response = await this.api.uploadExpenseInvoice(expenseId, formData);
     
-    // Ocultar indicador de carga
     if (this.ui.hideLoading) {
       this.ui.hideLoading();
     }
     
-    // Notificar éxito
     this.ui.showSuccessMessage('Factura subida correctamente');
     
     // Refrescar datos
@@ -1402,7 +1286,6 @@ async uploadInvoice(expenseId, file) {
     
     return response;
   } catch (error) {
-    // Ocultar indicador de carga en caso de error
     if (this.ui.hideLoading) {
       this.ui.hideLoading();
     }
@@ -1419,14 +1302,12 @@ async uploadInvoice(expenseId, file) {
  */
 showUploadInvoiceModal(expenseId) {
   try {
-    // Buscar egreso por ID
     const expense = this.expenses.find(e => e.id == expenseId);
     if (!expense) {
       this.ui.showErrorMessage('Error', 'No se encontró el egreso especificado');
       return;
     }
     
-    // Verificar si ya existe el modal
     let uploadModal = document.getElementById('uploadInvoiceModal');
     
     // Si no existe, crearlo
@@ -1481,15 +1362,12 @@ showUploadInvoiceModal(expenseId) {
       uploadModal = document.getElementById('uploadInvoiceModal');
     }
     
-    // Actualizar datos del egreso en el modal
     document.getElementById('upload-expense-id').value = expense.id;
     document.getElementById('upload-expense-id-display').textContent = expense.id;
     document.getElementById('upload-expense-description-display').textContent = expense.description || 'Sin descripción';
-    // Usar formatCurrency directamente en lugar de this.formatCurrency
     document.getElementById('upload-expense-amount-display').textContent = formatCurrency(expense.amount);
     document.getElementById('upload-expense-date-display').textContent = formatDate(expense.date);
     
-    // Mostrar enlace a factura actual si existe
     const invoiceContainer = document.getElementById('current-invoice-container');
     const invoiceLink = document.getElementById('current-invoice-link');
     
@@ -1500,21 +1378,17 @@ showUploadInvoiceModal(expenseId) {
       invoiceContainer.style.display = 'none';
     }
     
-    // Limpiar el input de archivo
     const fileInput = document.getElementById('invoice-file');
     if (fileInput) {
       fileInput.value = '';
       fileInput.classList.remove('is-invalid');
     }
     
-    // Configurar botón de confirmación
     const confirmButton = document.getElementById('confirm-upload-invoice');
     if (confirmButton) {
-      // Eliminar listeners previos
       const newConfirmButton = confirmButton.cloneNode(true);
       confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
       
-      // Agregar nuevo listener
       const self = this;
       newConfirmButton.addEventListener('click', async function() {
         const expenseId = document.getElementById('upload-expense-id').value;
@@ -1534,7 +1408,6 @@ showUploadInvoiceModal(expenseId) {
         try {
           await self.uploadInvoice(expenseId, file);
           
-          // Cerrar modal si todo sale bien
           const modal = bootstrap.Modal.getInstance(uploadModal);
           if (modal) {
             modal.hide();
@@ -1546,7 +1419,6 @@ showUploadInvoiceModal(expenseId) {
       });
     }
     
-    // Mostrar modal
     const modal = new bootstrap.Modal(uploadModal);
     modal.show();
   } catch (error) {
@@ -1565,13 +1437,11 @@ addInvalidFeedback(element, message) {
   const inputGroup = element.closest('.input-group');
   const target = inputGroup || element;
   
-  // Verificar si ya existe un feedback
   let feedback = target.nextElementSibling;
   if (!feedback || !feedback.classList.contains('invalid-feedback')) {
     feedback = document.createElement('div');
     feedback.className = 'invalid-feedback';
     
-    // Añadir después del elemento o del grupo
     if (inputGroup) {
       inputGroup.parentNode.insertBefore(feedback, inputGroup.nextSibling);
     } else {
@@ -1588,14 +1458,11 @@ addInvalidFeedback(element, message) {
  * Se debe llamar después de cargar el DOM
  */
 setupFormValidation() {
-  // Obtener el formulario de agregar egreso
   const addForm = document.getElementById('add-expense-form');
   if (addForm) {
-    // Para cada campo de entrada, añadir un event listener para input
     const inputFields = addForm.querySelectorAll('input, select, textarea');
     inputFields.forEach(field => {
       field.addEventListener('input', () => {
-        // Quitar la clase de error y el mensaje cuando el usuario comienza a escribir
         field.classList.remove('is-invalid');
         
         // Si el campo está dentro de un input-group, buscar feedback después del grupo
@@ -1606,7 +1473,6 @@ setupFormValidation() {
             feedback.style.display = 'none';
           }
         } else {
-          // Para campos normales, buscar feedback directamente
           const feedback = field.nextElementSibling;
           if (feedback && feedback.classList.contains('invalid-feedback')) {
             feedback.style.display = 'none';
@@ -1615,11 +1481,9 @@ setupFormValidation() {
       });
     });
     
-    // Añadir event listener para el botón de cancelar
     const cancelButton = document.querySelector('#addExpenseModal .btn-secondary');
     if (cancelButton) {
       cancelButton.addEventListener('click', () => {
-        // Limpiar formulario y errores al cancelar
         addForm.reset();
         addForm.querySelectorAll('.is-invalid').forEach(el => {
           el.classList.remove('is-invalid');
@@ -1634,7 +1498,6 @@ setupFormValidation() {
     const modal = document.getElementById('addExpenseModal');
     if (modal) {
       modal.addEventListener('hidden.bs.modal', () => {
-        // Limpiar formulario y errores cuando se cierra el modal
         addForm.reset();
         addForm.querySelectorAll('.is-invalid').forEach(el => {
           el.classList.remove('is-invalid');
@@ -1646,7 +1509,6 @@ setupFormValidation() {
     }
   }
 
-  // Aplicar la misma lógica para el formulario de edición
   const editForm = document.getElementById('edit-expense-form');
   if (editForm) {
     const editInputFields = editForm.querySelectorAll('input, select, textarea');
@@ -1670,7 +1532,6 @@ setupFormValidation() {
     });
   }
 
-  // Añadir clases 'required' a los campos obligatorios
   this.markRequiredFields();
 }
 
@@ -1694,7 +1555,6 @@ markRequiredFields() {
     'label[for="edit-expense-reference"]'
   ];
   
-  // Añadir la clase 'required' a cada etiqueta
   requiredFieldLabels.forEach(selector => {
     const label = document.querySelector(selector);
     if (label) {
@@ -1709,11 +1569,9 @@ markRequiredFields() {
    */
   async openEditExpenseModal(expenseId) {
     try {
-      // Buscar el egreso en los datos cargados
       const expense = this.expenses.find(e => e.id == expenseId);
       
       if (!expense) {
-        // Si no se encuentra localmente, intentar obtenerlo del API
         const response = await this.api.getExpense(expenseId);
         if (!response || !response.data) {
           throw new Error('No se encontró el egreso especificado');
@@ -1732,7 +1590,6 @@ markRequiredFields() {
       document.getElementById('edit-expense-reference').value = expense.reference || '';
       document.getElementById('edit-expense-tax-deductible').checked = expense.is_tax_deductible || false;
       
-      // Abrir modal
       const modal = new bootstrap.Modal(document.getElementById('editExpenseModal'));
       modal.show();
     } catch (error) {
@@ -1760,24 +1617,20 @@ markRequiredFields() {
         is_tax_deductible: document.getElementById('edit-expense-tax-deductible').checked
       };
       
-      // Validar campos requeridos
       if (!expenseData.date || !expenseData.category_id || !expenseData.description || isNaN(expenseData.amount)) {
         this.ui.showErrorMessage('Error en formulario', 'Todos los campos marcados como requeridos deben ser completados.');
         return;
       }
       
-      // Enviar al API
       const response = await this.api.updateExpense(expenseId, expenseData);
       
       if (response && response.success) {
-        // Cerrar modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('editExpenseModal'));
         modal.hide();
         
         // Recargar datos
         await this.refreshExpenses();
         
-        // Notificar éxito
         this.ui.showSuccessMessage('Egreso actualizado correctamente');
       } else {
         throw new Error(response.message || 'Error al actualizar egreso');
@@ -1796,7 +1649,6 @@ confirmDeleteExpense(expenseId) {
   try {
     console.log("Iniciando confirmación de eliminación para ID:", expenseId);
     
-    // Buscar el egreso para mostrar información
     const expense = this.expenses.find(e => e.id == expenseId);
     
     if (!expense) {
@@ -1807,7 +1659,6 @@ confirmDeleteExpense(expenseId) {
     
     console.log("Información del egreso a eliminar:", expense);
     
-    // Obtener o crear el modal de confirmación
     let deleteModal = document.getElementById('deleteExpenseModal');
     
     // Si no existe el modal en el DOM, lo añadimos
@@ -1847,7 +1698,6 @@ confirmDeleteExpense(expenseId) {
       document.body.insertAdjacentHTML('beforeend', modalHTML);
       deleteModal = document.getElementById('deleteExpenseModal');
       
-      // Agregar manejador para cerrar modal
       deleteModal.addEventListener('hidden.bs.modal', () => {
         // Asegurar que el loading se oculte si el modal se cierra
         if (this.ui && this.ui.hideLoading) {
@@ -1856,13 +1706,11 @@ confirmDeleteExpense(expenseId) {
       });
     }
     
-    // Almacenar el ID del egreso a eliminar en el modal
     const idInput = deleteModal.querySelector('#delete-expense-id-input');
     if (idInput) {
       idInput.value = expense.id;
     }
     
-    // Mostrar información del egreso en el modal
     const idDisplay = deleteModal.querySelector('#delete-expense-id-display');
     if (idDisplay) {
       idDisplay.textContent = expense.id;
@@ -1885,38 +1733,30 @@ confirmDeleteExpense(expenseId) {
       dateDisplay.textContent = formatDate(expense.date);
     }
     
-    // Obtener la instancia de Bootstrap Modal
     let modalInstance = bootstrap.Modal.getInstance(deleteModal);
     if (!modalInstance) {
       modalInstance = new bootstrap.Modal(deleteModal);
     }
     
-    // Configurar el botón de confirmación
     const confirmButton = deleteModal.querySelector('#confirm-delete-expense');
     if (confirmButton) {
-      // Eliminar event listeners previos
       const newConfirmButton = confirmButton.cloneNode(true);
       confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
       
-      // Añadir nuevo listener con manejo correcto del contexto (this)
       const self = this; // Preservar el contexto
       newConfirmButton.addEventListener('click', function() {
-        // Obtener el ID del input oculto
         const storedId = deleteModal.querySelector('#delete-expense-id-input').value;
         console.log("Ejecutando eliminación del egreso con ID:", storedId);
         
-        // Usar una referencia explícita a la instancia
         self.deleteExpense(storedId);
       });
     }
     
-    // Mostrar el modal
     modalInstance.show();
     
   } catch (error) {
     console.error('Error al mostrar modal de confirmación:', error);
     
-    // Fallback al método antiguo si hay algún error
     if (confirm('¿Está seguro que desea eliminar este egreso? Esta acción no se puede deshacer.')) {
       this.deleteExpense(expenseId);
     }
@@ -1931,7 +1771,6 @@ async deleteExpense(expenseId) {
   // Variable para controlar si ya se ocultó el loading
   let loadingHidden = false;
   
-  // Función auxiliar para asegurar que el loading se oculte
   const hideLoading = () => {
     if (!loadingHidden && this.ui && this.ui.hideLoading) {
       this.ui.hideLoading();
@@ -1940,11 +1779,9 @@ async deleteExpense(expenseId) {
   };
   
   try {
-    // Convertir a cadena para evitar problemas de tipo
     expenseId = expenseId ? String(expenseId) : null;
     console.log("Iniciando proceso de eliminación con ID:", expenseId);
     
-    // Si no se proporciona un ID, intentar obtenerlo del formulario de edición
     if (!expenseId) {
       const editIdField = document.getElementById('edit-expense-id');
       if (editIdField && editIdField.value) {
@@ -1967,28 +1804,23 @@ async deleteExpense(expenseId) {
       throw new Error('ID de egreso no especificado');
     }
     
-    // Mostrar indicador de carga si está disponible
     if (this.ui && this.ui.showLoading) {
       this.ui.showLoading('Eliminando egreso...');
     }
     
     console.log("Enviando solicitud de eliminación al API para el ID:", expenseId);
     
-    // Enviar al API
     const response = await this.api.deleteExpense(expenseId);
     console.log("Respuesta del API:", response);
     
-    // Ocultar indicador de carga SIEMPRE después de recibir respuesta
     hideLoading();
     
     if (response && response.success) {
-      // Cerrar modal de edición si está abierto
       const editModal = bootstrap.Modal.getInstance(document.getElementById('editExpenseModal'));
       if (editModal) {
         editModal.hide();
       }
       
-      // Cerrar modal de confirmación si está abierto
       const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteExpenseModal'));
       if (deleteModal) {
         deleteModal.hide();
@@ -2002,7 +1834,6 @@ async deleteExpense(expenseId) {
   } catch (error) {
     console.error('Error al eliminar egreso:', error);
     
-    // Ocultar indicador de carga en caso de error
     hideLoading();
     
     this.ui.showErrorMessage('Error al eliminar', error.message || 'No se pudo eliminar el egreso.');
@@ -2023,27 +1854,22 @@ async deleteExpense(expenseId) {
         description: document.getElementById('category-description').value
       };
       
-      // Validar campos requeridos
       if (!categoryData.name) {
         this.ui.showErrorMessage('Error en formulario', 'El nombre de la categoría es obligatorio.');
         return;
       }
       
-      // Enviar al API
       const response = await this.api.createExpenseCategory(categoryData);
       
       if (response && response.success) {
-        // Cerrar modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
         modal.hide();
         
-        // Limpiar formulario
         document.getElementById('add-category-form').reset();
         
         // Recargar categorías
         await this.loadCategories();
         
-        // Notificar éxito
         this.ui.showSuccessMessage('Categoría creada correctamente');
       } else {
         throw new Error(response.message || 'Error al crear categoría');
@@ -2065,7 +1891,6 @@ exportExpenses() {
     
     console.log(`Exportando egresos en formato: ${format}`);
     
-    // Preparar datos para exportación - asegurándonos que los valores numéricos sean números
     const dataToExport = this.filteredExpenses.map(expense => ({
       'ID': expense.id,
       'Fecha': formatDate(expense.date, 'YYYY-MM-DD'),
@@ -2079,7 +1904,6 @@ exportExpenses() {
       'Factura': expense.invoice_url || 'No disponible'
     }));
     
-    // Crear título con posible rango de fechas
     let title = 'Reporte de Egresos';
     let dateRangeInfo = '';
     
@@ -2096,7 +1920,6 @@ exportExpenses() {
     // Columnas que deben tener totales
     const columnsWithTotals = ['Importe', 'IVA', 'Total'];
     
-    // Calcular totales para deducibles
     const deductibleItems = dataToExport.filter(item => item.Deducible === 'Sí');
     const totalDeductibleIVA = deductibleItems.reduce((sum, item) => sum + item.IVA, 0);
     const totalDeductibleGasto = deductibleItems.reduce((sum, item) => sum + item.Importe, 0);
@@ -2109,11 +1932,8 @@ exportExpenses() {
         // Si hay más de 8 columnas, cambiar a A3
         pageSize: 'A4',
         orientation: 'portrait', // Cambiado a portrait (vertical)
-        // Activar la optimización para tablas anchas
         optimizeForWideTables: true,
-        // Usar reducción moderada de fuente para ajustar mejor al espacio vertical
         fontSizeReduction: 'medium',
-        // Activar compresión
         compressImages: true,
         // CLAVE: Forzar ajuste a página
         fitToPage: true,
@@ -2122,7 +1942,6 @@ exportExpenses() {
       }
     };
     
-    // Definir anchos explícitos para el cálculo de ajuste forzado
     // Optimizados para formato vertical (más reducidos que en landscape)
     const columnWidths = {
       'ID': 25,
@@ -2147,7 +1966,6 @@ exportExpenses() {
       }
     } : {};
     
-    // Exportar con formato avanzado y configuración personalizada
     exportManager.exportData(dataToExport, {
       fileName,
       format,
@@ -2160,7 +1978,6 @@ exportExpenses() {
       title: title,
       columnsWithTotals: columnsWithTotals,
       
-      // Definir anchos de columna como guía
       columnWidths: columnWidths,
       
       // Formatos para moneda
@@ -2173,7 +1990,6 @@ exportExpenses() {
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
       
-      // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {}),
       
       // Opciones para deducibles

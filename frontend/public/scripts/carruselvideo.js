@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentIndex = 0;
 
-    // Función para calcular el número de diapositivas visibles según el ancho de la pantalla
     function getVisibleSlides() {
         if (window.innerWidth <= 480) {
             return 1; // Una diapositiva visible en pantallas muy pequeñas
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Función para obtener el movimiento en píxeles según el tamaño de la pantalla
     function getMovePixels() {
         if (window.innerWidth <= 480) {
             return 350; // 350px en modo celular
@@ -28,13 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Función para mover el carrusel
     function moveCarousel(index) {
-        const movePixels = getMovePixels(); // Obtener los píxeles de movimiento
+        const movePixels = getMovePixels();
         track.style.transform = `translateX(-${index * movePixels}px)`;
     }
 
-    // Función para comprobar la visibilidad de los botones
     function checkButtonVisibility() {
         if (window.innerWidth <= 768) {
             prevButton.style.display = 'flex'; // Mostrar en pantallas pequeñas
@@ -45,10 +41,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Llamar a la función para comprobar los botones al cargar la página
     checkButtonVisibility();
 
-    // Llamar a la función para calcular el número de diapositivas visibles
     let visibleSlides = getVisibleSlides();
 
     // Evento para el botón "Siguiente"

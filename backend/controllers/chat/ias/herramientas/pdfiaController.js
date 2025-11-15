@@ -1,10 +1,8 @@
-// backend/controllers/chat/pdfiaController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER CENTRALIZADO)
 
 import { handleQueryPDF, handlePDFMultimodalQuery, queryPDFWithoutSaving, handlePDFMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/herramienta/pdfService.js";
 import { logSecurityEvent } from '../../../../utils/securityLogger.js';
 import pool from '../../../../lib/dbPool.js';
 
-// ✅ UTILIDADES UNIFICADAS DE HERRAMIENTAS
 import { 
   validateToolQueryParams, 
   validateToolMultimodalParams,
@@ -13,13 +11,8 @@ import {
   generateAttachmentsSummary
 } from "../../../../utils/chat/toolutil.js";
 
-// 🚀 TOKEN MANAGER CENTRALIZADO
 import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS PDF
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDF = async (req, res) => {
   try {
     console.log('🔍 queryPDF iniciado con TokenManager centralizado');
@@ -30,10 +23,8 @@ export const queryPDF = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES DE HERRAMIENTAS =====
     const validationErrors = validateToolQueryParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -41,7 +32,6 @@ export const queryPDF = async (req, res) => {
     const toolId = req.toolId || req.body.herramientaId;
     const toolInfo = req.toolInfo || null;
 
-    // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
     const serviceFunction = async (params, skipSaveMode) => {
       if (skipSaveMode) {
         console.log('Modo skipSave activado: generando respuesta de PDF sin guardar mensajes');
@@ -64,7 +54,6 @@ export const queryPDF = async (req, res) => {
       }
     };
 
-    // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
     return await TokenManager.handleCompleteToolController(req, res, {
       validationErrors,
       accessInfo,
@@ -97,10 +86,6 @@ export const queryPDF = async (req, res) => {
   }
 };
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS MULTIMODALES PDF
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDFMultimodal = async (req, res) => {
   try {
     console.log('🔍 queryPDFMultimodal iniciado con TokenManager centralizado');
@@ -113,10 +98,8 @@ export const queryPDFMultimodal = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
     const validationErrors = validateToolMultimodalParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -124,7 +107,6 @@ export const queryPDFMultimodal = async (req, res) => {
     const toolId = req.toolId || req.body.herramientaId;
     const toolInfo = req.toolInfo || null;
 
-    // 🚀 LOG DE ARCHIVOS ADJUNTOS
     const attachmentsSummary = generateAttachmentsSummary(req.body.content || []);
     console.log(`📄 Procesando consulta multimodal de PDF: ${attachmentsSummary}`);
     
@@ -143,11 +125,9 @@ export const queryPDFMultimodal = async (req, res) => {
       ip: req.ip
     }, 'low');
 
-    // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
     const serviceFunction = async (params) => {
       const result = await handlePDFMultimodalQuery(params);
       
-      // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
       if (result.success && result.chatId) {
         await addRecentDocumentsToResult(result, params.userId || req.user?.id_user);
       }
@@ -155,7 +135,6 @@ export const queryPDFMultimodal = async (req, res) => {
       return result;
     };
 
-    // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
     return await TokenManager.handleCompleteToolController(req, res, {
       validationErrors,
       accessInfo,
@@ -188,10 +167,6 @@ export const queryPDFMultimodal = async (req, res) => {
   }
 };
 
-/**
- * ✅ CONTROLADOR ULTRA-SIMPLIFICADO PDF MULTIMODAL SIN GUARDAR
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryPDFMultimodalWithoutSaving = async (req, res) => {
   try {
     console.log('🔄 queryPDFMultimodalWithoutSaving iniciado con TokenManager centralizado');
@@ -204,10 +179,8 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
       toolSlug: 'pdf'
     });
 
-    // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
     const validationErrors = validateToolMultimodalParams(req.body);
     
-    // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
     const accessInfo = req.accessInfo || {};
     const tokenInfo = req.tokenInfo || {};
     const tokenWarning = req.tokenWarning || null;
@@ -215,7 +188,6 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
     const toolId = req.toolId || req.body.herramientaId;
     const toolInfo = req.toolInfo || null;
 
-    // 🚀 LOG DE ARCHIVOS ADJUNTOS PARA SIN GUARDAR
     const attachmentsSummary = generateAttachmentsSummary(req.body.content || []);
     console.log(`🔄 Procesando consulta multimodal PDF SIN GUARDAR (retry/edit): ${attachmentsSummary}`);
     
@@ -233,11 +205,9 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
       ip: req.ip
     }, 'low');
 
-    // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
     const serviceFunction = async (params) => {
       const result = await handlePDFMultimodalQueryWithoutSaving(params);
       
-      // Agregar flag específico para sin guardar
       if (result.success) {
         result.processedWithoutSaving = true;
       }
@@ -245,7 +215,6 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
       return result;
     };
 
-    // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
     return await TokenManager.handleCompleteToolController(req, res, {
       validationErrors,
       accessInfo,
@@ -279,9 +248,6 @@ export const queryPDFMultimodalWithoutSaving = async (req, res) => {
   }
 };
 
-/**
- * 🔧 HELPER: Agregar documentos recientes al resultado
- */
 async function addRecentDocumentsToResult(result, userId) {
   try {
     console.log(`🔍 Buscando documentos recientes para chat PDF: ${result.chatId}`);

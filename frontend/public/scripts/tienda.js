@@ -27,9 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Variable para controlar el estado de la vista
     let isDetailView = false;
 
-    // ================= FUNCIONES CORE =================
     
-    // Función para determinar cuántos items mostrar según el ancho de la pantalla
     function getItemsToShow() {
         if (window.innerWidth <= 576) return 1;
         if (window.innerWidth <= 768) return 2;
@@ -45,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
             card.style.display !== 'none' && card.classList.contains('content-box')
         );
         
-        // Solo se activa el carousel si hay más que el número visible de tarjetas
         if (visibleCards.length <= itemsToShow) {
             track.style.transition = 'none';
             track.style.transform = 'none';
@@ -61,7 +58,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Asegurarse de que el track esté en el DOM antes de manipularlo
     if (track.parentNode) {
         track.style.transition = smooth ? 'transform 0.3s ease-out' : 'none';
-        // Añadir 10px adicionales al desplazamiento
         track.style.transform = `translateX(-${(currentIndex * cardWidth) + 30}px)`;
         updateNavigation();
     }
@@ -94,9 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         nextBtn.style.display = currentIndex < maxIndex ? 'flex' : 'none';
     }
 
-    // ================= MEJORAS VISUALES =================
 
-    // Añadir efectos de entrada para elementos de la página
     const addEntranceEffects = () => {
         if (!track) return;
         
@@ -115,7 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 100 * index);
         });
         
-        // Añadir clase para animar la sección de comparación
         if (comparisonSection) {
             setTimeout(() => {
                 comparisonSection.classList.add('visible');
@@ -130,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const contentBoxes = track.querySelectorAll('.content-box');
         if (contentBoxes.length === 0) return;
         
-        // Añadir efecto hover individual a cada tarjeta
         contentBoxes.forEach(box => {
             box.addEventListener('mouseenter', function() {
                 box.classList.add('hover-active');
@@ -154,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const enhanceSearchInput = () => {
         if (!searchInput || !searchIcon) return;
         
-        // Animar el icono del buscador al hacer focus
         searchInput.addEventListener('focus', function() {
             searchIcon.classList.add('searching');
         });
@@ -165,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         
-        // Añadir texto de placeholder dinámico
         const placeholders = [
             "Busca tu carrera ideal...",
             "Encuentra tu AVA perfecto...",
@@ -186,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     };
     
-    // Añadir efecto de desplazamiento suave
     const addSmoothScrolling = () => {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -204,9 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
     
-    // Mejorar los selectores de país y ciclo de facturación
     const enhanceControls = () => {
-        // Añadir efecto de hover a los botones de facturación
         if (billingButtons.length > 0) {
             billingButtons.forEach(btn => {
                 btn.addEventListener('mouseenter', function() {
@@ -223,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
         
-        // Añadir efecto de selección al country selector
         if (countrySelect) {
             countrySelect.addEventListener('change', function() {
                 this.classList.add('selected');
@@ -234,9 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
     
-    // Añadir efecto confeti al hacer clic en "Comprar"
     const setupConfettiEffect = () => {
-        // Función para crear el efecto de confeti
         const triggerConfetti = () => {
             const colors = ['#a4ac86', '#656d4a', '#f0efe7', '#8B4513'];
             const confettiCount = 150;
@@ -258,7 +242,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 8000);
         };
         
-        // Añadir listener a los botones de compra
         document.addEventListener('click', function(e) {
             const comprarBtn = e.target.closest('.comprar-btn');
             if (comprarBtn) {
@@ -267,7 +250,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
     
-    // Añadir contadores animados de usuarios o ventajas
     const addCounters = () => {
         if (!comparisonSection) return;
         
@@ -278,11 +260,9 @@ document.addEventListener("DOMContentLoaded", function () {
             { number: 95, text: 'Satisfacción', icon: 'bx-like', suffix: '%' }
         ];
         
-        // Crear contenedor de estadísticas
         const statsContainer = document.createElement('div');
         statsContainer.className = 'stats-container';
         
-        // Añadir las estadísticas
         stats.forEach(stat => {
             const statItem = document.createElement('div');
             statItem.className = 'stat-item';
@@ -294,10 +274,8 @@ document.addEventListener("DOMContentLoaded", function () {
             statsContainer.appendChild(statItem);
         });
         
-        // Insertar antes de la sección de comparación
         comparisonSection.parentNode.insertBefore(statsContainer, comparisonSection);
         
-        // Animar contadores cuando sean visibles
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -328,7 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(statsContainer);
     };
     
-    // Añadir testimonios deslizantes
     const addTestimonials = () => {
         const testimonials = [
             {
@@ -353,7 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         initIvaNoticeSystem();
 
-        // ================= SISTEMA DE AVISOS IVA =================
 
 function initIvaNoticeSystem() {
     addIvaNoticeToCards();
@@ -435,24 +411,20 @@ function handleFloatingNotice() {
     });
 }
         
-        // Crear contenedor de testimonios
         const testimonialsContainer = document.createElement('div');
         testimonialsContainer.className = 'testimonials-container';
         testimonialsContainer.style.maxWidth = '100%';
         testimonialsContainer.style.overflowX = 'hidden';
         
-        // Crear encabezado
         const header = document.createElement('h2');
         header.textContent = 'Lo que dicen nuestros usuarios';
         testimonialsContainer.appendChild(header);
         
-        // Crear slider
         const slider = document.createElement('div');
         slider.className = 'testimonials-slider';
         slider.style.width = '300%';
         slider.style.transition = 'transform 0.5s ease';
         
-        // Añadir las tarjetas de testimonios
         testimonials.forEach(t => {
             const card = document.createElement('div');
             card.className = 'testimonial-card';
@@ -503,7 +475,6 @@ function handleFloatingNotice() {
         
         testimonialsContainer.appendChild(slider);
         
-        // Crear dots para navegación
         const dotsContainer = document.createElement('div');
         dotsContainer.className = 'testimonial-dots';
         
@@ -520,22 +491,18 @@ function handleFloatingNotice() {
         
         testimonialsContainer.appendChild(dotsContainer);
         
-        // Insertar antes del footer
         const footer = document.querySelector('.main-footer');
         if (footer) {
             footer.parentNode.insertBefore(testimonialsContainer, footer);
             
-            // Configurar el slider de testimonios
             const slider = testimonialsContainer.querySelector('.testimonials-slider');
             const dots = testimonialsContainer.querySelectorAll('.dot');
             let currentSlide = 0;
             
-            // Función para cambiar el slide
             const goToSlide = (index) => {
                 currentSlide = index;
                 slider.style.transform = `translateX(-${index * 100 / testimonials.length}%)`;
                 
-                // Actualizar los puntos
                 dots.forEach((dot, i) => {
                     if (i === index) {
                         dot.classList.add('active');
@@ -545,7 +512,6 @@ function handleFloatingNotice() {
                 });
             };
             
-            // Añadir eventos a los puntos usando delegación
             dotsContainer.addEventListener('click', (e) => {
                 const dot = e.target.closest('.dot');
                 if (dot) {
@@ -564,9 +530,7 @@ function handleFloatingNotice() {
         }
     };
 
-    // ================= FUNCIONES DE TARJETAS Y DATOS =================
     
-    // Función para mostrar el skeleton loading
     function showSkeleton() {
         const itemsToShow = getItemsToShow();
         const skeletonHTML = Array(itemsToShow).fill().map(() => `
@@ -589,12 +553,10 @@ function handleFloatingNotice() {
 
         track.innerHTML = skeletonHTML;
         
-        // Ocultar la navegación del carousel mientras se muestran los skeletons
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
     }
 
-    // Función para filtrar elementos
     function filterItems(searchTerm) {
         if (!track) return;
         
@@ -619,7 +581,6 @@ function handleFloatingNotice() {
                 });
             }
             
-            // Mostrar un mensaje si no hay resultados
             const noResultsMsg = track.querySelector('.no-results-message');
             if (!anyVisible && searchTerm) {
                 if (!noResultsMsg) {
@@ -635,12 +596,10 @@ function handleFloatingNotice() {
             currentIndex = 0;
             updateCarousel(false);
             
-            // Aplicar efectos de hover a las tarjetas visibles
             setupCardHoverEffects();
         }, 300);
     }
 
-    // Función mejorada para mostrar las sugerencias
     async function showSuggestions(searchTerm) {
         suggestionsBox.innerHTML = "";
         if (!searchTerm) {
@@ -675,7 +634,6 @@ function handleFloatingNotice() {
         suggestionsBox.style.display = filtered.length > 0 ? "block" : "none";
     }
 
-    // Función para obtener las carreras desde el API
     async function getAllCarreras() {
         try {
             if (carrerasCache) {
@@ -704,7 +662,6 @@ function handleFloatingNotice() {
     }
     
     
-    // Función mejorada para guardar el contenido inicial (fixed)
     function storeInitialContent() {
         initialContent = track.innerHTML;
         originalContent = track.innerHTML;
@@ -718,7 +675,6 @@ function asignarEventoComprar() {
     if (typeof window.setupComprarBtnListeners === 'function') {
         window.setupComprarBtnListeners();
     } else {
-        // Implementación básica
         document.addEventListener('click', function(e) {
             const comprarBtn = e.target.closest('.comprar-btn');
             if (comprarBtn) {
@@ -738,7 +694,6 @@ function asignarEventoComprar() {
     }
 }
     
-    // Función mejorada para asignar evento Ver más
     function asignarEventoVerMas() {
         const botones = document.querySelectorAll('.vermas-btn');
         botones.forEach(boton => {
@@ -755,7 +710,6 @@ function asignarEventoComprar() {
                     document.getElementById('mainIvaNotice').classList.add('hidden');
                     regresarBtn.style.display = 'flex';
                     
-                    // Mostrar skeleton mientras cargamos
                     showSkeleton();
                     
                     // CORRECCIÓN: Obtener los AVAs desde la API
@@ -776,7 +730,6 @@ function asignarEventoComprar() {
                         });
                     });
                     
-                    // Actualizar el contenido
                     track.innerHTML = html;
                     
                     // Reiniciar el carrusel
@@ -808,7 +761,6 @@ function asignarEventoComprar() {
     
     updateIvaNoticeVisibility();
 
-    // ================= CONTROL DE VISIBILIDAD DEL AVISO IVA =================
 
 function updateIvaNoticeVisibility() {
     const mainNotice = document.getElementById('mainIvaNotice');
@@ -838,7 +790,6 @@ function updateIvaNoticeVisibility() {
         }
     }
 }
-    // ================= EVENT HANDLERS =================
     function configurarEventos() {
         // Eventos para funciones de drag
         if (track) {
@@ -867,7 +818,6 @@ function updateIvaNoticeVisibility() {
         document.getElementById('mainIvaNotice').classList.remove('hidden');
         isDetailView = false;
         
-        // Restaurar el track al estado original y reiniciar el carrusel
         track.innerHTML = originalContent;
         
         // Reconfigurar todo
@@ -883,7 +833,6 @@ function updateIvaNoticeVisibility() {
             track.style.transform = 'none';
             updateCarousel(false);
             
-            // Restaurar los hover effects
             setupCardHoverEffects();
             
             // CORRECCIÓN: Actualizar los precios después de restaurar el contenido
@@ -942,7 +891,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
 }
 
 
-    // ================= DRAG HANDLERS =================
     function startDrag(e) {
         if (isDetailView) return; // No permitir arrastrar en vista detalle
         
@@ -971,7 +919,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         }
     }
 
-    // ================= STYLES INJECTION =================
     
     // Inyectar estilos del skeleton
     const injectSkeletonStyles = () => {
@@ -1114,7 +1061,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         document.head.appendChild(style);
     };
 
-    // Agregar estilos necesarios
     const searchStyles = document.createElement('style');
     searchStyles.textContent = `
         /* Ocultar botones de navegación por defecto para evitar flasheo */
@@ -1184,23 +1130,18 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
     `;
     document.head.appendChild(searchStyles);
     
-    // ================= INICIALIZACIÓN =================
     async function inicializar() {
         try {
-            // Verificar si los elementos existen
             if (!track) {
                 console.error("Elemento del track no encontrado");
                 return;
             }
             
-            // Iniciar la carga de datos
             await getAllCarreras();
             
-            // Configurar eventos de navegación
             if (prevBtn) prevBtn.addEventListener('click', () => moveSlide(-1));
             if (nextBtn) nextBtn.addEventListener('click', () => moveSlide(1));
             
-            // Configurar eventos de búsqueda
             if (searchInput) {
                 let searchTimeout;
                 searchInput.addEventListener("input", function() {
@@ -1214,14 +1155,12 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                     }, 300);
                 });
                 
-                // Cerrar sugerencias al hacer clic fuera
                 document.addEventListener("click", function(e) {
                     if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
                         suggestionsBox.style.display = "none";
                     }
                 });
                 
-                // Limpiar búsqueda con Escape
                 searchInput.addEventListener("keydown", function(e) {
                     if (e.key === "Escape") {
                         this.value = "";
@@ -1231,10 +1170,8 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                 });
             }
 
-            // Configurar eventos del carrusel
             configurarEventos();
             
-            // Actualizar cuando cambia el tamaño de la ventana
             window.addEventListener('resize', () => {
                 itemsToShow = getItemsToShow();
                 updateCarousel(false);
@@ -1246,7 +1183,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                     asignarEventoVerMas();
                     updateCarousel(false);
                     
-                    // Guardar el contenido inicial solo una vez
                     if (!originalContent) {
                         storeInitialContent();
                     }
@@ -1255,7 +1191,6 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
             
             observer.observe(track, { childList: true });
             
-            // Iniciar las mejoras visuales
             setTimeout(() => {
                 // Primero aseguramos que las tarjetas son visibles
                 addEntranceEffects();
@@ -1292,26 +1227,22 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         }
     }
 
-    // Función para ocultar inmediatamente los botones de navegación
     function ocultarBotonesNavegacion() {
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
     }
 
-    // Iniciar el proceso
     injectSkeletonStyles();
     ocultarBotonesNavegacion();
     showSkeleton();
     inicializar();
 });
 
-// Inicializar el selector personalizado cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
     initCustomSelect();
 });
 
 function initCustomSelect() {
-    // Buscar el selector personalizado
     const customSelect = document.querySelector('.custom-select');
     if (!customSelect) return;
     
@@ -1319,7 +1250,6 @@ function initCustomSelect() {
     const selectItems = customSelect.querySelector('.select-items');
     const hiddenSelect = document.getElementById('countrySelect');
     
-    // Función para cerrar todos los select boxes excepto el actual
     function closeAllSelect(elmnt) {
         const selectItems = document.getElementsByClassName('select-items');
         const selectSelected = document.getElementsByClassName('select-selected');
@@ -1349,31 +1279,26 @@ function initCustomSelect() {
         selectItems.classList.toggle('select-hide');
     });
     
-    // Añadir evento a cada elemento
     const selectItemElements = customSelect.querySelectorAll('.select-item');
     selectItemElements.forEach(item => {
         item.addEventListener('click', function(e) {
             e.stopPropagation();
             
-            // Actualizar el elemento seleccionado visualmente
             const value = this.getAttribute('data-value');
             const html = this.innerHTML;
             
             selectSelected.innerHTML = html;
             selectSelected.setAttribute('data-value', value);
             
-            // Marcar como seleccionado en el dropdown
             for (let i = 0; i < selectItemElements.length; i++) {
                 selectItemElements[i].classList.remove('same-as-selected');
             }
             this.classList.add('same-as-selected');
             
-            // Actualizar el select real (oculto)
             if (hiddenSelect) {
                 for (let i = 0; i < hiddenSelect.options.length; i++) {
                     if (hiddenSelect.options[i].value === value) {
                         hiddenSelect.selectedIndex = i;
-                        // Disparar evento change para cualquier código que dependa del select original
                         const event = new Event('change', { bubbles: true });
                         hiddenSelect.dispatchEvent(event);
                         break;
@@ -1381,13 +1306,11 @@ function initCustomSelect() {
                 }
             }
             
-            // Cerrar el dropdown
             selectItems.classList.add('select-hide');
             selectSelected.classList.remove('select-arrow-active');
         });
     });
     
-    // Cerrar al hacer clic fuera
     document.addEventListener('click', function() {
         closeAllSelect();
     });

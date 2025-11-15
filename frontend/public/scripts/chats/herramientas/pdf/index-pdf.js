@@ -5,5 +5,4 @@
  * e importa los módulos necesarios.
  */
 
-// Importar solo el módulo principal de la aplicación
 import './core/app-pdf.js';

@@ -7,7 +7,6 @@ import { getState } from '../core/state-pdf.js';
 // API base URL (usando la misma base que tus otras APIs)
 const BASE_URL = '';
 
-// Función para obtener el token CSRF de forma coherente 
 function getCsrfToken() {
   // 1. Primero intentar obtener de la cookie
   const csrfCookie = document.cookie.split('; ')
@@ -57,7 +56,6 @@ export async function uploadPDF(pdfFile, progressCallback = null, signal = null)
     throw new Error('Se requiere un chatId para subir un PDF. Debe crear un chat primero.');
   }
 
-  // Mostrar notificación de inicio
   acadelInfo("📄 Subiendo tu documento", "Acadel está preparando el PDF para analizar todo su contenido");
 
   try {
@@ -251,7 +249,6 @@ export async function uploadPDF(pdfFile, progressCallback = null, signal = null)
         } else {
           clearAllTimers();
           
-          // Manejar errores específicos del servidor
           let errorMessage = "Acadel no pudo procesar tu PDF. Quizás está demasiado complejo o muy grande";
           
           if (xhr.status === 413) {

@@ -10,14 +10,12 @@ export const TaxController = {
      */
     async getTaxSummary(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 date_from: req.query.date_from,
                 date_to: req.query.date_to,
                 currency_code: req.query.currency_code
             };
             
-            // Log de acceso
             logSecurityEvent('TAX_SUMMARY_ACCESS', 'Acceso a resumen de impuestos', {
                 userId: req.user?.id_user,
                 filters,
@@ -53,13 +51,11 @@ export const TaxController = {
      */
     async getTaxesByCountry(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 date_from: req.query.date_from,
                 date_to: req.query.date_to
             };
             
-            // Log de acceso
             logSecurityEvent('TAX_BY_COUNTRY_ACCESS', 'Acceso a impuestos por país', {
                 userId: req.user?.id_user,
                 filters,
@@ -95,7 +91,6 @@ export const TaxController = {
      */
     async generateTaxReport(req, res) {
         try {
-            // Extraer parámetros del cuerpo de la petición
             const { date_from, date_to, format, filters } = req.body;
             
             if (!date_from || !date_to) {
@@ -105,7 +100,6 @@ export const TaxController = {
                 });
             }
             
-            // Log de acceso
             logSecurityEvent('TAX_REPORT_GENERATION', 'Generación de informe de impuestos', {
                 userId: req.user?.id_user,
                 period: { date_from, date_to },
@@ -148,14 +142,12 @@ export const TaxController = {
      */
     async getHistoricalTaxAnalysis(req, res) {
         try {
-            // Extraer filtros de query params
             const filters = {
                 date_from: req.query.date_from,
                 date_to: req.query.date_to,
                 country_code: req.query.country_code
             };
             
-            // Log de acceso
             logSecurityEvent('HISTORICAL_TAX_ACCESS', 'Acceso a análisis histórico de impuestos', {
                 userId: req.user?.id_user,
                 filters,

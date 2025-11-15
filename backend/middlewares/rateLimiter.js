@@ -4,10 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-// Importar el servicio Redis existente
 import { redisService } from '../lib/redis.js';
 
-// Obtener la ruta base del proyecto
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..', '..');
@@ -16,7 +14,6 @@ const projectRoot = path.resolve(__dirname, '..', '..');
  * Configuración de rate limiting con soporte para Redis
  */
 export const configureLimiters = (app) => {
-  // Verificar si Redis está conectado para usar el store adecuado
   const getStore = () => {
     if (redisService.isReady()) {
       return new RedisStore({
@@ -38,13 +35,11 @@ export const configureLimiters = (app) => {
         return res.status(options.statusCode).json(defaultMessage);
       }
       
-      // Para solicitudes web normales, mostrar página de error 429
       const errorPath = path.join(projectRoot, 'frontend', 'views', 'error', '429.html');
       if (fs.existsSync(errorPath)) {
         return res.status(options.statusCode).sendFile(errorPath);
       }
       
-      // Fallback si no existe la página
       res.status(options.statusCode).send(`${defaultMessage.error}. ${defaultMessage.message}`);
     };
   };
@@ -127,7 +122,6 @@ export const configureLimiters = (app) => {
     })
   });
   
-  // Aplicar limiters a rutas específicas
   app.use('/api/', globalLimiter);
   app.use('/api/usuarios/login', authLimiter);
   app.use('/api/openai', aiLimiter);

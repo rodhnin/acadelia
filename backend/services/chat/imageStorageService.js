@@ -1,10 +1,9 @@
-// backend/services/chat/imageStorageService.js
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import crypto from 'crypto';
 import sharp from 'sharp';
-import ImageSecurityService from './imageSecurityService.js'; // Importar el servicio específico para imágenes
+import ImageSecurityService from './imageSecurityService.js';
 
 /**
  * Servicio para almacenar y optimizar imágenes enviadas en chats multimodales
@@ -71,7 +70,6 @@ class ImageStorageService {
    * @returns {string} - Nombre de archivo único
    */
   generateUniqueFilename(originalUrl) {
-    // Generar un hash del URL original para evitar duplicados
     const hash = crypto.createHash('md5').update(originalUrl).digest('hex');
     const timestamp = Date.now();
     return `image_${timestamp}_${hash.substring(0, 8)}.webp`; // Usar WebP por defecto
@@ -86,10 +84,8 @@ class ImageStorageService {
     try {
       console.log(`🔄 Convirtiendo imagen local a base64 para retry/edit: ${localPath}`);
 
-      // Construir ruta completa del archivo
       const fullPath = path.join(process.cwd(), localPath.replace(/^\//, ''));
 
-      // Verificar que el archivo existe
       if (!fs.existsSync(fullPath)) {
         console.error(`❌ Archivo de imagen no encontrado: ${fullPath}`);
         return {
@@ -101,7 +97,6 @@ class ImageStorageService {
       // Leer el archivo
       const imageBuffer = fs.readFileSync(fullPath);
 
-      // Determinar el tipo MIME basado en la extensión
       const extension = path.extname(fullPath).toLowerCase();
       let mimeType = 'image/webp'; // Por defecto
 
@@ -123,7 +118,6 @@ class ImageStorageService {
           mimeType = 'image/webp';
       }
 
-      // Convertir a base64
       const base64Data = imageBuffer.toString('base64');
       const dataUrl = `data:${mimeType};base64,${base64Data}`;
 
@@ -158,7 +152,6 @@ class ImageStorageService {
 
     try {
       console.log(`Escaneando imagen con antivirus: ${filePath}`);
-      // Usar el servicio específico para imágenes para escanear
       const scanResult = await ImageSecurityService.scanFile(filePath);
       console.log(`Resultado del escaneo antivirus: ${scanResult.clean ? 'Limpio' : 'Infectado'}`);
       return scanResult;
@@ -173,9 +166,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: optimizeImage ahora usa la función central
-   */
   async optimizeImage(input, outputPath) {
     try {
       return await this.processWithSharp(input, outputPath);
@@ -185,9 +175,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN CENTRAL: Manejo seguro de instancias Sharp
-   */
   async processWithSharp(input, outputPath) {
     let sharpInstance = null;
 
@@ -206,13 +193,11 @@ class ImageStorageService {
         });
       }
 
-      // Convertir a WebP
       transformer = transformer.webp({
         quality: this.compressionQuality,
         effort: 6
       });
 
-      // Usar buffer para evitar handles de archivo
       const optimizedBuffer = await transformer.toBuffer();
 
       // Escribir archivo
@@ -220,7 +205,6 @@ class ImageStorageService {
 
       return true;
     } finally {
-      // ✅ CRÍTICO: Siempre liberar recursos
       if (sharpInstance) {
         try {
           sharpInstance.destroy();
@@ -233,9 +217,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN UNIFICADA: Eliminación segura de archivos temporales
-   */
   async safeDeleteTempFile(filePath, maxRetries = 5) {
     if (!filePath || !fs.existsSync(filePath)) {
       return true;
@@ -271,9 +252,6 @@ class ImageStorageService {
     return false;
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: Limpieza retrasada (reemplaza las múltiples funciones)
-   */
   scheduleDelayedCleanup(filePath) {
     const fileName = path.basename(filePath);
 
@@ -286,15 +264,11 @@ class ImageStorageService {
         }
       } catch (error) {
         console.log(`⚠️ Limpieza retrasada falló: ${fileName} - ${error.code}`);
-        // Marcar para limpieza al reinicio si falla
         this.markForStartupCleanup(filePath);
       }
     }, 30000);
   }
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA: Marcar para limpieza al inicio
-   */
   markForStartupCleanup(filePath) {
     try {
       const cleanupFile = path.join(this.tempDir, 'cleanup_queue.txt');
@@ -304,9 +278,6 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN DE INICIO: Limpieza de archivos huérfanos
-   */
   async performStartupCleanup() {
     try {
       const cleanupFile = path.join(this.tempDir, 'cleanup_queue.txt');
@@ -338,14 +309,10 @@ class ImageStorageService {
     }
   }
 
-  /**
-   * ✅ FUNCIÓN PRINCIPAL OPTIMIZADA: Sin redundancias
-   */
   async saveImageFromUrl(imageUrl, chatId, isRetryOrEdit = false) {
     let tempFilePath = null;
 
     try {
-      // Detectar si la URL es una ruta local
       if (imageUrl.startsWith('/uploads/')) {
         console.log(`Imagen local: ${imageUrl}`);
 
@@ -371,7 +338,6 @@ class ImageStorageService {
         };
       }
 
-      // Procesar data URLs
       if (imageUrl.startsWith('data:image')) {
         return await this.saveBase64Image(imageUrl, chatId);
       }
@@ -400,7 +366,6 @@ class ImageStorageService {
 
       const imageBuffer = Buffer.from(response.data);
 
-      // Verificar firma
       const signatureCheck = ImageSecurityService.verifyImageSignature(imageBuffer);
       if (!signatureCheck.valid) {
         return {
@@ -436,11 +401,9 @@ class ImageStorageService {
         };
       }
 
-      // ✅ OPTIMIZACIÓN: Usar función central para procesar con Sharp
       console.log(`Optimizando imagen: ${tempFilePath} -> ${finalPath}`);
       const optimized = await this.processWithSharp(imageBuffer, finalPath);
 
-      // ✅ LIMPIEZA UNIFICADA: Una sola llamada
       await this.safeDeleteTempFile(tempFilePath);
       tempFilePath = null;
 
@@ -504,40 +467,33 @@ class ImageStorageService {
         }
       }
 
-      // *** MEJORADO: Cache en memoria para búsquedas recientes ***
       const cacheKey = `${chatId}:${crypto.createHash('md5').update(imageUrl).digest('hex')}`;
 
       if (!this._searchCache) {
         this._searchCache = new Map();
       }
 
-      // Verificar cache en memoria (válido por 30 segundos)
       const cached = this._searchCache.get(cacheKey);
       if (cached && (Date.now() - cached.timestamp) < 30000) {
         console.log(`📦 Cache búsqueda hit: ${cached.result || 'null'}`);
         return cached.result;
       }
 
-      // Generar hash de la URL para buscar
       const hash = crypto.createHash('md5').update(imageUrl).digest('hex');
       const hashPrefix = hash.substring(0, 8);
 
-      // Obtener el directorio del chat
       const chatDir = this.getChatDirectory(chatId);
 
       let result = null;
 
-      // Verificar si existen archivos con este hash
       if (fs.existsSync(chatDir)) {
         const files = fs.readdirSync(chatDir);
 
-        // Buscar archivos que contengan el hash en su nombre
         const matchingFiles = files.filter(filename =>
           filename.includes(hashPrefix) && filename.endsWith('.webp')
         );
 
         if (matchingFiles.length > 0) {
-          // *** NUEVO: Verificar que el archivo realmente existe y es válido ***
           for (const fileName of matchingFiles) {
             const fullPath = path.join(chatDir, fileName);
             if (fs.existsSync(fullPath)) {
@@ -552,13 +508,11 @@ class ImageStorageService {
         }
       }
 
-      // *** NUEVO: Guardar en cache en memoria ***
       this._searchCache.set(cacheKey, {
         result,
         timestamp: Date.now()
       });
 
-      // *** NUEVO: Limpiar cache periódicamente ***
       if (this._searchCache.size > 100) {
         const now = Date.now();
         for (const [key, value] of this._searchCache.entries()) {
@@ -585,7 +539,6 @@ class ImageStorageService {
     let tempFilePath = null;
 
     try {
-      // Extraer los datos binarios del data URL
       const matches = dataUrl.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
 
       if (!matches || matches.length !== 3) {
@@ -599,11 +552,9 @@ class ImageStorageService {
         };
       }
 
-      // Extraer tipo MIME y datos
       const mimeType = matches[1];
       const base64Data = matches[2];
 
-      // Verificar que es una imagen
       if (!mimeType.startsWith('image/')) {
         return {
           success: false,
@@ -615,12 +566,10 @@ class ImageStorageService {
         };
       }
 
-      // Preparar directorio y nombres de archivo
       const chatDir = this.getChatDirectory(chatId);
       const filename = this.generateUniqueFilename(dataUrl.substring(0, 50));
       const finalFilePath = path.join(chatDir, filename);
 
-      // Crear nombre único para archivo temporal
       const tempFileName = `temp_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.tmp`;
       tempFilePath = path.join(this.tempDir, tempFileName);
 
@@ -629,10 +578,8 @@ class ImageStorageService {
         fs.mkdirSync(this.tempDir, { recursive: true });
       }
 
-      // Convertir base64 a buffer
       const imageBuffer = Buffer.from(base64Data, 'base64');
 
-      // Verificar tamaño máximo
       if (imageBuffer.length > this.maxImageSizeBytes) {
         return {
           success: false,
@@ -644,7 +591,6 @@ class ImageStorageService {
         };
       }
 
-      // Verificar firma de archivo para confirmar que es una imagen válida
       const signatureCheck = ImageSecurityService.verifyImageSignature(imageBuffer);
 
       if (!signatureCheck.valid) {
@@ -659,7 +605,6 @@ class ImageStorageService {
         };
       }
 
-      // Guardar en archivo temporal para escaneo
       await fs.promises.writeFile(tempFilePath, imageBuffer);
 
       // ESCANEAR CON ANTIVIRUS
@@ -670,7 +615,6 @@ class ImageStorageService {
       if (!scanResult.clean && !scanResult.skipped) {
         console.log(`🚨 Malware detectado en imagen base64: ${scanResult.message || 'Amenaza desconocida'}`);
 
-        // Eliminar archivo temporal
         if (tempFilePath && fs.existsSync(tempFilePath)) {
           await fs.promises.unlink(tempFilePath);
           tempFilePath = null;
@@ -686,11 +630,9 @@ class ImageStorageService {
         };
       }
 
-      // Optimizar la imagen
       console.log(`Optimizando imagen base64: ${tempFilePath} -> ${finalFilePath}`);
       const optimized = await this.optimizeImage(tempFilePath, finalFilePath);
 
-      // Eliminar archivo temporal
       if (tempFilePath && fs.existsSync(tempFilePath)) {
         await fs.promises.unlink(tempFilePath);
         tempFilePath = null;
@@ -702,7 +644,6 @@ class ImageStorageService {
         await fs.promises.writeFile(finalFilePath, imageBuffer);
       }
 
-      // Generar ruta relativa para guardar en BD
       const relativePath = path.join('/uploads/chat_images', chatId, filename);
       console.log(`✅ Imagen base64 procesada y guardada: ${relativePath}`);
 
@@ -760,11 +701,9 @@ class ImageStorageService {
 
     console.log(`🖼️ Procesando ${imageItems.length} imágenes para chat ${chatId} ${isRetryOrEdit ? '(RETRY/EDIT)' : ''} con escaneo antivirus`);
 
-    // Procesar todas las imágenes en paralelo
     const imagePromises = imageItems.map(async (item, index) => {
       console.log(`Procesando imagen ${index + 1}/${imageItems.length} ${isRetryOrEdit ? '(retry/edit)' : ''}`);
 
-      // Determinar la URL de la imagen según formato
       const imageUrl = typeof item.image_url === 'string'
         ? item.image_url
         : (item.image_url?.url || null);
@@ -782,7 +721,6 @@ class ImageStorageService {
         };
       }
 
-      // *** MODIFICADO: Pasar flag de retry/edit ***
       const result = await this.saveImageFromUrl(imageUrl, chatId, isRetryOrEdit);
 
       return {
@@ -797,7 +735,6 @@ class ImageStorageService {
 
     const results = await Promise.all(imagePromises);
 
-    // Registrar estadísticas de procesamiento
     const successCount = results.filter(r => r.success).length;
     const failCount = results.filter(r => !r.success).length;
     const securityIssues = results.filter(r =>
@@ -820,7 +757,6 @@ class ImageStorageService {
       const chatDir = path.join(this.chatImagesDir, chatId);
 
       if (fs.existsSync(chatDir)) {
-        // Eliminar directorio recursivamente
         this.deleteFolderRecursive(chatDir);
         console.log(`Imágenes eliminadas para chat ${chatId}`);
         return true;
@@ -846,16 +782,13 @@ class ImageStorageService {
           // Recursivamente eliminar subdirectorio
           this.deleteFolderRecursive(curPath);
         } else {
-          // Eliminar archivo
           fs.unlinkSync(curPath);
         }
       });
 
-      // Eliminar directorio vacío
       fs.rmdirSync(dir);
     }
   }
 }
 
-// Exportar instancia singleton
 export const imageStorageService = new ImageStorageService();

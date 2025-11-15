@@ -1,10 +1,4 @@
-/**
- * 📚🦫 CONFIGURACIÓN CENTRALIZADA DE ARCHIVOS - PROFESOR ACADEL
- * Constantes compartidas entre frontend y backend para mantener coherencia
- * 🔄 ACTUALIZADO: Sincronizado con backend-file-constants.js
- */
 
-// ====== LÍMITES GENERALES ======
 export const FILE_LIMITS = {
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB para todos los archivos
   MAX_TEXT_CONTENT: 100000,        // 100K caracteres máximo de contenido extraído
@@ -16,16 +10,13 @@ export const FILE_LIMITS = {
   CODE_MAX_SIZE: 5 * 1024 * 1024       // 5MB para código
 };
 
-// ====== TIPOS DE ARCHIVO SOPORTADOS ======
 export const SUPPORTED_FILES = {
-  // 🖼️ IMÁGENES SOPORTADAS
   IMAGES: {
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
     extensions: ['jpg', 'jpeg', 'png', 'webp'],
     description: 'Imágenes (JPG, PNG, WebP)'
   },
   
-  // 📄 DOCUMENTOS SOPORTADOS
   DOCUMENTS: {
     mimeTypes: [
       'text/plain',
@@ -39,7 +30,6 @@ export const SUPPORTED_FILES = {
     description: 'Documentos (TXT, DOC, DOCX, MD, CSV, RTF)'
   },
   
-  // 💻 CÓDIGO SOPORTADO - ✅ COMPLETAMENTE SINCRONIZADO CON BACKEND
   CODE: {
     extensions: [
       // JavaScript y TypeScript
@@ -58,44 +48,36 @@ export const SUPPORTED_FILES = {
       'sql', 'sh', 'bash', 'ps1', 'bat'
     ],
     mimeTypes: [
-      // ✅ JAVASCRIPT - TODAS LAS VARIANTES
       'text/javascript',
       'application/javascript',
       'application/x-javascript',         // ← CLAVE: Este causaba el error
       'text/ecmascript',
       'application/ecmascript',
       
-      // ✅ TYPESCRIPT - TODAS LAS VARIANTES
       'text/typescript',
       'application/typescript',
       'text/x-typescript',
       
-      // ✅ PYTHON - TODAS LAS VARIANTES
       'text/x-python',
       'application/x-python',
       'text/x-python-script',
       
-      // ✅ JAVA - TODAS LAS VARIANTES
       'text/x-java-source',
       'application/x-java',
       'text/x-java',
       
-      // ✅ C/C++ - TODAS LAS VARIANTES
       'text/x-c',
       'application/x-c',
       'text/x-c++',
       'application/x-c++',
       
-      // ✅ C# - TODAS LAS VARIANTES
       'text/x-csharp',
       'application/x-csharp',
       
-      // ✅ WEB - TODAS LAS VARIANTES
       'text/html',
       'application/xhtml+xml',
       'text/css',
       
-      // ✅ DATOS - TODAS LAS VARIANTES
       'application/json',
       'text/json',
       'text/xml',
@@ -104,21 +86,17 @@ export const SUPPORTED_FILES = {
       'text/x-yaml',
       'text/yaml',
       
-      // ✅ SQL - TODAS LAS VARIANTES
       'application/x-sql',
       'text/x-sql',
       'text/sql',
       
-      // Para archivos de código sin extensión específica
       'text/plain'
     ],
     description: 'Archivos de código (JS, PY, HTML, CSS, Java, C++, etc.)'
   }
 };
 
-// ====== ARCHIVOS PROHIBIDOS ======
 export const FORBIDDEN_FILES = {
-  // 🚫 TIPOS COMPLETAMENTE PROHIBIDOS
   BLOCKED_EXTENSIONS: ['pdf', 'exe', 'msi', 'app', 'deb', 'rpm', 'zip', 'rar', '7z'],
   BLOCKED_MIME_TYPES: [
     'application/pdf',
@@ -130,7 +108,6 @@ export const FORBIDDEN_FILES = {
     'application/x-7z-compressed'
   ],
   
-  // 📋 RAZONES DE BLOQUEO
   REASONS: {
     'pdf': 'Los PDFs no están soportados. Acadel prefiere texto plano para mejor análisis',
     'exe': 'Archivos ejecutables no permitidos por seguridad',
@@ -142,9 +119,7 @@ export const FORBIDDEN_FILES = {
   }
 };
 
-// ====== MENSAJES DE ERROR ACADEL ======
 export const ACADEL_FILE_MESSAGES = {
-  // 🚫 ERRORES DE TIPO DE ARCHIVO
   UNSUPPORTED_TYPE: {
     title: "¡Archivo rebelde detectado! 🤔",
     message: "Acadel no puede leer este tipo de archivo. Solo acepto imágenes, documentos de texto y código."
@@ -160,7 +135,6 @@ export const ACADEL_FILE_MESSAGES = {
     message: "Acadel no acepta archivos ejecutables por seguridad. ¡Solo documentos y código fuente!"
   },
   
-  // 📏 ERRORES DE TAMAÑO
   FILE_TOO_LARGE: {
     title: "¡Archivo gigante detectado! 📊",
     message: "Este archivo supera los 5MB. Acadel necesita archivos más ligeros para analizarlos bien."
@@ -176,7 +150,6 @@ export const ACADEL_FILE_MESSAGES = {
     message: "Acadel puede analizar máximo 4 archivos por consulta. ¡Calidad sobre cantidad!"
   },
   
-  // ✅ MENSAJES DE ÉXITO
   FILES_READY: {
     title: "¡Archivos listos para Acadel! 🎯",
     message: "Todos los archivos están perfectos. ¡Ahora pregúntame lo que necesites!"
@@ -187,7 +160,6 @@ export const ACADEL_FILE_MESSAGES = {
     message: "Acadel ya leyó tu archivo y está listo para ayudarte."
   },
   
-  // ⚠️ ADVERTENCIAS
   FILE_PARTIALLY_READ: {
     title: "¡Archivo recortado! ✂️",
     message: "Tu archivo era muy largo, así que Acadel leyó las primeras partes. ¡Debería ser suficiente!"
@@ -199,19 +171,13 @@ export const ACADEL_FILE_MESSAGES = {
   }
 };
 
-// ====== FUNCIONES DE VALIDACIÓN ======
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA: Valida si un archivo es soportado por tipo
- * Ahora incluye todas las variantes de MIME types
- */
 export function validateFileType(file, expectedType = null) {
   const fileName = typeof file === 'string' ? file : file.name;
   const fileSize = typeof file === 'string' ? 0 : file.size;
   const fileMimeType = typeof file === 'string' ? null : file.type;
   const extension = fileName.split('.').pop().toLowerCase();
   
-  // Verificar si está en la lista de prohibidos
   if (FORBIDDEN_FILES.BLOCKED_EXTENSIONS.includes(extension)) {
     return {
       valid: false,
@@ -220,7 +186,6 @@ export function validateFileType(file, expectedType = null) {
     };
   }
   
-  // ✅ NUEVA VALIDACIÓN: Verificar MIME types prohibidos
   if (fileMimeType && FORBIDDEN_FILES.BLOCKED_MIME_TYPES.includes(fileMimeType)) {
     return {
       valid: false,
@@ -229,7 +194,6 @@ export function validateFileType(file, expectedType = null) {
     };
   }
   
-  // Verificar tamaño
   if (fileSize > FILE_LIMITS.MAX_FILE_SIZE) {
     return {
       valid: false,
@@ -238,10 +202,8 @@ export function validateFileType(file, expectedType = null) {
     };
   }
   
-  // Determinar tipo de archivo
   let detectedType = null;
   
-  // ✅ PRIORIZAR VALIDACIÓN POR MIME TYPE PRIMERO
   if (fileMimeType) {
     if (SUPPORTED_FILES.IMAGES.mimeTypes.includes(fileMimeType)) {
       detectedType = 'image';
@@ -252,7 +214,6 @@ export function validateFileType(file, expectedType = null) {
     }
   }
   
-  // Si no se detectó por MIME type, verificar por extensión
   if (!detectedType) {
     if (SUPPORTED_FILES.IMAGES.extensions.includes(extension)) {
       detectedType = 'image';
@@ -271,7 +232,6 @@ export function validateFileType(file, expectedType = null) {
     };
   }
   
-  // Verificar si coincide con el tipo esperado (si se especificó)
   if (expectedType && detectedType !== expectedType) {
     return {
       valid: false,
@@ -323,9 +283,6 @@ export function validateFileCount(fileCount) {
   return { valid: true, reason: 'Cantidad válida' };
 }
 
-/**
- * ✅ FUNCIÓN ACTUALIZADA: Obtiene información sobre tipos soportados
- */
 export function getSupportedTypesInfo() {
   return {
     images: {
@@ -358,7 +315,6 @@ export function getSupportedTypesInfo() {
   };
 }
 
-// ====== EXPORTAR PARA COMPATIBILIDAD ======
 export default {
   FILE_LIMITS,
   SUPPORTED_FILES,

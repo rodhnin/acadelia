@@ -36,7 +36,6 @@ export class DateRangeManager {
       }
       
       try {
-        // Verificar que jQuery esté disponible
         if (typeof $ === 'undefined' || typeof $.fn.daterangepicker === 'undefined') {
           console.error('jQuery o daterangepicker no están disponibles');
           return false;
@@ -44,7 +43,6 @@ export class DateRangeManager {
         
         console.log('Aplicando daterangepicker al elemento...');
         
-        // Aplicar daterangepicker al elemento
         $(this.dateRangeElement).daterangepicker({
           ranges: this.defaultRanges,
           startDate: moment().subtract(29, 'days'),
@@ -70,19 +68,15 @@ export class DateRangeManager {
           alwaysShowCalendars: true
         }, this.handleDateRangeCallback.bind(this));
         
-        // Guardar referencia para uso posterior
         this.dateRangePicker = $(this.dateRangeElement).data('daterangepicker');
         
-        // Establecer rango inicial
         this.setDefaultRange();
         
-        // Añadir evento apply.daterangepicker para capturar cambios
         $(this.dateRangeElement).on('apply.daterangepicker', (event, picker) => {
           console.log('Evento apply.daterangepicker capturado');
           this.handleDateRangeCallback(picker.startDate, picker.endDate, picker.chosenLabel);
         });
         
-        // Configurar report date range si existe
         this.setupReportDateRange();
         
         console.log('DateRangeManager inicializado correctamente');
@@ -110,7 +104,6 @@ export class DateRangeManager {
         endDate: end
       };
       
-      // Emitir evento con el sistema de eventos si está disponible
       if (this.eventBus) {
         console.log('Emitiendo evento dateRangeChanged a través del eventBus');
         this.eventBus.emit('dateRangeChanged', this.currentRange);
@@ -133,7 +126,6 @@ export class DateRangeManager {
       
       console.log(`Estableciendo rango por defecto: ${start.format('DD/MM/YYYY')} - ${end.format('DD/MM/YYYY')}`);
       
-      // Actualizar el rango actual
       this.currentRange = {
         start: start.format('YYYY-MM-DD'),
         end: end.format('YYYY-MM-DD'),
@@ -142,16 +134,13 @@ export class DateRangeManager {
         endDate: end
       };
       
-      // Actualizar el texto del elemento
       this.dateRangeElement.value = start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY');
       
-      // Actualizar el picker si ya está inicializado
       if (this.dateRangePicker) {
         this.dateRangePicker.setStartDate(start);
         this.dateRangePicker.setEndDate(end);
       }
       
-      // Emitir evento con el sistema de eventos si está disponible
       if (this.eventBus) {
         this.eventBus.emit('dateRangeChanged', this.currentRange);
       }
@@ -164,11 +153,9 @@ export class DateRangeManager {
       const reportDateRange = document.getElementById('report-date-range');
       const manualReportDateRange = document.getElementById('manual-report-date-range');
       
-      // Configurar daterangepicker para informes regulares
       if (reportDateRange) {
         try {
           console.log('Configurando daterangepicker para informes regulares');
-          // Aplicar daterangepicker similar al principal
           $(reportDateRange).daterangepicker({
             ranges: this.defaultRanges,
             startDate: moment().startOf('month'),
@@ -193,7 +180,6 @@ export class DateRangeManager {
             autoApply: true
           });
           
-          // Escuchar cambios en el selector de período para mostrar/ocultar el selector personalizado
           const reportPeriod = document.getElementById('report-period');
           if (reportPeriod) {
             reportPeriod.addEventListener('change', (e) => {
@@ -208,7 +194,6 @@ export class DateRangeManager {
         }
       }
       
-      // Configurar daterangepicker para informes manuales
       if (manualReportDateRange) {
         try {
           console.log('Configurando daterangepicker para informes manuales');
@@ -267,14 +252,11 @@ export class DateRangeManager {
         try {
           console.log(`Estableciendo rango predefinido: ${rangeName}`);
           
-          // Obtener el rango
           const [start, end] = this.defaultRanges[rangeName];
           
-          // Establecer el rango en el picker
           this.dateRangePicker.setStartDate(start);
           this.dateRangePicker.setEndDate(end);
           
-          // Actualizar el rango actual
           this.currentRange = {
             start: start.format('YYYY-MM-DD'),
             end: end.format('YYYY-MM-DD'),
@@ -283,7 +265,6 @@ export class DateRangeManager {
             endDate: end
           };
           
-          // Emitir evento con el sistema de eventos si está disponible
           if (this.eventBus) {
             this.eventBus.emit('dateRangeChanged', this.currentRange);
           }
@@ -318,11 +299,9 @@ export class DateRangeManager {
       }
       
       try {
-        // Convertir a objetos moment
         const startDate = moment(start);
         const endDate = moment(end);
         
-        // Validar fechas
         if (!startDate.isValid() || !endDate.isValid()) {
           console.error('Fechas inválidas para rango personalizado:', start, end);
           return false;
@@ -330,11 +309,9 @@ export class DateRangeManager {
         
         console.log(`Estableciendo rango personalizado: ${startDate.format('DD/MM/YYYY')} - ${endDate.format('DD/MM/YYYY')}`);
         
-        // Establecer el rango en el picker
         this.dateRangePicker.setStartDate(startDate);
         this.dateRangePicker.setEndDate(endDate);
         
-        // Actualizar el rango actual
         this.currentRange = {
           start: startDate.format('YYYY-MM-DD'),
           end: endDate.format('YYYY-MM-DD'),
@@ -343,7 +320,6 @@ export class DateRangeManager {
           endDate: endDate
         };
         
-        // Emitir evento con el sistema de eventos si está disponible
         if (this.eventBus) {
           this.eventBus.emit('dateRangeChanged', this.currentRange);
         }
@@ -395,7 +371,6 @@ export class DateRangeManager {
     refresh() {
       if (this.dateRangePicker) {
         console.log('Refrescando daterangepicker');
-        // Actualizar picker si es necesario
         this.dateRangePicker.updateView();
         this.dateRangePicker.updateCalendars();
       }

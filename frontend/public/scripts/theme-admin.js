@@ -1,6 +1,5 @@
   // Prevenir flash de cualquier contenido y mostrar pantalla de carga inmediatamente
   (function() {
-    // Determinar modo oscuro/claro
     function shouldUseDarkMode() {
       try {
         if (window.cookieHelpers) {
@@ -20,10 +19,8 @@
       return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
     
-    // Aplicar tema inmediatamente
     const darkModeEnabled = shouldUseDarkMode();
     
-    // Aplicar clase/atributo al html
     if (darkModeEnabled) {
       document.documentElement.classList.add('dark-mode');
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -61,7 +58,6 @@
     `;
     document.head.appendChild(style);
     
-    // Guardar referencia al estilo para eliminarlo después
     window._loadingStyles = style;
     
     // Cuando el DOM esté listo, aplicar al body

@@ -28,10 +28,8 @@ export class EventBus {
       this.events.set(event, []);
     }
     
-    // Generar ID único para esta suscripción
     const id = ++this.idCounter;
     
-    // Guardar callback con su ID
     this.events.get(event).push({ id, callback });
     
     return id;
@@ -47,7 +45,6 @@ export class EventBus {
       return;
     }
     
-    // Usar una copia del array para evitar problemas si un callback modifica el array
     const callbacks = [...this.events.get(event)];
     
     callbacks.forEach(({ callback }) => {
@@ -125,8 +122,6 @@ export class EventBus {
   }
 }
 
-// Crear y exportar una instancia única
 export const eventBus = new EventBus();
 
-// Exportar por defecto para permitir importación simple
 export default eventBus;

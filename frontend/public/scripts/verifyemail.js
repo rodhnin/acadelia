@@ -1,4 +1,3 @@
-// Función para mostrar alertas
 function showAlert(message, type = 'info', duration = 3000) {
   const alertTypes = {
     success: { icon: '✓', class: 'alert-success' },
@@ -28,13 +27,11 @@ function showAlert(message, type = 'info', duration = 3000) {
   }, duration);
 }
 
-// Variables para elementos del DOM
 let loadingElement;
 let successElement;
 let errorElement;
 let errorMessageElement;
 
-// Función para verificar el token
 async function verifyEmailToken(token) {
   if (!token) {
     showNoToken();
@@ -44,7 +41,6 @@ async function verifyEmailToken(token) {
   try {
     console.log("Verificando token:", token);
     
-    // Verificar el token
     const response = await fetch(`/api/usuarios/verify-email?token=${token}`, {
       method: 'GET',
       headers: {
@@ -60,7 +56,6 @@ async function verifyEmailToken(token) {
     // Asegurar que los elementos del DOM están disponibles
     ensureDOMElements();
     
-    // Ocultar pantalla de carga
     if (loadingElement) loadingElement.style.display = 'none';
     
     if (response.ok) {
@@ -89,7 +84,6 @@ async function verifyEmailToken(token) {
   }
 }
 
-// Función para asegurarse de que los elementos DOM están disponibles
 function ensureDOMElements() {
   if (!loadingElement) loadingElement = document.getElementById('verification-loading');
   if (!successElement) successElement = document.getElementById('verification-success');
@@ -101,7 +95,6 @@ function ensureDOMElements() {
   }
 }
 
-// Función para mostrar error cuando no hay token
 function showNoToken() {
   ensureDOMElements();
   
@@ -111,18 +104,15 @@ function showNoToken() {
   showAlert('No se proporcionó un token de verificación.', 'error');
 }
 
-// Función principal que se ejecutará cuando el DOM esté completamente cargado
 function init() {
   try {
     console.log("DOM completamente cargado, inicializando verificación");
     
-    // Obtener referencias a los elementos una vez cargado el DOM
     loadingElement = document.getElementById('verification-loading');
     successElement = document.getElementById('verification-success');
     errorElement = document.getElementById('verification-error');
     errorMessageElement = document.getElementById('error-message');
     
-    // Verificar que todos los elementos necesarios están presentes
     if (!loadingElement || !successElement || !errorElement || !errorMessageElement) {
       console.error("No se pudieron encontrar todos los elementos necesarios en el DOM:", {
         loadingElement: !!loadingElement,
@@ -131,12 +121,10 @@ function init() {
         errorMessageElement: !!errorMessageElement
       });
       
-      // Añadir un pequeño retraso e intentar nuevamente una vez
       setTimeout(() => {
         console.log("Reintentando obtener elementos del DOM...");
         ensureDOMElements();
         
-        // Proceder con la verificación
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         console.log("Token obtenido:", token);
@@ -145,13 +133,11 @@ function init() {
       return;
     }
     
-    // Obtener el token de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     
     console.log("Token obtenido:", token);
     
-    // Iniciar verificación
     verifyEmailToken(token);
   } catch (error) {
     console.error("Error en la inicialización:", error);
@@ -159,7 +145,6 @@ function init() {
   }
 }
 
-// Intentar inicializar tan pronto como sea posible
 function attemptInitialization() {
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     console.log(`Inicializando desde attemptInitialization (readyState: ${document.readyState})`);
@@ -172,7 +157,6 @@ function attemptInitialization() {
 // Primera verificación inmediata
 attemptInitialization();
 
-// Configurar múltiples métodos de inicialización para mayor robustez
 if (document.readyState === 'loading') {
   console.log("Configurando evento DOMContentLoaded");
   document.addEventListener('DOMContentLoaded', function() {
@@ -190,7 +174,6 @@ window.addEventListener('load', function() {
   }
 });
 
-// Fallback final - si después de 1 segundo aún no se ha inicializado
 setTimeout(function() {
   if (!loadingElement) {
     console.log("Inicializando por timeout como último recurso");

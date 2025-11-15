@@ -24,7 +24,6 @@ export class MarkdownStreamHandler {
     this.RENDER_DELAY = 100;
     this.MIN_CHUNK_SIZE = 2;
     
-    // ✨ NUEVO: Estado de matemáticas con sistema universal
     this.mathDetection = {
       hasMath: false,
       confidence: 0,
@@ -50,11 +49,9 @@ export class MarkdownStreamHandler {
   processChunk(chunk) {
     if (!chunk || this.isComplete) return;
     
-    // Guardar chunk sin modificar
     this.chunks.push(chunk);
     this.fullContent += chunk;
     
-    // ✨ NUEVO: Detectar contenido matemático durante el streaming
     if (!this.mathDetection.hasMath) {
       const detection = detectUniversalMath(this.fullContent);
       if (detection.hasMath) {
@@ -63,12 +60,10 @@ export class MarkdownStreamHandler {
       }
     }
     
-    // Detectar contenido Mermaid durante el streaming
     if (!this.hasMermaidContent) {
       this.hasMermaidContent = this.detectMermaidContent(this.fullContent);
     }
     
-    // Verificar contenido antes de renderizar
     const hasValidContent = this.fullContent.trim().length > 0;
     const hasEnoughContent = this.fullContent.length >= this.MIN_CHUNK_SIZE;
     
@@ -123,10 +118,8 @@ export class MarkdownStreamHandler {
       // Renderizado directo sin transiciones
       const html = renderMarkdownStreaming(this.fullContent, true);
       
-      // Actualizar DOM directamente
       this.contentEl.innerHTML = html;
       
-      // ✨ NUEVO: Procesar elementos especiales de manera limitada durante streaming
       setTimeout(() => {
         this.processElementsSafeStreaming();
       }, 50);
@@ -140,13 +133,8 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ NUEVO: Procesamiento seguro de elementos durante streaming
-   * INCLUYE preparación de matemáticas con sistema universal
-   */
   processElementsSafeStreaming() {
     try {
-      // Solo highlight.js durante streaming
       const codeBlocks = this.contentEl.querySelectorAll('pre code:not(.hljs)');
       if (codeBlocks.length > 0 && typeof hljs !== 'undefined') {
         codeBlocks.forEach(block => {
@@ -163,7 +151,6 @@ export class MarkdownStreamHandler {
         });
       }
       
-      // ✨ NUEVO: Preparar matemáticas con sistema universal (sin renderizar aún)
       if (this.mathDetection.hasMath && !this.mathDetection.processed) {
         processUniversalMath(this.contentEl, true)
           .then((prepared) => {
@@ -176,7 +163,6 @@ export class MarkdownStreamHandler {
           });
       }
       
-      // Procesar otros elementos que no sean Mermaid o matemáticas complejas
       const mathElements = this.contentEl.querySelectorAll('.math-expression:not(.processed)');
       if (mathElements.length > 0) {
         mathElements.forEach(el => {
@@ -203,9 +189,6 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ COMPLETAR STREAMING - RENOVADO CON SISTEMA UNIVERSAL
-   */
   async complete() {
     if (this.isComplete) return;
     
@@ -218,7 +201,6 @@ export class MarkdownStreamHandler {
     
     this.isComplete = true;
     
-    // Cancelar renders pendientes
     if (this.renderTimeout) {
       clearTimeout(this.renderTimeout);
       this.renderTimeout = null;
@@ -247,9 +229,6 @@ export class MarkdownStreamHandler {
     setTimeout(() => this.ensureScroll(), 100);
   }
   
-  /**
-   * ✨ PROCESAMIENTO FINAL DE ELEMENTOS - RENOVADO CON SISTEMA UNIVERSAL
-   */
   async processAllElementsFinal() {
     try {
       console.log('🔧 Iniciando procesamiento final de elementos...');
@@ -257,7 +236,6 @@ export class MarkdownStreamHandler {
       // PASO 1: Procesar elementos básicos primero
       processSpecialElements(this.contentEl, false); // isStreamingComplete = false para elementos básicos
       
-      // PASO 2: ✨ PROCESAR MATEMÁTICAS CON SISTEMA UNIVERSAL
       if (this.mathDetection.hasMath) {
         console.log('🧮 Procesando matemáticas con Sistema Universal...');
         
@@ -272,7 +250,6 @@ export class MarkdownStreamHandler {
         } catch (mathError) {
           console.error('❌ Error procesando matemáticas:', mathError);
           
-          // Fallback: intentar procesamiento básico
           console.log('🔄 Intentando procesamiento matemático de respaldo...');
           setTimeout(() => {
             if (window.forceProcessMath) {
@@ -286,7 +263,6 @@ export class MarkdownStreamHandler {
       if (this.hasMermaidContent && window.mermaidManager) {
         console.log('🎨 Procesando diagramas Mermaid con sistema unificado...');
         
-        // Verificar que el MermaidManager esté inicializado
         if (window.mermaidManager.isInitialized) {
           await window.mermaidManager.processContainer(this.contentEl);
           this.mermaidProcessed = true;
@@ -323,7 +299,6 @@ export class MarkdownStreamHandler {
    */
   postProcessElements() {
     try {
-      // Actualizar highlight.js para cualquier código que pueda haberse perdido
       const newCodeBlocks = this.contentEl.querySelectorAll('pre code:not(.hljs)');
       if (newCodeBlocks.length > 0 && typeof hljs !== 'undefined') {
         newCodeBlocks.forEach(block => {
@@ -335,7 +310,6 @@ export class MarkdownStreamHandler {
         });
       }
       
-      // ✨ NUEVO: Verificar que las matemáticas se procesaron correctamente
       if (this.mathDetection.hasMath && !this.mathDetection.processed) {
         console.warn('⚠️ Matemáticas no se procesaron completamente');
         
@@ -354,7 +328,6 @@ export class MarkdownStreamHandler {
         }, 1000);
       }
       
-      // Verificar que los diagramas Mermaid se procesaron correctamente
       if (this.hasMermaidContent) {
         const unprocessedMermaid = this.contentEl.querySelectorAll('.mermaid:not([data-processed])');
         if (unprocessedMermaid.length > 0) {
@@ -397,9 +370,6 @@ export class MarkdownStreamHandler {
       .replace(/\n/g, '<br>')}</p>`;
   }
   
-  /**
-   * ✨ NUEVAS API para verificar estado de matemáticas y Mermaid
-   */
   hasMathContent() {
     return this.mathDetection.hasMath;
   }
@@ -420,9 +390,6 @@ export class MarkdownStreamHandler {
     return this.mermaidProcessed;
   }
   
-  /**
-   * ✨ NUEVO: Forzar reprocesamiento de matemáticas
-   */
   async reprocessMath() {
     if (this.mathDetection.hasMath && this.isComplete) {
       console.log('🔄 Reprocesando matemáticas con Sistema Universal...');
@@ -447,9 +414,6 @@ export class MarkdownStreamHandler {
     }
   }
   
-  /**
-   * ✨ NUEVO: Diagnóstico completo del contenido
-   */
   diagnose() {
     return {
       isComplete: this.isComplete,
@@ -516,9 +480,6 @@ export function checkMessageForMermaid(messageElement) {
   return mermaidPatterns.some(pattern => pattern.test(content));
 }
 
-/**
- * ✨ NUEVA: Función para verificar matemáticas en mensaje
- */
 export function checkMessageForMath(messageElement) {
   const content = messageElement.querySelector('.message-content')?.innerHTML || '';
   return detectUniversalMath(content);

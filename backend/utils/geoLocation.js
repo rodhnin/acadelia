@@ -8,10 +8,8 @@ import geoip from 'geoip-lite';
  */
 export const getLocationFromIP = (ip) => {
   try {
-    // Limpiar la IP si tiene el prefijo IPv6 para IPv4
     const cleanIP = ip.replace('::ffff:', '');
     
-    // Obtener información geográfica
     const geo = geoip.lookup(cleanIP);
     
     if (!geo) {
@@ -23,7 +21,6 @@ export const getLocationFromIP = (ip) => {
       };
     }
     
-    // Construir información formateada
     const location = {
       country: geo.country || 'Desconocido',
       region: geo.region || 'Desconocido',
@@ -32,7 +29,6 @@ export const getLocationFromIP = (ip) => {
       formattedLocation: `${geo.city || ''}, ${geo.region || ''}, ${geo.country || 'Ubicación desconocida'}`
     };
     
-    // Eliminar comas extras si falta algún dato
     location.formattedLocation = location.formattedLocation
       .replace(/, ,/g, ',')
       .replace(/^, /g, '')

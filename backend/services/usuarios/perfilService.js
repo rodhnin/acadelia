@@ -1,22 +1,17 @@
 import pool from "../../lib/dbPool.js";
 
-// ========================================
 // CACHÉ Y CONSTANTES (MANTENIDAS IGUAL)
-// ========================================
 
 let rolesCache = null;
 let rolesCacheTime = null;
 const CACHE_TTL = 3600000; // 1 hora
 
-// ========================================
 // FUNCIONES EXPORTADAS (MISMOS NOMBRES, REFACTORIZADAS INTERNAMENTE)
-// ========================================
 
 /**
  * Función para obtener todos los roles (REFACTORIZADA - sin cambio de interfaz)
  */
 export const getAllRoles = async () => {
-    // Usar caché si está disponible y válido
     if (rolesCache && rolesCacheTime && (Date.now() - rolesCacheTime < CACHE_TTL)) {
         return rolesCache;
     }
@@ -26,13 +21,11 @@ export const getAllRoles = async () => {
         const query = "SELECT id_rol, rol FROM rol";
         const { rows } = await client.query(query);
         
-        // Transformar a formato de objeto para facilitar el uso en el frontend
         const rolesObject = {};
         rows.forEach(rol => {
             rolesObject[rol.id_rol] = rol.rol;
         });
         
-        // Actualizar caché
         rolesCache = rolesObject;
         rolesCacheTime = Date.now();
         
@@ -59,25 +52,20 @@ export const createPerfil = async ({
 }) => {
     const client = await pool.connect();
     try {
-        // 🔧 CORRECCIÓN: Agregar transacción
         await client.query('BEGIN');
         
-        // Validación de campos obligatorios (MANTENIDA)
         if (!id_usuario || !id_rol || !nombre || !apellido || !id_pais || !nacimiento || !id_universidad) {
             throw new Error("Todos los campos obligatorios deben ser proporcionados");
         }
 
-        // 🔧 CORRECCIÓN: Verificar si ya existe un perfil para este usuario
         const existingProfileQuery = "SELECT id_usuario, id_rol FROM perfil WHERE id_usuario = $1";
         const existingResult = await client.query(existingProfileQuery, [id_usuario]);
         
         let result;
         
         if (existingResult.rows.length > 0) {
-            // 🔧 CORRECCIÓN: Si existe, actualizar en lugar de crear
             console.log(`✅ Perfil existente encontrado para usuario ${id_usuario}, actualizando...`);
             
-            // 🔧 CORRECCIÓN: Validar foreign keys de forma optimizada
             await validateForeignKeysOptimized([
                 ['usuario', id_usuario, 'El usuario no existe'],
                 ['rol', id_rol, 'El rol no existe'],
@@ -85,10 +73,8 @@ export const createPerfil = async ({
                 ['universidad', id_universidad, 'La universidad no existe']
             ], client);
 
-            // Aplicar timeout para esta operación (MANTENIDO)
             await client.query('SET statement_timeout = 10000');
             
-            // 🔧 CORRECCIÓN: Actualizar perfil existente
             const updateQuery = `
                 UPDATE perfil 
                 SET id_rol = $2, nombre = $3, apellido = $4, id_pais = $5, nacimiento = $6, id_universidad = $7
@@ -101,10 +87,8 @@ export const createPerfil = async ({
             
             console.log(`✅ Perfil actualizado exitosamente para usuario ${id_usuario}`);
         } else {
-            // 🔧 CORRECCIÓN: Si no existe, crear nuevo (lógica original)
             console.log(`✅ Creando nuevo perfil para usuario ${id_usuario}...`);
             
-            // 🔧 CORRECCIÓN: Validar foreign keys de forma optimizada
             await validateForeignKeysOptimized([
                 ['usuario', id_usuario, 'El usuario no existe'],
                 ['rol', id_rol, 'El rol no existe'],
@@ -112,10 +96,8 @@ export const createPerfil = async ({
                 ['universidad', id_universidad, 'La universidad no existe']
             ], client);
 
-            // Aplicar timeout para esta operación (MANTENIDO)
             await client.query('SET statement_timeout = 10000');
             
-            // Insertar en base de datos (QUERY MANTENIDA IGUAL)
             const insertQuery = `
                 INSERT INTO perfil 
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -128,17 +110,14 @@ export const createPerfil = async ({
             console.log(`✅ Perfil creado exitosamente para usuario ${id_usuario}`);
         }
         
-        // 🔧 CORRECCIÓN: Confirmar transacción
         await client.query('COMMIT');
         
         return result;
     } catch (error) {
-        // 🔧 CORRECCIÓN: Rollback en caso de error
         await client.query('ROLLBACK');
         console.error('Error en createPerfil:', error);
         throw error;
     } finally {
-        // Resetear el timeout (MANTENIDO)
         try {
             await client.query('SET statement_timeout = DEFAULT');
         } catch (e) {
@@ -162,22 +141,18 @@ export const updatePerfil = async ({
 }) => {
     const client = await pool.connect();
     try {
-        // 🔧 REFACTORIZACIÓN: Agregar transacción
         await client.query('BEGIN');
         
         if (!id) throw new Error("ID de usuario obligatorio");
 
-        // 🔧 REFACTORIZACIÓN: Validar foreign keys de forma optimizada
         await validateForeignKeysOptimized([
             ['rol', id_rol, 'El rol no existe'],
             ['pais', id_pais, 'El país no existe'],
             ['universidad', id_universidad, 'La universidad no existe']
         ], client);
 
-        // Aplicar timeout (MANTENIDO)
         await client.query('SET statement_timeout = 10000');
         
-        // Actualizar en base de datos (QUERY MANTENIDA IGUAL)
         const query = `
             UPDATE perfil 
             SET id_rol = $1, nombre = $2, apellido = $3, id_pais = $4, nacimiento = $5, id_universidad = $6
@@ -192,17 +167,14 @@ export const updatePerfil = async ({
             throw new Error("Perfil no encontrado");
         }
         
-        // 🔧 REFACTORIZACIÓN: Confirmar transacción
         await client.query('COMMIT');
         
         return rows[0];
     } catch (error) {
-        // 🔧 REFACTORIZACIÓN: Rollback en caso de error
         await client.query('ROLLBACK');
         console.error('Error en updatePerfil:', error);
         throw error;
     } finally {
-        // Resetear timeout (MANTENIDO)
         try {
             await client.query('SET statement_timeout = DEFAULT');
         } catch (e) {
@@ -229,9 +201,6 @@ export const getPerfilById = async (id_usuario) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Verificar si perfil está completo
- */
 export const isProfileComplete = async (id_usuario) => {
     const client = await pool.connect();
     try {
@@ -274,7 +243,6 @@ export const isProfileComplete = async (id_usuario) => {
 export const getAllPerfiles = async () => {
     const client = await pool.connect();
     try {
-        // Establecer timeout para esta consulta específica (MANTENIDO)
         await client.query('SET statement_timeout = 15000');
         
         const query = "SELECT * FROM perfil";
@@ -284,7 +252,6 @@ export const getAllPerfiles = async () => {
         console.error('Error en getAllPerfiles:', error);
         throw error;
     } finally {
-        // Resetear el timeout al valor por defecto (MANTENIDO)
         try {
             await client.query('SET statement_timeout = DEFAULT');
         } catch (e) {
@@ -300,14 +267,11 @@ export const getAllPerfiles = async () => {
 export const getAllPerfilesPaginado = async (page = 1, limit = 20) => {
     const client = await pool.connect();
     try {
-        // Calcular el offset basado en la página y el límite
         const offset = (page - 1) * limit;
         
-        // Ejecutar la consulta paginada
         const query = "SELECT * FROM perfil ORDER BY id_usuario LIMIT $1 OFFSET $2";
         const { rows } = await client.query(query, [limit, offset]);
         
-        // Obtener el total de registros para la paginación
         const countQuery = "SELECT COUNT(*) FROM perfil";
         const countResult = await client.query(countQuery);
         const total = parseInt(countResult.rows[0].count);
@@ -335,14 +299,12 @@ export const getAllPerfilesPaginado = async (page = 1, limit = 20) => {
 export const deletePerfil = async (id) => {
     const client = await pool.connect();
     try {
-        // 🔧 REFACTORIZACIÓN: Agregar transacción
         await client.query('BEGIN');
         
         if (!id) {
             throw new Error("El ID de usuario es obligatorio");
         }
 
-        // Verificar si el perfil existe (MANTENIDO)
         const checkQuery = "SELECT 1 FROM perfil WHERE id_usuario = $1";
         const checkResult = await client.query(checkQuery, [id]);
         
@@ -351,24 +313,19 @@ export const deletePerfil = async (id) => {
             throw new Error("El perfil no existe");
         }
         
-        // Aplicar timeout (MANTENIDO)
         await client.query('SET statement_timeout = 10000');
         
-        // Eliminar el perfil (QUERY MANTENIDA IGUAL)
         const query = "DELETE FROM perfil WHERE id_usuario = $1";
         await client.query(query, [id]);
         
-        // 🔧 REFACTORIZACIÓN: Confirmar transacción
         await client.query('COMMIT');
         
         return true;
     } catch (error) {
-        // 🔧 REFACTORIZACIÓN: Rollback en caso de error
         await client.query('ROLLBACK');
         console.error('Error en deletePerfil:', error);
         throw error;
     } finally {
-        // Resetear timeout (MANTENIDO)
         try {
             await client.query('SET statement_timeout = DEFAULT');
         } catch (e) {
@@ -378,15 +335,10 @@ export const deletePerfil = async (id) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Obtener perfil con información de universidad
- * (MOVIDA DESDE CONTROLLER - LÓGICA COMPLEJA)
- */
 export const getPerfilWithUniversityInfo = async (id_usuario) => {
     const client = await pool.connect();
     
     try {
-        // Verificar que el usuario existe
         const userQuery = `SELECT * FROM usuario WHERE id_user = $1`;
         const userResult = await client.query(userQuery, [id_usuario]);
         
@@ -436,10 +388,6 @@ export const getPerfilWithUniversityInfo = async (id_usuario) => {
     }
 };
 
-/**
- * 🔧 NUEVA FUNCIÓN: Obtener detalles completos del usuario
- * (MOVIDA DESDE CONTROLLER - LÓGICA COMPLEJA)
- */
 export const getCompleteUserDetails = async (id_usuario) => {
     const client = await pool.connect();
     
@@ -494,7 +442,6 @@ export const getCompleteUserDetails = async (id_usuario) => {
                 userDetails.perfil = perfilResult.rows[0];
             }
         } catch (perfilError) {
-            // Continuar sin perfil
         }
         
         // Consulta para obtener suscripciones activas
@@ -511,7 +458,6 @@ export const getCompleteUserDetails = async (id_usuario) => {
             userDetails.suscripciones.activas = subsResult.rows || [];
             userDetails.suscripciones.total = subsResult.rows.length || 0;
         } catch (subsError) {
-            // Continuar sin suscripciones
         }
         
         // Consulta para obtener historial de transacciones
@@ -528,7 +474,6 @@ export const getCompleteUserDetails = async (id_usuario) => {
             userDetails.transacciones.recientes = transResult.rows || [];
             userDetails.transacciones.total = transResult.rows.length || 0;
         } catch (transError) {
-            // Continuar sin transacciones
         }
         
         return userDetails;
@@ -556,14 +501,8 @@ export const executeQuery = async (queryText, params = []) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS (REFACTORIZADAS)
-// ========================================
 
-/**
- * 🔧 REFACTORIZACIÓN: Validación optimizada de foreign keys
- * (MEJORADA - una sola consulta para múltiples validaciones)
- */
 const validateForeignKeysOptimized = async (keys, client) => {
     try {
         if (!keys || keys.length === 0) return true;
@@ -584,11 +523,9 @@ const validateForeignKeysOptimized = async (keys, client) => {
             errorMessages[table] = errorMessage;
         }
         
-        // 🔧 OPTIMIZACIÓN: Una sola consulta para todas las validaciones
         const combinedQuery = queries.join(" UNION ALL ");
         const { rows } = await client.query(combinedQuery, params);
         
-        // Verificar resultados
         for (const row of rows) {
             if (!row.exists) {
                 throw new Error(errorMessages[row.table_name]);

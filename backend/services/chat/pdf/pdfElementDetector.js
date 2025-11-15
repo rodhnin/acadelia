@@ -19,7 +19,6 @@ export const PDFElementDetector = {
       for (let j = 0; j < operatorList.fnArray.length; j++) {
         const fnId = operatorList.fnArray[j];
 
-        // Verificar si es un operador de imagen o un operador XObject que podría contener imágenes
         if (imageOperatorSet.has(fnId)) {
           const args = operatorList.argsArray[j];
           const image = {
@@ -64,7 +63,6 @@ export const PDFElementDetector = {
         const content = await page.getTextContent();
         const viewport = page.getViewport({ scale: 1.0 });
 
-        // Buscar elementos que podrían ser imágenes basándonos en el tamaño y posición
         const potentialImages = [];
         const items = content.items;
 
@@ -113,15 +111,12 @@ export const PDFElementDetector = {
       const textContent = await page.getTextContent();
       const formulas = [];
       
-      // Unir el texto de la página
       const text = textContent.items.map(item => item.str).join(' ');
       
-      // Detectar y validar fórmulas con los patrones definidos
       for (const pattern of PDFPathConfig.formulaPatterns) {
         const matches = text.match(pattern);
         if (matches) {
           matches.forEach(formula => {
-            // Verificar que no sea texto normal que coincide accidentalmente
             if (this.validateFormula(formula)) {
               formulas.push({
                 pageNum: pageNum,
@@ -134,16 +129,13 @@ export const PDFElementDetector = {
         }
       }
       
-      // Buscar fórmulas por características visuales específicas
       textContent.items.forEach((item, index) => {
-        // Buscar elementos con espaciado o formato particular
         if (item.str && (
             // Operadores matemáticos consecutivos
             /[+\-*/^=<>]+/.test(item.str) ||
             // Símbolos matemáticos especiales
             /[∑∫∂√πΔ∇∈∉∋∌∞∝∀∃∄∴∵∼≅≈≠≤≥⊂⊃⊆⊇⊕⊗⊥]/.test(item.str)
           )) {
-          // Verificar si hay elementos adyacentes que podrían formar una fórmula
           const context = this.getContextItems(textContent.items, index, 3);
           if (context && this.looksLikeFormulaContext(context)) {
             const formulaText = context.map(item => item.str).join('');
@@ -170,17 +162,13 @@ export const PDFElementDetector = {
    * @returns {boolean} - true si parece una fórmula válida
    */
   validateFormula(formula) {
-    // Verificar longitud mínima razonable
     if (formula.length < 3) return false;
     
-    // Verificar que contiene al menos un símbolo matemático
     const hasMathSymbol = /[+\-*/^=<>≤≥±∑∫∂√πα-ωΑ-Ω]/.test(formula);
     
-    // Verificar que no es solo texto normal
     const normalTextPattern = /^[a-zA-Z\s,.]+$/;
     const isJustText = normalTextPattern.test(formula);
     
-    // Verificar balance de paréntesis/corchetes/llaves
     const isBalanced = this.checkBalancedSymbols(formula);
     
     return hasMathSymbol && !isJustText && isBalanced;
@@ -205,7 +193,6 @@ export const PDFElementDetector = {
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
       
-      // Manejar secuencias de escape LaTeX
       if (text.substring(i, i + 2) === '\\(' || 
           text.substring(i, i + 2) === '\\[' || 
           text.substring(i, i + 2) === '\\{') {
@@ -254,11 +241,9 @@ export const PDFElementDetector = {
   looksLikeFormulaContext(items) {
     const text = items.map(item => item.str).join('');
     
-    // Verificar densidad de símbolos matemáticos
     const mathSymbolCount = (text.match(/[+\-*/^=<>≤≥±∑∫∂√πα-ωΑ-Ω]/g) || []).length;
     const density = mathSymbolCount / text.length;
     
-    // Verificar presencia de patrones típicos de fórmulas
     const hasEquality = /=/.test(text);
     const hasVariables = /[a-zA-Z][0-9]/.test(text) || /[a-zA-Z]_[0-9a-zA-Z]/.test(text);
     
@@ -280,7 +265,6 @@ export const PDFElementDetector = {
       // Agrupar elementos de texto por líneas con mayor precisión
       const lines = this.groupTextItemsByLines(textContent.items, pageHeight);
       
-      // Detectar tablas utilizando múltiples heurísticas
       const tables = [];
       let tableStartIndex = -1;
       let inTable = false;
@@ -311,7 +295,6 @@ export const PDFElementDetector = {
         }
       }
       
-      // Verificar si hay una tabla al final del documento
       if (inTable && tableStartIndex >= 0 && lines.length - tableStartIndex >= 2) {
         const extractedTable = this.extractTable(lines, tableStartIndex, lines.length - 1, pageWidth);
         if (extractedTable && this.isValidTable(extractedTable)) {
@@ -339,25 +322,22 @@ export const PDFElementDetector = {
   groupTextItemsByLines(items, pageHeight) {
     if (!items || items.length === 0) return [];
     
-    // Ordenar por posición Y (de arriba a abajo)
     const sortedItems = [...items].sort((a, b) => {
       const yA = a.transform ? a.transform[5] : a.y;
       const yB = b.transform ? b.transform[5] : b.y;
       return yB - yA; // Ordenar de arriba a abajo
     });
     
-    // Calcular umbral adaptativo basado en altura de línea promedio
     const lineHeights = [];
     for (let i = 1; i < sortedItems.length; i++) {
       const yPrev = sortedItems[i-1].transform ? sortedItems[i-1].transform[5] : sortedItems[i-1].y;
       const yCurr = sortedItems[i].transform ? sortedItems[i].transform[5] : sortedItems[i].y;
       const diff = Math.abs(yPrev - yCurr);
-      if (diff > 0 && diff < pageHeight * 0.05) { // Solo diferencias razonables
+      if (diff > 0 && diff < pageHeight * 0.05) {
         lineHeights.push(diff);
       }
     }
     
-    // Calcular altura de línea promedio
     const avgLineHeight = lineHeights.length > 0 
       ? lineHeights.reduce((sum, h) => sum + h, 0) / lineHeights.length 
       : 12; // Valor predeterminado si no hay suficientes datos
@@ -375,7 +355,6 @@ export const PDFElementDetector = {
       
       if (Math.abs(itemY - currentY) > threshold) {
         if (currentLine.length > 0) {
-          // Ordenar elementos de la línea por coordenada X (de izquierda a derecha)
           currentLine.sort((a, b) => {
             const xA = a.transform ? a.transform[4] : a.x;
             const xB = b.transform ? b.transform[4] : b.x;
@@ -442,7 +421,6 @@ export const PDFElementDetector = {
     
     if (spaces.length === 0) return false;
     
-    // Calcular media y desviación estándar
     const avgSpace = spaces.reduce((sum, space) => sum + space, 0) / spaces.length;
     const variance = spaces.reduce((sum, space) => sum + Math.pow(space - avgSpace, 2), 0) / spaces.length;
     const stdDev = Math.sqrt(variance);
@@ -488,15 +466,12 @@ export const PDFElementDetector = {
    * @returns {boolean} - true si parece contener datos tabulares
    */
   checkTabularContent(line) {
-    // Verificar si hay elementos numéricos que sugieren datos tabulares
     const numericItems = line.filter(item => /^\s*[0-9]+([.,][0-9]+)?\s*$/.test(item.str));
     const hasNumericColumns = numericItems.length >= 2;
     
-    // Verificar si hay encabezados típicos de tabla
     const headerPattern = /^\s*(id|nombre|fecha|total|valor|precio|cantidad|descripción|description)\s*$/i;
     const hasHeaders = line.some(item => headerPattern.test(item.str));
     
-    // Verificar si hay alineación de datos que sugiere una tabla
     const alignedItems = this.countAlignedItems(line);
     const hasGoodAlignment = alignedItems / line.length > 0.7;
     
@@ -513,13 +488,10 @@ export const PDFElementDetector = {
     
     let alignedCount = 0;
     
-    // Verificar alineación a la derecha (típica para números)
     const rightAligned = line.filter(item => /^\s+\S+\s*$/.test(item.str)).length;
     
-    // Verificar alineación a la izquierda (típica para texto)
     const leftAligned = line.filter(item => /^\S+\s+$/.test(item.str)).length;
     
-    // Verificar alineación centrada
     const centered = line.filter(item => /^\s+\S+\s+$/.test(item.str)).length;
     
     alignedCount = Math.max(rightAligned, leftAligned, centered);
@@ -541,17 +513,13 @@ export const PDFElementDetector = {
     
     const tableLines = lines.slice(startIndex, endIndex + 1);
     
-    // Detectar número de columnas (tomamos el máximo entre todas las filas)
     const maxColumns = Math.max(...tableLines.map(line => line.length));
     
-    // Detectar bordes/posiciones de columnas basados en la distribución de los elementos
     const columnBoundaries = this.detectColumnBoundaries(tableLines, pageWidth);
     
-    // Extraer celdas usando los límites de columnas detectados
     const rows = tableLines.map(line => {
       const cells = new Array(columnBoundaries.length - 1).fill("");
       
-      // Asignar elementos de texto a sus correspondientes celdas
       line.forEach(item => {
         const x = item.transform ? item.transform[4] : item.x;
         const width = this.getItemWidth(item);
@@ -600,7 +568,6 @@ export const PDFElementDetector = {
       });
     });
     
-    // Ordenar y eliminar duplicados cercanos (tolerancia de 5 unidades)
     positions.sort((a, b) => a - b);
     
     const uniquePositions = [0]; // Empezar desde el borde izquierdo
@@ -617,7 +584,6 @@ export const PDFElementDetector = {
       uniquePositions.push(pageWidth);
     }
     
-    // Buscar agrupamientos usando histograma si hay demasiadas posiciones
     if (uniquePositions.length > 20) {
       return this.createHistogramBoundaries(positions, pageWidth);
     }
@@ -642,7 +608,6 @@ export const PDFElementDetector = {
       }
     });
     
-    // Detectar valles en el histograma (lugares con pocos elementos - posibles separadores de columnas)
     const valleys = [];
     
     for (let i = 1; i < 19; i++) {
@@ -651,7 +616,6 @@ export const PDFElementDetector = {
       }
     }
     
-    // Convertir índices de valle a posiciones reales
     const boundaries = [0]; // Siempre empezar desde el borde izquierdo
     
     valleys.forEach(valley => {
@@ -673,7 +637,6 @@ export const PDFElementDetector = {
       return false;
     }
     
-    // Verificar contenido mínimo
     const nonEmptyCells = table.rows.flat().filter(cell => cell && cell.trim() !== "").length;
     const totalCells = table.rowCount * table.columnCount;
     
@@ -682,12 +645,10 @@ export const PDFElementDetector = {
       return false;
     }
     
-    // Verificar consistencia de filas (al menos 70% de las filas deben tener longitud similar)
     const expectedLength = table.columnCount;
     let consistentRows = 0;
     
     table.rows.forEach(row => {
-      // Contar celdas no vacías
       const nonEmptyInRow = row.filter(cell => cell && cell.trim() !== "").length;
       
       if (nonEmptyInRow >= expectedLength * 0.5) {

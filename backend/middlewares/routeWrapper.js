@@ -1,4 +1,3 @@
-// backend/middlewares/routeWrapper.js
 import { throttle } from './throttleMiddleware.js';
 
 /**
@@ -8,7 +7,6 @@ import { throttle } from './throttleMiddleware.js';
  * @returns {Router} - El mismo router pero con throttling aplicado
  */
 export function wrapRouter(router, config = {}) {
-  // Guardar las funciones originales del router
   const originalMethods = {
     get: router.get,
     post: router.post,
@@ -16,20 +14,15 @@ export function wrapRouter(router, config = {}) {
     delete: router.delete
   };
   
-  // Reemplazar cada método del router
   for (const [method, originalFn] of Object.entries(originalMethods)) {
     router[method] = function(path, ...handlers) {
-      // Verificar si esta ruta debe tener throttling
       const routeConfig = config[path];
       
       if (routeConfig) {
-        // Extraer configuración
         const { type, timeout, concurrency } = routeConfig;
         
-        // Crear middleware de throttling
         const throttleMiddleware = throttle(type, timeout, concurrency);
         
-        // Insertar middleware de throttling antes del último handler
         if (handlers.length > 0) {
           const lastHandler = handlers.pop();
           handlers.push(throttleMiddleware);
@@ -37,7 +30,6 @@ export function wrapRouter(router, config = {}) {
         }
       }
       
-      // Llamar al método original
       return originalFn.call(router, path, ...handlers);
     };
   }

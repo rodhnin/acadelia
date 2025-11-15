@@ -6,13 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Deshabilitar botón durante el envío
         const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
         
         try {
-            // Obtener datos del formulario
             const formData = new FormData(form);
             const data = {
                 fullName: formData.get('fullName'),
@@ -21,10 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 message: formData.get('message')
             };
 
-            // Obtener token CSRF
             const csrfToken = await window.csrfUtils.getToken();
 
-            // Enviar petición al backend
             const response = await fetch('/api/contact/send', {
                 method: 'POST',
                 headers: {
@@ -37,14 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                // Mostrar mensaje de éxito
                 mensajeExito.textContent = '✅ Mensaje enviado con éxito. Revisa tu email para la confirmación.';
                 mensajeExito.style.display = 'block';
                 mensajeExito.style.background = '#d4edda';
                 mensajeExito.style.color = '#155724';
                 form.reset();
                 
-                // Ocultar mensaje después de 5 segundos
                 setTimeout(() => {
                     mensajeExito.style.display = 'none';
                 }, 5000);
@@ -55,13 +49,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error enviando mensaje:', error);
             
-            // Mostrar mensaje de error
             mensajeExito.textContent = '❌ Error al enviar el mensaje. Inténtalo de nuevo.';
             mensajeExito.style.display = 'block';
             mensajeExito.style.background = '#f8d7da';
             mensajeExito.style.color = '#721c24';
             
-            // Ocultar mensaje después de 5 segundos
             setTimeout(() => {
                 mensajeExito.style.display = 'none';
             }, 5000);

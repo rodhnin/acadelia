@@ -59,14 +59,12 @@ export function initMap(elementId = 'security-map', darkMode = false) {
         mapMarkers = [];
     }
     
-    // Crear nueva instancia del mapa
     securityMap = L.map(elementId, {
         center: MAP_CONFIG.defaultCenter,
         zoom: MAP_CONFIG.defaultZoom,
         zoomControl: true
     });
     
-    // Añadir capa de azulejos según el tema
     const tileUrl = darkMode ? MAP_CONFIG.mapDarkTileLayer : MAP_CONFIG.mapTileLayer;
     
     currentTileLayer = L.tileLayer(tileUrl, {
@@ -74,7 +72,6 @@ export function initMap(elementId = 'security-map', darkMode = false) {
         maxZoom: MAP_CONFIG.maxZoom
     }).addTo(securityMap);
     
-    // Crear capa de marcadores
     markerLayer = L.layerGroup().addTo(securityMap);
     
     return securityMap;
@@ -87,7 +84,6 @@ export function initMap(elementId = 'security-map', darkMode = false) {
 export function updateMapTheme(darkMode) {
     if (!securityMap) return;
     
-    // Cambiar capa de azulejos
     const tileUrl = darkMode ? MAP_CONFIG.mapDarkTileLayer : MAP_CONFIG.mapTileLayer;
     
     if (currentTileLayer) {
@@ -110,13 +106,11 @@ export function updateMapTheme(darkMode) {
 export function addMarker(lat, lng, data = {}) {
     if (!securityMap) return null;
     
-    // Verificar coordenadas válidas
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
         console.warn('Coordenadas inválidas para marcador:', lat, lng);
         return null;
     }
     
-    // Crear ícono personalizado
     const icon = L.divIcon({
         className: 'security-map-marker',
         html: `<div class="map-marker ${data.severity ? 'marker-' + data.severity : 'marker-default'}"><i class="bi bi-ban"></i></div>`,
@@ -125,10 +119,8 @@ export function addMarker(lat, lng, data = {}) {
         popupAnchor: [0, -32]
     });
     
-    // Crear marcador
     const marker = L.marker([lat, lng], { icon }).addTo(markerLayer);
     
-    // Crear contenido del popup
     let popupContent = `
         <div class="map-popup">
             <h5 class="popup-title">${data.ip || 'IP Desconocida'}</h5>
@@ -150,7 +142,6 @@ export function addMarker(lat, lng, data = {}) {
         popupContent += `<p><i class="bi bi-hash"></i> ID: ${data.id}</p>`;
     }
     
-    // Añadir botones de acción si es necesario
     if (data.actions) {
         popupContent += `<div class="popup-actions">`;
         
@@ -167,16 +158,12 @@ export function addMarker(lat, lng, data = {}) {
     
     popupContent += `</div>`;
     
-    // Añadir popup al marcador
     marker.bindPopup(popupContent);
     
-    // Almacenar referencia al marcador
     marker._securityData = data;
     mapMarkers.push(marker);
     
-    // Configurar eventos después de crear el popup
     marker.on('popupopen', function() {
-        // Agregar event listeners a los botones del popup
         const popup = this.getPopup();
         const container = popup.getContent();
         

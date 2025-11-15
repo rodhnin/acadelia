@@ -15,10 +15,8 @@ let currentView = 'grid';
 let typeChart = null;
 let channelChart = null;
 
-// 🔧 CONTROL DE EVENT LISTENERS - SOLO PARA MODAL BODY
 let modalBodyEventAttached = false;
 
-// Función principal para inicializar la modal de contenido
 export function initContentModal() {
   console.log('🎨 Inicializando modal de contenido...');
   
@@ -28,10 +26,8 @@ export function initContentModal() {
     return;
   }
   
-  // 🔧 LIMPIAR EVENT LISTENERS ANTERIORES
   cleanupEventListeners();
   
-  // Configurar event listener para cuando se abra la modal
   modal.addEventListener('modal:open', handleContentModalOpen);
   
   // También escuchar el evento de apertura estándar
@@ -50,11 +46,9 @@ export function initContentModal() {
   console.log('✅ Modal de contenido inicializada');
 }
 
-// 🔧 FUNCIÓN SIMPLIFICADA: Limpiar solo event listeners del modal body
 function cleanupEventListeners() {
   modalBodyEventAttached = false;
   
-  // Limpiar event listeners del modal body
   const modalBody = document.querySelector('#contentModal .modal-body');
   if (modalBody && modalBody._contentClickHandler) {
     modalBody.removeEventListener('click', modalBody._contentClickHandler);
@@ -62,11 +56,9 @@ function cleanupEventListeners() {
   }
 }
 
-// Manejar cuando se abre la modal - MEJORADO
 async function handleContentModalOpen() {
   console.log('📋 Abriendo modal de contenido...');
   
-  // 🔧 PREVENIR MÚLTIPLES EJECUCIONES
   if (window._contentModalLoading) {
     console.log('⚠️ Modal ya se está cargando, ignorando...');
     return;
@@ -75,20 +67,15 @@ async function handleContentModalOpen() {
   window._contentModalLoading = true;
   
   try {
-    // Mostrar loading PRIMERO
     showContentLoading();
     
-    // Cargar datos
     await loadContentData();
     
-    // Crear estructura del dashboard
     const modalBody = document.querySelector('#contentModal .modal-body');
     createContentDashboardStructure(modalBody);
     
-    // Renderizar dashboard
     renderContentDashboard();
     
-    // Configurar eventos UNA SOLA VEZ
     setupContentEvents();
     
     console.log('✅ Dashboard de contenido cargado correctamente');
@@ -96,12 +83,10 @@ async function handleContentModalOpen() {
     console.error('❌ Error cargando dashboard de contenido:', error);
     showContentError(error);
   } finally {
-    // 🔧 LIBERAR FLAG
     window._contentModalLoading = false;
   }
 }
 
-// Mostrar estado de carga
 function showContentLoading() {
   const modalBody = document.querySelector('#contentModal .modal-body');
   if (modalBody) {
@@ -114,7 +99,6 @@ function showContentLoading() {
   }
 }
 
-// Mostrar error
 function showContentError(error) {
   const modalBody = document.querySelector('#contentModal .modal-body');
   if (modalBody) {
@@ -130,7 +114,6 @@ function showContentError(error) {
   }
 }
 
-// Crear estructura del dashboard CON BOTONES SIEMPRE VISIBLES
 function createContentDashboardStructure(container) {
   container.innerHTML = `
     <div class="content-dashboard-container">
@@ -287,7 +270,6 @@ function createContentDashboardStructure(container) {
   `;
 }
 
-// Función para extraer información de manera inteligente de diferentes estructuras JSON
 function extractContentInfo(payload) {
   if (!payload) return { 
     title: 'Sin título', 
@@ -303,12 +285,10 @@ function extractContentInfo(payload) {
   let additional = [];
   let enrichedContext = {}; // NUEVO: Contexto enriquecido
   
-  // ✅ EXTRAER TEMA PRIMERO
   if (payload.theme) {
     theme = payload.theme;
   }
   
-  // ✅ EXTRAER TÍTULO CON MÁS OPCIONES
   if (payload.title) {
     title = payload.title;
   } else if (payload.meme?.titulo) {
@@ -333,7 +313,6 @@ function extractContentInfo(payload) {
     title = theme;
   }
   
-  // ✅ EXTRAER DESCRIPCIÓN ENRIQUECIDA
   if (payload.description) {
     description = payload.description;
   } else if (payload.meme?.descripcion) {
@@ -360,9 +339,7 @@ function extractContentInfo(payload) {
     description = payload.post.content;
   }
   
-  // 🆕 NUEVO: EXTRAER CONTEXTO ENRIQUECIDO ESPECÍFICO POR TIPO
   
-  // ========== MEMES ==========
   if (payload.meme) {
     const meme = payload.meme;
     
@@ -408,7 +385,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== VIDEOS ==========
   if (payload.video || payload.contenido_video) {
     const video = payload.video || payload.contenido_video;
     
@@ -447,7 +423,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== EMAILS ==========
   if (payload.email) {
     const email = payload.email;
     
@@ -472,7 +447,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // ========== CAMPAÑAS ==========
   if (payload.campaign) {
     const campaign = payload.campaign;
     
@@ -501,7 +475,6 @@ function extractContentInfo(payload) {
     }
   }
 
-  // ========== POSTS ENRIQUECIDOS ==========
   if (payload.post) {
     const post = payload.post;
     
@@ -563,8 +536,6 @@ function extractContentInfo(payload) {
     }
   }
 
-  // ========== POSTS ==========
-  // Información específica para POSTS ENRIQUECIDOS
   if (enrichedContext.type === 'post' && enrichedContext.postData) {
     const post = enrichedContext.postData;
     
@@ -705,7 +676,6 @@ function extractContentInfo(payload) {
   } 
 
 
-  // ========== INFORMACIÓN GENERAL ENRIQUECIDA ==========
   
   // Target Audience Enriquecido
   let targetAudience = null;
@@ -783,10 +753,8 @@ function extractContentInfo(payload) {
     enrichedContext.cta = payload.post.target.accion_deseada;
   }
   
-  // ========== GENERAR INFORMACIÓN ADICIONAL ENRIQUECIDA ==========
   additional = []; // Resetear array
   
-  // Información específica por tipo
   if (enrichedContext.type === 'meme' && enrichedContext.memeData) {
     const meme = enrichedContext.memeData;
     
@@ -956,7 +924,6 @@ function extractContentInfo(payload) {
     }
   }
   
-  // Información del target audience
   if (enrichedContext.targetAudience) {
     const target = enrichedContext.targetAudience;
     
@@ -1035,7 +1002,6 @@ function extractContentInfo(payload) {
   };
 }
 
-// Cargar datos de contenido
 async function loadContentData() {
   console.log('📡 Cargando datos de contenido...');
   
@@ -1048,7 +1014,6 @@ async function loadContentData() {
       
       console.log(`✅ ${contentData.length} contenidos cargados`);
       
-      // Procesar y enriquecer datos
       contentData = contentData.map(content => {
         const parsedPayload = typeof content.payload === 'string' 
           ? JSON.parse(content.payload) 
@@ -1072,13 +1037,11 @@ async function loadContentData() {
     }
   } catch (error) {
     console.error('Error cargando contenidos:', error);
-    // Usar datos de ejemplo para demostración
     contentData = generateSampleContentData();
     filteredContent = [...contentData];
   }
 }
 
-// Generar datos de ejemplo
 function generateSampleContentData() {
   const sampleData = [
     {
@@ -1192,7 +1155,6 @@ function generateSampleContentData() {
   }));
 }
 
-// Renderizar dashboard completo
 function renderContentDashboard() {
   renderSummaryCards();
   renderTypeChart();
@@ -1200,7 +1162,6 @@ function renderContentDashboard() {
   renderContentList();
 }
 
-// Renderizar tarjetas de resumen
 function renderSummaryCards() {
   const container = document.getElementById('contentSummaryCards');
   if (!container) return;
@@ -1241,7 +1202,6 @@ function renderSummaryCards() {
   `;
 }
 
-// Calcular estadísticas
 function calculateContentStats() {
   const now = new Date();
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -1257,7 +1217,6 @@ function calculateContentStats() {
   };
 }
 
-// Renderizar gráfico de tipos
 function renderTypeChart() {
   const canvas = document.getElementById('typeDistributionChart');
   const statsContainer = document.getElementById('typeStats');
@@ -1309,7 +1268,6 @@ function renderTypeChart() {
   `).join('');
 }
 
-// Renderizar distribución por canal
 function renderChannelDistribution() {
   const container = document.getElementById('channelDistribution');
   if (!container) return;
@@ -1356,7 +1314,6 @@ function renderChannelDistribution() {
     `).join('');
 }
 
-// Renderizar lista de contenido
 function renderContentList() {
   const container = document.getElementById('contentList');
   if (!container) return;
@@ -1377,11 +1334,9 @@ function renderContentList() {
     renderContentTable(container);
   }
   
-  // 🔧 RECONFIGURAR EVENTOS DE TOGGLE DESPUÉS DE RENDERIZAR
   setupViewToggleEvents();
 }
 
-// 🔧 NUEVA ESTRUCTURA DE TARJETA - BOTÓN ELIMINAR SIEMPRE VISIBLE
 function renderContentCard(content) {
   const info = content.extractedInfo || extractContentInfo(content.parsedPayload);
   const importancePercentage = (content.importance || 0.5) * 100;
@@ -1518,7 +1473,6 @@ function renderContentCard(content) {
   `;
 }
 
-// Renderizar vista de tarjetas
 function renderContentGrid(container) {
   container.innerHTML = `
     <div class="content-grid">
@@ -1527,7 +1481,6 @@ function renderContentGrid(container) {
   `;
 }
 
-// Renderizar vista de tabla CON BOTONES
 function renderContentTable(container) {
   container.innerHTML = `
     <table class="content-table">
@@ -1569,11 +1522,9 @@ function renderContentTable(container) {
   `;
 }
 
-// 🔧 CONFIGURAR EVENTOS - VERSION COMPLETAMENTE REFACTORIZADA
 function setupContentEvents() {
   console.log('🔧 Configurando eventos de contenido...');
   
-  // 🔧 SEPARAR EVENTOS ESTÁTICOS DE DINÁMICOS
   setupStaticEvents();
   setupContentDelegation();
   setupModalHierarchy();
@@ -1581,7 +1532,6 @@ function setupContentEvents() {
   console.log('✅ Eventos de contenido configurados');
 }
 
-// 🔧 NUEVA FUNCIÓN: Configurar eventos estáticos (que no cambian)
 function setupStaticEvents() {
   // Búsqueda
   const searchInput = document.getElementById('contentSearchInput');
@@ -1591,7 +1541,6 @@ function setupStaticEvents() {
     console.log('✅ Event listener de búsqueda configurado correctamente');
   }
   
-  // Filtros - 🔧 CORRECCIÓN: Usar funciones wrapper para evitar pasar el Event
   const typeFilter = document.getElementById('contentTypeFilter');
   const channelFilter = document.getElementById('contentChannelFilter');
   
@@ -1620,14 +1569,12 @@ function setupStaticEvents() {
     refreshBtn._contentEventAttached = true;
   }
   
-  // 🔧 Botón de debug
   const debugBtn = document.getElementById('contentDebugBtn');
   if (debugBtn && !debugBtn._contentEventAttached) {
     debugBtn.addEventListener('click', () => {
       console.log('🐛 Debug ejecutado manualmente');
       debugContentFilters();
       
-      // Mostrar notificación
       if (window.showNotification) {
         window.showNotification('Debug ejecutado - revisa la consola', 'info', 3000);
       }
@@ -1635,7 +1582,6 @@ function setupStaticEvents() {
     debugBtn._contentEventAttached = true;
   }
   
-  // Eliminar todo el contenido
   const resetBtn = document.getElementById('contentResetBtn');
   if (resetBtn && !resetBtn._contentEventAttached) {
     resetBtn.addEventListener('click', showResetContentModal);
@@ -1648,7 +1594,6 @@ function setupStaticEvents() {
   console.log('✅ Todos los event listeners configurados correctamente');
 }
 
-// 🔧 FUNCIÓN AUXILIAR: Reset completo de filtros (útil para testing)
 function resetContentFilters() {
   console.log('🔄 Reseteando filtros de contenido...');
   
@@ -1671,18 +1616,14 @@ function resetContentFilters() {
 }
 
 
-// 🔧 NUEVA FUNCIÓN: Configurar eventos de toggle de vista
 function setupViewToggleEvents() {
-  // 🔧 BUSCAR ESPECÍFICAMENTE LOS BOTONES DE TOGGLE DE VISTA (NO LOS DE DETALLES)
   const viewToggleBtns = document.querySelectorAll('.content-view-toggle .content-view-btn');
   
   viewToggleBtns.forEach(btn => {
-    // Remover listener anterior si existe
     if (btn._viewToggleHandler) {
       btn.removeEventListener('click', btn._viewToggleHandler);
     }
     
-    // Crear y asignar nuevo handler
     btn._viewToggleHandler = (e) => handleViewToggle(e);
     btn.addEventListener('click', btn._viewToggleHandler);
     
@@ -1690,14 +1631,11 @@ function setupViewToggleEvents() {
   });
 }
 
-// 🔧 NUEVA FUNCIÓN: Configurar delegación de eventos
 function setupContentDelegation() {
   const modalBody = document.querySelector('#contentModal .modal-body');
   if (!modalBody || modalBodyEventAttached) return;
   
-  // 🔧 CREAR HANDLER UNA SOLA VEZ
   const contentClickHandler = (e) => {
-    // 🔧 ELIMINAR CONTENIDO (BOTÓN SIEMPRE VISIBLE)
     if (e.target.closest('.content-card-delete-btn') || e.target.closest('.content-delete-btn')) {
       e.preventDefault();
       e.stopPropagation();
@@ -1721,7 +1659,6 @@ function setupContentDelegation() {
       return;
     }
     
-    // 🔧 VER DETALLES (SOLO BOTÓN EN TABLA - NO FILAS)
     if (e.target.closest('.content-detail-btn')) {
       e.preventDefault();
       e.stopPropagation();
@@ -1734,10 +1671,8 @@ function setupContentDelegation() {
       return;
     }
     
-    // 🔧 ELIMINADO: Click en filas de tabla ya no abre modal
   };
   
-  // 🔧 GUARDAR REFERENCIA Y AGREGAR EVENT LISTENER
   modalBody._contentClickHandler = contentClickHandler;
   modalBody.addEventListener('click', contentClickHandler);
   modalBodyEventAttached = true;
@@ -1745,7 +1680,6 @@ function setupContentDelegation() {
   console.log('✅ Delegación de eventos configurada');
 }
 
-// 🔧 HANDLER DE REFRESH SEPARADO
 async function handleRefreshContent() {
   console.log('🔄 Refrescando contenido...');
   
@@ -1764,7 +1698,6 @@ async function handleRefreshContent() {
   }
 }
 
-// Función separada para manejar el toggle de vista
 function handleViewToggle(e) {
   e.preventDefault();
   e.stopPropagation();
@@ -1781,7 +1714,6 @@ function handleViewToggle(e) {
   renderContentList();
 }
 
-// 🔧 MOSTRAR MODAL DE ELIMINACIÓN INDIVIDUAL - MEJORADO
 function showDeleteContentModal(content) {
   console.log('🚀 Mostrando modal de eliminar para:', content.extractedInfo?.title || content.type);
   
@@ -1791,7 +1723,6 @@ function showDeleteContentModal(content) {
     return;
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = deleteModal.querySelector('.content-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -1820,7 +1751,6 @@ function showDeleteContentModal(content) {
     </div>
   `;
   
-  // 🔧 LIMPIAR EVENT LISTENERS ANTERIORES
   if (deleteModal._deleteHandlers) {
     const { closeHandler, confirmHandler, handleDeleteEsc } = deleteModal._deleteHandlers;
     
@@ -1838,7 +1768,6 @@ function showDeleteContentModal(content) {
     delete deleteModal._deleteBackdropHandler;
   }
   
-  // Configurar eventos
   const closeHandler = () => closeDeleteContentModal(deleteModal);
   const confirmHandler = () => confirmDeleteContent(content.id, deleteModal);
   
@@ -1868,7 +1797,6 @@ function showDeleteContentModal(content) {
   
   document.addEventListener('keydown', handleDeleteEsc, true);
   
-  // Guardar handlers para limpieza
   deleteModal._deleteHandlers = { 
     closeHandler, 
     confirmHandler,
@@ -1878,11 +1806,9 @@ function showDeleteContentModal(content) {
   deleteModal.classList.add('active');
 }
 
-// Cerrar modal de eliminación individual
 function closeDeleteContentModal(deleteModal) {
   console.log('🚪 Cerrando modal de eliminar contenido...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = deleteModal.querySelector('.content-delete-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar';
@@ -1912,20 +1838,17 @@ function closeDeleteContentModal(deleteModal) {
   console.log('✅ Modal de eliminar contenido cerrada y limpiada');
 }
 
-// Confirmar eliminación individual
 async function confirmDeleteContent(contentId, deleteModal) {
   console.log('🔥 Iniciando eliminación de contenido:', contentId);
   
   const confirmBtn = deleteModal.querySelector('.content-delete-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -1936,7 +1859,6 @@ async function confirmDeleteContent(contentId, deleteModal) {
     const response = await deleteContent(contentId);
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -1961,7 +1883,6 @@ async function confirmDeleteContent(contentId, deleteModal) {
   } catch (error) {
     console.error('❌ Error eliminando contenido:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -1975,7 +1896,6 @@ async function confirmDeleteContent(contentId, deleteModal) {
   }
 }
 
-// Función para manejar eliminación individual
 async function handleDeleteContent(contentId) {
   console.log('🗑️ Intentando eliminar contenido con ID:', contentId);
   
@@ -1992,7 +1912,6 @@ async function handleDeleteContent(contentId) {
   showDeleteContentModal(content);
 }
 
-// MOSTRAR MODAL PARA ELIMINAR TODO EL CONTENIDO
 function showResetContentModal() {
   console.log('🚀 Mostrando modal de reseteo de contenido...');
   
@@ -2002,7 +1921,6 @@ function showResetContentModal() {
     return;
   }
   
-  // ✅ NUEVO: Restaurar estado inicial del botón de confirmación
   const confirmBtn = resetModal.querySelector('.content-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todo';
@@ -2011,7 +1929,6 @@ function showResetContentModal() {
     confirmBtn.style.cursor = 'pointer';
   }
   
-  // 🔧 LIMPIAR EVENT LISTENERS ANTERIORES
   if (resetModal._resetHandlers) {
     const { closeHandler, confirmHandler, handleResetEsc } = resetModal._resetHandlers;
     
@@ -2067,11 +1984,9 @@ function showResetContentModal() {
   resetModal.classList.add('active');
 }
 
-// Cerrar modal de reset
 function closeResetContentModal(resetModal) {
   console.log('🚪 Cerrando modal de reseteo de contenido...');
   
-  // ✅ ASEGURAR QUE EL BOTÓN ESTÉ EN ESTADO CORRECTO ANTES DE CERRAR
   const confirmBtn = resetModal.querySelector('.content-reset-confirm');
   if (confirmBtn) {
     confirmBtn.textContent = 'Sí, eliminar todo';
@@ -2101,20 +2016,17 @@ function closeResetContentModal(resetModal) {
   console.log('✅ Modal de reseteo de contenido cerrada y limpiada');
 }
 
-// Manejar eliminación de todo el contenido
 async function handleResetAllContent(resetModal) {
   console.log('🔥 Iniciando eliminación masiva de contenido...');
   
   const confirmBtn = resetModal.querySelector('.content-reset-confirm');
   
-  // ✅ GUARDAR ESTADO ORIGINAL DEL BOTÓN
   const originalButtonState = {
     text: confirmBtn ? confirmBtn.textContent : 'Sí, eliminar todo',
     disabled: confirmBtn ? confirmBtn.disabled : false
   };
   
   try {
-    // Cambiar a estado de carga
     if (confirmBtn) {
       confirmBtn.textContent = 'Eliminando...';
       confirmBtn.disabled = true;
@@ -2125,7 +2037,6 @@ async function handleResetAllContent(resetModal) {
     const response = await deleteAllContents();
     
     if (response && response.success) {
-      // ✅ RESTAURAR ESTADO ANTES DE CERRAR
       if (confirmBtn) {
         confirmBtn.textContent = originalButtonState.text;
         confirmBtn.disabled = originalButtonState.disabled;
@@ -2150,7 +2061,6 @@ async function handleResetAllContent(resetModal) {
   } catch (error) {
     console.error('❌ Error eliminando todo el contenido:', error);
     
-    // ✅ RESTAURAR ESTADO ORIGINAL EN CASO DE ERROR
     if (confirmBtn) {
       confirmBtn.textContent = originalButtonState.text;
       confirmBtn.disabled = originalButtonState.disabled;
@@ -2164,11 +2074,9 @@ async function handleResetAllContent(resetModal) {
   }
 }
 
-// ✅ CAMBIO 7: Agregar nueva función resetAllContentDeleteModals
 function resetAllContentDeleteModals() {
   console.log('🔄 Reseteando todas las modales de eliminación de contenido...');
   
-  // Modal de eliminación individual
   const deleteModal = document.querySelector('#contentDeleteModal');
   if (deleteModal) {
     const confirmBtn = deleteModal.querySelector('.content-delete-confirm');
@@ -2198,7 +2106,6 @@ function resetAllContentDeleteModals() {
     }
   }
   
-  // Modal de eliminación masiva
   const resetModal = document.querySelector('#contentResetModal');
   if (resetModal) {
     const confirmBtn = resetModal.querySelector('.content-reset-confirm');
@@ -2231,7 +2138,6 @@ function resetAllContentDeleteModals() {
   console.log('✅ Todas las modales de eliminación de contenido reseteadas');
 }
 
-// Configurar jerarquía de modales
 function setupModalHierarchy() {
   if (window._contentMainEscHandler) {
     document.removeEventListener('keydown', window._contentMainEscHandler, true);
@@ -2270,7 +2176,6 @@ function setupModalHierarchy() {
   document.addEventListener('keydown', handleMainModalEsc, false);
 }
 
-// Limpiar jerarquía de modales
 function cleanupModalHierarchy() {
   if (window._contentMainEscHandler) {
     document.removeEventListener('keydown', window._contentMainEscHandler, true);
@@ -2278,7 +2183,6 @@ function cleanupModalHierarchy() {
   }
 }
 
-// Mostrar detalles del contenido
 function showContentDetail(content) {
   const info = content.extractedInfo || extractContentInfo(content.parsedPayload);
   
@@ -2287,7 +2191,6 @@ function showContentDetail(content) {
   createContentDetailModal(content);
 }
 
-// Crear y mostrar mini modal de detalles
 function createContentDetailModal(content) {
   const info = content.extractedInfo || extractContentInfo(content.parsedPayload);
   
@@ -2336,7 +2239,6 @@ function createContentDetailModal(content) {
   return modal;
 }
 
-// Cerrar mini modal con limpieza mejorada
 function closeContentDetailModal(modal) {
   if (!modal) {
     console.warn('⚠️ Intentando cerrar modal null/undefined');
@@ -2361,7 +2263,6 @@ function closeContentDetailModal(modal) {
   }, 300);
 }
 
-// Configurar eventos de la mini modal
 function setupContentDetailEvents(modal) {
   const closeBtn = modal.querySelector('.content-detail-close');
   if (closeBtn) {
@@ -2400,7 +2301,6 @@ function setupContentDetailEvents(modal) {
   modal._escHandler = handleEsc;
 }
 
-// Renderizar secciones de detalles del contenido
 function renderContentDetailSections(content, info) {
   const sections = [];
   
@@ -3179,19 +3079,16 @@ function renderContentDetailSections(content, info) {
   return sections.join('');
 }
 
-// Manejar búsqueda
 function handleContentSearch(e) {
   const searchTerm = e.target.value.toLowerCase();
   console.log('🔍 Búsqueda activada:', searchTerm);
   applyContentFilters(searchTerm); // Pasar directamente el término
 }
 
-// Aplicar filtros
 function applyContentFilters(searchTermOrEvent = null) {
   const typeFilter = document.getElementById('contentTypeFilter')?.value || '';
   const channelFilter = document.getElementById('contentChannelFilter')?.value || '';
   
-  // 🔧 CORRECCIÓN: Detectar si el primer parámetro es un Event o un string
   let search = '';
   if (searchTermOrEvent && typeof searchTermOrEvent === 'string') {
     // Es un término de búsqueda directo
@@ -3206,7 +3103,6 @@ function applyContentFilters(searchTermOrEvent = null) {
   
   console.log('🔍 Aplicando filtros:', { typeFilter, channelFilter, search });
   
-  // 🔧 CONTADORES PARA DEBUG
   let totalChecked = 0;
   let typeMatches = 0;
   let channelMatches = 0;
@@ -3217,21 +3113,18 @@ function applyContentFilters(searchTermOrEvent = null) {
     totalChecked++;
     const info = content.extractedInfo || extractContentInfo(content.parsedPayload);
     
-    // 🔧 COMPARACIÓN MEJORADA: Case-insensitive y trimmed
     const contentType = (content.type || '').toLowerCase().trim();
     const filterType = typeFilter.toLowerCase().trim();
     const matchesType = !typeFilter || contentType === filterType;
     
     if (matchesType) typeMatches++;
     
-    // 🔧 COMPARACIÓN MEJORADA: Case-insensitive y trimmed para canales
     const contentChannel = (content.channel || '').toLowerCase().trim();
     const filterChannel = channelFilter.toLowerCase().trim();
     const matchesChannel = !channelFilter || contentChannel === filterChannel;
     
     if (matchesChannel) channelMatches++;
     
-    // 🔧 BÚSQUEDA MEJORADA: Más tolerante y exhaustiva
     const matchesSearch = !search || 
       (info.title && info.title.toLowerCase().includes(search)) ||
       (info.description && info.description.toLowerCase().includes(search)) ||
@@ -3248,7 +3141,6 @@ function applyContentFilters(searchTermOrEvent = null) {
     const finalMatch = matchesType && matchesChannel && matchesSearch;
     if (finalMatch) finalMatches++;
     
-    // 🔧 DEBUG: Log de elementos que no pasan el filtro de tipo
     if (!matchesType && typeFilter) {
       console.log(`❌ Tipo no coincide - Esperado: "${filterType}", Encontrado: "${contentType}"`, content);
     }
@@ -3256,7 +3148,6 @@ function applyContentFilters(searchTermOrEvent = null) {
     return finalMatch;
   });
   
-  // 🔧 LOG DE RESULTADOS DEL FILTRADO
   console.log('📊 Resultados del filtrado:');
   console.log(`- Total revisados: ${totalChecked}`);
   console.log(`- Coinciden tipo: ${typeMatches}`);
@@ -3264,10 +3155,8 @@ function applyContentFilters(searchTermOrEvent = null) {
   console.log(`- Coinciden búsqueda: ${searchMatches}`);
   console.log(`- Coincidencias finales: ${finalMatches}`);
   
-  // Renderizar y reconfigurar eventos
   renderContentList();
   
-  // 🔧 MOSTRAR MENSAJE DE DEBUG SI NO HAY RESULTADOS
   if (filteredContent.length === 0 && contentData.length > 0) {
     console.warn('⚠️ No se encontraron coincidencias. Ejecutando análisis de debug...');
     debugContentFilters();
@@ -3275,7 +3164,6 @@ function applyContentFilters(searchTermOrEvent = null) {
 }
 
 
-// Usar formateo del módulo de utilidades
 function formatContentDate(dateString) {
   if (!dateString) return 'Fecha no disponible';
   
@@ -3316,11 +3204,9 @@ if (typeof window !== 'undefined') {
   window.showResetContentModal = showResetContentModal;
 }
 
-// 🆕 FUNCIÓN DE RESET PARA CONTENT MODAL
 function resetContentModalState() {
   console.log('🔄 Reiniciando estado de content modal...');
   
-  // Limpiar variables globales del módulo
   if (typeof contentData !== 'undefined') {
     contentData = [];
   }
@@ -3349,17 +3235,14 @@ function resetContentModalState() {
     }
   }
   
-  // Limpiar event listeners
   if (typeof cleanupEventListeners === 'function') {
     cleanupEventListeners();
   }
   
-  // Limpiar flags de control
   if (typeof window !== 'undefined') {
     window._contentModalLoading = false;
   }
   
-  // ✅ NUEVO: Resetear modales de eliminación
   resetAllContentDeleteModals();
   
   console.log('✅ Estado de content modal reiniciado completamente');
@@ -3376,10 +3259,8 @@ if (typeof window !== 'undefined') {
   window.showDeleteContentModal = showDeleteContentModal;
   window.showResetContentModal = showResetContentModal;
   
-  // ✅ NUEVO: Exportar función de reseteo de modales
   window.resetAllContentDeleteModals = resetAllContentDeleteModals;
   
-  // Actualizar objeto contentModal
   if (!window.contentModal) {
     window.contentModal = {};
   }

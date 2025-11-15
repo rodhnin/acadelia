@@ -70,7 +70,6 @@ export class ChartManager {
     // Agrupar transacciones por período
     const groupedData = this.groupTransactionsByPeriod(transactions, period);
     
-    // Preparar datos para el gráfico
     const labels = groupedData.map(item => item.label);
     const revenue = groupedData.map(item => item.total);
     const count = groupedData.map(item => item.count);
@@ -205,7 +204,6 @@ getSubscriptionGrowthChartConfig(growthData) {
     };
   }
   
-  // Extraer datos para el gráfico
   const labels = growthData.map(item => item.label);
   const newSubscriptions = growthData.map(item => item.new);
   const canceledSubscriptions = growthData.map(item => item.canceled);
@@ -298,14 +296,12 @@ getSubscriptionGrowthChartConfig(growthData) {
     const grouped = {};
     const now = new Date();
     
-    // Determinar número de períodos a mostrar
     const periodsCount = {
       monthly: 12,
       quarterly: 4,
       yearly: 3
     }[period] || 12;
     
-    // Función para obtener la clave de período según tipo
     const getPeriodKey = (date, periodType) => {
       const d = new Date(date);
       
@@ -318,14 +314,12 @@ getSubscriptionGrowthChartConfig(growthData) {
           const quarter = Math.floor(d.getMonth() / 3) + 1;
           return `${d.getFullYear()}-Q${quarter}`;
         case 'yearly':
-          // Solo año
           return `${d.getFullYear()}`;
         default:
           return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       }
     };
     
-    // Función para obtener etiqueta legible
     const getLabel = (key, periodType) => {
       if (periodType === 'monthly') {
         const [year, month] = key.split('-');
@@ -339,7 +333,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       }
     };
     
-    // Inicializar períodos vacíos
     for (let i = 0; i < periodsCount; i++) {
       let d = new Date(now);
       
@@ -369,7 +362,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       // Saltamos períodos fuera del rango de interés
       if (!grouped[key]) return;
       
-      // Normalizar cantidad (puede venir como centavos)
       let amount = transaction.amount;
       if (typeof amount === 'string' && !amount.includes('.')) {
         amount = parseInt(amount) / 100;
@@ -380,7 +372,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       grouped[key].transactions.push(transaction);
     });
     
-    // Convertir a array y ordenar por fecha
     return Object.values(grouped).sort((a, b) => {
       return a.key.localeCompare(b.key);
     });
@@ -407,13 +398,11 @@ getSubscriptionGrowthChartConfig(growthData) {
       };
     }
     
-    // Ordenar productos por total
     const sortedProducts = [...productData].sort((a, b) => b.total - a.total);
     
     // Limitar a máximo 5 productos para mejor visualización
     const topProducts = sortedProducts.slice(0, 5);
     
-    // Sumar el resto si hay más de 5
     if (sortedProducts.length > 5) {
       const restTotal = sortedProducts.slice(5).reduce((sum, product) => sum + product.total, 0);
       topProducts.push({
@@ -478,10 +467,8 @@ getSubscriptionGrowthChartConfig(growthData) {
       };
     }
     
-    // Ordenar países por total
     const sortedGeo = [...geoData].sort((a, b) => b.total - a.total);
     
-    // Separar España del resto
     const spainData = sortedGeo.find(g => g.code === 'ES');
     const otherEU = sortedGeo.filter(g => g.code !== 'ES' && [
       'FR', 'DE', 'IT', 'PT', 'BE', 'NL', 'LU', 'AT', 'DK', 'SE', 'FI', 'GR', 'IE', 'PL', 'CZ', 'HU', 'SK', 'SI', 'LV', 'LT', 'EE', 'MT', 'CY', 'RO', 'BG', 'HR'
@@ -497,7 +484,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       !latinAmerica.find(la => la.code === g.code)
     );
     
-    // Crear categorías agrupadas
     const groupedData = [
       {
         name: 'España',
@@ -525,7 +511,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       }
     ].filter(group => group.total > 0);
     
-    // Asignar colores según región
     const regionColors = {
       'ES': this.colors.primary,
       'EU': this.colors.secondary,
@@ -587,7 +572,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       };
     }
     
-    // Contar suscripciones por estado
     const statusCounts = {
       active: 0,
       paused: 0,
@@ -617,7 +601,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       expired: 'Expiradas'
     };
     
-    // Construir datos para el gráfico
     const data = Object.keys(statusCounts)
       .filter(status => statusCounts[status] > 0)
       .map(status => ({
@@ -682,7 +665,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       };
     }
     
-    // Contar transacciones por método de pago
     const methodCounts = {};
     
     transactions.forEach(transaction => {
@@ -699,7 +681,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       methodCounts[method].total += this.normalizeAmount(transaction.amount);
     });
     
-    // Ordenar métodos por cantidad
     const sortedMethods = Object.keys(methodCounts)
       .map(method => ({
         method,
@@ -707,7 +688,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       }))
       .sort((a, b) => b.count - a.count);
     
-    // Mejorar etiquetas
     const methodLabels = {
       'card': 'Tarjeta de crédito',
       'credit_card': 'Tarjeta de crédito',
@@ -837,7 +817,6 @@ getSubscriptionGrowthChartConfig(growthData) {
       currencyTotals[currency].count++;
     });
     
-    // Convertir a array y ordenar
     const currencyData = Object.keys(currencyTotals)
       .map(currency => ({
         currency,
@@ -909,10 +888,8 @@ getSubscriptionGrowthChartConfig(growthData) {
       };
     }
     
-    // Ordenar por total
     const sortedData = [...taxData].sort((a, b) => b.total - a.total);
     
-    // Preparar datos para el gráfico
     const taxRates = sortedData.map(country => country.rate || 0);
     
     return {

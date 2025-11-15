@@ -2,7 +2,6 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Configurar directorio de almacenamiento
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(process.cwd(), 'uploads');
@@ -32,7 +31,6 @@ const storage = multer.diskStorage({
     cb(null, entityDir);
   },
   filename: function (req, file, cb) {
-    // Crear nombre de archivo único basado en timestamp
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
     cb(null, uniqueSuffix + ext);

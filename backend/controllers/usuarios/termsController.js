@@ -1,4 +1,3 @@
-// backend/controllers/usuarios/termsController.js
 import { TermsService } from "../../services/usuarios/termsService.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 
@@ -46,7 +45,6 @@ export const acceptTerms = async (req, res) => {
             
             userId = tokenData.userId;
             
-            // Marcar token como usado
             await pool.query(
                 "UPDATE terms_acceptance_tokens SET used_at = NOW() WHERE token = $1",
                 [token]
@@ -60,10 +58,8 @@ export const acceptTerms = async (req, res) => {
             }
         }
         
-        // Obtener versión de los términos
         const termsVersion = version || process.env.TERMS_VERSION || '1.0';
         
-        // Registrar la aceptación
         const ipAddress = req.ip || req.connection.remoteAddress || 'Unknown';
         const userAgent = req.headers['user-agent'] || 'Unknown';
         
@@ -75,7 +71,6 @@ export const acceptTerms = async (req, res) => {
             token ? 'email_link' : 'web_form'
         );
         
-        // Log de seguridad
         logSecurityEvent('TERMS_ACCEPTED', 'Usuario aceptó términos y condiciones', {
             userId,
             termsVersion,
@@ -110,7 +105,6 @@ export const acceptTerms = async (req, res) => {
  */
 export const updateTermsAndNotify = async (req, res) => {
     try {
-        // Verificar que sea administrador
         if (req.user.id_rol !== 3) { // Asumiendo que 3 es el rol de admin
             return res.status(403).json({ error: "No tienes permisos para esta acción" });
         }
@@ -121,10 +115,8 @@ export const updateTermsAndNotify = async (req, res) => {
             return res.status(400).json({ error: "Nueva versión de términos requerida" });
         }
         
-        // Iniciar proceso de notificación
         const result = await TermsService.notifyTermsUpdate(newVersion, daysToAccept);
         
-        // Log de seguridad
         logSecurityEvent('TERMS_UPDATED', 'Términos y condiciones actualizados', {
             adminId: req.user.id_user,
             newVersion,

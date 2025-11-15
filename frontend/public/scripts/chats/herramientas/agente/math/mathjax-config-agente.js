@@ -23,13 +23,9 @@ let initializationAttempts = 0;
 // Caché
 const mathJaxCache = new Map();
 
-/**
- * ✅ CONFIGURACIÓN ROBUSTA - Basada en el reset que funciona
- */
 function setupMathJaxConfig() {
   console.log('🔧 Configurando MathJax con configuración robusta...');
   
-  // Limpiar cualquier configuración previa
   if (window.MathJax) {
     console.log('🗑️ Limpiando configuración MathJax previa...');
     try {
@@ -65,7 +61,7 @@ function setupMathJaxConfig() {
       ignoreHtmlClass: 'no-math'
     },
     startup: {
-      typeset: false, // ✅ CRÍTICO: Evitar renderizado automático
+      typeset: false,
       ready: function() {
         console.log('🎯 MathJax ready callback ejecutado');
         
@@ -105,9 +101,6 @@ function setupMathJaxConfig() {
   };
 }
 
-/**
- * ✅ VERIFICACIÓN DE FUNCIONALIDAD - Como el test del reset
- */
 async function verifyMathJaxFunctionality() {
   if (!window.MathJax || !window.MathJax.typesetPromise) {
     console.log('❌ MathJax.typesetPromise no disponible');
@@ -115,7 +108,6 @@ async function verifyMathJaxFunctionality() {
   }
 
   try {
-    // Crear elemento de prueba (como en el reset nuclear)
     const testElement = document.createElement('div');
     testElement.innerHTML = 'Test funcionalidad: $x^2 + y^2 = r^2$';
     testElement.style.position = 'absolute';
@@ -127,11 +119,9 @@ async function verifyMathJaxFunctionality() {
     // Probar renderizado
     await window.MathJax.typesetPromise([testElement]);
     
-    // Verificar que se generaron elementos MathJax
     const mathElements = testElement.querySelectorAll('.MathJax, mjx-container, mjx-math');
     const isWorking = mathElements.length > 0;
     
-    // Limpiar elemento de prueba
     testElement.remove();
     
     console.log(`🧪 Test de funcionalidad: ${isWorking ? 'EXITOSO' : 'FALLIDO'} (${mathElements.length} elementos)`);
@@ -143,9 +133,6 @@ async function verifyMathJaxFunctionality() {
   }
 }
 
-/**
- * ✅ REINICIALIZACIÓN FORZADA - Como el reset nuclear
- */
 async function forceReinitialize() {
   console.log('🔄 Forzando reinicialización MathJax...');
   
@@ -155,12 +142,10 @@ async function forceReinitialize() {
     return;
   }
   
-  // Limpiar completamente
   mathJaxReady = false;
   isInitializing = false;
   mathJaxPromise = null;
   
-  // Remover elementos MathJax existentes
   const oldMathJax = document.querySelectorAll('.MathJax, mjx-container, mjx-math');
   oldMathJax.forEach(el => {
     if (el.parentNode) {
@@ -176,11 +161,9 @@ async function forceReinitialize() {
     }
   });
   
-  // Remover scripts
   const mathJaxScripts = document.querySelectorAll('script[src*="mathjax"]');
   mathJaxScripts.forEach(script => script.remove());
   
-  // Limpiar objeto MathJax
   if (window.MathJax) {
     try {
       delete window.MathJax;
@@ -189,14 +172,10 @@ async function forceReinitialize() {
     }
   }
   
-  // Esperar y reinicializar
   await new Promise(resolve => setTimeout(resolve, 1000));
   return initMathJax();
 }
 
-/**
- * ✅ INICIALIZACIÓN MEJORADA
- */
 export function initMathJax() {
   console.log('🚀 Iniciando MathJax mejorado...');
   
@@ -236,16 +215,13 @@ export function initMathJax() {
 
   isInitializing = true;
 
-  // Crear nueva promesa robusta
   mathJaxPromise = new Promise((resolve, reject) => {
     console.log('🔄 Creando nueva promesa MathJax...');
     
-    // Verificar script existente
     const existingScript = document.querySelector('script[src*="mathjax"]');
     if (existingScript && window.MathJax) {
       console.log('📜 Script y objeto MathJax existentes');
       
-      // Verificar si realmente funciona
       verifyMathJaxFunctionality().then(isWorking => {
         if (isWorking) {
           mathJaxReady = true;
@@ -259,7 +235,6 @@ export function initMathJax() {
       return;
     }
 
-    // Configurar antes de cargar
     setupMathJaxConfig();
 
     // Timeout de seguridad
@@ -291,7 +266,6 @@ export function initMathJax() {
       return;
     }
 
-    // Cargar nuevo script
     console.log('📥 Cargando script MathJax...');
     const script = createElement('script', {
       src: CONFIG.CDN_URL,
@@ -302,7 +276,6 @@ export function initMathJax() {
       console.log('✅ Script MathJax cargado');
       clearTimeout(timeoutId);
       
-      // Esperar a que se inicialice completamente
       setTimeout(async () => {
         const isWorking = await verifyMathJaxFunctionality();
         if (isWorking) {
@@ -329,9 +302,6 @@ export function initMathJax() {
   return mathJaxPromise;
 }
 
-/**
- * ✅ RENDERIZADO MEJORADO
- */
 export function renderMath(containerOrElements, options = {}) {
   const opts = {
     useCache: true,
@@ -345,7 +315,6 @@ export function renderMath(containerOrElements, options = {}) {
   }
 
   return ensureMathJaxInitialized().then(() => {
-    // Normalizar elementos
     let elements = [];
     if (Array.isArray(containerOrElements)) {
       elements = containerOrElements;
@@ -355,7 +324,6 @@ export function renderMath(containerOrElements, options = {}) {
       elements = [containerOrElements];
     }
     
-    // Filtrar elementos válidos con matemáticas
     const validElements = elements.filter(el => {
       return el && 
              el.nodeType === 1 && 
@@ -374,7 +342,6 @@ export function renderMath(containerOrElements, options = {}) {
       }
     });
 
-    // Función de renderizado con reintentos
     function tryRender(attempt = 1) {
       if (!window.MathJax || !window.MathJax.typesetPromise) {
         if (attempt >= opts.maxRetries) {
@@ -413,9 +380,6 @@ export function renderMath(containerOrElements, options = {}) {
   });
 }
 
-/**
- * ✅ ASEGURAR INICIALIZACIÓN
- */
 export function ensureMathJaxInitialized() {
   if (mathJaxReady && window.MathJax && window.MathJax.typesetPromise) {
     return Promise.resolve();

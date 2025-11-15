@@ -9,10 +9,8 @@ import {
   validateTrendData 
 } from "../../utils/marketing/validators.js";
 
-// Controlador para chat de marketing con IA
 export const queryMarketing = async (req, res) => {
   try {
-    // Sanitizar el body de la request si es necesario
     if (req.body && typeof req.body === 'object') {
       const sanitizationResult = sanitizeMarketingContent(req.body);
       if (sanitizationResult.success) {
@@ -43,7 +41,6 @@ export const queryMarketing = async (req, res) => {
     // NUEVO: Obtener notificaciones de la sesión
     const notifications = await marketingService.getCurrentNotifications();
     
-    // Sanitizar la respuesta antes de enviarla
     const sanitizedResponse = {
       success: true,
       response: result.response,
@@ -58,7 +55,6 @@ export const queryMarketing = async (req, res) => {
     
     console.log(`📱 Respuesta incluye ${notifications.total} notificaciones`);
     
-    // Aplicar sanitización final a la respuesta
     const finalSanitization = sanitizeMarketingContent(sanitizedResponse);
     
     if (finalSanitization.success) {
@@ -78,7 +74,6 @@ export const queryMarketing = async (req, res) => {
   } catch (error) {
     console.error("Error en queryMarketing:", error);
     
-    // Incluir notificaciones parciales incluso en caso de error
     let notifications = { total: 0, byType: {}, notifications: {}, sessionId: null };
     try {
       notifications = await marketingService.getCurrentNotifications();
@@ -96,7 +91,6 @@ export const queryMarketing = async (req, res) => {
   }
 };
 
-// Implementación mejorada para streaming
 export const queryMarketingStream = async (req, res) => {
   try {
     const { userId, query, chatHistory, explain = false, explainLevel = 'intermediate' } = req.body;
@@ -109,7 +103,6 @@ export const queryMarketingStream = async (req, res) => {
       });
     }
     
-    // Configurar cabeceras para streaming
     res.writeHead(200, {
       'Content-Type': 'text/plain; charset=utf-8',
       'Transfer-Encoding': 'chunked',
@@ -119,7 +112,6 @@ export const queryMarketingStream = async (req, res) => {
       'X-Accel-Buffering': 'no'
     });
     
-    // Función para enviar trozos al cliente
     const sendChunk = (text) => {
       res.write(text);
       if (typeof res.flush === 'function') {
@@ -127,7 +119,6 @@ export const queryMarketingStream = async (req, res) => {
       }
     };
     
-    // Incluir opción de explicabilidad en la solicitud
     const options = {
       streamEnabled: true,
       onPartialResponse: (chunk) => {
@@ -137,7 +128,6 @@ export const queryMarketingStream = async (req, res) => {
       explainLevel
     };
     
-    // Procesar con agentes
     const result = await marketingService.processMarketingQuery(query, chatHistory || [], options);
     
     // NUEVO: Enviar notificaciones al cliente
@@ -154,7 +144,6 @@ export const queryMarketingStream = async (req, res) => {
       sendChunk(notificationChunk);
     }
     
-    // Enviar metadatos al cliente si están disponibles
     if (result && (result.agentsUsed || result.agentSelection || result.explanation)) {
       const metadata = {
         agentsUsed: result.agentsUsed,
@@ -166,7 +155,6 @@ export const queryMarketingStream = async (req, res) => {
       sendChunk(metadataChunk);
     }
     
-    // Cerrar la respuesta
     res.end();
   } catch (error) {
     console.error("Error en queryMarketingStream:", error);
@@ -229,7 +217,6 @@ export const getNotificationCounts = async (req, res) => {
 // NUEVO: Controlador para limpiar notificaciones (marcar como leídas)
 export const clearNotifications = async (req, res) => {
   try {
-    // Resetear el tracker (simula marcar como leídas)
     notificationTracker.reset();
     
     res.json({
@@ -246,12 +233,10 @@ export const clearNotifications = async (req, res) => {
   }
 };
 
-// 🆕 NUEVO: Controlador para limpiar notificaciones por sección específica
 export const clearSectionNotifications = async (req, res) => {
   try {
     const { section } = req.params;
     
-    // Validar que la sección sea válida
     const validSections = ['profiles', 'contents', 'trends', 'memory', 'information'];
     if (!validSections.includes(section)) {
       return res.status(400).json({
@@ -262,11 +247,10 @@ export const clearSectionNotifications = async (req, res) => {
     
     console.log(`🧹 Limpiando notificaciones de la sección: ${section}`);
     
-    // Mapear secciones del frontend a tipos de notificación
     const sectionMapping = {
       'information': 'all', // Information muestra todas, así que limpia todas
       'profiles': 'profiles',
-      'contents': 'contents', // Note: plural en el backend
+      'contents': 'contents',
       'content': 'contents',  // Alias para compatibilidad
       'trends': 'trends',
       'memory': 'memory'
@@ -279,12 +263,10 @@ export const clearSectionNotifications = async (req, res) => {
       notificationTracker.reset();
       console.log('🧹 Todas las notificaciones limpiadas (sección information)');
     } else {
-      // Limpiar solo la sección específica
       const result = await marketingService.clearSectionNotifications(notificationType);
       console.log(`🧹 Notificaciones de ${notificationType} limpiadas:`, result);
     }
     
-    // Obtener el estado actualizado de las notificaciones
     const updatedNotifications = await marketingService.getCurrentNotifications();
     
     res.json({
@@ -306,13 +288,11 @@ export const clearSectionNotifications = async (req, res) => {
   }
 };
 
-// 🆕 NUEVO: Controlador para marcar sección como vista (alternativo más específico)
 export const markSectionAsViewed = async (req, res) => {
   try {
     const { section } = req.params;
     const { userId } = req.body; // Opcional: para trackear por usuario específico
     
-    // Validar sección
     const validSections = ['profiles', 'contents', 'trends', 'memory'];
     if (!validSections.includes(section)) {
       return res.status(400).json({
@@ -323,10 +303,8 @@ export const markSectionAsViewed = async (req, res) => {
     
     console.log(`👁️ Marcando sección ${section} como vista${userId ? ` para usuario ${userId}` : ''}`);
     
-    // Marcar la sección específica como vista
     const result = await marketingService.markSectionAsViewed(section, userId);
     
-    // Obtener notificaciones actualizadas
     const updatedNotifications = await marketingService.getCurrentNotifications();
     
     res.json({
@@ -349,7 +327,6 @@ export const markSectionAsViewed = async (req, res) => {
   }
 };
 
-// Controlador para explicaciones de consultas
 export const explainQueryController = async (req, res) => {
   try {
     const { query, level = 'intermediate' } = req.body;
@@ -361,10 +338,8 @@ export const explainQueryController = async (req, res) => {
       });
     }
     
-    // Importar explainService
     const explainService = await import('../../services/chat/marketing/explainService.js');
     
-    // Crear contexto simulado para la explicación si no hay consulta previa almacenada
     // En un sistema real, buscarías esta información en la base de datos
     const decisionContext = {
       query,
@@ -379,7 +354,6 @@ export const explainQueryController = async (req, res) => {
       recommendations: "Esta es una explicación generada bajo demanda sin contexto previo."
     };
     
-    // Generar explicación
     const explanation = await explainService.explainService.generateExplanation(decisionContext, level);
     
     res.json({
@@ -396,7 +370,6 @@ export const explainQueryController = async (req, res) => {
   }
 };
 
-// Controlador para visualización de decisiones
 export const visualizeDecisionController = async (req, res) => {
   try {
     const { query } = req.body;
@@ -408,10 +381,8 @@ export const visualizeDecisionController = async (req, res) => {
       });
     }
     
-    // Importar explainService
     const explainService = await import('../../services/chat/marketing/explainService.js');
     
-    // Crear contexto simulado para la visualización
     // En un sistema real, buscarías esta información en la base de datos
     const decisionContext = {
       query,
@@ -425,7 +396,6 @@ export const visualizeDecisionController = async (req, res) => {
       }
     };
     
-    // Generar visualización
     const visualization = await explainService.explainService.generateDecisionVisualization(decisionContext);
     
     res.json({
@@ -442,11 +412,9 @@ export const visualizeDecisionController = async (req, res) => {
   }
 };
 
-// Controlador para perfiles de marketing
 export const profileController = {
   async createProfile(req, res) {
     try {
-      // Validar datos del perfil antes de procesarlos
       const validationErrors = validateProfileData(req.body);
       if (validationErrors.length > 0) {
         return res.status(400).json({
@@ -495,7 +463,6 @@ export const profileController = {
     try {
       const { id } = req.params;
       
-      // Validar datos del perfil antes de actualizarlos
       const validationErrors = validateProfileData(req.body);
       if (validationErrors.length > 0) {
         return res.status(400).json({
@@ -521,7 +488,6 @@ export const profileController = {
     }
   },
 
-  // Eliminar perfil específico
   async deleteProfile(req, res) {
     try {
       const { id } = req.params;
@@ -552,7 +518,6 @@ export const profileController = {
     }
   },
   
-  // Eliminar todos los perfiles
   async deleteAllProfiles(req, res) {
     try {
       console.log('🗑️ Eliminando todos los perfiles');
@@ -575,11 +540,9 @@ export const profileController = {
   }
 };
 
-// Controlador para contenidos de marketing
 export const contentController = {
   async createContent(req, res) {
     try {
-      // Validar datos del contenido antes de procesarlos
       const validationErrors = validateContentData(req.body);
       if (validationErrors.length > 0) {
         return res.status(400).json({
@@ -643,7 +606,6 @@ async generateContent(req, res) {
     }
   },
 
-  // Eliminar contenido específico
   async deleteContent(req, res) {
     try {
       const { id } = req.params;
@@ -674,7 +636,6 @@ async generateContent(req, res) {
     }
   },
   
-  // Eliminar todos los contenidos
   async deleteAllContents(req, res) {
     try {
       console.log('🗑️ Eliminando todos los contenidos');
@@ -697,7 +658,6 @@ async generateContent(req, res) {
   }
 };
 
-// Controlador para matching
 export const matchingController = {
   async matchProfileToContent(req, res) {
     try {
@@ -777,7 +737,6 @@ export const matchingController = {
   }
 };
 
-// Controlador para simulación
 export const simulationController = {
   async simulateCampaign(req, res) {
     try {
@@ -804,11 +763,9 @@ export const simulationController = {
   }
 };
 
-// Controlador para tendencias CON NUEVAS FUNCIONES DE ELIMINACIÓN
 export const trendController = {
   async saveTrend(req, res) {
     try {
-      // Validar datos de la tendencia antes de procesarlos
       const validationErrors = validateTrendData(req.body);
       if (validationErrors.length > 0) {
         return res.status(400).json({
@@ -853,7 +810,6 @@ export const trendController = {
     }
   },
   
-  // Eliminar tendencia específica
   async deleteTrend(req, res) {
     try {
       const { id } = req.params;
@@ -884,7 +840,6 @@ export const trendController = {
     }
   },
   
-  // Eliminar todas las tendencias
   async deleteAllTrends(req, res) {
     try {
       console.log('🗑️ Eliminando todas las tendencias');
@@ -907,7 +862,6 @@ export const trendController = {
   }
 };
 
-// Controlador para resumen
 export const summaryController = {
   async getMarketingSummary(req, res) {
     try {
@@ -929,9 +883,7 @@ export const summaryController = {
   }
 };
 
-// Controlador para gestión de memoria
 export const memoryController = {
-  // Obtener todos los insights de memoria
   async getMemoryInsights(req, res) {
     try {
       const { type, source, limit = 1000, offset = 0 } = req.query;
@@ -958,7 +910,6 @@ export const memoryController = {
     }
   },
   
-  // Obtener insight específico por ID
   async getMemoryInsight(req, res) {
     try {
       const { id } = req.params;
@@ -980,13 +931,11 @@ export const memoryController = {
     }
   },
   
-  // Actualizar insight de memoria
   async updateMemoryInsight(req, res) {
     try {
       const { id } = req.params;
       const updateData = req.body;
       
-      // Validar datos básicos
       if (!updateData.insight && !updateData.importance && !updateData.type && !updateData.source) {
         return res.status(400).json({
           success: false,
@@ -1011,7 +960,6 @@ export const memoryController = {
     }
   },
   
-  // Eliminar insight específico
   async deleteMemoryInsight(req, res) {
     try {
       const { id } = req.params;
@@ -1053,7 +1001,6 @@ export const memoryController = {
     }
   },
   
-  // Obtener estadísticas de memoria
   async getMemoryStats(req, res) {
     try {
       const result = await marketingService.getMemoryStats();
@@ -1073,7 +1020,6 @@ export const memoryController = {
     }
   },
   
-  // Buscar en memoria por similitud semántica
   async searchMemory(req, res) {
     try {
       const { query, type, limit = 10 } = req.body;

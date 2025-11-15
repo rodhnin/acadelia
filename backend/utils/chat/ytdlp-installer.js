@@ -1,4 +1,3 @@
-// backend/utils/chat/ytdlp-installer.js - ARREGLO PRODUCCIÓN
 
 import fs from 'fs';
 import path from 'path';
@@ -18,16 +17,11 @@ if (!fs.existsSync(BIN_PATH)) {
   fs.mkdirSync(BIN_PATH, { recursive: true });
 }
 
-/**
- * 🎯 ARREGLO: Detecta y configura yt-dlp según el entorno
- */
 export async function installYtDlp() {
-  // 🎯 EN PRODUCCIÓN: Usar yt-dlp del sistema
   if (process.env.NODE_ENV === 'production') {
     console.log('🎬 Entorno de producción detectado - usando yt-dlp del sistema');
     
     try {
-      // Verificar que yt-dlp del sistema está disponible
       await execPromise('yt-dlp --version');
       console.log('✅ yt-dlp del sistema disponible');
       return 'yt-dlp'; // Comando directo del sistema
@@ -48,7 +42,6 @@ export async function installYtDlp() {
     }
   }
 
-  // 🎯 EN DESARROLLO: Usar instalación dinámica
   console.log('🛠️ Entorno de desarrollo - usando instalación dinámica');
   
   const isWindows = process.platform === 'win32';
@@ -68,14 +61,12 @@ export async function installYtDlp() {
       }
     }
     
-    // Verificar que funciona
     try {
       await execPromise(`"${ytdlpPath}" --version`);
       console.log('✅ yt-dlp existente es funcional');
       return ytdlpPath;
     } catch (error) {
       console.warn('⚠️ yt-dlp existente no funciona, redownloading...');
-      // Continuar con la descarga
     }
   }
 
@@ -106,7 +97,6 @@ export async function installYtDlp() {
       console.log('✅ Permisos de yt-dlp configurados');
     }
 
-    // Verificar que funciona
     try {
       await execPromise(`"${ytdlpPath}" --version`);
       console.log('✅ yt-dlp descargado y verificado');
@@ -122,9 +112,6 @@ export async function installYtDlp() {
   }
 }
 
-/**
- * 🎯 NUEVO: Detecta automáticamente la mejor ruta de yt-dlp
- */
 export async function detectYtdlpPath() {
   // 1. Intentar comando del sistema
   try {
@@ -164,9 +151,6 @@ export async function detectYtdlpPath() {
   return null;
 }
 
-/**
- * 🎯 NUEVO: Verifica el estado de yt-dlp
- */
 export async function checkYtdlpStatus() {
   const detectedPath = await detectYtdlpPath();
   
@@ -207,7 +191,6 @@ export async function checkYtdlpStatus() {
   }
 }
 
-// Exportar la función para obtener la ruta (compatibilidad)
 export function getYtdlpPath() {
   if (process.env.NODE_ENV === 'production') {
     return 'yt-dlp'; // Sistema
@@ -215,9 +198,6 @@ export function getYtdlpPath() {
   return path.join(BIN_PATH, process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp');
 }
 
-/**
- * 🎯 NUEVO: Configurar enlace simbólico en producción (para Docker)
- */
 export async function setupProductionSymlink() {
   if (process.env.NODE_ENV !== 'production') {
     console.log('⚠️ setupProductionSymlink solo debe usarse en producción');
@@ -227,16 +207,13 @@ export async function setupProductionSymlink() {
   try {
     const symlinkPath = path.join(BIN_PATH, 'yt-dlp');
     
-    // Verificar si ya existe
     if (fs.existsSync(symlinkPath)) {
       console.log('✅ Enlace simbólico ya existe');
       return true;
     }
 
-    // Crear enlace simbólico al binario del sistema
     await execPromise(`ln -sf /usr/bin/yt-dlp "${symlinkPath}"`);
     
-    // Verificar que funciona
     await execPromise(`"${symlinkPath}" --version`);
     
     console.log('✅ Enlace simbólico creado y verificado');

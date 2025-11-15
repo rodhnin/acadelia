@@ -5,13 +5,12 @@ import { memoryService } from "./marketing/memoryService.js";
 import { matchingService } from "./marketing/matchingService.js";
 import { simulationService } from "./marketing/simulationService.js";
 import { notificationTracker } from '../../utils/marketing/notificationTracker.js';
-import { agentService } from "./marketing/agentsService.js"; // ✅ UPDATED
+import { agentService } from "./marketing/agentsService.js";
 import { embeddings, openai } from "../../lib/openai.js";
 import pool from "../../lib/dbPool.js";
 import { TREND_ANALYSIS_PROMPT } from '../../utils/marketing/AcadeliaDNA.js';
 
 export const marketingService = {
-  // ✅ MÉTODOS SIMPLIFICADOS - Las notificaciones se registran automáticamente
   async createProfile(profileData) {
     return await profileService.createProfile(profileData);
   },
@@ -28,13 +27,11 @@ export const marketingService = {
     return await contentService.generateContent(params);
   },
   
-  // ✅ MÉTODO saveTrend SIN CAMBIOS
   async saveTrend(trendData) {
     const { theme, popularity, metadata = {} } = trendData;
     const client = await pool.connect();
     
     try {
-      // Generar embedding para el tema/tendencia
       const embeddingString = JSON.stringify({
         theme,
         ...metadata
@@ -45,7 +42,6 @@ export const marketingService = {
       
       await client.query('BEGIN');
       
-      // Guardar tendencia
       const result = await client.query(
         `INSERT INTO marketing_trends (theme, popularity, metadata, embedding) 
          VALUES ($1, $2, $3, $4::vector(1536)) 
@@ -53,7 +49,6 @@ export const marketingService = {
         [theme, popularity, metadata, formattedVector]
       );
       
-      // ✅ REGISTRAR NOTIFICACIÓN INMEDIATAMENTE DESPUÉS DEL GUARDADO
       if (result.rows[0]) {
         try {
           const trendForNotification = {
@@ -71,7 +66,6 @@ export const marketingService = {
         }
       }
       
-      // Analizar la tendencia automáticamente con IA
       const analysis = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18",
           messages: [
@@ -90,7 +84,6 @@ export const marketingService = {
       
       const analysisData = JSON.parse(analysis.choices[0].message.content);
       
-      // Guardar análisis en memoria - ✅ ESTO TAMBIÉN REGISTRARÁ UNA NOTIFICACIÓN AUTOMÁTICAMENTE
       await memoryService.saveToMemory({
         type: "trend_analysis",
         content: {
@@ -123,7 +116,6 @@ export const marketingService = {
     }
   },
 
-  // ✅ MÉTODO PRINCIPAL CON SISTEMA ESPECIALIZADO
   async processMarketingQuery(query, chatHistory = [], options = {}) {
     try {
       // PASO 1: Resetear el tracker al inicio de cada consulta
@@ -137,7 +129,6 @@ export const marketingService = {
         explainLevel = 'intermediate' 
       } = options;
       
-      // ✅ PROCESAR CON SISTEMA ESPECIALIZADO
       let result;
       if (streamEnabled && typeof onPartialResponse === 'function') {
         console.log("🎯 Procesando consulta con sistema especializado + streaming");
@@ -153,7 +144,6 @@ export const marketingService = {
       // PASO 2: Las notificaciones ya se registraron automáticamente durante la ejecución
       const notifications = notificationTracker.getNotificationSummary();
       
-      // Log del resumen para debug
       notificationTracker.logSummary();
       
       // PASO 3: Enriquecer la respuesta con notificaciones y metadatos del sistema especializado
@@ -179,7 +169,6 @@ export const marketingService = {
     } catch (error) {
       console.error("❌ Error en processMarketingQuery con sistema especializado:", error);
       
-      // Incluir notificaciones parciales incluso en caso de error
       const notifications = notificationTracker.getNotificationSummary();
       
       return {
@@ -194,7 +183,6 @@ export const marketingService = {
     }
   },
   
-  // ✅ MÉTODO DE STREAMING CON SISTEMA ESPECIALIZADO
   async processMarketingQueryStream(query, chatHistory = [], explainLevel = 'intermediate', res) {
     try {
       console.log("🚀 Iniciando streaming con sistema especializado:", query.substring(0, 50));
@@ -203,7 +191,6 @@ export const marketingService = {
       notificationTracker.reset();
       console.log('🔄 Tracker de notificaciones reiniciado para streaming especializado');
       
-      // Configurar headers para streaming
       res.writeHead(200, {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
@@ -213,7 +200,6 @@ export const marketingService = {
         'Access-Control-Allow-Headers': 'Content-Type'
       });
       
-      // Función para enviar chunks al cliente
       const onPartialResponse = (chunk) => {
         try {
           if (!res.writableEnded) {
@@ -224,7 +210,6 @@ export const marketingService = {
         }
       };
       
-      // ✅ PROCESAR CON SISTEMA ESPECIALIZADO + STREAMING
       const result = await this.processMarketingQuery(query, chatHistory, {
         streamEnabled: true,
         onPartialResponse: onPartialResponse,
@@ -246,7 +231,6 @@ export const marketingService = {
         onPartialResponse(notificationChunk);
       }
       
-      // Enviar metadatos finales con información de especialización
       if (result.stats || result.detectedElements) {
         const finalMetadata = {
           stats: result.stats,
@@ -260,7 +244,6 @@ export const marketingService = {
         onPartialResponse(metadataChunk);
       }
       
-      // Cerrar la conexión
       if (!res.writableEnded) {
         res.end();
       }
@@ -283,7 +266,6 @@ export const marketingService = {
     }
   },
 
-  // ✅ RESTO DE MÉTODOS SIN CAMBIOS (todos los métodos get, delete, etc.)
   async getProfiles(filters) {
     return await profileService.getProfiles(filters);
   },
@@ -332,15 +314,12 @@ export const marketingService = {
     return await simulationService.simulateCampaignResults(campaignData, audienceData);
   },
   
-  // ✅ MÉTODO DE EXPLICACIÓN CON CONTEXTO ESPECIALIZADO
   async generateExplanation(query, level = 'intermediate') {
     try {
       console.log(`Generando explicación nivel ${level} para sistema especializado:`, query.substring(0, 50));
       
-      // Importar el servicio de explicación
       const explainServiceModule = await import('./marketing/explainService.js');
       
-      // Crear un contexto básico con información de especialización
       const basicContext = {
         query,
         agentsUsed: ["strategist"], // Por defecto
@@ -355,7 +334,6 @@ export const marketingService = {
         specialization_note: "Cada agente tiene herramientas específicas sin duplicación"
       };
       
-      // Generar explicación
       const explanation = await explainServiceModule.explainService.generateExplanation(basicContext, level);
       
       return {
@@ -381,10 +359,8 @@ export const marketingService = {
     try {
       console.log("Generando visualización para sistema especializado:", query.substring(0, 50));
       
-      // Importar el servicio de explicación
       const explainServiceModule = await import('./marketing/explainService.js');
       
-      // Crear un contexto básico con información de especialización
       const basicContext = {
         query,
         agentsUsed: ["strategist", "analyst"], // Ejemplo
@@ -398,7 +374,6 @@ export const marketingService = {
         specialization_used: true
       };
       
-      // Generar visualización
       const visualization = await explainServiceModule.explainService.generateDecisionVisualization(basicContext);
       
       return {
@@ -419,10 +394,8 @@ export const marketingService = {
     }
   },
 
-  // ✅ MÉTODO DE RESUMEN CON CONTEXTO ESPECIALIZADO
   async generateMarketingSummary() {
     try {
-      // Obtener datos para el resumen
       const [
         profilesResult,
         contentsResult,
@@ -450,7 +423,6 @@ export const marketingService = {
         memoryService.getMemoryByType("agent_insight", 10)
       ]);
       
-      // Generar resumen con OpenAI incluyendo información de especialización
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18",
         messages: [
@@ -509,7 +481,6 @@ export const marketingService = {
     }
   },
 
-  // ✅ RESTO DE MÉTODOS SIN CAMBIOS (getTrends, deleteTrend, etc.)
   async getTrends() {
     try {
       const result = await pool.query(`
@@ -676,7 +647,6 @@ export const marketingService = {
     }
   },
 
-  // ✅ MÉTODOS DE NOTIFICACIONES SIN CAMBIOS
   async getCurrentNotifications() {
     return notificationTracker.getNotificationSummary();
   },
@@ -778,7 +748,6 @@ export const marketingService = {
     }
   },
 
-  // ✅ RESTO DE MÉTODOS DE MEMORIA SIN CAMBIOS
   async getMemoryInsights(filters = {}) {
     try {
       const { type, source, limit = 1000, offset = 0 } = filters;

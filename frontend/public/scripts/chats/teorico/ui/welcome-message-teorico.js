@@ -3,7 +3,6 @@ import { validateUUID } from '../../shared/validators.js';
 import { createElement, sanitizeText } from '../../shared/dom-helpers.js';
 import { getCurrentVariant, getWelcomeConfig } from '../core/config-teorico.js';
 
-// 🦫 IMPORTAR FUNCIONES DEL SISTEMA UNIFICADO DE ARCHIVOS
 import { 
   initWelcomeFileAttachments,
   getWelcomeAttachedFiles,
@@ -13,7 +12,6 @@ import {
   cleanupWelcomeAttachments 
 } from '../utils/file-attachments-teorico.js';
 
-// 🦫 IMPORTAR FUNCIONES DE VALIDACIÓN DESDE SHARED
 import {
   validateFile,
   validateContentLimits,
@@ -103,12 +101,10 @@ export async function showWelcomeMessage() {
     void fixedSpace.offsetHeight;
   }
 
-  // Verificar si estamos en una ruta con ID de chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[2];
 
   if (chatId && validateUUID(chatId)) {
-    // Restaurar visibilidad del textarea original ya que no mostraremos bienvenida
     if (fixedSpace) {
       applyStyles(fixedSpace, {
         opacity: null,
@@ -120,10 +116,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Obtener nombre del usuario
   const userName = await getUserName();
 
-  // Obtener referencias a elementos existentes
   const chatMessages = document.querySelector('.chat-messages');
 
   if (!chatMessages) {
@@ -136,10 +130,8 @@ export async function showWelcomeMessage() {
     return;
   }
 
-  // Limpiar cualquier mensaje de bienvenida previo
   chatMessages.querySelectorAll('.welcome-message, .centered-input-container, .suggestions-container').forEach(el => el.remove());
 
-  // Crear mensaje de bienvenida personalizado
   const welcomeDiv = createElement('div', {
     className: `welcome-message ${variantConfig.cssClass}`
   });
@@ -148,7 +140,6 @@ export async function showWelcomeMessage() {
   const welcomeIcon = createElement('div', { className: 'welcome-icon' });
   const welcomeAvatar = createElement('div', { className: 'welcome-avatar' });
 
-  // Añadir el icono específico de la variante
   const headerIconEl = createElement('i', {
     className: `bx ${variantConfig.headerIcon} header-icon`
   });
@@ -172,7 +163,6 @@ export async function showWelcomeMessage() {
   welcomeContainer.appendChild(welcomeContent);
   welcomeDiv.appendChild(welcomeContainer);
 
-  // Crear contenedor de input para nuevo chat con placeholder personalizado
   const welcomeInputContainer = document.createElement('div');
   welcomeInputContainer.className = `centered-input-container welcome-input-container ${variantConfig.cssClass}-input`;
   welcomeInputContainer.innerHTML = `
@@ -240,11 +230,9 @@ export async function showWelcomeMessage() {
         </div>
       `;
 
-  // Crear contenedor de sugerencias con sugerencias específicas para la variante
   const suggestionsDiv = document.createElement('div');
   suggestionsDiv.className = `suggestions-container ${variantConfig.cssClass}-suggestions`;
 
-  // Usar las sugerencias específicas para la variante actual
   variantConfig.suggestions.forEach(suggestion => {
     const suggestionBtn = document.createElement('button');
     suggestionBtn.className = 'suggestion-item';
@@ -259,7 +247,6 @@ export async function showWelcomeMessage() {
         welcomeTextarea.value = suggestion.text;
         welcomeTextarea.focus();
 
-        // Disparar evento input para que se ajuste el tamaño
         welcomeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
@@ -267,24 +254,19 @@ export async function showWelcomeMessage() {
     suggestionsDiv.appendChild(suggestionBtn);
   });
 
-  // Añadir elementos al DOM
   chatMessages.appendChild(welcomeDiv);
   chatMessages.appendChild(welcomeInputContainer);
   chatMessages.appendChild(suggestionsDiv);
 
-  // 🦫 INICIALIZAR SISTEMA UNIFICADO DE ARCHIVOS PARA WELCOME
   console.log('🦫 Inicializando sistema de archivos unificado para Welcome...');
   
-  // Limpiar sistema anterior si existe
   if (window.welcomeFiles) {
     window.welcomeFiles.clear();
     delete window.welcomeFiles;
   }
   
-  // Inicializar el sistema unificado
   await initWelcomeFileAttachments();
 
-  // Inicializar limitador de caracteres para el textarea de bienvenida
   const welcomeTextareaInit = document.getElementById('welcome-message-input');
   if (welcomeTextareaInit) {
     try {
@@ -297,14 +279,12 @@ export async function showWelcomeMessage() {
     }
   }
 
-  // Configurar funcionalidades inmediatamente (sin setTimeout)
   try {
     // 1. Configurar el botón de adjuntos
     const welcomeAttachBtn = document.getElementById('welcome-attach-btn');
     const attachmentOptions = document.getElementById('welcome-attachment-options');
 
     if (welcomeAttachBtn && attachmentOptions) {
-      // Configurar de manera directa para evitar problemas de event bubbling
       welcomeAttachBtn.onclick = function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -313,7 +293,6 @@ export async function showWelcomeMessage() {
         attachmentOptions.classList.toggle('show');
       };
 
-      // Cerrar al hacer clic fuera
       document.addEventListener('click', function (event) {
         if (attachmentOptions.classList.contains('show') &&
           !welcomeAttachBtn.contains(event.target) &&
@@ -323,20 +302,16 @@ export async function showWelcomeMessage() {
       });
     }
 
-    // 🚫 ELIMINADO COMPLETAMENTE: Todo el sistema específico de drag & drop de welcome
-    // Solo se usa el sistema unificado ahora
 
     // 2. Configurar textarea autoexpandible
     const welcomeTextarea = document.getElementById('welcome-message-input');
     if (welcomeTextarea) {
       function autoResizeTextarea() {
-        // Guardar la posición de scroll actual y la posición del cursor
         const scrollPos = window.scrollY;
 
         welcomeTextarea.style.height = 'auto';
         welcomeTextarea.style.height = (welcomeTextarea.scrollHeight) + 'px';
 
-        // Restaurar la posición de scroll para evitar saltos
         window.scrollTo(0, scrollPos);
       }
 
@@ -345,14 +320,11 @@ export async function showWelcomeMessage() {
       welcomeTextarea.focus();
     }
 
-    // 3. 🦫 CONFIGURAR BOTÓN DE ENVÍO CON SISTEMA UNIFICADO
     const welcomeSendBtn = document.getElementById('welcome-send-btn');
     if (welcomeSendBtn && welcomeTextarea) {
-      // Función principal para transferir y enviar mensaje - VERSIÓN SIMPLIFICADA CON SISTEMA UNIFICADO
 const transferAndSendMessage = async () => {
   const messageText = welcomeTextarea.value.trim();
 
-  // Verificar límite de caracteres
   let exceedsCharLimit = false;
   try {
     const charLimitModule = await import('../../shared/character-limit.js');
@@ -369,10 +341,8 @@ const transferAndSendMessage = async () => {
   // Si excede el límite, detener ejecución
   if (exceedsCharLimit) return;
 
-  // 🦫 USAR SISTEMA UNIFICADO PARA VALIDAR ARCHIVOS
   const hasFiles = hasWelcomeAttachedFiles();
   
-  // Validación original
   if (!messageText && !hasFiles) return;
 
   // 1. Transferir mensaje al textarea principal
@@ -380,7 +350,6 @@ const transferAndSendMessage = async () => {
   if (mainTextarea) {
     mainTextarea.value = messageText;
 
-    // 2. 🦫 TRANSFERIR ARCHIVOS USANDO SISTEMA UNIFICADO
     if (hasFiles) {
       try {
         console.log('🚀 Transfiriendo archivos usando sistema unificado...');
@@ -394,7 +363,6 @@ const transferAndSendMessage = async () => {
     // MODIFICACIÓN CLAVE: Restaurar visibilidad del textarea original
     const fixedSpace = document.querySelector('.fixed-space');
     if (fixedSpace) {
-      // Restaurar completamente todas las propiedades CSS
       fixedSpace.style.removeProperty('opacity');
       fixedSpace.style.removeProperty('display');
       fixedSpace.style.removeProperty('pointer-events');
@@ -405,21 +373,17 @@ const transferAndSendMessage = async () => {
       void fixedSpace.offsetHeight;
     }
 
-    // Restaurar visibilidad de botones
     const sendButton = document.querySelector('.input-box button:nth-child(2)');
     if (sendButton) sendButton.style.pointerEvents = 'auto';
 
-    // Esperar un instante para que la UI se actualice
     setTimeout(async () => {
       // 4. Eliminar elementos de bienvenida
       if (welcomeDiv && welcomeDiv.parentNode) welcomeDiv.remove();
       if (welcomeInputContainer && welcomeInputContainer.parentNode) welcomeInputContainer.remove();
       if (suggestionsDiv && suggestionsDiv.parentNode) suggestionsDiv.remove();
 
-      // 🦫 LIMPIAR SISTEMA UNIFICADO DE WELCOME
       cleanupWelcomeAttachments();
 
-      // ⭐ NOTIFICACIÓN ACADEL:
         acadelExito("🚀 ¡Mensaje enviado!", "Acadel transfirió tu consulta al chat principal");
 
       // 5. ENVIAR MENSAJE CON MÚLTIPLES FALLBACKS
@@ -501,7 +465,6 @@ const transferAndSendMessage = async () => {
   }
 };
 
-      // Configurar eventos con funciones explícitas (no usar referencias directas)
       welcomeSendBtn.addEventListener('click', function (e) {
         e.preventDefault();
         transferAndSendMessage();
@@ -530,7 +493,6 @@ const transferAndSendMessage = async () => {
     el.setAttribute('aria-label', variantConfig.assistantLabel);
   });
 
-  // Ocultar cualquier alerta de límite que pueda estar visible
   try {
     const { hideLimitAlert } = await import('../../shared/character-limit.js');
     if (typeof hideLimitAlert === 'function') {
@@ -547,16 +509,13 @@ const transferAndSendMessage = async () => {
  */
 async function getUserName() {
   try {
-    // Obtener userId del estado global
     const userId = getState('userId');
 
     if (!userId) {
       return 'usuario';
     }
 
-    // Intentar obtener el perfil del usuario usando fetchUserProfile
     try {
-      // Importar dinámicamente el módulo auth para acceder a fetchUserProfile
       const authModule = await import('../api/auth-teorico.js');
       const profile = await authModule.fetchUserProfile(userId);
 
@@ -570,13 +529,11 @@ async function getUserName() {
       }
     } catch (profileError) {
       console.warn('Error al obtener perfil para nombre:', profileError);
-      // Continuar con el método de respaldo si falla obtener el perfil
     }
 
     // Respaldo: Si falla obtener el perfil o no tiene nombre, formatear el userId
     // Respaldo: Si falla obtener el perfil o no tiene nombre, formatear el userId
     if (typeof userId === 'string' && userId.includes('@')) {
-      // Permitir solo caracteres alfanuméricos para máxima seguridad
       const namePart = userId.split('@')[0].replace(/[^a-z0-9._-]/gi, '');
       return namePart
         .replace(/[._-]/g, ' ')
@@ -598,13 +555,11 @@ async function getUserName() {
 export function sanitizeBase64(base64) {
   if (!base64 || typeof base64 !== 'string') return '';
 
-  // Verificar si es un data URL válido
   if (base64.startsWith('data:')) {
     const validPattern = /^data:(image\/[a-z]+);base64,[a-zA-Z0-9+/=]+$/;
     return validPattern.test(base64) ? base64 : '';
   }
 
-  // Verificar si es base64 crudo
   const validBase64 = /^[a-zA-Z0-9+/=]+$/;
   return validBase64.test(base64) ? base64 : '';
 }

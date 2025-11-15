@@ -1,4 +1,3 @@
-// backend/controllers/usuarios/authController.js - VERSIÓN MEJORADA PARA PRODUCCIÓN
 import { AuthService } from "../../services/usuarios/authService.js";
 import { notificationService } from "../../services/usuarios/notificationService.js";
 import { Logger } from "../../utils/logger.js";
@@ -8,17 +7,14 @@ import {
     getSecurityAlertInfo
 } from '../../utils/userAgentParser.js';
 
-// 🆕 Mapa para rastrear conexiones activas y sus timeouts
 const activeConnections = new Map();
 
-// 🆕 Cleanup automático de conexiones huérfanas
 const cleanupActiveConnections = () => {
     const now = Date.now();
     let cleanedCount = 0;
     
     for (const [key, connection] of activeConnections) {
         if (connection.expiry && connection.expiry < now) {
-            // Limpiar timeout si existe
             if (connection.timeoutId) {
                 clearTimeout(connection.timeoutId);
             }
@@ -32,12 +28,8 @@ const cleanupActiveConnections = () => {
     }
 };
 
-// Ejecutar cleanup cada 2 minutos
 setInterval(cleanupActiveConnections, 2 * 60 * 1000);
 
-/**
- * 🆕 Función helper para manejar cleanup de conexiones
- */
 const cleanupConnection = (connectionId) => {
     const connection = activeConnections.get(connectionId);
     if (connection) {
@@ -49,9 +41,6 @@ const cleanupConnection = (connectionId) => {
     }
 };
 
-/**
- * 🆕 Función helper para respuestas de longpolling mejoradas
- */
 const sendLongpollResponse = (res, data, statusCode = 200) => {
     if (!res.headersSent) {
         try {
@@ -74,10 +63,8 @@ export const longPollLoginAttempts = async (req, res) => {
     const connectionId = `longpoll_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     
     try {
-        // ✅ CRÍTICO: Configurar timeout del request ANTES de cualquier procesamiento
         req.setTimeout(40000); // 40 segundos - un poco más que el timeout del cliente
 
-        // ✅ CRÍTICO: Configurar headers inmediatamente para evitar ERR_EMPTY_RESPONSE
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.setHeader('Pragma', 'no-cache');
@@ -85,7 +72,6 @@ export const longPollLoginAttempts = async (req, res) => {
 
         const userId = req.params.userId;
 
-        // ✅ MEJORADO: Validaciones más robustas
         if (!userId || userId === 'undefined' || userId === 'null') {
             Logger.warn('Longpoll: ID de usuario inválido', { userId, ip: req.ip });
             return sendLongpollResponse(res, {
@@ -120,7 +106,6 @@ export const longPollLoginAttempts = async (req, res) => {
 
         Logger.info(`Longpoll iniciado para usuario ${userId}`, { userId, ip: req.ip, connectionId });
 
-        // ✅ MEJORADO: Verificar si ya hay un intento pendiente ANTES de registrar conexión
         try {
             const pendingAttempt = await notificationService.checkForPendingAttempt(userId);
 
@@ -149,10 +134,8 @@ export const longPollLoginAttempts = async (req, res) => {
             }
         } catch (pendingCheckError) {
             Logger.error('Error verificando intentos pendientes', pendingCheckError, { userId });
-            // Continuar con el longpolling normal
         }
 
-        // ✅ CRÍTICO: Manejar cierre prematuro de conexión de forma mejorada
         let connectionClosed = false;
 
         const handleConnectionClose = () => {
@@ -164,7 +147,6 @@ export const longPollLoginAttempts = async (req, res) => {
         req.on('close', handleConnectionClose);
         req.on('aborted', handleConnectionClose);
 
-        // ✅ MEJORADO: Timeout de seguridad interno con cleanup
         const timeoutId = setTimeout(() => {
             if (!res.headersSent && !connectionClosed) {
                 Logger.info(`Longpoll: Timeout alcanzado para usuario ${userId}`, { userId, connectionId });
@@ -177,7 +159,6 @@ export const longPollLoginAttempts = async (req, res) => {
             cleanupConnection(connectionId);
         }, 35000); // 35 segundos
 
-        // 🆕 Registrar conexión activa
         activeConnections.set(connectionId, {
             userId,
             req,
@@ -186,7 +167,6 @@ export const longPollLoginAttempts = async (req, res) => {
             expiry: Date.now() + 40000 // 40 segundos
         });
 
-        // ✅ CRÍTICO: Limpiar timeout si la respuesta se envía antes
         res.on('finish', () => {
             cleanupConnection(connectionId);
         });
@@ -195,7 +175,6 @@ export const longPollLoginAttempts = async (req, res) => {
             cleanupConnection(connectionId);
         });
 
-        // 🆕 Manejar errores de la respuesta
         res.on('error', (error) => {
             Logger.error('Error en respuesta longpolling', error, { userId, connectionId });
             cleanupConnection(connectionId);
@@ -213,10 +192,8 @@ export const longPollLoginAttempts = async (req, res) => {
             connectionId
         });
 
-        // 🆕 Limpiar conexión en caso de error
         cleanupConnection(connectionId);
 
-        // ✅ CRÍTICO: SIEMPRE enviar una respuesta JSON válida
         if (!res.headersSent) {
             sendLongpollResponse(res, {
                 status: "error",
@@ -271,7 +248,6 @@ function clearCookies(res) {
         domain: process.env.COOKIE_DOMAIN || undefined
     });
 
-    // Limpiar CSRF cookie
     res.clearCookie("XSRF-TOKEN", {
         path: "/",
         domain: process.env.COOKIE_DOMAIN || undefined
@@ -290,13 +266,9 @@ function extractRequestData(req) {
     };
 }
 
-/**
- * 🆕 Manejar errores mejorado y convertirlos en respuestas HTTP apropiadas
- */
 function handleError(res, error, additionalInfo = {}) {
     Logger.error("Error en operación de autenticación", error, additionalInfo);
 
-    // 🆕 Evitar respuestas duplicadas
     if (res.headersSent) {
         Logger.warn("Intento de enviar respuesta cuando headers ya fueron enviados", additionalInfo);
         return;
@@ -342,15 +314,12 @@ function handleError(res, error, additionalInfo = {}) {
                 status: "error",
                 error: "Error interno del servidor",
                 code: "SERVER_ERROR",
-                // 🆕 Incluir detalles solo en desarrollo
                 ...(process.env.NODE_ENV === 'development' && { details: error.message })
             });
     }
 }
 
-// ========================================
 // ENDPOINTS HTTP (Solo manejo de Request/Response)
-// ========================================
 
 /**
  * Login de usuario
@@ -359,21 +328,17 @@ export const loginUser = async (req, res) => {
     try {
         const { correo, contraseña, mantenerSesionesActivas = false } = req.body;
 
-        // Validación básica de entrada
         if (!correo || !contraseña) {
             return res.status(400).json({ error: "Datos de acceso incompletos" });
         }
 
-        // Extraer datos del request
         const requestData = extractRequestData(req);
 
-        // Delegar toda la lógica al servicio
         const result = await AuthService.performLogin(correo, contraseña, {
             mantenerSesionesActivas,
             requestData
         });
 
-        // Manejar diferentes tipos de respuesta del servicio
         if (result.status === "verification_required") {
             return res.status(200).json(result);
         }
@@ -393,7 +358,6 @@ export const loginUser = async (req, res) => {
             });
         }
 
-        // Respuesta de error inesperada
         return res.status(500).json({ error: "Respuesta de servicio inesperada" });
 
     } catch (error) {
@@ -409,7 +373,6 @@ export const loginUser = async (req, res) => {
  * Endpoint para obtener intentos de inicio de sesión pendientes
  */
 export const getPendingLoginAttempts = async (req, res) => {
-    // Configurar headers inmediatamente
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
@@ -425,7 +388,6 @@ export const getPendingLoginAttempts = async (req, res) => {
             });
         }
 
-        // Verificar autenticación
         if (!req.user || !req.user.id_user) {
             return sendLongpollResponse(res, {
                 status: "unauthenticated",
@@ -444,7 +406,6 @@ export const getPendingLoginAttempts = async (req, res) => {
 
         Logger.info(`Verificando intentos pendientes para usuario ${userId}`, { userId });
 
-        // Delegar lógica al servicio
         const pendingAttempt = await AuthService.getPendingLoginAttemptsLogic(userId);
 
         sendLongpollResponse(res, {
@@ -480,7 +441,6 @@ export const respondToLoginAttempt = async (req, res) => {
             return res.status(400).json({ error: "ID de intento requerido" });
         }
 
-        // Delegar lógica al servicio
         const result = await AuthService.respondToLoginAttemptLogic(
             attemptId,
             approved,
@@ -518,7 +478,6 @@ export const verifyLoginCode = async (req, res) => {
             return res.status(400).json({ error: "Datos incompletos" });
         }
 
-        // Delegar lógica al servicio
         const result = await AuthService.verifyLoginCodeLogic(email, code, attemptId, forceLogin);
 
         // Si se forzó el login, configurar cookies
@@ -575,7 +534,6 @@ export const resendVerificationCode = async (req, res) => {
             return res.status(400).json({ error: "Datos incompletos" });
         }
 
-        // Delegar lógica al servicio
         const result = await AuthService.resendVerificationCodeLogic(email, attemptId);
 
         res.status(200).json(result);
@@ -614,7 +572,6 @@ export const checkSessionStatus = async (req, res) => {
             });
         }
 
-        // Delegar lógica al servicio
         const result = await AuthService.checkSessionStatusLogic(userId, sessionId);
 
         return sendLongpollResponse(res, result);
@@ -640,7 +597,6 @@ export const checkSessionStatus = async (req, res) => {
  */
 export const revokeAllSessions = async (req, res) => {
     try {
-        // Logs para depuración
         Logger.info('Petición de revocación recibida', {
             body: req.body,
             user: req.user,
@@ -648,7 +604,6 @@ export const revokeAllSessions = async (req, res) => {
             ip: req.ip
         });
 
-        // Obtener ID del usuario 
         const userId = req.params.userId || req.user?.id_user;
 
         if (!userId) {
@@ -659,7 +614,6 @@ export const revokeAllSessions = async (req, res) => {
             return res.status(400).json({ error: "ID de usuario no proporcionado" });
         }
 
-        // Verificar que el usuario actual tiene permiso
         if (req.user.id_user != userId && req.user.id_rol !== 3) { // 3 = admin
             Logger.security(`Error de permisos: ${req.user.id_user} intenta revocar sesiones de ${userId}`, {
                 requesterId: req.user.id_user,
@@ -671,7 +625,6 @@ export const revokeAllSessions = async (req, res) => {
             });
         }
 
-        // Obtener datos del request
         const { currentToken, keepCurrentSession } = req.body;
         const requestData = extractRequestData(req);
 
@@ -681,7 +634,6 @@ export const revokeAllSessions = async (req, res) => {
             hasCurrentToken: !!currentToken
         });
 
-        // Delegar lógica al servicio
         const result = await AuthService.revokeSessionsLogic(userId, {
             currentToken,
             keepCurrentSession,
@@ -728,10 +680,8 @@ export const refreshToken = async (req, res) => {
             });
         }
 
-        // Delegar lógica al servicio
         const tokens = await AuthService.refreshTokens(refreshToken);
 
-        // Solo actualizar access token cookie
         res.cookie("token", tokens.accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
@@ -759,7 +709,6 @@ export const refreshToken = async (req, res) => {
     }
 };
 
-// ==================== CONTROLLER SIMPLIFICADO ====================
 
 /**
  * Login con Google (solo redirecciones)
@@ -770,7 +719,6 @@ export const googleLogin = async (req, res) => {
         requestData.protocol = req.protocol;
         requestData.host = req.get('host');
 
-        // Solo manejar GET con código OAuth
         const { code, error } = req.query;
 
         if (error) {
@@ -807,10 +755,8 @@ export const logoutUser = async (req, res) => {
         const refreshToken = req.cookies.refresh_token;
         const sessionData = extractRequestData(req);
 
-        // Delegar lógica al servicio
         const result = await AuthService.performLogout(userId, refreshToken, sessionData);
 
-        // Limpiar cookies (responsabilidad del controller)
         if (result.shouldClearCookies) {
             clearCookies(res);
         }
@@ -832,10 +778,8 @@ export const checkLoginStatus = async (req, res) => {
     try {
         const { correo, contraseña } = req.body;
 
-        // Extraer datos del request
         const requestData = extractRequestData(req);
 
-        // Delegar lógica al servicio
         const result = await AuthService.checkLoginStatusLogic(correo, contraseña, requestData);
 
         res.status(200).json(result);
@@ -853,7 +797,6 @@ export const checkLoginStatus = async (req, res) => {
     }
 };
 
-// 🆕 Cleanup al cerrar la aplicación
 process.on('SIGINT', () => {
     console.log('[AUTH] Limpiando conexiones activas...');
     for (const [connectionId, connection] of activeConnections) {

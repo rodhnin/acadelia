@@ -11,21 +11,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const resetStatus = document.getElementById('resetStatus');
   const formResetPassword = document.getElementById('formResetPassword');
   
-  // Obtener token y ID de la URL
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const userId = urlParams.get('id');
   
-  // Validar token y mostrar formulario o error
     const validateToken = async () => {
     try {
-        // Ocultar todo inicialmente, mostrar solo estado de carga
         resetForm.style.display = 'none';
         tokenError.style.display = 'none';
         resetSuccess.style.display = 'none';
         resetStatus.style.display = 'flex';
         
-        // Verificar que haya token e ID
         if (!token || !userId) {
         showTokenError('Enlace incompleto. Faltan parámetros necesarios.');
         return;
@@ -51,7 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetForm.style.display = 'block';
         tokenError.style.display = 'none';
         
-        // Crear temporizador visual si hay tiempo de expiración disponible
         if (data.expiresIn) {
             createExpiryTimer(data.expiresIn);
         }
@@ -65,7 +60,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     };
   
-  // Función para mostrar error de token
   const showTokenError = (message) => {
     resetStatus.style.display = 'none';
     tokenError.style.display = 'block';
@@ -76,13 +70,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
   
-  // Función para mostrar éxito
   const showSuccess = () => {
     resetForm.style.display = 'none';
     resetSuccess.style.display = 'block';
   };
   
-  // Manejar envío del formulario de reset
   if (formResetPassword) {
     formResetPassword.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -90,13 +82,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newPassword = document.getElementById('newPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
       
-      // Validar contraseñas
       if (newPassword !== confirmPassword) {
         showAlert('Las contraseñas no coinciden', 'warning');
         return;
       }
       
-      // Validar fuerza de contraseña
       if (newPassword.length < 8) {
         showAlert('La contraseña debe tener al menos 8 caracteres', 'warning');
         return;
@@ -105,11 +95,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         showAlert('Actualizando contraseña...', 'info');
         
-        // Obtener CSRF token si está disponible
         const csrfToken = window.csrfUtils && typeof window.csrfUtils.refreshToken === 'function' ? 
                         window.csrfUtils.refreshToken() : null;
         
-        // Enviar solicitud de cambio de contraseña
         const response = await fetch('/api/usuarios/reset-password', {
           method: 'POST',
           headers: {
@@ -139,7 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
-  // Manejar visibilidad de contraseña
   const togglePasswordButtons = document.querySelectorAll('.toggle-password');
   
   togglePasswordButtons.forEach((button) => {
@@ -165,7 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
   
-  // Validación de fuerza de contraseña
   const newPasswordInput = document.getElementById('newPassword');
   const confirmPasswordInput = document.getElementById('confirmPassword');
   
@@ -186,9 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
-  // Función para validar fuerza de contraseña
   function validatePasswordStrength(password) {
-    // Eliminar indicador existente
     const existingIndicator = document.querySelector('.password-strength');
     if (existingIndicator) {
       existingIndicator.remove();
@@ -206,7 +190,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (password.match(/\d/)) strength += 1;
     if (password.match(/[^a-zA-Z\d]/)) strength += 1;
     
-    // Determinar mensaje y color
     if (strength === 0) {
       message = 'Muy débil';
       color = '#ff4d4d';
@@ -224,16 +207,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       color = '#4d4dff';
     }
     
-    // Crear indicador
     const strengthIndicator = document.createElement('div');
     strengthIndicator.className = 'password-strength';
     
-    // Insertar después del campo de contraseña
     const passwordInput = document.getElementById('newPassword');
     const parentDiv = passwordInput.closest('.input-box');
     parentDiv.insertAdjacentElement('afterend', strengthIndicator);
     
-    // Crear estructura HTML
     strengthIndicator.innerHTML = `
       <div class="strength-bar">
         <div class="strength-fill"></div>
@@ -241,20 +221,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       <span style="color: ${color};">${message}</span>
     `;
     
-    // Obtener el elemento de relleno y aplicar estilos
     const strengthFill = strengthIndicator.querySelector('.strength-fill');
     strengthFill.style.width = `${(strength / 4) * 100}%`;
     strengthFill.style.backgroundColor = color;
     
-    // Añadir transición para suavizar el cambio de ancho
     setTimeout(() => {
       strengthFill.style.transition = 'width 0.3s ease-in-out';
     }, 10);
   }
   
-  // Función para validar coincidencia de contraseñas
   function validatePasswordMatch(password, confirm) {
-    // Eliminar mensaje existente
     const existingMessage = document.querySelector('.password-match');
     if (existingMessage) {
       existingMessage.remove();
@@ -271,13 +247,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       matchMessage.innerHTML = '<span style="color: #ff4d4d;">✗ Las contraseñas no coinciden</span>';
     }
     
-    // Aplicar estilos
     matchMessage.style.marginTop = '-10px';
     matchMessage.style.marginBottom = '10px';
     matchMessage.style.fontSize = '0.8rem';
     matchMessage.style.width = '100%';
     
-    // Insertar después del campo de confirmación
     const confirmInput = document.getElementById('confirmPassword');
     const parentDiv = confirmInput.closest('.input-box');
     parentDiv.insertAdjacentElement('afterend', matchMessage);
@@ -291,21 +265,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
-  // Iniciar validación de token al cargar la página
   validateToken();
 });
 
-// Añadir esta función para crear y actualizar el temporizador
 function createExpiryTimer(expiresInMinutes) {
-  // Eliminar temporizador existente si hay uno
   const existingTimer = document.querySelector('.timer-container');
   if (existingTimer) existingTimer.remove();
   
-  // Crear contenedor principal
   const timerContainer = document.createElement('div');
   timerContainer.className = 'timer-container';
   
-  // Crear etiquetas para el temporizador
   const timerLabel = document.createElement('div');
   timerLabel.className = 'timer-label';
   timerLabel.innerHTML = `
@@ -313,7 +282,6 @@ function createExpiryTimer(expiresInMinutes) {
     <span>Expira en ${expiresInMinutes} min</span>
   `;
   
-  // Crear barra de progreso
   const timerProgress = document.createElement('div');
   timerProgress.className = 'timer-progress';
   
@@ -321,11 +289,9 @@ function createExpiryTimer(expiresInMinutes) {
   timerBar.className = 'timer-bar timer-high';
   timerProgress.appendChild(timerBar);
   
-  // Crear visualización de dígitos
   const timerDigits = document.createElement('div');
   timerDigits.className = 'timer-digits';
   
-  // Añadir elementos al contenedor
   timerContainer.appendChild(timerLabel);
   timerContainer.appendChild(timerProgress);
   timerContainer.appendChild(timerDigits);
@@ -340,18 +306,14 @@ function createExpiryTimer(expiresInMinutes) {
     resetForm.insertBefore(timerContainer, resetForm.firstChild);
   }
   
-  // Calcular tiempo de expiración
   const expiryTime = new Date(Date.now() + expiresInMinutes * 60 * 1000);
   
-  // Iniciar temporizador
   updateTimer(timerBar, timerDigits, expiryTime, expiresInMinutes * 60);
   
   return timerContainer;
 }
 
-// Función para actualizar el temporizador cada segundo
 function updateTimer(timerBar, timerDigits, expiryTime, totalSeconds) {
-  // Calcular tiempo restante
   const now = new Date();
   const diffMs = expiryTime - now;
   
@@ -369,20 +331,16 @@ function updateTimer(timerBar, timerDigits, expiryTime, totalSeconds) {
     return;
   }
   
-  // Calcular minutos y segundos restantes
   const minutes = Math.floor(diffMs / 60000);
   const seconds = Math.floor((diffMs % 60000) / 1000);
   
-  // Formatear tiempo restante
   const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
   timerDigits.textContent = timeString;
   
-  // Calcular porcentaje de tiempo restante
   const secondsLeft = Math.floor(diffMs / 1000);
   const percentage = (secondsLeft / totalSeconds) * 100;
   timerBar.style.width = `${percentage}%`;
   
-  // Actualizar clase basada en porcentaje
   timerBar.className = 'timer-bar';
   if (percentage > 60) {
     timerBar.classList.add('timer-high');
@@ -393,11 +351,9 @@ function updateTimer(timerBar, timerDigits, expiryTime, totalSeconds) {
     timerBar.classList.add('timer-pulse');
   }
   
-  // Actualizar cada segundo
   setTimeout(() => updateTimer(timerBar, timerDigits, expiryTime, totalSeconds), 1000);
 }
 
-// Función para mostrar alertas personalizadas (duplicada del login.js)
 function showAlert(message, type = 'info', duration = 3000) {
   const alertTypes = {
     success: { icon: '✓', class: 'alert-success' },

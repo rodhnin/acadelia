@@ -25,39 +25,31 @@ const blockedIps = {
      * Inicializa el módulo de IPs bloqueadas
      */
     async init() {
-        // Mostrar indicador de carga
         this.showLoading(true);
         
         try {
-            // Inicializar mapa si no se ha hecho ya
             if (!this.state.map) {
                 const isDarkMode = theme.isDarkTheme();
                 this.state.map = initMap('security-map', isDarkMode);
                 
-                // Configurar manejadores para acciones del mapa
                 setMapHandlers({
                     unblockIP: (ip) => this.handleUnblockIP(ip),
                     showIPDetails: (ip) => this.showIPDetails(ip)
                 });
             }
             
-            // Cargar IPs bloqueadas
             await this.loadBlockedIPs();
             
-            // Configurar event listeners
             this.setupEventListeners();
             
-            // Marcar como inicializado
             this.state.initialized = true;
             
-            // Aplicar tema actual al mapa
             const isDarkMode = theme.isDarkTheme();
             updateMapTheme(isDarkMode);
         } catch (error) {
             console.error('Error inicializando módulo de IPs bloqueadas:', error);
             showNotification('Error', 'No se pudo inicializar el módulo de IPs bloqueadas', 'error');
         } finally {
-            // Ocultar indicador de carga
             this.showLoading(false);
         }
     },
@@ -71,7 +63,6 @@ const blockedIps = {
             this.loadBlockedIPs();
         });
         
-        // Validación para desbloqueo de todas las IPs
         const unblockConfirmInput = document.getElementById('unblock-confirmation');
         const confirmUnblockAllBtn = document.getElementById('confirm-unblock-all');
         
@@ -91,13 +82,11 @@ const blockedIps = {
             this.exportBlockedIPs();
         });
         
-        // Escuchar evento global de bloqueo de IP
         window.addEventListener('ipBlocked', () => {
             // Recargar IPs bloqueadas cuando se bloquee una nueva
             this.loadBlockedIPs();
         });
         
-        // Escuchar cambios de tema para actualizar el mapa
         window.addEventListener('themechange', (e) => {
             updateMapTheme(e.detail.theme === 'dark');
         });
@@ -108,29 +97,22 @@ const blockedIps = {
      */
     async loadBlockedIPs() {
         try {
-            // Mostrar indicador de carga
             this.state.isLoading = true;
             this.showLoading(true);
             
-            // Obtener IPs bloqueadas
             const blockedIPs = await getBlockedIPs();
             
             // Enriquecer con datos de geolocalización si faltan
             const enrichedIPs = await this.enrichGeoData(blockedIPs);
             
-            // Actualizar estado
             this.state.blockedIPs = enrichedIPs;
             
-            // Actualizar contador
             document.getElementById('blocked-count').textContent = `${enrichedIPs.length} IPs`;
             
-            // Renderizar tabla
             this.renderBlockedIPsTable(enrichedIPs);
             
-            // Actualizar mapa
             this.updateMap(enrichedIPs);
             
-            // Ocultar indicador de carga
             this.state.isLoading = false;
             this.showLoading(false);
         } catch (error) {
@@ -150,7 +132,6 @@ const blockedIps = {
         if (!blockedIPs || blockedIPs.length === 0) return [];
         
         try {
-            // Usar un servicio de geolocalización para las IPs que faltan coordenadas
             // Intentamos obtener las coordenadas para todas las IPs que no las tienen
             const enrichedIPs = await Promise.all(blockedIPs.map(async (ip) => {
                 // Si ya tiene coordenadas, devolver tal cual
@@ -185,7 +166,6 @@ const blockedIps = {
                     console.warn(`Error enriqueciendo datos geo para IP ${ip.ip}:`, error);
                 }
                 
-                // Si todo falla, devolver IP original
                 return ip;
             }));
             
@@ -227,19 +207,16 @@ const blockedIps = {
             'Toronto, Canada': { lat: 43.6532, lng: -79.3832 }
         };
         
-        // Buscar ubicación exacta
         if (location in geoCache) {
             return geoCache[location];
         }
         
-        // Buscar ubicación parcial
         for (const [cachedLocation, coords] of Object.entries(geoCache)) {
             if (location.includes(cachedLocation) || cachedLocation.includes(location)) {
                 return coords;
             }
         }
         
-        // Si no se encuentra, devolver null
         return null;
     },
 
@@ -253,13 +230,10 @@ const blockedIps = {
             // En una implementación real, se usaría un servicio como ipstack, ipify, etc.
             // Aquí generamos datos de forma aleatoria para algunas IPs (demo)
             
-            // Generar datos aleatorios basados en la IP para que sean consistentes
             // Esto es solo para simulación, en una implementación real usarías un servicio real
             
-            // Generar hash simple para la IP
             const ipHash = ip.split('.').reduce((acc, octet) => acc + parseInt(octet, 10), 0);
             
-            // Usar el hash para asignar una ubicación fija a cada IP
             const locations = [
                 { location: 'Madrid, España', lat: 40.4165, lng: -3.7026 },
                 { location: 'Barcelona, España', lat: 41.3851, lng: 2.1734 },
@@ -290,11 +264,9 @@ const blockedIps = {
         const tableBody = document.getElementById('blocked-ips-table');
         if (!tableBody) return;
         
-        // Limpiar tabla
         tableBody.innerHTML = '';
         
         if (blockedIPs.length === 0) {
-            // Mostrar mensaje si no hay IPs bloqueadas
             const emptyRow = createTableRow([
                 { colspan: 5, className: 'text-center', text: 'No hay IPs bloqueadas actualmente' }
             ]);
@@ -302,7 +274,6 @@ const blockedIps = {
             return;
         }
         
-        // Añadir filas de IPs bloqueadas
         blockedIPs.forEach(ip => {
             const row = createTableRow([
                 { text: ip.ip, className: 'text-nowrap' },
@@ -321,7 +292,6 @@ const blockedIps = {
             
             tableBody.appendChild(row);
             
-            // Añadir event listener al botón de desbloqueo
             const unblockBtn = row.querySelector('.unblock-ip-btn');
             if (unblockBtn) {
                 unblockBtn.addEventListener('click', () => {
@@ -336,17 +306,14 @@ const blockedIps = {
      * @param {Array} blockedIPs - Lista de IPs bloqueadas
      */
     updateMap(blockedIPs) {
-        // Limpiar marcadores existentes
         clearMarkers();
         
         // Si no hay IPs, no hacer nada más
         if (blockedIPs.length === 0) return;
         
-        // Añadir nuevos marcadores
         let markersAdded = 0;
         
         blockedIPs.forEach(ip => {
-            // Añadir marcador si tiene coordenadas
             if (ip.latitude && ip.longitude) {
                 addMarker(ip.latitude, ip.longitude, {
                     ip: ip.ip,
@@ -362,7 +329,6 @@ const blockedIps = {
             }
         });
         
-        // Solo ajustar zoom si se añadieron marcadores
         if (markersAdded > 0) {
             fitMarkers();
         }
@@ -374,12 +340,10 @@ const blockedIps = {
      */
     async handleUnblockIP(ip) {
         try {
-            // Mostrar confirmación
             if (!confirm(`¿Estás seguro de desbloquear la IP ${ip}?`)) {
                 return;
             }
             
-            // Llamar a la API
             const result = await unblockIP(ip);
             
             if (result && result.success) {
@@ -401,22 +365,17 @@ const blockedIps = {
      */
     async handleUnblockAllIPs() {
         try {
-            // Cerrar modal de confirmación
             const modal = bootstrap.Modal.getInstance(document.getElementById('confirmUnblockAllModal'));
             if (modal) modal.hide();
             
-            // Limpiar campo de confirmación
             const unblockConfirmInput = document.getElementById('unblock-confirmation');
             if (unblockConfirmInput) unblockConfirmInput.value = '';
             
-            // Deshabilitar botón de confirmación
             const confirmUnblockAllBtn = document.getElementById('confirm-unblock-all');
             if (confirmUnblockAllBtn) confirmUnblockAllBtn.disabled = true;
             
-            // Mostrar notificación
             showNotification('Info', 'Desbloqueando todas las IPs...', 'info');
             
-            // Llamar a la API
             const result = await unblockAllIPs();
             
             if (result && result.success) {
@@ -458,26 +417,21 @@ const blockedIps = {
      */
     async exportBlockedIPs() {
         try {
-            // Obtener formato seleccionado
             const format = document.getElementById('export-format')?.value || 'csv';
             
-            // Intentar usar la API de exportación si existe
             try {
-                // Usar la API específica para exportar IPs bloqueadas
                 const filters = {
                     eventType: 'BLOCKED_IP'
                 };
                 
                 const blob = await exportSecurityEvents(filters, format);
                 
-                // Generar nombre de archivo
                 const date = new Date().toISOString().split('T')[0];
                 const filename = `ips_bloqueadas_${date}.${format}`;
                 
                 // Descargar archivo
                 downloadBlob(blob, filename);
                 
-                // Mostrar notificación
                 showNotification('Éxito', 'Exportación completada', 'success');
                 return;
             } catch (apiError) {
@@ -485,11 +439,9 @@ const blockedIps = {
             }
             
             // Si la API falla, exportar localmente
-            // Generar nombre de archivo
             const date = new Date().toISOString().split('T')[0];
             const filename = `ips_bloqueadas_${date}.${format}`;
             
-            // Crear contenido según formato
             let content;
             let mimeType;
             
@@ -514,7 +466,6 @@ const blockedIps = {
                 content = JSON.stringify(this.state.blockedIPs, null, 2);
                 mimeType = 'application/json;charset=utf-8;';
             } else if (format === 'excel') {
-                // Para Excel, intentamos usar la librería sheetjs si está disponible
                 try {
                     const XLSX = window.XLSX;
                     if (!XLSX) throw new Error('Librería XLSX no disponible');
@@ -530,7 +481,6 @@ const blockedIps = {
                     console.warn('Error generando Excel, usando CSV:', xlsxError);
                     showNotification('Advertencia', 'Formato Excel no disponible, usando CSV', 'warning');
                     
-                    // Cambiar a CSV y llamar de nuevo a esta función
                     document.getElementById('export-format').value = 'csv';
                     return this.exportBlockedIPs();
                 }
@@ -541,13 +491,11 @@ const blockedIps = {
                 return this.exportBlockedIPs();
             }
             
-            // Crear blob
             const blob = new Blob([content], { type: mimeType });
             
             // Descargar archivo
             downloadBlob(blob, filename);
             
-            // Mostrar notificación
             showNotification('Éxito', 'Exportación completada', 'success');
         } catch (error) {
             console.error('Error exportando IPs bloqueadas:', error);
@@ -564,7 +512,6 @@ const blockedIps = {
         if (!tableBody) return;
         
         if (show) {
-            // Mostrar indicador de carga
             tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Cargando IPs bloqueadas...</td></tr>';
         }
     },
@@ -577,7 +524,6 @@ const blockedIps = {
         if (this.state.initialized && this.state.map) {
             this.state.map.invalidateSize();
             
-            // Cargar datos si es necesario
             if (this.state.blockedIPs.length === 0) {
                 this.loadBlockedIPs();
             }
@@ -588,7 +534,6 @@ const blockedIps = {
      * Limpia recursos al destruir el módulo
      */
     destroy() {
-        // Limpiar event listeners
         document.getElementById('refresh-ips-btn')?.removeEventListener('click', () => this.loadBlockedIPs());
         document.getElementById('confirm-unblock-all')?.removeEventListener('click', () => this.handleUnblockAllIPs());
         document.getElementById('export-ips-btn')?.removeEventListener('click', () => this.exportBlockedIPs());

@@ -4,7 +4,6 @@
  * ACTUALIZADO: Agregadas las 3 nuevas variantes médicas faltantes
  */
 
-// Variables para tracking interno (solo para depuración)
 let _lastDetectedVariantKey = null;
 let _lastDetectedUrlSegment = null;
 
@@ -108,7 +107,6 @@ export const VARIANTS = {
     }
   },
 
-  // ===== NUEVAS VARIANTES TEÓRICAS MÉDICAS AGREGADAS =====
 
   ESPECIALIDADES_MED1: {
     urlSegment: 'EspecialidadesMed1',
@@ -301,7 +299,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 DSM-5 Y PSICOLOGÍA CLÍNICA
   DSM5: {
     urlSegment: 'DSM5',
     displayName: 'DSM-5 y Psicología Clínica',
@@ -326,7 +323,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 EPISTEMOLOGÍA GENÉTICA
   EPISTEMOLOGIA: {
     urlSegment: 'Epistemologia',
     displayName: 'Epistemología Genética',
@@ -351,7 +347,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 PSICOPATOLOGÍA
   PSICOPATOLOGIA: {
     urlSegment: 'Psicopatologia',
     displayName: 'Psicopatología',
@@ -376,7 +371,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 EXPLORACIÓN Y DIAGNÓSTICO PSICOLÓGICO
   PSIC_DIAGNOSTICO: {
     urlSegment: 'PsicDiagnostico',
     displayName: 'Exploración y Diagnóstico Psicológico',
@@ -401,7 +395,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 NEUROPSICOLOGÍA
   NEUROPSICOLOGIA: {
     urlSegment: 'Neuropsicologia',
     displayName: 'Neuropsicología',
@@ -426,7 +419,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 PSICOANÁLISIS
   PSICOANALISIS: {
     urlSegment: 'Psicoanalisis',
     displayName: 'Psicoanálisis',
@@ -451,7 +443,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 PSICOLOGÍA GENERAL
   PSICOLOGIA_GENERAL: {
     urlSegment: 'PsicologiaGeneral',
     displayName: 'Psicología General',
@@ -476,7 +467,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 PSICOLOGÍA SOCIAL
   PSICOLOGIA_SOCIAL: {
     urlSegment: 'PsicologiaSocial',
     displayName: 'Psicología Social',
@@ -501,7 +491,6 @@ export const VARIANTS = {
     }
   },
 
-  // 🧠 PSICOLOGÍA EVOLUTIVA
   PSICOLOGIA_EVOLUTIVA: {
     urlSegment: 'PsicologiaEvolutiva',
     displayName: 'Psicología Evolutiva',
@@ -527,17 +516,14 @@ export const VARIANTS = {
   }
 };
 
-// Para compatibilidad con código existente
 export const APP_VARIANTS = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [key, variant.urlSegment])
 );
 
-// Para compatibilidad con código existente
 export const URL_TO_VARIANT = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [variant.urlSegment, key])
 );
 
-// Para compatibilidad con código existente
 export const VARIANT_CONFIG = Object.fromEntries(
   Object.entries(VARIANTS).map(([key, variant]) => [variant.urlSegment, variant.welcomeConfig])
 );
@@ -551,7 +537,6 @@ function detectVariantFromUrl() {
   const pathSegments = path.split('/').filter(Boolean);
   const firstSegment = pathSegments[0]; // Mantener case-sensitive para slugs como "CienciasBasicas"
   
-  // Buscar directamente en la estructura VARIANTS
   for (const [key, variant] of Object.entries(VARIANTS)) {
     if (variant.urlSegment === firstSegment) {
       _lastDetectedVariantKey = key;
@@ -563,7 +548,6 @@ function detectVariantFromUrl() {
     }
   }
   
-  // Fallback con búsqueda insensible a mayúsculas/minúsculas
   const lowerFirstSegment = firstSegment?.toLowerCase();
   for (const [key, variant] of Object.entries(VARIANTS)) {
     if (variant.urlSegment.toLowerCase() === lowerFirstSegment) {
@@ -623,7 +607,6 @@ export function setCurrentVariant(variantKey) {
     return true;
   }
   
-  // Si no se encuentra la variante, intentar buscarla insensible a mayúsculas/minúsculas
   const upperKey = variantKey?.toUpperCase();
   if (upperKey && upperKey in VARIANTS) {
     _lastDetectedVariantKey = upperKey;
@@ -835,12 +818,10 @@ export const DOM_SELECTORS = {
   }
 };
 
-// Para mantener compatibilidad con código existente - ahora se calculan bajo demanda
 export const URL_CONFIG = getUrlConfig();
 export const APP_CONFIG = getAppConfig();
 export const API_ROUTES = getApiRoutes();
 
-// Exportar todo para mantener compatibilidad
 export default {
   VARIANTS,
   APP_VARIANTS,

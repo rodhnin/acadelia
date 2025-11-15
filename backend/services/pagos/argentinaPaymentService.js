@@ -1,33 +1,27 @@
-// backend/services/pagos/argentinaPaymentService.js - VERSIÓN CORREGIDA
 import pool from '../../lib/dbPool.js';
 import { ualaBisConfig } from '../../lib/ualaBisConfig.js';
 import { argentinaEmailService } from '../email/argentinaEmailService.js';
 import { googleDriveService } from '../../utils/googleDriveService.js';
 
 class ArgentinaPaymentService {
-  // Validar datos de entrada
   validatePaymentData(data) {
     const errors = [];
 
-    // ✅ VALIDACIÓN MEJORADA para userId
     const userId = typeof data.userId === 'string' ? parseInt(data.userId) : data.userId;
     if (!userId || !Number.isInteger(userId) || userId <= 0) {
         errors.push('ID de usuario inválido');
     }
 
-    // ✅ VALIDACIÓN MEJORADA para carreraId  
     const carreraId = typeof data.carreraId === 'string' ? parseInt(data.carreraId) : data.carreraId;
     if (!carreraId || !Number.isInteger(carreraId) || carreraId <= 0) {
         errors.push('ID de carrera inválido');
     }
 
-    // ✅ VALIDACIÓN MEJORADA para amount
     const amount = typeof data.amount === 'string' ? parseFloat(data.amount) : data.amount;
     if (!amount || isNaN(amount) || amount <= 0) {
         errors.push('Monto inválido');
     }
 
-    // ✅ VALIDACIÓN para billingCycle
     if (!['month', 'year'].includes(data.billingCycle)) {
         errors.push('Ciclo de facturación inválido');
     }
@@ -42,14 +36,12 @@ class ArgentinaPaymentService {
     return errors;
   }
 
-  // Crear orden de pago con Ualá Bis
   async createUalaOrder(userId, carreraId, amount, billingCycle, carreraName) {
     const client = await pool.connect();
     
     try {
       await client.query('BEGIN');
 
-      // Validar datos
       const validationErrors = this.validatePaymentData({
         userId, carreraId, amount, billingCycle
       });
@@ -58,7 +50,6 @@ class ArgentinaPaymentService {
         throw new Error(`Datos inválidos: ${validationErrors.join(', ')}`);
       }
 
-      // Verificar si ya existe una suscripción activa o procesando
       const existingSub = await client.query(
         `SELECT id, status FROM subscriptions_arg 
          WHERE user_id = $1 AND carrera_id = $2 AND status IN ('activo', 'procesando')`,
@@ -74,7 +65,6 @@ class ArgentinaPaymentService {
         }
       }
 
-      // Crear registro de pago
       const paymentResult = await client.query(
         `INSERT INTO payments_arg 
          (user_id, carrera_id, amount, currency, payment_method, payment_status, billing_cycle)
@@ -85,10 +75,8 @@ class ArgentinaPaymentService {
 
       const paymentId = paymentResult.rows[0].id;
 
-      // Obtener URLs de callback
       const { success: callbackSuccess, fail: callbackFail } = ualaBisConfig.getCallbackUrls(paymentId);
 
-      // Preparar datos para Ualá Bis
       const orderData = {
         amount: parseFloat(amount),
         description: `${carreraName} - Plan ${billingCycle === 'month' ? 'Mensual' : 'Anual'}`,
@@ -103,11 +91,9 @@ class ArgentinaPaymentService {
         notification_url: orderData.notification_url
       });
 
-      // ✅ CREAR ORDEN CON EL SDK
       console.log('🔄 Llamando a ualaBisConfig.createOrder...');
       const order = await ualaBisConfig.createOrder(orderData);
 
-      // ✅ VALIDACIÓN SIMPLIFICADA
       console.log('📦 Orden recibida en service:', {
         uuid: order?.uuid,
         status: order?.status,
@@ -128,7 +114,6 @@ class ArgentinaPaymentService {
 
       console.log(`✅ Validación exitosa - UUID: ${order.uuid}, URL: ${checkoutUrl}`);
 
-      // Actualizar pago con datos de Ualá
       await client.query(
         `UPDATE payments_arg 
          SET external_payment_id = $1, 
@@ -158,7 +143,6 @@ class ArgentinaPaymentService {
     }
   }
 
-  // ✅ PROCESAR TRANSFERENCIA BANCARIA - CORREGIDO PARA CREAR SUSCRIPCIÓN "PROCESANDO"
   async processBankTransfer(userId, carreraId, amount, billingCycle, transferData, imageUrl) {
     const client = await pool.connect();
     
@@ -173,7 +157,6 @@ class ArgentinaPaymentService {
         throw new Error(`Datos inválidos: ${validationErrors.join(', ')}`);
       }
 
-      // ✅ VERIFICAR SUSCRIPCIONES ACTIVAS O EN PROCESO
       const existingSub = await client.query(
         `SELECT id, status FROM subscriptions_arg 
          WHERE user_id = $1 AND carrera_id = $2 AND status IN ('activo', 'procesando')`,
@@ -189,7 +172,6 @@ class ArgentinaPaymentService {
         }
       }
 
-      // ✅ CREAR EL PAGO
       const paymentResult = await client.query(
         `INSERT INTO payments_arg 
          (user_id, carrera_id, amount, currency, payment_method, payment_status, 
@@ -201,7 +183,6 @@ class ArgentinaPaymentService {
 
       const paymentId = paymentResult.rows[0].id;
 
-      // ✅ CREAR SUSCRIPCIÓN CON ESTADO "PROCESANDO"
       const endDateQuery = billingCycle === 'month' 
         ? "CURRENT_TIMESTAMP + INTERVAL '1 month'"
         : "CURRENT_TIMESTAMP + INTERVAL '1 year'";
@@ -237,7 +218,6 @@ class ArgentinaPaymentService {
     }
   }
 
-  // Confirmar pago exitoso
   async confirmPayment(paymentId, source = 'webhook') {
     const client = await pool.connect();
     
@@ -346,7 +326,6 @@ class ArgentinaPaymentService {
     }
   }
 
-  // Marcar pago como fallido
   async failPayment(paymentId, reason) {
     try {
       // Primero obtener datos del pago para verificar si es Ualá
@@ -361,7 +340,6 @@ class ArgentinaPaymentService {
 
       const payment = paymentData.rows[0];
 
-      // Actualizar estado del pago
       await pool.query(
         `UPDATE payments_arg 
          SET payment_status = 'fallido',
@@ -372,7 +350,6 @@ class ArgentinaPaymentService {
 
       console.log(`❌ Pago ${paymentId} marcado como fallido`);
 
-      // ✅ NUEVO: Enviar email solo si es un pago Ualá fallido
       if (payment.payment_method === 'uala_bis') {
         try {
           await argentinaEmailService.sendUalaPaymentFailedFromId(paymentId);

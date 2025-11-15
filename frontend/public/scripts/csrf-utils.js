@@ -1,4 +1,3 @@
-// frontend/js/csrf-utils.js - REEMPLAZAR TODO
 (function() {
     'use strict';
     
@@ -81,7 +80,6 @@
      */
     const originalFetch = window.fetch;
     window.fetch = async function(url, options = {}) {
-        // Solo para peticiones que modifican datos, excluyendo dominios de confianza
         if (options.method && 
             ['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method.toUpperCase()) &&
             !url.includes('/api/csrf-') &&
@@ -90,7 +88,6 @@
             // Asegurar credentials
             options.credentials = options.credentials || 'include';
             
-            // Obtener token
             let token = getTokenFromCookie();
             
             // Si no hay token, intentar obtener uno
@@ -124,7 +121,6 @@
         isTrustedDomain // Exponer la función por si es útil
     };
     
-    // Verificar token inicial
     setTimeout(async () => {
         const token = getTokenFromCookie();
         if (!token) {

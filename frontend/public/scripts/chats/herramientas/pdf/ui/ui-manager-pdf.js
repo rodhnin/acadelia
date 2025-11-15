@@ -118,12 +118,10 @@ export function closeAcadelNotification(id) {
  * Deshabilita todos los botones de interacción de mensajes de manera no intrusiva
  */
 function disableInteractionButtons() {
-  // Deshabilitar botones de respuesta de AI
   const responseActions = document.querySelectorAll('.response-actions');
   responseActions.forEach(container => {
     container.classList.add('disabled-during-processing');
 
-    // Deshabilitar todos los botones dentro del contenedor
     const buttons = container.querySelectorAll('.response-action-btn');
     buttons.forEach(btn => {
       btn.disabled = true;
@@ -131,7 +129,6 @@ function disableInteractionButtons() {
       btn.style.opacity = '0.4';
       btn.setAttribute('aria-disabled', 'true');
 
-      // Cambiar tooltip para indicar que está deshabilitado
       const originalTooltip = btn.getAttribute('data-tooltip');
       if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
         btn.setAttribute('data-original-tooltip', originalTooltip);
@@ -140,7 +137,6 @@ function disableInteractionButtons() {
     });
   });
 
-  // Deshabilitar botones de edición de usuario
   const userActions = document.querySelectorAll('.user-response-actions');
   userActions.forEach(container => {
     container.classList.add('disabled-during-processing');
@@ -152,7 +148,6 @@ function disableInteractionButtons() {
       btn.style.opacity = '0.4';
       btn.setAttribute('aria-disabled', 'true');
 
-      // Cambiar tooltip para indicar que está deshabilitado
       const originalTooltip = btn.getAttribute('data-tooltip');
       if (originalTooltip && !btn.hasAttribute('data-original-tooltip')) {
         btn.setAttribute('data-original-tooltip', originalTooltip);
@@ -161,7 +156,6 @@ function disableInteractionButtons() {
     });
   });
 
-  // Deshabilitar otros elementos interactivos relacionados con mensajes
   const messageInteractives = document.querySelectorAll(
     '.chat-image-item.clickable, .document-preview.clickable, .file-preview'
   );
@@ -179,12 +173,10 @@ function disableInteractionButtons() {
  * Rehabilita todos los botones de interacción de mensajes
  */
 function enableInteractionButtons() {
-  // ⭐ NUEVO: Verificar si hay un mensaje siendo procesado actualmente
   const isProcessingMessage = () => {
     return document.querySelector('.ai-message.processing') !== null;
   };
 
-  // ⭐ NUEVO: Encontrar el último mensaje de usuario
   const getLastUserMessage = () => {
     const userMessages = document.querySelectorAll('.user-message');
     return userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
@@ -205,7 +197,6 @@ function enableInteractionButtons() {
       btn.style.opacity = '';
       btn.removeAttribute('aria-disabled');
 
-      // Restaurar tooltip original
       const originalTooltip = btn.getAttribute('data-original-tooltip');
       if (originalTooltip) {
         btn.setAttribute('data-tooltip', originalTooltip);
@@ -214,12 +205,10 @@ function enableInteractionButtons() {
     });
   });
 
-  // ⭐ CORREGIDO: Rehabilitar botones de edición de usuario CON EXCEPCIÓN
   const userActions = document.querySelectorAll('.user-response-actions');
   userActions.forEach(container => {
     const userMessage = container.closest('.user-message');
 
-    // ⭐ CRÍTICO: NO rehabilitar el último mensaje si se está procesando
     if (isCurrentlyProcessing && lastUserMessage && userMessage === lastUserMessage) {
       console.log('🚫 Manteniendo botón de edición deshabilitado para mensaje siendo procesado');
       return; // Saltar este mensaje, mantenerlo deshabilitado
@@ -234,7 +223,6 @@ function enableInteractionButtons() {
       btn.style.opacity = '';
       btn.removeAttribute('aria-disabled');
 
-      // Restaurar tooltip original
       const originalTooltip = btn.getAttribute('data-original-tooltip');
       if (originalTooltip) {
         btn.setAttribute('data-tooltip', originalTooltip);
@@ -257,15 +245,7 @@ function enableInteractionButtons() {
   console.log('✅ Botones de interacción rehabilitados (excepto último mensaje si está procesando)');
 }
 
-/**
- * Cambia el estado de la interfaz (habilitar/deshabilitar textarea y botón).
- * Versión actualizada que cambia el botón de enviar por uno de cancelar.
- * ⭐ CORREGIDO: Ahora refresca el estado de botones al habilitar
- * 
- * @param {boolean} disabled - true para deshabilitar.
- */
 export function toggleUIState(disabled) {
-  // CRÍTICO: Ignorar intentos de desbloquear durante cancelación
   if (!disabled && isCancellationInProgress) {
     return; // SALIR SIN HACER NADA
   }
@@ -274,13 +254,11 @@ export function toggleUIState(disabled) {
     return;
   }
 
-  // ⭐ NUEVA FUNCIONALIDAD: Deshabilitar/habilitar botones de interacción ⭐
   if (disabled) {
     disableInteractionButtons();
   } else {
     enableInteractionButtons();
 
-    // ⭐ NUEVO: Refrescar estado de botones después de habilitar
     setTimeout(async () => {
       try {
         const { refreshButtonsState } = await import('../utils/response-interaction-pdf.js');
@@ -295,27 +273,23 @@ export function toggleUIState(disabled) {
 
   // BLOQUEO COMPLETO DEL TEXTAREA - Múltiples métodos para asegurar bloqueo
   if (disabled) {
-    // Aplicar varios métodos de bloqueo para máxima seguridad
     elements.textarea.disabled = true;
     elements.textarea.readOnly = true;
     elements.textarea.setAttribute('aria-disabled', 'true');
     elements.textarea.style.pointerEvents = 'none';
     elements.textarea.classList.add('textarea-disabled');
 
-    // Guardar estado original para restaurar después
     if (!elements.textarea.dataset.originalTabIndex) {
       elements.textarea.dataset.originalTabIndex = elements.textarea.tabIndex || '0';
     }
     elements.textarea.tabIndex = -1; // Evitar foco con tabulación
   } else {
-    // Restaurar estado interactivo completamente
     elements.textarea.disabled = false;
     elements.textarea.readOnly = false;
     elements.textarea.removeAttribute('aria-disabled');
     elements.textarea.style.pointerEvents = 'auto';
     elements.textarea.classList.remove('textarea-disabled');
 
-    // Restaurar tabIndex original
     if (elements.textarea.dataset.originalTabIndex) {
       elements.textarea.tabIndex = elements.textarea.dataset.originalTabIndex;
     } else {
@@ -323,21 +297,17 @@ export function toggleUIState(disabled) {
     }
   }
 
-  // Lógica del botón de enviar/cancelar
   if (disabled) {
-    // Guardar el contenido original del botón si aún no se ha hecho
     if (!elements.sendButton.dataset.originalContent) {
       elements.sendButton.dataset.originalContent = elements.sendButton.innerHTML;
     }
 
-    // Cambiar a ícono de cancelar
     clearElement(elements.sendButton);
     const cancelIcon = createElement('i', { className: 'bx bx-x' });
     elements.sendButton.appendChild(cancelIcon);
     elements.sendButton.title = "Cancelar consulta";
     addClass(elements.sendButton, 'cancel-mode');
 
-    // Cambiar el manejador de eventos
     removeEvent(elements.sendButton, 'click', handleSendMessage);
     addEvent(elements.sendButton, 'click', function cancelHandler(e) {
       e.preventDefault();
@@ -346,7 +316,6 @@ export function toggleUIState(disabled) {
       }
     });
   } else {
-    // Restaurar el contenido original si no está en modo cargando
     if (!elements.sendButton.classList.contains('loading-mode')) {
       if (elements.sendButton.dataset.originalContent) {
         elements.sendButton.innerHTML = elements.sendButton.dataset.originalContent;
@@ -358,7 +327,6 @@ export function toggleUIState(disabled) {
       elements.sendButton.title = "Enviar mensaje";
       removeClass(elements.sendButton, 'cancel-mode');
 
-      // Restaurar el manejador de eventos original
       removeEvent(elements.sendButton, 'click');
       addEvent(elements.sendButton, 'click', handleSendMessage);
     } else {
@@ -376,19 +344,15 @@ export function toggleUIState(disabled) {
  */
 export function cancelCurrentRequest() {
   if (currentFetchController) {
-    // CRÍTICO: Marcar que estamos en proceso de cancelación
     isCancellationInProgress = true;
 
-    // Abortar la solicitud HTTP
     currentFetchController.abort();
     currentFetchController = null;
 
-    // Mostrar notificación
     acadelInfo("¡Operación cancelada! 🛑", "Acadel detuvo la consulta como pediste. ¡No hay problema!");
     // NUEVO: Cambiar botón a modo cargando INMEDIATAMENTE
     changeButtonToLoading();
 
-    // Buscar el mensaje de carga para cancelar
     let loadingMessage = document.getElementById('current-loading-message');
 
     if (!loadingMessage) {
@@ -402,49 +366,40 @@ export function cancelCurrentRequest() {
     }
 
     if (loadingMessage) {
-      // Restaurar la imagen del avatar inmediatamente
       const aiProfile = loadingMessage.querySelector('.ai-profile');
       if (aiProfile) {
         aiProfile.classList.remove('thinking');
       }
 
-      // 🎯 VERIFICACIÓN MEJORADA: Si ya tiene botones O contenido previo válido
       const hasResponseButtons = loadingMessage.querySelector('.response-actions');
       const hasValidContent = loadingMessage.querySelector('.message-content') &&
         !loadingMessage.querySelector('.thought-bubble') &&
         !loadingMessage.querySelector('.cancelled-message');
 
-      // ✅ NUEVA VERIFICACIÓN: Si está en modo edición/retry (preservar siempre)
       const isEditingOrRetry = loadingMessage.closest('.message').hasAttribute('data-response-interaction-processing');
 
       if (hasResponseButtons || (hasValidContent && isEditingOrRetry)) {
         console.log('✅ [CANCEL] Mensaje con contenido válido detectado - preservando respuesta');
 
-        // Solo limpiar estado de loading y restaurar botón
         loadingMessage.classList.remove('processing');
         loadingMessage.removeAttribute('data-is-loading');
 
-        // Restaurar botón inmediatamente
         restoreButtonFromLoading();
 
-        // Limpiar estado de cancelación
         setTimeout(() => {
           isCancellationInProgress = false;
           toggleUIState(false);
         }, 100);
 
-        return; // ✅ SALIR SIN APLICAR CLASES DE CANCELACIÓN
+        return;
       }
 
-      // 🔄 COMPORTAMIENTO ORIGINAL: Solo si NO tiene botones (resto del código igual)
-      // Preparar el mensaje y añadir clases
       loadingMessage.classList.remove('processing');
       loadingMessage.classList.add('cancelled', 'just-cancelled');
 
       // NUEVA ADICIÓN: Buscar el mensaje del usuario asociado y eliminar botones de edición
       const userMessage = loadingMessage.previousElementSibling;
       if (userMessage && userMessage.classList.contains('user-message')) {
-        // Eliminar botones de interacción del usuario si existen
         const userActions = userMessage.querySelector('.user-response-actions');
         if (userActions) {
           console.log('Eliminando botones de edición de mensaje de usuario asociado a cancelación');
@@ -466,7 +421,6 @@ export function cancelCurrentRequest() {
         }
       }
 
-      // Buscar o crear elemento de contenido
       let messageContent = loadingMessage.querySelector('.message-content');
       if (!messageContent) {
         messageContent = document.createElement('div');
@@ -474,7 +428,6 @@ export function cancelCurrentRequest() {
         loadingMessage.appendChild(messageContent);
       }
 
-      // Mostrar mensaje temporal del profesor Acadel (3 segundos)
       messageContent.innerHTML = `
         <div class="cancelled-message" style="display:flex;align-items:center;gap:8px;padding:12px;color:#666;background-color:rgba(255,193,7,0.1);border-radius:8px;margin:5px 0;border-left:3px solid rgba(255,193,7,0.6);">
           <i class="bx bx-cog bx-spin" style="font-size:1.3rem;color:#ffc107;"></i>
@@ -485,7 +438,6 @@ export function cancelCurrentRequest() {
         </div>
       `;
 
-      // Aplicar estilos para el mensaje temporal
       loadingMessage.style.opacity = '1';
       loadingMessage.style.transition = 'all 0.3s ease';
       loadingMessage.style.display = 'flex';
@@ -527,7 +479,6 @@ export function cancelCurrentRequest() {
             </div>
           `;
 
-          // Cambiar a opacidad final
           loadingMessage.style.opacity = '0.7';
 
           // NUEVO: Quitar loading del botón cuando aparece la confirmación
@@ -545,7 +496,6 @@ export function cancelCurrentRequest() {
       }, 100);
     }
 
-    // Enviar señal al servidor
     const chatId = getState('currentChatId');
     if (chatId) {
       sendCancellationRequest(chatId);
@@ -553,21 +503,18 @@ export function cancelCurrentRequest() {
 
     // TIMEOUT PRINCIPAL: Restaurar UI después de 5 segundos
     setTimeout(() => {
-      // Desactivar flag antes de restaurar UI
       isCancellationInProgress = false;
       toggleUIState(false);
     }, 7000);
   }
 }
 
-// ====== NUEVAS FUNCIONES AUXILIARES ======
 /**
  * Cambia el botón a modo cargando inmediatamente al cancelar
  */
 function changeButtonToLoading() {
   if (!elements.sendButton) return;
 
-  // Cambiar ícono a spinner de carga
   clearElement(elements.sendButton);
   const loadingIcon = createElement('i', {
     className: 'bx bx-loader-alt bx-spin'
@@ -575,14 +522,11 @@ function changeButtonToLoading() {
   elements.sendButton.appendChild(loadingIcon);
   elements.sendButton.title = "Procesando cancelación...";
 
-  // Añadir clase de cargando
   removeClass(elements.sendButton, 'cancel-mode');
   addClass(elements.sendButton, 'loading-mode');
 
-  // Deshabilitar temporalmente el botón
   elements.sendButton.disabled = true;
 
-  // Remover event listeners temporalmente
   removeEvent(elements.sendButton, 'click');
 }
 
@@ -592,13 +536,11 @@ function changeButtonToLoading() {
 function restoreButtonFromLoading() {
   if (!elements.sendButton) return;
 
-  // Cambiar de vuelta a ícono de cancelar
   clearElement(elements.sendButton);
   const cancelIcon = createElement('i', { className: 'bx bx-x' });
   elements.sendButton.appendChild(cancelIcon);
   elements.sendButton.title = "Esperando restauración...";
 
-  // Cambiar clases
   removeClass(elements.sendButton, 'loading-mode');
   addClass(elements.sendButton, 'cancel-mode');
 
@@ -612,7 +554,6 @@ function restoreButtonFromLoading() {
 function restoreButtonToSend() {
   if (!elements.sendButton) return;
 
-  // Restaurar el contenido original
   if (elements.sendButton.dataset.originalContent) {
     elements.sendButton.innerHTML = elements.sendButton.dataset.originalContent;
   } else {
@@ -624,11 +565,9 @@ function restoreButtonToSend() {
   elements.sendButton.title = "Enviar mensaje";
   elements.sendButton.disabled = false;
 
-  // Remover clases de estado
   removeClass(elements.sendButton, 'cancel-mode');
   removeClass(elements.sendButton, 'loading-mode');
 
-  // Restaurar el manejador de eventos original
   addEvent(elements.sendButton, 'click', handleSendMessage);
 }
 
@@ -637,7 +576,6 @@ async function sendCancellationRequest(chatId) {
   try {
     const userId = getState('userId');
 
-    // Usar un nuevo AbortController para esta solicitud
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
 
@@ -669,7 +607,6 @@ async function sendCancellationRequest(chatId) {
  * Establece el controlador de fetch actual para poder cancelarlo si es necesario.
  */
 export function setCurrentFetchController(controller) {
-  // Cancelar el controlador anterior si existe y estamos estableciendo uno nuevo
   if (currentFetchController && controller) {
     try {
       currentFetchController.abort();
@@ -792,11 +729,9 @@ export function setupScrollBehavior() {
   const chatMessages = elements.chatMessages;
   if (!chatMessages) return;
 
-  // Detectar scroll manual del usuario
   let userScrollTimeoutId;
 
   addEvent(chatMessages, 'scroll', () => {
-    // Verificar si hay una interacción de respuesta activa
     const isResponseInteractionActive = () => {
       return (
         document.querySelector('.message.editing-message') !== null ||
@@ -814,7 +749,6 @@ export function setupScrollBehavior() {
     if (!scrollManager.isNearBottom(150)) {
       scrollManager.lockScroll();
 
-      // Limpiar timeout existente
       if (userScrollTimeoutId) {
         clearManagedTimeouts('user-scroll');
       }
@@ -837,9 +771,7 @@ export function setupScrollBehavior() {
     }
   });
 
-  // Detectar teclas de navegación (flechas arriba/abajo, espacio, página arriba/abajo)
   addEvent(document, 'keydown', (e) => {
-    // Verificar si hay una interacción de respuesta activa
     const isResponseInteractionActive = () => {
       return (
         document.querySelector('.message.editing-message') !== null ||
@@ -875,7 +807,6 @@ export function setupScrollBehavior() {
  * @param {Function} onCancel - Función a ejecutar si el usuario cancela
  */
 export function showConfirmation(title, message, onConfirm, onCancel = null) {
-  // Usar el modal centralizado en lugar de crear uno nuevo
   showConfirmationModal(message)
     .then(confirmed => {
       if (confirmed && onConfirm) {
@@ -894,12 +825,10 @@ export function applyHeaderSkeleton() {
   const headerSubtitle = document.querySelector('.header-subtitle');
   if (!headerSubtitle) return;
 
-  // Guardar el texto original para restaurarlo si es necesario
   if (!headerSubtitle.getAttribute('data-original-text')) {
     headerSubtitle.setAttribute('data-original-text', headerSubtitle.textContent);
   }
 
-  // Aplicar clase skeleton y limpiar texto
   addClass(headerSubtitle, 'skeleton-text');
   clearElement(headerSubtitle);
 
@@ -914,7 +843,6 @@ export function removeHeaderSkeleton() {
   const headerSubtitle = document.querySelector('.header-subtitle');
   if (!headerSubtitle) return;
 
-  // Remover clase skeleton
   removeClass(headerSubtitle, 'skeleton-text');
 
   // Si no hay contenido actual pero había contenido original, restaurarlo
@@ -930,13 +858,11 @@ export function applyMessagesSkeleton() {
   const chatMessages = document.querySelector('.chat-messages');
   if (!chatMessages) return;
 
-  // Limpiar cualquier skeleton previo
   chatMessages.querySelectorAll('.skeleton-message').forEach(el => el.remove());
 
   // Contenedor para mensajes skeleton
   const skeletonContainer = createElement('div', { className: 'skeleton-container' });
 
-  // Crear mensajes simulados - alternando entre AI y usuario
   for (let i = 0; i < 3; i++) {
     let skeletonMessage;
 
@@ -999,7 +925,6 @@ export function applyInitialLoader() {
   // Si ya existe, no crear otro
   if (document.querySelector('.acadel-biblioteca-loader')) return;
 
-  // Detectar tema para logo
   const isDarkTheme = document.body.getAttribute('data-theme') === 'dark' ||
     localStorage.getItem('theme') === 'dark';
   const logoPath = isDarkTheme
@@ -1032,7 +957,6 @@ export function applyInitialLoader() {
   // Mensaje inicial aleatorio
   const mensajeInicial = mensajesBiblioteca[Math.floor(Math.random() * mensajesBiblioteca.length)];
 
-  // Crear elementos de la biblioteca
   const logo = createElement('img', {
     src: logoPath,
     alt: 'Profesor Acadel - Bibliotecario',
@@ -1071,7 +995,6 @@ export function applyInitialLoader() {
   progressContainer.appendChild(progressBar);
   progressContainer.appendChild(progressPercent);
 
-  // Crear pasos de la biblioteca
   const stepsContainer = createElement('div', {
     className: 'acadel-biblioteca-steps'
   });
@@ -1156,7 +1079,6 @@ export function applyInitialLoader() {
   // Precargar recursos
   preloadCriticalResources();
 
-  // Activar primer paso
   setTimeout(() => {
     const firstStep = document.querySelector('.acadel-step[data-step="1"]');
     if (firstStep) {
@@ -1182,7 +1104,6 @@ export function updateAcadelBibliotecaProgress(progress) {
 
   window.acadelBibliotecaState.progress = Math.max(window.acadelBibliotecaState.progress, progress);
 
-  // Determinar fase y descripción
   let phase;
   let descripcion = '';
 
@@ -1199,7 +1120,6 @@ export function updateAcadelBibliotecaProgress(progress) {
 
   window.acadelBibliotecaState.phase = phase;
 
-  // Actualizar pasos visualmente
   document.querySelectorAll('.acadel-step').forEach(step => {
     const stepNum = parseInt(step.dataset.step);
     const icon = step.querySelector('.acadel-step-icon');
@@ -1232,7 +1152,6 @@ export function updateAcadelBibliotecaProgress(progress) {
     }
   });
 
-  // Actualizar barra de progreso
   const progressBar = document.getElementById('acadelCatalogoProgress');
   const progressPercent = document.getElementById('acadelCatalogoPercent');
   const progressLabel = document.querySelector('.acadel-catalogo-label');
@@ -1270,7 +1189,6 @@ function createBookDustEffect() {
     return;
   }
 
-  // Crear múltiples partículas de polvo de libros
   for (let i = 0; i < 3; i++) {
     setTimeout(() => {
       const bookDust = createElement('div', {
@@ -1283,7 +1201,6 @@ function createBookDustEffect() {
 
       loader.appendChild(bookDust);
 
-      // Eliminar después de la animación
       setTimeout(() => {
         if (bookDust.parentNode) {
           bookDust.parentNode.removeChild(bookDust);
@@ -1292,7 +1209,6 @@ function createBookDustEffect() {
     }, i * 200);
   }
 
-  // Permitir nuevo efecto después de 2 segundos
   setTimeout(() => {
     if (window.acadelBibliotecaState) {
       window.acadelBibliotecaState.dustEffectActive = false;
@@ -1346,12 +1262,10 @@ export function completeAllAcadelSteps() {
   document.querySelectorAll('.acadel-step').forEach((step, index) => {
     const icon = step.querySelector('.acadel-step-icon');
 
-    // Activar todos los pasos
     addClass(step, 'active');
     addClass(step, 'completed');
     removeClass(step, 'current');
 
-    // Marcar todos como completados
     setTimeout(() => {
       icon.textContent = '✅';
 
@@ -1370,7 +1284,6 @@ export function removeAcadelBibliotecaLoader(forceRemove = false) {
   const bibliotecaLoader = document.querySelector('.acadel-biblioteca-loader');
   if (!bibliotecaLoader) return;
 
-  // Limpiar intervalos
   if (window.acadelBibliotecaState?.intervalosActivos) {
     window.acadelBibliotecaState.intervalosActivos.forEach(clearInterval);
   }
@@ -1453,13 +1366,11 @@ export function removeInitialLoader(forceRemove = false) {
  * Aplica el skeleton de cambio de chat
  */
 export function applyChatSwitchSkeleton() {
-  // ⭐ PREVENCIÓN DE DUPLICADOS ⭐
   if (window.isApplyingChatSkeleton) {
     console.log('⚠️ Prevención: Ya se está aplicando skeleton de chat');
     return;
   }
 
-  // ⭐ VERIFICAR SI YA HAY UN SKELETON ACTIVO ⭐
   const existingOverlays = document.querySelectorAll('.chat-switch-overlay');
   if (existingOverlays.length > 0) {
     console.log('⚠️ Prevención: Ya existe skeleton de chat activo');
@@ -1468,10 +1379,8 @@ export function applyChatSwitchSkeleton() {
 
   console.log('Aplicando skeleton de cambio de chat');
 
-  // Marcar que estamos aplicando skeleton
   window.isApplyingChatSkeleton = true;
 
-  // Crear elementos de forma segura
   const spinner = createElement('div', { className: 'chat-switch-spinner' });
   const text = createElement('div', { className: 'chat-switch-text' }, 'Cambiando de chat...');
 
@@ -1480,14 +1389,12 @@ export function applyChatSwitchSkeleton() {
     [spinner, text]
   );
 
-  // Crear overlay principal
   const overlay = createElement('div', {
     className: 'chat-switch-overlay',
     id: 'chat-switch-overlay-' + Date.now(),
     style: 'z-index:9999;'
   }, spinnerContainer);
 
-  // Agregar al DOM y activar
   document.body.appendChild(overlay);
 
   // Forzar reflow y activar con delay mínimo para evitar problemas de timing
@@ -1495,40 +1402,31 @@ export function applyChatSwitchSkeleton() {
     addClass(overlay, 'active');
   });
 
-  // Guardar estado de los mensajes si existen
   const chatMessages = document.querySelector('.chat-messages');
   if (chatMessages) {
     addClass(chatMessages, 'switching');
   }
 
-  // Aplicar skeleton al header si es necesario
   applyHeaderSkeleton();
 
-  // ⭐ ESTABLECER TIMESTAMP UNA SOLA VEZ ⭐
   if (!window.chatSwitchStartTime) {
     window.chatSwitchStartTime = Date.now();
     console.log('🕒 Timestamp de inicio de skeleton establecido:', window.chatSwitchStartTime);
   }
 
-  // Establecer un timeout de seguridad para eliminar el overlay si algo falla
   overlay.timeoutId = setManagedTimeout(() => {
     console.warn('⏰ Timeout de seguridad activado para skeleton de cambio de chat');
     removeChatSwitchSkeleton(true); // Forzar eliminación
   }, 15000, 'chat-switch-safety');
 
-  // Limpiar flag después de aplicar
   setTimeout(() => {
     window.isApplyingChatSkeleton = false;
   }, 100);
 }
 
-/**
- * ⭐ NUEVA: Función de limpieza de emergencia ⭐
- */
 export function emergencyCleanupChatSkeleton() {
   console.log('🚨 Limpieza de emergencia de skeleton de chat');
 
-  // Eliminar todos los overlays sin condiciones
   const allOverlays = document.querySelectorAll('.chat-switch-overlay, .loading-skeleton');
   allOverlays.forEach(overlay => {
     if (overlay && overlay.parentNode) {
@@ -1536,16 +1434,13 @@ export function emergencyCleanupChatSkeleton() {
     }
   });
 
-  // Restaurar estado de mensajes
   const chatMessages = document.querySelector('.chat-messages');
   if (chatMessages) {
     removeClass(chatMessages, 'switching');
   }
 
-  // Quitar skeleton del header
   removeHeaderSkeleton();
 
-  // Limpiar todas las variables globales
   window.chatSwitchStartTime = null;
   window.isRemovingChatSkeleton = false;
   window.isApplyingChatSkeleton = false;
@@ -1557,18 +1452,15 @@ export function emergencyCleanupChatSkeleton() {
  * Elimina el skeleton de cambio de chat - VERSIÓN CORREGIDA SIN BUCLES
  */
 export function removeChatSwitchSkeleton(forceRemove = false) {
-  // ⭐ PREVENCIÓN DE BUCLES INFINITOS ⭐
   if (window.isRemovingChatSkeleton && !forceRemove) {
     console.log('⚠️ Prevención de bucle: Ya se está removiendo skeleton');
     return;
   }
 
-  // Marcar que estamos removiendo
   if (!forceRemove) {
     window.isRemovingChatSkeleton = true;
   }
 
-  // ⭐ VERIFICAR SI HAY OVERLAYS PARA REMOVER ⭐
   const overlays = document.querySelectorAll('.chat-switch-overlay');
 
   if (overlays.length === 0) {
@@ -1580,17 +1472,14 @@ export function removeChatSwitchSkeleton(forceRemove = false) {
       removeClass(chatMessages, 'switching');
     }
 
-    // Quitar skeleton del header
     removeHeaderSkeleton();
 
-    // Limpiar flags y timestamps
     window.isRemovingChatSkeleton = false;
     window.chatSwitchStartTime = null;
 
     return;
   }
 
-  // ⭐ LÓGICA DE TIEMPO MEJORADA ⭐
   let elapsedTime = 0;
   const minDisplayTime = 800;
 
@@ -1602,21 +1491,17 @@ export function removeChatSwitchSkeleton(forceRemove = false) {
     elapsedTime = minDisplayTime; // Forzar eliminación inmediata
   }
 
-  // ⭐ ELIMINACIÓN CONDICIONAL SIN RECURSIÓN ⭐
   if (elapsedTime < minDisplayTime && !forceRemove) {
     const remainingTime = minDisplayTime - elapsedTime;
     console.log(`⏳ Esperando ${remainingTime}ms adicionales para quitar skeleton`);
 
-    // ⭐ USAR setTimeout EN LUGAR DE RECURSIÓN DIRECTA ⭐
     setTimeout(() => {
-      // Verificar nuevamente si aún hay overlays antes de proceder
       const stillExistingOverlays = document.querySelectorAll('.chat-switch-overlay');
       if (stillExistingOverlays.length > 0) {
         removeChatSwitchSkeleton(true); // Forzar eliminación después del tiempo de espera
       }
     }, remainingTime);
 
-    // ⭐ TIMEOUT DE SEGURIDAD ADICIONAL ⭐
     setTimeout(() => {
       const emergencyOverlays = document.querySelectorAll('.chat-switch-overlay');
       if (emergencyOverlays.length > 0) {
@@ -1630,21 +1515,16 @@ export function removeChatSwitchSkeleton(forceRemove = false) {
 
   console.log('✅ Quitando skeleton de cambio de chat');
 
-  // Eliminar cada overlay con una pequeña diferencia de tiempo para evitar parpadeos
   overlays.forEach((overlay, index) => {
-    // Limpiar timeout si existe
     if (overlay.timeoutId) {
       clearTimeout(overlay.timeoutId);
     }
 
     // Programar eliminación inmediata o con pequeño retraso
     setTimeout(() => {
-      // Verificar que el overlay aún existe antes de intentar eliminarlo
       if (overlay && overlay.parentNode) {
-        // Eliminar clase active para iniciar transición
         removeClass(overlay, 'active');
 
-        // Eliminar completamente después de la transición
         setTimeout(() => {
           if (overlay && overlay.parentNode) {
             overlay.parentNode.removeChild(overlay);
@@ -1654,16 +1534,13 @@ export function removeChatSwitchSkeleton(forceRemove = false) {
     }, index * 50);
   });
 
-  // Restaurar estado de mensajes inmediatamente
   const chatMessages = document.querySelector('.chat-messages');
   if (chatMessages) {
     removeClass(chatMessages, 'switching');
   }
 
-  // Quitar skeleton del header
   removeHeaderSkeleton();
 
-  // ⭐ LIMPIAR TODAS LAS VARIABLES GLOBALES ⭐
   window.chatSwitchStartTime = null;
   window.isRemovingChatSkeleton = false;
   window.isApplyingChatSkeleton = false;

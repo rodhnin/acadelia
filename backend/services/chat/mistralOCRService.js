@@ -41,7 +41,6 @@ async processPDFWithOCR({
   const startTime = Date.now();
   
   try {
-    // Verificar cancelación antes de comenzar
     if (chatId && userId) {
       const isCancelled = await wasRequestCancelled(chatId, userId);
       if (isCancelled) {
@@ -54,7 +53,6 @@ async processPDFWithOCR({
       }
     }
     
-    // Inicializar cliente
     const client = this.initClient(apiKey);
     
     // 1. Subir el archivo a Mistral
@@ -69,7 +67,6 @@ async processPDFWithOCR({
     
     console.log(`Archivo subido con éxito. ID: ${uploadedFile.id}`);
     
-    // Verificar cancelación después de subir archivo
     if (chatId && userId) {
       const isCancelled = await wasRequestCancelled(chatId, userId);
       if (isCancelled) {
@@ -101,7 +98,6 @@ async processPDFWithOCR({
       include_image_base64: MistralConfig.ocrOptions.includeImageBase64
     });
     
-    // Verificar cancelación después de procesar OCR
     if (chatId && userId) {
       const isCancelled = await wasRequestCancelled(chatId, userId);
       if (isCancelled) {
@@ -131,7 +127,6 @@ async processPDFWithOCR({
       // Asegurar que la respuesta tenga la estructura esperada
       if (!ocrResponse.pages || !Array.isArray(ocrResponse.pages)) {
         console.warn("La respuesta OCR no contiene la estructura esperada de páginas");
-        // Crear estructura mínima esperada
         ocrResponse.pages = [{ markdown: `[OCR sin contenido de texto para ${originalFilename}]` }];
       }
       
@@ -147,7 +142,6 @@ async processPDFWithOCR({
     } catch (error) {
       console.error("Error en procesamiento OCR con Mistral:", error);
       
-      // Manejar reintentos si está configurado
       if (MistralConfig.processingOptions.maxRetries > 0) {
         console.log(`Reintentando procesamiento OCR (quedan ${MistralConfig.processingOptions.maxRetries} intentos)...`);
         // Se podría implementar la lógica de reintento aquí si es necesario
@@ -178,21 +172,17 @@ async processPDFWithOCR({
     // DEBUG: Imprimir información sobre las páginas
     console.log(`Convirtiendo ${ocrResults.pages.length} páginas OCR a documentos`);
     
-    // Preparar documentos
     const documents = [];
     
-    // Procesar cada página
     ocrResults.pages.forEach((page, pageIndex) => {
       // El pageIndex es 0-based, pero queremos que page sea 1-based
       const pageNumber = pageIndex + 1;
       
-      // Verificar si la página existe y tiene estructura válida
       if (!page) {
         console.warn(`Página ${pageNumber} es inválida o vacía`);
         return; // Saltar esta página
       }
       
-      // Extraer contenido de texto (asegurarse de que existe)
       // NOTA: Mistral OCR devuelve el texto en la propiedad 'markdown' no en 'content'
       let pageContent = '';
       if (page.markdown) {
@@ -207,13 +197,11 @@ async processPDFWithOCR({
         pageContent = `[Página ${pageNumber} sin texto reconocible]`;
       }
       
-      // Detectar elementos especiales
       const specialElements = this.extractSpecialElements(page, pageNumber);
       
       // DEBUG: Informar sobre elementos especiales encontrados
       console.log(`Página ${pageNumber} - Elementos especiales: ${specialElements.images.length} imágenes, ${specialElements.tables.length} tablas, ${specialElements.formulas.length} fórmulas`);
       
-      // Crear documento
       const document = {
         pageContent,
         metadata: {
@@ -230,7 +218,6 @@ async processPDFWithOCR({
     
     if (documents.length === 0) {
       console.warn("No se pudo extraer ningún documento de los resultados OCR");
-      // Crear al menos un documento vacío para evitar errores posteriores
       documents.push({
         pageContent: "[Documento sin contenido reconocible por OCR]",
         metadata: {
@@ -257,7 +244,6 @@ async processPDFWithOCR({
    * @returns {Object} - Elementos especiales encontrados
    */
   extractSpecialElements(page, pageNumber) {
-    // Verificar que page es un objeto válido
     if (!page || typeof page !== 'object') {
       console.warn(`Página inválida para pageNumber ${pageNumber}`);
       return {
@@ -273,7 +259,6 @@ async processPDFWithOCR({
       tables: []
     };
     
-    // Extraer imágenes
     if (page.images && Array.isArray(page.images)) {
       page.images.forEach((image, idx) => {
         // DEBUG: Información sobre la imagen encontrada
@@ -295,13 +280,11 @@ async processPDFWithOCR({
       });
     }
     
-    // Extraer tablas
     if (page.tables && Array.isArray(page.tables)) {
       page.tables.forEach((table, idx) => {
         // DEBUG: Información sobre la tabla encontrada
         console.log(`Página ${pageNumber} - Tabla ${idx} detectada con ${table.rows?.length || 0} filas`);
         
-        // Procesar tabla a formato compatible
         const processedTable = {
           pageNum: pageNumber,
           reference: `page_${pageNumber}_table_${idx}`,
@@ -316,7 +299,6 @@ async processPDFWithOCR({
       });
     }
     
-    // Extraer fórmulas matemáticas si Mistral las proporciona
     if (page.formulas && Array.isArray(page.formulas)) {
       page.formulas.forEach((formula, idx) => {
         // DEBUG: Información sobre la fórmula encontrada

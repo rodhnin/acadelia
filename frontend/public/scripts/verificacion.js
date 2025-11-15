@@ -1,4 +1,3 @@
-// ===== 🚀 SCRIPT DE VERIFICACIÓN ANTI-FLASHEO COMPLETO =====
 // Colocar este script en el <head> de tu index.html, justo después de los meta tags
 
 (function() {
@@ -6,7 +5,6 @@
   
   console.log('🔍 [AUTH] Verificación anti-flasheo iniciada');
   
-  // ===== ⚙️ CONFIGURACIÓN =====
   const CONFIG = {
     DEVELOPMENT: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
     CACHE_DURATION: 30000, // 30 segundos
@@ -15,7 +13,6 @@
     AUTH_ENDPOINT: '/api/usuarios/auth-status'
   };
   
-  // ===== 📦 CACHE SIMPLE =====
   const AuthCache = {
     get: function(key) {
       try {
@@ -52,7 +49,6 @@
     }
   };
   
-  // ===== 🎨 MANEJO DE UI =====
   const UIManager = {
     addLoadingOverlay: function() {
       const overlay = document.createElement('div');
@@ -72,14 +68,12 @@
     showPublicPage: function() {
       console.log('✅ [AUTH] Mostrando página pública');
       
-      // Remover overlay de loading si existe
       const overlay = document.querySelector('.auth-loading-overlay');
       if (overlay) {
         overlay.style.opacity = '0';
         setTimeout(() => overlay.remove(), 300);
       }
       
-      // Mostrar página con animación
       this.setBodyClass('auth-verified');
       
       // Asegurar que el contenido sea visible
@@ -97,7 +91,6 @@
     }
   };
   
-  // ===== 🔐 VALIDADOR DE JWT =====
   const JWTValidator = {
     isValidFormat: function(token) {
       return token && typeof token === 'string' && token.includes('.') && token.split('.').length === 3;
@@ -137,7 +130,6 @@
     }
   };
   
-  // ===== 🍪 EXTRACTOR DE COOKIES =====
   const CookieManager = {
     get: function(name) {
       try {
@@ -155,10 +147,8 @@
     }
   };
   
-  // ===== ⚡ VERIFICACIÓN SÚPER RÁPIDA =====
   const QuickAuth = {
     check: function() {
-      // Verificar cache primero
       if (AuthCache.isValid('auth_status')) {
         const cached = AuthCache.get('auth_status');
         if (cached && cached.value === 'authenticated') {
@@ -168,7 +158,6 @@
         }
       }
       
-      // Verificar token de cookie
       const token = CookieManager.getAuthToken();
       if (token) {
         const validation = JWTValidator.validate(token);
@@ -178,7 +167,6 @@
             console.log('Token expira en:', new Date(validation.payload.exp * 1000));
           }
           
-          // Guardar en cache y redirigir
           AuthCache.set('auth_status', 'authenticated');
           this.redirect();
           return true;
@@ -194,20 +182,17 @@
     redirect: function() {
       UIManager.showRedirecting();
       
-      // Usar replace para mejor UX (no agrega entrada al historial)
       setTimeout(() => {
         window.location.replace(CONFIG.REDIRECT_URL);
       }, 50); // Pequeño delay para permitir que se vea la transición
     }
   };
   
-  // ===== 🌐 VERIFICACIÓN COMPLETA VÍA API =====
   const FullAuth = {
     check: async function() {
       try {
         if (CONFIG.DEVELOPMENT) console.log('🔍 [AUTH] Iniciando verificación completa vía API');
         
-        // Crear AbortController para timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_DURATION);
         
@@ -237,7 +222,6 @@
             }
           }
           
-          // Guardar en cache y redirigir
           AuthCache.set('auth_status', 'authenticated');
           QuickAuth.redirect();
           return true;
@@ -270,23 +254,19 @@
     }
   };
   
-  // ===== 🚀 INICIALIZACIÓN PRINCIPAL =====
   const AuthCheck = {
     init: function() {
-      // Establecer estado inicial
       UIManager.setBodyClass('auth-checking');
       
       // Verificación súper rápida primero
       const quickResult = QuickAuth.check();
       
       if (!quickResult) {
-        // Si no se redirigió rápidamente, hacer verificación completa
         this.performFullCheck();
       }
     },
     
     performFullCheck: function() {
-      // Verificar si el DOM está listo
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
           this.executeFullCheck();
@@ -297,17 +277,14 @@
     },
     
     executeFullCheck: async function() {
-      // Añadir overlay de loading si es necesario
       if (document.body && !document.querySelector('.auth-loading-overlay')) {
         UIManager.addLoadingOverlay();
       }
       
-      // Ejecutar verificación completa
       await FullAuth.check();
     }
   };
   
-  // ===== 🎯 EJECUTAR INMEDIATAMENTE =====
   
   // Si el DOM ya está listo, ejecutar inmediatamente
   if (document.readyState !== 'loading') {
@@ -327,12 +304,10 @@
     }
   }, 100);
   
-  // ===== 🛡️ MANEJO DE ERRORES GLOBALES =====
   window.addEventListener('unhandledrejection', function(event) {
     if (event.reason && event.reason.message && event.reason.message.includes('auth')) {
       if (CONFIG.DEVELOPMENT) console.error('❌ [AUTH] Error no manejado:', event.reason);
       
-      // Fallback: mostrar página pública
       setTimeout(() => {
         if (!document.body.classList.contains('auth-verified') && !document.body.classList.contains('redirecting')) {
           UIManager.showPublicPage();

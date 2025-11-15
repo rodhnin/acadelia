@@ -34,7 +34,6 @@ const Cache = {
       return null;
     }
     
-    // Incrementar contador de accesos
     item.accessCount++;
     
     if (this.debugMode && item.accessCount > 1) {
@@ -76,18 +75,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   const nextBtn = document.getElementById('nextBtn');
   const regresarBtn = document.getElementById('regresarBtn');
 
-  // Variables para la vista
   let initialContent = '';
   let isDetailView = false;
   let currentUserId = null;
 
-  // ======================================================
-  // Función para manejar la compra - Esta debe estar definida en paddle.js
   if (typeof window.handleCompra !== 'function') {
     window.handleCompra = function(producto, dataId) {
       console.log('Función handleCompra invocada con:', producto, dataId);
       
-      // Usar la capa de abstracción en lugar de llamar directamente a openCheckout
       if (window.AcadeliaPagos && typeof window.AcadeliaPagos.procesarCompra === 'function') {
         window.AcadeliaPagos.procesarCompra(producto, dataId);
       } else {
@@ -113,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
   }
 
-  // ======================================================
   // Funciones mejoradas para obtener datos con caché
   
   async function getUserId() {
@@ -138,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     return await response.json();
   }
 
-  // ======================================================
   // Funciones para generar tarjetas dinámicas
   function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", producto, btnTexto = "Ver más", esVerMas = true, mostrarComprar = true }) {
     const descripcionCorta = descripcion.length > 120 ? descripcion.substring(0, 120) + "..." : descripcion;
@@ -178,13 +171,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     `;
   }
 
-  // Función principal para cargar carreras con caché
   async function fetchCarreras() {
     try {
       const userId = await getUserId();
       currentUserId = userId;
       
-      // Intentar obtener carreras del caché
       const cacheKey = `carreras_${userId}`;
       let carreras = Cache.get(cacheKey);
       
@@ -193,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         Cache.set(cacheKey, carreras);
       }
 
-      // Si no se obtienen carreras, mostrar el mensaje especial para 404
       if (!carreras) {
         track.innerHTML = `
             <div class="box-content" style="text-align: center;">
@@ -226,7 +216,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       regresarBtn.style.display = 'none';
     } catch (error) {
       console.error('Error en fetchCarreras:', error);
-      // Solo mostrar este mensaje si el error no es 404
       if (error.message !== '404') {
         track.innerHTML = `
           <div class="content-box">
@@ -258,7 +247,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
-  // Función auxiliar para obtener carreras desde la API
   async function fetchCarrerasFromAPI(userId) {
     try {
       const response = await fetch(`/api/compra/carrera/available/${userId}`);
@@ -299,9 +287,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     regresarBtn.style.display = 'none';
   });
 
-  // Función mejorada para refrescar carreras
   async function refreshCarreras() {
-    // Limpiar caché relacionado con el usuario actual
     if (currentUserId) {
       Cache.data.delete(`carreras_${currentUserId}`);
     }
@@ -312,10 +298,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   window.fetchCarreras = fetchCarreras;
   window.refreshCarreras = refreshCarreras;
 
-  // Inicializar
   fetchCarreras();
   
-  // Ocultar los botones de navegación del carrusel que ya no se usan
   prevBtn.style.display = 'none';
   nextBtn.style.display = 'none';
 });

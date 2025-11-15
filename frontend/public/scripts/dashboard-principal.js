@@ -1,10 +1,7 @@
-// Verificar consentimiento y aplicar el tema inmediatamente al cargar la página
 (function() {
-    // Verificar explícitamente el consentimiento para cookies funcionales
     const hasConsent = localStorage.getItem('cookiePreferences') && 
                        JSON.parse(localStorage.getItem('cookiePreferences')).functional === true;
     
-    // Obtener el tema solo si hay consentimiento, de lo contrario usar 'light'
     let savedTheme = 'light';
     if (hasConsent && localStorage.getItem('theme')) {
         savedTheme = localStorage.getItem('theme');
@@ -18,25 +15,19 @@
 
 // Script unificado para manejar todas las funcionalidades del dashboard
 document.addEventListener('DOMContentLoaded', () => {
-    // Aplicar tema inicial
     initTheme();
 
-    // Inicializar menú de navegación y dropdown
     initNavMenu();
 
-    // Inicializar contenedores de esquina
     initCornerContainers();
 
     console.log("Dashboard: Inicialización completada");
 });
 
-// === FUNCIONALIDAD DEL TEMA ===
 function initTheme() {
-    // Verificar explícitamente el consentimiento para cookies funcionales
     const hasConsent = localStorage.getItem('cookiePreferences') && 
                        JSON.parse(localStorage.getItem('cookiePreferences')).functional === true;
     
-    // Obtener el tema solo si hay consentimiento, de lo contrario usar 'light'
     let savedTheme = 'light';
     if (hasConsent && localStorage.getItem('theme')) {
         savedTheme = localStorage.getItem('theme');
@@ -45,7 +36,6 @@ function initTheme() {
     document.documentElement.setAttribute('data-theme', savedTheme);
     document.body.setAttribute('data-theme', savedTheme);
     
-    // Configurar toggle de tema
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', (e) => {
@@ -65,14 +55,12 @@ function initTheme() {
     });
 }
 
-// Función auxiliar para verificar consentimiento con ambos sistemas
 function hasFunctionalConsent() {
     // Primero intentar con cookieHelpers (cookie-helpers.js)
     if (window.cookieHelpers && typeof window.cookieHelpers.hasCookieConsent === 'function') {
         return window.cookieHelpers.hasCookieConsent('functional');
     }
     
-    // Fallback a cookie-consent.js
     if (window.isCookieCategoryEnabled && typeof window.isCookieCategoryEnabled === 'function') {
         return window.isCookieCategoryEnabled('functional');
     }
@@ -80,7 +68,6 @@ function hasFunctionalConsent() {
     return false;
 }
 
-// Función auxiliar para guardar tema con consentimiento
 function saveThemeWithConsent(theme) {
     // Con cookieHelpers
     if (window.cookieHelpers && typeof window.cookieHelpers.setStorageWithConsent === 'function') {
@@ -104,31 +91,24 @@ function saveThemeWithConsent(theme) {
 }
 
 function toggleTheme() {
-    // Determinar el tema actual
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
-    // Aplicar el nuevo tema a HTML y body INMEDIATAMENTE
     document.documentElement.setAttribute('data-theme', newTheme);
     document.body.setAttribute('data-theme', newTheme);
     
-    // Aplicar clase CSS legacy si es necesario
     if (newTheme === 'dark') {
         document.body.classList.add('dark-theme');
     } else {
         document.body.classList.remove('dark-theme');
     }
     
-    // Actualizar la posición del slider
     updateThemeSlider(newTheme);
     
-    // Detectar qué sistema de cookies está disponible y usar el apropiado
     const hasConsent = hasFunctionalConsent();
     
-    // Intentar guardar (con o sin consentimiento para mejor UX)
     const saved = saveThemeWithConsent(newTheme);
     
-    // Determinar qué sistema se usó para el log
     let system = 'localStorage directo';
     if (hasConsent) {
         if (window.cookieHelpers && typeof window.cookieHelpers.setStorageWithConsent === 'function') {
@@ -160,9 +140,7 @@ function updateThemeSlider(theme) {
     }
 }
 
-// === FUNCIONALIDAD DEL MENÚ Y DROPDOWN ===
 function initNavMenu() {
-    // Manejo del menú móvil
     const menuToggle = document.getElementById('menuToggle');
     const navButtons = document.querySelector('.nav-buttons');
 
@@ -172,7 +150,6 @@ function initNavMenu() {
             console.log("Menú móvil toggled");
         });
 
-        // Cerrar menú al hacer clic fuera
         document.addEventListener('click', (e) => {
             if (!navButtons.contains(e.target) && !menuToggle.contains(e.target)) {
                 navButtons.classList.remove('show');
@@ -180,7 +157,6 @@ function initNavMenu() {
         });
     }
 
-    // Manejo del dropdown de cuenta
     const accountBtn = document.getElementById('accountBtn');
     const dropdown = document.querySelector('.dropdown');
     
@@ -191,7 +167,6 @@ function initNavMenu() {
             console.log("Dropdown de cuenta toggled");
         });
         
-        // Cerrar dropdown al hacer clic en cualquier parte fuera
         document.addEventListener('click', (e) => {
             if (dropdown && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('active');
@@ -202,18 +177,14 @@ function initNavMenu() {
     }
 }
 
-// === FUNCIONALIDAD DE CONTENEDORES DE ESQUINA ===
 function initCornerContainers() {
-    // Obtener indicadores y contenedores
     const cornerIndicators = document.querySelectorAll('.corner-indicator');
     const cornerContainers = document.querySelectorAll('.corner-container');
     
     console.log(`Encontrados ${cornerIndicators.length} indicadores y ${cornerContainers.length} contenedores`);
 
-    // Detectar si es Firefox
     const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
     
-    // Manejar clic en los indicadores
     cornerIndicators.forEach(indicator => {
         indicator.addEventListener('click', function(e) {
             e.preventDefault();
@@ -221,7 +192,6 @@ function initCornerContainers() {
             
             console.log('Clic en indicador:', indicator.className);
             
-            // Obtener posición del indicador
             const position = getPositionClass(indicator);
             
             // Encontrar contenedor correspondiente
@@ -232,7 +202,6 @@ function initCornerContainers() {
                 
                 // Si el contenedor no está activo, activarlo
                 if (!targetContainer.classList.contains('active')) {
-                    // Desactivar todos los contenedores primero
                     cornerContainers.forEach(container => {
                         container.classList.remove('active');
                     });
@@ -246,11 +215,9 @@ function initCornerContainers() {
                         targetContainer.style.display = '';
                     }
                     
-                    // Activar el contenedor
                     targetContainer.classList.add('active');
                     console.log(`Contenedor activado: ${position}`);
                     
-                    // Desactivar eventos de hover
                     disableHoverEffects(cornerIndicators);
                 } else {
                     // Si ya está activo, desactivarlo
@@ -267,19 +234,15 @@ function initCornerContainers() {
         });
     });
     
-    // Configurar comportamiento de hover para desktop
     if (window.innerWidth > 768) {
         enableHoverEffects(cornerIndicators, cornerContainers);
     }
     
-    // Agregar botones de cerrar
     addCloseButtons(cornerContainers);
     
-    // Cerrar contenedores al hacer clic en el fondo
     const dashboardContainer = document.querySelector('.dashboard-container');
     if (dashboardContainer) {
         dashboardContainer.addEventListener('click', function(e) {
-            // Solo si el clic fue directamente en el fondo
             if (e.target === dashboardContainer) {
                 cornerContainers.forEach(container => {
                     container.classList.remove('active');
@@ -293,7 +256,6 @@ function initCornerContainers() {
         });
     }
     
-    // Manejar tecla Escape para cerrar contenedores
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const activeContainer = document.querySelector('.corner-container.active');
@@ -309,15 +271,12 @@ function initCornerContainers() {
     });
 }
 
-// Función para habilitar efectos de hover (solo desktop)
 function enableHoverEffects(indicators, containers) {
     if (window.innerWidth <= 768) return;
     
-    // Detectar si es Firefox
     const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
     
     indicators.forEach(indicator => {
-        // Eliminar eventos previos si existen
         if (indicator._mouseenterHandler) {
             indicator.removeEventListener('mouseenter', indicator._mouseenterHandler);
         }
@@ -325,7 +284,6 @@ function enableHoverEffects(indicators, containers) {
             indicator.removeEventListener('mouseleave', indicator._mouseleaveHandler);
         }
         
-        // Agregar nuevos event listeners
         indicator._mouseenterHandler = function() {
             const position = getPositionClass(indicator);
             const container = document.querySelector(`.corner-container.${position}`);
@@ -350,7 +308,6 @@ function enableHoverEffects(indicators, containers) {
             const container = document.querySelector(`.corner-container.${position}`);
             
             if (container && !container.classList.contains('active')) {
-                // Solo ocultar si el ratón no entró al contenedor
                 if (!container.contains(e.relatedTarget)) {
                     container.style.opacity = '0';
                     container.style.pointerEvents = 'none';
@@ -365,18 +322,15 @@ function enableHoverEffects(indicators, containers) {
     
     // También añadir eventos a los contenedores
     containers.forEach(container => {
-        // Eliminar eventos previos si existen
         if (container._mouseleaveHandler) {
             container.removeEventListener('mouseleave', container._mouseleaveHandler);
         }
         
-        // Agregar eventos de mouseleave
         container._mouseleaveHandler = function(e) {
             if (!container.classList.contains('active')) {
                 const position = getPositionClass(container);
                 const indicator = document.querySelector(`.corner-indicator.${position}`);
                 
-                // Solo ocultar si el ratón no entró al indicador
                 if (!indicator || !indicator.contains(e.relatedTarget)) {
                     container.style.opacity = '0';
                     container.style.pointerEvents = 'none';
@@ -389,7 +343,6 @@ function enableHoverEffects(indicators, containers) {
     });
 }
 
-// Función para deshabilitar efectos de hover
 function disableHoverEffects(indicators) {
     indicators.forEach(indicator => {
         if (indicator._mouseenterHandler) {
@@ -401,10 +354,8 @@ function disableHoverEffects(indicators) {
     });
 }
 
-// Función auxiliar para agregar botones de cerrar
 function addCloseButtons(containers) {
     containers.forEach(container => {
-        // Solo añadir si no existe ya
         if (!container.querySelector('.close-btn')) {
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-btn';
@@ -416,7 +367,6 @@ function addCloseButtons(containers) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Desactivar el contenedor
                 container.classList.remove('active');
                 
                 // Reactivar efectos de hover solo en desktop
@@ -435,7 +385,6 @@ function addCloseButtons(containers) {
     });
 }
 
-// Función para obtener la clase de posición
 function getPositionClass(element) {
     const classes = element.className.split(' ');
     for (const cls of classes) {
@@ -446,7 +395,6 @@ function getPositionClass(element) {
     return '';
 }
 
-// Manejar cambios de tamaño de ventana
 window.addEventListener('resize', () => {
     const cornerIndicators = document.querySelectorAll('.corner-indicator');
     const cornerContainers = document.querySelectorAll('.corner-container');
@@ -463,7 +411,6 @@ window.addEventListener('resize', () => {
                 container.style.right = 'auto';
                 container.style.bottom = 'auto';
             } else {
-                // Devolver a posición original
                 container.style.transform = 'scale(1)';
                 
                 // Posicionar en esquina
@@ -487,9 +434,7 @@ window.addEventListener('resize', () => {
         }
     });
     
-    // Manejar comportamiento de hover según tamaño de pantalla
     if (window.innerWidth > 768) {
-        // Solo habilitar hover si no hay ningún contenedor activo
         if (!document.querySelector('.corner-container.active')) {
             enableHoverEffects(cornerIndicators, cornerContainers);
         }

@@ -1,17 +1,13 @@
-// backend/middlewares/adminMiddleware.js
 import pool from "../lib/dbPool.js"; // Pool de conexión a la base de datos
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-// Obtener la ruta base del proyecto
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..', '..');
 
-// Función helper para manejar 403 (Acceso prohibido)
 const handle403 = (req, res) => {
-    // Verificar si es una solicitud a la API
     if (req.path.startsWith('/api/') || req.xhr || req.get('accept')?.includes('application/json')) {
         return res.status(403).json({ 
             success: false, 
@@ -20,7 +16,6 @@ const handle403 = (req, res) => {
         });
     }
     
-    // Para solicitudes de páginas, mostrar la página 403
     const errorPath = path.join(projectRoot, 'frontend', 'views', 'error', '403.html');
     if (fs.existsSync(errorPath)) {
         return res.status(403).sendFile(errorPath);
@@ -32,7 +27,6 @@ const handle403 = (req, res) => {
 
 export const isAdmin = async (req, res, next) => {
     try {
-        // Verificar si el usuario está autenticado
         if (!req.user || !req.user.id_user) {
             console.log("Error: Usuario no autenticado");
             return res.status(401).json({ error: "Usuario no autenticado" });

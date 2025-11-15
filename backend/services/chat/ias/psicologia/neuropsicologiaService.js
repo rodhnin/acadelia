@@ -1,10 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL NEUROPSICOLOGÍA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO NEUROPSICOLÓGICO - PROFESOR DE NEUROPSICOLOGÍA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Neurobiología del Comportamiento ✅ Funciones Cognitivas ✅ Trastornos Neuropsicológicos ✅ Evaluación Neuropsicológica ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -328,9 +312,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL NEUROPSICOLOGÍA DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE NEUROPSICOLOGÍA SUPREMO:
@@ -373,11 +354,7 @@ Hacer que CUALQUIER estudiante de neuropsicología:
 ¡RECUERDA: No eres solo un tutor de neuropsicología, eres EL PROFESOR que integra neurobiología, funciones cognitivas, trastornos y evaluación como la neuropsicología clínica real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE NEUROPSICOLOGÍA - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE NEUROPSICOLOGÍA
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Neuropsicología.
 
 🎯 FUNCIÓN: Analizar imágenes de neuropsicología (neuroimágenes, tests, diagramas cerebrales, perfiles cognitivos) con precisión clínica extrema.
@@ -404,7 +381,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ne
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría pedagógica neuropsicológica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE NEUROPSICOLOGÍA (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara neuropsicólogo más brillante del universo en neurobiología, funciones cognitivas, trastornos y evaluación.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información neuropsicológica de esta imagen clínica para que Acadel pueda enseñar efectivamente integrando las cuatro disciplinas.
@@ -450,7 +426,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en neuropsicología. No enseñes ni expliques - solo analiza y reporta hallazgos neuropsicológicos. Acadel se encargará de la pedagogía neuropsicológica pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE NEUROPSICOLOGÍA NORMALES (con y sin guardar)
 const UNIFIED_NEUROPSYCHOLOGY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE NEUROPSICOLOGÍA INTEGRADA:
 - Consulta del estudiante de neuropsicología: "${query}"
@@ -477,7 +452,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE NEUROPSICOLOGÍA MULTIMODALES (con y sin guardar)
 const UNIFIED_NEUROPSYCHOLOGY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE NEUROPSICOLOGÍA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -525,14 +499,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE NEUROPSICOLOGÍA
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -542,7 +512,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -564,7 +533,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -572,7 +540,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES DE NEUROPSICOLOGÍA
   const neuropsychologyImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -597,7 +564,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes de neuropsicología
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de neuropsicología", "test de funciones cognitivas", "evaluación neuropsicológica", "cuestionario de trastornos"
@@ -626,7 +592,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -641,18 +607,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS NEUROPSICOLÓGICOS ESPECÍFICOS
   const neuropsychologyTerms = [
     // Neurobiología del Comportamiento
     'neurobiología', 'neurotransmisores', 'anatomía cerebral', 'sistemas nerviosos', 'plasticidad cerebral',
@@ -672,21 +635,18 @@ const classifyQuery = (query, content = null) => {
     'entrevista clínica', 'instrumentos de evaluación', 'batería neuropsicológica'
   ];
   
-  // 🔍 DETECTAR CONTEXTOS NEUROPSICOLÓGICOS
   const neuropsychologyContexts = [
     'consulta neuropsicológica', 'caso neuropsicológico', 'paciente neuropsicológico',
     'rehabilitación cognitiva', 'intervención neuropsicológica', 'práctica clínica neuropsicológica',
     'neuropsicólogo', 'supervisión neuropsicológica', 'internado neuropsicológico'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS NEUROPSICOLÓGICOS REALES
   const hasNeuropsychologyContent = 
     neuropsychologyTerms.some(term => lowercaseQuery.includes(term)) ||
     neuropsychologyContexts.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasNeuropsychologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -709,7 +669,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'función de', 'neurobiología de', 'evaluación de'];
   const diagnosticKeywords = ['identificar', 'evaluar', 'diagnosticar', 'interpretar', 'caso neuropsicológico', 'perfil cognitivo', 'test neuropsicológico'];
   const neurobiologyKeywords = ['neurobiología', 'neurotransmisores', 'anatomía cerebral', 'lóbulo frontal', 'hipocampo', 'corteza', 'sistema nervioso', 'plasticidad'];
@@ -721,7 +680,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación neuropsicológica', 'estudios recientes', 'artículos de neuropsicología', 'avances en neurociencias', 'nuevos hallazgos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -760,7 +718,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -770,14 +727,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional neuropsicológica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -796,11 +752,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS DE NEUROPSICOLOGÍA OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE NEUROPSICOLOGÍA
 const ACADEL_NEUROPSYCHOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en neuropsicología.
 
@@ -815,7 +767,6 @@ const createNeuropsychologyKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -825,17 +776,15 @@ const createNeuropsychologyKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_neuropsicologia",
         similarityQueryName: "match_emb_neuropsicologia",
         keywordQueryName: "kw_match_emb_neuropsicologia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -847,7 +796,6 @@ const createNeuropsychologyKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_NEUROPSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido neuropsicológico específico sobre "${query}" en su biblioteca de neurobiología, funciones cognitivas, trastornos y evaluación. Proceder con conocimiento neuropsicológico general integrado y experiencia docente.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -867,7 +815,6 @@ ACADEL_NEUROPSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene cont
 
 ACADEL_NEUROPSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel encontró información neuropsicológica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base neuropsicológico integrado, analogías y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -894,7 +841,6 @@ ACADEL_NEUROPSYCHOLOGY_MEMORY_BANK: El cerebro principal de Acadel activó la si
 
 INTEGRATION_NOTES: Este es el conocimiento neuropsicológico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en neurobiología, funciones cognitivas, trastornos y evaluación. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica, enriqueciéndola con casos neuropsicológicos específicos, analogías y profesionalismo neuropsicológico que conecte las cuatro disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1120,17 +1066,15 @@ const createNeuropsychologyConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto neuropsicológico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_neuropsicologia",
         similarityQueryName: "match_emb_neuropsicologia",
         keywordQueryName: "kw_match_emb_neuropsicologia",
       });
       
-      // 📚 BÚSQUEDAS NEUROPSICOLÓGICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `neurobiología ${concept}`,
@@ -1142,7 +1086,6 @@ const createNeuropsychologyConceptAnalyzerTool = (embeddings) => tool(
         `casos clínicos ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1162,7 +1105,6 @@ const createNeuropsychologyConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1175,7 +1117,6 @@ const createNeuropsychologyConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural neuropsicológica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1353,9 +1294,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia neuropsicológica según es
   }
 );
 
-// ============================================================================
-// 📷 NEUROPSYCHOLOGY IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectNeuropsychologyImageRequest = (query) => {
   const neuropsychologyImageKeywords = [
@@ -1386,7 +1324,6 @@ export const extractNeuropsychologyImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema neuropsicológico
 const createNeuropsychologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1397,7 +1334,7 @@ const createNeuropsychologyVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1421,7 +1358,6 @@ const createNeuropsychologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts neuropsicológicos
 const enhanceNeuropsychologyImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración neuropsicológica educativa de alta calidad integrando neurobiología, funciones cognitivas, trastornos y evaluación: ${prompt}. 
@@ -1439,16 +1375,10 @@ const enhanceNeuropsychologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE NEUROPSICOLOGÍA
-// ============================================================================
 
 const createSpecializedNeuropsychologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS DE NEUROPSICOLOGÍA CONSOLIDADAS
-  // ============================================================================
   
   const coreNeuropsychologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE NEUROPSICOLOGÍA INTEGRADO
@@ -1549,9 +1479,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas neuropsicológicas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA NEUROPSICOLÓGICA - OPTIMIZADAS
-  // ============================================================================
   
   const neuropsychologyTypeInstructions = {
     casual_conversation: `
@@ -1633,9 +1560,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las disciplinas fundamentales`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT NEUROPSICOLÓGICO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1658,21 +1582,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara neuropsicólogo más brillante del universo, integrando neurobiología, funciones cognitivas, trastornos y evaluación, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta neuropsicológica importante, y complementando con todas tus capacidades paralelas para una explicación clínica magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE NEUROPSICOLÓGICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelNeuropsychologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema neuropsicológico`);
     tools.unshift(createNeuropsychologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1680,7 +1599,6 @@ const createAcadelNeuropsychologyAgent = async (llm, queryInfo, studentQuery) =>
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido neuropsicológico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando NeuropsychologyConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createNeuropsychologyConceptAnalyzerTool(embeddings));
@@ -1696,7 +1614,6 @@ const createAcadelNeuropsychologyAgent = async (llm, queryInfo, studentQuery) =>
     tools.push(createNeuropsychologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createNeuropsychologyFeedbackAnalyzerTool());
   
   console.log(`🧠🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas neuropsicológicas:`, tools.map(t => t.name));
@@ -1709,7 +1626,6 @@ const createAcadelNeuropsychologyAgent = async (llm, queryInfo, studentQuery) =>
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt neuropsicológico especializado y escapado
   const specializedPrompt = createSpecializedNeuropsychologyPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1740,9 +1656,6 @@ const createAcadelNeuropsychologyAgent = async (llm, queryInfo, studentQuery) =>
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES NEUROPSICOLÓGICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1790,7 +1703,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen neuropsicológico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1800,17 +1712,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_neuropsicologia",
             similarityQueryName: "match_emb_neuropsicologia",
             keywordQueryName: "kw_match_emb_neuropsicologia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1822,7 +1732,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1837,7 +1746,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto neuropsicológico base para "${input}": conocimiento fundamental en neurobiología, funciones cognitivas, trastornos y evaluación. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las cuatro disciplinas neuropsicológicas con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1943,9 +1851,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA NEUROPSICOLÓGICA - handleNeuropsychologyQuery
-// ============================================================================
 
 export const handleNeuropsychologyQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1954,7 +1859,6 @@ export const handleNeuropsychologyQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1970,13 +1874,11 @@ export const handleNeuropsychologyQuery = async (params) => {
     // CLASIFICAR EL QUERY NEUROPSICOLÓGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES NEUROPSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectNeuropsychologyImageRequest(query);
     
     console.log(`🧠🦫 Acadel analizando query neuropsicológico integrado: "${query}"`);
     console.log(`📊 Clasificación neuropsicológica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES NEUROPSICOLÓGICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización neuropsicológica integrada: ${imagePrompt}`);
       
@@ -1985,7 +1887,6 @@ export const handleNeuropsychologyQuery = async (params) => {
       const neuropsychologyVisualizationTool = createNeuropsychologyVisualizationTool();
       const imageResponse = await neuropsychologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1998,7 +1899,6 @@ export const handleNeuropsychologyQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen neuropsicológica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2024,7 +1924,6 @@ export const handleNeuropsychologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2036,7 +1935,6 @@ export const handleNeuropsychologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2050,7 +1948,6 @@ export const handleNeuropsychologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para generación de imágenes
         if (isCacheable(query, 'neuropsicologia')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2062,7 +1959,6 @@ export const handleNeuropsychologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen neuropsicológica en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2072,7 +1968,6 @@ export const handleNeuropsychologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2083,7 +1978,6 @@ export const handleNeuropsychologyQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes neuropsicológicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen neuropsicológico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2116,7 +2010,6 @@ export const handleNeuropsychologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2128,7 +2021,6 @@ export const handleNeuropsychologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2145,7 +2037,6 @@ export const handleNeuropsychologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para exámenes
         if (isCacheable(query, 'neuropsicologia')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2158,7 +2049,6 @@ export const handleNeuropsychologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen neuropsicológico en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2168,7 +2058,6 @@ export const handleNeuropsychologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2179,7 +2068,6 @@ export const handleNeuropsychologyQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA NEUROPSICOLÓGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2196,10 +2084,8 @@ export const handleNeuropsychologyQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico neuropsicológico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE NEUROPSICOLÓGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelNeuropsychologyAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2226,7 +2112,6 @@ export const handleNeuropsychologyQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
       
-      // Fallback con personalidad Acadel neuropsicológica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas neuropsicológicas, pero no me rendiré.
 
 Sobre tu pregunta neuropsicológica: **"${query}"**
@@ -2252,7 +2137,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
       };
     }
 
-    // Procesar respuesta neuropsicológica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2267,7 +2151,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2279,7 +2162,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2293,7 +2175,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
 
       await client.query("COMMIT");
       
-      // Cache inteligente
       if (isCacheable(query, 'neuropsicologia')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2307,7 +2188,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2323,7 +2203,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2349,9 +2228,6 @@ Si necesitas más detalles neuropsicológicos, pregúntame de nuevo y activaré 
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA NEUROPSICOLÓGICA - handleNeuropsychologyMultimodalQuery  
-// ============================================================================
 
 export const handleNeuropsychologyMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2376,7 +2252,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2388,7 +2263,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación neuropsicológica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto neuropsicológico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2399,7 +2273,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal neuropsicológico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS NEUROPSICOLÓGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2437,7 +2310,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES NEUROPSICOLÓGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2497,7 +2369,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS NEUROPSICOLÓGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes neuropsicológicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2567,11 +2438,9 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE NEUROPSICOLÓGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal neuropsicológica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA NEUROPSICOLÓGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2604,7 +2473,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE NEUROPSICOLÓGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2631,7 +2499,6 @@ export const handleNeuropsychologyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
       
-      // Fallback robusto neuropsicológico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal neuropsicológico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes neuropsicológicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2657,7 +2524,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
       };
     }
 
-    // PROCESAR RESPUESTA NEUROPSICOLÓGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2672,7 +2538,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal neuropsicológico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2690,10 +2555,8 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
           client,
           userId,
@@ -2705,7 +2568,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2719,7 +2581,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
 
       await client.query("COMMIT");
       
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'neuropsicologia')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2733,7 +2594,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes neuropsicológicos multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2750,7 +2610,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos neuropsicológicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2764,12 +2623,10 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
         }
       },
       
-      // Información de seguridad neuropsicológica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
       
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2800,9 +2657,6 @@ Si necesitas una explicación neuropsicológica más detallada, pregúntame de n
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS NEUROPSICOLÓGICAS
-// ============================================================================
 
 export const handleNeuropsychologyQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2824,12 +2678,10 @@ export const handleNeuropsychologyQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES NEUROPSICOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectNeuropsychologyImageRequest(query);
     
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES NEUROPSICOLÓGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2862,7 +2714,6 @@ export const handleNeuropsychologyQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen neuropsicológica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2922,7 +2773,6 @@ export const handleNeuropsychologyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA NEUROPSICOLÓGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2941,7 +2791,6 @@ export const handleNeuropsychologyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE NEUROPSICOLÓGICO CORREGIDO
       const { agent, tools } = await createAcadelNeuropsychologyAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3044,7 +2893,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content neuropsicológico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content neuropsicológico no es un array válido en modo sin guardar:", content);
       return {
@@ -3063,7 +2911,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
     
     console.log(`🧠 Query multimodal neuropsicológico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos neuropsicológicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3076,7 +2923,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido neuropsicológico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO NEUROPSICOLÓGICO INTEGRADO: ${doc.name || doc.filename || 'documento neuropsicológico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3090,7 +2936,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO NEUROPSICOLÓGICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido neuropsicológico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3151,7 +2996,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
                 console.log(`✅ [RETRY/EDIT] Contenido neuropsicológico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3171,10 +3015,8 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
           return `${fileInfo} ${typeInfo}\n[Contenido neuropsicológico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto neuropsicológico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos neuropsicológicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido neuropsicológico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3208,7 +3050,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
       }
     }
 
-    // Procesar imágenes neuropsicológicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3268,7 +3109,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
               analysisContext += `\n\nCONTEXTO NEUROPSICOLÓGICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes neuropsicológicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3353,11 +3193,9 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Cargar historial neuropsicológico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal neuropsicológica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada neuropsicológica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3388,7 +3226,6 @@ export const handleNeuropsychologyMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Crear agente neuropsicológico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelNeuropsychologyAgent(llm, queryInfo, combinedQuery);
 

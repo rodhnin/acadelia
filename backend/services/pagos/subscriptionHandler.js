@@ -23,7 +23,6 @@ export async function handleSubscription(eventData) {
   const newStatus = statusMap[event_type] || data.status;
   
   try {
-    // CAMBIO: En lugar de borrar, actualizamos la suscripción cancelada
     if (event_type === 'subscription.canceled') {
         await pool.query(
             `UPDATE suscripciones 
@@ -37,7 +36,6 @@ export async function handleSubscription(eventData) {
         
         console.log(`🔄 Suscripción marcada como cancelada: ${subscriptionId}`);
         
-        // Intentar enviar correo de confirmación de cancelación (si no se envió antes)
         try {
           const userQuery = await pool.query(
             'SELECT correo FROM usuario WHERE id_user = $1',
@@ -47,7 +45,6 @@ export async function handleSubscription(eventData) {
           if (userQuery.rows.length > 0) {
             const userEmail = userQuery.rows[0].correo;
             
-            // Enviar correo de cancelación completada
             console.log(`📧 Enviando correo de confirmación de cancelación a ${userEmail}`);
             await emailService.sendCancelConfirmationEmail(userEmail, eventData);
             console.log(`✅ Correo de confirmación enviado exitosamente a ${userEmail}`);
@@ -71,7 +68,6 @@ export async function handleSubscription(eventData) {
       console.log(`🔔 Cancelación programada detectada para la suscripción: ${subscriptionId}`);
       hasCancellationScheduled = true;
       
-      // Intentar obtener el correo del usuario para enviar la notificación
       try {
         const userQuery = await pool.query(
           'SELECT correo FROM usuario WHERE id_user = $1',
@@ -81,7 +77,6 @@ export async function handleSubscription(eventData) {
         if (userQuery.rows.length > 0) {
           const userEmail = userQuery.rows[0].correo;
           
-          // Enviar correo de cancelación
           console.log(`📧 Enviando correo de cancelación de suscripción a ${userEmail}`);
           await emailService.sendCancelSubscriptionEmail(userEmail, eventData);
           console.log(`✅ Correo de cancelación enviado exitosamente a ${userEmail}`);
@@ -94,7 +89,6 @@ export async function handleSubscription(eventData) {
       }
     }
 
-    // Continuar con la lógica de actualización normal
     if (event_type === 'subscription.updated') {
       // CAMBIO AQUÍ: En lugar de "pending_cancellation", usar "paused" para cancelaciones programadas
       const statusToSet = hasCancellationScheduled ? 'paused' : data.status;
@@ -161,7 +155,6 @@ export async function handleSubscription(eventData) {
     }
     // 3. Si no existe: CREAR NUEVA (solo para evento created)
     else if (event_type === 'subscription.created') {
-      // Cancelar suscripciones activas previas
       await pool.query(
         `UPDATE suscripciones SET
           status = 'canceled',
@@ -170,7 +163,6 @@ export async function handleSubscription(eventData) {
         [id_user, id_carrera]
       );
 
-      // Insertar nueva
       const item = data.items[0];
       await pool.query(
         `INSERT INTO suscripciones (

@@ -1,10 +1,8 @@
-// backend/controllers/chat/agentController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER CENTRALIZADO)
 
 import { handleStudyQuery, handleStudyMultimodalQuery, handleStudyQueryWithoutSaving, handleStudyMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/herramienta/agentService.js";
 import { logSecurityEvent } from '../../../../utils/securityLogger.js';
 import pool from '../../../../lib/dbPool.js';
 
-// ✅ UTILIDADES UNIFICADAS DE HERRAMIENTAS
 import {
   validateToolQueryParams,
   validateToolMultimodalParams,
@@ -13,15 +11,9 @@ import {
   generateAttachmentsSummary
 } from "../../../../utils/chat/toolutil.js";
 
-// 🚀 TOKEN MANAGER CENTRALIZADO
 import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS DE TEXTO AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgent = async (req, res) => {
-  // ✅ SIN TRY-CATCH aquí - TokenManager maneja todo
   console.log('🔍 queryAgent iniciado con TokenManager centralizado');
 
   logToolOperation('AGENT_QUERY_START', req.body, {
@@ -30,10 +22,8 @@ export const queryAgent = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES DE HERRAMIENTAS =====
   const validationErrors = validateToolQueryParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -41,7 +31,6 @@ export const queryAgent = async (req, res) => {
   const toolId = req.toolId || req.body.herramientaId;
   const toolInfo = req.toolInfo || null;
 
-  // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
   const serviceFunction = async (params, skipSaveMode) => {
     if (skipSaveMode) {
       console.log('Modo skipSave activado: generando respuesta de Agente sin guardar mensajes');
@@ -65,8 +54,6 @@ export const queryAgent = async (req, res) => {
     }
   };
 
-  // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
-  // ✅ CRÍTICO: return await (sin try-catch adicional)
   return await TokenManager.handleCompleteToolController(req, res, {
     validationErrors,
     accessInfo,
@@ -82,12 +69,7 @@ export const queryAgent = async (req, res) => {
   });
 };
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO PARA CONSULTAS MULTIMODALES AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgentMultimodal = async (req, res) => {
-  // ✅ SIN TRY-CATCH aquí - TokenManager maneja todo
   console.log('🔍 queryAgentMultimodal iniciado con TokenManager centralizado');
 
   logToolOperation('AGENT_MULTIMODAL_START', req.body, {
@@ -98,10 +80,8 @@ export const queryAgentMultimodal = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
   const validationErrors = validateToolMultimodalParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -109,7 +89,6 @@ export const queryAgentMultimodal = async (req, res) => {
   const toolId = req.toolId || req.body.herramientaId;
   const toolInfo = req.toolInfo || null;
 
-  // 🚀 LOG DE ARCHIVOS ADJUNTOS
   const attachmentsSummary = generateAttachmentsSummary(req.body.content || []);
   console.log(`📄 Procesando consulta multimodal de Agente: ${attachmentsSummary}`);
 
@@ -128,7 +107,6 @@ export const queryAgentMultimodal = async (req, res) => {
     ip: req.ip
   }, 'low');
 
-  // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
   const serviceFunction = async (params) => {
     const result = await handleStudyMultimodalQuery({
       userId: params.userId,
@@ -139,7 +117,6 @@ export const queryAgentMultimodal = async (req, res) => {
       skipSave: false
     });
 
-    // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
     if (result.success && result.chatId) {
       await addRecentDocumentsToResult(result, params.userId || req.user?.id_user);
     }
@@ -147,8 +124,6 @@ export const queryAgentMultimodal = async (req, res) => {
     return result;
   };
 
-  // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
-  // ✅ CRÍTICO: return await (sin try-catch adicional)
   return await TokenManager.handleCompleteToolController(req, res, {
     validationErrors,
     accessInfo,
@@ -164,12 +139,7 @@ export const queryAgentMultimodal = async (req, res) => {
   });
 };
 
-/**
- * 🚀 CONTROLADOR ULTRA-SIMPLIFICADO MULTIMODAL SIN GUARDAR AGENTE
- * ✅ USES: TokenManager.handleCompleteToolController - Reduce 90% duplicación
- */
 export const queryAgentMultimodalWithoutSaving = async (req, res) => {
-  // ✅ SIN TRY-CATCH aquí - TokenManager maneja todo
   console.log('🔄 queryAgentMultimodalWithoutSaving iniciado con TokenManager centralizado');
 
   logToolOperation('AGENT_MULTIMODAL_WITHOUT_SAVING_START', req.body, {
@@ -180,10 +150,8 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
     toolSlug: 'agente'
   });
 
-  // ===== VALIDACIÓN CON UTILIDADES MULTIMODALES =====
   const validationErrors = validateToolMultimodalParams(req.body);
 
-  // ===== INFORMACIÓN DE ACCESO DESDE MIDDLEWARES ESPECÍFICOS =====
   const accessInfo = req.accessInfo || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
@@ -191,7 +159,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
   const toolId = req.toolId || req.body.herramientaId;
   const toolInfo = req.toolInfo || null;
 
-  // 🚀 LOG DE ARCHIVOS ADJUNTOS PARA SIN GUARDAR
   const attachmentsSummary = generateAttachmentsSummary(req.body.content || []);
   console.log(`🔄 Procesando consulta multimodal de Agente SIN GUARDAR (retry/edit): ${attachmentsSummary}`);
 
@@ -209,7 +176,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
     ip: req.ip
   }, 'low');
 
-  // 🚀 FUNCIÓN DE SERVICIO PARA EJECUTAR
   const serviceFunction = async (params) => {
     const result = await handleStudyMultimodalQueryWithoutSaving({
       userId: params.userId,
@@ -219,7 +185,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
       content: params.content
     });
 
-    // Agregar flag específico para sin guardar
     if (result.success) {
       result.processedWithoutSaving = true;
     }
@@ -227,8 +192,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
     return result;
   };
 
-  // 🚀 USAR CONTROLADOR CENTRALIZADO DEL TOKEN MANAGER
-  // ✅ CRÍTICO: return await (sin try-catch adicional)
   return await TokenManager.handleCompleteToolController(req, res, {
     validationErrors,
     accessInfo,
@@ -244,9 +207,6 @@ export const queryAgentMultimodalWithoutSaving = async (req, res) => {
   });
 };
 
-/**
- * 🔧 HELPER: Agregar documentos recientes al resultado
- */
 async function addRecentDocumentsToResult(result, userId) {
   try {
     console.log(`🔍 Buscando documentos recientes para chat Agente: ${result.chatId}`);

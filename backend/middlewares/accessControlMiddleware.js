@@ -1,4 +1,3 @@
-// backend/middlewares/accessControlMiddleware.js (OPTIMIZADO - SIN CACHE DUPLICADO)
 
 import { AccessValidationService } from "../services/shared/accessValidationService.js";
 import { ERROR_CODES, getErrorStatusCode } from "../utils/shared/errorCodes.js";
@@ -13,21 +12,12 @@ import {
 import { logSecurityEvent } from '../utils/securityLogger.js';
 import logger from '../utils/logger.js';
 
-/**
- * ⚡ MIDDLEWARE OPTIMIZADO: Control de acceso ultrarrápido 
- * ✅ ACTUALIZADO: Sin cache duplicado, usa solo AccessValidationService
- * OBJETIVO: Reducir tiempo de middleware de 5-8s a <500ms
- */
 
-/**
- * ⚡ OPTIMIZADO: Tool access con bypass admin inmediato
- */
 export const verifyToolAccess = async (req, res, next) => {
   try {
     const { userId } = req.body;
     const userFromAuth = req.user?.id_user;
 
-    // 🚀 Validación de autorización optimizada
     if (!userId || (userFromAuth && userId !== userFromAuth)) {
       logSecurityEvent('TOOL_ACCESS_USER_MISMATCH', 'Intento de acceso con userId diferente al autenticado', {
         requestedUserId: userId,
@@ -45,7 +35,6 @@ export const verifyToolAccess = async (req, res, next) => {
       });
     }
 
-    // ⚡ USAR DIRECTAMENTE AccessValidationService (ya tiene cache optimizado)
     const userStatus = await AccessValidationService.getUserStatus(userId);
     
     if (userStatus.isAdmin) {
@@ -76,7 +65,6 @@ export const verifyToolAccess = async (req, res, next) => {
       return next();
     }
 
-    // 📋 USUARIOS REGULARES: Validación optimizada
     logger.debug('Usuario regular - Validando límites', { 
       userId, 
       isPremium: userStatus.isPremium 
@@ -145,15 +133,11 @@ export const verifyToolAccess = async (req, res, next) => {
   }
 };
 
-/**
- * ⚡ OPTIMIZADO: AVA access con bypass admin inmediato
- */
 export const verifyAvaAccess = async (req, res, next) => {
   try {
     const { userId, avaId } = req.body;
     const userFromAuth = req.user?.id_user;
 
-    // 🚀 Validación optimizada
     if (!userId || (userFromAuth && userId !== userFromAuth)) {
       logSecurityEvent('AVA_ACCESS_USER_MISMATCH', 'Intento de acceso a AVA con userId diferente al autenticado', {
         requestedUserId: userId,
@@ -182,7 +166,6 @@ export const verifyAvaAccess = async (req, res, next) => {
       });
     }
 
-    // ⚡ USAR DIRECTAMENTE AccessValidationService (ya optimizado)
     const userStatus = await AccessValidationService.getUserStatus(userId);
     
     if (userStatus.isAdmin) {
@@ -199,7 +182,6 @@ export const verifyAvaAccess = async (req, res, next) => {
         avaId 
       });
 
-      // ⚡ LAZY LOADING: Solo obtener info del AVA si es necesario, NO bloquear respuesta
       req.accessInfo = {
         isAdmin: true,
         avaAccess: {
@@ -211,7 +193,6 @@ export const verifyAvaAccess = async (req, res, next) => {
         avaId
       };
 
-      // 🚀 Obtener info del AVA en background (no bloquear)
       setImmediate(async () => {
         try {
           const validation = await AccessValidationService.validateAvaAccess(userId, avaId);
@@ -227,7 +208,6 @@ export const verifyAvaAccess = async (req, res, next) => {
       return next();
     }
 
-    // 📋 USUARIOS REGULARES: Validación completa
     const validation = await AccessValidationService.validateAvaAccess(userId, avaId);
 
     if (!validation.canProceed) {
@@ -290,9 +270,6 @@ export const verifyAvaAccess = async (req, res, next) => {
   }
 };
 
-/**
- * ⚡ ULTRA-OPTIMIZADO: Token limits unificado con bypass admin y cache agresivo
- */
 export const checkTokenLimitsUnified = async (req, res, next) => {
   try {
     const { chatId, query, content } = req.body;
@@ -311,7 +288,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       });
     }
 
-    // ⚡ BYPASS ADMIN INMEDIATO - SIN CÁLCULOS DE TOKENS
     if (userId) {
       const userStatus = await AccessValidationService.getUserStatus(userId);
       
@@ -343,19 +319,15 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       }
     }
 
-    // 🚀 USUARIOS REGULARES: Validación optimizada en paralelo
     logger.debug('Ejecutando validación optimizada para usuarios regulares', { userId });
 
-    // 🚀 OPERACIONES EN PARALELO PARA MÁXIMA VELOCIDAD
     const validationPromises = [];
     
-    // 1️⃣ Validación actual de tokens (siempre)
     validationPromises.push(
       AccessValidationService.validateTokenLimits(chatId, userId)
         .then(result => ({ type: 'current', result }))
     );
 
-    // 2️⃣ Pre-validación solo si hay query/content (en paralelo)
     const textToValidate = query || (content && Array.isArray(content) ? 
       content.filter(item => item && item.type === 'text')
              .map(item => item.text)
@@ -370,10 +342,8 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       );
     }
 
-    // ⚡ EJECUTAR TODAS LAS VALIDACIONES EN PARALELO
     const validationResults = await Promise.all(validationPromises);
     
-    // 🚀 PROCESAR RESULTADOS
     let currentValidation = null;
     let preValidation = null;
     
@@ -385,7 +355,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       }
     }
 
-    // ✅ VERIFICAR LÍMITE ACTUAL
     if (!currentValidation.canProceed) {
       logSecurityEvent('TOKEN_LIMIT_EXCEEDED', 'Límite de tokens excedido en chat', {
         userId: userId,
@@ -412,7 +381,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       });
     }
 
-    // ✅ VERIFICAR PRE-VALIDACIÓN SI EXISTE
     if (preValidation && !preValidation.canProceed) {
       logSecurityEvent('PRE_VALIDATION_FAILED', 'Pre-validación falló en validación unificada', {
         userId,
@@ -431,7 +399,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       });
     }
 
-    // ✅ CONFIGURAR INFORMACIÓN UNIFICADA
     const tokenInfo = {
       ...currentValidation.tokenInfo,
       exactCalculation: true
@@ -455,7 +422,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
       method: 'optimized_unified_parallel'
     } : null;
 
-    // 🚀 LOGGING OPTIMIZADO
     if (tokenWarning) {
       logSecurityEvent('TOKEN_LIMIT_WARNING', 'Advertencia de límite de tokens', {
         userId: userId,
@@ -496,7 +462,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
 
     logger.error('Error en validación unificada de tokens', { error: error.message });
 
-    // ✅ FALLBACK ULTRARRÁPIDO
     try {
       logger.debug('Usando fallback ultrarrápido');
       
@@ -549,9 +514,6 @@ export const checkTokenLimitsUnified = async (req, res, next) => {
   }
 };
 
-/**
- * ⚡ OPTIMIZADO: Middleware combinado con bypass admin
- */
 export const verifyToolAccessWithTokensUnified = async (req, res, next) => {
   verifyToolAccess(req, res, (error) => {
     if (error) return next(error);
@@ -579,9 +541,6 @@ export const verifyToolAccessWithTokensUnified = async (req, res, next) => {
   });
 };
 
-/**
- * ⚡ OPTIMIZADO: Middleware AVA combinado con bypass admin
- */
 export const verifyAvaAccessWithTokensUnified = async (req, res, next) => {
   verifyAvaAccess(req, res, (error) => {
     if (error) return next(error);
@@ -609,9 +568,6 @@ export const verifyAvaAccessWithTokensUnified = async (req, res, next) => {
   });
 };
 
-/**
- * ⚡ ULTRA-OPTIMIZADO: Middleware específico por herramienta
- */
 export const verifySpecificToolAccess = (toolSlug) => {
   return async (req, res, next) => {
     try {
@@ -629,7 +585,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
 
       const userId = req.body.userId || req.user?.id_user;
       
-      // ⚡ BYPASS ADMIN INMEDIATO
       if (userId) {
         const userStatus = await AccessValidationService.getUserStatus(userId);
         
@@ -682,7 +637,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
         }
       }
 
-      // 📋 USUARIOS REGULARES: Validación específica optimizada
       logger.debug('Usuario regular - Validando límites específicos', { toolSlug, userId });
 
       const userStatus = await AccessValidationService.getUserStatus(userId);
@@ -705,7 +659,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
         const limitType = validation.limits?.daily?.exceeded ? 'daily' : 'hourly';
         const resetTime = validation.limits?.[limitType]?.resetTime;
         
-        // ⭐ PASAR LÍMITES ESPECÍFICOS DINÁMICOS
         const response = withUpgradeInfo(
           specificToolLimitReached(toolSlug, limitType, resetTime, validation.limits, {
             toolSlug,
@@ -720,7 +673,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
         return res.status(statusCode).json(response);
       }
 
-      // ⭐ AGREGAR LÍMITES ESPECÍFICOS AL REQUEST
       req.toolSlug = toolSlug;
       req.toolId = validation.toolId;
       req.toolInfo = {
@@ -734,7 +686,6 @@ export const verifySpecificToolAccess = (toolSlug) => {
         toolAccess: validation,
         userId,
         
-        // ⭐ LÍMITES ESPECÍFICOS DINÁMICOS
         specificToolLimits: {
           toolSlug,
           type: userStatus.isPremium ? 'premium' : 'free_user_limits',
@@ -770,18 +721,12 @@ export const verifySpecificToolAccess = (toolSlug) => {
   };
 };
 
-/**
- * ⚡ HELPER: Mapeo dinámico de tipos a slugs (para compatibilidad)
- */
 const TOOL_TYPE_TO_SLUG_MAP = {
   'agent': 'agente',
   'agente': 'agente', 
   'pdf': 'pdf'
 };
 
-/**
- * ⚡ OPTIMIZADO: Middleware por tipo de herramienta
- */
 export const verifySpecificToolAccessByType = (toolType) => {
   return async (req, res, next) => {
     try {
@@ -821,15 +766,8 @@ export const verifySpecificToolAccessByType = (toolType) => {
   };
 };
 
-// ================================
-// ⚡ FUNCIONES DE LIMPIEZA DE CACHE
-// ================================
 
-/**
- * ⚡ OPTIMIZADO: Limpiar cache centralizado
- */
 export const clearUserStatusCache = (userId = null) => {
-  // Solo limpiar del AccessValidationService (fuente única de verdad)
   AccessValidationService.clearUserStatusCache(userId);
   logger.debug('User status cache cleared', { 
     userId: userId || 'all_users', 
@@ -837,9 +775,6 @@ export const clearUserStatusCache = (userId = null) => {
   });
 };
 
-// ================================
-// 🗑️ FUNCIONES LEGACY DEPRECADAS (compatibilidad)
-// ================================
 
 export const checkTokenLimits = checkTokenLimitsUnified;
 export const verifyToolAccessWithTokens = verifyToolAccessWithTokensUnified;

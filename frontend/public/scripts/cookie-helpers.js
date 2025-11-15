@@ -12,7 +12,6 @@
    */
   function hasCookieConsent(category) {
     try {
-      // Para propósitos de debug, verificamos adicional info
       const cookieMetadata = localStorage.getItem('cookieConsentMetadata');
       const cookiePreferences = localStorage.getItem('cookiePreferences');
       
@@ -93,10 +92,8 @@
    */
   function notifyUserChange(userId) {
     try {
-      // Guardar ID del usuario actual para verificaciones
       window.currentUserId = userId;
       
-      // Emitir evento para el sistema de cookies
       if (userId) {
         const loginEvent = new CustomEvent('userLoggedIn', { detail: { userId } });
         document.dispatchEvent(loginEvent);
@@ -107,12 +104,10 @@
         console.log('Notificación de cierre de sesión emitida');
       }
       
-      // Actualizar metadata si existe
       try {
         const cookieMetadata = localStorage.getItem('cookieConsentMetadata');
         if (cookieMetadata) {
           const metadata = JSON.parse(cookieMetadata);
-          // Actualizar el userId en la metadata
           metadata.userId = userId;
           localStorage.setItem('cookieConsentMetadata', JSON.stringify(metadata));
         }

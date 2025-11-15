@@ -8,15 +8,8 @@ import {
 } from './enhancedDuplicateDetection.js';
 import pool from "../../../lib/dbPool.js";
 
-/**
- * ✅ MIDDLEWARE INTELIGENTE BASADO EN EMBEDDINGS
- * Usa búsqueda semántica + análisis de IA para detección real de duplicados
- */
 export class UniquenessMiddleware {
   
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE PERFILES CON EMBEDDINGS
-   */
   static async checkProfileUniqueness(profileData, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando perfil con embeddings + IA...");
@@ -62,9 +55,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE CONTENIDO CON EMBEDDINGS
-   */
   static async checkContentUniqueness(type, channel, payload, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando contenido con embeddings + IA...");
@@ -110,9 +100,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE TENDENCIAS CON EMBEDDINGS
-   */
   static async checkTrendUniqueness(theme, metadata = {}, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando tendencia con embeddings + IA...");
@@ -158,9 +145,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN INTELIGENTE DE INSIGHTS CON EMBEDDINGS + FUSIÓN
-   */
   static async checkMemoryUniqueness(type, content, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE INTELIGENTE: Verificando insight con embeddings + IA...");
@@ -168,7 +152,6 @@ export class UniquenessMiddleware {
       const result = await isUniqueInsightIntelligent(content);
       
       if (!result.isUnique) {
-        // ✅ CASO ESPECIAL: FUSIÓN INTELIGENTE
         if (result.shouldFuse) {
           console.log(`🔗 MIDDLEWARE: Insight candidato para fusión inteligente`);
           console.log(`📊 Análisis: ${result.analysisType}, Similitud: ${result.similarityScore ? (result.similarityScore * 100).toFixed(1) + '%' : 'N/A'}`);
@@ -224,9 +207,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ VERIFICACIÓN DE INTERACCIONES (sin cambios - no necesita embeddings)
-   */
   static async checkInteractionUniqueness(profileId, contentId, channel, action, options = {}) {
     try {
       console.log("🔍 MIDDLEWARE: Verificando unicidad de interacción...");
@@ -278,9 +258,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ MÉTODO PRINCIPAL ACTUALIZADO CON SISTEMA INTELIGENTE
-   */
   static async checkUniqueness(type, data, options = {}) {
     const startTime = Date.now();
     
@@ -326,7 +303,6 @@ export class UniquenessMiddleware {
       
       const duration = Date.now() - startTime;
       
-      // ✅ LOGGING INTELIGENTE CON DETALLES DE IA
       if (result.similarityScore !== undefined) {
         console.log(`⏱️ MIDDLEWARE INTELIGENTE: Verificación de ${type} completada en ${duration}ms`);
         console.log(`📊 Similitud: ${(result.similarityScore * 100).toFixed(1)}%, Análisis: ${result.analysisType || 'N/A'}`);
@@ -358,9 +334,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ WRAPPER PRINCIPAL CON LOGGING INTELIGENTE DETALLADO
-   */
   static async beforeSave(type, data, options = {}) {
     console.log(`🔒 MIDDLEWARE INTELIGENTE: Iniciando verificación antes de guardar ${type}`);
     
@@ -369,7 +342,6 @@ export class UniquenessMiddleware {
     if (verification.shouldSkip) {
       console.log(`🚫 MIDDLEWARE: Guardado de ${type} CANCELADO - ${verification.reason}`);
       
-      // ✅ LOGGING DETALLADO PARA DUPLICADOS
       if (verification.similarityScore) {
         console.log(`📊 DETALLES: Similitud ${(verification.similarityScore * 100).toFixed(1)}%, Análisis: ${verification.analysisType}`);
       }
@@ -416,7 +388,6 @@ export class UniquenessMiddleware {
     
     console.log(`✅ MIDDLEWARE: Guardado de ${type} AUTORIZADO por sistema inteligente - ${verification.reason}`);
     
-    // ✅ LOGGING POSITIVO DETALLADO
     if (verification.analysisType) {
       console.log(`📊 CONFIRMACIÓN: Análisis ${verification.analysisType} completado exitosamente`);
     }
@@ -433,15 +404,11 @@ export class UniquenessMiddleware {
     };
   }
 
-  /**
-   * ✅ ESTADÍSTICAS INTELIGENTES MEJORADAS
-   */
   static async getDuplicationStats() {
     try {
       const intelligentStats = await getIntelligentDuplicationStats();
       
       if (!intelligentStats) {
-        // Fallback a estadísticas básicas
         const basicStats = await Promise.all([
           pool.query('SELECT COUNT(*) as total FROM marketing_profiles'),
           pool.query('SELECT COUNT(*) as total FROM marketing_contents'),  
@@ -479,9 +446,6 @@ export class UniquenessMiddleware {
     }
   }
 
-  /**
-   * ✅ MÉTODO DE DIAGNÓSTICO DEL SISTEMA INTELIGENTE
-   */
   static async diagnosticReport() {
     try {
       console.log("🔍 DIAGNÓSTICO: Ejecutando reporte del sistema inteligente...");

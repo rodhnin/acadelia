@@ -1,4 +1,3 @@
-// backend/controllers/chat/chatController.js (SIN TRUNCAMIENTO - SOLO WARNING AL 75%)
 import path from 'path';
 import fs from 'fs';
 import * as chatService from '../../services/chat/chatServices.js';
@@ -11,12 +10,10 @@ export const createChat = async (req, res) => {
 
     console.log('🔍 createChat Controller - req.body:', req.body);
 
-    // Validación de userId
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
 
-    // Validación de query
     if (!query || typeof query !== 'string' || query.trim() === '') {
         return res.status(400).json({ error: 'Se requiere una query inicial para el chat' });
     }
@@ -24,24 +21,21 @@ export const createChat = async (req, res) => {
     try {
         let chat;
 
-        // ✅ DETERMINAR SI ES HERRAMIENTA O AVA
         if (herramientaId !== null && herramientaId !== undefined && !isNaN(Number(herramientaId))) {
-            // Crear chat para herramienta
             console.log(`🔧 Creando chat para herramienta ${herramientaId}`);
             chat = await chatService.createChat(
                 Number(userId),
-                null,           // avaId = null
+                null,
                 query,
                 Number(herramientaId)
             );
         } else if (avaId !== null && avaId !== undefined && !isNaN(Number(avaId))) {
-            // Crear chat para AVA
             console.log(`🎭 Creando chat para AVA ${avaId}`);
             chat = await chatService.createChat(
                 Number(userId),
                 Number(avaId),
                 query,
-                null            // herramientaId = null
+                null
             );
         } else {
             return res.status(400).json({
@@ -67,16 +61,12 @@ export const createChat = async (req, res) => {
     }
 };
 
-/**
- * Cancela una solicitud pendiente con detección correcta de herramientas
- */
 export const cancelPendingRequest = async (req, res) => {
     const { chatId } = req.params;
     const userId = Number(req.headers['id_user'] || req.body.userId);
     let avaId = req.body.avaId ? Number(req.body.avaId) : null;
     let herramientaId = req.body.herramientaId ? Number(req.body.herramientaId) : null;
 
-    // Validaciones básicas
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
@@ -88,7 +78,6 @@ export const cancelPendingRequest = async (req, res) => {
     try {
         console.log(`🔄 Iniciando cancelación para chat ${chatId}, usuario ${userId}`);
 
-        // ✅ Si no se proporcionan IDs, obtenerlos correctamente
         if (!avaId && !herramientaId) {
             try {
                 console.log(`🔍 Obteniendo información del chat usando servicio para ${chatId}...`);
@@ -102,7 +91,6 @@ export const cancelPendingRequest = async (req, res) => {
                 if (result.rows.length > 0) {
                     const { id_ava, id_herramienta } = result.rows[0];
 
-                    // ✅ LÓGICA CORREGIDA: Verificar EXACTAMENTE qué campo tiene valor
                     if (id_herramienta !== null && id_herramienta !== undefined) {
                         herramientaId = id_herramienta;
                         avaId = null;
@@ -112,7 +100,6 @@ export const cancelPendingRequest = async (req, res) => {
                         herramientaId = null;
                         console.log(`✅ Chat ${chatId} es de AVA: ${avaId}`);
                     } else {
-                        // Fallback: para herramientas por defecto
                         herramientaId = 2;
                         avaId = null;
                         console.log(`⚠️ Chat ${chatId} sin tipo definido, usando herramienta por defecto: ${herramientaId}`);
@@ -124,21 +111,17 @@ export const cancelPendingRequest = async (req, res) => {
                 }
             } catch (e) {
                 console.warn("⚠️ Error obteniendo información del chat:", e.message);
-                // Fallback: asumir herramienta
                 herramientaId = 2;
                 avaId = null;
                 console.log(`🔧 Usando fallback: herramientaId = 2`);
             }
         }
 
-        // ✅ VALIDACIÓN FINAL CORREGIDA
         const hasAva = avaId !== null && avaId !== undefined && !isNaN(avaId) && avaId > 0;
         const hasHerramienta = herramientaId !== null && herramientaId !== undefined && !isNaN(herramientaId) && herramientaId > 0;
 
-        // 🚨 NUNCA TENER AMBOS AL MISMO TIEMPO
         if (hasAva && hasHerramienta) {
             console.error(`❌ ERROR CRÍTICO: Chat ${chatId} tiene tanto AVA (${avaId}) como herramienta (${herramientaId})`);
-            // Priorizar herramienta y limpiar AVA
             avaId = null;
             console.log(`🔧 CORRIGIENDO: Limpiando avaId, manteniendo herramientaId = ${herramientaId}`);
         }
@@ -154,7 +137,6 @@ export const cancelPendingRequest = async (req, res) => {
 
         console.log(`🎯 Cancelando solicitud para chat ${chatId}, usuario ${userId}, AVA: ${finalAvaId}, Herramienta: ${finalHerramientaId}`);
 
-        // Registrar solicitud como cancelada con parámetros CORRECTOS
         const result = await chatService.registerCancelledRequest(chatId, userId, finalAvaId, finalHerramientaId);
 
         if (!result.success) {
@@ -218,9 +200,6 @@ export const cancelPendingRequest = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN CORREGIDA: cancelChatMessage
- */
 export const cancelChatMessage = async (req, res) => {
     const { chatId } = req.params;
     const userId = Number(req.headers['id_user'] || req.body.userId);
@@ -228,7 +207,6 @@ export const cancelChatMessage = async (req, res) => {
     let avaId = null;
     let herramientaId = null;
 
-    // Validaciones básicas
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
@@ -240,7 +218,6 @@ export const cancelChatMessage = async (req, res) => {
     try {
         console.log(`🔄 Iniciando cancelación de mensaje para chat ${chatId}, usuario ${userId}`);
 
-        // ✅ OBLIGATORIO: Detectar tipo de chat correctamente SIEMPRE
         try {
             console.log(`🔍 Detectando tipo de chat automáticamente para ${chatId}...`);
 
@@ -253,7 +230,6 @@ export const cancelChatMessage = async (req, res) => {
             if (result.rows.length > 0) {
                 const { id_ava, id_herramienta } = result.rows[0];
 
-                // ✅ LÓGICA CRÍTICA: HERRAMIENTA PRIMERO
                 if (id_herramienta !== null && id_herramienta !== undefined) {
                     herramientaId = id_herramienta;
                     avaId = null;
@@ -263,7 +239,6 @@ export const cancelChatMessage = async (req, res) => {
                     herramientaId = null;
                     console.log(`✅ cancelChatMessage: Chat ${chatId} es de AVA: ${avaId}`);
                 } else {
-                    // Fallback: para herramientas por defecto
                     herramientaId = 2;
                     avaId = null;
                     console.log(`⚠️ cancelChatMessage: Chat ${chatId} sin tipo definido, usando herramienta por defecto: ${herramientaId}`);
@@ -280,7 +255,6 @@ export const cancelChatMessage = async (req, res) => {
             console.log(`🔧 cancelChatMessage: Usando fallback: herramientaId = 2`);
         }
 
-        // ✅ VALIDACIÓN CRÍTICA: NUNCA AMBOS AL MISMO TIEMPO
         const hasAva = avaId !== null && avaId !== undefined && !isNaN(avaId) && avaId > 0;
         const hasHerramienta = herramientaId !== null && herramientaId !== undefined && !isNaN(herramientaId) && herramientaId > 0;
 
@@ -356,7 +330,6 @@ export const cancelChatMessage = async (req, res) => {
 export const getChats = async (req, res) => {
     const { userId, avaId, herramientaId } = req.params;
 
-    // Validación básica del userId
     if (!userId || isNaN(Number(userId))) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
@@ -370,9 +343,7 @@ export const getChats = async (req, res) => {
     });
 
     try {
-        // Detectar tipo de ruta basado en la URL
         if (req.path.includes('/tool/')) {
-            // RUTA DE HERRAMIENTAS: /chats/:userId/tool/:herramientaId
             console.log('📊 Procesando ruta de herramientas');
 
             if (!herramientaId || isNaN(Number(herramientaId))) {
@@ -391,7 +362,6 @@ export const getChats = async (req, res) => {
             return;
         }
         else {
-            // RUTA DE AVAS: /chats/:userId/:avaId
             console.log('🤖 Procesando ruta de AVAs');
 
             if (!avaId || isNaN(Number(avaId))) {
@@ -417,7 +387,6 @@ export const getChats = async (req, res) => {
             path: req.path
         });
 
-        // Determinar el tipo de error y responder apropiadamente
         if (error.message === 'Chat no encontrado o acceso no autorizado') {
             return res.status(404).json({ error: error.message });
         }
@@ -442,10 +411,8 @@ export const getChatMessages = async (req, res) => {
     }
 
     try {
-        // 🔒 VALIDACIÓN ADICIONAL: Verificar que el chat existe y pertenece al usuario
         const chatInfo = await chatService.getChatInfo(chatId);
 
-        // Verificar que el chat pertenece al usuario
         const pool = (await import('../../lib/dbPool.js')).default;
         const ownerCheck = await pool.query(
             'SELECT id_user FROM chat WHERE id_chat = $1',
@@ -513,21 +480,16 @@ export const deleteChat = async (req, res) => {
     }
 
     try {
-        // Eliminar el chat de la base de datos
         const deletedChat = await chatService.deleteChat(chatId, userId);
 
-        // ✅ IMPLEMENTACIÓN DIRECTA: Eliminar archivos físicos del chat
         console.log(`🗑️ Iniciando eliminación de archivos para chat: ${chatId}`);
 
-        // Eliminar documentos del chat
         const documentsDeleted = await documentStorageService.deleteFilesForChat(chatId);
         console.log(`📄 Documentos eliminados: ${documentsDeleted ? 'Sí' : 'No'}`);
 
-        // Eliminar imágenes del chat
         const imagesDeleted = await imageStorageService.deleteImagesForChat(chatId);
         console.log(`🖼️ Imágenes eliminadas: ${imagesDeleted ? 'Sí' : 'No'}`);
 
-        // Log de eliminación exitosa de chat
         logSecurityEvent('CHAT_DELETED', 'Chat eliminado exitosamente', {
             userId: userId,
             chatId: chatId,
@@ -545,7 +507,6 @@ export const deleteChat = async (req, res) => {
             }
         });
     } catch (error) {
-        // Log de error en eliminación de chat
         logSecurityEvent('CHAT_DELETION_ERROR', 'Error al eliminar chat', {
             userId: userId,
             chatId: chatId,
@@ -564,15 +525,11 @@ export const deleteChat = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA SIN VALIDACIÓN DE TOKENS: updateChatMessage
- */
 export const updateChatMessage = async (req, res) => {
     const { chatId } = req.params;
     const { messageId, content } = req.body;
     const userId = Number(req.headers['id_user'] || req.body.userId);
 
-    // Validaciones básicas
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
@@ -586,7 +543,6 @@ export const updateChatMessage = async (req, res) => {
     }
 
     try {
-        // ✅ SIN VALIDACIÓN DE TOKENS: Proceder directamente con la actualización
         const updatedMessage = await chatService.updateChatMessage(chatId, userId, messageId, content);
 
         const response = {
@@ -598,7 +554,6 @@ export const updateChatMessage = async (req, res) => {
         res.json(response);
 
     } catch (error) {
-        // Log y manejo normal de errores
         logSecurityEvent('MESSAGE_UPDATE_ERROR', 'Error al actualizar mensaje de chat', {
             userId: userId,
             chatId: chatId,
@@ -630,15 +585,11 @@ export const updateChatMessage = async (req, res) => {
     }
 };
 
-/**
- * ✅ FUNCIÓN SIMPLIFICADA SIN VALIDACIÓN DE TOKENS: replaceInteraction
- */
 export const replaceInteraction = async (req, res) => {
     const { chatId } = req.params;
     const { userMessageId, aiMessageId, userContent, aiContent } = req.body;
     const userId = Number(req.headers['id_user'] || req.body.userId);
 
-    // Validaciones básicas
     if (!userId || isNaN(userId)) {
         return res.status(400).json({ error: 'ID de usuario requerido y debe ser numérico' });
     }
@@ -653,7 +604,6 @@ export const replaceInteraction = async (req, res) => {
     }
 
     try {
-        // ✅ SIN VALIDACIÓN DE TOKENS: Proceder directamente con el reemplazo
         const result = await chatService.replaceInteraction(
             chatId,
             userId,
@@ -672,7 +622,6 @@ export const replaceInteraction = async (req, res) => {
         res.json(response);
 
     } catch (error) {
-        // Log y manejo normal de errores
         logSecurityEvent('INTERACTION_REPLACE_ERROR', 'Error al reemplazar interacción en chat', {
             userId: userId,
             chatId: chatId,
@@ -714,7 +663,6 @@ export const saveMarkdownImage = async (req, res) => {
     }
 
     try {
-        // *** VERIFICAR RUTA LOCAL más estricta ***
         if (imageUrl.startsWith('/uploads/')) {
             const fullPath = path.join(process.cwd(), imageUrl.replace(/^\//, ''));
             if (fs.existsSync(fullPath)) {
@@ -730,7 +678,6 @@ export const saveMarkdownImage = async (req, res) => {
             }
         }
 
-        // ✅ SISTEMA DE LOCKS MEJORADO con Map en lugar de global
         if (!global._saveImageLocks) {
             global._saveImageLocks = new Map();
         }
@@ -738,12 +685,10 @@ export const saveMarkdownImage = async (req, res) => {
         const locks = global._saveImageLocks;
         const lockKey = `${chatId || 'default'}:${imageUrl}`;
 
-        // ✅ VERIFICAR SI YA ESTÁ SIENDO PROCESADA
         if (locks.has(lockKey)) {
             console.log(`⏳ Imagen ya en procesamiento, esperando resultado: ${imageUrl.substring(0, 50)}...`);
 
             try {
-                // ✅ MEJORADA: Esperar con timeout y validación
                 const existingPromise = locks.get(lockKey);
                 const timeoutPromise = new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Timeout esperando procesamiento concurrente')), 10000)
@@ -751,23 +696,19 @@ export const saveMarkdownImage = async (req, res) => {
 
                 const result = await Promise.race([existingPromise, timeoutPromise]);
 
-                // ✅ VALIDAR RESULTADO antes de devolver
                 if (result && result.success && result.filePath) {
                     console.log(`✅ Usando resultado exitoso de procesamiento concurrente: ${result.filePath}`);
                     return res.json(result);
                 } else {
                     console.log(`❌ Resultado de procesamiento concurrente no válido, eliminando lock`);
                     locks.delete(lockKey);
-                    // Continuar con procesamiento nuevo
                 }
             } catch (error) {
                 console.log(`❌ Error esperando procesamiento concurrente: ${error.message}`);
                 locks.delete(lockKey);
-                // Continuar con procesamiento nuevo
             }
         }
 
-        // *** VERIFICACIÓN DE DUPLICADOS más robusta ***
         if (checkDuplicate) {
             const existingImage = await imageStorageService.findExistingImage(imageUrl, chatId || 'markdown_images');
 
@@ -787,12 +728,10 @@ export const saveMarkdownImage = async (req, res) => {
             }
         }
 
-        // ✅ CREAR PROMESA PARA LOCK con manejo de errores mejorado
         const processingPromise = (async () => {
             try {
                 const result = await imageStorageService.saveImageFromUrl(imageUrl, chatId || 'markdown_images');
 
-                // ✅ VALIDAR RESULTADO antes de almacenar en cache
                 if (!result || !result.success) {
                     throw new Error(result?.error || 'Resultado de procesamiento inválido');
                 }
@@ -802,7 +741,6 @@ export const saveMarkdownImage = async (req, res) => {
                 console.error(`❌ Error en procesamiento de imagen: ${error.message}`);
                 throw error;
             } finally {
-                // ✅ CLEANUP automático del lock con delay
                 setTimeout(() => {
                     if (locks.has(lockKey)) {
                         locks.delete(lockKey);
@@ -812,7 +750,6 @@ export const saveMarkdownImage = async (req, res) => {
             }
         })();
 
-        // ✅ ESTABLECER LOCK
         locks.set(lockKey, processingPromise);
 
         try {
@@ -827,13 +764,11 @@ export const saveMarkdownImage = async (req, res) => {
                 securityInfo: result.securityInfo
             });
         } catch (error) {
-            // ✅ LIMPIAR LOCK inmediatamente en error
             locks.delete(lockKey);
             throw error;
         }
 
     } catch (error) {
-        // ✅ SILENCIOSO: Quitar console.error
         res.status(500).json({
             success: false,
             error: 'Error interno del servidor'

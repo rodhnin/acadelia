@@ -5,7 +5,6 @@
 // Configuración global
 const CONFIG = {
   // El modelo soporta aproximadamente 8164 tokens
-  // Para español, aproximadamente 3-4 caracteres por token
   MAX_CHARS: 3000,
   
   // Límites por variante (ajustar según necesidades)
@@ -36,18 +35,13 @@ let state = {
   isExceeded: false     // Si actualmente se excede el límite
 };
 
-/**
- * 🦫 NUEVA: Muestra alerta del Profesor Acadel en lugar de alerta genérica
- */
 function showAcadelLimitAlert() {
-  // 🦫 REEMPLAZAR alerta genérica con notificación del Profesor Acadel
   if (typeof window.acadelWarning === 'function') {
     window.acadelWarning(
       "📝 ¡Mensaje muy extenso!",
       "Acadel dice: 'Incluso mi cerebro de capibara tiene límites'. Haz tu consulta más concisa, por favor"
     );
   } else {
-    // Fallback si acadelWarning no está disponible
     showAlert(); // Usar el método original como respaldo
   }
 }
@@ -63,22 +57,18 @@ function createAlertElement() {
     return state.alertElement;
   }
   
-  // Crear elemento de alerta
   const alert = document.createElement('div');
   alert.className = 'character-limit-alert';
   alert.setAttribute('role', 'alert');
   alert.id = 'character-limit-alert';
   
-  // Añadir contenido con personalidad de Acadel
   alert.innerHTML = `
     <i class="bx bx-error-circle"></i>
     <span>Acadel dice: "¡Ey! Ese mensaje está muy largo para mi cerebro de capibara"</span>
   `;
   
-  // Añadir al DOM
   document.body.appendChild(alert);
   
-  // Guardar referencia
   state.alertElement = alert;
   
   return alert;
@@ -89,19 +79,15 @@ function createAlertElement() {
  * Normalmente se usa showAcadelLimitAlert()
  */
 function showAlert() {
-  // Crear alerta si no existe
   const alert = createAlertElement();
   
-  // Cancelar timeout anterior si existe
   if (state.alertTimeout) {
     clearTimeout(state.alertTimeout);
     state.alertTimeout = null;
   }
   
-  // Mostrar alerta
   alert.classList.add('visible');
   
-  // Ocultar después del tiempo configurado
   state.alertTimeout = setTimeout(() => {
     hideAlert();
   }, CONFIG.ALERT_DURATION);
@@ -132,7 +118,6 @@ function createCounter(textarea) {
     return state.counters.get(textarea);
   }
   
-  // Determinar el contenedor adecuado (normal o welcome)
   const isWelcomeTextarea = textarea.id === 'welcome-message-input';
   const container = textarea.closest('.input-container') || 
                    textarea.closest('.input-box') ||
@@ -141,21 +126,15 @@ function createCounter(textarea) {
   
   if (!container) return null;
   
-  // Crear elemento contador
   const counter = document.createElement('div');
   counter.className = 'character-counter';
   container.appendChild(counter);
   
-  // Guardar referencia
   state.counters.set(textarea, counter);
   
   return counter;
 }
 
-/**
- * 🦫 MEJORADA: Actualiza el contador con mensajes del Profesor Acadel
- * @param {HTMLTextAreaElement} textarea - El textarea a actualizar
- */
 function updateCounter(textarea) {
   if (!textarea) return;
   
@@ -166,7 +145,6 @@ function updateCounter(textarea) {
   const remaining = state.currentLimit - currentLength;
   const ratio = currentLength / state.currentLimit;
   
-  // 🦫 MENSAJES MEJORADOS CON PERSONALIDAD DE ACADEL
   if (remaining >= 0) {
     if (ratio >= CONFIG.DANGER_THRESHOLD) {
       counter.textContent = `⚠️ Solo ${remaining} caracteres restantes (Acadel está preocupado)`;
@@ -179,22 +157,17 @@ function updateCounter(textarea) {
     counter.textContent = `🚫 Excedido por ${Math.abs(remaining)} caracteres (¡Acadel no puede procesar tanto!)`;
   }
   
-  // Limpiar todas las clases
   counter.classList.remove('warning', 'danger', 'limit-reached');
   textarea.classList.remove('limit-exceeded');
   
-  // Determinar el estado actual
   const exceeds = remaining < 0;
   
-  // Actualizar estado global
   state.isExceeded = exceeds;
   
-  // Aplicar clases según el estado
   if (exceeds) {
     counter.classList.add('limit-reached');
     textarea.classList.add('limit-exceeded');
     
-    // 🦫 USAR NUEVA FUNCIÓN DE ACADEL en lugar de alerta genérica
     showAcadelLimitAlert();
   } else if (ratio >= CONFIG.DANGER_THRESHOLD) {
     counter.classList.add('danger');
@@ -210,7 +183,6 @@ function updateCounter(textarea) {
 function handleTextareaInput(e) {
   const textarea = e.target;
   
-  // Cancelar cualquier actualización pendiente
   if (textarea._updateTimeout) {
     clearTimeout(textarea._updateTimeout);
   }
@@ -234,10 +206,8 @@ export function initCharacterLimit(textarea, options = {}) {
     return;
   }
   
-  // Limpiar cualquier inicialización previa para este textarea
   cleanupTextarea(textarea);
   
-  // Determinar el límite a aplicar
   if (options.limit && typeof options.limit === 'number') {
     state.currentLimit = options.limit;
   } else if (options.variant && CONFIG.VARIANT_LIMITS[options.variant]) {
@@ -246,13 +216,10 @@ export function initCharacterLimit(textarea, options = {}) {
     state.currentLimit = CONFIG.MAX_CHARS;
   }
   
-  // Crear contador
   createCounter(textarea);
   
-  // Añadir listener de input
   textarea.addEventListener('input', handleTextareaInput);
   
-  // Registrar el textarea en el mapa
   state.textareas.set(textarea, {
     options: options
   });
@@ -268,25 +235,20 @@ export function initCharacterLimit(textarea, options = {}) {
 function cleanupTextarea(textarea) {
   if (!textarea) return;
   
-  // Remover evento
   textarea.removeEventListener('input', handleTextareaInput);
   
-  // Limpiar timeout específico
   if (textarea._updateTimeout) {
     clearTimeout(textarea._updateTimeout);
     delete textarea._updateTimeout;
   }
   
-  // Remover clase de excedido
   textarea.classList.remove('limit-exceeded');
   
-  // Eliminar contador si existe
   const counter = state.counters.get(textarea);
   if (counter && counter.parentNode) {
     counter.parentNode.removeChild(counter);
   }
   
-  // Eliminar del mapa
   state.counters.delete(textarea);
   state.textareas.delete(textarea);
 }
@@ -301,12 +263,7 @@ export function exceedsLimit(text) {
   return text.length > state.currentLimit;
 }
 
-/**
- * 🦫 REEMPLAZADA: Muestra la alerta del Profesor Acadel en lugar de genérica
- * Útil para cuando se intenta enviar un mensaje que excede el límite
- */
 export function showLimitExceededAlert() {
-  // 🦫 NUEVA IMPLEMENTACIÓN CON ACADEL
   showAcadelLimitAlert();
 }
 
@@ -322,24 +279,20 @@ export function hideLimitAlert() {
  * Limpia todas las instancias del limitador (todos los textareas)
  */
 export function cleanup() {
-  // Limpiar alerta
   hideAlert();
   if (state.alertElement && state.alertElement.parentNode) {
     state.alertElement.parentNode.removeChild(state.alertElement);
     state.alertElement = null;
   }
   
-  // Limpiar todos los textareas
   state.textareas.forEach((_, textarea) => {
     cleanupTextarea(textarea);
   });
   
-  // Resetear el mapa
   state.textareas.clear();
   state.counters.clear();
 }
 
-// Exportar funciones
 export default {
   initCharacterLimit,
   exceedsLimit,

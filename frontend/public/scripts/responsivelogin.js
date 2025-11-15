@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Función para detectar si estamos en modo responsive
     const isMobile = () => window.innerWidth <= 870;
     
     // Seleccionar el wrapper y los contenedores
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginContainer = document.querySelector('.login-container');
     const registerContainer = document.querySelector('.register-container');
     
-    // Función para cambiar a registro
     function showRegister(e) {
         if (e) e.preventDefault();
         console.log('Cambiando a registro');
@@ -19,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Función para cambiar a login
     function showLogin(e) {
         if (e) e.preventDefault();
         console.log('Cambiando a login');
@@ -43,20 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
         ghostBtnIngresar.addEventListener('click', showLogin);
     }
     
-    // CREAR BOTONES EQUIVALENTES PARA MODO RESPONSIVE
     function createResponsiveButtons() {
-        // Solo crear los botones si estamos en móvil y no existen ya
         if (!isMobile()) return;
         
-        // Verificar si ya existen
         if (!document.getElementById('mobile-ghost-register')) {
-            // Crear botón de registro para móvil
             const mobileRegisterBtn = document.createElement('button');
             mobileRegisterBtn.id = 'mobile-ghost-register';
             mobileRegisterBtn.className = 'ghost-btn link-registro mobile-ghost-btn';
             mobileRegisterBtn.textContent = 'Crear cuenta';
             
-            // Agregar al formulario de login
             const loginForm = document.getElementById('formLogin');
             if (loginForm) {
                 loginForm.appendChild(mobileRegisterBtn);
@@ -65,13 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (!document.getElementById('mobile-ghost-login')) {
-            // Crear botón de login para móvil
             const mobileLoginBtn = document.createElement('button');
             mobileLoginBtn.id = 'mobile-ghost-login';
             mobileLoginBtn.className = 'ghost-btn link-ingresar mobile-ghost-btn';
             mobileLoginBtn.textContent = 'Ingresar';
             
-            // Agregar al formulario de registro
             const registerForm = document.getElementById('formRegistro');
             if (registerForm) {
                 registerForm.appendChild(mobileLoginBtn);
@@ -80,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Ejecutar la creación de botones
     createResponsiveButtons();
     
     // También crear los botones cuando cambie el tamaño de la ventana

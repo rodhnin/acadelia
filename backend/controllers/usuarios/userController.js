@@ -1,6 +1,3 @@
-// ========================================
-// 📁 userController.js - CONTROLLER COMPLETO LIMPIO
-// ========================================
 
 import { UserService } from "../../services/usuarios/userService.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
@@ -25,7 +22,6 @@ export const createUser = async (req, res) => {
             return res.status(400).json(validationError);
         }
 
-        // Delegar al servicio
         const result = await UserService.createUserWithProfile({
             correo,
             contraseña,
@@ -36,7 +32,6 @@ export const createUser = async (req, res) => {
             }
         });
 
-        // Manejar respuesta
         if (!result.success) {
             const statusCode = getHttpStatusFromError(result.errorCode);
             return res.status(statusCode).json({
@@ -203,7 +198,6 @@ export const resendVerificationEmail = async (req, res) => {
             });
         }
 
-        // Enviar nuevo correo
         try {
             const { emailService } = await import('../../services/email/emailService.js');
             await emailService.sendWelcomeVerificationEmail(correo, result.user.verification_token);
@@ -315,11 +309,9 @@ export const updateUser = async (req, res) => {
             ip: req.ip
         }, 'medium');
 
-        // 🆕 NUEVO: Verificar tipo de autenticación si se está cambiando contraseña
         if (contraseña) {
             const authInfo = await UserService.checkGoogleAuth(parseInt(id));
             
-            // 🆕 LÓGICA ESPECÍFICA: Solo verificar contraseña actual si el usuario tiene una contraseña establecida
             if (!authInfo.isGoogleUser || authInfo.hasPassword) {
                 // Usuario normal O usuario de Google CON contraseña - requiere verificación
                 if (!currentPassword) {
@@ -330,7 +322,6 @@ export const updateUser = async (req, res) => {
                     });
                 }
 
-                // Verificar contraseña actual
                 try {
                     const isValidPassword = await UserService.verifyUserPassword(
                         req.user.correo, 
@@ -365,7 +356,6 @@ export const updateUser = async (req, res) => {
             }
         }
 
-        // 🔧 CONTINUAR: Usar método refactorizado que devuelve correo actual
         const result = await UserService.updateUserWithEmail(parseInt(id), correo, contraseña);
 
         if (!result.success) {
@@ -621,9 +611,7 @@ export const checkUserRegistrationStatus = async (req, res) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS
-// ========================================
 
 /**
  * Valida entrada HTTP para creación de usuario
@@ -707,7 +695,6 @@ function getHttpStatusFromError(errorCode) {
  * Manejar cambio de contraseña (sesiones y notificaciones)
  */
 async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, isPasswordSetup = false) {
-    // Log específico de cambio/establecimiento de contraseña
     logSecurityEvent(
         isPasswordSetup ? 'PASSWORD_SETUP' : 'PASSWORD_CHANGE', 
         isPasswordSetup ? 'Usuario estableció contraseña' : 'Usuario cambió su contraseña', 
@@ -721,7 +708,6 @@ async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, i
         'high'
     );
 
-    // Enviar correo de confirmación
     if (userEmail) {
         try {
             const { emailService } = await import('../../services/email/emailService.js');
@@ -737,7 +723,6 @@ async function handlePasswordChange(userId, userEmail, req, revokeAllSessions, i
             };
 
             if (isPasswordSetup) {
-                // 🆕 NUEVO: Email específico para establecimiento de contraseña
                 await emailService.sendPasswordSetupConfirmation(
                     userEmail,
                     userData,

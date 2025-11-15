@@ -1,8 +1,6 @@
 // exportChat.js - Sistema de exportación de conversaciones
 
-// Función para configurar el botón de exportación
 export function setupChatExport() {
-  // Configurar evento en el botón de exportación
   const exportButton = document.getElementById('export-chat-btn');
   
   if (exportButton) {
@@ -21,10 +19,8 @@ export function setupChatExport() {
   window.exportChat = exportCurrentChat;
 }
 
-// Exportar la conversación actual a un archivo Markdown
 export async function exportCurrentChat() {
   try {
-    // Mostrar notificación de inicio
     if (window.showNotification) {
       window.showNotification('Preparando exportación...', 'info');
     }
@@ -39,11 +35,9 @@ export async function exportCurrentChat() {
       return;
     }
     
-    // Construir contenido markdown
     let markdownContent = "# Conversación de Marketing IA de Acadelia\n";
     markdownContent += `## Fecha: ${new Date().toLocaleString()}\n\n`;
     
-    // Procesar cada mensaje
     chatMessages.forEach(message => {
       const isUser = message.classList.contains('message-user');
       const isAssistant = message.classList.contains('message-assistant');
@@ -53,20 +47,15 @@ export async function exportCurrentChat() {
       if (isUser) role = '👤 Usuario';
       if (isAssistant) role = '🤖 Asistente IA';
       
-      // Obtener contenido del mensaje
       let content = message.querySelector('.message-content').innerHTML;
       
-      // Convertir HTML a Markdown
       content = convertHtmlToMarkdown(content);
       
-      // Añadir al markdown final
       markdownContent += `### ${role}\n\n${content}\n\n`;
     });
     
-    // Crear y descargar archivo
     downloadMarkdownFile(markdownContent, `chat-marketing-${formatDateForFilename(new Date())}.md`);
     
-    // Notificar éxito
     if (window.showNotification) {
       window.showNotification('Chat exportado correctamente', 'success');
     }
@@ -78,7 +67,6 @@ export async function exportCurrentChat() {
   }
 }
 
-// Convertir HTML a Markdown
 function convertHtmlToMarkdown(html) {
   // Preservar bloques especiales para procesarlos después
   const specialBlocks = [];
@@ -135,7 +123,6 @@ function convertHtmlToMarkdown(html) {
     }
   );
   
-  // Reemplazar etiquetas HTML comunes con sintaxis Markdown
   let markdown = processedHtml
     .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/g, '# $1\n')
     .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/g, '## $1\n')
@@ -155,21 +142,17 @@ function convertHtmlToMarkdown(html) {
     .replace(/<br\s*\/?>/g, '\n')
     .replace(/<hr\s*\/?>/g, '---\n');
   
-  // Procesar tablas
   markdown = markdown.replace(/<div class="table-container">([\s\S]*?)<\/div>/g, (match, tableHTML) => {
-    // Extraer filas
     const rows = tableHTML.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) || [];
     
     if (rows.length === 0) return '';
     
     let markdownTable = '';
     
-    // Procesar cada fila
     rows.forEach((row, rowIndex) => {
       const cells = row.match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g) || [];
       
       const cellContents = cells.map(cell => {
-        // Extraer contenido de la celda
         const content = cell.replace(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g, '$1').trim();
         return content || ' ';
       });
@@ -185,22 +168,18 @@ function convertHtmlToMarkdown(html) {
     return markdownTable;
   });
   
-  // Eliminar todas las demás etiquetas HTML
   markdown = markdown.replace(/<[^>]+>/g, '');
   
-  // Restaurar bloques especiales
   specialBlocks.forEach((block, index) => {
     const placeholder = new RegExp(`(CODE|MERMAID|SPECIAL)_BLOCK_${index}`, 'g');
     markdown = markdown.replace(placeholder, block);
   });
   
-  // Decodificar entidades HTML
   markdown = decodeHTML(markdown);
   
   return markdown;
 }
 
-// Decodificar entidades HTML
 function decodeHTML(html) {
   const textarea = document.createElement('textarea');
   textarea.innerHTML = html;
@@ -211,10 +190,8 @@ function decodeHTML(html) {
 function downloadMarkdownFile(content, filename) {
   const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
   
-  // Crear URL para el blob
   const url = URL.createObjectURL(blob);
   
-  // Crear elemento <a> para descargar
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;
@@ -223,12 +200,10 @@ function downloadMarkdownFile(content, filename) {
   document.body.appendChild(link);
   link.click();
   
-  // Limpiar
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
-// Formatear fecha para nombre de archivo
 function formatDateForFilename(date) {
   return date.toISOString()
     .replace(/:/g, '-')

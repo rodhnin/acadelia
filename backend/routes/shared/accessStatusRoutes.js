@@ -16,7 +16,6 @@ const router = express.Router();
  * =========================================================================
  */
 
-// ===== ESTADO GENERAL =====
 
 /**
  * GET /api/access/status/:userId
@@ -56,7 +55,6 @@ router.get("/recommendations/:userId",
   AccessStatusController.getUpgradeRecommendations
 );
 
-// ===== VALIDACIONES ESPECÍFICAS =====
 
 /**
  * GET /api/access/ava-access/:userId/:avaId
@@ -88,7 +86,6 @@ router.get("/career-access/:userId/:careerId",
   AccessStatusController.checkCareerAccess
 );
 
-// ===== LISTAS DE RECURSOS =====
 
 /**
  * GET /api/access/careers/:userId
@@ -100,7 +97,6 @@ router.get("/careers/:userId",
   AccessStatusController.getAccessibleCareers
 );
 
-// ===== RUTAS DE COMPATIBILIDAD TEMPORAL =====
 
 /**
  * DEPRECATED ROUTES - Temporal compatibility
@@ -140,7 +136,6 @@ router.get("/quick-check/:userId",
   }
 );
 
-// ===== INFORMACIÓN Y DOCUMENTACIÓN =====
 
 /**
  * GET /api/access/

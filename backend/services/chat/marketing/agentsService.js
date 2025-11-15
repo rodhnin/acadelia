@@ -5,11 +5,9 @@ import { llm } from "../../../lib/openai.js";
 import { getMarketingTools, resetSessionTracker } from "./toolsService.js";
 import { memoryService } from "./memoryService.js";
 import { AGENT_PROMPTS, COORDINATION_ADDENDUM, toolsInstructions, FINAL_COORDINATOR_PROMPT } from '../../../utils/marketing/AcadeliaDNA.js';
-// ✅ IMPORTAR SISTEMA INTELIGENTE DE UNICIDAD
 import UniquenessMiddleware from "./uniquenessMiddleware.js";
 
 export const agentService = {
-  // Función utilitaria para escapar llaves en strings
   escapePromptBraces(text) {
     if (typeof text !== 'string') {
       text = String(text);
@@ -22,19 +20,16 @@ export const agentService = {
       .replace(/\]/g, "\\]"); // Escapar ] por si acaso
   },
 
-  // ✅ CREAR AGENTE CON HERRAMIENTAS ESPECÍFICAS
   async createAgent(type, extraContext = {}) {
     if (!AGENT_PROMPTS[type]) {
       throw new Error(`Tipo de agente desconocido: ${type}`);
     }
     
-    // ✅ OBTENER HERRAMIENTAS ESPECÍFICAS PARA ESTE TIPO DE AGENTE
     const tools = getMarketingTools(type);
     console.log(`🛠️ Agente ${type.toUpperCase()} configurado con ${tools.length} herramientas específicas (Sistema Inteligente)`);
     
     const systemPrompt = AGENT_PROMPTS[type];
     
-    // Formatear el contexto extra de manera segura
     let contextString = "";
     if (Object.keys(extraContext).length > 0) {
       contextString = Object.entries(extraContext)
@@ -56,12 +51,10 @@ export const agentService = {
         .join("\n\n");
     }
       
-    // ✅ AÑADIR COORDINACIÓN ESPECÍFICA PARA EVITAR DUPLICACIÓN CON SISTEMA INTELIGENTE
     let coordinationString = "";
     if (type !== "strategist" && COORDINATION_ADDENDUM[type]) {
       coordinationString = COORDINATION_ADDENDUM[type];
       
-      // ✅ ACTUALIZAR MENSAJE DE COORDINACIÓN PARA MENCIONAR SISTEMA INTELIGENTE
       coordinationString += `\n\n🧠 SISTEMA INTELIGENTE ACTIVO: Embeddings + IA detectarán automáticamente duplicados.`;
       
       if (extraContext.elementsAlreadySaved) {
@@ -73,7 +66,6 @@ export const agentService = {
       }
     }
     
-    // ✅ INSTRUCCIONES ESPECÍFICAS DE HERRAMIENTAS POR AGENTE (ACTUALIZADA)
     const specificToolInstructions = toolsInstructions[type] || `
   🎯 HERRAMIENTAS CON SISTEMA INTELIGENTE:
   - Cada herramienta usa embeddings + IA para detectar duplicados
@@ -100,7 +92,6 @@ export const agentService = {
     return agent;
   },
   
-  // ✅ CREAR EJECUTOR CON MANEJO DE ERRORES MEJORADO PARA SISTEMA INTELIGENTE
   async createAgentExecutor(agent, tools) {
     return new AgentExecutor({
       agent,
@@ -110,7 +101,6 @@ export const agentService = {
       returnIntermediateSteps: true,
       
       handleToolError: async (error, toolCall) => {
-        // ✅ MANEJO ESPECÍFICO PARA ERRORES DEL SISTEMA INTELIGENTE
         if (error.message && (
             error.message.includes("ya existe") || 
             error.message.includes("existente") || 
@@ -125,7 +115,6 @@ export const agentService = {
           return `Esta herramienta es exclusiva de otro agente especializado. El Sistema Inteligente coordinará automáticamente - enfócate en tu área de especialización.`;
         }
         
-        // ✅ MANEJO PARA ERRORES DE EMBEDDING
         if (error.message && error.message.includes("embedding")) {
           return `Error en análisis semántico. El Sistema Inteligente continuará con métodos alternativos de verificación.`;
         }
@@ -135,7 +124,6 @@ export const agentService = {
     });
   },
   
-  // ✅ MÉTODO PRINCIPAL PARA STREAMING CON SISTEMA INTELIGENTE
   async processWithMultiAgentStreaming(query, chatHistory = [], options = {}) {
     const { onPartialResponse = null, explainLevel = 'intermediate' } = options;
     
@@ -179,10 +167,9 @@ export const agentService = {
         savedInsights: [],
         decisions: {},
         memoryCount: 0,
-        intelligentSystemUsed: true // ✅ MARCAR USO DEL SISTEMA INTELIGENTE
+        intelligentSystemUsed: true
       };
       
-      // 5. ✅ SIEMPRE ejecutar STRATEGIST con herramientas del Sistema Inteligente
       console.log("🎯 Ejecutando STRATEGIST con Sistema Inteligente...");
       const strategistAgent = await this.createAgent("strategist");
       const strategistExecutor = await this.createAgentExecutor(strategistAgent, getMarketingTools('strategist'));
@@ -194,10 +181,8 @@ export const agentService = {
       
       agentResults.strategist = strategistResult.output;
       
-      // Extraer decisiones del estratega
       this.extractAgentDecisions(strategistResult, sharedContext, 'strategist');
       
-      // 6. ✅ Ejecutar agentes especializados según decisión del director
       if (agentDecision.analyst) {
         console.log("📊 Ejecutando ANALYST con Sistema Inteligente...");
         const analystResult = await this.executeSpecializedAgent('analyst', query, chatHistory, sharedContext, agentResults);
@@ -257,7 +242,6 @@ export const agentService = {
         }
       }
       
-      // 10. ✅ FINALIZAR RESPUESTA CON SISTEMA INTELIGENTE
       await this.finalizeResponseWithIntelligentSystem(query, fullResponse, sharedContext, agentsUsed, explainLevel, onPartialResponse);
       
       return {
@@ -265,7 +249,7 @@ export const agentService = {
         agentsUsed: agentsUsed,
         agentSelection: agentDecision,
         specialization_used: true,
-        intelligent_system_used: true, // ✅ NUEVO CAMPO
+        intelligent_system_used: true,
         stats: {
           savedProfiles: sharedContext.savedProfiles.length,
           savedContents: sharedContext.savedContents.length,
@@ -291,12 +275,10 @@ export const agentService = {
     }
   },
   
-  // ✅ MÉTODO AUXILIAR PARA EJECUTAR AGENTES ESPECIALIZADOS CON SISTEMA INTELIGENTE
   async executeSpecializedAgent(agentType, query, chatHistory, sharedContext, agentResults) {
     try {
       const savedItemsInfo = this.buildSavedItemsInfo(sharedContext);
       
-      // Limpiar y escapar el contexto
       const strategistThoughts = agentResults.strategist ? 
         this.escapePromptBraces(agentResults.strategist.substring(0, 1000)) : "";
       
@@ -304,18 +286,15 @@ export const agentService = {
       
       console.log(`🔧 Ejecutando agente especializado ${agentType.toUpperCase()} con Sistema Inteligente`);
       
-      // ✅ CREAR AGENTE CON HERRAMIENTAS ESPECÍFICAS + SISTEMA INTELIGENTE
       const agent = await this.createAgent(agentType, {
         strategistThoughts: strategistThoughts,
         elementsAlreadySaved: cleanSavedItemsInfo,
-        intelligentSystemActive: true // ✅ NUEVO CONTEXTO
+        intelligentSystemActive: true
       });
       
-      // ✅ OBTENER HERRAMIENTAS ESPECÍFICAS CON SISTEMA INTELIGENTE
       const specificTools = getMarketingTools(agentType);
       const executor = await this.createAgentExecutor(agent, specificTools);
       
-      // ✅ MODIFICAR QUERY PARA ENFOQUE ESPECIALIZADO + SISTEMA INTELIGENTE
       let specializedQuery = "";
       switch (agentType) {
         case 'profile':
@@ -336,7 +315,6 @@ export const agentService = {
         chat_history: chatHistory
       });
       
-      // Extraer decisiones de este agente especializado
       this.extractAgentDecisions(result, sharedContext, agentType);
       
       console.log(`✅ Agente especializado ${agentType.toUpperCase()} ejecutado exitosamente con Sistema Inteligente`);
@@ -348,7 +326,6 @@ export const agentService = {
     }
   },
   
-  // ✅ EXTRAER DECISIONES CON LOGGING MEJORADO PARA SISTEMA INTELIGENTE
   extractAgentDecisions(agentResult, sharedContext, agentType) {
     if (agentResult.intermediateSteps) {
       for (const step of agentResult.intermediateSteps) {
@@ -369,10 +346,9 @@ export const agentService = {
             result: observationData,
             timestamp: new Date().toISOString(),
             agent: agentType,
-            intelligentSystemUsed: true // ✅ MARCAR USO DEL SISTEMA INTELIGENTE
+            intelligentSystemUsed: true
           });
           
-          // ✅ ACTUALIZAR ELEMENTOS GUARDADOS CON LOGGING DEL SISTEMA INTELIGENTE
           if (step.action.tool === 'saveProfile' && observationData && observationData.profileId) {
             if (!sharedContext.savedProfiles.includes(observationData.profileId)) {
               sharedContext.savedProfiles.push(observationData.profileId);
@@ -432,7 +408,6 @@ export const agentService = {
       savedItemsInfo += `IMPORTANTE: Ya se han guardado ${sharedContext.memoryCount} insights únicos en memoria. Sistema Inteligente evitará duplicar automáticamente.\n`;
     }
     
-    // ✅ AGREGAR INFORMACIÓN DEL SISTEMA INTELIGENTE
     if (sharedContext.intelligentSystemUsed) {
       savedItemsInfo += `🧠 Sistema Inteligente activo: Embeddings + IA analizando unicidad automáticamente.\n`;
     }
@@ -489,10 +464,8 @@ export const agentService = {
     }
   },
   
-  // ✅ NUEVA FUNCIÓN: FINALIZAR RESPUESTA CON SISTEMA INTELIGENTE
   async finalizeResponseWithIntelligentSystem(query, fullResponse, sharedContext, agentsUsed, explainLevel, onPartialResponse) {
     try {
-      // ✅ GUARDAR INSIGHT FINAL CON SISTEMA INTELIGENTE SI HAY ESPACIO
       if (sharedContext.memoryCount < 3) {
         console.log("🧠 Generando insight final estratégico con Sistema Inteligente...");
         
@@ -502,21 +475,19 @@ export const agentService = {
             query_type: query.substring(0, 100),
             agentsUsed: agentsUsed,
             specialization_used: true,
-            intelligent_system_used: true, // ✅ NUEVO CAMPO
+            intelligent_system_used: true,
             responseSummary: fullResponse.substring(0, 200)
           });
           
           if (insight && insight.insight && insight.insight.length > 5 && insight.insight.length < 100) {
             console.log("🔍 Verificando unicidad del insight final con Sistema Inteligente...");
             
-            // ✅ USAR SISTEMA INTELIGENTE PARA VERIFICAR UNICIDAD DEL INSIGHT FINAL
             const verification = await UniquenessMiddleware.beforeSave('memory', {
               memoryType: "strategic_final_insight",
               content: insight
             });
             
             if (verification.success) {
-              // Guardar insight final
               await memoryService.saveToMemory({
                 type: "strategic_final_insight",
                 content: insight,
@@ -543,7 +514,6 @@ export const agentService = {
         }
       }
       
-      // Generar explicación del proceso especializado con Sistema Inteligente
       const explainServiceModule = await import('./explainService.js');
       
       const decisionContext = {
@@ -558,12 +528,11 @@ export const agentService = {
         },
         recommendations: fullResponse.substring(0, 200),
         specialization_note: "Cada agente usó herramientas específicas con Sistema Inteligente (embeddings + IA) para eliminar duplicación",
-        intelligent_system_used: true // ✅ NUEVO CAMPO
+        intelligent_system_used: true
       };
       
       const explanation = await explainServiceModule.explainService.generateExplanation(decisionContext, explainLevel);
       
-      // Enviar metadatos de explicación con nota del Sistema Inteligente
       if (onPartialResponse && explanation) {
         const explanationMetadata = {
           explanation: explanation,
@@ -586,7 +555,6 @@ export const agentService = {
     }
   },
   
-  // ✅ MÉTODO PRINCIPAL SIN STREAMING CON SISTEMA INTELIGENTE
   async processWithMultiAgent(query, chatHistory = []) {
     try {
       console.log("🚀 Procesando consulta con multi-agente especializado + Sistema Inteligente (sin streaming):", query);
@@ -603,7 +571,7 @@ export const agentService = {
         decisions: {},
         memoryCount: 0,
         specialization_used: true,
-        intelligentSystemUsed: true // ✅ NUEVO CAMPO
+        intelligentSystemUsed: true
       };
       
       // 3. Usar el agente director para determinar qué agentes especializados se necesitan
@@ -624,7 +592,6 @@ export const agentService = {
         profile: null
       };
       
-      // 6. ✅ SIEMPRE ejecutar STRATEGIST con Sistema Inteligente
       console.log("🎯 Ejecutando STRATEGIST con Sistema Inteligente...");
       const strategistAgent = await this.createAgent("strategist");
       const strategistExecutor = await this.createAgentExecutor(strategistAgent, getMarketingTools('strategist'));
@@ -644,7 +611,6 @@ export const agentService = {
       console.log("🎯 Decisiones del STRATEGIST con Sistema Inteligente:", JSON.stringify(sharedContext.decisions, null, 2));
       console.log(`🧠 Insights estratégicos únicos guardados: ${sharedContext.memoryCount}`);
       
-      // 8. ✅ EJECUTAR SOLO LOS AGENTES ESPECIALIZADOS NECESARIOS CON SISTEMA INTELIGENTE
       let savedItemsInfo = this.buildSavedItemsInfo(sharedContext);
       
       // 8.1 ANALYST especializado con Sistema Inteligente
@@ -674,7 +640,6 @@ export const agentService = {
       
       const finalResponse = await llm.invoke(await finalPrompt.formatMessages({}));
       
-      // 10. ✅ FINALIZAR CON SISTEMA INTELIGENTE
       await this.finalizeResponseWithIntelligentSystem(query, finalResponse.content, sharedContext, Object.keys(agentResults).filter(key => agentResults[key] !== null), 'intermediate', null);
       
       // 11. Generar explicación con información del Sistema Inteligente
@@ -694,7 +659,7 @@ export const agentService = {
           },
           recommendations: finalResponse.content.substring(0, 200),
           specialization_note: "Sistema especializado con Sistema Inteligente sin duplicación",
-          intelligent_system_used: true // ✅ NUEVO CAMPO
+          intelligent_system_used: true
         };
         
         explanation = await explainServiceModule.explainService.generateExplanation(decisionContext, 'intermediate');
@@ -702,12 +667,11 @@ export const agentService = {
         console.error("❌ Error generando explicación:", explainError);
       }
       
-      // Devolver respuesta enriquecida con información del Sistema Inteligente
       return {
         response: finalResponse.content,
         agentsUsed: Object.keys(agentResults).filter(key => agentResults[key] !== null),
         specialization_used: true,
-        intelligent_system_used: true, // ✅ NUEVO CAMPO
+        intelligent_system_used: true,
         no_duplication: true,
         stats: {
           savedProfiles: sharedContext.savedProfiles.length,
@@ -717,7 +681,7 @@ export const agentService = {
         },
         agentSelection: agentDecision,
         explanation: explanation,
-        intelligent_features: { // ✅ NUEVA SECCIÓN
+        intelligent_features: {
           embedding_based_search: true,
           ai_similarity_analysis: true,
           psychographic_analysis: true,
@@ -738,7 +702,6 @@ export const agentService = {
     }
   },
   
-  // ✅ MÉTODOS AUXILIARES ACTUALIZADOS
   getMarketingTools(agentType = 'strategist') {
     return getMarketingTools(agentType);
   },
@@ -763,7 +726,6 @@ export const agentService = {
     }
   },
 
-  // ✅ NUEVA FUNCIÓN: Obtener estadísticas del Sistema Inteligente
   async getIntelligentSystemStats() {
     try {
       console.log("📊 Obteniendo estadísticas del Sistema Inteligente...");
@@ -791,7 +753,6 @@ export const agentService = {
     }
   },
 
-  // ✅ NUEVA FUNCIÓN: Diagnóstico del Sistema Inteligente
   async diagnosticIntelligentSystem() {
     try {
       console.log("🔍 Ejecutando diagnóstico del Sistema Inteligente...");

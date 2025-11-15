@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Función para verificar la autenticación
     const checkAuthentication = async () => {
         try {
             const response = await fetch('/api/usuarios/auth-status', {
@@ -29,6 +28,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Ejecutar verificación inmediatamente
     await checkAuthentication();
 });

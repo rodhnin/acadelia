@@ -1,7 +1,6 @@
 // promptTemplates.js - Plantillas mejoradas con estructuras específicas
 export const promptTemplates = {
   
-// Para videos - Estructura completa como la del ejemplo
 video: `Crea un video viral protagonizado por el PROFESOR ACADEL (nuestro chigüire carismático) sobre {{theme}} para estudiantes de {{target.carrera}} que están HARTOS de profesores aburridos.
 
 CONTEXTO ACADELIA: Somos la marca que traduce conocimiento al idioma emocional de Gen Z. El Profesor Acadel es torpe, brutalmente honesto, políticamente incorrecto pero entrañable. Los estudiantes lo aman porque los entiende mejor que sus profesores tradicionales.
@@ -59,7 +58,6 @@ RESPONDE SOLO CON ESTE JSON:
   }
 }`,
 
-// Para memes - Estructura específica
 meme: `Diseña un MEME ÉPICO protagonizado por el PROFESOR ACADEL sobre {{theme}} que haga que estudiantes de {{target.carrera}} digan "ESTE CHIGÜIRE ME ENTIENDE".
 
 VIBE DEL MEME: 
@@ -102,7 +100,6 @@ RESPONDE SOLO CON ESTE JSON:
   }
 }`,
 
-// Para emails - Estructura específica
 email: `Escribe un email donde el PROFESOR ACADEL le habla directamente a estudiantes de {{target.carrera}} sobre {{theme}} como el amigo brutalmente honesto que todos necesitan.
 
 TONO DE ACADEL EN EMAIL:
@@ -165,7 +162,6 @@ RESPONDE SOLO CON ESTE JSON:
   }
 }`,
 
-// Para campañas - Estructura específica
 campaign: `Diseña una CAMPAÑA ÉPICA donde el PROFESOR ACADEL lidera un movimiento cultural contra la educación aburrida, centrado en {{theme}} para {{target.carrera}}.
 
 FILOSOFÍA DE LA CAMPAÑA:
@@ -250,7 +246,6 @@ RESPONDE SOLO CON ESTE JSON:
   }
 }`,
 
-// Para posts - Estructura específica
 post: `Crea un POST ICONIC donde el PROFESOR ACADEL drops truth bombs sobre {{theme}} que hace que {{target.carrera}} digan "SAY IT LOUDER FOR THE PEOPLE IN THE BACK".
 
 ENERGY DEL POST:
@@ -308,7 +303,6 @@ RESPONDE SOLO CON ESTE JSON:
 }`,
 
 
-// Para stories - Estructura específica
 story: `Crea una HISTORIA ÍNTIMA donde el PROFESOR ACADEL conecta 1-a-1 con estudiantes de {{target.carrera}} sobre {{theme}} como el mentor que todos necesitan pero nunca tuvieron.
 
 VIBE DE LA HISTORIA:
@@ -415,11 +409,9 @@ RESPONDE SOLO CON ESTE JSON:
 }`
 };
 
-// Función helper para obtener prompt personalizado
 export const getPromptTemplate = (type = 'default', params = {}) => {
   const template = promptTemplates[type] || promptTemplates.default;
   
-  // Reemplazar variables manteniendo la personalidad de Acadel
   let customizedPrompt = template;
   Object.entries(params).forEach(([key, value]) => {
     const placeholder = `{{${key}}}`;
@@ -430,7 +422,6 @@ export const getPromptTemplate = (type = 'default', params = {}) => {
   return customizedPrompt;
 };
 
-// Validación de estructura específica por tipo
 export const validateSpecificStructure = (response, type) => {
   const warnings = [];
   const errors = [];
@@ -444,7 +435,6 @@ export const validateSpecificStructure = (response, type) => {
     errors.push('Campo "targetAudience" requerido - debe especificar carrera y connection points');
   }
   
-  // Verificar que capture la esencia de Acadel
   const responseText = JSON.stringify(response).toLowerCase();
   const acadelKeywords = ['acadel', 'chigüire', 'brutal', 'honesto', 'humor', 'estudiante'];
   const hasAcadelEssence = acadelKeywords.some(keyword => responseText.includes(keyword));
@@ -491,7 +481,6 @@ export const validateSpecificStructure = (response, type) => {
   };
 };
 
-// Función mejorada para limpiar respuesta de IA con estructura específica
 export const cleanAIResponseWithStructure = (response, type) => {
    if (!response || typeof response !== 'object') {
     return null;

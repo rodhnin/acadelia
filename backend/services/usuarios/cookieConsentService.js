@@ -1,4 +1,3 @@
-// backend/services/usuarios/cookieConsentService.js
 import crypto from 'crypto';
 import pool from "../../lib/dbPool.js";
 import { redisService } from "../../lib/redis.js";
@@ -8,7 +7,6 @@ import { isMinor, getUserAge } from "../../utils/ageVerification.js";
 import { getLocationFromIP } from "../../utils/geoLocation.js";
 
 class CookieConsentService {
-  // Obtener preferencias de consentimiento para un usuario/visitante
   async getConsent({ consentToken, userId, ipAddress }) {
     try {
       // Primero intentar caché
@@ -21,12 +19,10 @@ class CookieConsentService {
         }
       }
       
-      // Modificar la consulta para priorizar userId y evitar mezclar usuarios
       let query = '';
       let params = [];
       
       if (userId) {
-        // Para usuarios autenticados - máxima prioridad
         query = `
           SELECT essential, functional, analytics, marketing, consent_token, pais, user_id
           FROM cookie_consent 
@@ -36,7 +32,6 @@ class CookieConsentService {
         `;
         params = [userId];
       } else if (consentToken) {
-        // Para visitantes con un token de consentimiento
         query = `
           SELECT essential, functional, analytics, marketing, consent_token, pais, user_id 
           FROM cookie_consent 
@@ -46,7 +41,6 @@ class CookieConsentService {
         `;
         params = [consentToken];
       } else if (ipAddress) {
-        // Buscar cualquier consentimiento para esta IP, no solo anónimos
         // IMPORTANTE: Ahora buscamos consentimiento para la IP independientemente del usuario
         query = `
           SELECT essential, functional, analytics, marketing, consent_token, pais, user_id 
@@ -97,7 +91,6 @@ class CookieConsentService {
         userId: rows[0].user_id
       };
       
-      // Cachear el resultado
       if (cacheKey) {
         await redisService.set(cacheKey, result, 3600); // Cachear por 1 hora
       }
@@ -109,12 +102,9 @@ class CookieConsentService {
     }
   }
   
-  // Guardar preferencias de consentimiento
   async saveConsent({ consentToken, userId, ipAddress, userAgent, preferences }) {
     try {
-      // Verificar si hay un token existente
       if (consentToken) {
-        // Intentar obtener el consentimiento actual
         try {
           const existingConsent = await this.getConsent({ consentToken });
           
@@ -123,7 +113,6 @@ class CookieConsentService {
               userId && existingConsent.userId !== userId) {
             console.log(`Consentimiento existente (token: ${consentToken}) pertenece a otro usuario: ${existingConsent.userId} vs ${userId}`);
             
-            // Generar nuevo token para este usuario
             consentToken = null;
           } else if (!existingConsent || !existingConsent.exists) {
             console.log("Token de consentimiento inválido o expirado, se generará uno nuevo");
@@ -135,23 +124,18 @@ class CookieConsentService {
         }
       }
       
-      // Generar un nuevo token de consentimiento si no existe uno válido
       if (!consentToken) {
         consentToken = crypto.randomBytes(32).toString('hex');
         console.log(`Generando nuevo token de consentimiento: ${consentToken}`);
       }
       
-      // Obtener información geográfica de la IP
       const geoData = getLocationFromIP(ipAddress);
       
-      // Verificar si el usuario es menor de edad (para GDPR)
       let userIsMinor = false;
       if (userId) {
         userIsMinor = await isMinor(userId);
         
-        // Para menores de edad, limitar el consentimiento según GDPR
         if (userIsMinor) {
-          // Solo permitir cookies esenciales y funcionales para menores
           preferences = {
             essential: true,
             functional: preferences.functional, // Mantener preferencia funcional
@@ -159,7 +143,6 @@ class CookieConsentService {
             marketing: false, // No permitir marketing para menores
           };
           
-          // Registrar evento específico para cumplimiento GDPR
           logSecurityEvent(
             'COOKIE_GDPR_MINOR',
             'Consentimiento de cookies limitado por protección de menor de edad',
@@ -176,7 +159,6 @@ class CookieConsentService {
         }
       }
       
-      // Loguear los datos para depuración
       console.log("Guardando consentimiento:");
       console.log(` Existe registro previo: ${consentToken ? 'Sí' : 'No'}`);
       console.log(` ConsentToken: ${consentToken}`);
@@ -269,7 +251,6 @@ class CookieConsentService {
           consentToken
         ];
       } else {
-        // Insertar nuevo registro
         console.log("Ejecutando INSERT para nuevo consentimiento");
         query = `
           INSERT INTO cookie_consent 
@@ -297,11 +278,9 @@ class CookieConsentService {
       
       if (rows.length > 0) {
         console.log(`Consentimiento guardado con éxito, ID: ${rows[0].id}, userId: ${rows[0].user_id}, token: ${rows[0].consent_token}`);
-        // Actualizar el consentToken por si cambió
         consentToken = rows[0].consent_token;
       }
       
-      // Registrar evento de seguridad
       logSecurityEvent(
         'COOKIE_CONSENT_UPDATED',
         'Preferencias de cookies actualizadas',
@@ -318,10 +297,8 @@ class CookieConsentService {
         ipAddress
       );
       
-      // Determinar el tipo de acción para el servicio de auditoría
       const action = existingId || userConsentId ? 'consent_updated' : 'consent_granted';
       
-      // Registrar la auditoría
       await cookieAuditService.logAudit({
         action,
         userId,
@@ -332,13 +309,10 @@ class CookieConsentService {
         geoData
       });
       
-      // Limpiar caché para asegurar datos actualizados
       if (userId) {
-        // Usar delete en lugar de del
         await redisService.delete(`consent:user:${userId}`);
       }
       
-      // Actualizar caché
       const cacheKey = userId ? `consent:user:${userId}` : `consent:token:${consentToken}`;
       const result = {
         exists: true,
@@ -356,7 +330,6 @@ class CookieConsentService {
       
       await redisService.set(cacheKey, result, 3600); // Cachear por 1 hora
       
-      // Loguear para depuración
       console.log(`Nueva cookie de consentimiento establecida: ${consentToken} para ${userId ? `usuario ${userId}` : 'visitante anónimo'}`);
       
       return result;
@@ -366,7 +339,6 @@ class CookieConsentService {
     }
   }
   
-  // Comprobar si debemos mostrar el banner según la IP o userId
   async shouldShowBanner(ipAddress, userId) {
     try {
       // MEJORA: Si hay un userId, primero verificar si hay consentimiento específico para ese usuario
@@ -451,7 +423,6 @@ class CookieConsentService {
     }
     
     try {
-      // Verificar si el token existe y no está vinculado a otro usuario
       const checkQuery = `
         SELECT id, user_id 
         FROM cookie_consent 
@@ -474,7 +445,6 @@ class CookieConsentService {
         return false;
       }
       
-      // Verificar si el usuario ya tiene un consentimiento
       const userCheckQuery = `
         SELECT id 
         FROM cookie_consent 
@@ -509,11 +479,9 @@ class CookieConsentService {
       
       console.log(`Token ${consentToken} vinculado exitosamente al usuario ${userId}`);
       
-      // Limpiar caché
       await redisService.delete(`consent:token:${consentToken}`);
       await redisService.delete(`consent:user:${userId}`);
       
-      // Registrar evento para auditoría
       logSecurityEvent(
         'COOKIE_CONSENT_LINKED',
         'Consentimiento de cookies vinculado a usuario',

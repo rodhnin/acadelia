@@ -22,7 +22,6 @@ import searchModalModule from '../utils/searchat-pdf.js';
 import scrollManager from '../../../shared/scroll-manager.js';
 // NUEVO: Importar sistema Mermaid
 import { initMermaidSystem } from '../../../shared/mermaid-utils.js';
-// Sistema PDF
 import { initializePDF } from '../pdf-init.js';
 import acadelEmojiIntegration, { enhanceAcadelMessageRenderer } from '../../../shared/acadel-emoji-integration.js';
 
@@ -48,7 +47,6 @@ function initScrollSystem() {
     }
   });
 
-  // Configurar detector de zoom
   if (typeof scrollManager.setupBrowserZoomHandler === 'function') {
     scrollManager.setupBrowserZoomHandler();
   }
@@ -89,22 +87,18 @@ function initScrollSystem() {
 
 
 async function initApp() {
-  // Verificar configuración inicial
   console.log("📋 Profesor Acadel abriendo su biblioteca digital:");
   console.log("📚 Preparando archivo personal de documentos PDF");
   console.log("🗂️ Configurando sistema de análisis textual avanzado");
   
-  // Inicializar Mermaid temprano
   const mermaidPromise = initMermaidSystem();
 
-    // ⭐ APLICAR PIZARRÓN RESPONSIVO (sin skeleton que bloquee)
   import('../ui/ui-manager-pdf.js').then(uiModule => {
     if (typeof uiModule.applyInitialLoader === 'function') {
-      uiModule.applyInitialLoader(); // Solo pizarrón, contenido visible detrás
+      uiModule.applyInitialLoader();
     }
   });
   
-  // AGREGAR AQUÍ - Inicializar MathJax temprano
 console.log('🔍 DEBUG: Inicializando MathJax desde app.js');
 const mathJaxPromise = import('../../../matematico/math/mathjax-config.js').then(module => {
   console.log('✅ DEBUG: Módulo MathJax cargado en app.js:', module);
@@ -137,11 +131,9 @@ setTimeout(() => {
 }, 2000);
 
 
-  // Detectar estado de chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[pathSegments.length - 1] || pathSegments[pathSegments.length - 2];
   
-  // Configurar bienvenida si es necesario
   if (!chatId || chatId === 'pdf') {
     document.documentElement.classList.add('welcome-pending');
     document.body.classList.add('initializing');
@@ -194,7 +186,6 @@ setTimeout(() => {
     initPreviewPanel();
     initFileAttachments();
 
-    // Inicializar sistema de emoji
     console.log('🎨 Acadel: Configurando sistema emoji académico...');
     try {
       await acadelEmojiIntegration.init();
@@ -204,7 +195,6 @@ setTimeout(() => {
       console.warn('⚠️ Sistema Acadel emoji no pudo inicializarse:', error);
     }
     
-    // Inicializar sistema PDF específico
     initializePDF()
     .then(success => {
       console.log('🦫 Acadel: Sistema PDF', success ? 'operativo' : 'con ajustes menores');
@@ -214,7 +204,6 @@ setTimeout(() => {
       console.warn('🦫 Acadel: Pequeño ajuste en el sistema PDF:', error);
     });
     
-    // Configurar Mermaid para diagramas
     window.renderMermaidDiagram = async function(containerId, code) {
       const { initializeMermaidDiagram } = await import('../../../shared/mermaid-utils.js');
       return initializeMermaidDiagram(containerId, code);
@@ -250,7 +239,6 @@ setTimeout(() => {
     await searchModalModule.initSearchModal();
     window.searchModalInitialized = true;
 
-    // Verificar Mermaid
     try {
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Timeout Mermaid')), 3000)
@@ -302,7 +290,6 @@ setTimeout(() => {
         });
       });
 
-      // ⭐ Progreso final y cierre de la biblioteca
       updateBibliotecaProgress(100, '🎉 ¡Catálogo bibliográfico completado!');
       
       setManagedTimeout(() => {
@@ -310,17 +297,14 @@ setTimeout(() => {
           if (typeof uiModule.removeAcadelBibliotecaLoader === 'function') {
             uiModule.removeAcadelBibliotecaLoader();
           } else if (typeof uiModule.removeInitialLoader === 'function') {
-            // Fallback para compatibilidad
             uiModule.removeInitialLoader();
           }
           
-                // ⭐ Bienvenida especializada del Bibliotecario Acadel
                 window.acadelConfetti(
                   "🏛️ ¡Biblioteca digital abierta! 🦫", 
                   "El Profesor Acadel ha organizado su archivo personal. ¡Desde documentos simples hasta textos académicos complejos, aquí analizamos todo con sabiduría de capibara bibliotecario!"
                 );
 
-          // Limpiar estado de inicialización
           setManagedTimeout(() => {
             document.body.classList.remove('initializing');
             console.log('🦫 Profesor Acadel: ¡Biblioteca digital completamente operativa y catalogada!');
@@ -339,7 +323,6 @@ setTimeout(() => {
       "Hasta los capibara más organizados a veces derribamos una estantería. El Profesor Acadel sugiere recargar para reorganizar toda la biblioteca desde cero."
     );
 
-    // Limpiar biblioteca en caso de error
     import('../ui/ui-manager-pdf.js').then(uiModule => {
       if (typeof uiModule.removeAcadelBibliotecaLoader === 'function') {
         uiModule.removeAcadelBibliotecaLoader(true);
@@ -358,20 +341,17 @@ setTimeout(() => {
  * @param {string} mensaje - Mensaje del Bibliotecario Acadel
  */
 function updateBibliotecaProgress(progress, mensaje = '') {
-  // Actualizar progreso visual de la biblioteca
   import('../ui/ui-manager-pdf.js').then(uiModule => {
     if (typeof uiModule.updateAcadelBibliotecaProgress === 'function') {
       uiModule.updateAcadelBibliotecaProgress(progress);
     }
   });
   
-  // Log con personalidad del Bibliotecario Acadel
   if (mensaje) {
     console.log(`🦫 Bibliotecario Acadel [${progress}%]: ${mensaje}`);
   }
 }
 
-// ⭐ Funciones globales para uso en toda la aplicación PDF
 window.updateBibliotecaProgress = updateBibliotecaProgress;
 
 // Inicialización al cargar DOM

@@ -14,12 +14,10 @@ const execPromise = util.promisify(exec);
  * @returns {string} - Ruta a pdftocairo
  */
 const getPdftocairoPath = () => {
-  // Usar valor de variable de entorno si está definido
   if (process.env.PDFTOCAIRO_PATH) {
     return process.env.PDFTOCAIRO_PATH;
   }
   
-  // Detectar sistema operativo
   const platform = os.platform();
   
   // En sistemas Linux/Ubuntu, pdftocairo suele estar en /usr/bin
@@ -65,7 +63,6 @@ const PDFImageRenderer = {
     if (!this.isLinux()) return false;
     
     try {
-      // Intentar leer el archivo os-release para verificar si es Ubuntu
       const { stdout } = await execPromise('cat /etc/os-release');
       return stdout.toLowerCase().includes('ubuntu');
     } catch (error) {
@@ -87,7 +84,6 @@ const PDFImageRenderer = {
     try {
       console.log("Intentando instalar pdftocairo (poppler-utils)...");
       
-      // Usar sudo si está disponible, o sin sudo si se ejecuta como root
       const isRoot = process.getuid && process.getuid() === 0;
       const sudoPrefix = isRoot ? '' : 'sudo ';
       
@@ -97,7 +93,6 @@ const PDFImageRenderer = {
       console.log("Instalación completada:", stdout);
       if (stderr) console.warn("Advertencias durante la instalación:", stderr);
       
-      // Verificar que la instalación fue exitosa
       return await this.checkPdftocairoAvailability();
     } catch (error) {
       console.error("Error instalando pdftocairo:", error);
@@ -147,7 +142,6 @@ const PDFImageRenderer = {
       
       console.log("Actualizando pdftocairo (poppler-utils)...");
       
-      // Usar sudo si está disponible, o sin sudo si se ejecuta como root
       const isRoot = process.getuid && process.getuid() === 0;
       const sudoPrefix = isRoot ? '' : 'sudo ';
       
@@ -182,7 +176,6 @@ const PDFImageRenderer = {
         }
       }
       
-      // Verificar que el archivo existe en la ruta especificada
       const fileExists = fs.existsSync(PDFTOCAIRO_PATH);
       if (!fileExists) {
         console.error("El archivo pdftocairo no existe en la ruta especificada");
@@ -196,7 +189,6 @@ const PDFImageRenderer = {
         return false;
       }
       
-      // Intentar ejecutar el comando con la ruta absoluta
       // Usamos -h (help) en lugar de --version porque pdftocairo no soporta --version
       const command = this.isLinux() ? `${PDFTOCAIRO_PATH} -h` : `"${PDFTOCAIRO_PATH}" -h`;
       const { stdout, stderr } = await execPromise(command);
@@ -261,13 +253,11 @@ const PDFImageRenderer = {
   async renderWithPdftocairo(pdfPath, pageNum, width = 0) {
     const tempDir = path.dirname(pdfPath);
     
-    // Validar que pageNum sea un número válido
     const validPageNum = Number.isInteger(Number(pageNum)) && Number(pageNum) > 0 ? Number(pageNum) : 1;
     
     const tempFileName = `temp_render_${Date.now()}_page_${validPageNum}`;
     const tempOutputPath = path.join(tempDir, tempFileName);
     
-    // Crear el comando según el sistema operativo
     let command;
     if (this.isLinux()) {
       command = `${PDFTOCAIRO_PATH} -png -singlefile`;
@@ -276,12 +266,10 @@ const PDFImageRenderer = {
       command = `"${PDFTOCAIRO_PATH}" -png -singlefile`;
     }
     
-    // Agregar opciones de escalado si se especifica width
     if (width > 0) {
       command += ` -scale-to-x ${width} -scale-to-y -1`;
     }
     
-    // Usar validPageNum en lugar de pageNum
     if (this.isLinux()) {
       command += ` -f ${validPageNum} -l ${validPageNum} "${pdfPath}" "${tempOutputPath}"`;
     } else {
@@ -293,7 +281,6 @@ const PDFImageRenderer = {
     try {
       await execPromise(command);
       
-      // Verificar si se creó el archivo
       const outputPngPath = `${tempOutputPath}.png`;
       if (!fs.existsSync(outputPngPath)) {
         throw new Error(`No se generó el archivo PNG esperado: ${outputPngPath}`);
@@ -302,7 +289,6 @@ const PDFImageRenderer = {
       // Leer el archivo generado
       const imageBuffer = await fs.promises.readFile(outputPngPath);
       
-      // Eliminar archivo temporal
       try {
         await fs.promises.unlink(outputPngPath);
       } catch (cleanupErr) {
@@ -367,7 +353,6 @@ const PDFImageRenderer = {
       const startTime = Date.now();
       const { width = 800, format = 'png' } = options;
       
-      // Comprobar disponibilidad de pdftocairo
       const pdftocairoAvailable = await this.checkPdftocairoAvailability();
       
       if (!pdftocairoAvailable) {
@@ -378,10 +363,8 @@ const PDFImageRenderer = {
         };
       }
       
-      // Extraer imagen usando pdftocairo
       const imageBuffer = await this.renderWithPdftocairo(pdfPath, pageNum, width);
       
-      // Procesar imagen según opciones adicionales
       const finalImage = options.crop || options.height
         ? await this.processImage(imageBuffer, options)
         : imageBuffer;
@@ -419,10 +402,8 @@ const PDFImageRenderer = {
       const scale = region.scale || 1;
       const pageWidth = options.fullPageWidth || 1200; // Resolución razonable
       
-      // Renderizar la página completa
       const pageImage = await this.renderWithPdftocairo(pdfPath, pageNum, pageWidth);
       
-      // Calcular coordenadas normalizadas
       const cropOptions = {
         x: Math.min(region.x1, region.x2) * scale,
         y: Math.min(region.y1, region.y2) * scale,

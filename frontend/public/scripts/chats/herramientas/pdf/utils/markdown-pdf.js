@@ -108,10 +108,8 @@ function preprocessPDFPageHeaders(text) {
  * @returns {string} HTML resultante
  */
 export function parseMarkdownToHTML(markdownText) {
-  // Validación de entrada
   if (!markdownText) return '';
   
-  // Normalizar saltos de línea para consistencia
   const normalizedText = markdownText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   
   // Procesamiento especial para visualización de páginas PDF
@@ -130,7 +128,6 @@ export function parseMarkdownToHTML(markdownText) {
     return processPlainText(preprocessedText);
   }
   
-  // Sistema de protección de contenido mejorado
   
   // FASE 1: Proteger fórmulas LaTeX primero con mejor detección
   const { text: textWithoutLatex, blocks: latexBlocks } = protectContentBlocks(
@@ -231,7 +228,6 @@ export function parseMarkdownToHTML(markdownText) {
     }
     
     if (block.type === 'link') {
-      // Procesar enlaces
       let safeUrl = block.content.url.trim();
       if (!/^https?:\/\//i.test(safeUrl) && !safeUrl.startsWith('/')) {
         if (safeUrl.includes('.')) {
@@ -239,7 +235,6 @@ export function parseMarkdownToHTML(markdownText) {
         }
       }
       
-      // Sanitizar URL
       safeUrl = encodeURI(safeUrl)
         .replace(/\|/g, '%7C')
         .replace(/"/g, '%22')
@@ -247,13 +242,11 @@ export function parseMarkdownToHTML(markdownText) {
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E');
       
-      // Sanitizar texto
       const safeText = sanitizeText(block.content.text);
       
       return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
     }
     else if (block.type === 'image') {
-      // Procesar imágenes
       let safeSrc = block.content.src.trim();
       if (!/^https?:\/\//i.test(safeSrc) && !safeSrc.startsWith('/')) {
         if (safeSrc.includes('.')) {
@@ -261,7 +254,6 @@ export function parseMarkdownToHTML(markdownText) {
         }
       }
       
-      // Sanitizar URL
       safeSrc = encodeURI(safeSrc)
         .replace(/\|/g, '%7C')
         .replace(/"/g, '%22')
@@ -269,7 +261,6 @@ export function parseMarkdownToHTML(markdownText) {
         .replace(/</g, '%3C')
         .replace(/>/g, '%3E');
       
-      // Procesar atributos adicionales
       let attrHTML = '';
       if (block.content.attributes) {
         const attrMatches = block.content.attributes.match(/(\w+)=(['"]?)([^'"=\s]+)\2/g) || [];
@@ -290,7 +281,6 @@ export function parseMarkdownToHTML(markdownText) {
   // 2. Restaurar bloques de código
   htmlText = restoreContentBlocks(htmlText, codeBlocks, (block) => {
     if (block.type === 'code-block') {
-      // Detectar si es un diagrama Mermaid
       if (isMermaidCode(block.content.code, block.content.language)) {
         return createMermaidBlockHTML(block.content.code);
       } else {
@@ -305,7 +295,6 @@ export function parseMarkdownToHTML(markdownText) {
   // 3. Restaurar expresiones LaTeX al final
   htmlText = restoreContentBlocks(htmlText, latexBlocks, (block, id) => {
     if (block.type === 'display-latex') {
-      // Verificar si estamos dentro de una tabla o un caption de imagen
       const isInTable = block.id.indexOf('<td') >= 0 || block.id.indexOf('<th') >= 0 ||
         /(?:<table|<tr|<td|<th)[^>]*>[^<]*___DISPLAY-LATEX/.test(htmlText);
       const isInImageCaption = /markdown-image-caption[^>]*>[^<]*___DISPLAY-LATEX/.test(htmlText);
@@ -344,10 +333,8 @@ function processParagraphsAndLineBreaks(html) {
   // Si está vacío, retornar inmediatamente
   if (!html.trim()) return '';
 
-  // Dividir por líneas para procesar cada una
   const lines = html.split('\n');
   
-  // Información sobre el estado actual de procesamiento
   let result = [];
   let currentParagraph = [];
   let inBlockElement = false;
@@ -369,22 +356,17 @@ function processParagraphsAndLineBreaks(html) {
     'blockquote', 'pre', 'code', 'ul', 'ol', 'li'
   ];
   
-  // Procesar cada línea individualmente
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
     
-    // Verificar si la línea actual contiene cierre de lista
     const justClosedList = /<\/(ul|ol)>/.test(line);
     
-    // Verificar si la línea siguiente contiene un marcador LaTeX
     const nextLineHasLatex = i < lines.length - 1 && latexMarkerRegex.test(lines[i + 1]);
     
-    // Detectar elementos de bloque en esta línea
     const openMatches = [...line.matchAll(/<([a-z][a-z0-9]*)[^>]*>/gi)];
     const closeMatches = [...line.matchAll(/<\/([a-z][a-z0-9]*)>/gi)];
     
-    // Procesar aperturas de bloques
     for (const match of openMatches) {
       const tag = match[1].toLowerCase();
       if (blockElements.includes(tag)) {
@@ -393,7 +375,6 @@ function processParagraphsAndLineBreaks(html) {
       }
     }
     
-    // Procesar cierres de bloques
     for (const match of closeMatches) {
       const tag = match[1].toLowerCase();
       const index = blockStack.lastIndexOf(tag);
@@ -411,7 +392,6 @@ function processParagraphsAndLineBreaks(html) {
         currentParagraph = [];
       }
       
-      // Añadir la línea del bloque directamente
       result.push(line);
       consecutiveEmptyLines = 0; // Reiniciar contador de líneas vacías
     }
@@ -430,7 +410,7 @@ function processParagraphsAndLineBreaks(html) {
       }
       else {
         // Limitar número de líneas vacías consecutivas
-        if (consecutiveEmptyLines < 1) { // Solo permitir 1 línea vacía como máximo
+        if (consecutiveEmptyLines < 1) {
           result.push('');
           consecutiveEmptyLines++;
         }
@@ -448,13 +428,11 @@ function processParagraphsAndLineBreaks(html) {
     result.push('<p>' + currentParagraph.join('<br>') + '</p>');
   }
   
-  // Unir el resultado final
   let finalResult = result.join('\n');
   
   // Corrección adicional: eliminar cualquier <br> que pueda aparecer entre un cierre de lista y un marcador LaTeX
   finalResult = finalResult.replace(/(<\/(?:ul|ol)>)\s*<br[^>]*>\s*(___(?:DISPLAY-LATEX|INLINE-LATEX)_\d+___)/g, '$1$2');
   
-  // Limpiar múltiples <br> consecutivos en el resultado final
   finalResult = finalResult.replace(/<br>\s*<br>\s*<br>/g, '<br><br>');
   
   return finalResult;
@@ -472,7 +450,6 @@ function protectContentBlocks(text, blockTypes) {
   let processedText = text;
   const blocks = [];
   
-  // Procesar cada tipo de bloque
   blockTypes.forEach(({ pattern, type, processor }) => {
     processedText = processedText.replace(pattern, (...args) => {
       const content = processor(...args);
@@ -526,7 +503,6 @@ export function buildCodeBlockHTML(code, language, id = null) {
   const blockId = typeof id === 'string' ? id : `code-block-${id || Date.now()}`;
   const lang = language ? language.trim() : 'text';
 
-  // Sanitizar el código
   const safeCode = typeof sanitizeText === 'function' ?
     sanitizeText(code) :
     code.replace(/[&<>"']/g, m => ({
@@ -537,12 +513,10 @@ export function buildCodeBlockHTML(code, language, id = null) {
       "'": '&#039;'
     }[m]));
     
-  // Verificar si el código contiene LaTeX
   const codeHasLatex = containsMathExpressions(code);
   const containerClass = codeHasLatex ? 'code-block math-content' : 'code-block';
   const mathDataAttr = codeHasLatex ? ' data-has-math="true"' : '';
     
-  // Versión simplificada para PDF
   if (isPDFPreview) {
     return `
     <div class="${containerClass}" id="${blockId}"${mathDataAttr}>
@@ -554,7 +528,6 @@ export function buildCodeBlockHTML(code, language, id = null) {
     `;
   }
 
-  // Versión completa para uso normal
   return `
   <div class="${containerClass}" id="${blockId}"${mathDataAttr}>
     <div class="code-header">
@@ -594,15 +567,12 @@ export function parseWithPDFSupport(markdownText) {
  * @returns {string} HTML con párrafos y saltos preservados
  */
 function processPlainText(text) {
-  // Para texto de una sola línea, simplemente devolverlo
   if (!text.includes('\n')) return text;
   
-  // Dividir en líneas para procesar párrafos y saltos
   const lines = text.split('\n');
   const paragraphs = [];
   let currentParagraph = [];
   
-  // Procesar cada línea
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
@@ -617,12 +587,10 @@ function processPlainText(text) {
         paragraphs.push('<p><br></p>');
       }
     } else {
-      // Añadir línea al párrafo actual
       currentParagraph.push(line);
     }
   }
   
-  // Procesar el último párrafo si hay alguno
   if (currentParagraph.length > 0) {
     paragraphs.push(`<p>${currentParagraph.join('<br data-nl="plaintext">')}</p>`);
   }
@@ -642,7 +610,6 @@ function processPlainText(text) {
  * @returns {string} HTML con encabezados procesados
  */
 function processHeadings(html) {
-  // Procesar en orden de mayor a menor (h6->h1) para evitar conflictos
   let processed = html;
   processed = processed.replace(REGEX.HEADING6, '<h6>$1</h6>');
   processed = processed.replace(REGEX.HEADING5, '<h5>$1</h5>');
@@ -699,7 +666,6 @@ function processSuperSubScript(html) {
  * @returns {string} HTML de la previsualización
  */
 export function createImagePreviewHTML(src, alt, attrHTML = '') {
-  // ✅ FUNCIÓN getChatId SEGURA SIN DEPENDENCIAS
   function getChatIdSafe() {
     try {
       // Método 1: Desde URL
@@ -721,7 +687,6 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
         }
       }
       
-      // Fallback seguro
       return 'default_chat';
     } catch (e) {
       console.warn('Error obteniendo chatId:', e);
@@ -729,14 +694,12 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
     }
   }
 
-  // ✅ VERIFICAR CACHE ANTES DE DECIDIR SI CREAR PLACEHOLDER - CON FALLBACK SEGURO
   let finalSrc = src;
   let isStored = false;
   
   try {
     const chatId = getChatIdSafe();
     
-    // Solo verificar cache si imageUrlCache está disponible
     if (typeof window !== 'undefined' && window.imageUrlCache?.getLocalPath) {
       const cachedPath = window.imageUrlCache.getLocalPath(chatId, src);
       if (cachedPath) {
@@ -745,17 +708,14 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
       }
     }
     
-    // Verificar si ya es ruta local
     if (src.startsWith('/uploads/')) {
       isStored = true;
       finalSrc = src;
     }
   } catch (e) {
     console.warn('Error verificando cache de imagen:', e);
-    // Continuar sin cache - no es crítico
   }
   
-  // ✅ SOLO crear placeholder para imágenes realmente externas sin cache
   const needsPlaceholder = !isStored && 
                           !finalSrc.startsWith('data:') && 
                           (finalSrc.match(/^(https?:\/\/|www\.)/i) || finalSrc.startsWith('//'));
@@ -766,7 +726,6 @@ export function createImagePreviewHTML(src, alt, attrHTML = '') {
     </div>
   ` : '';
   
-  // ✅ ESTILOS INICIALES CORRECTOS - visible si ya está disponible
   const initialStyles = isStored ? 
     'style="visibility: visible; opacity: 1;"' : 
     '';
@@ -803,7 +762,6 @@ function processLinks(html) {
       }
     }
     
-    // Sanitizar URL
     safeUrl = safeUrl
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -811,7 +769,6 @@ function processLinks(html) {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
     
-    // Sanitizar texto
     const safeText = sanitizeText(text);
     
     return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
@@ -826,16 +783,13 @@ function processLinks(html) {
 function convertPlainUrls(html) {
   if (!html || typeof html !== 'string') return html;
   
-  // Dividir el HTML en segmentos de etiquetas y texto
   const segments = splitHtmlIntoSegments(html);
   
-  // Procesar solo los segmentos de texto
   for (let i = 0; i < segments.length; i++) {
     if (!segments[i].isTag) {
       // Expresión regular mejorada para URLs planas
       const urlRegex = /\b(?:https?:\/\/|www\.)[^\s<>'"()]+\.[^\s<>'"()[\]{}]+\b/g;
       
-      // Convertir URLs en enlaces
       segments[i].content = segments[i].content.replace(urlRegex, (match) => {
         const url = match.startsWith('www.') ? 'http://' + match : match;
         const safeUrl = sanitizeText(url);
@@ -861,7 +815,6 @@ function splitHtmlIntoSegments(html) {
   const tagRegex = /<[^>]+>/g;
   let match;
   
-  // Buscar todas las etiquetas HTML
   while ((match = tagRegex.exec(html)) !== null) {
     // Si hay texto antes de la etiqueta
     if (match.index > currentIndex) {
@@ -871,7 +824,6 @@ function splitHtmlIntoSegments(html) {
       });
     }
     
-    // Añadir la etiqueta
     segments.push({
       isTag: true,
       content: match[0]
@@ -880,7 +832,6 @@ function splitHtmlIntoSegments(html) {
     currentIndex = match.index + match[0].length;
   }
   
-  // Añadir texto restante después de última etiqueta
   if (currentIndex < html.length) {
     segments.push({
       isTag: false,
@@ -944,7 +895,6 @@ function processTables(html) {
     }
   }
   
-  // Procesar tabla final si quedó alguna
   if (inTable && tableLines.length >= 3) {
     const isValidTable = tableLines[1].includes('-') && 
                         tableLines[1].startsWith('|') && 
@@ -972,7 +922,6 @@ function processMarkdownTable(tableLines) {
   const separatorLine = tableLines[1];
   const dataLines = tableLines.slice(2);
 
-  // Extraer información de alineación
   const alignments = separatorLine
     .split('|')
     .filter((cell, index, array) => index > 0 && index < array.length - 1)
@@ -984,13 +933,11 @@ function processMarkdownTable(tableLines) {
       return '';
     });
 
-  // Extraer encabezados
   const headers = headerLine
     .split('|')
     .filter((cell, index, array) => index > 0 && index < array.length - 1)
     .map(cell => parseMarkdownInCell(cell.trim()));
 
-  // Extraer filas de datos
   const rows = dataLines.map(line => {
     return line
       .split('|')
@@ -1063,7 +1010,6 @@ export function parseMarkdownInCell(cellContent) {
   let processed = cellContent.replace(/<br>/g, '__BR_MARKER__');
   processed = processed.replace(/&lt;br&gt;/g, '__BR_MARKER__');
   
-  // Procesar formatos en la celda
   if (processed.includes('**')) {
     processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
@@ -1103,7 +1049,6 @@ export function parseMarkdownInCell(cellContent) {
     processed = processed.replace(/~(.*?)~/g, '<sub>$1</sub>');
   }
   
-  // Manejar saltos de línea
   processed = processed.replace(/\n/g, '<br>');
   processed = processed.replace(/__BR_MARKER__/g, '<br>');
   
@@ -1118,7 +1063,6 @@ export function parseMarkdownInCell(cellContent) {
 function processBlockquotes(html) {
   if (!html) return '';
   
-  // Dividir por líneas para procesamiento línea por línea
   const lines = html.split('\n');
   const result = [];
   let inBlockquote = false;
@@ -1134,7 +1078,6 @@ function processBlockquotes(html) {
         inBlockquote = true;
       }
       
-      // Extraer contenido después del '>' manteniendo espacios internos pero quitando el prefijo
       const content = line.replace(/^(\s*)>\s?/, '$1');
       blockquoteContent.push(content);
     } 
@@ -1146,12 +1089,10 @@ function processBlockquotes(html) {
     // Línea normal o fin de blockquote
     else {
       if (inBlockquote) {
-        // Verificar si hay LaTeX en la cita
         const blockquoteHasLatex = blockquoteContent.some(content => containsMathExpressions(content));
         const blockquoteClass = blockquoteHasLatex ? 'blockquote math-content' : 'blockquote';
         const mathDataAttr = blockquoteHasLatex ? ' data-has-math="true"' : '';
         
-        // Crear blockquote con contenido acumulado
         const blockquoteHTML = `<blockquote class="${blockquoteClass}"${mathDataAttr}>${blockquoteContent.join('<br>')}</blockquote>`;
         result.push(blockquoteHTML);
         
@@ -1164,7 +1105,6 @@ function processBlockquotes(html) {
 
   // No olvidar cerrar blockquote al final
   if (inBlockquote) {
-    // Verificar si hay LaTeX en la cita
     const blockquoteHasLatex = blockquoteContent.some(content => containsMathExpressions(content));
     const blockquoteClass = blockquoteHasLatex ? 'blockquote math-content' : 'blockquote';
     const mathDataAttr = blockquoteHasLatex ? ' data-has-math="true"' : '';
@@ -1173,7 +1113,6 @@ function processBlockquotes(html) {
     result.push(blockquoteHTML);
   }
 
-  // Unir resultado
   return result.join('\n');
 }
 
@@ -1186,7 +1125,6 @@ function processTaskLists(html) {
   return html.replace(/^\s*[-*+]\s+\[( |x|X)\]\s+(.+)$/gm, (match, status, content) => {
     const checked = (status.toLowerCase() === 'x') ? 'checked' : '';
     
-    // Verificar si el contenido tiene LaTeX
     const contentHasLatex = containsMathExpressions(content);
     const itemClass = contentHasLatex ? 'task-list-item math-content' : 'task-list-item';
     const mathDataAttr = contentHasLatex ? ' data-has-math="true"' : '';
@@ -1231,10 +1169,8 @@ function processLists(html) {
       continue;
     }
     
-    // Resetear contador de líneas vacías
     emptyLineCount = 0;
     
-    // Detectar tipo de línea de lista
     const bulletMatch = line.match(/^([ \t]*)([-*+])[ \t]+(.+)$/);
     const numberMatch = line.match(/^([ \t]*)(\d+)\.[ \t]+(.+)$/);
     
@@ -1274,7 +1210,6 @@ function processLists(html) {
           listStack.push({ type: listType, level: indent });
           lastIndent = indent;
           
-          // Añadir el elemento actual
           const itemClass = `compact-item first-item`;
           result.push(`<li class="${itemClass}">${content}`);
           continue;
@@ -1284,7 +1219,6 @@ function processLists(html) {
         
         // Elemento más indentado - crear sublista
         if (indent > currentList.level) {
-          // Cerrar ítem actual para iniciar sublista
           if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
             result[result.length - 1] += '</li>';
           }
@@ -1300,12 +1234,10 @@ function processLists(html) {
         } 
         // Elemento menos indentado - cerrar listas hasta nivel adecuado
         else if (indent < currentList.level) {
-          // Cerrar ítem abierto
           if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
             result[result.length - 1] += '</li>';
           }
           
-          // Cerrar listas hasta nivel correcto
           while (listStack.length > 0 && listStack[listStack.length - 1].level > indent) {
             result.push(`</${listStack.pop().type}></li>`);
           }
@@ -1339,7 +1271,6 @@ function processLists(html) {
         } 
         // Mismo nivel de indentación
         else {
-          // Cerrar ítem anterior
           if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
             result[result.length - 1] += '</li>';
           }
@@ -1373,18 +1304,15 @@ function processLists(html) {
       const itemClassWithMath = contentHasLatex ? `${itemClass} math-content` : itemClass;
       const mathDataAttr = contentHasLatex ? ' data-has-math="true"' : '';
       
-      // Añadir ítem actual
       result.push(`<li class="${itemClassWithMath}"${mathDataAttr}>${content}`);
       lastIndent = indent;
     } 
     // No es elemento de lista pero estábamos en lista
     else if (inList) {
-      // Cerrar ítem abierto
       if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
         result[result.length - 1] += '</li>';
       }
       
-      // Cerrar todas las listas
       while (listStack.length > 0) {
         result.push(`</${listStack.pop().type}>`);
       }
@@ -1398,14 +1326,11 @@ function processLists(html) {
     }
   }
 
-  // Cerrar lista al final si quedó abierta
   if (inList) {
-    // Cerrar ítem pendiente
     if (result[result.length - 1] && !result[result.length - 1].endsWith('</li>')) {
       result[result.length - 1] += '</li>';
     }
     
-    // Cerrar listas
     while (listStack.length > 0) {
       result.push(`</${listStack.pop().type}>`);
     }
@@ -1446,7 +1371,6 @@ export function createMermaidBlockHTML(code) {
   // Escapar código para atributos HTML
   const escapedCode = escapeHTML(code, true);
   
-  // Versión simplificada para PDF
   if (isPDFPreview) {
     return `
     <div class="mermaid-diagram-container">
@@ -1464,7 +1388,6 @@ export function createMermaidBlockHTML(code) {
     `;
   }
 
-  // Versión completa para uso normal
   return `
   <div class="mermaid-diagram-container">
     <h4 class="concept-map-title">Mapa Conceptual</h4>
@@ -1488,9 +1411,7 @@ export function createMermaidBlockHTML(code) {
 `;
 }
 
-// ======================================
 // FUNCIONES DE ANÁLISIS DE CARACTERÍSTICAS
-// ======================================
 
 /**
  * Detecta qué características de Markdown están presentes
@@ -1570,9 +1491,7 @@ function detectMarkdownFeatures(text) {
   };
 }
 
-// ======================================
 // FUNCIONES AUXILIARES DE SEGURIDAD Y UTILIDAD
-// ======================================
 
 /**
  * Escapa caracteres HTML especiales
@@ -1594,9 +1513,7 @@ export function escapeHTML(text, forAttr = false) {
   return text.replace(forAttr ? /[&<>"']/g : /[&<>]/g, m => map[m]);
 }
 
-// ======================================
 // FUNCIONES DE DETECCIÓN Y PROCESAMIENTO ESPECÍFICAS
-// ======================================
 
 /**
  * Detecta y procesa tablas en texto
@@ -1606,10 +1523,8 @@ export function escapeHTML(text, forAttr = false) {
 export function detectTableInText(text) {
   if (typeof text !== 'string') return { success: false, html: '' };
 
-  // Dividir en líneas
   const lines = text.split('\n');
 
-  // Buscar tablas
   const tableRanges = [];
   let inTable = false;
   let tableStart = -1;
@@ -1627,9 +1542,7 @@ export function detectTableInText(text) {
       continue;
     }
     
-    // Verificar si es separador después del encabezado
     if (inTable && !hasHeaderSeparator && line.startsWith('|') && line.endsWith('|')) {
-      // Verificar formato de separador (debe tener guiones)
       const separatorCells = line.slice(1, -1).split('|');
       
       if (separatorCells.length === columnCount) {
@@ -1645,12 +1558,10 @@ export function detectTableInText(text) {
       }
     }
     
-    // Detectar fin de tabla
     if (inTable) {
       if (!line.startsWith('|') || !line.endsWith('|') || !line || 
           (line.split('|').length - 2 !== columnCount)) {
         
-        // Guardar tabla válida (encabezado + separador + al menos una fila)
         if (hasHeaderSeparator && i - tableStart >= 3) {
           tableRanges.push({ start: tableStart, end: i - 1 });
         }
@@ -1662,7 +1573,6 @@ export function detectTableInText(text) {
     }
   }
 
-  // Revisar última tabla si quedó abierta
   if (inTable && hasHeaderSeparator && lines.length - tableStart >= 3) {
     tableRanges.push({ start: tableStart, end: lines.length - 1 });
   }
@@ -1672,7 +1582,6 @@ export function detectTableInText(text) {
     return { success: false, html: '' };
   }
 
-  // Si todo el texto es una sola tabla
   if (tableRanges.length === 1 && tableRanges[0].start <= 1 && tableRanges[0].end >= lines.length - 2) {
     try {
       const tableLines = lines.slice(tableRanges[0].start, tableRanges[0].end + 1);
@@ -1684,7 +1593,6 @@ export function detectTableInText(text) {
     }
   }
 
-  // Para contenido mixto, combinar texto y tablas
   let resultHTML = '';
   let lastEnd = 0;
 
@@ -1697,7 +1605,6 @@ export function detectTableInText(text) {
       }
     }
     
-    // Procesar la tabla
     try {
       const tableLines = lines.slice(range.start, range.end + 1);
       resultHTML += processMarkdownTable(tableLines);
@@ -1730,7 +1637,6 @@ export function detectAndProcessCode(text) {
     return { success: false, html: '', stats: { codeBlocks: 0 } };
   }
 
-  // Buscar bloques de código
   const codeBlockRegex = /```([a-zA-Z]*)\s*\n([\s\S]*?)```/g;
   const matches = [...text.matchAll(codeBlockRegex)];
 
@@ -1739,12 +1645,10 @@ export function detectAndProcessCode(text) {
   }
 
   try {
-    // ===== CAMBIO CLAVE: En lugar de extraer y procesar todo el texto =====
     // Reemplazamos cada bloque de código con un marcador único para procesarlo después
     let processedText = text;
     const codeBlocks = [];
     
-    // Guardar cada bloque de código y reemplazarlo con un marcador
     matches.forEach((match, index) => {
       const id = `___CODE_BLOCK_${index}___`;
       const fullMatch = match[0];
@@ -1758,14 +1662,11 @@ export function detectAndProcessCode(text) {
         fullMatch
       });
       
-      // Reemplazar el bloque de código con el marcador
       processedText = processedText.replace(fullMatch, id);
     });
     
-    // Procesar todo el texto normalmente con markdown
     let htmlContent = parseMarkdownToHTML(processedText);
     
-    // Restaurar los bloques de código con su HTML correspondiente
     codeBlocks.forEach(block => {
       let codeHtml;
       if (isMermaidCode(block.code, block.language)) {
@@ -1806,7 +1707,6 @@ export function detectAndProcessCode(text) {
 export function processLatexText(text) {
   if (!text) return '';
 
-  // Cache para evitar reprocesamiento
   const cacheKey = text;
   if (processedForLatexCache.has(cacheKey)) {
     return text; // Ya está procesado, devolver sin cambios
@@ -1833,7 +1733,6 @@ export function processLatexText(text) {
     .replace(/\s*<=\s*/g, ' \\leq ')
     .replace(/\s*!=\s*/g, ' \\neq ');
     
-  // Añadir al caché para evitar reprocesar
   processedForLatexCache.add(cacheKey);
 
   return processedText;
@@ -1901,13 +1800,11 @@ function processPDFLaTeX(content) {
 export function renderMathInContainer(container, options = {}) {
   return new Promise((resolve, reject) => {
     try {
-      // Verificar si MathJax está disponible
       if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([container])
           .then(resolve)
           .catch(reject);
       } else {
-        // Importar dinámicamente el módulo mathjax-config.js
         import('../utils/mathjax-config.js')
           .then(module => {
             if (typeof module.renderMath === 'function') {
@@ -1937,7 +1834,6 @@ export function renderMathInContainer(container, options = {}) {
  * @returns {boolean} Verdadero si se detecta tabla Markdown válida
  */
 export function containsMarkdownTable(text) {
-  // Dividir el texto en líneas y limpiar
   const lines = text.split('\n').map(line => line.trim());
 
   // Debe tener al menos 3 líneas (encabezado, separador, datos)
@@ -1998,9 +1894,7 @@ export function linkify(text) {
   return convertPlainUrls(text);
 }
 
-// ======================================
 // EXPORTACIONES UNIFICADAS
-// ======================================
 
 export default {
   // Funciones principales

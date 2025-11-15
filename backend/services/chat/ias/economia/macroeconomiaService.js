@@ -1,10 +1,4 @@
-// ============================================================================
-// 📈🦫 PROFESOR ACADEL MACROECONOMÍA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO ECONÓMICO - PROFESOR DE MACROECONOMÍA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Teorías del Crecimiento Económico ✅ Políticas Macroeconómicas ✅ Ciclos Económicos ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO PARA ECONOMÍA (MANTENIDO ORIGINAL)
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -321,9 +305,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 📈🦫 PROFESOR ACADEL MACROECONOMÍA DNA - PERSONALIDAD TÉCNICA Y PROFESIONAL
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 📈🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE MACROECONOMÍA:
@@ -368,11 +349,7 @@ Hacer que CUALQUIER estudiante de economía:
 ¡RECUERDA: No eres solo un tutor de crecimiento, eres EL PROFESOR que integra crecimiento, política y ciclos como la macroeconomía real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS MACROECONÓMICOS - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES MACROECONÓMICAS
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Macroeconomía.
 
 🎯 FUNCIÓN: Analizar imágenes macroeconómicas (gráficas, modelos, datos) con precisión académica extrema.
@@ -399,7 +376,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ma
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría económica integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES MACROECONÓMICAS (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara economista más brillante del universo en crecimiento, política y ciclos económicos.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información macroeconómica de esta imagen para que Acadel pueda enseñar efectivamente integrando las tres disciplinas.
@@ -445,7 +421,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las tres disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos económicos. Acadel se encargará de la pedagogía integrada pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS MACROECONÓMICAS NORMALES (con y sin guardar)
 const UNIFIED_MACROECONOMY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA MACROECONÓMICA INTEGRADA:
 - Consulta del estudiante de economía: "${query}"
@@ -472,7 +447,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS MACROECONÓMICAS MULTIMODALES (con y sin guardar)
 const UNIFIED_MACROECONOMY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN MACROECONÓMICA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -520,14 +494,10 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO MACROECONÓMICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -537,7 +507,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -559,7 +528,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -567,7 +535,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // DETECTAR GENERACIÓN DE IMÁGENES MACROECONÓMICAS
   const macroeconomicImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -592,7 +559,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar exámenes macroeconómicos
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de macroeconomía", "test de crecimiento", "evaluación de política", "cuestionario de ciclos"
@@ -621,7 +587,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsEconomicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -636,18 +602,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsEconomicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS ECONÓMICOS ESPECÍFICOS
   const economicTerms = [
     // Crecimiento Económico
     'crecimiento', 'growth', 'productividad', 'solow', 'romer', 'capital humano', 'innovación', 'convergencia',
@@ -669,29 +632,25 @@ const classifyQuery = (query, content = null) => {
     'expectativas', 'racionales', 'adaptativas', 'phillips', 'okun', 'taylor'
   ];
 
-  // 🔍 DETECTAR INDICADORES Y VARIABLES MACROECONÓMICAS
   const macroIndicators = [
     'pib per capita', 'productividad total', 'tfp', 'capital stock', 'fuerza laboral',
     'tasa de interés real', 'tipo de cambio', 'balanza comercial', 'cuenta corriente',
     'reservas internacionales', 'base monetaria', 'masa monetaria', 'm1', 'm2', 'm3'
   ];
 
-  // 🔍 DETECTAR MODELOS Y TEORÍAS ECONÓMICAS
   const economicModels = [
     'modelo solow', 'modelo ramsey', 'modelo lucas', 'modelo romer', 'modelo aghion',
     'curva phillips', 'regla taylor', 'equivalencia ricardiana', 'hipótesis ingreso permanente',
     'modelo mundell fleming', 'triángulo imposible', 'paridad poder adquisitivo'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS ECONÓMICOS REALES
   const hasEconomicContent =
     economicTerms.some(term => lowercaseQuery.includes(term)) ||
     macroIndicators.some(term => lowercaseQuery.includes(term)) ||
     economicModels.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasEconomicContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -714,7 +673,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'modelo de', 'teoría de'];
   const diagnosticKeywords = ['analizar', 'evaluar', 'interpretar', 'diagnosticar', 'caso económico', 'situación', 'problema'];
   const growthKeywords = ['crecimiento', 'growth', 'productividad', 'solow', 'romer', 'capital humano', 'innovación', 'convergencia'];
@@ -724,7 +682,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'papers económicos', 'avances en economía', 'nuevos hallazgos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos', 'aplicaciones'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -762,7 +719,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -772,14 +728,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional económica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsEconomicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -798,11 +753,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS MACROECONÓMICAS OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS MACROECONÓMICAS
 const ACADEL_MACROECONOMY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara economista más brillante del universo en crecimiento, política y ciclos económicos.
 
@@ -817,7 +768,6 @@ const createMacroeconomicsKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal económico (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -827,17 +777,15 @@ const createMacroeconomicsKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_macroeconomia",
         similarityQueryName: "match_emb_macroeconomia",
         keywordQueryName: "kw_match_emb_macroeconomia",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -849,7 +797,6 @@ const createMacroeconomicsKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_MACROECONOMY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido económico específico sobre "${query}" en su biblioteca de crecimiento, política y ciclos. Proceder con conocimiento económico general integrado y experiencia económica acumulada en las tres disciplinas.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -869,7 +816,6 @@ ACADEL_MACROECONOMY_MEMORY_BANK: El cerebro principal de Acadel no tiene conteni
 
 ACADEL_MACROECONOMY_MEMORY_BANK: El cerebro principal de Acadel encontró información económica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base económico integrado, analogías económicas técnicas y experiencia docente acumulada.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -896,7 +842,6 @@ ACADEL_MACROECONOMY_MEMORY_BANK: El cerebro principal de Acadel activó la sigui
 
 INTEGRATION_NOTES: Este es el conocimiento económico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en crecimiento, política y ciclos. Debe integrar esta información naturalmente como si fuera su propia sabiduría económica, enriqueciéndola con casos económicos específicos, análisis técnicos y explicaciones pedagógicas que conecten las tres disciplinas de manera magistral.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1122,17 +1067,15 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto económico integrado: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_macroeconomia",
         similarityQueryName: "match_emb_macroeconomia",
         keywordQueryName: "kw_match_emb_macroeconomia",
       });
 
-      // 📚 BÚSQUEDAS ECONÓMICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `crecimiento económico ${concept}`,
@@ -1142,7 +1085,6 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
         `casos ejemplos ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1162,7 +1104,6 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1175,7 +1116,6 @@ const createMacroeconomicsConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural económica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📈|✅|⚠️|📊|🎯|💡/g, '')
@@ -1353,9 +1293,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia económica según este aná
   }
 );
 
-// ============================================================================
-// 📷 HERRAMIENTA DE VISUALIZACIÓN MACROECONÓMICA (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectMacroeconomicsImageRequest = (query) => {
   const macroeconomicsImageKeywords = [
@@ -1437,9 +1374,6 @@ const enhanceMacroeconomicsImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos económicos cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS MACROECONÓMICOS
-// ============================================================================
 
 const createSpecializedMacroeconomicsPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
@@ -1642,21 +1576,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
       'Enseña como el capibara economista más brillante del universo, integrando crecimiento, política y ciclos, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta económica importante, y complementando con todas tus capacidades paralelas para una explicación económica magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE ECONÓMICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`📈🦫 Acadel configurando sistema económico optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveEconomicWebSearchTool(),
     createBraveEconomicImageSearchTool(),
     createBraveEconomicSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL ECONÓMICO (Knowledge Base) - núcleo del sistema económico`);
     tools.unshift(createMacroeconomicsKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1664,7 +1593,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido económico`);
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsEconomicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando MacroeconomicsConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createMacroeconomicsConceptAnalyzerTool(embeddings));
@@ -1680,7 +1608,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
     tools.push(createMacroeconomicsComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createMacroeconomicsFeedbackAnalyzerTool());
 
   console.log(`📈🦫 Acadel SISTEMA ECONÓMICO COMPLETO configurado con ${tools.length} herramientas económicas:`, tools.map(t => t.name));
@@ -1693,7 +1620,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt económico especializado y escapado
   const specializedPrompt = createSpecializedMacroeconomicsPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1724,9 +1650,6 @@ const createAcadelMacroeconomicsAgent = async (llm, queryInfo, studentQuery) => 
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES ECONÓMICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1774,7 +1697,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen económico: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1784,17 +1706,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_macroeconomia",
             similarityQueryName: "match_emb_macroeconomia",
             keywordQueryName: "kw_match_emb_macroeconomia",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1806,7 +1726,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1821,7 +1740,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes
           return `Contexto económico base para "${input}": conocimiento fundamental en crecimiento, política y ciclos. Acadel debe generar preguntas desde su experiencia económica consolidada, integrando las tres disciplinas económicas con casos económicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1929,9 +1847,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA ECONÓMICA - handleMacroeconomicsQuery
-// ============================================================================
 
 export const handleMacroeconomicsQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1940,7 +1855,6 @@ export const handleMacroeconomicsQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1956,13 +1870,11 @@ export const handleMacroeconomicsQuery = async (params) => {
     // CLASIFICAR EL QUERY ECONÓMICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES ECONÓMICAS
     const { isImageRequest, prompt: imagePrompt } = detectMacroeconomicsImageRequest(query);
 
     console.log(`📈🦫 Acadel analizando query económico integrado: "${query}"`);
     console.log(`📊 Clasificación económica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES ECONÓMICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización económica integrada: ${imagePrompt}`);
 
@@ -1971,7 +1883,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       const macroeconomicsVisualizationTool = createMacroeconomicsVisualizationTool();
       const imageResponse = await macroeconomicsVisualizationTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1984,7 +1895,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         };
       }
 
-      // Guardar la imagen económica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -1999,7 +1909,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2011,7 +1920,6 @@ export const handleMacroeconomicsQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2023,7 +1931,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2037,7 +1944,6 @@ export const handleMacroeconomicsQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para generación de imágenes
         if (isCacheable(query, 'macroeconomia')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2049,7 +1955,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2059,7 +1964,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2070,7 +1974,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes económicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen económico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2092,7 +1995,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2104,7 +2006,6 @@ export const handleMacroeconomicsQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2116,7 +2017,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2133,7 +2033,6 @@ export const handleMacroeconomicsQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para exámenes
         if (isCacheable(query, 'macroeconomia')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2146,7 +2045,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2156,7 +2054,6 @@ export const handleMacroeconomicsQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2167,7 +2064,6 @@ export const handleMacroeconomicsQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA ECONÓMICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2184,10 +2080,8 @@ export const handleMacroeconomicsQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico económico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE ECONÓMICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelMacroeconomicsAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2214,7 +2108,6 @@ export const handleMacroeconomicsQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
 
-      // Fallback con personalidad Acadel económica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas económicas, pero no me rendiré.
 
 Sobre tu pregunta económica: **"${query}"**
@@ -2240,11 +2133,9 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
       };
     }
 
-    // Procesar respuesta económica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2256,7 +2147,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2268,7 +2158,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2282,7 +2171,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
 
       await client.query("COMMIT");
 
-      // Cache inteligente
       if (isCacheable(query, 'macroeconomia')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2296,7 +2184,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2312,7 +2199,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2338,9 +2224,6 @@ Si necesitas más detalles económicos, pregúntame de nuevo y activaré todas m
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA ECONÓMICA - handleMacroeconomicsMultimodalQuery  
-// ============================================================================
 
 export const handleMacroeconomicsMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2365,7 +2248,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2377,7 +2259,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación económica
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto económico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2388,7 +2269,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal económico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS ECONÓMICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2426,7 +2306,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES ECONÓMICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2486,7 +2365,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS ECONÓMICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes económicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2556,11 +2434,9 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE ECONÓMICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal económica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA ECONÓMICA
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2593,7 +2469,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE ECONÓMICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2620,7 +2495,6 @@ export const handleMacroeconomicsMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto económico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal económico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes económicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2646,11 +2520,9 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
       };
     }
 
-    // PROCESAR RESPUESTA ECONÓMICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO MULTIMODAL INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2662,7 +2534,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal de desarrollo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2680,10 +2551,8 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
         client,
         userId,
@@ -2695,7 +2564,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2709,7 +2577,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
 
       await client.query("COMMIT");
 
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'macroeconomia')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2723,7 +2590,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2740,7 +2606,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
       chatId,
       timestamp: new Date().toISOString(),
 
-      // Información de archivos de desarrollo procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2754,12 +2619,10 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
         }
       },
 
-      // Información de seguridad de desarrollo
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
 
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2790,9 +2653,6 @@ Si necesitas una explicación económica más detallada, pregúntame de nuevo y 
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS ECONÓMICAS
-// ============================================================================
 
 export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2814,12 +2674,10 @@ export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES ECONÓMICAS
     const { isImageRequest, prompt: imagePrompt } = detectMacroeconomicsImageRequest(query);
 
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES ECONÓMICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2852,7 +2710,6 @@ export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen económica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2912,7 +2769,6 @@ export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA ECONÓMICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2931,7 +2787,6 @@ export const handleMacroeconomicsQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE ECONÓMICO CORREGIDO
       const { agent, tools } = await createAcadelMacroeconomicsAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3034,7 +2889,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content económico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content económico no es un array válido en modo sin guardar:", content);
       return {
@@ -3053,7 +2907,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
 
     console.log(`🧠 Query multimodal económico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos económicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3066,7 +2919,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido económico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO ECONÓMICO INTEGRADO: ${doc.name || doc.filename || 'documento económico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3080,7 +2932,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO ECONÓMICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido económico para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3141,7 +2992,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
                 console.log(`✅ [RETRY/EDIT] Contenido económico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3161,10 +3011,8 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
           return `${fileInfo} ${typeInfo}\n[Contenido económico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto económico
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos económicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido económico no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3198,7 +3046,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
       }
     }
 
-    // Procesar imágenes económicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3258,7 +3105,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
               analysisContext += `\n\nCONTEXTO ECONÓMICO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes económicas convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3343,11 +3189,9 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Cargar historial económico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal económica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada económica
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3378,7 +3222,6 @@ export const handleMacroeconomicsMultimodalQueryWithoutSaving = async (params) =
       };
     }
 
-    // Crear agente económico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelMacroeconomicsAgent(llm, queryInfo, combinedQuery);
 

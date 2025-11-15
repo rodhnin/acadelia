@@ -170,7 +170,6 @@ export function formatJsonToHtml(jsonData) {
         // Si es un string, intentar parsearlo
         const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
         
-        // Convertir a string formateado
         const formattedJson = JSON.stringify(data, null, 2)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')

@@ -39,7 +39,6 @@ class GoogleDriveService {
    */
   async getOrCreateFolder(folderName, parentFolderId = null) {
     try {
-      // Verificar si la carpeta ya existe
       const query = parentFolderId 
         ? `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and '${parentFolderId}' in parents and trashed=false`
         : `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
@@ -81,20 +80,16 @@ class GoogleDriveService {
  */
 async createYearMonthFolderStructure(date, baseFolderId = null) {
     try {
-      // Determinar año y mes
       const year = date.getFullYear().toString();
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       
       // Primero obtener/crear la carpeta de facturas si no se proporciona una carpeta base
       const invoicesFolderId = baseFolderId || await this.getOrCreateFolder('Facturas_Acadelia');
       
-      // Obtener/crear la subcarpeta "Egresos" dentro de Facturas_Acadelia
       const egresosFolderId = await this.getOrCreateFolder('Egresos', invoicesFolderId);
       
-      // Obtener/crear la carpeta del año dentro de Egresos
       const yearFolderId = await this.getOrCreateFolder(year, egresosFolderId);
       
-      // Obtener/crear la carpeta del mes
       const monthFolderName = `${month}_${this.getMonthName(date)}`;
       const monthFolderId = await this.getOrCreateFolder(monthFolderName, yearFolderId);
       
@@ -127,18 +122,15 @@ async createYearMonthFolderStructure(date, baseFolderId = null) {
    */
   async uploadFile(filePath, fileName, folderId) {
     try {
-      // Verificar que el archivo existe
       if (!fs.existsSync(filePath)) {
         throw new Error(`El archivo ${filePath} no existe`);
       }
       
-      // Preparar metadatos del archivo
       const fileMetadata = {
         name: fileName,
         parents: [folderId],
       };
       
-      // Crear stream de lectura del archivo
       const media = {
         mimeType: 'application/pdf',
         body: fs.createReadStream(filePath),
@@ -153,7 +145,6 @@ async createYearMonthFolderStructure(date, baseFolderId = null) {
       
       console.log(`Archivo subido con ID: ${response.data.id}`);
       
-      // Configurar permisos para que el archivo sea accesible mediante enlace
       await this.driveClient.permissions.create({
         fileId: response.data.id,
         requestBody: {
@@ -178,16 +169,13 @@ async createYearMonthFolderStructure(date, baseFolderId = null) {
    */
   async uploadInvoice(filePath, expenseId, expenseDate) {
     try {
-      // Crear estructura de carpetas año/mes
       const folderId = await this.createYearMonthFolderStructure(expenseDate);
       
-      // Generar nombre descriptivo para el archivo
       const fileName = `Factura_${expenseId}_${expenseDate.toISOString().split('T')[0]}.pdf`;
       
       // Subir archivo
       const fileData = await this.uploadFile(filePath, fileName, folderId);
       
-      // Eliminar archivo temporal después de subir
       fs.unlink(filePath, (err) => {
         if (err) console.error('Error al eliminar archivo temporal:', err);
       });
@@ -206,20 +194,16 @@ async createYearMonthFolderStructure(date, baseFolderId = null) {
  */
 async createYearMonthFolderStructureForIncome(date, baseFolderId = null) {
   try {
-    // Determinar año y mes
     const year = date.getFullYear().toString();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     
     // Primero obtener/crear la carpeta de facturas si no se proporciona una carpeta base
     const invoicesFolderId = baseFolderId || await this.getOrCreateFolder('Facturas_Acadelia');
     
-    // Obtener/crear la subcarpeta "Ingresos" dentro de Facturas_Acadelia
     const ingresosFolderId = await this.getOrCreateFolder('Ingresos', invoicesFolderId);
     
-    // Obtener/crear la carpeta del año dentro de Ingresos
     const yearFolderId = await this.getOrCreateFolder(year, ingresosFolderId);
     
-    // Obtener/crear la carpeta del mes
     const monthFolderName = `${month}_${this.getMonthName(date)}`;
     const monthFolderId = await this.getOrCreateFolder(monthFolderName, yearFolderId);
     
@@ -238,13 +222,10 @@ async createYearMonthFolderStructureForIncome(date, baseFolderId = null) {
  */
 async uploadInvoiceFromPaddle(invoiceUrl, transactionId, transactionDate) {
   try {
-    // Crear estructura de carpetas año/mes para ingresos
     const folderId = await this.createYearMonthFolderStructureForIncome(transactionDate);
     
-    // Crear un archivo temporal para descargar la factura
     const tempFilePath = path.join(process.cwd(), 'uploads', 'temp', `paddle_invoice_${transactionId}.pdf`);
     
-    // Crear el directorio si no existe
     const tempDir = path.dirname(tempFilePath);
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir, { recursive: true });
@@ -258,14 +239,12 @@ async uploadInvoiceFromPaddle(invoiceUrl, transactionId, transactionDate) {
       throw new Error(`Error al descargar factura: ${response.status} ${response.statusText}`);
     }
     
-    // Convertir la respuesta a un array buffer y escribirlo en el archivo
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     fs.writeFileSync(tempFilePath, buffer);
     
     console.log(`Factura descargada a: ${tempFilePath}`);
     
-    // Generar nombre descriptivo para el archivo
     const fileName = `Factura_${transactionId}_${transactionDate.toISOString().split('T')[0]}.pdf`;
     
     // Subir archivo a Google Drive
@@ -273,7 +252,6 @@ async uploadInvoiceFromPaddle(invoiceUrl, transactionId, transactionDate) {
     
     console.log(`Factura subida a Google Drive: ${fileData.webViewLink}`);
     
-    // Eliminar archivo temporal después de subir
     fs.unlink(tempFilePath, (err) => {
       if (err) console.error('Error al eliminar archivo temporal:', err);
     });
@@ -292,20 +270,15 @@ async uploadInvoiceFromPaddle(invoiceUrl, transactionId, transactionDate) {
  */
 async createReportFolderStructure(date) {
   try {
-    // Determinar año y mes
     const year = date.getFullYear().toString();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     
-    // Obtener/crear la carpeta base Facturas_Acadelia
     const baseFolder = await this.getOrCreateFolder('Facturas_Acadelia');
     
-    // Obtener/crear la subcarpeta "Informe_Integral" dentro de Facturas_Acadelia
     const reportsFolderId = await this.getOrCreateFolder('Informe_Integral', baseFolder);
     
-    // Obtener/crear la carpeta del año dentro de Informe_Integral
     const yearFolderId = await this.getOrCreateFolder(year, reportsFolderId);
     
-    // Obtener/crear la carpeta del mes
     const monthFolderName = `${month}_${this.getMonthName(date)}`;
     const monthFolderId = await this.getOrCreateFolder(monthFolderName, yearFolderId);
     
@@ -325,10 +298,8 @@ async createReportFolderStructure(date) {
  */
 async uploadIntegralReport(filePath, reportId, reportDate) {
   try {
-    // Crear estructura de carpetas específica para informes
     const folderId = await this.createReportFolderStructure(reportDate);
     
-    // Generar nombre descriptivo para el archivo
     const fileName = `Informe_Integral_${reportId}_${reportDate.toISOString().split('T')[0]}.pdf`;
     
     // Subir archivo
@@ -381,13 +352,11 @@ async uploadTransferProof(filePath, fileName) {
   try {
     const folderId = await this.createTransferProofFolderStructure(new Date());
     
-    // Preparar metadatos del archivo
     const fileMetadata = {
       name: fileName,
       parents: [folderId],
     };
     
-    // Determinar tipo MIME
     const extension = path.extname(fileName).toLowerCase();
     let mimeType = 'application/octet-stream';
     
@@ -411,7 +380,6 @@ async uploadTransferProof(filePath, fileName) {
       fields: 'id,name,webViewLink',
     });
     
-    // Configurar permisos
     await this.driveClient.permissions.create({
       fileId: response.data.id,
       requestBody: {

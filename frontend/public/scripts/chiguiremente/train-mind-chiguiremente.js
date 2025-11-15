@@ -46,16 +46,13 @@ let activeModalStack = [];
  * @param {Function} closeCallback - Función para cerrar el modal
  */
 function registerActiveModal(modal, closeCallback) {
-  // Agregar al stack de modales activos
   activeModalStack.push({
     modal: modal,
     closeFunc: closeCallback
   });
   
-  // Remover cualquier listener global anterior de Escape
   document.removeEventListener('keydown', globalEscapeHandler);
   
-  // Agregar el nuevo listener
   document.addEventListener('keydown', globalEscapeHandler);
 }
 
@@ -64,7 +61,6 @@ function registerActiveModal(modal, closeCallback) {
  * @param {HTMLElement} modal - El elemento modal a desregistrar
  */
 function unregisterActiveModal(modal) {
-  // Filtrar el modal del stack
   activeModalStack = activeModalStack.filter(item => item.modal !== modal);
   
   // Si no quedan modales activos, quitar el listener global
@@ -79,10 +75,8 @@ function unregisterActiveModal(modal) {
  */
 function globalEscapeHandler(e) {
   if (e.key === 'Escape' && activeModalStack.length > 0) {
-    // Obtener el último modal (el superior en la jerarquía)
     const topModal = activeModalStack[activeModalStack.length - 1];
     
-    // Ejecutar su función de cierre
     if (topModal && typeof topModal.closeFunc === 'function') {
       e.preventDefault();
       e.stopPropagation();
@@ -105,13 +99,11 @@ function getElement(id) {
 export function initTrainMindModule() {
     console.log('Inicializando módulo renovado de entrenamiento...');
     
-    // Verificar si estamos en la vista de entrenamiento
     if (window.location.hash === '#train-mind') {
         // Siempre mostrar la pantalla de bienvenida al inicializar
         resetToWelcomeView();
     }
     
-    // Escuchar cambios de hash para inicializar cuando se active la vista
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '#train-mind') {
             // Siempre mostrar la pantalla de bienvenida cuando cambia a esta vista
@@ -119,7 +111,6 @@ export function initTrainMindModule() {
         }
     });
     
-    // Escuchar evento de activación de vista
     document.addEventListener('viewActivated', (event) => {
         if (event.detail.view === 'train-mind') {
             // Siempre mostrar la pantalla de bienvenida cuando se activa esta vista
@@ -127,10 +118,8 @@ export function initTrainMindModule() {
         }
     });
     
-    // Configurar evento del botón continuar
     const continueBtn = document.getElementById('welcome-continue-btn');
     if (continueBtn) {
-        // Remover listeners previos
         continueBtn.removeEventListener('click', handleWelcomeContinue);
         continueBtn.addEventListener('click', handleWelcomeContinue);
     }
@@ -143,10 +132,8 @@ function handleWelcomeContinue() {
     state.processingStatus = 'idle';
     document.getElementById('welcome-screen').style.display = 'none';
     
-    // Mostrar el contenedor principal que estaba oculto
     document.querySelector('.train-content-container').style.display = 'block';
     
-    // Inicializar la interfaz de selección de AVA
     setupAvaSelection();
 }
 
@@ -182,7 +169,6 @@ function resetToWelcomeView() {
         trainMindSection.style.visibility = 'hidden';
     }
     
-    // Preparar la estructura antes de hacerla visible
     if (contentContainer) contentContainer.style.display = 'none';
     if (welcomeScreen) {
         welcomeScreen.style.display = 'flex';
@@ -193,19 +179,15 @@ function resetToWelcomeView() {
         welcomeScreen.style.margin = '0 auto';
     }
     
-    // Preparar el estado interno para cuando el usuario avance
     if (noAvaSelected) noAvaSelected.style.display = 'block';
     if (selectedAvaSection) selectedAvaSection.style.display = 'none';
     if (uploadProgress) uploadProgress.style.display = 'none';
     if (uploadResults) uploadResults.style.display = 'none';
     
-    // Actualizar la imagen del Chiguire según el tema
     updateChiguireTheme();
 
     addWelcomeAnimation();
     
-    // Restaurar la visibilidad después de un breve retraso
-    // para que todos los cambios se apliquen primero
     setTimeout(() => {
         if (trainMindSection) {
             trainMindSection.style.display = originalDisplay;
@@ -231,7 +213,6 @@ function addWelcomeAnimation() {
         // Forzar un reflow para reiniciar las animaciones
         void welcomeScreen.offsetWidth;
         
-        // Agregar clases de animación
         welcomeScreen.classList.add('welcome-animation');
         professorImage.classList.add('professor-animation');
         neuralBubble.classList.add('bubble-animation');
@@ -256,22 +237,17 @@ function updateChiguireTheme() {
  * Configura la interfaz de selección de AVA
  */
 async function setupAvaSelection() {
-    // Mostrar la sección de selección de AVA
     document.getElementById('no-ava-selected').style.display = 'block';
     document.getElementById('selected-ava-section').style.display = 'none';
     document.getElementById('upload-progress').style.display = 'none';
     document.getElementById('upload-results').style.display = 'none';
     
-    // Cargar carreras para el filtro
     await loadCarreras();
     
-    // Cargar AVAs disponibles
     await loadAvas();
     
-    // Configurar navegación del carrusel
     setupCarouselNavigation();
     
-    // Configurar filtros
     setupFilters();
 }
 
@@ -280,12 +256,10 @@ async function setupAvaSelection() {
  */
 async function loadCarreras() {
     try {
-        // Cargar carreras desde la API
         const carreras = await fetchWithCSRF('/api/carrera/carrera', {
             method: 'GET'
         });
         
-        // Guardar carreras en el estado
         if (Array.isArray(carreras)) {
             state.carreras = carreras;
             
@@ -317,7 +291,6 @@ async function loadCarreras() {
  */
 async function loadAvas() {
     try {
-        // Mostrar indicador de carga en el carrusel
         const avaCarousel = document.getElementById('ava-carousel');
         avaCarousel.innerHTML = `
             <div class="neural-carousel-loader">
@@ -329,16 +302,13 @@ async function loadAvas() {
             </div>
         `;
         
-        // Cargar AVAs desde la API
         const avas = await fetchWithCSRF('/api/avas', {
             method: 'GET'
         });
         
-        // Actualizar estado
         state.avas = avas;
         state.filteredAvas = [...avas];
         
-        // Renderizar tarjetas de AVA
         renderAvaCards();
         
     } catch (error) {
@@ -372,7 +342,6 @@ function renderAvaCards() {
     const avaCarousel = document.getElementById('ava-carousel');
     const template = document.getElementById('ava-card-template');
     
-    // Limpiar carrusel
     avaCarousel.innerHTML = '';
     
     // Si no hay AVAs, mostrar mensaje
@@ -389,9 +358,7 @@ function renderAvaCards() {
         return;
     }
     
-    // Crear una tarjeta para cada AVA
     state.filteredAvas.forEach(ava => {
-        // Clonar la plantilla
         const card = template.content.cloneNode(true);
         const hasEmbedding = !!ava.embedding_table_name;
         
@@ -404,13 +371,10 @@ function renderAvaCards() {
         imgElement.src = ava.imagen || '/images/placeholder.jpg';
         imgElement.alt = ava.nom_ava;
         
-        // Configurar manejo de errores de imagen de forma segura
         setupImageFallback(imgElement, '/images/placeholder.jpg');
         
-        // Información básica
         card.querySelector('.neural-card-title').textContent = ava.nom_ava;
         
-        // Truncar descripción a longitud adecuada (82 caracteres como referencia)
         const description = ava.descripcion || 'Sin descripción disponible';
         const truncatedDescription = truncateText(description, 82);
         card.querySelector('.neural-card-description').textContent = truncatedDescription;
@@ -429,7 +393,6 @@ function renderAvaCards() {
             card.querySelector('.embedding-status i').className = 'bx bx-x-circle';
         }
         
-        // Configurar botón de selección
         const selectButton = card.querySelector('.neural-card-select');
         
         if (hasEmbedding) {
@@ -439,7 +402,6 @@ function renderAvaCards() {
             selectButton.textContent = 'No Disponible';
         }
         
-        // Agregar tarjeta al carrusel
         avaCarousel.appendChild(card);
     });
     
@@ -457,11 +419,9 @@ function setupCarouselNavigation() {
     const carousel = document.getElementById('ava-carousel');
     
     if (prevButton && nextButton) {
-        // Remover listeners previos
         prevButton.removeEventListener('click', handleCarouselPrev);
         nextButton.removeEventListener('click', handleCarouselNext);
         
-        // Agregar nuevos listeners
         prevButton.addEventListener('click', handleCarouselPrev);
         nextButton.addEventListener('click', handleCarouselNext);
     }
@@ -472,7 +432,6 @@ function setupCarouselNavigation() {
         carousel.addEventListener('scroll', handleCarouselScroll);
     }
     
-    // Actualizar botones de navegación según el número de elementos
     updateCarouselNavigation();
     
     // Ajustar carouselVisibleItems según el ancho de la pantalla
@@ -497,7 +456,6 @@ function handleCarouselScroll() {
     // Debounce para mejorar rendimiento
     clearTimeout(carousel.scrollTimeout);
     carousel.scrollTimeout = setTimeout(() => {
-        // Calcular la posición aproximada basada en el scrollLeft
         const newPosition = Math.round(carousel.scrollLeft / state.carouselItemWidth);
         
         // Si la posición es diferente, actualizar el estado y la navegación
@@ -525,7 +483,6 @@ function updateCarouselResponsive() {
         state.carouselVisibleItems = 4;
     }
     
-    // Actualizar posición si es necesario
     const maxPosition = Math.max(0, state.filteredAvas.length - state.carouselVisibleItems);
     if (state.carouselPosition > maxPosition) {
         state.carouselPosition = maxPosition;
@@ -547,7 +504,6 @@ function navigateCarousel(direction) {
         state.carouselPosition++;
     }
     
-    // Usar animación suave cuando se navega con botones
     updateCarouselPosition(true);
     updateCarouselNavigation();
 }
@@ -575,14 +531,11 @@ function updateCarouselNavigation() {
     const carousel = document.getElementById('ava-carousel');
     
     if (prevButton && nextButton && carousel) {
-        // Calcular posición máxima
         const maxPosition = Math.max(0, state.filteredAvas.length - state.carouselVisibleItems);
         
-        // Actualizar estados de botones
         prevButton.disabled = state.carouselPosition <= 0;
         nextButton.disabled = state.carouselPosition >= maxPosition;
         
-        // Aplicar estilos visuales
         prevButton.style.opacity = state.carouselPosition <= 0 ? '0.3' : '1';
         nextButton.style.opacity = state.carouselPosition >= maxPosition ? '0.3' : '1';
     }
@@ -602,16 +555,13 @@ function setupFilters() {
     // Búsqueda por nombre
     const avaSearch = document.getElementById('avaneural-search');
     if (avaSearch) {
-        // Remover event listeners previos para evitar duplicados
         avaSearch.removeEventListener('input', debounceSearch);
-        // Agregar el nuevo event listener con debounce para mejor rendimiento
         avaSearch.addEventListener('input', debounceSearch);
     } else {
         console.error('Elemento de búsqueda no encontrado: #avaneural-search');
     }
 }
 
-// Función debounce para mejorar rendimiento de búsqueda
 function debounceSearch() {
     clearTimeout(window.searchTimeout);
     window.searchTimeout = setTimeout(applyFilters, 300);
@@ -634,13 +584,11 @@ function applyFilters() {
     
     console.log('Aplicando filtros:', { carrera: carreraValue, busqueda: searchTerm });
     
-    // Verificar que state.avas existe y tiene elementos
     if (!state.avas || !Array.isArray(state.avas) || state.avas.length === 0) {
         console.error('No hay AVAs disponibles para filtrar');
         return;
     }
     
-    // Filtrar los AVAs
     state.filteredAvas = state.avas.filter(ava => {
         // Filtro por carrera
         const matchesCarrera = !carreraValue || ava.id_carrera == carreraValue;
@@ -656,7 +604,6 @@ function applyFilters() {
     // Restablecer posición del carrusel
     state.carouselPosition = 0;
     
-    // Renderizar tarjetas filtradas
     renderAvaCards();
 }
 
@@ -666,46 +613,35 @@ function applyFilters() {
 function selectAva(ava) {
     state.selectedAva = ava;
     
-    // Ocultar sección de selección
     document.getElementById('no-ava-selected').style.display = 'none';
     
-    // Mostrar sección de AVA seleccionado
     const selectedSection = document.getElementById('selected-ava-section');
     selectedSection.style.display = 'block';
     
-    // Actualizar información del AVA seleccionado
     const selectedImage = document.getElementById('selected-ava-image');
     selectedImage.src = ava.imagen || '/images/placeholder.jpg';
     
-    // Configurar manejo de errores de imagen de forma segura
     setupImageFallback(selectedImage, '/images/placeholder.jpg');
     
     document.getElementById('selected-ava-name').textContent = ava.nom_ava;
     
-    // Buscar nombre de carrera
     const carrera = state.carreras.find(c => c.id_carrera == ava.id_carrera);
     document.getElementById('selected-ava-carrera').textContent = carrera ? carrera.nombre : 'Sin carrera';
     
-    // Mostrar tabla de embeddings
     document.getElementById('selected-ava-table').textContent = ava.embedding_table_name;
     
-    // Mostrar tab de entrenamiento por defecto
     switchTab('training-tab');
     
-    // Configurar volver a selección
     const backButton = document.getElementById('back-to-selection');
     if (backButton) {
         backButton.removeEventListener('click', handleBackToSelection);
         backButton.addEventListener('click', handleBackToSelection);
     }
     
-    // Configurar tabs
     setupTabs();
     
-    // Configurar zona de arrastrar y soltar
     setupEnhancedDropZone();
     
-    // Cargar archivos procesados
     loadProcessedFiles(ava.id_ava);
 }
 
@@ -729,7 +665,6 @@ function setupTabs() {
     const tabs = document.querySelectorAll('.neural-tab');
     
     tabs.forEach(tab => {
-        // Remover listeners previos
         tab.removeEventListener('click', handleTabClick);
         tab.addEventListener('click', handleTabClick);
     });
@@ -742,18 +677,14 @@ function handleTabClick(e) {
     const tab = e.currentTarget;
     const tabs = document.querySelectorAll('.neural-tab');
     
-    // Desactivar todas las pestañas
     tabs.forEach(t => t.classList.remove('active'));
     
-    // Ocultar todos los contenidos
     document.querySelectorAll('.neural-tab-content').forEach(content => {
         content.classList.remove('active');
     });
     
-    // Activar la pestaña seleccionada
     tab.classList.add('active');
     
-    // Mostrar el contenido correspondiente
     const tabId = tab.dataset.tab;
     switchTab(tabId);
 }
@@ -762,12 +693,10 @@ function handleTabClick(e) {
  * Cambia a la pestaña especificada
  */
 function switchTab(tabId) {
-    // Actualizar clases de las pestañas
     document.querySelectorAll('.neural-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabId);
     });
     
-    // Actualizar contenido visible
     document.querySelectorAll('.neural-tab-content').forEach(content => {
         content.classList.toggle('active', content.id === tabId);
     });
@@ -787,7 +716,6 @@ async function loadProcessedFiles(avaId) {
         const filesContainer = document.getElementById('processed-files-container');
         if (!filesContainer) return;
         
-        // Mostrar indicador de carga
         filesContainer.innerHTML = `
             <div class="neural-files-loader">
                 <div class="neural-loader-brain">
@@ -806,22 +734,17 @@ async function loadProcessedFiles(avaId) {
             </div>
         `;
         
-        // Cargar archivos desde la API
         const response = await fetchWithCSRF(`/api/ava/${avaId}/embeddings/files`, {
             method: 'GET'
         });
         
-        // Actualizar estado
         if (response.success && Array.isArray(response.files)) {
             state.processedFiles = response.files;
             
-            // Actualizar contador en la pestaña
             document.getElementById('files-count').textContent = response.count || 0;
             
-            // Actualizar estadísticas
             updateProcessedStats(avaId, response);
             
-            // Mostrar archivos
             if (response.files.length === 0) {
                 filesContainer.innerHTML = `
                     <div class="neural-empty-selection">
@@ -835,10 +758,8 @@ async function loadProcessedFiles(avaId) {
                 return;
             }
             
-            // Limpiar contenedor
             filesContainer.innerHTML = '';
             
-            // Crear tarjetas para cada archivo
             response.files.forEach(file => {
                 const card = document.createElement('div');
                 card.className = 'neural-processed-file-card';
@@ -876,7 +797,6 @@ async function loadProcessedFiles(avaId) {
                 filesContainer.appendChild(card);
             });
             
-            // Configurar eventos para botones
             configureProcesedFileButtons(avaId);
         } else {
             filesContainer.innerHTML = `
@@ -912,10 +832,8 @@ async function loadProcessedFiles(avaId) {
  */
 async function updateProcessedStats(avaId, filesResponse) {
     try {
-        // Actualizar contadores básicos
         document.getElementById('total-processed-files').textContent = filesResponse.count || 0;
         
-        // Obtener estadísticas adicionales
         const statsResponse = await fetchWithCSRF(`/api/ava/${avaId}/embeddings/stats`, {
             method: 'GET'
         });
@@ -923,7 +841,6 @@ async function updateProcessedStats(avaId, filesResponse) {
         if (statsResponse.success) {
             document.getElementById('total-processed-pages').textContent = statsResponse.stats.total_documents || 0;
             
-            // Formatear fecha más reciente
             let lastUpdateText = '-';
             if (statsResponse.stats.newest_document) {
                 const newestDate = new Date(statsResponse.stats.newest_document);
@@ -979,7 +896,6 @@ async function showEmbeddingContent(avaId, filename) {
     embeddingModalState.pages = [];
     embeddingModalState.isLoading = true;
     
-    // Buscar el modal
     const modal = getElement('embedding-content-modal');
     if (!modal) {
       console.error('No se encontró el modal de embeddings');
@@ -989,10 +905,8 @@ async function showEmbeddingContent(avaId, filename) {
     // Asegurar que los tabs estén configurados
     setupEmbeddingModalTabs();
     
-    // Mostrar el modal
     openModal(modal);
     
-    // Obtener referencias a los elementos del DOM
     const filenameElement = getElement('modal-filename');
     const timestampElement = getElement('modal-timestamp');
     const contentLoader = getElement('content-loader');
@@ -1000,7 +914,6 @@ async function showEmbeddingContent(avaId, filename) {
     const contentElement = getElement('modal-content');
     const metadataElement = getElement('modal-metadata');
     
-    // Establecer información básica - con comprobaciones para evitar errores
     if (filenameElement) {
       const truncatedName = truncateFilename(filename, 40);
       filenameElement.textContent = truncatedName;
@@ -1009,19 +922,15 @@ async function showEmbeddingContent(avaId, filename) {
     
     if (timestampElement) timestampElement.textContent = '...';
     
-    // Deshabilitar controles inicialmente
     setLoadingState(true);
     
-    // Mostrar loaders y ocultar contenido
     if (contentLoader) contentLoader.style.display = 'flex';
     if (metadataLoader) metadataLoader.style.display = 'flex';
     if (contentElement) contentElement.style.display = 'none';
     if (metadataElement) metadataElement.style.display = 'none';
     
-    // Limpiar errores anteriores
     clearErrors();
     
-    // Activar tab de contenido por defecto
     const contentTab = document.querySelector('.embedding-tabs .neural-tab[data-tab="content-tab"]');
     if (contentTab) contentTab.click();
     
@@ -1053,13 +962,10 @@ async function showEmbeddingContent(avaId, filename) {
       })
     });
     
-    // Verificar respuesta
     if (pagesResponse.success && pagesResponse.data && pagesResponse.data.length > 0) {
-      // Actualizar estado con información de páginas
       embeddingModalState.totalPages = pagesResponse.data.length;
       embeddingModalState.pages = pagesResponse.data;
       
-      // Configurar navegación
       setupPageNavigation();
       setupDeleteButton();
       
@@ -1085,25 +991,21 @@ async function showEmbeddingContent(avaId, filename) {
         })
       });
       
-      // Ocultar loaders
       if (contentLoader) contentLoader.style.display = 'none';
       if (metadataLoader) metadataLoader.style.display = 'none';
       
-      // Mostrar contenedores
       if (contentElement) contentElement.style.display = 'block';
       if (metadataElement) metadataElement.style.display = 'block';
       
       if (contentResponse.success && contentResponse.data && contentResponse.data.length > 0) {
         const embedding = contentResponse.data[0];
         
-        // Mostrar contenido (con verificación de que el elemento existe)
         if (contentElement) {
           // Asegurarse de quitar cualquier clase de error previo
           contentElement.classList.remove('error-content');
           
           contentElement.textContent = embedding.content || 'Sin contenido';
           
-          // Aplicar formato especial para markdown
           if (embedding.content && embedding.content.trim().startsWith('#')) {
             contentElement.classList.add('markdown-content');
           } else {
@@ -1111,7 +1013,6 @@ async function showEmbeddingContent(avaId, filename) {
           }
         }
         
-        // Parsear y mostrar metadatos
         let metadata = {};
         try {
           metadata = typeof embedding.metadata === 'string' 
@@ -1129,14 +1030,12 @@ async function showEmbeddingContent(avaId, filename) {
           metadataElement.textContent = JSON.stringify(metadata, null, 2);
         }
         
-        // Formatear timestamp
         let timestamp = metadata.timestamp || embedding.created_at;
         if (timestampElement && timestamp) {
           const date = new Date(timestamp);
           timestampElement.textContent = date.toLocaleString();
         }
       } else {
-        // Mostrar mensaje de error
         showError('modal-content', 'No se pudo cargar el contenido');
         showError('modal-metadata', 'No se pudieron cargar los metadatos');
       }
@@ -1151,14 +1050,12 @@ async function showEmbeddingContent(avaId, filename) {
       showError('modal-content', 'No se encontraron páginas para este archivo');
       showError('modal-metadata', 'No se encontraron metadatos para este archivo');
       
-      // Actualizar controles
       setupPageNavigation();
       setupDeleteButton();
     }
   } catch (error) {
     console.error('Error al cargar contenido del embedding:', error);
     
-    // Ocultar loaders
     const contentLoader = getElement('content-loader');
     const metadataLoader = getElement('metadata-loader');
     const contentElement = getElement('modal-content');
@@ -1173,11 +1070,9 @@ async function showEmbeddingContent(avaId, filename) {
     showError('modal-content', 'Error al cargar contenido: ' + error.message);
     showError('modal-metadata', 'Error: ' + error.message);
     
-    // Actualizar controles
     setupPageNavigation();
     setupDeleteButton();
   } finally {
-    // Desactivar estado de carga
     setLoadingState(false);
   }
 }
@@ -1189,11 +1084,9 @@ function setupDeleteButton() {
   const deleteButton = getElement('delete-page-btn');
   
   if (deleteButton) {
-    // Limpiar event listeners anteriores
     deleteButton.removeEventListener('click', handleDeletePageClick);
     deleteButton.addEventListener('click', handleDeletePageClick);
     
-    // Deshabilitar si solo hay una página
     deleteButton.disabled = embeddingModalState.totalPages <= 1;
   }
 }
@@ -1214,7 +1107,6 @@ function setupEmbeddingModalTabs() {
   
   const tabs = modal.querySelectorAll('.embedding-tabs .neural-tab');
   
-  // Configurar event listeners
   tabs.forEach(tab => {
     tab.removeEventListener('click', handleEmbeddingTabClick);
     tab.addEventListener('click', handleEmbeddingTabClick);
@@ -1229,20 +1121,16 @@ function handleEmbeddingTabClick(e) {
     const modal = document.getElementById('embedding-content-modal');
     if (!modal) return;
     
-    // Desactivar solo las pestañas dentro del modal
     modal.querySelectorAll('.embedding-tabs .neural-tab').forEach(t => {
         t.classList.remove('active');
     });
     
-    // Ocultar solo los contenidos dentro del modal
     modal.querySelectorAll('.embedding-tab-content').forEach(content => {
         content.classList.remove('active');
     });
     
-    // Activar la pestaña seleccionada
     tab.classList.add('active');
     
-    // Mostrar el contenido correspondiente (solo dentro del modal)
     const tabId = tab.dataset.tab;
     const contentTab = modal.querySelector(`#${tabId}`);
     if (contentTab) {
@@ -1258,16 +1146,13 @@ function setupPageNavigation() {
   const nextButton = getElement('next-page-btn');
   
   if (prevButton && nextButton) {
-    // Limpiar event listeners anteriores
     prevButton.removeEventListener('click', handlePrevPageClick);
     nextButton.removeEventListener('click', handleNextPageClick);
     
-    // Configurar nuevos event listeners
     prevButton.addEventListener('click', handlePrevPageClick);
     nextButton.addEventListener('click', handleNextPageClick);
   }
   
-  // Configurar selector de página
   setupPageSelector();
 }
 
@@ -1293,10 +1178,8 @@ function setupPageSelector() {
   const pageSelect = getElement('page-select');
   
   if (pageSelect) {
-    // Limpiar opciones actuales
     pageSelect.innerHTML = '';
     
-    // Generar opciones basadas en el número total de páginas
     for (let i = 1; i <= embeddingModalState.totalPages; i++) {
       const option = document.createElement('option');
       option.value = i;
@@ -1304,10 +1187,8 @@ function setupPageSelector() {
       pageSelect.appendChild(option);
     }
     
-    // Establecer página actual
     pageSelect.value = embeddingModalState.currentPage;
     
-    // Configurar evento de cambio
     pageSelect.removeEventListener('change', handlePageSelectChange);
     pageSelect.addEventListener('change', handlePageSelectChange);
   }
@@ -1332,10 +1213,8 @@ function showError(elementId, message) {
     // Asegurarse de que el elemento esté visible
     element.style.display = 'block';
     
-    // Agregar clase de error
     element.classList.add('error-content');
     
-    // Establecer mensaje de error
     element.textContent = message || 'Error desconocido';
   }
 }
@@ -1349,12 +1228,10 @@ function updateNavigationButtons() {
   const pageSelect = getElement('page-select');
   const deleteButton = getElement('delete-page-btn');
   
-  // Actualizar select
   if (pageSelect) {
     pageSelect.value = embeddingModalState.currentPage;
   }
   
-  // Habilitar/deshabilitar botones
   if (prevButton) prevButton.disabled = embeddingModalState.currentPage <= 1 || embeddingModalState.isLoading;
   if (nextButton) nextButton.disabled = embeddingModalState.currentPage >= embeddingModalState.totalPages || embeddingModalState.isLoading;
   if (deleteButton) deleteButton.disabled = embeddingModalState.totalPages <= 1 || embeddingModalState.isLoading;
@@ -1369,16 +1246,12 @@ async function navigateToPage(pageNumber) {
       return;
     }
     
-    // Establecer estado de carga
     setLoadingState(true);
     
-    // Actualizar estado
     embeddingModalState.currentPage = pageNumber;
     
-    // Actualizar navegación
     updateNavigationButtons();
     
-    // Mostrar loaders
     const contentLoader = getElement('content-loader');
     const metadataLoader = getElement('metadata-loader');
     const contentElement = getElement('modal-content');
@@ -1387,11 +1260,9 @@ async function navigateToPage(pageNumber) {
     if (contentLoader) contentLoader.style.display = 'flex';
     if (metadataLoader) metadataLoader.style.display = 'flex';
     
-    // Ocultar contenido mientras carga
     if (contentElement) contentElement.style.display = 'none';
     if (metadataElement) metadataElement.style.display = 'none';
     
-    // Limpiar errores anteriores
     clearErrors();
     
     // Tabla de embeddings del AVA seleccionado
@@ -1400,7 +1271,6 @@ async function navigateToPage(pageNumber) {
       throw new Error('No se encontró la tabla de embeddings');
     }
     
-    // Construir consulta de forma segura
     const query = `
       SELECT content, metadata, created_at 
       FROM ${tableName} 
@@ -1410,7 +1280,6 @@ async function navigateToPage(pageNumber) {
       LIMIT 1
     `;
     
-    // Cargar contenido de la página
     const response = await fetchWithCSRF('/api/query/embedding', {
       method: 'POST',
       headers: {
@@ -1422,38 +1291,31 @@ async function navigateToPage(pageNumber) {
       })
     });
     
-    // Ocultar loaders
     if (contentLoader) contentLoader.style.display = 'none';
     if (metadataLoader) metadataLoader.style.display = 'none';
     
-    // Mostrar contenedores
     if (contentElement) contentElement.style.display = 'block';
     if (metadataElement) metadataElement.style.display = 'block';
     
     if (response.success && response.data && response.data.length > 0) {
       const embedding = response.data[0];
       
-      // Aplicar animación de transición
       if (contentElement && metadataElement) {
         // Asegurarse de quitar cualquier clase de error previo
         contentElement.classList.remove('error-content');
         metadataElement.classList.remove('error-content');
         
-        // Añadir clase de animación
         contentElement.classList.add('page-transition-in');
         metadataElement.classList.add('page-transition-in');
         
-        // Mostrar contenido
         contentElement.textContent = embedding.content || 'Sin contenido';
         
-        // Aplicar formato especial para markdown
         if (embedding.content && embedding.content.trim().startsWith('#')) {
           contentElement.classList.add('markdown-content');
         } else {
           contentElement.classList.remove('markdown-content');
         }
         
-        // Parsear y mostrar metadatos
         let metadata = {};
         try {
           metadata = typeof embedding.metadata === 'string' 
@@ -1466,7 +1328,6 @@ async function navigateToPage(pageNumber) {
         
         metadataElement.textContent = JSON.stringify(metadata, null, 2);
         
-        // Formatear timestamp
         let timestamp = metadata.timestamp || embedding.created_at;
         const timestampElement = getElement('modal-timestamp');
         if (timestampElement && timestamp) {
@@ -1474,31 +1335,26 @@ async function navigateToPage(pageNumber) {
           timestampElement.textContent = date.toLocaleString();
         }
         
-        // Eliminar clase de animación después de completarla
         setTimeout(() => {
           contentElement.classList.remove('page-transition-in');
           metadataElement.classList.remove('page-transition-in');
         }, 300);
       }
     } else {
-      // Mostrar mensaje de error
       showError('modal-content', 'No se pudo cargar el contenido de la página');
       showError('modal-metadata', 'No se pudieron cargar los metadatos de la página');
     }
   } catch (error) {
     console.error('Error al navegar a la página:', error);
     
-    // Ocultar loaders
     const contentLoader = getElement('content-loader');
     const metadataLoader = getElement('metadata-loader');
     if (contentLoader) contentLoader.style.display = 'none';
     if (metadataLoader) metadataLoader.style.display = 'none';
     
-    // Mostrar errores
     showError('modal-content', 'Error al cargar página: ' + error.message);
     showError('modal-metadata', 'Error: ' + error.message);
   } finally {
-    // Desactivar estado de carga
     setLoadingState(false);
   }
 }
@@ -1513,13 +1369,11 @@ function setLoadingState(isLoading) {
   const deleteButton = getElement('delete-page-btn');
   const pageSelect = getElement('page-select');
   
-  // Establecer estado de carga
   if (prevButton) prevButton.disabled = isLoading || embeddingModalState.currentPage <= 1;
   if (nextButton) nextButton.disabled = isLoading || embeddingModalState.currentPage >= embeddingModalState.totalPages;
   if (deleteButton) deleteButton.disabled = isLoading || embeddingModalState.totalPages <= 1;
   if (pageSelect) pageSelect.disabled = isLoading;
   
-  // Actualizar estado
   embeddingModalState.isLoading = isLoading;
 }
 
@@ -1557,7 +1411,6 @@ async function reloadPagesInfo() {
     });
     
     if (pagesResponse.success && pagesResponse.data) {
-      // Actualizar estado con información de páginas
       embeddingModalState.totalPages = pagesResponse.data.length;
       embeddingModalState.pages = pagesResponse.data;
       
@@ -1567,18 +1420,15 @@ async function reloadPagesInfo() {
         targetPage = embeddingModalState.totalPages;
       }
       
-      // Actualizar navegación
       setupPageNavigation();
       setupDeleteButton();
       
-      // Cargar la página
       await navigateToPage(targetPage);
     } else {
       throw new Error('Error al recargar información de páginas');
     }
   } catch (error) {
     console.error('Error al recargar información de páginas:', error);
-    // Intentar navegar a la página actual de todos modos
     await navigateToPage(Math.min(embeddingModalState.currentPage, embeddingModalState.totalPages || 1));
   }
 }
@@ -1588,10 +1438,8 @@ async function reloadPagesInfo() {
  */
 async function deletePage(avaId, filename, pageNumber) {
   try {
-    // Deshabilitar los controles durante la eliminación
     setLoadingState(true);
     
-    // Mostrar notificación de proceso
     showNotification({
       title: 'Eliminando página',
       message: `Eliminando página ${pageNumber} del archivo "${filename}"...`,
@@ -1599,7 +1447,6 @@ async function deletePage(avaId, filename, pageNumber) {
       duration: 2000
     });
     
-    // Crear un identificador único para la página
     const pageIdentifier = `${filename}#page=${pageNumber}`;
     
     // Utilizar el endpoint existente para eliminar documentos
@@ -1608,7 +1455,6 @@ async function deletePage(avaId, filename, pageNumber) {
     });
     
     if (response.success) {
-      // Actualizar estado
       embeddingModalState.totalPages--;
       
       // Si se eliminó la última página, ir a la anterior
@@ -1620,7 +1466,6 @@ async function deletePage(avaId, filename, pageNumber) {
       if (embeddingModalState.totalPages <= 0) {
         closeModal(getElement('embedding-content-modal'));
         
-        // Mostrar notificación
         showNotification({
           title: 'Página eliminada',
           message: 'Se ha eliminado la última página del archivo.',
@@ -1635,7 +1480,6 @@ async function deletePage(avaId, filename, pageNumber) {
         return;
       }
       
-      // Mostrar notificación
       showNotification({
         title: 'Página eliminada',
         message: `Se ha eliminado la página ${pageNumber} del archivo.`,
@@ -1655,14 +1499,12 @@ async function deletePage(avaId, filename, pageNumber) {
   } catch (error) {
     console.error('Error al eliminar página:', error);
     
-    // Mostrar notificación de error
     showNotification({
       title: 'Error',
       message: error.message || 'Error al eliminar la página',
       type: 'error'
     });
   } finally {
-    // Habilitar controles
     setLoadingState(false);
   }
 }
@@ -1695,7 +1537,6 @@ function showDeleteConfirmation() {
   const confirmTotalPages = getElement('confirm-total-pages');
   
   if (confirmModal && confirmFilename && confirmPage && confirmTotalPages) {
-    // Truncar nombre para mostrar en el modal
     const truncatedName = truncateFilename(embeddingModalState.filename, 40);
     
     // Llenar información
@@ -1704,23 +1545,19 @@ function showDeleteConfirmation() {
     confirmPage.textContent = embeddingModalState.currentPage;
     confirmTotalPages.textContent = embeddingModalState.totalPages;
     
-    // Función de cierre para este modal
     const closeConfirmModal = () => {
       confirmModal.classList.remove('active');
       unregisterActiveModal(confirmModal);
     };
     
-    // Mostrar modal y registrarlo
     confirmModal.classList.add('active');
     registerActiveModal(confirmModal, closeConfirmModal);
     
-    // Configurar botones
     const cancelButton = getElement('cancel-delete-page');
     const confirmButton = getElement('confirm-delete-page');
     const closeButton = confirmModal.querySelector('.neural-modal-close');
     const overlay = confirmModal.querySelector('.neural-modal-overlay');
     
-    // Limpiar event listeners anteriores
     if (cancelButton) {
         cancelButton.removeEventListener('click', closeConfirmModal);
         cancelButton.addEventListener('click', closeConfirmModal);
@@ -1756,23 +1593,18 @@ function showDeleteConfirmation() {
 function openModal(modal) {
   if (!modal) return;
   
-  // Mostrar modal
   modal.classList.add('active');
   
-  // Función de cierre para este modal
   const closeModalFunc = () => {
     modal.classList.remove('active');
     unregisterActiveModal(modal);
   };
   
-  // Registrar este modal como activo
   registerActiveModal(modal, closeModalFunc);
   
-  // Configurar botones y overlay
   const closeButton = modal.querySelector('.neural-modal-close');
   const overlay = modal.querySelector('.neural-modal-overlay');
   
-  // Configurar event listeners
   if (closeButton) {
     closeButton.removeEventListener('click', closeModalFunc);
     closeButton.addEventListener('click', closeModalFunc);
@@ -1798,7 +1630,6 @@ function closeModal(modal) {
  * Confirma la eliminación de un archivo
  */
 function confirmDeleteFile(avaId, filename) {
-    // Truncar nombre para mostrar en el modal
     const truncatedName = truncateFilename(filename, 25);
     
     // 1. Crear el HTML del modal con IDs únicos
@@ -1849,7 +1680,6 @@ function confirmDeleteFile(avaId, filename) {
     // 5. Definir función para cerrar modal
     function closeDeleteModal() {
         modal.classList.remove('active');
-        // Eliminar el modal completamente después de la animación
         setTimeout(() => {
             if (modal && modal.parentNode) {
                 modal.parentNode.removeChild(modal);
@@ -1908,7 +1738,6 @@ function closeConfirmModal(modal) {
     
     modal.classList.remove('active');
     
-    // Eliminar del DOM después de la animación
     setTimeout(() => {
         if (modal && modal.parentNode) {
             modal.parentNode.removeChild(modal);
@@ -1921,7 +1750,6 @@ function closeConfirmModal(modal) {
  */
 async function deleteProcessedFile(avaId, filename) {
     try {
-        // Mostrar notificación de proceso
         showNotification({
             title: 'Eliminando archivo',
             message: 'Eliminando embeddings del archivo...',
@@ -1929,13 +1757,11 @@ async function deleteProcessedFile(avaId, filename) {
             duration: 2000
         });
         
-        // Eliminar archivo desde la API
         const response = await fetchWithCSRF(`/api/ava/${avaId}/embeddings/${encodeURIComponent(filename)}`, {
             method: 'DELETE'
         });
         
         if (response.success) {
-            // Mostrar notificación de éxito
             showNotification({
                 title: 'Archivo Eliminado',
                 message: `Se han eliminado ${response.deletedPages || 'los'} embeddings del archivo "${filename}"`,
@@ -1950,7 +1776,6 @@ async function deleteProcessedFile(avaId, filename) {
     } catch (error) {
         console.error('Error eliminando archivo:', error);
         
-        // Mostrar notificación de error
         showNotification({
             title: 'Error de Eliminación',
             message: error.message || 'Ha ocurrido un error al eliminar el archivo.',
@@ -1973,7 +1798,6 @@ function formatDate(timestamp) {
  * Muestra u oculta el indicador de procesamiento de archivos
  */
 function showFileProcessingIndicator(show) {
-    // Crear indicador si no existe
     let processingIndicator = document.getElementById('file-processing-indicator');
     
     if (!processingIndicator && show) {
@@ -1998,7 +1822,6 @@ function showFileProcessingIndicator(show) {
  * Confirma la eliminación de un archivo específico
  */
 function confirmRemoveFile(index, filename) {
-    // Usar el modal de confirmación existente
     const confirmTitle = document.getElementById('confirm-title');
     const confirmMessage = document.getElementById('confirm-message');
     const confirmOk = document.getElementById('confirm-ok');
@@ -2011,61 +1834,48 @@ function confirmRemoveFile(index, filename) {
         return;
     }
     
-    // Truncar el nombre para el mensaje
     const truncatedName = truncateFilename(filename, 40); // Un poco más largo para el modal
     
-    // Actualizar contenido del modal
     confirmTitle.textContent = 'Eliminar archivo';
     confirmMessage.textContent = `¿Estás seguro de que deseas eliminar el archivo "${truncatedName}"?`;
     confirmMessage.title = filename; // Mostrar nombre completo en tooltip
     confirmOk.textContent = 'Eliminar';
     
-    // Mostrar modal
     modal.style.display = 'flex';
     overlay.style.display = 'block';
     
-    // Configurar eventos
     const okHandler = () => {
-        // Eliminar archivo del estado
         state.files.splice(index, 1);
         
-        // Actualizar interfaz
         updateFilesList();
         
-        // Ocultar modal
         modal.style.display = 'none';
         overlay.style.display = 'none';
         const notificationName = truncateFilename(filename, 20);
         
-        // Mostrar notificación con nombre truncado
         showNotification({
             title: 'Archivo eliminado',
             message: `Se ha eliminado "${notificationName}" de la lista.`,
             type: 'info'
         });
         
-        // Limpiar manejadores
         confirmOk.removeEventListener('click', okHandler);
         confirmCancel.removeEventListener('click', cancelHandler);
     };
     
     const cancelHandler = () => {
-        // Solo ocultar modal
         modal.style.display = 'none';
         overlay.style.display = 'none';
         
-        // Limpiar manejadores
         confirmOk.removeEventListener('click', okHandler);
         confirmCancel.removeEventListener('click', cancelHandler);
     };
     
-    // Agregar eventos con manejadores separados para poder eliminarlos después
     confirmOk.addEventListener('click', okHandler);
     confirmCancel.addEventListener('click', cancelHandler);
 }
 
 function setupEnhancedDropZone() {
-    // Verificar si ya se configuraron los listeners para evitar duplicación
     if (state.eventListenersAttached) {
         return;
     }
@@ -2075,7 +1885,6 @@ function setupEnhancedDropZone() {
     
     if (!dropZone || !fileInput) return;
     
-    // Marcar que los listeners están configurados
     state.eventListenersAttached = true;
     
     // Click en zona activa input de archivo
@@ -2100,7 +1909,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         dragCounter++;
         
-        // Solo mostrar efecto si tenemos archivos
         if (e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file')) {
             dropZone.classList.add('dragActive');
         }
@@ -2111,7 +1919,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         dragCounter--;
         
-        // Solo quitar efecto si realmente salimos de la ventana
         if (dragCounter === 0) {
             dropZone.classList.remove('dragActive');
         }
@@ -2122,7 +1929,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Solo mostrar efecto si tenemos archivos
         if (e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file')) {
             dropZone.classList.add('drag-over');
             
@@ -2135,7 +1941,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Mostrar que se puede soltar aquí
         if (e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file')) {
             e.dataTransfer.dropEffect = 'copy';
             dropZone.classList.add('drag-over');
@@ -2146,7 +1951,6 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Solo quitar efecto si realmente salimos del dropzone
         // y no de un elemento hijo
         if (e.currentTarget === e.target) {
             dropZone.classList.remove('drag-over');
@@ -2159,20 +1963,17 @@ function setupEnhancedDropZone() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Resetear contadores y clases
         dragCounter = 0;
         dropZone.classList.remove('drag-over');
         dropZone.classList.remove('dragActive');
         document.body.classList.remove('drag-active');
         
-        // Mostrar efecto de "procesando"
         showFileProcessingIndicator(true);
         
         if (e.dataTransfer.files) {
             handleFiles(e.dataTransfer.files);
         }
         
-        // Ocultar indicador después de procesar
         setTimeout(() => showFileProcessingIndicator(false), 500);
     });
     
@@ -2187,7 +1988,6 @@ function setupEnhancedDropZone() {
     
     // FIN: Mejora en el feedback visual para drag and drop
     
-    // Configurar botones de acción
     setupActionButtons();
 }
 
@@ -2195,7 +1995,6 @@ function setupEnhancedDropZone() {
  * Manejadores de eventos para la dropzone
  */
 function handleDropZoneClick(e) {
-    // Detener propagación para evitar doble activación
     e.stopPropagation();
     const fileInput = document.getElementById('pdf-upload');
     if (fileInput) {
@@ -2214,7 +2013,6 @@ function handleBrowseLinkClick(e) {
 
 function handleFileInputChange() {
     const fileInput = document.getElementById('pdf-upload');
-    // Mostrar indicador de carga durante procesamiento
     showFileProcessingIndicator(true);
     
     handleFiles(fileInput.files);
@@ -2222,7 +2020,6 @@ function handleFileInputChange() {
     // Importante: resetear el valor del input para permitir seleccionar el mismo archivo
     fileInput.value = '';
     
-    // Ocultar indicador de carga una vez procesados
     setTimeout(() => showFileProcessingIndicator(false), 500);
 }
 
@@ -2230,9 +2027,7 @@ function handleFileInputChange() {
  * Maneja los archivos seleccionados
  */
 function handleFiles(fileList) {
-    // Convertir FileList a Array
     const newFiles = Array.from(fileList).filter(file => {
-        // Filtrar archivos PDF
         if (file.type !== 'application/pdf') {
             showNotification({
                 title: 'Tipo de archivo no válido',
@@ -2246,13 +2041,10 @@ function handleFiles(fileList) {
     
     if (newFiles.length === 0) return;
     
-    // Añadir al estado
     state.files = [...state.files, ...newFiles];
     
-    // Actualizar interfaz
     updateFilesList();
     
-    // Mostrar lista de archivos
     document.getElementById('upload-files-list').style.display = 'block';
 }
 
@@ -2268,7 +2060,6 @@ function truncateFilename(filename, maxLength = 30) {
     // Si el nombre ya es corto, devolverlo sin cambios
     if (filename.length <= maxLength) return filename;
     
-    // Dividir el nombre y la extensión
     const lastDotIndex = filename.lastIndexOf('.');
     
     // Si no hay extensión o está al principio
@@ -2279,17 +2070,14 @@ function truncateFilename(filename, maxLength = 30) {
     const name = filename.substring(0, lastDotIndex);
     const extension = filename.substring(lastDotIndex);
     
-    // Calcular cuántos caracteres podemos mostrar del nombre
     // Reservamos espacio para '...' y la extensión completa
     const maxNameLength = maxLength - 3 - extension.length;
     
     // Si no hay suficiente espacio ni para un carácter del nombre
     if (maxNameLength <= 0) {
-        // Truncar también la extensión en casos extremos
         return filename.substring(0, maxLength - 3) + '...';
     }
     
-    // Truncar el nombre y mantener la extensión
     return name.substring(0, maxNameLength) + '...' + extension;
 }
 
@@ -2301,7 +2089,6 @@ function updateFilesList() {
     
     if (!filesList) return;
     
-    // Limpiar lista
     filesList.innerHTML = '';
     
     // Si no hay archivos, ocultar la sección
@@ -2310,12 +2097,10 @@ function updateFilesList() {
         return;
     }
     
-    // Crear elementos de lista
     state.files.forEach((file, index) => {
         const fileItem = document.createElement('div');
         fileItem.className = 'neural-file-item';
         
-        // Truncar nombre para mostrar en la interfaz
         const displayName = truncateFilename(file.name, 35);
         
         fileItem.innerHTML = `
@@ -2336,13 +2121,11 @@ function updateFilesList() {
         filesList.appendChild(fileItem);
     });
     
-    // Agregar eventos a botones de eliminar con confirmación
     document.querySelectorAll('.neural-remove-file').forEach(button => {
         button.addEventListener('click', (e) => {
             const index = parseInt(e.currentTarget.dataset.index);
             const filename = state.files[index].name;
             
-            // Mostrar confirmación antes de eliminar
             confirmRemoveFile(index, filename);
         });
     });
@@ -2380,7 +2163,6 @@ function setupActionButtons() {
         backToUploadButton.addEventListener('click', handleBackToUpload);
     }
     
-    // Configurar toggle de logs
     setupLogToggle();
 }
 
@@ -2397,7 +2179,6 @@ function handleClearFiles() {
         return;
     }
     
-    // Usar el modal de confirmación existente
     const confirmTitle = document.getElementById('confirm-title');
     const confirmMessage = document.getElementById('confirm-message');
     const confirmOk = document.getElementById('confirm-ok');
@@ -2410,16 +2191,13 @@ function handleClearFiles() {
         return;
     }
     
-    // Actualizar contenido del modal
     confirmTitle.textContent = 'Limpiar lista';
     confirmMessage.textContent = `¿Estás seguro de que deseas eliminar todos los archivos de la lista?`;
     confirmOk.textContent = 'Eliminar todos';
     
-    // Mostrar modal
     modal.style.display = 'flex';
     overlay.style.display = 'block';
     
-    // Configurar eventos
     const handleConfirm = () => {
         const count = state.files.length;
         state.files = [];
@@ -2435,7 +2213,6 @@ function handleClearFiles() {
             type: 'info'
         });
         
-        // Limpiar manejadores
         confirmOk.removeEventListener('click', handleConfirm);
         confirmCancel.removeEventListener('click', handleCancel);
     };
@@ -2444,7 +2221,6 @@ function handleClearFiles() {
         modal.style.display = 'none';
         overlay.style.display = 'none';
         
-        // Limpiar manejadores
         confirmOk.removeEventListener('click', handleConfirm);
         confirmCancel.removeEventListener('click', handleCancel);
     };
@@ -2463,16 +2239,12 @@ function handleCancelProcessing() {
 }
 
 function handleBackToUpload() {
-    // Ocultar resultados
     document.getElementById('upload-results').style.display = 'none';
     
-    // Mostrar sección de AVA seleccionado
     document.getElementById('selected-ava-section').style.display = 'block';
     
-    // Activar tab de entrenamiento
     switchTab('training-tab');
     
-    // Resetear progreso y estado
     state.progress = 0;
     state.processingStatus = 'idle';
     updateProgress(0);
@@ -2499,10 +2271,8 @@ function handleLogToggle() {
     
     const isVisible = logContent.style.display !== 'none';
     
-    // Cambiar visibilidad
     logContent.style.display = isVisible ? 'none' : 'block';
     
-    // Cambiar icono
     toggleButton.innerHTML = isVisible 
         ? '<i class="bx bx-chevron-down"></i>' 
         : '<i class="bx bx-chevron-up"></i>';
@@ -2512,7 +2282,6 @@ function handleLogToggle() {
  * Inicia el procesamiento de archivos
  */
 async function startProcessing() {
-    // Verificar que hay archivos seleccionados
     if (state.files.length === 0) {
         showNotification({
             title: 'Sin archivos',
@@ -2522,7 +2291,6 @@ async function startProcessing() {
         return;
     }
     
-    // Verificar AVA seleccionado
     if (!state.selectedAva) {
         showNotification({
             title: 'AVA no seleccionado',
@@ -2533,7 +2301,6 @@ async function startProcessing() {
     }
     
     try {
-        // Cambiar estado
         state.processingStatus = 'preparing';
         state.progress = 0;
         state.currentOperation = 'Preparando archivos para entrenamiento...';
@@ -2541,38 +2308,29 @@ async function startProcessing() {
         state.processingTimes = [];
         state.processingStartTime = Date.now();
         
-        // Limpiar procesos activos
         state.activeProcesses.clear();
         
-        // Ocultar sección de AVA seleccionado
         document.getElementById('selected-ava-section').style.display = 'none';
         
-        // Mostrar panel de progreso
         document.getElementById('upload-progress').style.display = 'block';
         
-        // Ocultar panel de resultados si estaba visible
         const uploadResults = document.getElementById('upload-results');
         if (uploadResults) {
             uploadResults.style.display = 'none';
         }
         
-        // Actualizar interfaz de procesamiento
         updateProcessingUI();
         updateProgressTimer();
         
-        // Añadir información de inicio al log
         addLogEntry(`Iniciando entrenamiento con ${state.files.length} archivos`, 'info');
         addLogEntry(`AVA seleccionado: ${state.selectedAva.nom_ava} (ID: ${state.selectedAva.id_ava})`, 'info');
         
-        // Obtener ID de usuario de la sesión o solicitar si es necesario
         const userId = await getUserId();
         
-        // Cambiar a estado de procesamiento
         state.processingStatus = 'processing';
         state.currentOperation = `Procesando archivos (0/${state.files.length})...`;
         updateProcessingUI();
         
-        // Procesar cada archivo
         let completedFiles = 0;
         
         for (let i = 0; i < state.files.length; i++) {
@@ -2581,21 +2339,17 @@ async function startProcessing() {
             updateProcessingUI();
             
             try {
-                // Procesar archivo
                 await processFile(file, i, state.selectedAva.id_ava, userId);
                 completedFiles++;
                 
-                // Actualizar progreso global
                 const fileProgress = completedFiles / state.files.length;
                 updateProgress(Math.floor(fileProgress * 100));
             } catch (error) {
                 console.error(`Error procesando archivo "${file.name}":`, error);
                 addLogEntry(`Error procesando "${file.name}": ${error.message}`, 'error');
-                // Continuar con el siguiente archivo
             }
         }
         
-        // Finalizar procesamiento
         state.processingStatus = 'completed';
         state.currentOperation = 'Entrenamiento completado con éxito';
         updateProgress(100);
@@ -2603,17 +2357,13 @@ async function startProcessing() {
         
         addLogEntry('Entrenamiento finalizado correctamente', 'success');
         
-        // Actualizar resultados
         state.results.totalFiles = completedFiles;
         
-        // Mostrar resultados finales
         await showResults(state.selectedAva.id_ava);
         
-        // Limpiar lista de archivos
         state.files = [];
         updateFilesList();
         
-        // Notificar al usuario
         showNotification({
             title: 'Entrenamiento Completado',
             message: `Se han procesado ${completedFiles} archivos correctamente.`,
@@ -2623,14 +2373,12 @@ async function startProcessing() {
     } catch (error) {
         console.error('Error en procesamiento:', error);
         
-        // Cambiar estado
         state.processingStatus = 'error';
         state.currentOperation = 'Error en entrenamiento: ' + error.message;
         updateProcessingUI();
         
         addLogEntry(`Error: ${error.message}`, 'error');
         
-        // Notificar al usuario
         showNotification({
             title: 'Error de Entrenamiento',
             message: error.message || 'Ha ocurrido un error al procesar los archivos.',
@@ -2656,7 +2404,6 @@ function updateProgressTimer() {
     
     timeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-    // Actualizar cada segundo
     setTimeout(updateProgressTimer, 1000);
 }
 
@@ -2671,7 +2418,6 @@ async function getUserId() {
         return userIdElement.value;
     }
     
-    // Si no se encuentra, usar un valor predeterminado 
     // (esto debería ser reemplazado con una implementación adecuada)
     return 1; // Usuario "admin" por defecto
 }
@@ -2680,12 +2426,10 @@ async function getUserId() {
  * Actualiza interfaz de procesamiento
  */
 function updateProcessingUI() {
-    // Actualizar texto de operación actual
     const operationText = document.getElementById('current-operation-text');
     if (operationText) {
         operationText.textContent = state.currentOperation;
         
-        // Añadir/quitar efecto de pulso según estado
         if (state.processingStatus === 'processing' || state.processingStatus === 'preparing') {
             operationText.classList.add('pulsing');
         } else {
@@ -2693,7 +2437,6 @@ function updateProcessingUI() {
         }
     }
     
-    // Actualizar logs
     updateLogs();
 }
 
@@ -2703,13 +2446,11 @@ function updateProcessingUI() {
 function updateProgress(percentage) {
     state.progress = percentage;
     
-    // Actualizar texto de porcentaje
     const progressPercentage = document.getElementById('progress-percentage');
     if (progressPercentage) {
         progressPercentage.textContent = `${percentage}%`;
     }
     
-    // Actualizar barra de progreso
     const progressFill = document.querySelector('.neural-progress-fill');
     const progressGlow = document.querySelector('.neural-progress-glow');
     
@@ -2743,10 +2484,8 @@ function updateLogs() {
     const logContent = document.getElementById('operation-log-content');
     if (!logContent) return;
     
-    // Limpiar contenido actual
     logContent.innerHTML = '';
     
-    // Añadir cada entrada
     state.logEntries.forEach(entry => {
         const logEntry = document.createElement('div');
         logEntry.className = `neural-log-entry ${entry.type}`;
@@ -2766,7 +2505,6 @@ function updateLogs() {
  */
 async function processFile(file, index, avaId, userId) {
     try {
-        // Crear FormData
         const formData = new FormData();
         formData.append('pdf', file);
         formData.append('userId', userId);
@@ -2786,7 +2524,6 @@ async function processFile(file, index, avaId, userId) {
         addLogEntry(`Archivo "${file.name}" subido correctamente`, 'success');
         addLogEntry(`ID de proceso: ${uploadResponse.processId}`, 'info');
         
-        // Registrar proceso
         const processId = uploadResponse.processId;
         state.activeProcesses.set(processId, {
             file,
@@ -2795,7 +2532,6 @@ async function processFile(file, index, avaId, userId) {
             progress: 0
         });
         
-        // Seguir el progreso del procesamiento
         await trackProcessing(processId, file.name);
         
         return true;
@@ -2819,7 +2555,6 @@ async function trackProcessing(processId, fileName) {
                 method: 'GET'
             });
             
-            // Actualizar estado del proceso
             const processInfo = state.activeProcesses.get(processId);
             if (processInfo) {
                 processInfo.status = response.status;
@@ -2827,7 +2562,6 @@ async function trackProcessing(processId, fileName) {
                 state.activeProcesses.set(processId, processInfo);
             }
             
-            // Mostrar progreso
             const progressMessage = `${fileName}: ${response.message || 'Procesando...'} (${response.progress}%)`;
             addLogEntry(progressMessage, 'info');
             
@@ -2842,7 +2576,6 @@ async function trackProcessing(processId, fileName) {
                 throw new Error(response.message || 'Error en procesamiento');
             }
             
-            // Esperar antes del siguiente intento
             await sleep(1000);
             attempts++;
             
@@ -2850,7 +2583,6 @@ async function trackProcessing(processId, fileName) {
             console.error(`Error siguiendo progreso de ${processId}:`, error);
             addLogEntry(`Error en seguimiento de "${fileName}": ${error.message}`, 'warning');
             
-            // Esperar un poco más si hay error
             await sleep(2000);
             attempts++;
         }
@@ -2865,7 +2597,6 @@ async function trackProcessing(processId, fileName) {
  */
 async function showResults(avaId) {
     try {
-        // Obtener estadísticas y archivos del AVA
         const statsResponse = await fetchWithCSRF(`/api/ava/${avaId}/embeddings/stats`, {
             method: 'GET'
         });
@@ -2874,14 +2605,11 @@ async function showResults(avaId) {
             method: 'GET'
         });
         
-        // Ocultar sección de progreso
         document.getElementById('upload-progress').style.display = 'none';
         
-        // Mostrar sección de resultados
         const resultsSection = document.getElementById('upload-results');
         resultsSection.style.display = 'block';
         
-        // Actualizar contadores
         const totalFiles = document.getElementById('total-files');
         const totalPages = document.getElementById('total-pages');
         const avaName = document.getElementById('ava-name');
@@ -2890,7 +2618,6 @@ async function showResults(avaId) {
         if (totalPages) totalPages.textContent = statsResponse.success ? statsResponse.stats.total_documents : '0';
         if (avaName) avaName.textContent = state.selectedAva.nom_ava;
         
-        // Generar tarjetas de resultados si existe el contenedor
         const fileResultsContainer = document.getElementById('file-results-list');
         if (fileResultsContainer) {
             fileResultsContainer.innerHTML = '';
@@ -2931,7 +2658,6 @@ async function showResults(avaId) {
                     fileResultsContainer.appendChild(card);
                 });
                 
-                // Configurar eventos para ver embeddings
                 document.querySelectorAll('.view-result-embeddings').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const filename = e.currentTarget.dataset.filename;
@@ -2954,14 +2680,12 @@ async function showResults(avaId) {
     } catch (error) {
         console.error('Error obteniendo resultados:', error);
         
-        // Mostrar notificación de error
         showNotification({
             title: 'Error',
             message: 'No se pudieron obtener los resultados completos.',
             type: 'error'
         });
         
-        // Mostrar sección de resultados de todas formas con datos básicos
         const totalFiles = document.getElementById('total-files');
         const totalPages = document.getElementById('total-pages');
         const avaName = document.getElementById('ava-name');
@@ -2970,7 +2694,6 @@ async function showResults(avaId) {
         if (totalPages) totalPages.textContent = '?';
         if (avaName && state.selectedAva) avaName.textContent = state.selectedAva.nom_ava;
         
-        // Mostrar sección de resultados
         const uploadResults = document.getElementById('upload-results');
         if (uploadResults) {
             uploadResults.style.display = 'block';
@@ -2978,7 +2701,6 @@ async function showResults(avaId) {
     }
 }
 
-// Exportar objeto para usar en index.js
 export default {
     initTrainMindModule
 };

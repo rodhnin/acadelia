@@ -32,7 +32,6 @@ const navigation = {
      * Inicializa la navegación
      */
     init() {
-        // Obtener referencias a elementos del DOM
         this.elements.sidebar = document.getElementById('sidebar');
         this.elements.mainContent = document.getElementById('main-content');
         this.elements.contentBackdrop = document.getElementById('content-backdrop');
@@ -46,10 +45,8 @@ const navigation = {
         this.elements.contentSections = document.querySelectorAll('.content-section');
         console.log('Secciones de contenido encontradas:', this.elements.contentSections.length);
 
-        // Configurar eventos
         this.setupEventListeners();
         
-        // Inicializar sección actual desde URL si existe
         this.initFromUrl();
     },
 
@@ -71,7 +68,6 @@ const navigation = {
             });
         }
 
-        // Cerrar sidebar al hacer clic en el backdrop
         if (this.elements.contentBackdrop) {
             this.elements.contentBackdrop.addEventListener('click', () => {
                 this.toggleMobileSidebar(false);
@@ -102,12 +98,10 @@ const navigation = {
             console.error('No se encontraron enlaces de navegación');
         }
 
-        // Escuchar eventos de cambio de tamaño de ventana
         window.addEventListener('resize', () => {
             this.handleResize();
         });
         
-        // Manejar navegación por URL (botón atrás/adelante)
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.section) {
                 this.changeSection(e.state.section, false);
@@ -119,10 +113,8 @@ const navigation = {
      * Inicializa la navegación desde la URL
      */
     initFromUrl() {
-        // Verificar si hay un hash en la URL
         const hash = window.location.hash.replace('#', '');
         if (hash) {
-            // Verificar si el hash corresponde a una sección válida
             const validSections = Array.from(this.elements.navLinks).map(link => 
                 link.getAttribute('data-section')
             );
@@ -141,7 +133,6 @@ const navigation = {
     changeSection(sectionId, updateHistory = true) {
         console.log(`Cambiando a la sección: ${sectionId}`);
         
-        // Actualizar enlaces de navegación
         this.elements.navLinks.forEach(link => {
             const linkSection = link.getAttribute('data-section');
             if (linkSection === sectionId) {
@@ -181,7 +172,6 @@ const navigation = {
             console.error(`No se encontró la sección con ID: ${targetSectionId}`);
         }
 
-        // Actualizar título de la página
         const pageTitle = document.querySelector('.page-title');
         if (pageTitle) {
             const formattedTitle = sectionId
@@ -194,15 +184,12 @@ const navigation = {
                 : formattedTitle;
         }
 
-        // Actualizar historial del navegador
         if (updateHistory) {
             window.history.pushState({ section: sectionId }, '', `#${sectionId}`);
         }
 
-        // Guardar sección actual
         this.currentSection = sectionId;
         
-        // Disparar evento de cambio de sección
         window.dispatchEvent(new CustomEvent('sectionChanged', {
             detail: { section: sectionId }
         }));

@@ -19,7 +19,6 @@ const embeddingAvaController = {
    */
   async uploadPDF(req, res) {
     try {
-      // Verificar que se haya enviado un archivo
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -27,11 +26,9 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener parámetros
       const avaId = parseInt(req.params.avaId);
       const userId = parseInt(req.body.userId || req.query.userId || req.user?.id_user);
       
-      // Validar parámetros
       if (!avaId || isNaN(avaId)) {
         return res.status(400).json({
           success: false,
@@ -46,7 +43,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Verificar que el archivo sea un PDF
       if (req.file.mimetype !== 'application/pdf') {
         return res.status(400).json({
           success: false,
@@ -54,7 +50,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Verificar si el AVA tiene una tabla de embeddings
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -64,10 +59,8 @@ const embeddingAvaController = {
         });
       }
       
-      // Generar un ID único para el procesamiento
       const processId = crypto.randomUUID();
       
-      // Registrar el inicio del procesamiento
       processingStatus.set(processId, {
         avaId,
         userId,
@@ -92,12 +85,9 @@ const embeddingAvaController = {
         }
       });
 
-      // Registrar actividad
       try {
-        // Obtener nombre de usuario mediante el servicio
         const userName = await activityMenteLogService.getUserName(userId);
         
-        // Registrar actividad
         await activityMenteLogService.logActivity({
           action_type: "upload",
           entity_type: "embedding",
@@ -112,7 +102,6 @@ const embeddingAvaController = {
         // No interrumpimos el flujo si falla el registro de actividad
       }
       
-      // Procesar el PDF de forma asíncrona
       this.processPDFAsync(processId, req.file.buffer, avaId, userId, req.file.originalname);
       
     } catch (error) {
@@ -135,10 +124,8 @@ const embeddingAvaController = {
    */
   async processPDFAsync(processId, fileBuffer, avaId, userId, filename) {
     try {
-      // Actualizar estado a "en cola"
       this.updateProcessStatus(processId, 0, 'En cola de procesamiento', 'queued');
       
-      // Función de callback para actualizar el progreso
       const progressCallback = (progress, message) => {
         this.updateProcessStatus(processId, progress, message);
       };
@@ -146,10 +133,8 @@ const embeddingAvaController = {
       // Encolar el procesamiento
       await embeddingAvaProcessingQueue.enqueue(
         async () => {
-          // Actualizar estado a "procesando"
           this.updateProcessStatus(processId, 5, 'Iniciando procesamiento', 'processing');
           
-          // Procesar el PDF
           const result = await pdfEmbeddingAvaService.processPDF({
             fileBuffer,
             avaId,
@@ -158,7 +143,6 @@ const embeddingAvaController = {
             progressCallback
           });
           
-          // Actualizar estado según el resultado
           if (result.success) {
             this.updateProcessStatus(
               processId, 
@@ -167,7 +151,6 @@ const embeddingAvaController = {
               'completed'
             );
             
-            // Guardar el resultado
             const statusInfo = processingStatus.get(processId);
             if (statusInfo) {
               statusInfo.result = result;
@@ -223,7 +206,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Extraer el nombre de archivo y número de página del identificador
       const [filename, pagePart] = pageIdentifier.split('#page=');
       const pageNumber = parseInt(pagePart);
       
@@ -234,7 +216,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener información de la tabla
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -244,7 +225,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Eliminar la página específica
       const query = `
         DELETE FROM ${avaInfo.tableName}
         WHERE 
@@ -262,9 +242,7 @@ const embeddingAvaController = {
         });
       }
 
-      // Registrar actividad
       try {
-        // Obtener nombre de usuario
         const userName = await activityMenteLogService.getUserName(userId);
         
         await activityMenteLogService.logActivity({
@@ -281,7 +259,6 @@ const embeddingAvaController = {
         // No interrumpimos el flujo si falla el registro
       }
       
-      // Responder con éxito
       res.status(200).json({
         success: true,
         avaId,
@@ -308,10 +285,8 @@ const embeddingAvaController = {
    */
   async getQueueStatus(req, res) {
     try {
-      // Obtener estado de la cola
       const queueStatus = embeddingAvaProcessingQueue.getStatus();
       
-      // Responder con el estado
       res.status(200).json({
         success: true,
         queueStatus
@@ -341,7 +316,6 @@ const embeddingAvaController = {
       statusInfo.progress = progress;
       statusInfo.message = message;
       
-      // Actualizar estado solo si se proporciona uno nuevo
       if (status) {
         statusInfo.status = status;
       } else if (progress === 100) {
@@ -371,7 +345,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener estado actual
       const status = processingStatus.get(processId);
       
       if (!status) {
@@ -381,10 +354,8 @@ const embeddingAvaController = {
         });
       }
       
-      // Calcular tiempo transcurrido
       const elapsedTime = Date.now() - status.startTime;
       
-      // Responder con el estado actual
       res.status(200).json({
         success: true,
         processId,
@@ -395,7 +366,6 @@ const embeddingAvaController = {
         filename: status.filename,
         elapsedTime,
         startTime: status.startTime,
-        // Incluir resultado si está completo
         result: status.status === 'completed' ? status.result : undefined
       });
       
@@ -425,7 +395,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener la lista de archivos procesados
       const result = await pdfEmbeddingAvaService.listProcessedFiles(avaId);
       
       if (!result.success) {
@@ -435,7 +404,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Responder con la lista de archivos
       res.status(200).json({
         success: true,
         avaId,
@@ -478,10 +446,8 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener información de la tabla
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
-      // Eliminar documentos del PDF
       const result = await pdfEmbeddingAvaService.deleteDocuments(avaId, filename);
       
       if (!result.success) {
@@ -491,9 +457,7 @@ const embeddingAvaController = {
         });
       }
       
-      // Registrar actividad
       try {
-        // Obtener nombre de usuario
         const userName = await activityMenteLogService.getUserName(userId);
         
         await activityMenteLogService.logActivity({
@@ -510,7 +474,6 @@ const embeddingAvaController = {
         // No interrumpimos el flujo si falla el registro
       }
       
-      // Responder con el resultado
       res.status(200).json({
         success: true,
         avaId,
@@ -545,7 +508,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener información de la tabla
       const avaInfo = await pdfEmbeddingAvaService.getAvaEmbeddingTable(avaId);
       
       if (!avaInfo.success) {
@@ -555,7 +517,6 @@ const embeddingAvaController = {
         });
       }
       
-      // Obtener estadísticas básicas
       const query = `
         SELECT 
           COUNT(*) as total_documents,
@@ -567,7 +528,6 @@ const embeddingAvaController = {
       
       const { rows } = await pool.query(query);
       
-      // Responder con las estadísticas
       res.status(200).json({
         success: true,
         avaId,

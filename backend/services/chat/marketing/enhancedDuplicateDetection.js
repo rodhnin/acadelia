@@ -3,9 +3,6 @@ import pool from "../../../lib/dbPool.js";
 import { supabase } from "../../../lib/supabaseService.js";
 import { embeddings, openai } from '../../../lib/openai.js';
 
-/**
- * ✅ CONFIGURACIÓN DE UMBRALES INTELIGENTES BASADOS EN EMBEDDINGS
- */
 const INTELLIGENT_THRESHOLDS = {
   profiles: {
     duplicate: 0.95,      // 95%+ = Duplicado exacto
@@ -33,10 +30,6 @@ const INTELLIGENT_THRESHOLDS = {
   }
 };
 
-/**
- * ✅ DETECCIÓN INTELIGENTE DE PERFILES USANDO EMBEDDINGS
- * Esta función integra toda la lógica de semanticComparison.js
- */
 export async function isUniqueProfileIntelligent(profileData) {
   try {
     console.log("🧠 SISTEMA EMBEDDING: Verificando unicidad de perfil con IA...");
@@ -139,9 +132,6 @@ export async function isUniqueProfileIntelligent(profileData) {
   }
 }
 
-/**
- * ✅ DETECCIÓN INTELIGENTE DE CONTENIDO MEJORADA CON EMBEDDINGS
- */
 export async function isUniqueContentIntelligent(type, channel, payload) {
   try {
     console.log("🎨 SISTEMA EMBEDDING: Verificando unicidad de contenido con IA...");
@@ -222,9 +212,6 @@ export async function isUniqueContentIntelligent(type, channel, payload) {
   }
 }
 
-/**
- * ✅ DETECCIÓN INTELIGENTE DE TENDENCIAS CON EMBEDDINGS
- */
 export async function isUniqueTrendIntelligent(theme, metadata = {}) {
   try {
     console.log("📊 SISTEMA EMBEDDING: Verificando unicidad de tendencia con IA...");
@@ -308,9 +295,6 @@ export async function isUniqueTrendIntelligent(theme, metadata = {}) {
   }
 }
 
-/**
- * ✅ DETECCIÓN INTELIGENTE DE INSIGHTS CON EMBEDDINGS MEJORADA
- */
 export async function isUniqueInsightIntelligent(newInsight) {
   try {
     console.log("🧠 SISTEMA EMBEDDING: Verificando unicidad de insight con IA...");
@@ -405,11 +389,7 @@ export async function isUniqueInsightIntelligent(newInsight) {
   }
 }
 
-// =============== FUNCIONES DE GENERACIÓN DE EMBEDDINGS ===============
 
-/**
- * ✅ GENERA EMBEDDING OPTIMIZADO PARA PERFILES
- */
 async function generateProfileEmbedding(profileData) {
   try {
     let profileText = "";
@@ -417,10 +397,8 @@ async function generateProfileEmbedding(profileData) {
     if (typeof profileData === 'string') {
       profileText = profileData;
     } else if (typeof profileData === 'object' && profileData !== null) {
-      // Crear texto estructurado priorizando campos psicográficos
       const parts = [];
       
-      // CRÍTICO: Personalidad
       if (profileData.personalidad) {
         parts.push(`Personalidad: ${JSON.stringify(profileData.personalidad)}`);
       }
@@ -457,7 +435,6 @@ async function generateProfileEmbedding(profileData) {
       return null;
     }
     
-    // Generar embedding
     const vector = await embeddings.embedQuery(profileText);
     return vector;
     
@@ -467,9 +444,6 @@ async function generateProfileEmbedding(profileData) {
   }
 }
 
-/**
- * ✅ GENERA EMBEDDING OPTIMIZADO PARA CONTENIDO
- */
 async function generateContentEmbedding(type, channel, payload) {
   try {
     const parts = [
@@ -477,7 +451,6 @@ async function generateContentEmbedding(type, channel, payload) {
       `Canal: ${channel}`
     ];
     
-    // Extraer elementos clave del payload
     if (payload) {
       if (payload.theme) parts.push(`Tema: ${payload.theme}`);
       if (payload.title || payload.titulo) parts.push(`Título: ${payload.title || payload.titulo}`);
@@ -485,7 +458,6 @@ async function generateContentEmbedding(type, channel, payload) {
       if (payload.concept || payload.concepto) parts.push(`Concepto: ${payload.concept || payload.concepto}`);
       if (payload.hashtags) parts.push(`Tags: ${Array.isArray(payload.hashtags) ? payload.hashtags.join(', ') : payload.hashtags}`);
       
-      // Para contenido específico
       if (payload.video && payload.video.titulo) parts.push(`Video: ${payload.video.titulo}`);
       if (payload.meme && payload.meme.titulo) parts.push(`Meme: ${payload.meme.titulo}`);
       if (payload.email && payload.email.subject) parts.push(`Email: ${payload.email.subject}`);
@@ -506,9 +478,6 @@ async function generateContentEmbedding(type, channel, payload) {
   }
 }
 
-/**
- * ✅ GENERA EMBEDDING OPTIMIZADO PARA TENDENCIAS
- */
 async function generateTrendEmbedding(theme, metadata) {
   try {
     const parts = [`Tendencia: ${theme}`];
@@ -530,9 +499,6 @@ async function generateTrendEmbedding(theme, metadata) {
   }
 }
 
-/**
- * ✅ GENERA EMBEDDING OPTIMIZADO PARA INSIGHTS
- */
 async function generateInsightEmbedding(insightData) {
   try {
     let insightText = "";
@@ -542,7 +508,6 @@ async function generateInsightEmbedding(insightData) {
     } else if (insightData && insightData.insight) {
       insightText = insightData.insight;
       
-      // Agregar contexto adicional si existe
       if (insightData.type) insightText += ` | Tipo: ${insightData.type}`;
       if (insightData.source) insightText += ` | Fuente: ${insightData.source}`;
       if (insightData.context) insightText += ` | Contexto: ${insightData.context}`;
@@ -563,11 +528,7 @@ async function generateInsightEmbedding(insightData) {
   }
 }
 
-// =============== FUNCIONES DE ANÁLISIS AVANZADO ===============
 
-/**
- * ✅ ANÁLISIS PSICOGRÁFICO PROFUNDO
- */
 async function analyzePsychographicSimilarity(newProfile, existingProfile) {
   try {
     const completion = await openai.chat.completions.create({
@@ -613,9 +574,6 @@ async function analyzePsychographicSimilarity(newProfile, existingProfile) {
   }
 }
 
-/**
- * ✅ ANÁLISIS CONTEXTUAL DE DIFERENCIAS
- */
 async function analyzeContextualDifferences(newProfile, existingProfile) {
   try {
     const completion = await openai.chat.completions.create({
@@ -655,9 +613,6 @@ async function analyzeContextualDifferences(newProfile, existingProfile) {
   }
 }
 
-/**
- * ✅ ANÁLISIS ESTRUCTURAL DE CONTENIDO
- */
 async function analyzeContentStructure(newPayload, existingPayload) {
   try {
     const completion = await openai.chat.completions.create({
@@ -697,9 +652,6 @@ async function analyzeContentStructure(newPayload, existingPayload) {
   }
 }
 
-/**
- * ✅ ANÁLISIS CONCEPTUAL DE TENDENCIAS
- */
 async function analyzeConceptualSimilarity(newTheme, newMetadata, existingTheme, existingMetadata) {
   try {
     const completion = await openai.chat.completions.create({
@@ -739,9 +691,6 @@ async function analyzeConceptualSimilarity(newTheme, newMetadata, existingTheme,
   }
 }
 
-/**
- * ✅ ANÁLISIS DE POTENCIAL DE FUSIÓN
- */
 async function analyzeFusionPotential(newInsight, existingInsight) {
   try {
     const completion = await openai.chat.completions.create({
@@ -781,9 +730,6 @@ async function analyzeFusionPotential(newInsight, existingInsight) {
   }
 }
 
-/**
- * ✅ FUNCIÓN DE ESTADÍSTICAS INTELIGENTES
- */
 export async function getIntelligentDuplicationStats() {
   try {
     const stats = await Promise.all([

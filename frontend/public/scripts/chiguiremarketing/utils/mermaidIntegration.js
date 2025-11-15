@@ -78,26 +78,20 @@ export class MermaidManager {
     
     console.log('🚀 Inicializando MermaidManager unificado...');
     
-    // Verificar que Mermaid esté disponible
     if (typeof mermaid === 'undefined') {
       console.error('❌ Mermaid no está cargado');
       return false;
     }
     
     try {
-      // Detectar tema actual
       this.currentTheme = document.body.getAttribute('data-theme') || 'light';
       
-      // Configurar Mermaid
       this.configureMermaid();
       
-      // Configurar observer
       this.setupObserver();
       
-      // Configurar listener de tema
       this.setupThemeListener();
       
-      // Procesar diagramas existentes
       await this.processExistingDiagrams();
       
       this.isInitialized = true;
@@ -173,17 +167,14 @@ export class MermaidManager {
     const newDiagrams = [];
     
     for (const mutation of mutations) {
-      // Detectar nuevos elementos mermaid
       if (mutation.type === 'childList') {
         for (const node of mutation.addedNodes) {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            // Buscar elementos mermaid directos
             if (node.classList?.contains('mermaid') && !node.getAttribute('data-processed')) {
               newDiagrams.push(node);
               shouldProcess = true;
             }
             
-            // Buscar elementos mermaid dentro del nodo
             const mermaidElements = node.querySelectorAll?.('.mermaid:not([data-processed])');
             if (mermaidElements?.length > 0) {
               newDiagrams.push(...mermaidElements);
@@ -193,7 +184,6 @@ export class MermaidManager {
         }
       }
       
-      // Detectar cambios en clases (fin de streaming)
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
         const target = mutation.target;
         
@@ -253,39 +243,30 @@ export class MermaidManager {
     }
     
     try {
-      // Verificar que está en el DOM
       if (!document.contains(diagram)) {
         console.log('⚠️ Diagrama no está en el DOM, omitiendo');
         return;
       }
       
-      // Obtener contenido
       const content = this.extractDiagramContent(diagram);
       if (!content) {
         console.log('⚠️ No se pudo extraer contenido del diagrama');
         return;
       }
       
-      // Guardar código original
       diagram.setAttribute('data-original-code', content);
       
-      // Generar ID único
       const diagramId = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       diagram.id = diagramId;
       
-      // Mostrar loading
       this.showLoading(diagram);
       
-      // Renderizar
       await this.renderDiagram(diagram, content, diagramId);
       
-      // Marcar como procesado
       diagram.setAttribute('data-processed', 'true');
       
-      // Configurar zoom si es necesario
       this.setupZoomForDiagram(diagram);
       
-      // Guardar referencia
       this.processedDiagrams.set(diagram.id, {
         element: diagram,
         originalCode: content,
@@ -307,12 +288,10 @@ export class MermaidManager {
     let content = diagram.textContent || diagram.innerHTML || '';
     content = content.trim();
     
-    // Verificar que no sea SVG ya renderizado
     if (content.includes('<svg') || content.includes('mermaid-')) {
       return null;
     }
     
-    // Verificar que sea Mermaid válido
     const mermaidKeywords = [
       'graph', 'flowchart', 'sequenceDiagram', 'classDiagram',
       'stateDiagram', 'pie', 'gantt', 'erDiagram', 'journey'
@@ -328,15 +307,12 @@ export class MermaidManager {
    */
   async renderDiagram(diagram, content, diagramId) {
     try {
-      // Limpiar contenido
       diagram.innerHTML = '';
       
-      // Usar mermaid.render si está disponible (v10+)
       if (mermaid.render) {
         const { svg } = await mermaid.render(`${diagramId}-svg`, content);
         diagram.innerHTML = svg;
       } else {
-        // Fallback para versiones anteriores
         diagram.textContent = content;
         await mermaid.init(undefined, diagram);
       }
@@ -350,17 +326,14 @@ export class MermaidManager {
    * Configurar zoom para un diagrama
    */
   setupZoomForDiagram(diagram) {
-    // Solo si tiene SVG y no tiene zoom ya
     if (!diagram.querySelector('svg') || diagram.getAttribute('data-zoom-enabled') === 'true') {
       return;
     }
     
     try {
-      // Detectar contexto
       const isExplanation = diagram.closest('.explanation-container') || 
                            diagram.closest('.visualization-container');
       
-      // Configurar opciones según contexto
       const options = isExplanation ? {
         controlsScale: 0.9,
         minZoom: 0.2,
@@ -368,11 +341,9 @@ export class MermaidManager {
         preserveContainerPosition: true
       } : {};
       
-      // Crear instancia de zoom
       const zoomPan = new MermaidZoomPan(diagram, options);
       diagram._zoomPanInstance = zoomPan;
       
-      // Actualizar referencia
       const diagramData = this.processedDiagrams.get(diagram.id);
       if (diagramData) {
         diagramData.hasZoom = true;
@@ -495,7 +466,6 @@ export class MermaidManager {
       // Reconfigurar Mermaid
       this.configureMermaid();
       
-      // Actualizar todos los diagramas existentes
       await this.updateAllDiagramsForTheme();
       
     } catch (error) {
@@ -545,10 +515,8 @@ export class MermaidManager {
         diagramData.hasZoom = false;
       }
       
-      // Mostrar loading
       this.showLoading(element);
       
-      // Limpiar atributos
       element.removeAttribute('data-processed');
       element.removeAttribute('data-zoom-enabled');
       element.removeAttribute('data-error');
@@ -556,10 +524,8 @@ export class MermaidManager {
       // Re-renderizar
       await this.renderDiagram(element, originalCode, element.id);
       
-      // Marcar como procesado
       element.setAttribute('data-processed', 'true');
       
-      // Restaurar zoom
       this.setupZoomForDiagram(element);
       
     } catch (error) {
@@ -597,7 +563,6 @@ export class MermaidManager {
     
     const { element, originalCode } = diagramData;
     
-    // Limpiar estado de error
     element.removeAttribute('data-error');
     element.removeAttribute('data-processed');
     
@@ -626,7 +591,6 @@ export class MermaidManager {
   async reprocessAll() {
     console.log('🔄 Reprocesando todos los diagramas...');
     
-    // Limpiar estado
     for (const diagramData of this.processedDiagrams.values()) {
       if (diagramData.hasZoom && diagramData.element._zoomPanInstance) {
         diagramData.element._zoomPanInstance.destroy();

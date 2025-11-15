@@ -1,4 +1,3 @@
-// backend/middlewares/routeMapper.js
 // ARREGLADO - SIN CAMBIAR NOMBRES, SIN ROMPER CSRF, CON SOPORTE MULTI-NIVEL
 import fs from 'fs';
 import path from 'path';
@@ -8,7 +7,6 @@ import crypto from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar mapeo de rutas (OPCIONAL - si no existe, no pasa nada)
 let routeMap = {};
 let parameterMap = {};
 
@@ -18,13 +16,11 @@ try {
     routeMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
     console.log(`✅ Mapa de rutas API cargado: ${Object.keys(routeMap).length} rutas seguras`);
     
-    // Cargar mapa de parámetros si existe
     const paramMapPath = path.join(__dirname, '../utils/parameterMap.json');
     if (fs.existsSync(paramMapPath)) {
       parameterMap = JSON.parse(fs.readFileSync(paramMapPath, 'utf8'));
       console.log(`✅ Mapa de parámetros cargado: ${Object.keys(parameterMap).length} parámetros configurados`);
     } else {
-      // 🆕 CREAR MAPA BÁSICO CON PARÁMETROS DE ARGENTINA
       parameterMap = {
         "verifyPassword": generateHashCode("verifyPassword"),
         "carrera": generateHashCode("carrera"),
@@ -33,7 +29,6 @@ try {
         "token": generateHashCode("token"),
         "login": generateHashCode("login"),
         "register": generateHashCode("register"),
-        // 🆕 AGREGAR: Parámetros específicos de admin/argentina
         "argentina": generateHashCode("argentina"),
         "finance": generateHashCode("finance"),
         "queues": generateHashCode("queues"),
@@ -52,12 +47,10 @@ try {
   console.warn('⚠️ Error cargando mapa de rutas (continuando sin él):', error.message);
 }
 
-// Función para generar códigos hash consistentes
 function generateHashCode(str) {
   return crypto.createHash('md5').update(str).digest('hex').substring(0, 8);
 }
 
-// 🆕 FUNCIÓN MEJORADA: Crear mapa inverso para decodificación rápida
 function createReverseParameterMap() {
   const reverseMap = {};
   Object.entries(parameterMap).forEach(([original, hashed]) => {
@@ -66,7 +59,6 @@ function createReverseParameterMap() {
   return reverseMap;
 }
 
-// Función para ofuscar parámetros y segmentos de ruta
 function ofuscatePathSegment(segment) {
   // Si es un ID numérico, ofuscarlo directamente
   if (/^\d+$/.test(segment)) {
@@ -81,7 +73,6 @@ function ofuscatePathSegment(segment) {
   // Si es otro tipo de segmento, crear hash simple
   const hash = generateHashCode(segment);
   
-  // Guardar para consistencia (OPCIONAL)
   try {
     parameterMap[segment] = hash;
     const paramMapPath = path.join(__dirname, '../utils/parameterMap.json');
@@ -93,12 +84,9 @@ function ofuscatePathSegment(segment) {
   return hash;
 }
 
-// 🆕 FUNCIÓN MEJORADA: Decodificar segmentos ofuscados con soporte multi-nivel
 function deofuscatePathSegment(ofuscatedSegment) {
-  // Crear mapa inverso para búsqueda rápida
   const reverseMap = createReverseParameterMap();
   
-  // Buscar en el mapa inverso
   if (reverseMap[ofuscatedSegment]) {
     return reverseMap[ofuscatedSegment];
   }
@@ -112,21 +100,17 @@ function deofuscatePathSegment(ofuscatedSegment) {
   return ofuscatedSegment;
 }
 
-// ✅ MIDDLEWARE PRINCIPAL - 🆕 MEJORADO PARA MULTI-NIVEL
 export function routeMapper(req, res, next) {
-  // ✅ SOLO procesar rutas /api/x/ si existen mapas
   if (!req.originalUrl.startsWith('/api/x/') || Object.keys(routeMap).length === 0) {
     // Si no hay mapas o no es ruta ofuscada, continuar normalmente
     return next();
   }
   
   try {
-    // 🆕 MEJORADO: Extraer código de ruta y manejar query params correctamente
     const [basePath, queryString] = req.originalUrl.split('?');
     const urlParts = basePath.split('/api/x/')[1].split('/');
     const code = urlParts[0];
     
-    // Buscar ruta real
     const targetRoute = routeMap[code];
     
     if (!targetRoute) {
@@ -139,43 +123,35 @@ export function routeMapper(req, res, next) {
       console.log(`🔄 Ruta ofuscada detectada: ${req.originalUrl} → /api${targetRoute}`);
     }
     
-    // 🆕 MEJORADO: Procesar segmentos adicionales (parámetros multi-nivel)
     const additionalSegments = urlParts.slice(1); // Todo después del código de ruta
     const decodedSegments = [];
     
-    // Decodificar cada segmento individualmente
     for (const segment of additionalSegments) {
       if (segment && segment.trim() !== '') {
         const decodedSegment = deofuscatePathSegment(segment);
         decodedSegments.push(decodedSegment);
         
-        // Log solo en desarrollo
         if (process.env.NODE_ENV === 'development' && decodedSegment !== segment) {
           console.log(`  🔓 Segmento decodificado: ${segment} → ${decodedSegment}`);
         }
       }
     }
     
-    // Construir la ruta original completa
     let newPath = `/api${targetRoute}`;
     if (decodedSegments.length > 0) {
       newPath += '/' + decodedSegments.join('/');
     }
     
-    // Agregar query params si existen
     if (queryString) {
       newPath += '?' + queryString;
     }
     
-    // Actualizar la request URL
     req.url = newPath;
     
-    // ✅ CRÍTICO: NO modificar headers de autenticación ni cookies
     // Esto garantiza que CSRF y auth funcionen correctamente
     
     console.log(`🔄 Ruta mapeada: ${req.originalUrl} → ${req.url}`);
     
-    // Continuar con la petición
     next();
     
   } catch (error) {
@@ -184,19 +160,14 @@ export function routeMapper(req, res, next) {
   }
 }
 
-// ✅ MIDDLEWARE PARA NORMALIZAR ERRORES - SIEMPRE ACTIVO
 export function normalizeErrors(req, res, next) {
-  // Guardar el método original
   const originalStatus = res.status;
   
-  // ✅ SIEMPRE ACTIVO PARA PRUEBAS (como pidió el usuario)
   res.status = function(code) {
-    // Normalizar códigos de error de cliente (4xx) para APIs
     if (code >= 400 && code < 500 && req.url.startsWith('/api/')) {
       // Mantener códigos importantes
       const preserveCodes = [401, 403, 404, 429];
       if (!preserveCodes.includes(code)) {
-        // Solo en desarrollo mostrar código original en logs
         if (process.env.NODE_ENV === 'development') {
           console.log(`🔧 Error normalizado: ${code} → 404 para ${req.url}`);
         }
@@ -209,18 +180,16 @@ export function normalizeErrors(req, res, next) {
   next();
 }
 
-// ✅ FUNCIÓN EXPORTADA PARA USO EN LA GENERACIÓN DEL MAPA
 export function getParameterMap() {
   return parameterMap;
 }
 
-// ✅ ESTADÍSTICAS SIMPLES (OPCIONAL)
 let requestStats = {
   total: 0,
   apiRequests: 0,
   obfuscatedRequests: 0,
   errorRequests: 0,
-  decodedSegments: 0 // 🆕 NUEVO: Contador de segmentos decodificados
+  decodedSegments: 0
 };
 
 // Middleware para contar requests (OPCIONAL)
@@ -234,14 +203,12 @@ export function trackRequests(req, res, next) {
   if (req.originalUrl.startsWith('/api/x/')) {
     requestStats.obfuscatedRequests++;
     
-    // 🆕 NUEVO: Contar segmentos decodificados
     const urlParts = req.originalUrl.split('/api/x/')[1].split('/');
     if (urlParts.length > 1) {
       requestStats.decodedSegments += urlParts.length - 1;
     }
   }
   
-  // Contar errores
   res.on('finish', () => {
     if (res.statusCode >= 400) {
       requestStats.errorRequests++;
@@ -251,7 +218,6 @@ export function trackRequests(req, res, next) {
   next();
 }
 
-// Función para obtener estadísticas
 export function getRouteStats() {
   return {
     ...requestStats,
@@ -261,7 +227,6 @@ export function getRouteStats() {
   };
 }
 
-// Función para limpiar estadísticas
 export function clearStats() {
   requestStats = {
     total: 0,
@@ -273,7 +238,6 @@ export function clearStats() {
   console.log('📊 Estadísticas limpiadas');
 }
 
-// ✅ ENDPOINTS PARA BACKEND (OPCIONALES)
 export function createSecurityEndpoints(app, authenticateUser, isAdmin) {
   // Endpoint para servir mapa de rutas (OPCIONAL)
   app.get('/api/security/route-map', authenticateUser, isAdmin, (req, res) => {
@@ -299,7 +263,6 @@ export function createSecurityEndpoints(app, authenticateUser, isAdmin) {
     }
   });
   
-  // 🆕 NUEVO: Endpoint para test de decodificación
   app.post('/api/security/test-decode', authenticateUser, isAdmin, (req, res) => {
     try {
       const { obfuscatedUrl } = req.body;

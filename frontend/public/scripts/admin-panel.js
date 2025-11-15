@@ -5,7 +5,6 @@
     
     console.log('🔧 [ADMIN] Inicializando panel de administración... v2.1 - Event Listeners Mejorados');
     
-    // ===== CONFIGURACIÓN ===== 
     const CONFIG = {
         API_BASE: '/api/admin/argentina',
         REFRESH_INTERVAL: 30000, // 30 segundos
@@ -13,7 +12,6 @@
         POLLING_ENABLED: true
     };
     
-    // ===== ESTADO GLOBAL =====
     const AppState = {
         currentSection: 'dashboard',
         transfers: [],
@@ -37,12 +35,10 @@
         refreshTimer: null,
         isMobile: window.innerWidth <= 992,
         lastUserSearch: null,
-        // ✅ NUEVO: Sistema de limpieza
         sectionStates: new Map(),
         activeEventListeners: new Map()
     };
     
-    // ===== ELEMENTOS DOM =====
     const Elements = {
         // Navigation
         navItems: document.querySelectorAll('.nav-item'),
@@ -74,7 +70,6 @@
         paymentsNextBtn: document.getElementById('paymentsNextBtn'),
         paymentsPages: document.getElementById('paymentsPages'),
         
-        // Modals
         transferModal: document.getElementById('transferModal'),
         transferModalBody: document.getElementById('transferModalBody'),
         closeTransferModal: document.getElementById('closeTransferModal'),
@@ -96,9 +91,7 @@
         actionBtns: document.querySelectorAll('.action-btn')
     };
     
-    // ===== UTILIDADES MEJORADAS =====
     const Utils = {
-        // Formatear moneda
         formatCurrency: (amount) => {
             return new Intl.NumberFormat('es-AR', {
                 style: 'currency',
@@ -106,7 +99,6 @@
             }).format(amount);
         },
         
-        // Formatear fecha
         formatDate: (dateString) => {
             return new Date(dateString).toLocaleDateString('es-AR', {
                 year: 'numeric',
@@ -117,7 +109,6 @@
             });
         },
         
-        // ✅ MEJORADO: Sistema de notificaciones integrado
         showNotification: (message, type = 'info', duration = 3000) => {
             // Prioridad 1: notification service
             if (window.notifyService && typeof window.notifyService.add === 'function') {
@@ -131,7 +122,6 @@
             else {
                 console.log(`[${type.toUpperCase()}] ${message}`);
                 
-                // Crear notificación básica temporal
                 const notification = document.createElement('div');
                 notification.style.cssText = `
                     position: fixed;
@@ -157,7 +147,6 @@
             }
         },
         
-        // ✅ NUEVO: Mostrar notificación de carga
         showLoadingNotification: (message = 'Cargando...') => {
             if (window.notifyService && typeof window.notifyService.loading === 'function') {
                 return window.notifyService.loading(message);
@@ -165,23 +154,19 @@
             return Utils.showNotification(message, 'info', 0);
         },
         
-        // ✅ NUEVO: Actualizar notificación existente
         updateNotification: (id, message, type = 'success', duration = 2000) => {
             if (window.notifyService && typeof window.notifyService.update === 'function') {
                 return window.notifyService.update(id, message, type, duration);
             }
-            // Fallback: mostrar nueva notificación
             return Utils.showNotification(message, type, duration);
         },
         
-        // ✅ NUEVO: Remover notificación
         removeNotification: (id) => {
             if (window.notifyService && typeof window.notifyService.remove === 'function') {
                 return window.notifyService.remove(id);
             }
         },
         
-        // Obtener estado legible
         getStatusBadge: (status) => {
             const statusMap = {
                 'pendiente': { class: 'status-pending', text: 'Pendiente' },
@@ -210,7 +195,6 @@
             };
         },
         
-        // Validar respuesta de API
         validateApiResponse: (response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -218,7 +202,6 @@
             return response.json();
         },
         
-        // Parsear transfer_details de manera segura
         parseTransferDetails: (transferDetails) => {
             try {
                 if (!transferDetails) return {};
@@ -238,7 +221,6 @@
             }
         },
         
-        // ✅ NUEVO: Limpiar event listeners de una sección
         cleanupSectionEvents: (sectionName) => {
             const listeners = AppState.activeEventListeners.get(sectionName) || [];
             console.log(`🧹 [EVENTS] Limpiando ${listeners.length} event listeners de sección ${sectionName}`);
@@ -255,14 +237,12 @@
             console.log(`✅ [EVENTS] Limpieza completada para sección ${sectionName}`);
         },
         
-        // ✅ NUEVO: Registrar event listener para limpieza posterior
         registerEventListener: (sectionName, element, event, handler) => {
             if (!element || typeof element.addEventListener !== 'function') {
                 console.warn(`⚠️ [EVENTS] Elemento no válido para sección ${sectionName}:`, element);
                 return;
             }
             
-            // ✅ MEJORADO: Logging detallado
             console.log(`🔗 [EVENTS] Registrando ${event} en sección ${sectionName} para:`, element.id || element.tagName);
             
             element.addEventListener(event, handler);
@@ -273,7 +253,6 @@
         }
     };
     
-    // ===== API SERVICE =====
     const ApiService = {
         // Método base para requests
         async request(endpoint, options = {}) {
@@ -294,12 +273,10 @@
             }
         },
         
-        // Obtener estadísticas
         async getStats(period = 30) {
             return this.request(`/stats?period=${period}`);
         },
         
-        // Obtener transferencias (solo pendientes de revisión manual)
         async getTransfers(filters = {}) {
             const params = new URLSearchParams({
                 status: 'en_revision_manual',
@@ -309,7 +286,6 @@
             return this.request(`/payments?${params}`);
         },
         
-        // Obtener todos los pagos
         async getPayments(page = 1, filters = {}) {
             const params = new URLSearchParams({
                 page,
@@ -319,7 +295,6 @@
             return this.request(`/payments?${params}`);
         },
         
-        // Obtener detalles de pago
         async getPaymentDetails(paymentId) {
             return this.request(`/payments/${paymentId}`);
         },
@@ -332,7 +307,6 @@
             });
         },
         
-        // Rechazar transferencia
         async rejectTransfer(paymentId, reason) {
             return this.request(`/payments/${paymentId}/reject`, {
                 method: 'POST',
@@ -340,7 +314,6 @@
             });
         },
         
-        // Obtener suscripciones
         async getSubscriptions(page = 1, filters = {}) {
             const params = new URLSearchParams({
                 page,
@@ -350,7 +323,6 @@
             return this.request(`/subscriptions?${params}`);
         },
         
-        // Actualizar estado de suscripción
         async updateSubscriptionStatus(subscriptionId, status, reason = '') {
             return this.request(`/subscriptions/${subscriptionId}/status`, {
                 method: 'PUT',
@@ -358,7 +330,6 @@
             });
         },
         
-        // ✅ NUEVO: Actualizar suscripciones vencidas manualmente
         async updateExpiredSubscriptions() {
             try {
                 const response = await fetch('/api/admin/actualizar-suscripciones-vencidas', {
@@ -375,19 +346,16 @@
             }
         },
         
-        // Buscar usuarios
         async searchUsers(filters = {}) {
             const params = new URLSearchParams(filters);
             return this.request(`/users/search?${params}`);
         },
         
-        // Obtener detalles de usuario
         async getUserDetails(userId) {
             return this.request(`/users/${userId}`);
         }
     };
 
-    // ===== NAVEGACIÓN MEJORADA =====
     const Navigation = {
         init() {
             this.bindEvents();
@@ -421,11 +389,9 @@
             }
         },
         
-        // ✅ MEJORADO: Navegación con limpieza
         navigateToSection(sectionName) {
             console.log(`🔧 [NAV] Navegando a: ${sectionName}`);
             
-            // ✅ NUEVO: Limpiar sección anterior
             if (AppState.currentSection && AppState.currentSection !== sectionName) {
                 this.cleanupSection(AppState.currentSection);
             }
@@ -452,65 +418,50 @@
             }
         },
         
-        // ✅ NUEVO: Limpiar estado de sección
         cleanupSection(sectionName) {
             console.log(`🧹 [NAV] Limpiando sección: ${sectionName}`);
             
-            // Limpiar event listeners específicos de la sección
             Utils.cleanupSectionEvents(sectionName);
             
-            // ✅ NUEVO: Limpiar modales abiertos
             this.closeAllModals();
             
-            // Limpiar estados específicos por sección
             switch (sectionName) {
                 case 'payments':
-                    // ✅ NUEVO: Reseteo completo para pagos (igual que suscripciones)
                     AppState.filters.payments = { status: '', method: '', search: '' };
                     AppState.pagination.payments.current = 1;
-                    AppState.payments = []; // ✅ Limpiar datos existentes
+                    AppState.payments = [];
                     
-                    // Marcar para reinicialización
                     Payments.needsReinit = true;
                     
-                    // Limpiar inputs
                     if (Elements.paymentsSearch) Elements.paymentsSearch.value = '';
                     if (Elements.paymentStatusFilter) Elements.paymentStatusFilter.value = '';
                     if (Elements.paymentMethodFilter) Elements.paymentMethodFilter.value = '';
                     
-                    // ✅ Limpiar tabla visualmente
                     if (Elements.paymentsTableBody) {
                         Elements.paymentsTableBody.innerHTML = '';
                     }
                     break;
                     
                 case 'transfers':
-                    // ✅ NUEVO: Reseteo completo para transferencias
                     AppState.filters.transfers = { search: '' };
-                    AppState.transfers = []; // ✅ Limpiar datos existentes
+                    AppState.transfers = [];
                     
-                    // Marcar para reinicialización
                     Transfers.needsReinit = true;
                     
-                    // Limpiar inputs
                     if (Elements.transferSearch) Elements.transferSearch.value = '';
                     
-                    // ✅ Limpiar tabla visualmente
                     if (Elements.transfersTableBody) {
                         Elements.transfersTableBody.innerHTML = '';
                     }
                     break;
                     
                 case 'subscriptions':
-                    // ✅ NUEVO: Reseteo completo para suscripciones
                     AppState.filters.subscriptions = { status: '', search: '' };
                     AppState.pagination.subscriptions.current = 1;
                     AppState.subscriptions = [];
                     
-                    // Marcar para recreación
                     Subscriptions.isInitialized = false;
                     
-                    // Limpiar inputs si existen
                     const subscriptionSearch = document.getElementById('subscriptionSearch');
                     const subscriptionStatusFilter = document.getElementById('subscriptionStatusFilter');
                     if (subscriptionSearch) subscriptionSearch.value = '';
@@ -518,25 +469,20 @@
                     break;
                     
                 case 'users':
-                    // ✅ NUEVO: Reseteo completo para usuarios
                     AppState.filters.users = { role: '', search: '' };
                     AppState.pagination.users.current = 1;
                     AppState.lastUserSearch = null;
-                    AppState.users = []; // ✅ Limpiar datos existentes
+                    AppState.users = [];
                     
-                    // Marcar para reinicialización
                     Users.needsReinit = true;
                     
-                    // Limpiar inputs
                     if (Elements.userSearchInput) Elements.userSearchInput.value = '';
                     const roleFilter = document.getElementById('roleFilter');
                     if (roleFilter) roleFilter.value = '';
                     
-                    // ✅ Ocultar paginación
                     const usersPagination = document.getElementById('usersPagination');
                     if (usersPagination) usersPagination.style.display = 'none';
                     
-                    // Resetear vista a estado inicial
                     if (Elements.userResults) {
                         Elements.userResults.innerHTML = `
                             <div class="empty-state">
@@ -549,7 +495,6 @@
                     break;
             }
             
-            // Guardar estado limpio
             AppState.sectionStates.set(sectionName, {
                 cleanedAt: Date.now(),
                 filters: { ...AppState.filters[sectionName] },
@@ -557,7 +502,6 @@
             });
         },
 
-        // ✅ NUEVO: Cerrar todos los modales
         closeAllModals() {
             const modals = document.querySelectorAll('.modal-overlay.show');
             modals.forEach(modal => {
@@ -586,7 +530,6 @@
                         break;
                 }
                 
-                // ✅ NUEVO: Verificar que los eventos se han vinculado correctamente
                 setTimeout(() => {
                     this.verifyEventListeners(sectionName);
                 }, 500);
@@ -597,7 +540,6 @@
             }
         },
         
-        // ✅ NUEVO: Verificador de event listeners
         verifyEventListeners(sectionName) {
             const listeners = AppState.activeEventListeners.get(sectionName) || [];
             console.log(`🔍 [NAV] Verificando ${listeners.length} event listeners en sección ${sectionName}`);
@@ -643,7 +585,6 @@
         }
     };
     
-    // ===== DASHBOARD =====
     const Dashboard = {
         async load() {
             console.log('🔧 [DASHBOARD] Cargando estadísticas...');
@@ -686,22 +627,18 @@
         }
     };
     
-    // ===== TRANSFERENCIAS MEJORADAS =====
     const Transfers = {
-        needsReinit: false, // ✅ NUEVO: Flag de reinicialización
+        needsReinit: false,
         
         init() {
             this.bindEvents();
         },
         
-        // ✅ MEJORADO: Verificar si necesita reinicialización
         async load() {
             console.log('🔧 [TRANSFERS] Cargando transferencias...');
             
-            // ✅ NUEVO: Limpiar eventos previos específicamente para esta sección
             Utils.cleanupSectionEvents('transfers');
             
-            // ✅ FORZAR: Siempre re-vincular eventos para garantizar funcionamiento
             console.log('🔄 [TRANSFERS] Re-inicializando eventos...');
             this.bindEvents();
             this.needsReinit = false;
@@ -710,7 +647,6 @@
             await this.loadData();
         },
 
-        // ✅ NUEVO: Separar carga de datos
         async loadData() {
             this.showLoading(true);
             
@@ -726,7 +662,6 @@
             }
         },
         
-        // ✅ MEJORADO: Usar sistema de registro de eventos
         bindEvents() {
             console.log('🔧 [TRANSFERS] Vinculando eventos...');
             
@@ -734,7 +669,7 @@
             if (Elements.transferSearch) {
                 const searchHandler = Utils.debounce((e) => {
                     AppState.filters.transfers.search = e.target.value;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 }, 500);
                 
                 Utils.registerEventListener('transfers', Elements.transferSearch, 'input', searchHandler);
@@ -742,11 +677,10 @@
             
             // Refresh button
             if (Elements.refreshTransfers) {
-                const refreshHandler = () => this.loadData(); // ✅ Cambiar a loadData
+                const refreshHandler = () => this.loadData();
                 Utils.registerEventListener('transfers', Elements.refreshTransfers, 'click', refreshHandler);
             }
             
-            // ✅ CRÍTICO: Table events con logging mejorado
             if (Elements.transfersTableBody) {
                 console.log('✅ [TRANSFERS] Vinculando eventos de tabla...');
                 const tableHandler = (e) => {
@@ -943,7 +877,6 @@
         async approve(notes = '') {
             if (!AppState.currentTransfer) return;
             
-            // ✅ NUEVO: Deshabilitar botones del modal
             const approveBtn = document.getElementById('approveTransferBtn');
             const rejectBtn = document.getElementById('rejectTransferBtn');
             
@@ -965,14 +898,13 @@
                 Utils.updateNotification(loadingId, 'Transferencia aprobada exitosamente', 'success');
                 Modals.hide('transferModal');
                 
-                await this.loadData(); // ✅ Cambiar a loadData
+                await this.loadData();
                 await Dashboard.load();
                 
             } catch (error) {
                 console.error('[TRANSFERS] Error aprobando:', error);
                 Utils.updateNotification(loadingId, 'Error al aprobar transferencia', 'error');
             } finally {
-                // ✅ NUEVO: Restaurar botones
                 if (approveBtn) {
                     approveBtn.disabled = false;
                     approveBtn.innerHTML = '<i class="bx bx-check"></i> Aprobar';
@@ -986,7 +918,6 @@
         async reject(reason) {
             if (!AppState.currentTransfer || !reason.trim()) return;
             
-            // ✅ NUEVO: Deshabilitar botones del modal
             const confirmBtn = document.getElementById('confirmRejectBtn');
             const cancelBtn = document.getElementById('cancelRejectBtn');
             
@@ -1009,14 +940,13 @@
                 Modals.hide('rejectModal');
                 Modals.hide('transferModal');
                 
-                await this.loadData(); // ✅ Cambiar a loadData
+                await this.loadData();
                 await Dashboard.load();
                 
             } catch (error) {
                 console.error('[TRANSFERS] Error rechazando:', error);
                 Utils.updateNotification(loadingId, 'Error al rechazar transferencia', 'error');
             } finally {
-                // ✅ NUEVO: Restaurar botones
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
                     confirmBtn.innerHTML = '<i class="bx bx-x"></i> Confirmar Rechazo';
@@ -1056,22 +986,18 @@
         }
     };
     
-    // ===== PAGOS MEJORADOS =====
     const Payments = {
-        needsReinit: false, // ✅ NUEVO: Flag de reinicialización
+        needsReinit: false,
         
         init() {
             this.bindEvents();
         },
         
-        // ✅ MEJORADO: Verificar si necesita reinicialización
         async load() {
             console.log('🔧 [PAYMENTS] Cargando pagos...');
             
-            // ✅ NUEVO: Limpiar eventos previos específicamente para esta sección
             Utils.cleanupSectionEvents('payments');
             
-            // ✅ FORZAR: Siempre re-vincular eventos para garantizar funcionamiento
             console.log('🔄 [PAYMENTS] Re-inicializando eventos...');
             this.bindEvents();
             this.needsReinit = false;
@@ -1080,7 +1006,6 @@
             await this.loadData();
         },
 
-        // ✅ NUEVO: Separar carga de datos
         async loadData() {
             const loadingId = Utils.showLoadingNotification('Cargando pagos...');
             
@@ -1110,7 +1035,6 @@
         },
         
         
-        // ✅ MEJORADO: Usar sistema de registro de eventos
         bindEvents() {
             console.log('🔧 [PAYMENTS] Vinculando eventos...');
             
@@ -1119,7 +1043,7 @@
                 const searchHandler = Utils.debounce((e) => {
                     AppState.filters.payments.search = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 }, 500);
                 
                 Utils.registerEventListener('payments', Elements.paymentsSearch, 'input', searchHandler);
@@ -1129,7 +1053,7 @@
                 const statusHandler = (e) => {
                     AppState.filters.payments.status = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 };
                 
                 Utils.registerEventListener('payments', Elements.paymentStatusFilter, 'change', statusHandler);
@@ -1139,7 +1063,7 @@
                 const methodHandler = (e) => {
                     AppState.filters.payments.method = e.target.value;
                     AppState.pagination.payments.current = 1;
-                    this.loadData(); // ✅ Cambiar a loadData
+                    this.loadData();
                 };
                 
                 Utils.registerEventListener('payments', Elements.paymentMethodFilter, 'change', methodHandler);
@@ -1150,7 +1074,7 @@
                 const prevHandler = () => {
                     if (AppState.pagination.payments.current > 1) {
                         AppState.pagination.payments.current--;
-                        this.loadData(); // ✅ Cambiar a loadData
+                        this.loadData();
                     }
                 };
                 
@@ -1161,7 +1085,7 @@
                 const nextHandler = () => {
                     if (AppState.pagination.payments.current < AppState.pagination.payments.total) {
                         AppState.pagination.payments.current++;
-                        this.loadData(); // ✅ Cambiar a loadData
+                        this.loadData();
                     }
                 };
                 
@@ -1183,7 +1107,6 @@
                 Utils.registerEventListener('payments', Elements.paymentsPages, 'click', pageHandler);
             }
             
-            // ✅ CRÍTICO: Table events con logging mejorado
             if (Elements.paymentsTableBody) {
                 console.log('✅ [PAYMENTS] Vinculando eventos de tabla...');
                 const tableHandler = (e) => {
@@ -1315,16 +1238,14 @@
         
         goToPage(page) {
             AppState.pagination.payments.current = page;
-            this.loadData(); // ✅ Cambiar a loadData
+            this.loadData();
         }
     };
     
-    // ===== SUSCRIPCIONES MEJORADAS =====
     const Subscriptions = {
         isInitialized: false,
         
         init() {
-            // ✅ MEJORADO: Solo inicializar una vez
             if (this.isInitialized) {
                 console.log('🔧 [SUBSCRIPTIONS] Ya inicializado, omitiendo...');
                 return;
@@ -1334,18 +1255,14 @@
             this.isInitialized = true;
         },
 
-        // ✅ MEJORADO: Verificar disponibilidad del notification service
         async load() {
             console.log('🔧 [SUBSCRIPTIONS] Cargando suscripciones...');
             
-            // ✅ NUEVO: Siempre limpiar y recrear para evitar problemas de persistencia
             const section = document.getElementById('subscriptions-section');
             const existingTable = document.getElementById('subscriptionsTableBody');
             
-            // Limpiar eventos previos específicamente para esta sección
             Utils.cleanupSectionEvents('subscriptions');
             
-            // ✅ FORZAR: Siempre recrear para garantizar funcionamiento de eventos
             console.log('🔄 [SUBSCRIPTIONS] Recreando estructura de sección...');
             this.createSubscriptionsSection();
             this.isInitialized = true;
@@ -1389,15 +1306,13 @@
             }
         },
 
-        // ✅ MEJORADO: Usar sistema de registro de eventos
         bindEvents() {
             console.log('🔧 [SUBSCRIPTIONS] Vinculando eventos...');
             
             const subscriptionSearch = document.getElementById('subscriptionSearch');
             const subscriptionStatusFilter = document.getElementById('subscriptionStatusFilter');
-            const updateExpiredBtn = document.getElementById('updateExpiredBtn'); // ✅ NUEVO: Botón para actualización manual
+            const updateExpiredBtn = document.getElementById('updateExpiredBtn');
             
-            // ✅ LOGGING: Verificar que los elementos existan
             console.log('🔍 [SUBSCRIPTIONS] Elementos encontrados:', {
                 search: !!subscriptionSearch,
                 filter: !!subscriptionStatusFilter,
@@ -1426,7 +1341,6 @@
                 Utils.registerEventListener('subscriptions', subscriptionStatusFilter, 'change', statusHandler);
             }
 
-            // ✅ CRÍTICO: Botón para actualizar suscripciones vencidas
             if (updateExpiredBtn) {
                 console.log('✅ [SUBSCRIPTIONS] Botón "Actualizar Vencidas" encontrado, vinculando evento...');
                 const updateHandler = () => {
@@ -1500,7 +1414,6 @@
             }
         },
 
-        // ✅ NUEVO: Función para actualizar suscripciones vencidas manualmente
         async updateExpiredSubscriptions() {
             const updateExpiredBtn = document.getElementById('updateExpiredBtn');
             
@@ -1535,7 +1448,6 @@
                 console.error('[SUBSCRIPTIONS] Error actualizando suscripciones vencidas:', error);
                 Utils.updateNotification(loadingId, 'Error al actualizar suscripciones vencidas', 'error');
             } finally {
-                // Restaurar botón
                 if (updateExpiredBtn) {
                     updateExpiredBtn.disabled = false;
                     updateExpiredBtn.innerHTML = '<i class="bx bx-refresh"></i> Actualizar Vencidas';
@@ -1601,12 +1513,10 @@
             return `<span class="status-badge ${config.class}">${config.text}</span>`;
         },
 
-        // ✅ MODIFICADO: Quitar botón de pausar, solo cancelar y reactivar
         getSubscriptionActionButtons(subscription) {
             const buttons = [];
             
             if (subscription.status === 'activo') {
-                // ✅ REMOVIDO: Botón de pausar
                 buttons.push(`
                     <button class="btn btn-sm btn-danger" 
                             data-action="cancel" 
@@ -1639,7 +1549,6 @@
 
         async handleSubscriptionAction(action, subscriptionId, currentStatus) {
             const actionMap = {
-                // ✅ REMOVIDO: 'pause' action
                 'activate': { 
                     status: 'activo', 
                     title: 'Reactivar Suscripción',
@@ -1661,7 +1570,6 @@
             const actionConfig = actionMap[action];
             if (!actionConfig) return;
             
-            // ✅ NUEVO: Mostrar modal de confirmación personalizada
             const confirmed = await this.showConfirmationModal(actionConfig);
             if (!confirmed) return;
             
@@ -1683,10 +1591,8 @@
             }
         },
 
-        // ✅ NUEVO: Modal de confirmación personalizada
         showConfirmationModal(config) {
             return new Promise((resolve) => {
-                // Crear modal de confirmación
                 const modalHtml = `
                     <div class="modal-overlay" id="confirmationModal" style="display: flex; opacity: 1;">
                         <div class="modal-content" style="max-width: 400px;">
@@ -1715,7 +1621,6 @@
                     </div>
                 `;
                 
-                // Añadir al DOM
                 document.body.insertAdjacentHTML('beforeend', modalHtml);
                 document.body.style.overflow = 'hidden';
                 
@@ -1724,7 +1629,6 @@
                 const cancelBtn = document.getElementById('cancelConfirmationBtn');
                 const confirmBtn = document.getElementById('confirmActionBtn');
                 
-                // Función de limpieza
                 const cleanup = () => {
                     if (modal && modal.parentNode) {
                         modal.parentNode.removeChild(modal);
@@ -1755,7 +1659,6 @@
             });
         },
 
-        // ✅ MODIFICADO: Agregar botón para actualización manual
         createSubscriptionsSection() {
             const section = document.getElementById('subscriptions-section');
             if (!section) return;
@@ -1836,8 +1739,6 @@
                 </div>
             `;
             
-            // ✅ IMPORTANTE: Reinicializar eventos INMEDIATAMENTE después de crear el HTML
-            // Usar requestAnimationFrame para asegurar que el DOM esté listo
             requestAnimationFrame(() => {
                 console.log('🔧 [SUBSCRIPTIONS] Vinculando eventos después de crear HTML...');
                 this.bindEvents();
@@ -1925,13 +1826,11 @@
         }
     };
     
-    // ===== USUARIOS MEJORADOS =====
     const Users = {
         init() {
             this.bindEvents();
         },
 
-        // ✅ MEJORADO: Usar sistema de registro de eventos
         bindEvents() {
             const userSearchBtn = document.getElementById('userSearchBtn');
             const userSearchInput = document.getElementById('userSearchInput');
@@ -2020,7 +1919,6 @@
         async load() {
             console.log('🔧 [USERS] Cargando sección de usuarios...');
             
-            // ✅ FORZAR: Siempre limpiar eventos y recrear sección
             Utils.cleanupSectionEvents('users');
             this.createUsersSection();
         },
@@ -2296,7 +2194,6 @@
                 </div>
             `;
             
-            // ✅ NUEVO: Asegurar que el botón de cerrar funcione
             setTimeout(() => {
                 const closeBtn = document.getElementById('closeUserModal');
                 if (closeBtn) {
@@ -2471,7 +2368,6 @@
         }
     };
     
-    // ===== MODALES =====
     const Modals = {
         init() {
             this.bindEvents();
@@ -2487,14 +2383,12 @@
             
             if (Elements.approveTransferBtn) {
                 Elements.approveTransferBtn.addEventListener('click', async () => {
-                    // ✅ NUEVO: Deshabilitar botón durante la operación
                     Elements.approveTransferBtn.disabled = true;
                     Elements.approveTransferBtn.innerHTML = '<i class="bx bx-loader-alt" style="animation: spin 1s linear infinite;"></i> Aprobando...';
                     
                     try {
                         await Transfers.approve();
                     } finally {
-                        // Restaurar botón
                         Elements.approveTransferBtn.disabled = false;
                         Elements.approveTransferBtn.innerHTML = '<i class="bx bx-check"></i> Aprobar';
                     }
@@ -2524,7 +2418,6 @@
                 Elements.confirmRejectBtn.addEventListener('click', async () => {
                     const reason = Elements.rejectReason?.value?.trim();
                     if (reason) {
-                        // ✅ NUEVO: Deshabilitar botón durante la operación
                         Elements.confirmRejectBtn.disabled = true;
                         Elements.confirmRejectBtn.innerHTML = '<i class="bx bx-loader-alt" style="animation: spin 1s linear infinite;"></i> Rechazando...';
                         
@@ -2532,7 +2425,6 @@
                             await Transfers.reject(reason);
                             Elements.rejectReason.value = '';
                         } finally {
-                            // Restaurar botón
                             Elements.confirmRejectBtn.disabled = false;
                             Elements.confirmRejectBtn.innerHTML = '<i class="bx bx-x"></i> Confirmar Rechazo';
                         }
@@ -2542,7 +2434,6 @@
                 });
             }
 
-            // ✅ MEJORADO: User modal con delegation para elementos dinámicos
             this.setupUserModalEvents();
             
             // Close modals on overlay click
@@ -2555,18 +2446,14 @@
             });
         },
 
-        // ✅ NUEVO: Configuración específica para modal de usuarios
         setupUserModalEvents() {
-            // Usar delegation en el document para manejar elementos dinámicos
             document.addEventListener('click', (e) => {
-                // Cerrar modal de usuario
                 if (e.target.id === 'closeUserModal' || e.target.closest('#closeUserModal')) {
                     console.log('🔧 [MODAL] Cerrando modal de usuario');
                     this.hide('userModal');
                     return;
                 }
                 
-                // Cerrar modal con botón del footer
                 if (e.target.closest('.modal-footer .btn-secondary') && 
                     e.target.closest('#userModal')) {
                     this.hide('userModal');
@@ -2592,7 +2479,6 @@
         }
     };
     
-    // ===== AUTO REFRESH =====
     const AutoRefresh = {
         start() {
             if (!CONFIG.POLLING_ENABLED) return;
@@ -2617,7 +2503,6 @@
         }
     };
     
-    // ===== LOGOUT =====
     const Logout = {
         init() {
             document.querySelectorAll('.logout-btn').forEach(btn => {
@@ -2656,19 +2541,15 @@
         }
     };
     
-    // ===== INICIALIZACIÓN =====
     const AdminPanel = {
         async init() {
             console.log('🔧 [ADMIN] Inicializando...');
             
-            // ✅ NUEVO: Verificar disponibilidad del notification service
             this.waitForNotificationService();
             
-            // ✅ NUEVO: Añadir estilos de carga para botones
             this.addLoadingStyles();
             
             try {
-                // Inicializar componentes
                 Navigation.init();
                 Transfers.init();
                 Payments.init();
@@ -2677,10 +2558,8 @@
                 Modals.init();
                 Logout.init();
                 
-                // Cargar sección inicial
                 await Navigation.loadSectionContent('dashboard');
                 
-                // Iniciar auto-refresh
                 AutoRefresh.start();
                 
                 console.log('✅ [ADMIN] Panel inicializado correctamente');
@@ -2692,7 +2571,6 @@
             }
         },
 
-        // ✅ NUEVO: Añadir estilos para animaciones de carga
         addLoadingStyles() {
             const style = document.createElement('style');
             style.textContent = `
@@ -2718,7 +2596,6 @@
             document.head.appendChild(style);
         },
         
-        // ✅ NUEVO: Esperar a que esté disponible el notification service
         waitForNotificationService() {
             let attempts = 0;
             const maxAttempts = 10;
@@ -2760,7 +2637,6 @@
         Utils
     };
     
-    // ===== MANEJO DE ERRORES GLOBALES =====
     window.addEventListener('error', (e) => {
         console.error('[GLOBAL] Error:', e.error);
         Utils.showNotification('Error inesperado en la aplicación', 'error');
@@ -2771,18 +2647,14 @@
         Utils.showNotification('Error de conexión o servidor', 'error');
     });
     
-    // ===== CLEANUP =====
     window.addEventListener('beforeunload', () => {
         AutoRefresh.stop();
         
-        // Limpiar todos los event listeners registrados
         AppState.activeEventListeners.clear();
     });
     
-    // ===== EXPOSER AL SCOPE GLOBAL =====
     window.AdminPanel = AdminPanel;
     
-    // ===== INICIALIZAR CUANDO EL DOM ESTÉ LISTO =====
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => AdminPanel.init());
     } else {

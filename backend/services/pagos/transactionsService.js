@@ -10,7 +10,6 @@ export class TransactionsService {
      */
     async getAllTransactions(filters = {}, pagination = { page: 1, limit: 50 }) {
         try {
-            // Construir la consulta base con los nuevos campos
             let query = `
                 SELECT t.*, u.correo as user_email,
                        t.tax_amount, t.tax_rate, t.fee_amount, t.earnings,
@@ -25,7 +24,6 @@ export class TransactionsService {
             const queryParams = [];
             let paramIndex = 1;
             
-            // Aplicar filtros existentes
             if (filters.id_user) {
                 query += ` AND t.id_user = $${paramIndex}`;
                 queryParams.push(filters.id_user);
@@ -76,7 +74,6 @@ export class TransactionsService {
             
             // Nuevo: Filtro por país
             if (filters.country_code) {
-                // Manejar caso especial 'ES' y 'non-ES'
                 if (filters.country_code === 'ES') {
                     query += ` AND t.country_code = 'ES'`;
                 } else if (filters.country_code === 'non-ES') {
@@ -103,7 +100,6 @@ export class TransactionsService {
             const countResult = await pool.query(countQuery, queryParams);
             const totalCount = parseInt(countResult.rows[0].count);
             
-            // Aplicar ordenamiento y paginación
             const sortField = filters.sort_by || 'updated_at';
             const sortDirection = filters.sort_direction || 'DESC';
             
@@ -117,7 +113,6 @@ export class TransactionsService {
             query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
             queryParams.push(limit, offset);
             
-            // Ejecutar la consulta final
             const result = await pool.query(query, queryParams);
             
             return {
@@ -145,7 +140,6 @@ async getTransactionById(transactionId) {
         // Asegurarnos de que el transactionId se trata como texto
         const transactionIdStr = String(transactionId);
         
-        // Modificar la consulta para usar CAST explícito en todas las comparaciones
         const query = `
             SELECT t.*, u.correo as user_email, c.nombre as carrera_nombre,
                    t.tax_amount, t.tax_rate, t.fee_amount, t.earnings,
@@ -295,7 +289,6 @@ async getTransactionById(transactionId) {
                 ORDER BY region
             `;
             
-            // Ejecutar consultas
             const revenueByCurrency = await pool.query(revenueByCurrencyQuery, queryParams);
             const revenueByProduct = await pool.query(revenueByProductQuery, queryParams);
             const revenueByMonth = await pool.query(revenueByMonthQuery, queryParams);

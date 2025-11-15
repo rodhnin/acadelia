@@ -19,7 +19,6 @@ const distJsDir = path.join(distDir, 'js');
 const distCssDir = path.join(distDir, 'css');
 const htmlBackupDir = path.join(rootDir, '.html-originals');
 
-// ✅ CONFIGURACIÓN MEJORADA PARA MÓDULOS + LOGGING + ARCHIVOS PROTEGIDOS
 const CONFIG = {
   // Core settings
   minify_js: true,
@@ -37,27 +36,22 @@ const CONFIG = {
   anti_debug_basic: true,
   api_route_protection: true,
   
-  // 🆕 NUEVA CONFIGURACIÓN PARA MÓDULOS
   modular_obfuscation: true,
   preserve_module_structure: false, // false = aplanar todo en /dist/js/
   deep_import_analysis: true,
   rename_module_files: true,
   
-  // 🆕 Configuración específica para console logs
   remove_debug_logs: true, // Eliminar console específicos de debug
   obfuscate_log_messages: true, // Ofuscar mensajes de log
   
-  // 🆕 NUEVO: Configuración de logging del build
   verbose_import_logging: false, // true = mostrar todos los imports, false = solo importantes
   show_dynamic_import_warnings: false, // true = mostrar warnings de imports dinámicos no encontrados
   show_search_successes: true, // true = mostrar cuándo la búsqueda inteligente funciona
   
-  // 🆕 NUEVO: Configuración de archivos protegidos y assets
   copy_static_assets: true, // Copiar fonts, sounds, images automáticamente
   protect_critical_files: true, // Proteger archivos críticos de la ofuscación
   update_css_asset_paths: true, // Actualizar rutas en CSS para assets
   
-  // 🆕 NUEVO: Lista de archivos que NO deben ofuscarse
   protected_files: [
     'csrf-utils.js',
     'cookie-helpers.js', 
@@ -66,7 +60,6 @@ const CONFIG = {
     // Agregar más archivos críticos aquí
   ],
   
-  // 🆕 NUEVO: Directorios de assets a copiar
   static_assets: {
     fonts: 'css/fonts',
     sounds: 'scripts/sounds',
@@ -83,7 +76,6 @@ const CONFIG = {
   }
 };
 
-// 🆕 CONFIGURACIÓN DE PROTECCIÓN MATEMÁTICA
 const MATH_PROTECTION_CONFIG = {
   preserve_math_content: true,
   conservative_math_minification: true,
@@ -101,10 +93,8 @@ const MATH_PROTECTION_CONFIG = {
 const BUILD_ID = crypto.randomBytes(8).toString('hex');
 console.log(`🔑 Build ID: ${BUILD_ID}`);
 
-// 🆕 NUEVO: Generar nombre ofuscado para el archivo de seguridad API
 const API_SECURITY_FILENAME = generateSecurityFileName();
 
-// 🆕 MAPEOS GLOBALES PARA MÓDULOS
 const moduleMapping = {
   fileNames: new Map(),     // archivo original -> nombre ofuscado
   fullPaths: new Map(),     // ruta completa -> ruta ofuscada
@@ -122,7 +112,6 @@ const fileMapping = { js: {}, css: {} };
   }
 });
 
-// 🆕 NUEVO: Función para generar nombre ofuscado para archivo de seguridad
 function generateSecurityFileName() {
   const securitySeed = crypto.createHash('md5').update(BUILD_ID + 'security_file').digest('hex');
   const prefix = String.fromCharCode(97 + Math.floor(Math.random() * 26)); // letra aleatoria
@@ -131,7 +120,6 @@ function generateSecurityFileName() {
   return `${prefix}${hash}_${timestamp}.js`;
 }
 
-// ✅ GENERAR NOMBRES SEGUROS PARA MÓDULOS
 function generateModularName(originalPath, index = 0) {
   const prefix = String.fromCharCode(97 + Math.floor(Math.random() * 26));
   const hash = crypto.createHash('md5').update(originalPath + BUILD_ID + index).digest('hex').substring(0, 8);
@@ -139,18 +127,14 @@ function generateModularName(originalPath, index = 0) {
   return `${prefix}${hash}_${timestamp}.js`;
 }
 
-// 🆕 ANALIZAR ESTRUCTURA MODULAR COMPLETA (MEJORADO PARA SHARED)
 function analyzeModularStructure() {
   console.log('\n🔍 Analizando estructura modular...');
   
-  // 🆕 MEJORADO: Encontrar archivos JS modulares en múltiples directorios
   const jsFiles = [
     ...glob.sync(path.join(publicDir, 'scripts/**/*.js')),
-    // 🆕 AGREGAR: archivos compartidos en directorios superiores
     ...glob.sync(path.join(publicDir, '../shared/**/*.js')).filter(file => 
       fs.existsSync(file) && file.includes('shared')
     ),
-    // 🆕 AGREGAR: otros directorios comunes
     ...glob.sync(path.join(publicDir, 'shared/**/*.js')),
   ];
   
@@ -160,13 +144,12 @@ function analyzeModularStructure() {
   const moduleFiles = uniqueFiles.filter(file => {
     try {
       const content = fs.readFileSync(file, 'utf8');
-      // 🆕 MEJORADO: Detectar tanto imports estáticos como dinámicos
       return content.includes('import ') || 
              content.includes('export ') || 
              content.includes('from \'') || 
              content.includes('from "') ||
-             content.includes('import(') ||  // 🆕 Imports dinámicos
-             content.includes('await import('); // 🆕 Imports dinámicos con await
+             content.includes('import(') ||
+             content.includes('await import(');
     } catch (e) {
       return false;
     }
@@ -186,7 +169,6 @@ function analyzeModularStructure() {
   // Generar nombres ofuscados para todos los módulos
   generateObfuscatedNames(moduleFiles);
   
-  // 🆕 AGREGAR: Estadísticas de resolución de imports
   console.log(`\n📊 Estadísticas de resolución de imports:`);
   let totalImports = 0;
   let staticImports = 0;
@@ -212,7 +194,6 @@ function analyzeModularStructure() {
   return moduleFiles;
 }
 
-// 🆕 ANALIZAR ARCHIVO MODULAR INDIVIDUAL (MEJORADO PARA IMPORTS DINÁMICOS + ESTADÍSTICAS)
 function analyzeModuleFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
@@ -227,7 +208,6 @@ function analyzeModuleFile(filePath) {
     moduleMapping.exports.set(filePath, exports);
     
     if (imports.length > 0 || exports.length > 0) {
-      // 🆕 MEJORADO: Separar conteo por tipo de import y estado
       const staticImports = imports.filter(imp => imp.type === 'static').length;
       const dynamicImports = imports.filter(imp => imp.type === 'dynamic').length;
       const foundBySearch = imports.filter(imp => imp.wasFoundBySearch).length;
@@ -243,7 +223,6 @@ function analyzeModuleFile(filePath) {
         importInfo = '0 imports';
       }
       
-      // 🆕 NUEVO: Agregar info sobre búsqueda inteligente
       if (foundBySearch > 0) {
         importInfo += ` (${foundBySearch} encontrados por búsqueda)`;
       }
@@ -256,7 +235,6 @@ function analyzeModuleFile(filePath) {
   }
 }
 
-// 🆕 VERIFICAR SI UN ARCHIVO ESTÁ PROTEGIDO DE LA OFUSCACIÓN
 function isProtectedFile(filePath) {
   if (!CONFIG.protect_critical_files) return false;
   
@@ -264,7 +242,6 @@ function isProtectedFile(filePath) {
   return CONFIG.protected_files.includes(fileName);
 }
 
-// 🆕 COPIAR ARCHIVOS ESTÁTICOS (FONTS, SOUNDS, ETC.) - 🔧 MODIFICADO PARA SOUNDS
 function copyStaticAssets() {
   if (!CONFIG.copy_static_assets) {
     console.log('ℹ️ Copia de assets estáticos deshabilitada');
@@ -278,10 +255,9 @@ function copyStaticAssets() {
   Object.entries(CONFIG.static_assets).forEach(([assetType, relativePath]) => {
     const sourcePath = path.join(publicDir, relativePath);
     
-    // 🔧 ARREGLO ESPECÍFICO PARA SOUNDS: Cambiar destino a /dist/js/sounds/
     let destPath;
     if (assetType === 'sounds') {
-      destPath = path.join(distJsDir, 'sounds'); // 🔧 CAMBIO: de distDir a distJsDir + 'sounds'
+      destPath = path.join(distJsDir, 'sounds');
     } else {
       destPath = path.join(distDir, relativePath);
     }
@@ -304,7 +280,6 @@ function copyStaticAssets() {
             totalCopied++;
           });
           
-          // 🔧 CAMBIO: Mostrar el destino correcto en el log
           const displayPath = assetType === 'sounds' ? '/dist/js/sounds/' : `/dist/${relativePath}/`;
           console.log(`  📁 ${assetType}: ${files.length} archivos copiados a ${displayPath}`);
         } else {
@@ -326,7 +301,6 @@ function copyStaticAssets() {
   console.log(`✅ Assets estáticos copiados: ${totalCopied} archivos`);
 }
 
-// 🆕 ACTUALIZAR RUTAS DE ASSETS EN CSS - 🔧 MODIFICADO PARA SOUNDS
 function updateCSSAssetPaths(content, fileName) {
   if (!CONFIG.update_css_asset_paths) return content;
   
@@ -341,7 +315,6 @@ function updateCSSAssetPaths(content, fileName) {
       replacement: 'url("/dist/css/fonts/$1")',
       type: 'fonts'
     },
-    // 🔧 CAMBIO: url('./sounds/...') → url("/dist/js/sounds/...")
     {
       pattern: /url\(['"]?\.\.?\/sounds\/([^'")\s]+)['"]?\)/g,
       replacement: 'url("/dist/js/sounds/$1")',
@@ -373,7 +346,6 @@ function updateCSSAssetPaths(content, fileName) {
   return updatedContent;
 }
 
-// 🆕 Función para backup individual de HTML
 function backupHtmlFile(filePath) {
   try {
     const relativePath = path.relative(frontendDir, filePath);
@@ -462,7 +434,6 @@ function findFileInMultipleLocations(originalPath, currentFilePath) {
   return null;
 }
 
-// 🆕 EXTRAER IMPORTS DE UN ARCHIVO (MEJORADO PARA RUTAS COMPLEJAS + IMPORTS DINÁMICOS)
 function extractImports(content, currentFilePath) {
   const imports = [];
   const currentDir = path.dirname(currentFilePath);
@@ -493,11 +464,9 @@ function extractImports(content, currentFilePath) {
     while ((match = pattern.exec(content)) !== null) {
       const importPath = match[match.length - 1]; // Último grupo capturado
       
-      // 🆕 DETECTAR TIPO DE IMPORT
       const isDynamic = match[0].includes('import(') || match[0].includes('await import');
       const importType = isDynamic ? 'dynamic' : 'static';
       
-      // 🆕 MEJORADO: Resolver ruta del import con búsqueda inteligente
       let resolvedPath;
       if (importPath.startsWith('./') || importPath.startsWith('../')) {
         resolvedPath = path.resolve(currentDir, importPath);
@@ -513,10 +482,8 @@ function extractImports(content, currentFilePath) {
         resolvedPath += '.js';
       }
       
-      // 🆕 CRÍTICO: Normalizar la ruta
       resolvedPath = path.normalize(resolvedPath);
       
-      // 🆕 BÚSQUEDA INTELIGENTE: Si no existe, buscar en múltiples ubicaciones
       let finalResolvedPath = resolvedPath;
       let searchPerformed = false;
       
@@ -536,22 +503,19 @@ function extractImports(content, currentFilePath) {
           importPath: importPath,
           resolvedPath: finalResolvedPath,
           relativeTo: currentFilePath,
-          // 🆕 AGREGAR: información adicional para debugging
           isRelativeUp: importPath.includes('../'),
           depth: (importPath.match(/\.\.\//g) || []).length,
-          type: importType, // 🆕 NUEVO: static o dynamic
+          type: importType,
           patternIndex: patternIndex, // Para debugging
-          wasFoundBySearch: searchPerformed // 🆕 NUEVO: si se encontró por búsqueda
+          wasFoundBySearch: searchPerformed
         });
         
         const searchLabel = searchPerformed ? ' (encontrado por búsqueda)' : '';
         
-        // 🆕 LOGGING INTELIGENTE: Solo mostrar si está configurado para verbose o si fue encontrado por búsqueda
         if (CONFIG.verbose_import_logging || (searchPerformed && CONFIG.show_search_successes)) {
           console.log(`    📥 Import ${importType} detectado: ${importPath} → ${path.relative(publicDir, finalResolvedPath)}${searchLabel}`);
         }
       } else {
-        // 🆕 MEJORADO: Logging controlado por configuración
         if (importType === 'static') {
           // Siempre mostrar errores de imports estáticos (son críticos)
           console.warn(`    ⚠️ Import ${importType} no encontrado: ${importPath} (resuelto a ${resolvedPath})`);
@@ -571,7 +535,6 @@ function extractImports(content, currentFilePath) {
   return imports;
 }
 
-// 🆕 EXTRAER EXPORTS DE UN ARCHIVO
 function extractExports(content) {
   const exports = [];
   
@@ -597,7 +560,6 @@ function extractExports(content) {
   return exports;
 }
 
-// 🆕 CONSTRUIR GRAFO DE DEPENDENCIAS
 function buildDependencyGraph() {
   console.log('\n🔗 Construyendo grafo de dependencias...');
   
@@ -628,13 +590,11 @@ function buildDependencyGraph() {
   console.log(`✅ Grafo construido: ${totalDependencies} dependencias mapeadas`);
 }
 
-// 🆕 GENERAR NOMBRES OFUSCADOS PARA MÓDULOS (MEJORADO PARA SHARED)
 function generateObfuscatedNames(moduleFiles) {
   console.log('\n🎭 Generando nombres ofuscados para módulos...');
   
   let index = 0;
   moduleFiles.forEach(filePath => {
-    // 🆕 MEJORADO: Manejar rutas relativas de diferentes directorios
     const fileName = path.basename(filePath);
     let relativeFilePath;
     
@@ -652,7 +612,6 @@ function generateObfuscatedNames(moduleFiles) {
       obfuscatedName = generateModularName(filePath, index++);
     } while (Array.from(moduleMapping.fileNames.values()).includes(obfuscatedName));
     
-    // 🆕 MEJORADO: Mapear múltiples variantes de la ruta
     const pathVariants = [
       filePath,                    // Ruta absoluta
       fileName,                    // Solo nombre
@@ -689,7 +648,6 @@ function generateObfuscatedNames(moduleFiles) {
     fileMapping.js[relativeFilePath] = obfuscatedName;
     fileMapping.js[originalPath] = obfuscatedName;
     
-    // 🆕 MEJORADO: Log más informativo
     if (filePath.includes('shared')) {
       console.log(`  🎭 [SHARED] ${fileName} → ${obfuscatedName}`);
     } else {
@@ -698,7 +656,6 @@ function generateObfuscatedNames(moduleFiles) {
   });
 }
 
-// 🆕 PROCESAR ARCHIVO MODULAR CON ACTUALIZACIÓN DE IMPORTS
 function processModularFile(filePath) {
   try {
     const fileName = path.basename(filePath);
@@ -720,7 +677,6 @@ function processModularFile(filePath) {
     // 2. Ofuscar strings conservadoramente
     content = obfuscateStrings(content);
     
-    // 🆕 3. Ofuscar mensajes de log específicos
     content = obfuscateDebugLogs(content);
     
     // 4. Minificar con configuración especial para módulos
@@ -772,7 +728,6 @@ function processModularFile(filePath) {
     const outputPath = path.join(distJsDir, obfuscatedName);
     fs.writeFileSync(outputPath, finalContent);
     
-    // 🆕 MEJORADO: Log con información del directorio origen
     const isSharedFile = filePath.includes('shared');
     const sourceDir = isSharedFile ? 'shared' : 'scripts';
     console.log(`✅ [${sourceDir}] ${fileName} procesado exitosamente → ${obfuscatedName}`);
@@ -784,7 +739,6 @@ function processModularFile(filePath) {
   }
 }
 
-// 🆕 ACTUALIZAR IMPORTS EN UN ARCHIVO (MEJORADO PARA RUTAS COMPLEJAS + IMPORTS DINÁMICOS)
 function updateImportsInFile(content, filePath) {
   const imports = moduleMapping.imports.get(filePath) || [];
   
@@ -806,14 +760,12 @@ function updateImportsInFile(content, filePath) {
     const obfuscatedFileName = moduleMapping.fileNames.get(resolvedPath);
     
     if (obfuscatedFileName) {
-      // 🆕 MEJORADO: Crear nueva declaración según el tipo de import
       // Todas las rutas ahora apuntan al mismo directorio dist/js/
       const newImportPath = `./${obfuscatedFileName}`;
       
       let newStatement;
       
       if (type === 'dynamic') {
-        // 🆕 IMPORTS DINÁMICOS: import("path") → import("newPath")
         newStatement = originalStatement.replace(
           /(['"])([^'"]+)\1/, 
           `$1${newImportPath}$1`
@@ -828,7 +780,6 @@ function updateImportsInFile(content, filePath) {
       
       content = content.replace(originalStatement, newStatement);
       
-      // 🆕 MEJORADO: Log más detallado para debugging
       const importTypeLabel = type === 'dynamic' ? 'dinámico' : 'estático';
       if (importPath.includes('../')) {
         console.log(`    🔗 Import ${importTypeLabel} complejo actualizado: ${importPath} → ${newImportPath}`);
@@ -843,7 +794,6 @@ function updateImportsInFile(content, filePath) {
   return content;
 }
 
-// 🆕 OFUSCACIÓN ESPECÍFICA PARA DEBUG LOGS
 function obfuscateDebugLogs(content) {
   if (!CONFIG.obfuscate_log_messages) return content;
   
@@ -900,7 +850,6 @@ function obfuscateDebugLogs(content) {
   }
 }
 
-// 🆕 PROCESAR TODOS LOS MÓDULOS EN ORDEN CORRECTO
 async function processAllModularFiles() {
   console.log('\n🚀 Procesando archivos modulares...');
   
@@ -932,7 +881,6 @@ async function processAllModularFiles() {
   // 3. Procesar archivos JS no modulares con método original
   const allJsFiles = [
     ...glob.sync(path.join(publicDir, 'scripts/**/*.js')),
-    // 🆕 NO incluir archivos shared aquí ya que se procesan como modulares
   ];
   const nonModularFiles = allJsFiles.filter(file => !moduleFiles.includes(file));
   
@@ -955,7 +903,6 @@ async function processAllModularFiles() {
   };
 }
 
-// 🆕 DETERMINAR ORDEN DE PROCESAMIENTO BASADO EN DEPENDENCIAS
 function determineProcessingOrder(moduleFiles) {
   const ordered = [];
   const visited = new Set();
@@ -993,7 +940,6 @@ function determineProcessingOrder(moduleFiles) {
   return ordered;
 }
 
-// ✅ FUNCIÓN ORIGINAL processJSFile PARA ARCHIVOS NO MODULARES
 function processJSFile(filePath) {
   try {
     const fileName = path.basename(filePath);
@@ -1058,7 +1004,6 @@ function processJSFile(filePath) {
   }
 }
 
-// ✅ GENERAR NOMBRES ALEATORIOS PARA ARCHIVOS NO MODULARES
 function generateRandomName() {
   const prefix = String.fromCharCode(97 + Math.floor(Math.random() * 26));
   const randomData = crypto.randomBytes(8).toString('hex');
@@ -1066,7 +1011,6 @@ function generateRandomName() {
   return prefix + randomData + '_' + timestamp;
 }
 
-// 🔧 FUNCIÓN PROTEGER CONTENIDO MATEMÁTICO ANTES DE PROCESAMIENTO
 function protectMathContent(content) {
   const protectedSections = [];
   let counter = 0;
@@ -1109,7 +1053,6 @@ function protectMathContent(content) {
   }
 }
 
-// 🔧 FUNCIÓN RESTAURAR CONTENIDO MATEMÁTICO DESPUÉS DE PROCESAMIENTO
 function restoreMathContent(content, protectedSections) {
   try {
     // Restaurar en orden inverso para evitar conflictos
@@ -1127,12 +1070,10 @@ function restoreMathContent(content, protectedSections) {
   }
 }
 
-// 🔧 OFUSCACIÓN DE STRINGS MEJORADA PARA EVITAR CONTENIDO MATEMÁTICO
 function obfuscateStrings(code) {
   if (!CONFIG.string_obfuscation) return code;
   
   try {
-    // 🆕 VERIFICAR SI EL CÓDIGO CONTIENE CONTENIDO MATEMÁTICO
     const hasMathContent = (
       code.includes('data-latex') ||
       code.includes('math-preview') ||
@@ -1180,7 +1121,6 @@ function obfuscateStrings(code) {
   }
 }
 
-// ✅ CSS Y HTML PROCESSING (CON ACTUALIZACIÓN DE RUTAS DE ASSETS)
 function processCSSFile(filePath) {
   try {
     const fileName = path.basename(filePath);
@@ -1194,7 +1134,6 @@ function processCSSFile(filePath) {
     content = resolveImports(content, filePath);
     content = cleanCSSBeforeMinify(content, fileName);
     
-    // 🆕 NUEVO: Actualizar rutas de assets en CSS
     content = updateCSSAssetPaths(content, fileName);
     
     if (CONFIG.minify_css) {
@@ -1261,7 +1200,6 @@ function processCSSFile(filePath) {
   }
 }
 
-// ✅ FUNCIONES AUXILIARES CSS (mantener originales)
 function cleanCSSBeforeMinify(content, fileName) {
   try {
     content = content.replace(/\/\*(?:[^*]|\*(?!\/))*(?:\*\/|$)/g, '');
@@ -1319,7 +1257,6 @@ function resolveImports(content, filePath) {
   return resolved;
 }
 
-// ✅ ANTI-DEBUG Y API PROTECTION (mantener originales)
 function addBasicAntiDebug() {
   if (!CONFIG.anti_debug_basic) return '';
   
@@ -1365,110 +1302,87 @@ function generateAlgorithmicRouteDecoder() {
     const routeMap = {};
     const parameterMap = {};
     
-    // 🔒 RUTAS PROTEGIDAS COMPLETAS (ORGANIZADAS POR CATEGORÍA) - UPDATED
     const routes = [
-      // 🔒 RUTAS PRINCIPALES DE USUARIOS Y AUTENTICACIÓN
       '/usuarios',              // userRoutes - gestión de usuarios
       '/perfil',               // perfilRoutes - perfiles de usuario
       '/chats',                // chatRoutes - conversaciones del usuario
       
-      // 🤖 RUTAS DE IA Y PROCESAMIENTO
       '/openai',               // openaiRoutes - consultas a IA
       '/ava',                  // embeddingAvaRoutes - embeddings de IA
       '/avas',                 // avaRoutes - avatares de IA
       '/documents',            // documentRoutes - procesamiento de documentos
       '/file',                 // fileRoutes - procesamiento de archivos
       
-      // 🎥 RUTAS DE MEDIA Y TRANSCRIPCIÓN (SENSIBLES)
       '/media',                // youtubeAudioRoutes - procesamiento de YouTube
       '/video-transcription',  // videoTranscriptionRoutes - transcripción de video
       '/audio-transcription',  // audioTranscriptionRoutes - transcripción de audio
       
-      // 🛠️ RUTAS DE HERRAMIENTAS Y FUNCIONALIDADES
       '/herramientas',         // herramientaRoutes - herramientas del usuario
       '/carrera',              // carreraRoutes - información de carreras
       '/marketing',            // marketingRoutes - funciones de marketing
       '/feedback',             // feedbackRoutes - feedback de usuarios
       
-      // 💳 RUTAS DE PAGOS Y TRANSACCIONES
       '/paddle',               // paddleRoutes - integración con Paddle
       '/price',                // priceRoutes - gestión de precios
       '/payment',              // transactionRoutes - transacciones
       '/compra',               // useravaRoutes - compras de usuarios
       '/payments-arg',         // argentinaPaymentRoutes - pagos Argentina
       
-      // 🔐 RUTAS DE SEGURIDAD Y ADMINISTRACIÓN
       '/security',             // securityRoutes - funciones de seguridad
       '/query',                // queryRoutes - consultas administrativas
       '/activitymente',        // activityMenteLogRoutes - logs de actividad
       '/access',               // accessStatusRoutes - estado de acceso
       '/cookie-consent',       // cookieConsentRoutes - consentimiento cookies
       
-      // 🆕 CRÍTICO: Ruta admin principal para manejar sub-rutas multi-nivel
-      '/admin',                // 🔥 NUEVA: Ruta admin principal (argentina, finance, queues, etc.)
+      '/admin',
       
-      // 📋 RUTAS DE TÉRMINOS Y POLÍTICAS
       '/terminos'              // termsRoutes - términos y condiciones
     ];
 
-    // 🔑 PARÁMETROS CRÍTICOS EXPANDIDOS (ORGANIZADOS POR CATEGORÍA) - UPDATED
     const params = [
-      // 🔒 PARÁMETROS DE AUTENTICACIÓN Y USUARIOS
       'verifyPassword', 'refresh-token', 'token', 'login', 'register', 'logout', 'reset',
       'active', 'userId', 'id', 'chatId', 'sessionId', 'verificar', 'activar',
       'authenticate', 'login-status', 'auth-status',
       
-      // 🏫 PARÁMETROS DE CARRERAS Y EDUCACIÓN
       'carrera', 'universidad', 'curso', 'materia', 'nivel',
       
-      // 🤖 PARÁMETROS DE IA Y CONSULTAS
       'query-chat', 'query-patologia', 'query-anatomia', 'query-pdf', 'query-fisica', 
       'query-quimica', 'query-Agent', 'query-teorico', 'query-matematico',
       'multimodal-query', 'multimodal-Agent', 'multimodal-patologia', 'multimodal-pdf', 
       'multimodal-fisica', 'multimodal-anatomia', 'multimodal-teorico',
       
-      // 🎥 PARÁMETROS DE MEDIA Y TRANSCRIPCIÓN
       'process-youtube', 'process-audio-file', 'process-recorded-audio', 'process-video-file',
       'extract-audio', 'transcribe', 'analyze-video', 'convert-media',
       
-      // 📄 PARÁMETROS DE DOCUMENTOS Y ARCHIVOS
       'extract-content', 'extract-text', 'upload-file', 'process-pdf', 'analyze-document',
       'parse-content', 'generate-summary', 'extract-images',
       
-      // 🛠️ PARÁMETROS DE HERRAMIENTAS Y OPERACIONES
       'create', 'delete', 'update', 'edit', 'modify', 'generate', 'process', 'analyze',
       'validate', 'verify', 'check', 'submit', 'save', 'load', 'export', 'import',
       'list', 'get', 'post', 'put', 'patch', 'search', 'filter', 'sort',
       
-      // 💳 PARÁMETROS DE PAGOS Y TRANSACCIONES
       'purchase', 'payment', 'transaction', 'subscription', 'billing', 'invoice',
       'refund', 'charge', 'checkout', 'cancel-subscription', 'upgrade', 'downgrade',
       
-      // 💰 PARÁMETROS FINANCIEROS Y REPORTES
       'subscriptions', 'transactions', 'tax', 'reports', 'expenses', 'revenue',
       'analytics', 'statistics', 'metrics', 'dashboard', 'summary',
       
-      // 🔐 PARÁMETROS DE ADMINISTRACIÓN Y SEGURIDAD
       'run-security-cleanup', 'run-user-tasks', 'maintenance', 'admin-panel',
       'security-log', 'audit-trail', 'monitor', 'activity-log', 'error-log',
       'queue-status', 'queue-clear', 'queue-retry', 'system-status',
       
-      // 🆕 CRÍTICO: Parámetros específicos para admin multi-nivel
       'argentina', 'finance', 'queues',                    // Sub-rutas de admin
       'stats', 'users', 'payments',                        // Endpoints comunes
       'actualizar-suscripciones-vencidas',                 // Endpoint específico Argentina
       'estadisticas-suscripciones',                        // Endpoint específico Argentina  
       'verificar-pgcron',                                  // Endpoint específico Argentina
       
-      // 🎯 PARÁMETROS DE MARKETING Y FEEDBACK
       'feedback', 'rating', 'review', 'survey', 'comment', 'recommendation',
       'campaign', 'promotion', 'discount', 'coupon', 'referral',
       
-      // 📊 PARÁMETROS DE EMBEDDINGS Y VECTORES
       'embedding', 'vector', 'similarity', 'semantic-search', 'ava-training',
       'model-update', 'index-rebuild', 'cache-clear', 'optimize',
       
-      // 🌐 PARÁMETROS DE ACCESO Y PERMISOS
       'access-level', 'permission', 'role', 'scope', 'privilege', 'authorization',
       'grant-access', 'revoke-access', 'check-permission', 'validate-role'
     ];
@@ -1495,7 +1409,6 @@ function generateAlgorithmicRouteDecoder() {
       fs.writeFileSync(path.join(utils, 'routeMap.json'), JSON.stringify(routeMap, null, 2));
       fs.writeFileSync(path.join(utils, 'parameterMap.json'), JSON.stringify(parameterMap, null, 2));
       
-      // 📊 ESTADÍSTICAS DETALLADAS POR CATEGORÍA
       console.log(`✅ Mapas algorítmicos generados exitosamente:`);
       console.log(`   📁 Total rutas protegidas: ${Object.keys(routeMap).length}`);
       console.log(`      🔒 Usuarios y auth: 3 rutas`);
@@ -1519,7 +1432,6 @@ function generateAlgorithmicRouteDecoder() {
       console.log(`   🔒 Método: Algoritmo hash (sin mapas expuestos)`);
       console.log(`   📍 Ubicación: backend/utils/`);
       
-      // 🔍 MOSTRAR ALGUNAS RUTAS OFUSCADAS (SOLO EN DESARROLLO)
       if (process.env.NODE_ENV === 'development') {
         console.log(`\n🔍 Ejemplo de rutas ofuscadas:`);
         const sampleRoutes = Object.entries(routeMap).slice(0, 5);
@@ -1548,7 +1460,6 @@ function generateAlgorithmicRouteDecoder() {
   }
 }
 
-// 🆕 MODIFICADO: Función para crear script de protección API SIN LOGS
 function createSecureApiObfuscationScript() {
   if (!CONFIG.api_route_protection) return '';
   
@@ -1727,7 +1638,6 @@ function createSecureApiObfuscationScript() {
 `;
 }
 
-// ✅ PROCESO PRINCIPAL MEJORADO CON MÓDULOS
 async function processAllFiles() {
   console.log('🚀 Starting MODULAR build process with AGGRESSIVE minification...\n');
   
@@ -1744,7 +1654,6 @@ async function processAllFiles() {
     generateAlgorithmicRouteDecoder();
     
     const apiSecurityScript = createSecureApiObfuscationScript();
-    // 🆕 CAMBIO: Usar nombre ofuscado en lugar de "api-secure.js"
     fs.writeFileSync(path.join(distJsDir, API_SECURITY_FILENAME), apiSecurityScript);
     console.log(`✅ API Security script created: ${API_SECURITY_FILENAME} (ALGORITHMIC - SECURE)`);
   }
@@ -1756,10 +1665,8 @@ async function processAllFiles() {
     console.log('✅ Protection script created');
   }
   
-  // 🆕 PROCESAR ARCHIVOS MODULARES
   const jsResults = await processAllModularFiles();
   
-  // 🆕 COPIAR ARCHIVOS ESTÁTICOS
   copyStaticAssets();
   
   // Procesar CSS
@@ -1781,7 +1688,6 @@ async function processAllFiles() {
   };
 }
 
-// ✅ ACTUALIZAR HTML CON MAPEO MODULAR
 function updateHTMLFiles() {
   const htmlFiles = [
     ...glob.sync(path.join(viewsDir, '**/*.html')),
@@ -1794,7 +1700,6 @@ function updateHTMLFiles() {
   
   htmlFiles.forEach(filePath => {
   try {
-    // 🆕 AGREGAR: Hacer backup ANTES de modificar
     const backupMade = backupHtmlFile(filePath);
     if (backupMade) {
       console.log(`💾 Backup: ${path.basename(filePath)}`);
@@ -1854,7 +1759,6 @@ function updateHTMLFiles() {
         });
       });
       
-      // 🆕 CAMBIO: Usar nombre ofuscado en lugar de "api-secure.js"
       if (CONFIG.api_route_protection && !content.includes(API_SECURITY_FILENAME)) {
         content = content.replace('<head>', `<head>\n  <script src="/dist/js/${API_SECURITY_FILENAME}"></script>`);
         updates++;
@@ -1880,7 +1784,6 @@ function updateHTMLFiles() {
   console.log(`\n✅ Total HTML updates: ${totalUpdates}`);
 }
 
-// 🔧 NUEVA FUNCIÓN DE MINIFICACIÓN CONSERVADORA PARA ARCHIVOS MATEMÁTICOS
 function conservativeMathMinify(content) {
   try {
     return content
@@ -1898,12 +1801,10 @@ function conservativeMathMinify(content) {
   }
 }
 
-// 🔧 REEMPLAZAR LA FUNCIÓN preprocessHTML EXISTENTE
 function preprocessHTML(content, fileName) {
   try {
     console.log(`🔍 Pre-procesando HTML: ${fileName}`);
     
-    // 🆕 PASO 1: Proteger contenido matemático ANTES de cualquier procesamiento
     const { content: protectedContent, protectedSections } = protectMathContent(content);
     
     // PASO 2: Procesar contenido no matemático (como antes)
@@ -1928,7 +1829,6 @@ function preprocessHTML(content, fileName) {
       processedContent = processedContent.replace(placeholder, originalContent);
     });
     
-    // 🆕 PASO 3: Restaurar contenido matemático DESPUÉS del procesamiento
     processedContent = restoreMathContent(processedContent, protectedSections);
     
     console.log(`  ✅ ${fileName} pre-procesado correctamente`);
@@ -1940,7 +1840,6 @@ function preprocessHTML(content, fileName) {
   }
 }
 
-// 🔧 MEJORAR minifyHTMLFiles CON MEJOR MANEJO DE ERRORES MATEMÁTICOS
 async function minifyHTMLFiles() {
   if (!CONFIG.minify_html) {
     console.log('\nℹ️ HTML minification disabled');
@@ -1963,7 +1862,6 @@ async function minifyHTMLFiles() {
       
       console.log(`  🔄 Procesando: ${fileName}`);
       
-      // 🆕 DETECTAR SI ES ARCHIVO CON CONTENIDO MATEMÁTICO
       const hasMathContent = (
         originalContent.includes('data-latex') ||
         originalContent.includes('math-preview') ||
@@ -1979,11 +1877,10 @@ async function minifyHTMLFiles() {
       
       let processedContent = preprocessHTML(originalContent, fileName);
       
-      // 🆕 OPCIONES DE MINIFICACIÓN ESPECÍFICAS PARA ARCHIVOS MATEMÁTICOS
       const minifyOptions = {
         collapseWhitespace: true,
-        removeEmptyAttributes: false, // 🔧 CAMBIO: Mantener atributos vacíos en archivos matemáticos
-        removeRedundantAttributes: !hasMathContent, // 🔧 CAMBIO: No remover en archivos matemáticos
+        removeEmptyAttributes: false,
+        removeRedundantAttributes: !hasMathContent,
         removeComments: CONFIG.remove_comments,
         removeCommentsFromCDATA: false,
         minifyCSS: false,
@@ -1996,7 +1893,6 @@ async function minifyHTMLFiles() {
         minifyURLs: false,
         sortAttributes: false,
         sortClassName: false,
-        // 🆕 IGNORAR FRAGMENTOS MATEMÁTICOS ESPECÍFICOS
         ignoreCustomFragments: [
           /<%[\s\S]*?%>/,
           /<\?[\s\S]*?\?>/,
@@ -2006,13 +1902,13 @@ async function minifyHTMLFiles() {
           /<span[^>]*class="math-preview"[^>]*>.*?<\/span>/gs, // Math preview spans
           /\\\w+/g, // Backslash commands
         ],
-        caseSensitive: true, // 🔧 CAMBIO: Mantener sensibilidad para LaTeX
+        caseSensitive: true,
         keepClosingSlash: true,
         preserveLineBreaks: false,
-        removeAttributeQuotes: false, // 🔧 CAMBIO: Mantener comillas en atributos
+        removeAttributeQuotes: false,
         removeTagWhitespace: false,
         html5: true,
-        decodeEntities: false, // 🔧 CAMBIO: No decodificar entidades matemáticas
+        decodeEntities: false,
         processScripts: [],
         processConditionalComments: false
       };
@@ -2021,7 +1917,7 @@ async function minifyHTMLFiles() {
         const minifiedContent = await minifyHTML(processedContent, minifyOptions);
         const reductionPercent = (1 - minifiedContent.length/originalContent.length) * 100;
         
-        if (minifiedContent.length < originalContent.length && reductionPercent > 3) { // 🔧 CAMBIO: Umbral más bajo para archivos matemáticos
+        if (minifiedContent.length < originalContent.length && reductionPercent > 3) {
           fs.writeFileSync(filePath, minifiedContent);
           console.log(`    ✅ ${fileName}: ${originalContent.length} → ${minifiedContent.length} chars (${Math.round(reductionPercent)}% reducción)`);
           minifiedCount++;
@@ -2032,7 +1928,6 @@ async function minifyHTMLFiles() {
       } catch (minifyError) {
         console.error(`    ❌ Error minificando ${fileName}:`, minifyError.message);
         
-        // 🆕 FALLBACK MEJORADO PARA ARCHIVOS MATEMÁTICOS
         if (hasMathContent) {
           console.log(`    🔧 Aplicando minificación conservadora para archivo matemático...`);
           try {
@@ -2085,14 +1980,12 @@ function basicHTMLMinify(content) {
   }
 }
 
-// ✅ GUARDAR MAPEO EXTENDIDO CON INFORMACIÓN MODULAR + ASSETS
 function saveMapping() {
   const mapping = {
     buildId: BUILD_ID,
     timestamp: Date.now(),
     files: fileMapping,
     apiProtection: CONFIG.api_route_protection,
-    // 🆕 INFORMACIÓN MODULAR + ASSETS
     modularInfo: {
       enabled: CONFIG.modular_obfuscation,
       totalModules: moduleMapping.fileNames.size,
@@ -2102,7 +1995,6 @@ function saveMapping() {
       cssAssetPaths: CONFIG.update_css_asset_paths,
       modules: {}
     },
-    // 🆕 NUEVO: Incluir nombre del archivo de seguridad ofuscado
     securityFile: {
       originalName: 'api-secure.js',
       obfuscatedName: API_SECURITY_FILENAME,
@@ -2131,7 +2023,7 @@ function saveMapping() {
     buildId: BUILD_ID,
     protectedFiles: CONFIG.protected_files,
     staticAssets: CONFIG.static_assets,
-    securityFileName: API_SECURITY_FILENAME, // 🆕 NUEVO: Incluir nombre ofuscado
+    securityFileName: API_SECURITY_FILENAME,
     moduleMapping: {
       fileNames: Object.fromEntries(moduleMapping.fileNames),
       imports: Object.fromEntries(moduleMapping.imports),
@@ -2152,7 +2044,6 @@ function saveMapping() {
   console.log('✅ Mapping saved (including modular info + assets + obfuscated security file)');
 }
 
-// ✅ FUNCIÓN PRINCIPAL MEJORADA
 async function main() {
   const startTime = Date.now();
   

@@ -1,4 +1,3 @@
-// backend/services/chat/documentStorageService.js
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
@@ -6,7 +5,6 @@ import crypto from 'crypto';
 import pool from '../../lib/dbPool.js';
 import mammoth from 'mammoth';
 
-// ====== IMPORTAR CONFIGURACIÓN CENTRALIZADA ACADEL ======
 import {
   FILE_LIMITS,
   SUPPORTED_FILES,
@@ -19,10 +17,6 @@ import {
   createSupportedMimeTypesConfig
 } from '../../utils/chat/backend-file-constants.js';
 
-/**
- * 🦫 Servicio para almacenar y procesar documentos con Sistema Acadel Centralizado
- * Mantiene coherencia total con el frontend
- */
 class DocumentStorageService {
   constructor() {
     console.log('🦫 Acadel Document Storage Service iniciándose...');
@@ -32,7 +26,6 @@ class DocumentStorageService {
     this.chatDocumentsDir = path.join(this.uploadsDir, 'chat_documents');
     this.tempDir = path.join(process.cwd(), 'tmp', 'document_processing');
 
-    // ⭐ USAR CONFIGURACIÓN CENTRALIZADA ACADEL ⭐
     this.supportedMimeTypes = createSupportedMimeTypesConfig();
     this.maxFileSize = FILE_LIMITS.MAX_FILE_SIZE;
     this.maxContentLength = FILE_LIMITS.MAX_TEXT_CONTENT;
@@ -56,11 +49,6 @@ class DocumentStorageService {
     });
   }
 
-  /**
-   * 🦫 NUEVA FUNCIÓN: Recupera contenido de documentos para retry/edit
-   * @param {string} fileId - ID del archivo
-   * @returns {Promise<Object|null>} - Datos del archivo o null
-   */
   async getDocumentContentForRetryEdit(fileId) {
     const client = await pool.connect();
 
@@ -82,7 +70,6 @@ class DocumentStorageService {
 
       const doc = result.rows[0];
 
-      // Actualizar accessed_at
       await client.query(
         'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
         [fileId]
@@ -143,13 +130,6 @@ class DocumentStorageService {
     return `${baseName}_${timestamp}_${randomHash}${extension}`;
   }
 
-  /**
-   * 🦫 EXTRACCIÓN DE CONTENIDO CENTRALIZADA CON VALIDACIONES ACADEL
-   * @param {Buffer} fileBuffer - Buffer del archivo
-   * @param {string} mimeType - Tipo MIME del archivo
-   * @param {string} filename - Nombre del archivo
-   * @returns {Promise<string>} - Contenido extraído y validado
-   */
   async extractContent(fileBuffer, mimeType, filename) {
     console.log(`🦫 Acadel extrayendo contenido: ${filename} (${mimeType})`);
 
@@ -164,50 +144,41 @@ class DocumentStorageService {
         case 'application/msword':
           throw new Error('Archivos .doc no soportados por Acadel, usa .docx en su lugar');
 
-        // ⭐ TODOS LOS TIPOS DE TEXTO Y CÓDIGO ⭐
         case 'text/plain':
         case 'text/markdown':
         case 'text/csv':
         case 'text/rtf':
 
-        // ✅ JAVASCRIPT - TODOS LOS MIME TYPES
         case 'text/javascript':
         case 'application/javascript':
         case 'application/x-javascript':    // ← ESTE ERA EL FALTANTE
         case 'text/ecmascript':
         case 'application/ecmascript':
 
-        // ✅ TYPESCRIPT - TODOS LOS MIME TYPES
         case 'text/typescript':
         case 'application/typescript':
         case 'text/x-typescript':
 
-        // ✅ PYTHON - TODOS LOS MIME TYPES
         case 'text/x-python':
         case 'application/x-python':
         case 'text/x-python-script':
 
-        // ✅ JAVA - TODOS LOS MIME TYPES
         case 'text/x-java-source':
         case 'application/x-java':
         case 'text/x-java':
 
-        // ✅ C/C++ - TODOS LOS MIME TYPES
         case 'text/x-c':
         case 'application/x-c':
         case 'text/x-c++':
         case 'application/x-c++':
 
-        // ✅ C# - TODOS LOS MIME TYPES
         case 'text/x-csharp':
         case 'application/x-csharp':
 
-        // ✅ WEB - TODOS LOS MIME TYPES
         case 'text/html':
         case 'application/xhtml+xml':
         case 'text/css':
 
-        // ✅ DATOS - TODOS LOS MIME TYPES
         case 'text/xml':
         case 'application/xml':
         case 'application/json':
@@ -216,7 +187,6 @@ class DocumentStorageService {
         case 'text/x-yaml':
         case 'text/yaml':
 
-        // ✅ SQL - TODOS LOS MIME TYPES
         case 'application/x-sql':
         case 'text/x-sql':
         case 'text/sql':
@@ -227,7 +197,6 @@ class DocumentStorageService {
           throw new Error(`Tipo de archivo no soportado por Acadel: ${mimeType}`);
       }
 
-      // ⭐ VALIDAR CONTENIDO CON SISTEMA CENTRALIZADO ⭐
       const validation = validateTextContentBackend(rawContent, filename);
 
       if (validation.truncated) {
@@ -326,21 +295,12 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA ARCHIVO DESDE URL CON VALIDACIONES ACADEL CENTRALIZADAS
-   * @param {string} fileUrl - URL del archivo
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {string} originalName - Nombre original (opcional)
-   * @returns {Promise<Object>} - Resultado del procesamiento
-   */
   async processFileFromUrl(fileUrl, chatId, userId, originalName = null) {
     let tempFilePath = null;
 
     try {
       console.log(`🦫 Acadel procesando documento desde URL: ${fileUrl.substring(0, 100)}...`);
 
-      // Verificar si la URL es ya una ruta local del servidor
       if (fileUrl.startsWith('/uploads/')) {
         console.log(`🦫 Acadel: El archivo ya está almacenado localmente: ${fileUrl}`);
         return {
@@ -350,14 +310,12 @@ class DocumentStorageService {
         };
       }
 
-      // Preparar directorio y nombres de archivo
       const chatDir = this.getChatDirectory(chatId);
       const fileName = originalName
         ? this.generateUniqueFilename(originalName)
         : this.generateUniqueFilename('document');
       const finalPath = path.join(chatDir, fileName);
 
-      // Crear archivo temporal
       const tempFileName = `temp_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.tmp`;
       tempFilePath = path.join(this.tempDir, tempFileName);
 
@@ -371,12 +329,10 @@ class DocumentStorageService {
         maxContentLength: this.maxFileSize
       });
 
-      // Obtener información del archivo
       const fileBuffer = Buffer.from(response.data);
       const contentType = response.headers['content-type'] || 'application/octet-stream';
       const fileSize = fileBuffer.length;
 
-      // ⭐ VALIDAR CON SISTEMA CENTRALIZADO ACADEL ⭐
       const validation = validateFileTypeBackend(fileName, contentType, fileSize);
       if (!validation.valid) {
         throw new Error(`Acadel rechazó el archivo: ${validation.reason}`);
@@ -384,7 +340,6 @@ class DocumentStorageService {
 
       const fileInfo = this.supportedMimeTypes[contentType];
       if (!fileInfo) {
-        // Intentar inferir MIME type por extensión
         const inferredMimeType = inferMimeTypeFromExtensionBackend(fileName);
         const inferredValidation = validateFileTypeBackend(fileName, inferredMimeType, fileSize);
 
@@ -393,7 +348,6 @@ class DocumentStorageService {
         }
 
         console.log(`🦫 Acadel infirió MIME type: ${contentType} -> ${inferredMimeType}`);
-        // Usar el tipo inferido
         const inferredFileInfo = this.supportedMimeTypes[inferredMimeType];
         if (inferredFileInfo) {
           fileInfo = inferredFileInfo;
@@ -403,22 +357,17 @@ class DocumentStorageService {
         }
       }
 
-      // Guardar archivo temporal
       await fs.promises.writeFile(tempFilePath, fileBuffer);
 
-      // Extraer contenido
       console.log(`🦫 Acadel extrayendo contenido...`);
       const extractedContent = await this.extractContent(fileBuffer, contentType, fileName);
       const language = detectLanguageBackend(fileName, extractedContent);
 
-      // Mover archivo a ubicación final
       await fs.promises.copyFile(tempFilePath, finalPath);
 
-      // Limpiar archivo temporal
       await fs.promises.unlink(tempFilePath);
       tempFilePath = null;
 
-      // Preparar datos para guardar en BD
       const fileData = {
         chatId,
         userId,
@@ -433,7 +382,6 @@ class DocumentStorageService {
         language
       };
 
-      // Guardar en base de datos
       const dbResult = await this.saveFileToDatabase(fileData);
 
       console.log(`🎉 Acadel procesó exitosamente: ${originalName || fileName}`);
@@ -452,7 +400,6 @@ class DocumentStorageService {
     } catch (error) {
       console.error('❌ Acadel error procesando archivo:', error);
 
-      // Limpiar archivos temporales
       if (tempFilePath && fs.existsSync(tempFilePath)) {
         try {
           await fs.promises.unlink(tempFilePath);
@@ -468,21 +415,12 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA ARCHIVO EN BASE64 CON VALIDACIONES ACADEL CENTRALIZADAS
-   * @param {string} dataUrl - Data URL del archivo
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {string} originalName - Nombre original del archivo
-   * @returns {Promise<Object>} - Resultado del procesamiento
-   */
   async processBase64File(dataUrl, chatId, userId, originalName) {
     let tempFilePath = null;
 
     try {
       console.log(`🦫 Acadel procesando archivo base64: ${originalName}`);
 
-      // ⭐ VALIDACIONES INICIALES MEJORADAS ⭐
       if (!dataUrl || typeof dataUrl !== 'string') {
         throw new Error(`Data URL inválido para ${originalName} - tipo: ${typeof dataUrl}`);
       }
@@ -499,7 +437,6 @@ class DocumentStorageService {
         throw new Error(`Data URL debe contener "base64," para ${originalName}`);
       }
 
-      // ⭐ EXTRACCIÓN ROBUSTA CON MÚLTIPLES MÉTODOS DE FALLBACK ⭐
       let mimeType, base64Data;
 
       try {
@@ -537,7 +474,6 @@ class DocumentStorageService {
         }
       }
 
-      // ⭐ VALIDACIONES POST-EXTRACCIÓN ⭐
       if (!mimeType || mimeType === '') {
         throw new Error(`MIME type vacío extraído para ${originalName}`);
       }
@@ -546,10 +482,8 @@ class DocumentStorageService {
         throw new Error(`Datos base64 vacíos extraídos para ${originalName}`);
       }
 
-      // Normalizar MIME type
       mimeType = mimeType.toLowerCase().trim();
 
-      // ⭐ CONVERTIR BASE64 A BUFFER CON VALIDACIÓN ⭐
       let fileBuffer;
       try {
         fileBuffer = Buffer.from(base64Data, 'base64');
@@ -563,13 +497,11 @@ class DocumentStorageService {
         throw new Error(`Acadel no pudo crear buffer para ${originalName}: ${bufferError.message}`);
       }
 
-      // ⭐ VALIDAR CON SISTEMA CENTRALIZADO ACADEL ⭐
       const validation = validateFileTypeBackend(originalName, mimeType, fileBuffer.length);
       if (!validation.valid) {
         throw new Error(`Acadel rechazó el archivo: ${validation.reason}`);
       }
 
-      // Verificar si el MIME type está soportado o necesita inferencia
       let finalMimeType = mimeType;
       let fileInfo = this.supportedMimeTypes[mimeType];
 
@@ -583,19 +515,15 @@ class DocumentStorageService {
         }
       }
 
-      // Preparar directorio y nombres de archivo
       const chatDir = this.getChatDirectory(chatId);
       const filename = this.generateUniqueFilename(originalName);
       const finalPath = path.join(chatDir, filename);
 
-      // Crear archivo temporal
       const tempFileName = `temp_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.tmp`;
       tempFilePath = path.join(this.tempDir, tempFileName);
 
-      // Guardar archivo temporal
       await fs.promises.writeFile(tempFilePath, fileBuffer);
 
-      // Extraer contenido
       console.log(`🦫 Acadel extrayendo contenido de ${originalName}...`);
       let extractedContent, language;
       try {
@@ -607,7 +535,6 @@ class DocumentStorageService {
         throw new Error(`Acadel no pudo extraer contenido de ${originalName}: ${extractError.message}`);
       }
 
-      // Mover archivo a ubicación final
       try {
         await fs.promises.copyFile(tempFilePath, finalPath);
         console.log(`✅ Acadel: Archivo guardado en ${finalPath}`);
@@ -615,13 +542,11 @@ class DocumentStorageService {
         throw new Error(`Acadel no pudo guardar archivo ${originalName}: ${saveError.message}`);
       }
 
-      // Limpiar archivo temporal
       if (tempFilePath && fs.existsSync(tempFilePath)) {
         await fs.promises.unlink(tempFilePath);
         tempFilePath = null;
       }
 
-      // Preparar datos para BD
       const fileData = {
         chatId,
         userId,
@@ -636,7 +561,6 @@ class DocumentStorageService {
         language
       };
 
-      // Guardar en base de datos
       let dbResult;
       try {
         dbResult = await this.saveFileToDatabase(fileData);
@@ -684,19 +608,11 @@ class DocumentStorageService {
     }
   }
 
-  /**
-   * 🦫 PROCESA MÚLTIPLES DOCUMENTOS CON VALIDACIONES ACADEL
-   * @param {Array} content - Contenido del mensaje
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @returns {Promise<Array>} - Resultados del procesamiento
-   */
   async processMultimodalDocuments(content, chatId, userId) {
     if (!content || !Array.isArray(content)) {
       return [];
     }
 
-    // Filtrar items que sean archivos de documento
     const documentItems = content.filter(item =>
       item.type === 'file' ||
       (item.type === 'document' && (item.file_url || item.data_url))
@@ -708,7 +624,6 @@ class DocumentStorageService {
 
     console.log(`🦫 Acadel procesando ${documentItems.length} documentos para chat ${chatId}`);
 
-    // ⭐ VALIDAR CANTIDAD TOTAL CON SISTEMA CENTRALIZADO ⭐
     const countValidation = validateFileCountBackend(documentItems.length);
     if (!countValidation.valid) {
       console.error(`❌ Acadel rechazó cantidad de archivos: ${countValidation.reason}`);
@@ -719,7 +634,6 @@ class DocumentStorageService {
       }];
     }
 
-    // Procesar todos los archivos en paralelo
     const documentPromises = documentItems.map(async (item, index) => {
       console.log(`🦫 Acadel procesando documento ${index + 1}/${documentItems.length}`);
 
@@ -764,7 +678,6 @@ class DocumentStorageService {
 
     const results = await Promise.all(documentPromises);
 
-    // Registrar estadísticas
     const successCount = results.filter(r => r.success).length;
     const failCount = results.filter(r => !r.success).length;
 
@@ -773,20 +686,11 @@ class DocumentStorageService {
     return results;
   }
 
-  /**
-   * 🦫 PROCESA DOCUMENTOS PARA RETRY/EDIT SIN GUARDAR NUEVOS ARCHIVOS
-   * @param {Array} content - Contenido del mensaje
-   * @param {string} chatId - ID del chat
-   * @param {number} userId - ID del usuario
-   * @param {boolean} isRetryOrEdit - Flag indicando que es retry/edit
-   * @returns {Promise<Array>} - Resultados del procesamiento
-   */
   async processMultimodalDocumentsForRetryEdit(content, chatId, userId, isRetryOrEdit = true) {
     if (!content || !Array.isArray(content)) {
       return [];
     }
 
-    // Filtrar items que sean archivos de documento
     const documentItems = content.filter(item =>
       item && (
         item.type === 'file' ||
@@ -802,7 +706,6 @@ class DocumentStorageService {
 
     console.log(`🦫 Acadel [RETRY/EDIT] procesando ${documentItems.length} documentos para chat ${chatId}`);
 
-    // Procesar documentos con recuperación automática de contenido
     const results = await Promise.all(documentItems.map(async (item, index) => {
       console.log(`🦫 Acadel [RETRY/EDIT] procesando documento ${index + 1}/${documentItems.length}: ${item.name || item.filename || 'documento'}`);
 
@@ -837,7 +740,6 @@ class DocumentStorageService {
           };
         }
 
-        // ⭐ NUEVA LÓGICA: Recuperar contenido de BD si tiene fileId ⭐
         if (item.fileId) {
           console.log(`🔍 Acadel [RETRY/EDIT] recuperando contenido desde BD para: ${item.fileId}`);
 
@@ -858,7 +760,6 @@ class DocumentStorageService {
           }
         }
 
-        // ⭐ NUEVA LÓGICA: Buscar por nombre si no tiene fileId ⭐
         if ((item.name || item.filename) && !item.fileId) {
           console.log(`🔍 Acadel [RETRY/EDIT] buscando documento por nombre: ${item.name || item.filename}`);
 
@@ -927,13 +828,11 @@ class DocumentStorageService {
       }
     }));
 
-    // Registrar estadísticas
     const successCount = results.filter(r => r.success).length;
     const failCount = results.filter(r => !r.success).length;
 
     console.log(`📊 Acadel [RETRY/EDIT] completó: ${successCount} exitosos, ${failCount} fallidos`);
 
-    // Log detallado de documentos exitosos
     const successfulDocs = results.filter(r => r.success);
     successfulDocs.forEach(doc => {
       console.log(`✅ Acadel [RETRY/EDIT] documento exitoso:`, {
@@ -945,7 +844,6 @@ class DocumentStorageService {
       });
     });
 
-    // Log detallado de documentos fallidos
     const failedDocs = results.filter(r => !r.success);
     failedDocs.forEach(doc => {
       console.warn(`❌ Acadel [RETRY/EDIT] documento fallido:`, {
@@ -978,7 +876,6 @@ class DocumentStorageService {
         return null;
       }
 
-      // Actualizar accessed_at
       await client.query(
         'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
         [fileId]
@@ -1004,11 +901,9 @@ class DocumentStorageService {
     try {
       await client.query('BEGIN');
 
-      // Obtener archivos del chat
       const filesQuery = 'SELECT file_path FROM file_attachments WHERE chat_id = $1';
       const filesResult = await client.query(filesQuery, [chatId]);
 
-      // Eliminar archivos físicos
       for (const row of filesResult.rows) {
         const fullPath = path.join(process.cwd(), row.file_path.replace(/^\//, ''));
         if (fs.existsSync(fullPath)) {
@@ -1016,10 +911,8 @@ class DocumentStorageService {
         }
       }
 
-      // Eliminar registros de la BD
       await client.query('DELETE FROM file_attachments WHERE chat_id = $1', [chatId]);
 
-      // Eliminar directorio del chat si está vacío
       const chatDir = path.join(this.chatDocumentsDir, chatId);
       if (fs.existsSync(chatDir)) {
         const files = fs.readdirSync(chatDir);
@@ -1049,10 +942,6 @@ class DocumentStorageService {
     return !!this.supportedMimeTypes[mimeType];
   }
 
-  /**
-   * 🦫 OBTIENE INFORMACIÓN SOBRE TIPOS SOPORTADOS CON CONFIGURACIÓN ACADEL
-   * @returns {Object} - Información de tipos soportados
-   */
   getSupportedTypes() {
     console.log(`🦫 Acadel proporcionando información de tipos soportados`);
 
@@ -1097,10 +986,8 @@ class DocumentStorageService {
    */
   async verifyFileExists(filePath) {
     try {
-      // Construir ruta completa del archivo
       const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ''));
 
-      // Verificar que el archivo existe físicamente
       return fs.existsSync(fullPath);
     } catch (error) {
       console.error('❌ Acadel error verificando existencia de archivo:', error);
@@ -1115,10 +1002,8 @@ class DocumentStorageService {
    */
   async getExistingFileContent(filePath) {
     try {
-      // Construir ruta completa del archivo
       const fullPath = path.join(process.cwd(), filePath.replace(/^\//, ''));
 
-      // Verificar que el archivo existe
       if (!fs.existsSync(fullPath)) {
         return null;
       }
@@ -1133,7 +1018,6 @@ class DocumentStorageService {
   }
 }
 
-// Exportar instancia singleton
 export const documentStorageService = new DocumentStorageService();
 
 console.log('🎉 Acadel Document Storage Service cargado y listo');

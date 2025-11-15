@@ -1,4 +1,3 @@
-// backend/services/chat/cleanupScheduler.js
 import fs from 'fs';
 import path from 'path';
 import schedule from 'node-schedule';
@@ -34,7 +33,6 @@ class ImageCleanupScheduler {
     
     console.log('Iniciando planificador de limpieza de imágenes...');
     
-    // Limpiar imágenes antiguas (cada domingo a las 2am)
     this.jobs.push(
       schedule.scheduleJob('0 2 * * 0', async () => {
         console.log('Ejecutando limpieza de imágenes antiguas...');
@@ -42,7 +40,6 @@ class ImageCleanupScheduler {
       })
     );
     
-    // Limpiar imágenes huérfanas (cada miércoles a las 3am)
     this.jobs.push(
       schedule.scheduleJob('0 3 * * 3', async () => {
         console.log('Ejecutando limpieza de imágenes huérfanas...');
@@ -50,7 +47,6 @@ class ImageCleanupScheduler {
       })
     );
     
-    // Verificar límites de espacio en disco (cada día a las 4am)
     this.jobs.push(
       schedule.scheduleJob('0 4 * * *', async () => {
         console.log('Verificando límites de espacio en disco...');
@@ -58,7 +54,6 @@ class ImageCleanupScheduler {
       })
     );
     
-    // Verificar límites por usuario (cada lunes a las 5am)
     this.jobs.push(
       schedule.scheduleJob('0 5 * * 1', async () => {
         console.log('Verificando límites de almacenamiento por usuario...');
@@ -100,11 +95,9 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Calcular fecha límite
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.maxImageAgeInDays);
       
-      // Obtener mensajes antiguos con imágenes
       const result = await pool.query(`
         SELECT ch.id, ch.id_chat, ch.message, ch.timestamp
         FROM chat_history ch
@@ -116,14 +109,12 @@ class ImageCleanupScheduler {
       
       console.log(`Se encontraron ${result.rowCount} mensajes antiguos con imágenes para evaluar`);
       
-      // Verificar imágenes antiguas
       for (const row of result.rows) {
         try {
           stats.processed++;
           const message = JSON.parse(row.message);
           
           if (message.images && Array.isArray(message.images)) {
-            // Verificar qué imágenes eliminar
             const imagesToRemove = [];
             
             for (const img of message.images) {
@@ -131,7 +122,6 @@ class ImageCleanupScheduler {
                 const imagePath = path.join(process.cwd(), img.path.replace(/^\//, ''));
                 
                 if (fs.existsSync(imagePath)) {
-                  // Verificar fecha de último acceso
                   const stats = fs.statSync(imagePath);
                   const lastAccessTime = new Date(stats.atime);
                   
@@ -149,12 +139,10 @@ class ImageCleanupScheduler {
             
             // Si hay imágenes para eliminar, actualizar mensaje y eliminar archivos
             if (imagesToRemove.length > 0) {
-              // Crear lista de imágenes que se mantienen
               const remainingImages = message.images.filter(img => 
                 !imagesToRemove.some(remove => remove.path === img.path)
               );
               
-              // Actualizar mensaje con nota de eliminación
               const updatedMessage = {
                 ...message,
                 images: remainingImages,
@@ -165,14 +153,12 @@ class ImageCleanupScheduler {
                   : "Algunas imágenes fueron eliminadas automáticamente por antigüedad."
               };
               
-              // Actualizar en base de datos
               await pool.query(`
                 UPDATE chat_history
                 SET message = $1
                 WHERE id = $2
               `, [JSON.stringify(updatedMessage), row.id]);
               
-              // Eliminar archivos
               for (const img of imagesToRemove) {
                 try {
                   if (fs.existsSync(img.fullPath)) {
@@ -214,15 +200,12 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Obtener todos los chats activos
       const chatsResult = await pool.query(`
         SELECT id_chat FROM chat WHERE is_deleted = false
       `);
       
-      // Crear conjunto de IDs de chat activos para búsqueda rápida
       const activeChatIds = new Set(chatsResult.rows.map(row => row.id_chat));
       
-      // Verificar cada directorio en uploads/chat_images
       if (fs.existsSync(this.chatImagesDir)) {
         const chatDirs = fs.readdirSync(this.chatImagesDir, { withFileTypes: true })
           .filter(dirent => dirent.isDirectory())
@@ -246,7 +229,6 @@ class ImageCleanupScheduler {
             continue;
           }
           
-          // Para chats activos, obtener referencias a imágenes en la base de datos
           await this.cleanOrphanedImagesInChat(chatId, stats);
         }
       }
@@ -266,13 +248,11 @@ class ImageCleanupScheduler {
    */
   async cleanOrphanedImagesInChat(chatId, stats) {
     try {
-      // Obtener todas las imágenes referenciadas en este chat
       const result = await pool.query(`
         SELECT message FROM chat_history
         WHERE id_chat = $1 AND is_multimodal = true
       `, [chatId]);
       
-      // Crear conjunto de todas las rutas de imagen referenciadas
       const referencedPaths = new Set();
       
       for (const row of result.rows) {
@@ -282,7 +262,6 @@ class ImageCleanupScheduler {
           if (message.images && Array.isArray(message.images)) {
             for (const img of message.images) {
               if (img.path) {
-                // Normalizar ruta para comparación
                 const normalizedPath = img.path.replace(/^\//, '');
                 referencedPaths.add(normalizedPath.toLowerCase());
                 // También añadir variantes sin /uploads/ al principio
@@ -291,7 +270,6 @@ class ImageCleanupScheduler {
                 } else {
                   referencedPaths.add(`uploads/${normalizedPath}`.toLowerCase());
                 }
-                // Añadir solo el nombre del archivo
                 referencedPaths.add(path.basename(normalizedPath).toLowerCase());
               }
             }
@@ -301,7 +279,6 @@ class ImageCleanupScheduler {
         }
       }
       
-      // Verificar cada archivo en el directorio del chat
       const chatDir = path.join(this.chatImagesDir, chatId);
       
       if (fs.existsSync(chatDir)) {
@@ -313,7 +290,6 @@ class ImageCleanupScheduler {
           }));
         
         for (const file of files) {
-          // Verificar si el archivo es huérfano
           const isReferenced = 
             referencedPaths.has(file.name.toLowerCase()) || 
             referencedPaths.has(`uploads/chat_images/${chatId}/${file.name}`.toLowerCase()) ||
@@ -349,7 +325,6 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Calcular uso actual
       stats.currentUsageGB = this.getDirSize(this.chatImagesDir) / (1024 * 1024 * 1024);
       
       console.log(`Uso actual de almacenamiento: ${stats.currentUsageGB.toFixed(2)}GB de ${this.maxDiskUsageGB}GB`);
@@ -359,13 +334,11 @@ class ImageCleanupScheduler {
         return stats;
       }
       
-      // Calcular cuánto espacio necesitamos liberar
       const excessGB = stats.currentUsageGB - this.maxDiskUsageGB;
       const excessBytes = excessGB * 1024 * 1024 * 1024;
       
       console.log(`Se necesita liberar ${excessGB.toFixed(2)}GB de espacio`);
       
-      // Obtener imágenes más antiguas
       const result = await pool.query(`
         SELECT ch.id, ch.id_chat, ch.message, ch.timestamp
         FROM chat_history ch
@@ -374,7 +347,6 @@ class ImageCleanupScheduler {
         LIMIT 5000
       `);
       
-      // Procesar mensajes para liberar espacio
       let freedSpace = 0;
       
       for (const row of result.rows) {
@@ -384,7 +356,6 @@ class ImageCleanupScheduler {
           const message = JSON.parse(row.message);
           
           if (message.images && Array.isArray(message.images) && message.images.length > 0) {
-            // Actualizar mensaje
             const updatedMessage = {
               ...message,
               images: [],
@@ -393,7 +364,6 @@ class ImageCleanupScheduler {
               note: "Imágenes eliminadas automáticamente debido a restricciones de almacenamiento global"
             };
             
-            // Eliminar las imágenes físicamente
             for (const img of message.images) {
               if (img.path) {
                 const imagePath = path.join(process.cwd(), img.path.replace(/^\//, ''));
@@ -409,7 +379,6 @@ class ImageCleanupScheduler {
               }
             }
             
-            // Actualizar en base de datos
             await pool.query(`
               UPDATE chat_history
               SET message = $1
@@ -443,7 +412,6 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Obtener uso por usuario
       const usageResult = await pool.query(`
         SELECT ch.id_user, u.correo, COUNT(ch.id) as message_count
         FROM chat_history ch
@@ -456,7 +424,6 @@ class ImageCleanupScheduler {
       for (const user of usageResult.rows) {
         stats.usersChecked++;
         
-        // Calcular uso real en disco
         const userStorage = await this.calculateUserImageStorage(user.id_user);
         
         if (userStorage.usageMB > this.maxUserStorageMB) {
@@ -464,7 +431,6 @@ class ImageCleanupScheduler {
           
           console.log(`Usuario ${user.correo} (ID: ${user.id_user}) excede cuota: ${userStorage.usageMB.toFixed(2)}MB > ${this.maxUserStorageMB}MB`);
           
-          // Obtener imágenes más antiguas del usuario para eliminar
           const cleanupResult = await this.cleanupUserOldestImages(user.id_user, userStorage.usageMB - this.maxUserStorageMB);
           
           stats.imagesDeleted += cleanupResult.imagesDeleted;
@@ -493,7 +459,6 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Obtener los chats del usuario
       const chatsResult = await pool.query(`
         SELECT id_chat FROM chat
         WHERE id_user = $1 AND is_deleted = false
@@ -501,7 +466,6 @@ class ImageCleanupScheduler {
       
       stats.chats = chatsResult.rowCount;
       
-      // Calcular espacio usado en cada chat
       for (const row of chatsResult.rows) {
         const chatDir = path.join(this.chatImagesDir, row.id_chat);
         
@@ -540,11 +504,9 @@ class ImageCleanupScheduler {
     };
     
     try {
-      // Convertir exceso de MB a bytes
       const excessBytes = excessMB * 1024 * 1024;
       let freedSpace = 0;
       
-      // Obtener mensajes más antiguos con imágenes
       const result = await pool.query(`
         SELECT ch.id, ch.id_chat, ch.message, ch.timestamp
         FROM chat_history ch
@@ -553,7 +515,6 @@ class ImageCleanupScheduler {
         LIMIT 1000
       `, [userId]);
       
-      // Procesar mensajes para liberar espacio
       for (const row of result.rows) {
         if (freedSpace >= excessBytes) break;
         
@@ -563,7 +524,6 @@ class ImageCleanupScheduler {
           const message = JSON.parse(row.message);
           
           if (message.images && Array.isArray(message.images) && message.images.length > 0) {
-            // Actualizar mensaje
             const updatedMessage = {
               ...message,
               images: [],
@@ -572,7 +532,6 @@ class ImageCleanupScheduler {
               note: "Imágenes eliminadas automáticamente debido a exceso de cuota de almacenamiento"
             };
             
-            // Eliminar las imágenes físicamente
             for (const img of message.images) {
               if (img.path) {
                 const imagePath = path.join(process.cwd(), img.path.replace(/^\//, ''));
@@ -588,7 +547,6 @@ class ImageCleanupScheduler {
               }
             }
             
-            // Actualizar en base de datos
             await pool.query(`
               UPDATE chat_history
               SET message = $1
@@ -640,10 +598,8 @@ class ImageCleanupScheduler {
   }
 }
 
-// Exportar instancia singleton
 export const imageCleanupScheduler = new ImageCleanupScheduler();
 
-// Iniciar automáticamente en producción
 if (process.env.NODE_ENV === 'production') {
   setTimeout(() => {
     imageCleanupScheduler.start();

@@ -69,7 +69,6 @@ export async function fetchUserProfile(userId) {
     
     const responseData = await response.json();
     
-    // Detectar si la respuesta usa el nuevo formato con estructura success/data
     // o si es el formato antiguo con datos directos
     return responseData.hasOwnProperty('success') && responseData.hasOwnProperty('data') 
       ? responseData.data 

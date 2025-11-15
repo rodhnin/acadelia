@@ -1,23 +1,16 @@
-// backend/controllers/chat/cienciasaplicadasController.js (ULTRA-SIMPLIFICADO CON TOKEN MANAGER)
 
-// ===== IMPORTACIONES NECESARIAS (REDUCIDAS 60%) =====
 import { handleAppliedSciencesQuery, handleAppliedSciencesMultimodalQuery, handleAppliedSciencesQueryWithoutSaving, handleAppliedSciencesMultimodalQueryWithoutSaving } from "../../../../services/chat/ias/Medicina/cienciasaplicadasService.js";
 import { validateQueryParams, validateMultimodalParams, generateAttachmentsSummary } from "../../../../utils/chat/theoryutils.js";
 import { logSecurityEvent } from '../../../../utils/securityLogger.js';
 import pool from '../../../../lib/dbPool.js';
-import { TokenManager } from "../../../../utils/shared/tokenManager.js"; // 🚀 ÚNICO IMPORT NECESARIO
+import { TokenManager } from "../../../../utils/shared/tokenManager.js";
 
-/**
- * ✅ FUNCIÓN ULTRA-SIMPLIFICADA: queryCienciasAplicadas
- * REDUCCIÓN: 90% menos código usando TokenManager.handleCompleteAvaController
- */
 export const queryCienciasAplicadas = async (req, res) => {
   const validationErrors = validateQueryParams(req.body);
   const avaAccessInfo = req.accessInfo?.avaAccess || {};
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -45,7 +38,6 @@ export const queryCienciasAplicadasMultimodal = async (req, res) => {
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,
@@ -66,7 +58,6 @@ export const queryCienciasAplicadasMultimodal = async (req, res) => {
         return result;
       }
 
-      // ⭐ OBTENER DOCUMENTOS PROCESADOS RECIENTEMENTE ⭐
       if (result.success && result.chatId) {
         try {
           const client = await pool.connect();
@@ -135,7 +126,6 @@ export const queryCienciasAplicadasMultimodalWithoutSaving = async (req, res) =>
   const tokenInfo = req.tokenInfo || {};
   const tokenWarning = req.tokenWarning || null;
 
-  // 🚀 DELEGACIÓN COMPLETA AL TOKEN MANAGER - UNA LÍNEA
   await TokenManager.handleCompleteAvaController(req, res, {
     validationErrors,
     avaAccessInfo,

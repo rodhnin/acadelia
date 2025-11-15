@@ -1,4 +1,3 @@
-// backend/services/pagos/transactionHandler.js
 import pool from '../../lib/dbPool.js';
 import { getExchangeRate } from '../../utils/currencyConverter.js';
 import { googleDriveService } from '../../utils/googleDriveService.js';
@@ -14,11 +13,9 @@ export async function handleTransaction(eventData) {
   try {
     const paymentData = eventData.data;
     
-    // Extraer datos básicos
     const primaryItem = paymentData.items?.[0];
     const lineItem = paymentData.details?.line_items?.[0];
     
-    // Extraer ID de transacción y datos básicos
     const transaction_id = paymentData.id;
     const price_id = primaryItem?.price_id;
     const product_id = lineItem?.product?.id;
@@ -26,19 +23,14 @@ export async function handleTransaction(eventData) {
     const invoice_id = paymentData.invoice_id;
     const invoice_number = paymentData.invoice_number;
     
-    // Verificar si es un evento de pago fallido
     const isPaymentFailed = eventData.event_type === 'transaction.payment_failed';
     
-    // Extraer valores referenciales originales (sólo para tener disponibles para el log)
     const originalAmount = parseFloat(paymentData.details?.totals?.grand_total) / 100;
     const currency_code = paymentData.currency_code;
     
-    // Inicializar valores monetarios 
     let amount, tax_amount, fee_amount, earnings, exchange_rate, amount_eur, tax_amount_eur, fee_amount_eur, earnings_eur, tax_rate;
     
-    // PARA PAGOS FALLIDOS: Todos los valores monetarios a 0
     if (isPaymentFailed) {
-      // Establecer TODOS los valores monetarios a 0
       amount = 0;
       tax_amount = 0;
       fee_amount = 0;
@@ -56,14 +48,12 @@ export async function handleTransaction(eventData) {
     } 
     // TRANSACCIONES NORMALES: Procesamiento regular
     else {
-      // Extraer importes monetarios originales
       amount = originalAmount;
       tax_amount = parseFloat(paymentData.details?.totals?.tax) / 100;
       tax_rate = lineItem?.tax_rate ? parseFloat(lineItem.tax_rate) : null;
       fee_amount = parseFloat(paymentData.details?.totals?.fee) / 100;
       earnings = parseFloat(paymentData.details?.totals?.earnings) / 100;
       
-      // Determinar tasa de cambio y monto en EUR
       exchange_rate = 1; // Valor predeterminado para EUR
       amount_eur = amount;
       tax_amount_eur = tax_amount;
@@ -80,7 +70,6 @@ export async function handleTransaction(eventData) {
           try {
             console.log(`⚠️ Moneda USD detectada: Ignorando tasa de Paddle y usando Frankfurter API`);
             
-            // Obtener tasa de cambio usando la API Frankfurter
             exchange_rate = await getExchangeRate(currency_code, 'EUR');
             amount_eur = amount * exchange_rate;
             
@@ -93,13 +82,11 @@ export async function handleTransaction(eventData) {
           } catch (convError) {
             console.warn(`❌ ERROR: No se pudo obtener tasa de cambio para ${currency_code}->EUR:`, convError);
             
-            // Usar valor de respaldo para USD->EUR de 0.91 (mayo 2025)
             exchange_rate = 0.91;
             amount_eur = amount * exchange_rate;
             console.log(`   Usando tasa de respaldo: 1 ${currency_code} = ${exchange_rate} EUR`);
           }
         }
-        // Para otras monedas, mantener el comportamiento original con las 3 opciones
         else {
           // Opción 1: Usar datos de Paddle si están disponibles
           if (paymentData.details?.payout_totals?.currency_code === 'EUR') {
@@ -124,7 +111,6 @@ export async function handleTransaction(eventData) {
             try {
               console.log(`⚠️ OPCIÓN 3: Paddle no proporcionó datos de conversión, usando Frankfurter API`);
               
-              // Obtener tasa de cambio usando la API Frankfurter
               exchange_rate = await getExchangeRate(currency_code, 'EUR');
               amount_eur = amount * exchange_rate;
               
@@ -137,7 +123,6 @@ export async function handleTransaction(eventData) {
           }
         }
         
-        // Calcular montos de impuestos y tarifas en EUR para informes consistentes
         tax_amount_eur = tax_amount * exchange_rate;
         fee_amount_eur = fee_amount * exchange_rate;
         earnings_eur = earnings * exchange_rate;
@@ -149,17 +134,14 @@ export async function handleTransaction(eventData) {
         console.log(`   Ganancias: ${earnings} ${currency_code} = ${earnings_eur} EUR`);
       }
       
-      // Redondear valores para evitar problemas de precisión
       amount_eur = parseFloat(amount_eur.toFixed(2));
       tax_amount_eur = parseFloat(tax_amount_eur.toFixed(2));
       fee_amount_eur = parseFloat(fee_amount_eur.toFixed(2));
       earnings_eur = parseFloat(earnings_eur.toFixed(2));
     }
     
-    // Extraer método de pago
     const paymentMethod = paymentData.payments?.[0]?.method_details?.card;
     
-    // Extraer información del país - múltiples fuentes potenciales
     // 1. Intentar obtener del address_id (generalmente contiene el país)
     let country_code = null;
     
@@ -196,17 +178,14 @@ export async function handleTransaction(eventData) {
       country_code = currencyToCountry[currency_code] || null;
     }
     
-    // Validar datos requeridos
     if (!transaction_id) {
       throw new Error("Falta el ID de transacción en los datos");
     }
     
-    // Para transacciones normales, verificar también price_id y product_id
     if (!isPaymentFailed && (!price_id || !product_id)) {
       throw new Error("Faltan campos esenciales en los datos de la transacción (price_id, product_id)");
     }
 
-    // Insertar en la base de datos con todos los campos disponibles
     await pool.query(
       `INSERT INTO historial_transacciones 
        (transaction_id, price_id, product_id, amount, currency_code, 
@@ -261,10 +240,8 @@ export async function handleTransaction(eventData) {
     
     // Procesamiento según tipo de evento
     if (isPaymentFailed) {
-      // Enviar correo de notificación de pago fallido (con el amount original para mostrar en el correo)
       console.log("🔴 Pago fallido detectado, enviando notificación por correo...");
       
-      // Añadir el monto original al objeto eventData para el correo
       // Esto es solo para fines de visualización en el correo, no afecta lo guardado en BD
       if (!eventData._originalAmount) {
         eventData._originalAmount = originalAmount;
@@ -273,7 +250,6 @@ export async function handleTransaction(eventData) {
       await sendFailedPaymentEmail(eventData);
     } 
     else if (eventData.event_type === 'transaction.completed') {
-      // Procesar la factura si la transacción está completada y tiene una factura asociada
       if (invoice_id) {
         try {
           console.log(`🧾 Procesando factura para transacción ${transaction_id}, factura ${invoice_id}...`);
@@ -307,7 +283,6 @@ export async function handleTransaction(eventData) {
               [driveUrl, transaction_id]
             );
             
-            // Añadir la URL a los datos del evento para el correo
             paymentData.invoice_url = driveUrl;
             
             console.log(`✅ URL de factura guardada en base de datos para transacción ${transaction_id}`);
@@ -324,11 +299,9 @@ export async function handleTransaction(eventData) {
       const isRenewal = paymentData.origin === 'subscription_recurring';
       
       if (isRenewal) {
-        // Enviar correo de confirmación de renovación
         console.log("🔄 Renovación automática detectada, enviando correo de confirmación...");
         await sendRenewalConfirmationEmail(eventData);
       } else {
-        // Enviar correo de confirmación de compra inicial
         console.log("🛒 Compra inicial detectada, enviando correo de confirmación...");
         await sendPurchaseConfirmationEmail(eventData);
       }
@@ -348,7 +321,6 @@ export async function handleTransaction(eventData) {
  */
 async function sendPurchaseConfirmationEmail(eventData) {
   try {
-    // Verificar si tenemos un ID de usuario para poder enviar el correo
     const userId = eventData.data?.custom_data?.id_user;
     
     if (!userId) {
@@ -356,7 +328,6 @@ async function sendPurchaseConfirmationEmail(eventData) {
       return;
     }
     
-    // Obtener el correo del usuario desde la base de datos
     const userQuery = await pool.query(
       'SELECT correo FROM usuario WHERE id_user = $1',
       [userId]
@@ -373,11 +344,9 @@ async function sendPurchaseConfirmationEmail(eventData) {
     try {
       console.log(`🧾 Intentando obtener URL de factura para el correo de transacción ${eventData.data.id}...`);
       
-      // Solicitar la URL de la factura a Paddle
       const invoiceResponse = await PaddleService.getInvoiceUrl(eventData.data.id, null);
       
       if (invoiceResponse && invoiceResponse.success && invoiceResponse.data.url) {
-        // Agregar la URL directa de la factura de Paddle a los datos del evento
         eventData.data.invoice_url = invoiceResponse.data.url;
         console.log(`📄 URL de factura Paddle para email: ${eventData.data.invoice_url}`);
       } else {
@@ -402,7 +371,6 @@ async function sendPurchaseConfirmationEmail(eventData) {
       }
     }
     
-    // Enviar el correo de confirmación con todos los datos de la transacción
     console.log(`📧 Enviando correo de confirmación de compra a ${userEmail}`);
     
     await emailService.sendPurchaseConfirmationEmail(userEmail, eventData);
@@ -421,7 +389,6 @@ async function sendPurchaseConfirmationEmail(eventData) {
  */
 async function sendFailedPaymentEmail(eventData) {
   try {
-    // Verificar si tenemos un ID de usuario para poder enviar el correo
     const userId = eventData.data?.custom_data?.id_user;
     
     if (!userId) {
@@ -429,7 +396,6 @@ async function sendFailedPaymentEmail(eventData) {
       return;
     }
     
-    // Obtener el correo del usuario desde la base de datos
     const userQuery = await pool.query(
       'SELECT correo FROM usuario WHERE id_user = $1',
       [userId]
@@ -442,7 +408,6 @@ async function sendFailedPaymentEmail(eventData) {
     
     const userEmail = userQuery.rows[0].correo;
     
-    // Enviar el correo de notificación con los datos del pago fallido
     console.log(`📧 Enviando correo de notificación de pago fallido a ${userEmail}`);
     
     await emailService.sendFailedPaymentEmail(userEmail, eventData);
@@ -461,7 +426,6 @@ async function sendFailedPaymentEmail(eventData) {
  */
 async function sendRenewalConfirmationEmail(eventData) {
   try {
-    // Verificar si tenemos un ID de usuario para poder enviar el correo
     const userId = eventData.data?.custom_data?.id_user;
     
     if (!userId) {
@@ -469,7 +433,6 @@ async function sendRenewalConfirmationEmail(eventData) {
       return;
     }
     
-    // Obtener el correo del usuario desde la base de datos
     const userQuery = await pool.query(
       'SELECT correo FROM usuario WHERE id_user = $1',
       [userId]
@@ -486,11 +449,9 @@ async function sendRenewalConfirmationEmail(eventData) {
     try {
       console.log(`🧾 Intentando obtener URL de factura para el correo de renovación ${eventData.data.id}...`);
       
-      // Solicitar la URL de la factura a Paddle
       const invoiceResponse = await PaddleService.getInvoiceUrl(eventData.data.id, null);
       
       if (invoiceResponse && invoiceResponse.success && invoiceResponse.data.url) {
-        // Agregar la URL directa de la factura de Paddle a los datos del evento
         eventData.data.invoice_url = invoiceResponse.data.url;
         console.log(`📄 URL de factura Paddle para email de renovación: ${eventData.data.invoice_url}`);
       } else {
@@ -515,7 +476,6 @@ async function sendRenewalConfirmationEmail(eventData) {
       }
     }
     
-    // Enviar el correo de confirmación de renovación
     console.log(`📧 Enviando correo de confirmación de renovación a ${userEmail}`);
     
     await emailService.sendRenewalConfirmationEmail(userEmail, eventData);

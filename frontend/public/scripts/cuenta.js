@@ -1,12 +1,8 @@
-// ---------------------------
-// Sistema de Pantalla de Carga Global
-// ---------------------------
 const LoadingOverlay = {
   overlay: null,
   count: 0,
 
   init() {
-    // Crear el overlay si aún no existe
     if (!this.overlay) {
       this.overlay = document.createElement('div');
       this.overlay.className = 'loading-overlay';
@@ -82,13 +78,11 @@ const LoadingOverlay = {
     this.init();
     this.count++;
 
-    // Actualizar el mensaje
     const textElement = this.overlay.querySelector('.spinner-text');
     if (textElement) {
       textElement.textContent = message;
     }
 
-    // Mostrar el overlay
     this.overlay.classList.add('active');
     document.body.classList.add('modal-open');
   },
@@ -115,17 +109,12 @@ const LoadingOverlay = {
   }
 };
 
-// ---------------------------
-// Sistema de notificaciones centralizado
-// ---------------------------
 function showAlert(message, type = 'info', duration = 3000) {
-  // Verificar si existe el servicio centralizado de notificaciones
   if (window.showAlert) {
     return window.showAlert(message, type, duration);
   } else if (window.notifyService) {
     return window.notifyService.add(message, type, duration);
   } else {
-    // Implementación de respaldo si no está disponible el servicio centralizado
     const alertTypes = {
       success: { icon: '✓', class: 'alert-success' },
       error: { icon: '⚠', class: 'alert-error' },
@@ -152,9 +141,6 @@ function showAlert(message, type = 'info', duration = 3000) {
   }
 }
 
-// ---------------------------
-// Sistema de Cache
-// ---------------------------
 const Cache = {
   data: new Map(),
   defaultExpiration: 5 * 60 * 1000, // 5 minutos por defecto
@@ -187,9 +173,7 @@ const Cache = {
   }
 };
 
-// ---------------------------
 // Funciones Globales (Top-Level)
-// ---------------------------
 const rolesMapping = { 1: "Gratuito", 2: "Premium", 3: "Administrador" };
 
 const checkAuthentication = async () => {
@@ -242,7 +226,6 @@ const performForcedLogout = async () => {
 // Accesible globalmente para usar en event listeners
 let globalUserEmail = '';
 
-// Función para limpiar indicadores - definida globalmente 
 function clearPasswordIndicators() {
   const strengthIndicator = document.querySelector('.password-strength');
   if (strengthIndicator) strengthIndicator.remove();
@@ -254,11 +237,8 @@ function clearPasswordIndicators() {
   if (verificationIndicator) verificationIndicator.remove();
 }
 
-// ---------------------------
 // Configuración Principal
-// ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar LoadingOverlay
   LoadingOverlay.init();
 
   // Elementos del DOM existentes
@@ -287,14 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentProfileData = null;
   let userHasCompleteProfile = false;
 
-  // Asignar al objeto global para acceso desde event listeners
   window.currentPasswordInput = currentPasswordInput;
   window.newPasswordInput = newPasswordInput;
   window.confirmPasswordInput = confirmPasswordInput;
 
-  // ---------------------------
   // Funciones de Interfaz
-  // ---------------------------
   function toggleEditMode(editMode) {
     profileView.classList.toggle('hidden', editMode);
     profileEdit.classList.toggle('hidden', !editMode);
@@ -306,12 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function togglePasswordMode(showPasswordForm) {
     if (showPasswordForm) {
-      // Ocultar todos los elementos
       profileView.classList.add('hidden');
       profileEdit.classList.add('hidden');
       editToggleBtn.classList.add('hidden');
       changePasswordBtn.classList.add('hidden');
-      // Mostrar solo el formulario de contraseña
       changePasswordForm.classList.remove('hidden');
 
       // Restablecer campos
@@ -319,11 +294,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (newPasswordInput) newPasswordInput.value = '';
       if (confirmPasswordInput) confirmPasswordInput.value = '';
 
-      // Deshabilitar campos hasta que se ingrese contraseña actual
       if (newPasswordInput) newPasswordInput.setAttribute('disabled', '');
       if (confirmPasswordInput) confirmPasswordInput.setAttribute('disabled', '');
 
-      // Limpiar indicadores si existen
       clearPasswordIndicators();
 
       // Enfocar el campo de contraseña actual
@@ -331,9 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPasswordInput) currentPasswordInput.focus();
       }, 100);
     } else {
-      // Ocultar el formulario de contraseña
       changePasswordForm.classList.add('hidden');
-      // Mostrar solo la vista inicial
       profileView.classList.remove('hidden');
       editToggleBtn.classList.remove('hidden');
       changePasswordBtn.classList.remove('hidden');
@@ -355,7 +326,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function adjustLabels() {
-    // Para formularios de edición existentes
     document.querySelectorAll('.profile-edit .form-group select').forEach(select => {
       const hasValue = select.value.trim() !== '' && select.value !== '';
       select.classList.toggle('has-value', hasValue);
@@ -365,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Para formulario de completar perfil
     document.querySelectorAll('.profile-complete-form .form-group select').forEach(select => {
       const hasValue = select.value.trim() !== '' && select.value !== '';
       select.classList.toggle('has-value', hasValue);
@@ -376,11 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------------------------
-  // Validación de contraseñas (mantener existente)
-  // ---------------------------
 
-  // Manejar visibilidad de contraseña
   const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
   togglePasswordButtons.forEach((button) => {
@@ -400,17 +365,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Habilitar nueva contraseña solo después de verificar la contraseña actual
   if (currentPasswordInput) {
     currentPasswordInput.addEventListener('blur', async function () {
-      // Solo validar si hay contenido
       if (this.value.trim().length === 0) return;
 
-      // Buscar el elemento indicador o crearlo si no existe
       let verificationIndicator = document.getElementById('passwordVerificationIndicator');
 
       if (!verificationIndicator) {
-        // Crear el indicador
         verificationIndicator = document.createElement('div');
         verificationIndicator.id = 'passwordVerificationIndicator';
         verificationIndicator.className = 'password-verification';
@@ -425,14 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Mostrar indicador de verificación en progreso
       verificationIndicator.innerHTML = '<span style="color: #ffaa00;">⟳ Verificando contraseña...</span>';
 
       try {
         await LoadingOverlay.withLoading(async () => {
           console.log('Verificando contraseña para:', correo);
 
-          // Verificar la contraseña con el servidor
           const response = await fetch('/api/usuarios/verifyPassword', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -445,7 +404,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
           console.log('Respuesta del servidor:', response.status);
 
-          // Verificar que el indicador todavía existe antes de actualizar
           verificationIndicator = document.getElementById('passwordVerificationIndicator');
           if (!verificationIndicator) {
             console.error('El indicador ya no existe en el DOM');
@@ -457,7 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
             verificationIndicator.innerHTML = '<span style="color: #4dff4d;">✓ Contraseña correcta</span>';
             showAlert('Contraseña verificada correctamente', 'success', 2000);
 
-            // Habilitar campo de nueva contraseña si existe
             if (newPasswordInput) {
               newPasswordInput.removeAttribute('disabled');
 
@@ -471,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
             verificationIndicator.innerHTML = '<span style="color: #ff4d4d;">✗ Contraseña incorrecta</span>';
             showAlert('La contraseña actual es incorrecta', 'error');
 
-            // Deshabilitar campos
             if (newPasswordInput) newPasswordInput.setAttribute('disabled', '');
             if (confirmPasswordInput) confirmPasswordInput.setAttribute('disabled', '');
           }
@@ -479,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (error) {
         console.error('Error al verificar contraseña:', error);
 
-        // Verificar que el indicador todavía existe antes de actualizar
         verificationIndicator = document.getElementById('passwordVerificationIndicator');
         if (verificationIndicator) {
           verificationIndicator.innerHTML = '<span style="color: #ff4d4d;">Error al verificar</span>';
@@ -491,12 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Validación de fuerza de contraseña
   if (newPasswordInput) {
     newPasswordInput.addEventListener('input', function () {
       validatePasswordStrength(this.value);
 
-      // Habilitar el campo de confirmación si hay algo en la nueva contraseña
       if (this.value.trim().length > 0) {
         if (confirmPasswordInput) confirmPasswordInput.removeAttribute('disabled');
       } else {
@@ -505,7 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
           confirmPasswordInput.value = '';
         }
 
-        // Limpiar indicador de coincidencia
         const existingMatch = document.querySelector('.password-match');
         if (existingMatch) existingMatch.remove();
       }
@@ -517,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Validación de coincidencia de contraseñas
   if (confirmPasswordInput) {
     confirmPasswordInput.addEventListener('input', function () {
       if (newPasswordInput) {
@@ -526,9 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Función para validar fuerza de contraseña
   function validatePasswordStrength(password) {
-    // Eliminar indicador existente
     const existingIndicator = document.querySelector('.password-strength');
     if (existingIndicator) {
       existingIndicator.remove();
@@ -546,7 +495,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (password.match(/\d/)) strength += 1;
     if (password.match(/[^a-zA-Z\d]/)) strength += 1;
 
-    // Determinar mensaje y color
     if (strength === 0) {
       message = 'Muy débil';
       color = '#ff4d4d';
@@ -564,11 +512,9 @@ document.addEventListener('DOMContentLoaded', () => {
       color = '#4d4dff';
     }
 
-    // Crear indicador
     const strengthIndicator = document.createElement('div');
     strengthIndicator.className = 'password-strength';
 
-    // Insertar después del campo de contraseña
     const passwordInput = document.getElementById('newPassword');
     if (passwordInput) {
       const parentDiv = passwordInput.closest('.input-wrapper');
@@ -577,7 +523,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Crear estructura HTML
     strengthIndicator.innerHTML = `
     <div class="strength-bar">
       <div class="strength-fill"></div>
@@ -585,22 +530,18 @@ document.addEventListener('DOMContentLoaded', () => {
     <span style="color: ${color};">${message}</span>
   `;
 
-    // Obtener el elemento de relleno y aplicar estilos
     const strengthFill = strengthIndicator.querySelector('.strength-fill');
     if (strengthFill) {
       strengthFill.style.width = `${(strength / 4) * 100}%`;
       strengthFill.style.backgroundColor = color;
 
-      // Añadir transición para suavizar el cambio de ancho
       setTimeout(() => {
         strengthFill.style.transition = 'width 0.3s ease-in-out';
       }, 10);
     }
   }
 
-  // Función para validar coincidencia de contraseñas
   function validatePasswordMatch(password, confirm) {
-    // Eliminar mensaje existente
     const existingMessage = document.querySelector('.password-match');
     if (existingMessage) {
       existingMessage.remove();
@@ -617,7 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
       matchMessage.innerHTML = '<span style="color: #ff4d4d;">✗ Las contraseñas no coinciden</span>';
     }
 
-    // Insertar después del campo de confirmación
     const confirmInput = document.getElementById('confirmPassword');
     if (confirmInput) {
       const parentDiv = confirmInput.closest('.input-wrapper');
@@ -627,10 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ---------------------------
   // Funciones de Datos con Caché (mantener existentes)
-  // ---------------------------
-  // Función para obtener países - Actualizada con más validaciones
   const fetchPaises = async () => {
     return await LoadingOverlay.withLoading(async () => {
       const cachedPaises = Cache.get('paises');
@@ -662,7 +599,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'Cargando países...');
   };
 
-  // Función para obtener universidades - Actualizada con URL correcta
   const fetchUniversidades = async (idPais) => {
     return await LoadingOverlay.withLoading(async () => {
       const cacheKey = `universidades_${idPais}`;
@@ -670,7 +606,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cachedUniversidades) return cachedUniversidades;
 
       try {
-        // Usar la URL correcta según tu nuevo enrutamiento
         const response = await fetch(`/api/paises/${idPais}/universidades`, {
           credentials: 'include'
         });
@@ -699,7 +634,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'Cargando universidades...');
   };
 
-  // Función para inicializar selectores (formulario de edición existente)
   const initializeSelects = async () => {
     const paisSelect = document.getElementById('pais');
     if (!paisSelect) return;
@@ -794,7 +728,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // 🔧 CORRECCIÓN: Función mejorada para cargar perfil con mejor detección
   const loadProfile = async () => {
     return await LoadingOverlay.withLoading(async () => {
       if (!userId) return performForcedLogout();
@@ -809,13 +742,11 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // 🔧 CORRECCIÓN: Usar endpoint correcto que maneja perfiles completos
         const response = await fetch(`/api/perfil/with-university/${userId}`, { credentials: 'include' });
         const responseData = await response.json();
 
         console.log('🔍 Datos de perfil recibidos:', responseData);
 
-        // Extraer los datos del nuevo formato
         const profileData = responseData.success && responseData.data ? responseData.data : responseData;
 
         Cache.set(cacheKey, profileData);
@@ -829,11 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'Cargando perfil...');
   };
 
-  // 🔧 CORRECCIÓN: Función mejorada para verificar si el perfil está completo
   const checkProfileCompleteness = (profileData) => {
     console.log('🔍 Verificando completitud del perfil:', profileData);
 
-    // 🔧 CORRECCIÓN: Verificación más robusta
     const hasBasicData = profileData &&
       profileData.nombre &&
       profileData.nombre.trim() !== '' &&
@@ -855,14 +784,12 @@ document.addEventListener('DOMContentLoaded', () => {
     userHasCompleteProfile = hasBasicData;
 
     if (userHasCompleteProfile) {
-      // Mostrar vista de perfil existente
       console.log('✅ Mostrando vista de perfil completo');
       toggleProfileView(false);
       updateProfileView(profileData);
       populateEditForm(profileData);
       showAlert('Perfil cargado correctamente', 'success', 2000);
     } else {
-      // Mostrar vista de completar perfil
       console.log('⚠️ Mostrando vista de completar perfil');
       toggleProfileView(true);
       initializeCompleteSelects();
@@ -915,7 +842,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function validateProfileForm(nombre, apellido, fecha) {
     const errors = [];
 
-    // Validar nombre y apellido
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
     if (!nameRegex.test(nombre.trim())) {
       errors.push("El nombre debe contener solo letras y tener entre 2 y 50 caracteres");
@@ -925,7 +851,6 @@ document.addEventListener('DOMContentLoaded', () => {
       errors.push("El apellido debe contener solo letras y tener entre 2 y 50 caracteres");
     }
 
-    // Validar fecha de nacimiento
     const birthDate = new Date(fecha);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
@@ -942,7 +867,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return errors;
   }
 
-  // Modificar handleCompleteProfileSubmit (reemplazar la sección de validación):
   const handleCompleteProfileSubmit = async (e) => {
     e.preventDefault();
 
@@ -958,7 +882,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Validar que todos los campos estén llenos
       if (!completeNameInput.value.trim() ||
         !completeLastNameInput.value.trim() ||
         !completeCountrySelect.value ||
@@ -968,7 +891,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // 🔧 NUEVA VALIDACIÓN: Validar formato y contenido
       const validationErrors = validateProfileForm(
         completeNameInput.value,
         completeLastNameInput.value,
@@ -992,7 +914,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('📤 Enviando datos de perfil:', formData);
 
       try {
-        // 🔧 CORRECCIÓN: Usar endpoint correcto para crear/actualizar perfil
         const response = await fetch('/api/perfil', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1011,14 +932,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const responseData = await response.json();
         console.log('✅ Perfil completado exitosamente:', responseData);
 
-        // Limpiar caché y recargar perfil
         Cache.delete(`profile_${userId}`);
 
-        // Actualizar estado
         userHasCompleteProfile = true;
         currentProfileData = responseData.data;
 
-        // Cambiar a vista de perfil existente
         toggleProfileView(false);
         updateProfileView(currentProfileData);
         populateEditForm(currentProfileData);
@@ -1046,7 +964,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // 🔧 NUEVA VALIDACIÓN: Validar campos obligatorios
       if (!nombreInput.value.trim() ||
         !apellidoInput.value.trim() ||
         !paisSelect.value ||
@@ -1056,7 +973,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // 🔧 NUEVA VALIDACIÓN: Validar formato y contenido
       const validationErrors = validateProfileForm(
         nombreInput.value,
         apellidoInput.value,
@@ -1098,7 +1014,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'Guardando cambios...');
   };
 
-  // Función para obtener información detallada de autenticación
   const checkUserAuthType = async (userId) => {
     return await LoadingOverlay.withLoading(async () => {
       // Intentamos usar datos cacheados primero
@@ -1138,7 +1053,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error al verificar tipo de autenticación:', error);
         showAlert('Error al verificar tipo de cuenta', 'error');
 
-        // 🆕 NUEVO: Valor por defecto más seguro
         const defaultAuth = {
           isGoogleUser: false,
           hasPassword: true,
@@ -1155,24 +1069,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (changePasswordBtn) {
     changePasswordBtn.addEventListener('click', async () => {
       try {
-        // Verificar el tipo de autenticación del usuario
         const authInfo = await checkUserAuthType(userId);
 
-        // Limpiar campos del formulario
         if (currentPasswordInput) currentPasswordInput.value = '';
         if (newPasswordInput) newPasswordInput.value = '';
         if (confirmPasswordInput) confirmPasswordInput.value = '';
 
-        // Limpiar indicadores si existen
         clearPasswordIndicators();
 
-        // Ocultar elementos de la vista principal
         profileView.classList.add('hidden');
         profileEdit.classList.add('hidden');
         editToggleBtn.classList.add('hidden');
         changePasswordBtn.classList.add('hidden');
 
-        // Mostrar el formulario de contraseña
         changePasswordForm.classList.remove('hidden');
 
         // Elemento del grupo de contraseña actual
@@ -1180,14 +1089,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Si es usuario de Google SIN contraseña establecida
         if (authInfo.isGoogleUser && !authInfo.hasPassword) {
-          // Ocultar campo de contraseña actual
           if (currentPasswordGroup) currentPasswordGroup.classList.add('hidden');
           if (currentPasswordInput) currentPasswordInput.removeAttribute('required');
 
-          // Habilitar directamente los campos de nueva contraseña
           if (newPasswordInput) newPasswordInput.removeAttribute('disabled');
 
-          // Cambiar textos del formulario
           const formTitle = document.querySelector('.password-form-header h2');
           const formSubtitle = document.querySelector('.password-form-header p');
           const submitBtn = changePasswordForm.querySelector('button[type="submit"]');
@@ -1211,7 +1117,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (newPasswordInput) newPasswordInput.setAttribute('disabled', '');
           if (confirmPasswordInput) confirmPasswordInput.setAttribute('disabled', '');
 
-          // Restaurar textos del formulario
           const formTitle = document.querySelector('.password-form-header h2');
           const formSubtitle = document.querySelector('.password-form-header p');
           const submitBtn = changePasswordForm.querySelector('button[type="submit"]');
@@ -1237,13 +1142,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return await LoadingOverlay.withLoading(async () => {
       try {
-        // Verificar tipo de autenticación
         const authInfo = await checkUserAuthType(userId);
 
         const newPasswordValue = newPasswordInput ? newPasswordInput.value : '';
         const confirmPasswordValue = confirmPasswordInput ? confirmPasswordInput.value : '';
 
-        // Validación básica
         if (newPasswordValue !== confirmPasswordValue) {
           showAlert('Las contraseñas nuevas no coinciden', 'warning');
           return;
@@ -1254,7 +1157,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // 🆕 NUEVO: Determinar si es establecimiento o cambio de contraseña
         const isPasswordSetup = authInfo.isGoogleUser && !authInfo.hasPassword;
 
         // Preparamos los datos según el caso
@@ -1263,7 +1165,6 @@ document.addEventListener('DOMContentLoaded', () => {
           contraseña: newPasswordValue
         };
 
-        // 🔧 CAMBIO CRÍTICO: Solo enviar currentPassword si NO es setup inicial
         if (!isPasswordSetup) {
           const currentPasswordValue = currentPasswordInput ? currentPasswordInput.value : '';
 
@@ -1275,7 +1176,6 @@ document.addEventListener('DOMContentLoaded', () => {
           userData.currentPassword = currentPasswordValue;
         }
 
-        // 🆕 NUEVO: Agregar flag para identificar el tipo de operación
         userData.isPasswordSetup = isPasswordSetup;
 
         console.log('🔍 Enviando datos de contraseña:', {
@@ -1285,7 +1185,6 @@ document.addEventListener('DOMContentLoaded', () => {
           hasExistingPassword: authInfo.hasPassword
         });
 
-        // Mostrar indicador de carga
         const submitBtn = changePasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn ? submitBtn.textContent : 'Guardar';
         if (submitBtn) {
@@ -1293,7 +1192,6 @@ document.addEventListener('DOMContentLoaded', () => {
           submitBtn.disabled = true;
         }
 
-        // Enviar datos al servidor
         const response = await fetch(`/api/usuarios/usuarios/${userId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -1301,7 +1199,6 @@ document.addEventListener('DOMContentLoaded', () => {
           credentials: 'include'
         });
 
-        // Restaurar botón
         if (submitBtn) {
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
@@ -1310,7 +1207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) {
           const errorData = await response.json();
 
-          // 🆕 NUEVO: Manejo específico de errores
           if (response.status === 401 && errorData.code === 'INVALID_CURRENT_PASSWORD') {
             showAlert('La contraseña actual es incorrecta', 'error');
             if (currentPasswordInput) currentPasswordInput.focus();
@@ -1326,27 +1222,21 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error(errorData.message || errorData.error || 'Error al procesar la contraseña');
         }
 
-        // Obtener respuesta del servidor
         const responseData = await response.json();
         const passwordChangeEmailSent = responseData.passwordChangeEmailSent === true;
         const isSetupComplete = responseData.isPasswordSetup === true;
 
-        // Limpiar el formulario
         if (currentPasswordInput) currentPasswordInput.value = '';
         if (newPasswordInput) newPasswordInput.value = '';
         if (confirmPasswordInput) confirmPasswordInput.value = '';
 
-        // Limpiar indicadores
         clearPasswordIndicators();
 
-        // Actualizar caché después de cambiar contraseña
         Cache.delete(`profile_${userId}`);
         Cache.delete(`authtype_${userId}`);
 
-        // Restaurar vista normal
         togglePasswordMode(false);
 
-        // 🆕 NUEVO: Mostrar mensaje específico según el caso
         if (isSetupComplete) {
           showAlert('¡Contraseña establecida exitosamente! Ahora puedes acceder con tu correo y contraseña además de Google.', 'success', 6000);
         } else if (passwordChangeEmailSent) {
@@ -1361,9 +1251,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 'Procesando contraseña...');
   };
-  // ---------------------------
   // Configuración Inicial
-  // ---------------------------
   if (profileView) profileView.classList.remove('hidden');
   if (profileEdit) profileEdit.classList.add('hidden');
   if (editToggleBtn) editToggleBtn.classList.remove('hidden');
@@ -1371,7 +1259,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (changePasswordBtn) changePasswordBtn.classList.remove('hidden');
   if (changePasswordForm) changePasswordForm.classList.add('hidden');
 
-  // Inicializar vistas de perfil ocultas
   if (profileCompleteSection) profileCompleteSection.classList.add('hidden');
   if (profileExistingSection) profileExistingSection.classList.remove('hidden');
 
@@ -1426,7 +1313,6 @@ document.addEventListener('DOMContentLoaded', () => {
       userId = userData.id_user;
       correo = userData.correo;
 
-      // Guardar correo en variable global para uso en event listeners
       globalUserEmail = correo;
 
       const rolInput = document.getElementById('Rol');

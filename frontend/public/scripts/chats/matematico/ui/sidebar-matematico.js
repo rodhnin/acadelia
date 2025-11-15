@@ -17,7 +17,6 @@ import {
   sanitizeText,
 } from '../../shared/dom-helpers.js';
 
-// Cache de elementos DOM frecuentemente utilizados
 const elements = {
   sidebar: null,
   chatList: null,
@@ -67,20 +66,17 @@ export function renderChatHistory(chats, performCleanup = true) {
   // Preservar referencia a los chats
   let processingChats = chats;
 
-  // Verificar si estamos en nuevo chat
   const pathSegments = window.location.pathname.split('/');
   const chatId = pathSegments[2];
   const isNewChat = !chatId;
 
   // MEJORA: Cargar chats problemáticos sincrónicamente antes de renderizar
-  // para asegurar que el filtrado sea preciso
   try {
     const { loadProblematicChats } = require('../utils/chat-error-handler-matematico.js');
     if (typeof loadProblematicChats === 'function') {
       loadProblematicChats();
     }
   } catch (e) {
-    // Fallback a importación dinámica si require falla
     import('../utils/chat-error-handler-matematico.js')
       .then(module => {
         if (typeof module.loadProblematicChats === 'function') {
@@ -109,14 +105,12 @@ export function renderChatHistory(chats, performCleanup = true) {
   }
 
   // MEJORA: Verificación previa de chats problemáticos en el DOM
-  // Eliminar cualquier chat que ya esté en el DOM pero marcado como problemático
   try {
     const { problematicChatIds, isChatProblematic } = require('../utils/chat-error-handler-matematico.js');
     if (problematicChatIds && problematicChatIds.size > 0) {
       document.querySelectorAll('.sidebar-item[data-chat-id]').forEach(item => {
         const itemChatId = item.getAttribute('data-chat-id');
         if (itemChatId && isChatProblematic(itemChatId)) {
-          // Eliminar con desvanecimiento visual
           item.style.opacity = '0.5';
           item.style.transition = 'opacity 0.2s ease-out';
           setTimeout(() => {
@@ -129,56 +123,43 @@ export function renderChatHistory(chats, performCleanup = true) {
     // Silenciar error, intentaremos de otra forma
   }
 
-  // Usar un tiempo de espera adaptativo según el contexto
   const renderDelay = 0; // Sin delays
 
   setManagedTimeout(() => {
-    // Limpiar contenido existente
     clearElement(elements.chatList);
 
-    // Añadir estilos si no existen
     ensureChatGroupStylesExist();
 
-    // Importar dependencia para verificar chats problemáticos
     let isChatProblematicFn;
     try {
       const { isChatProblematic } = require('../utils/chat-error-handler-matematico.js');
       isChatProblematicFn = isChatProblematic;
     } catch (e) {
-      // Fallback a importación dinámica
       import('../utils/chat-error-handler-matematico.js').then(module => {
         isChatProblematicFn = module.isChatProblematic;
       }).catch(e => {
         console.warn('Error al importar isChatProblematic:', e);
-        // Función fallback si falla la importación
         isChatProblematicFn = () => false;
       });
     }
 
     // Si no tenemos la función, esperar a que se importe
     if (!isChatProblematicFn) {
-      // Esperar 50ms y reintento
       setTimeout(() => {
         import('../utils/chat-error-handler-matematico.js').then(module => {
           isChatProblematicFn = module.isChatProblematic;
-          // Continuar con el proceso de renderizado una vez disponible
           processAndRenderChats(processingChats, isChatProblematicFn);
         }).catch(e => {
           console.warn('Error al importar isChatProblematic en segundo intento:', e);
-          // Último recurso: función que permite todos los chats
           processAndRenderChats(processingChats, () => false);
         });
       }, 50);
     } else {
-      // Función ya disponible, proceder directamente
       processAndRenderChats(processingChats, isChatProblematicFn);
     }
 
-    // Función para procesar y renderizar los chats una vez tengamos isChatProblematic
     function processAndRenderChats(chats, filterFn) {
-      // Comprobar si estamos recibiendo el nuevo formato de chats agrupados
       if (chats && chats.grouped && chats.allChats) {
-        // Filtrar chats problemáticos antes de renderizar
         const filteredGroups = {};
         Object.keys(chats.grouped).forEach(groupKey => {
           filteredGroups[groupKey] = chats.grouped[groupKey].filter(chat =>
@@ -186,12 +167,10 @@ export function renderChatHistory(chats, performCleanup = true) {
           );
         });
 
-        // Renderizar los chats filtrados
         renderGroupedChats(elements.chatList, filteredGroups);
       }
       // Compatibilidad con el formato anterior (array de chats)
       else if (Array.isArray(chats)) {
-        // Filtrar chats problemáticos
         const filteredChats = chats.filter(chat => !filterFn(chat.id));
 
         filteredChats.forEach(chat => {
@@ -200,7 +179,6 @@ export function renderChatHistory(chats, performCleanup = true) {
         });
       }
 
-      // Actualizar ítem activo en el sidebar
       import('../core/state-matematico.js').then(module => {
         const currentChatId = module.getState('currentChatId');
         if (currentChatId) {
@@ -227,7 +205,6 @@ function hasClass(element, className) {
   try {
     return element.classList.contains(className);
   } catch (error) {
-    // Fallback a expresión regular
     return new RegExp(`(^| )${className}( |$)`, 'gi').test(element.className);
   }
 }
@@ -239,12 +216,10 @@ function hasClass(element, className) {
 export function updateActiveSidebarItem(chatId) {
   if (!chatId) return;
 
-  // Desactivar todos los chats activos primero
   document.querySelectorAll('.sidebar-item').forEach(item => {
     removeClass(item, 'active');
   });
 
-  // Activar el chat correspondiente
   const chatItem = document.querySelector(`.sidebar-item[data-chat-id="${chatId}"]`);
   if (chatItem) {
     addClass(chatItem, 'active');
@@ -269,7 +244,6 @@ function renderGroupedChats(container, groupedChats) {
   // Variable para rastrear si se ha renderizado al menos un grupo
   let hasRenderedGroup = false;
 
-  // Función auxiliar para renderizar un grupo si no está vacío
   function renderGroup(group, title) {
     if (isGroupEmpty(group)) return false;
 
@@ -287,7 +261,6 @@ function renderGroupedChats(container, groupedChats) {
     return true;
   }
 
-  // Renderizar cada grupo en orden
   renderGroup(groupedChats.today, 'Hoy');
   renderGroup(groupedChats.yesterday, 'Ayer');
   renderGroup(groupedChats.thisWeek, 'Esta semana');
@@ -399,7 +372,6 @@ export function toggleSidebar() {
     elements.mainContent = document.querySelector('.main-content');
   }
 
-  // Verificar si el sidebar está "pinned" antes de colapsar
   if (hasClass(elements.sidebar, 'pinned')) {
     // Si está pinned, lo quitamos primero
     removeClass(elements.sidebar, 'pinned');
@@ -424,7 +396,6 @@ export function pinSidebar(e) {
 
   if (!elements.sidebar) return;
 
-  // Bloquear el scroll durante 2 segundos para evitar saltos durante la transición
   if (window.scrollManager && typeof window.scrollManager.lockScrollWithReason === 'function') {
     window.scrollManager.lockScrollWithReason('sidebar-pin-action', 1000);
   }
@@ -433,15 +404,12 @@ export function pinSidebar(e) {
   removeClass(elements.sidebar, 'collapsed');
   localStorage.setItem('sidebarCollapsed', 'false');
 
-  // Aplicar el pin
   addClass(elements.sidebar, 'pinned');
   if (elements.mainContent) addClass(elements.mainContent, 'sidebar-pinned');
 
-  // Cambiar visibilidad de los botones
   if (elements.pinButton) elements.pinButton.style.display = 'none';
   if (elements.unpinButton) elements.unpinButton.style.display = 'block';
 
-  // Guardar el estado de pin en localStorage
   localStorage.setItem('sidebarPinned', 'true');
 }
 
@@ -460,20 +428,16 @@ export function unpinSidebar(e) {
 
   if (!elements.sidebar) return;
 
-  // Bloquear el scroll durante 2 segundos para evitar saltos durante la transición
   if (window.scrollManager && typeof window.scrollManager.lockScrollWithReason === 'function') {
     window.scrollManager.lockScrollWithReason('sidebar-unpin-action', 1000);
   }
 
-  // Quitar el pin
   removeClass(elements.sidebar, 'pinned');
   if (elements.mainContent) removeClass(elements.mainContent, 'sidebar-pinned');
 
-  // Cambiar visibilidad de los botones
   if (elements.pinButton) elements.pinButton.style.display = 'block';
   if (elements.unpinButton) elements.unpinButton.style.display = 'none';
 
-  // Guardar el estado de no-pin en localStorage
   localStorage.setItem('sidebarPinned', 'false');
 }
 
@@ -505,7 +469,6 @@ export function toggleAccountMenu() {
   if (isVisible) {
     removeClass(elements.accountOptions, 'active');
   } else {
-    // Cerrar cualquier otro menú abierto primero
     document.querySelectorAll('.account-options').forEach(menu => {
       removeClass(menu, 'active');
     });
@@ -525,11 +488,9 @@ export function initializeSidebarState() {
 
   if (!elements.sidebar) return;
 
-  // Obtener estados guardados
   const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
   const isPinned = localStorage.getItem('sidebarPinned') === 'true';
 
-  // Aplicar estado de pin primero (para evitar animaciones innecesarias)
   if (isPinned) {
     addClass(elements.sidebar, 'pinned');
     if (elements.mainContent) addClass(elements.mainContent, 'sidebar-pinned');
@@ -542,7 +503,6 @@ export function initializeSidebarState() {
     if (elements.unpinButton) elements.unpinButton.style.display = 'none';
   }
 
-  // Aplicar estado de colapso después
   if (isCollapsed && !isPinned) { // No colapsar si está pinned
     addClass(elements.sidebar, 'collapsed');
   } else {
@@ -557,10 +517,8 @@ export function preventInitialAnimations() {
   if (!elements.sidebar) elements.sidebar = getElement('sidebar');
   if (!elements.sidebar) return;
 
-  // Añadir clase para prevenir animaciones
   addClass(elements.sidebar, 'initial-load');
 
-  // Quitar la clase después de un breve tiempo
   setManagedTimeout(() => {
     removeClass(elements.sidebar, 'initial-load');
   }, 500, 'remove-initial-load');
@@ -584,7 +542,6 @@ function setupMobileListeners() {
   if (!elements.overlay) elements.overlay = document.getElementById('mobile-sidebar-overlay');
   if (!elements.accountOptions) elements.accountOptions = document.querySelector('.account-options');
 
-  // Verificar si los elementos existen
   if (!elements.mobileToggle || !elements.sidebar || !elements.overlay) return;
 
   // Toggle sidebar en móvil
@@ -601,7 +558,6 @@ function setupMobileListeners() {
       elements.sidebar.style.backgroundColor = 'var(--sidebar-bg-color)';
       elements.sidebar.style.backdropFilter = 'none';
 
-      // Mostrar todos los elementos relevantes
       const sidebarItems = elements.sidebar.querySelector('.sidebar-items');
       const newChatBtn = elements.sidebar.querySelector('.sidebar-item.new-chat-btn');
       const searchButton = elements.sidebar.querySelector('.search-button');
@@ -620,7 +576,6 @@ function setupMobileListeners() {
         elements.pinButton.style.display = 'none';
       }
 
-      // Mostrar textos
       elements.sidebar.querySelectorAll('.item-text, .chat-title').forEach(el => {
         el.style.display = 'inline-block';
         el.style.opacity = '1';
@@ -630,7 +585,6 @@ function setupMobileListeners() {
     }
   });
 
-  // Cerrar sidebar al hacer click en overlay
   addEvent(elements.overlay, 'click', () => {
     removeClass(elements.sidebar, 'mobile-open');
     elements.overlay.style.display = 'none';
@@ -647,7 +601,6 @@ function setupMobileListeners() {
     });
   }
 
-  // Cerrar sidebar con Escape en móvil
   addEvent(document, 'keydown', (e) => {
     if (isMobile() && e.key === 'Escape') {
       removeClass(elements.sidebar, 'mobile-open');
@@ -656,14 +609,12 @@ function setupMobileListeners() {
     }
   });
 
-  // Manejar cambios de tamaño de ventana
   addEvent(window, 'resize', () => {
     if (!isMobile()) {
       // Restablecer estado al volver a escritorio
       removeClass(elements.sidebar, 'mobile-open');
       if (elements.overlay) elements.overlay.style.display = 'none';
 
-      // Limpiar estilos inline
       elements.sidebar.style.opacity = '';
       elements.sidebar.style.backgroundColor = '';
       elements.sidebar.style.backdropFilter = '';
@@ -679,7 +630,6 @@ function setupMobileListeners() {
     }
   });
 
-  // Configurar menú de adjuntos en móvil
   setupAttachmentMenu();
 }
 
@@ -693,7 +643,6 @@ function setupAttachmentMenu() {
 
   if (!elements.attachBtn || !elements.attachmentOptions) return;
 
-  // Función para manejar el clic en el botón
   function handleAttachBtnClick(e) {
     if (isMobile()) {
       toggleClass(elements.attachBtn, 'active');
@@ -702,7 +651,6 @@ function setupAttachmentMenu() {
     }
   }
 
-  // Cerrar el menú cuando se hace clic fuera
   function handleDocumentClick(e) {
     if (isMobile() &&
       hasClass(elements.attachmentOptions, 'active') &&
@@ -713,7 +661,6 @@ function setupAttachmentMenu() {
     }
   }
 
-  // Manejar cambios de tamaño de ventana
   function handleResize() {
     if (!isMobile()) {
       removeClass(elements.attachBtn, 'active');
@@ -721,7 +668,6 @@ function setupAttachmentMenu() {
     }
   }
 
-  // Agregar event listeners usando nuestra función addEvent
   addEvent(elements.attachBtn, 'click', handleAttachBtnClick);
   addEvent(document, 'click', handleDocumentClick);
   addEvent(window, 'resize', handleResize);
@@ -750,10 +696,8 @@ function ensureInitialStyles() {
  * para evitar parpadeos durante la carga
  */
 (function immediateInit() {
-  // Aplicar estilos para prevenir animaciones durante la carga
   ensureInitialStyles();
 
-  // Detectar y aplicar el estado del sidebar lo antes posible
   if (document.readyState === 'loading') {
     addEvent(document, 'DOMContentLoaded', applyInitialSidebarState);
   } else {
@@ -764,13 +708,10 @@ function ensureInitialStyles() {
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
-    // Marcar como carga inicial
     addClass(sidebar, 'initial-load');
 
-    // Obtener el estado guardado
     const isPinned = localStorage.getItem('sidebarPinned') === 'true';
 
-    // Aplicar el estado pinned inmediatamente si corresponde
     if (isPinned) {
       addClass(sidebar, 'pinned');
       const pinButton = sidebar.querySelector('.pin-button');
@@ -784,7 +725,6 @@ function ensureInitialStyles() {
       if (mainContent) addClass(mainContent, 'sidebar-pinned');
     }
 
-    // Eliminar la clase initial-load después de un tiempo
     setManagedTimeout(() => {
       removeClass(sidebar, 'initial-load');
     }, 500, 'initial-animation-prevent');
@@ -795,7 +735,6 @@ function ensureInitialStyles() {
  * Configura los listeners del sidebar de manera unificada
  */
 export function setupSidebarListeners() {
-  // Registrar y gestionar eventos solo una vez
   if (isInitialized) return;
 
   cacheElements();
@@ -810,11 +749,9 @@ export function setupSidebarListeners() {
     }
   }
 
-  // Marcar sidebar con clase initial-load
   if (elements.sidebar) {
     addClass(elements.sidebar, 'initial-load');
 
-    // Quitar la clase tras un tiempo para permitir animaciones
     setManagedTimeout(() => {
       removeClass(elements.sidebar, 'initial-load');
     }, 500, 'remove-initial-load-class');
@@ -842,7 +779,6 @@ export function setupSidebarListeners() {
     });
   }
 
-  // Cerrar menús al hacer click fuera
   addEvent(document, 'click', function (event) {
     if (elements.accountOptions && elements.accountItem &&
       !elements.accountOptions.contains(event.target) &&
@@ -851,14 +787,11 @@ export function setupSidebarListeners() {
     }
   });
 
-  // Configurar soporte para móviles
   setupMobileListeners();
 
-  // Marcar como inicializado
   isInitialized = true;
 }
 
-// Inicializar durante la carga del DOM
 addEvent(document, 'DOMContentLoaded', setupSidebarListeners);
 
 // Asegurar limpieza de timeouts antes de descargar la página
@@ -871,28 +804,23 @@ addEvent(window, 'beforeunload', clearManagedTimeouts);
 export function removeChatFromSidebar(chatId) {
   if (!chatId) return;
 
-  // Buscar y eliminar directamente del DOM usando varios selectores para mayor robustez
   try {
     // Método 1: Selector directo
     const chatItem = document.querySelector(`.sidebar-item[data-chat-id="${chatId}"]`);
     if (chatItem) {
-      // Eliminar eventos antes de quitar del DOM
       if (typeof removeAllEvents === 'function') {
         removeAllEvents(chatItem);
       }
 
-      // Aplicar efecto visual de desvanecimiento
       chatItem.style.opacity = '0.5';
       chatItem.style.transition = 'opacity 0.2s ease-out';
 
-      // Eliminar después de la transición
       setTimeout(() => {
         if (chatItem && chatItem.parentNode) {
           chatItem.parentNode.removeChild(chatItem);
         }
       }, 200);
 
-      // Registrar para diagnóstico
       console.log(`Chat ${chatId} eliminado del sidebar mediante selector directo`);
       return;
     }
@@ -954,7 +882,6 @@ export function removeChatFromSidebar(chatId) {
   }
 }
 
-// Exportar módulo
 export default {
   renderChatHistory,
   toggleSidebar,

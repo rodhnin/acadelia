@@ -16,10 +16,8 @@ import { redisService } from '../../lib/redis.js';
 import { saveMessage } from '../../utils/chat/chat.js';
 import pool from '../../lib/dbPool.js';
 
-// Ejecutar la verificación al iniciar
 checkFontPaths();
 
-// Definir configuración central
 const DEFAULT_CONFIG = {
   maxFileSize: 50 * 1024 * 1024,
   chunkSize: 3500,
@@ -54,9 +52,6 @@ export const PDFService = {
     };
   },
 
-  /**
-   * 🚀 FUNCIÓN PRINCIPAL SIMPLIFICADA - Procesa PDF completo
-   */
   async processPDF({ fileBuffer, userId, chatId, metadata = {} }) {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
@@ -77,7 +72,6 @@ export const PDFService = {
         throw new Error('Procesamiento cancelado por el usuario');
       }
 
-      // Guardar archivo
       const fileInfo = await PDFStorageService.savePDFFile(
         fileBuffer, chatId, userId, metadata.originalName || 'document.pdf'
       );
@@ -99,7 +93,6 @@ export const PDFService = {
 
       updateProcessingProgress(chatId, userId, 40, 'Procesando con Mistral OCR');
 
-      // ✅ PROCESAMIENTO COMPLETO CON MISTRAL OCR
       const ocrResult = await this.processCompletePDFWithMistral(
         fileBuffer, userId, chatId, metadata, fileInfo
       );
@@ -109,7 +102,6 @@ export const PDFService = {
 
       updateProcessingProgress(chatId, userId, 70, `OCR completado - ${totalPages} páginas`);
 
-      // ✅ GUARDAR TODOS LOS DOCUMENTOS
       await PDFStorageService.storeDocumentsInDB(
         ocrResult.allDocuments, userId, chatId, metadata,
         this.processingMetrics, this.generateEmbedding.bind(this)
@@ -117,7 +109,6 @@ export const PDFService = {
 
       updateProcessingProgress(chatId, userId, 90, 'Documentos guardados');
 
-      // ✅ ENVIAR MENSAJE ÚNICO DE COMPLETADO
       const messageInfo = await this.sendCompletionMessage(userId, chatId, metadata, totalPages);
 
       updateProcessingProgress(chatId, userId, 100, 'Procesamiento completado');
@@ -162,9 +153,6 @@ export const PDFService = {
     }
   },
 
-  /**
-   * ✅ FUNCIÓN SIMPLIFICADA - Procesamiento con Mistral OCR
-   */
   async processCompletePDFWithMistral(fileBuffer, userId, chatId, metadata, fileInfo) {
     try {
       console.log("Procesando PDF completo con Mistral OCR...");
@@ -200,7 +188,6 @@ export const PDFService = {
 
       const allDocuments = MistralOCRService.convertOCRToDocuments(ocrResult.ocr, userId, chatId);
 
-      // Obtener conteo real de páginas de Mistral OCR
       let actualPageCount = 1;
       if (ocrResult.ocr && ocrResult.ocr.pages && Array.isArray(ocrResult.ocr.pages)) {
         actualPageCount = ocrResult.ocr.pages.length;
@@ -231,9 +218,6 @@ export const PDFService = {
     }
   },
 
-  /**
-   * ✅ MENSAJE ÚNICO SIMPLIFICADO
-   */
   async sendCompletionMessage(userId, chatId, metadata, totalPages) {
     try {
       console.log(`📤 Enviando mensaje de completado para PDF de ${totalPages} páginas`);
@@ -471,9 +455,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
     }
   },
 
-  /**
-   * ✅ EXTRACCIÓN DE TEXTO SIMPLIFICADA CON CACHÉ
-   */
   async extractPDFTextForChat(chatId, userId, options = {}) {
     try {
       const {
@@ -486,7 +467,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
 
       console.log(`📚 Extrayendo texto del PDF - chatId: ${chatId}, userId: ${userId}, pdfId: ${pdfId || 'no especificado'}`);
 
-      // Intentar obtener de caché
       if (useCache) {
         try {
           const cacheOptions = { maxPages, includePageNumbers, specificPage };
@@ -501,10 +481,8 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         }
       }
 
-      // Ejecutar extracción
       const result = await this._performTextExtraction(chatId, userId, options);
 
-      // Guardar en caché si fue exitoso
       if (useCache && result.success) {
         try {
           const cacheOptions = { maxPages, includePageNumbers, specificPage };
@@ -525,9 +503,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
     }
   },
 
-  /**
-   * ✅ FUNCIÓN CORE DE EXTRACCIÓN DE TEXTO
-   */
   async _performTextExtraction(chatId, userId, options = {}) {
     const {
       maxPages = 3,
@@ -539,7 +514,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
     try {
       const extractAllPages = maxPages <= 0;
 
-      // Obtener información del archivo PDF
       let pdfFileInfo;
       try {
         pdfFileInfo = await PDFStorageService.getPDFFileInfo(chatId, userId, pdfId);
@@ -557,7 +531,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         };
       }
 
-      // Verificar que el archivo existe físicamente
       const pdfPath = pdfFileInfo.path;
       if (!pdfPath || !fs.existsSync(pdfPath)) {
         return {
@@ -568,7 +541,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
 
       PDFUtils.extendTempFileLife(pdfPath);
 
-      // Obtener documentos
       let documents;
       try {
         documents = await PDFStorageService.findPDFDocumentsByChat(
@@ -588,14 +560,12 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         };
       }
 
-      // Ordenar por número de página
       documents.sort((a, b) => {
         const pageA = a.metadata?.page || 0;
         const pageB = b.metadata?.page || 0;
         return pageA - pageB;
       });
 
-      // Filtrar documentos según las opciones
       let documentsToShow = [...documents];
 
       if (specificPage !== null) {
@@ -633,7 +603,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         documentsToShow = limitedDocs;
       }
 
-      // Formatear el texto
       let formattedText = "";
       let currentPage = null;
       const pagesIncluded = new Set();
@@ -699,7 +668,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         };
       }
 
-      // Obtener el texto completo de la página como alternativa
       try {
         const textExtractionResult = await this.extractPDFTextForChat(chatId, userId, {
           maxPages: 1,
@@ -731,7 +699,6 @@ Tu documento PDF ha sido procesado exitosamente y está listo para consultas.`;
         console.log("❌ Error obteniendo texto de página:", textError);
       }
 
-      // Fallback
       return {
         success: false,
         error: "No se pudo extraer el texto específico de la región seleccionada",

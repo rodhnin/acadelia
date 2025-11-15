@@ -1,4 +1,3 @@
-// backend/utils/chat/chat.js (SIN TRUNCAMIENTO - SOLO WARNING AL 75%)
 
 import pool from "../../lib/dbPool.js";
 import { supabase } from "../../lib/supabaseService.js";
@@ -23,7 +22,6 @@ async function saveMessage({
             throw new Error("Parámetros incompletos");
         }
 
-        // ✅ VALIDAR QUE TENGA UNO U OTRO, NO AMBOS
         const hasAva = avaId !== null && avaId !== undefined;
         const hasHerramienta = herramientaId !== null && herramientaId !== undefined;
         
@@ -35,7 +33,6 @@ async function saveMessage({
             throw new Error("No se puede usar avaId Y herramientaId simultáneamente");
         }
 
-        // ✅ SIN TRUNCAMIENTO: Usar mensaje tal como viene
         let finalMessage = message;
 
         // 2. Convertir embedding a array numérico
@@ -62,7 +59,6 @@ async function saveMessage({
         // 4. Formatear para PostgreSQL
         const embeddingVector = `[${embeddingArray.join(',')}]`;
 
-        // ✅ 5. Query con ambos campos
         const query = `
             INSERT INTO chat_history 
                 (id_user, id_ava, id_herramienta, id_chat, role, message, embedding)
@@ -75,7 +71,7 @@ async function saveMessage({
             hasHerramienta ? Number(herramientaId) : null,
             chatId,
             role,
-            finalMessage, // ✅ MENSAJE SIN TRUNCAR
+            finalMessage,
             embeddingVector
         ];
 
@@ -91,7 +87,6 @@ async function saveMessage({
             
         await client.query(updateQuery, [chatId]);
         
-        // ✅ RESPUESTA SIMPLE SIN INFORMACIÓN DE TRUNCAMIENTO
         return { 
             success: true, 
             id: result.rows[0].id,
@@ -124,7 +119,6 @@ async function saveMultimodalMessage({
             throw new Error("Parámetros incompletos");
         }
 
-        // Validar que tenga uno u otro, no ambos
         const hasAva = avaId !== null && avaId !== undefined;
         const hasHerramienta = herramientaId !== null && herramientaId !== undefined;
         
@@ -136,10 +130,8 @@ async function saveMultimodalMessage({
             throw new Error("No se puede usar avaId Y herramientaId simultáneamente");
         }
 
-        // ⭐ FORMATEO PARA COLUMNA TEXT CON DOBLE STRINGIFY ⭐
         let finalMessage = message;
         
-        // Detectar diferentes formatos
         const isDoubleStringified = typeof message === 'string' && 
                                    message.startsWith('"{') && 
                                    message.endsWith('}"');
@@ -149,7 +141,6 @@ async function saveMultimodalMessage({
                                    !isDoubleStringified;
         const isObjectMessage = typeof message === 'object' && message !== null;
         
-        // ✅ SIN TRUNCAMIENTO: Solo formatear correctamente
         if (isDoubleStringified) {
             // Ya está doblemente escapado
             finalMessage = message;
@@ -217,19 +208,17 @@ async function saveMultimodalMessage({
             hasHerramienta ? Number(herramientaId) : null,
             chatId,
             role,
-            finalMessage, // ✅ MENSAJE SIN TRUNCAR
+            finalMessage,
             embeddingVector
         ];
 
         const result = await client.query(query, values);
         
-        // Actualizar last_message_date
         await client.query(
             `UPDATE chat SET last_message_date = NOW() WHERE id_chat = $1::UUID`,
             [chatId]
         );
         
-        // ✅ RESPUESTA SIMPLE SIN INFORMACIÓN DE TRUNCAMIENTO
         return { 
             success: true, 
             id: result.rows[0].id,
@@ -253,10 +242,8 @@ async function loadRelevantChatHistory(userId, avaId, chatId, query, herramienta
 
         const queryEmbedding = await embeddings.embedQuery(query);
         
-        // ✅ DETERMINAR PARÁMETROS SEGÚN TIPO
         let rpcParams;
         if (herramientaId !== null && herramientaId !== undefined) {
-            // Para herramientas: buscar por id_herramienta
             rpcParams = {
                 query_embedding: queryEmbedding,
                 id_user_param: userId,
@@ -266,7 +253,6 @@ async function loadRelevantChatHistory(userId, avaId, chatId, query, herramienta
                 match_count: 6,
             };
         } else {
-            // Para AVAs: buscar por id_ava (lógica original)
             rpcParams = {
                 query_embedding: queryEmbedding,
                 id_user_param: userId,
@@ -303,12 +289,10 @@ async function loadChatHistoryForOpenAI(userId, avaId, chatId, query, herramient
             throw new Error("UUID inválido");
         }
 
-        // Generar embedding para la consulta
         const queryEmbedding = await embeddings.embedQuery(
             typeof query === 'string' ? query : extractTextFromMultimodal(query)
         );
         
-        // ✅ DETERMINAR PARÁMETROS SEGÚN TIPO
         let rpcParams;
         if (herramientaId !== null && herramientaId !== undefined) {
             rpcParams = {
@@ -338,7 +322,6 @@ async function loadChatHistoryForOpenAI(userId, avaId, chatId, query, herramient
             throw new Error("Formato de respuesta inválido de Supabase");
         }
 
-        // Convertir al formato esperado por OpenAI
         return data.map(item => {
             if (item.is_multimodal) {
                 try {
@@ -368,7 +351,6 @@ async function loadChatHistoryForOpenAI(userId, avaId, chatId, query, herramient
     }
 }
 
-// ===== FUNCIONES PARA MANEJO DE DOCUMENTOS (SIN CAMBIOS) =====
 
 /**
  * Obtiene información de documentos adjuntos de un chat
@@ -417,7 +399,6 @@ async function getDocumentContent(fileId, userId) {
             return null;
         }
         
-        // Actualizar accessed_at
         await client.query(
             'UPDATE file_attachments SET accessed_at = NOW() WHERE file_id = $1',
             [fileId]

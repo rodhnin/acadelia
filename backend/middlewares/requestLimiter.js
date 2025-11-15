@@ -1,10 +1,8 @@
-// backend/middlewares/requestLimiter.js
 import { acquireSemaphore, completeSemaphore, failSemaphore } from '../lib/throttleService.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-// Obtener la ruta base del proyecto
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..', '..');
@@ -25,7 +23,6 @@ export function limitRequests(type, options = {}) {
   const config = { ...defaults, ...options };
   
   return async (req, res, next) => {
-    // Extraer metadatos básicos para el seguimiento
     const metadata = {
       path: req.path,
       method: req.method,
@@ -35,7 +32,6 @@ export function limitRequests(type, options = {}) {
     };
     
     try {
-      // Intentar adquirir un semáforo (esperar si está lleno)
       const jobId = await acquireSemaphore(
         type, 
         metadata, 
@@ -43,7 +39,6 @@ export function limitRequests(type, options = {}) {
         config.maxWaitTime
       );
       
-      // Si no se pudo adquirir, rechazar la petición
       if (!jobId) {
         // Si es solicitud de API, devolver JSON
         if (req.path.startsWith('/api/') || req.xhr || req.get('accept')?.includes('application/json')) {
@@ -53,17 +48,14 @@ export function limitRequests(type, options = {}) {
           });
         }
         
-        // Para navegación web, mostrar página 429
         const errorPath = path.join(projectRoot, 'frontend', 'views', 'error', '429.html');
         if (fs.existsSync(errorPath)) {
           return res.status(config.rejectStatusCode).sendFile(errorPath);
         }
         
-        // Fallback
         return res.status(config.rejectStatusCode).send('Demasiadas solicitudes en proceso. Inténtalo de nuevo más tarde.');
       }
       
-      // Guardar jobId en la petición para uso posterior
       req.throttleJobId = jobId;
       
       // Interceptar métodos de respuesta para detectar finalización
@@ -71,7 +63,6 @@ export function limitRequests(type, options = {}) {
       const originalJson = res.json;
       const originalEnd = res.end;
       
-      // Función para marcar trabajo como completado
       const markComplete = () => {
         if (req.throttleJobId) {
           const result = {
@@ -85,7 +76,6 @@ export function limitRequests(type, options = {}) {
             failSemaphore(req.throttleJobId, `Error HTTP ${res.statusCode}`);
           }
           
-          // Limpiar para evitar duplicados
           req.throttleJobId = null;
         }
       };
@@ -106,7 +96,6 @@ export function limitRequests(type, options = {}) {
         return originalEnd.apply(this, args);
       };
       
-      // Manejar errores para marcar trabajos como fallidos
       const originalNext = next;
       const errorHandlingNext = (err) => {
         if (err && req.throttleJobId) {
@@ -116,7 +105,6 @@ export function limitRequests(type, options = {}) {
         return originalNext(err);
       };
       
-      // Continuar con el próximo middleware
       errorHandlingNext();
     } catch (error) {
       // Si hubo un error al adquirir semáforo (ej: timeout de espera)

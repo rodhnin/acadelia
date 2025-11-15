@@ -12,7 +12,6 @@
 export function createElement(tag, attrs = {}, content) {
     const element = document.createElement(tag);
     
-    // Establecer atributos
     for (const [key, value] of Object.entries(attrs)) {
         if (key === 'className') {
             element.className = value;
@@ -26,7 +25,6 @@ export function createElement(tag, attrs = {}, content) {
         }
     }
     
-    // Añadir contenido
     if (content !== undefined) {
         if (typeof content === 'string') {
             element.innerText = content;
@@ -67,7 +65,6 @@ export function clearElement(element) {
 export function createTableRow(cells, options = {}) {
     const row = document.createElement('tr');
     
-    // Aplicar opciones a la fila
     if (options.className) {
         row.className = options.className;
     }
@@ -80,7 +77,6 @@ export function createTableRow(cells, options = {}) {
         row.addEventListener('click', options.onClick);
     }
     
-    // Crear celdas
     cells.forEach(cell => {
         let td;
         
@@ -172,7 +168,6 @@ export function createIconButton(icon, onClick, tooltip, className = 'btn-sm btn
     if (tooltip) {
         button.setAttribute('title', tooltip);
         
-        // Inicializar tooltip si Bootstrap está disponible
         if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
             new bootstrap.Tooltip(button);
         }
@@ -189,11 +184,9 @@ export function createIconButton(icon, onClick, tooltip, className = 'btn-sm btn
  * @returns {HTMLElement} Elemento de paginación
  */
 export function createPagination(currentPage, totalPages, onPageChange) {
-    // Crear contenedor
     const pagination = document.createElement('ul');
     pagination.className = 'pagination pagination-sm';
     
-    // Añadir botón de anterior
     const prevBtn = document.createElement('li');
     prevBtn.className = `page-item ${currentPage <= 1 ? 'disabled' : ''}`;
     
@@ -212,7 +205,6 @@ export function createPagination(currentPage, totalPages, onPageChange) {
     prevBtn.appendChild(prevLink);
     pagination.appendChild(prevBtn);
     
-    // Determinar rango de páginas a mostrar
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
     
@@ -221,7 +213,6 @@ export function createPagination(currentPage, totalPages, onPageChange) {
         startPage = Math.max(1, endPage - 4);
     }
     
-    // Añadir botones de página
     for (let i = startPage; i <= endPage; i++) {
         const pageBtn = document.createElement('li');
         pageBtn.className = `page-item ${i === currentPage ? 'active' : ''}`;
@@ -242,7 +233,6 @@ export function createPagination(currentPage, totalPages, onPageChange) {
         pagination.appendChild(pageBtn);
     }
     
-    // Añadir botón de siguiente
     const nextBtn = document.createElement('li');
     nextBtn.className = `page-item ${currentPage >= totalPages ? 'disabled' : ''}`;
     
@@ -305,7 +295,6 @@ export function updatePaginationInfo(currentPage, totalPages, itemCount, perPage
         totalElement.textContent = itemCount;
     }
     
-    // Actualizar botones de paginación
     const prevButton = document.getElementById('prev-page-btn');
     const nextButton = document.getElementById('next-page-btn');
     
@@ -357,10 +346,8 @@ export function addSpinner(container, size = '', color = 'primary') {
     
     if (!el) return null;
     
-    // Limpiar contenedor
     clearElement(el);
     
-    // Crear spinner
     const spinner = document.createElement('div');
     spinner.className = `spinner-border text-${color} ${size ? `spinner-border-${size}` : ''}`;
     spinner.setAttribute('role', 'status');
@@ -381,21 +368,17 @@ export function addSpinner(container, size = '', color = 'primary') {
  * @param {string} filename - Nombre del archivo
  */
 export function downloadBlob(blob, filename) {
-    // Crear URL para el blob
     const url = URL.createObjectURL(blob);
     
-    // Crear enlace de descarga
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     
-    // Añadir temporalmente al documento
     document.body.appendChild(link);
     
     // Simular clic
     link.click();
     
-    // Limpiar
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }

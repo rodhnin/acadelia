@@ -17,7 +17,6 @@ export const contentService = {
     const client = await pool.connect();
     
     try {
-      // Generar embedding para el contenido
       const embeddingString = JSON.stringify({
         type,
         channel,
@@ -38,7 +37,6 @@ export const contentService = {
       
       await client.query('COMMIT');
       
-      // ✅ REGISTRAR NOTIFICACIÓN SIEMPRE QUE SE GUARDE CONTENIDO
       if (result.rows[0]) {
         try {
           const notification = notificationTracker.trackContent(result.rows[0]);
@@ -65,7 +63,6 @@ export const contentService = {
     try {
       console.log(`🚀 Generando contenido tipo: ${type}, canal: ${channel}, tema: ${theme}`);
       
-      // ✅ USAR PLANTILLA ESPECÍFICA PARA EL TIPO
       const customPrompt = getPromptTemplate(type, {
         type,
         channel,
@@ -75,7 +72,6 @@ export const contentService = {
       
       console.log(`📝 Usando plantilla específica para tipo: ${type}`);
       
-      // ✅ MENSAJE DEL SISTEMA MEJORADO PARA ESTRUCTURAS ESPECÍFICAS
       const systemMessage = `${CONTENT_GENERATION_ENHANCED}
 
 CRÍTICO: Debes generar contenido con estructura específica para ${type}. 
@@ -90,7 +86,6 @@ Reglas ESTRICTAS:
 7. NO agregues campos con underscores o metadatos adicionales
 8. Asegúrate de que toda la información esté dentro de la estructura correcta`;
       
-      // Generar contenido con IA usando el prompt personalizado
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini-2024-07-18",
         messages: [
@@ -110,7 +105,6 @@ Reglas ESTRICTAS:
       console.log("🤖 Respuesta de IA recibida, procesando...");
       const rawAIResponse = completion.choices[0].message.content;
       
-      // ✅ PARSEAR Y VALIDAR ESTRUCTURA ESPECÍFICA
       let aiResponseObj;
       try {
         aiResponseObj = JSON.parse(rawAIResponse);
@@ -134,7 +128,6 @@ Reglas ESTRICTAS:
         console.log("✅ JSON sanitizado y parseado");
       }
       
-      // ✅ VALIDAR ESTRUCTURA ESPECÍFICA DEL TIPO
       console.log("🔍 Validando estructura específica...");
       const structureValidation = validateSpecificStructure(aiResponseObj, type);
       
@@ -142,7 +135,6 @@ Reglas ESTRICTAS:
         console.warn("⚠️ Estructura no válida:", structureValidation.errors);
         console.log("🔧 Intentando limpiar y adaptar estructura...");
         
-        // Intentar limpiar y adaptar la estructura
         aiResponseObj = cleanAIResponseWithStructure(aiResponseObj, type);
         
         if (!aiResponseObj) {
@@ -152,13 +144,11 @@ Reglas ESTRICTAS:
         console.log("✅ Estructura específica válida");
       }
       
-      // ✅ VERIFICAR QUE THEME ESTÉ PRESENTE
       if (!aiResponseObj.theme) {
         console.warn("⚠️ Campo theme faltante, agregando...");
         aiResponseObj.theme = `${theme} con Capibara Profesor para estudiantes de ${target?.carrera || 'universidad'}`;
       }
       
-      // ✅ VERIFICAR QUE EL OBJETO ESPECÍFICO DEL TIPO ESTÉ PRESENTE
       if (!aiResponseObj[type]) {
         console.warn(`⚠️ Campo ${type} faltante, creando estructura básica...`);
         aiResponseObj[type] = {
@@ -168,7 +158,6 @@ Reglas ESTRICTAS:
         };
       }
       
-      // ✅ VERIFICAR PLANTILLAS PRESERVADAS
       const responseText = JSON.stringify(aiResponseObj);
       const templatesFound = (responseText.match(/\{\{[^}]+\}\}/g) || []).length;
       
@@ -178,7 +167,6 @@ Reglas ESTRICTAS:
         console.warn("⚠️ No se encontraron plantillas, puede ser que se hayan perdido");
       }
       
-      // ✅ SANITIZACIÓN FINAL PRESERVANDO ESTRUCTURA
       console.log("🧹 Aplicando sanitización final...");
       const finalSanitization = sanitizeAIGeneratedContent(aiResponseObj, {
         preserveTemplates: true,
@@ -199,7 +187,6 @@ Reglas ESTRICTAS:
         finalPayload = aiResponseObj;
       }
       
-      // ✅ LIMPIEZA FINAL - REMOVER CAMPOS NO DESEADOS
       Object.keys(finalPayload).forEach(key => {
         if (key.startsWith('_') && key !== '_id') {
           console.log(`🗑️ Removiendo campo no deseado: ${key}`);
@@ -207,7 +194,6 @@ Reglas ESTRICTAS:
         }
       });
       
-      // ✅ LOG DE ESTRUCTURA FINAL
       console.log("✅ Payload final preparado:", Object.keys(finalPayload));
       console.log("📊 Estructura validada:", {
         theme: finalPayload.theme ? '✓' : '✗',
@@ -216,7 +202,6 @@ Reglas ESTRICTAS:
         templatesPreserved: templatesFound > 0 ? '✓' : '✗'
       });
       
-      // ✅ LOG DE CONTENIDO ESPECÍFICO DEL TIPO
       if (finalPayload[type]) {
         const typeSpecific = finalPayload[type];
         console.log(`📝 Contenido ${type}:`, {
@@ -226,7 +211,6 @@ Reglas ESTRICTAS:
         });
       }
       
-      // Guardar el contenido con estructura específica - ✅ ESTO ACTIVARÁ LA NOTIFICACIÓN
       const result = await this.createContent({
         type,
         channel,
@@ -242,14 +226,12 @@ Reglas ESTRICTAS:
     } catch (error) {
       console.error("❌ Error generando contenido con estructura específica:", error);
       
-      // ✅ CREAR CONTENIDO DE RESPALDO CON ESTRUCTURA ESPECÍFICA
       console.log("🆘 Generando contenido de respaldo con estructura específica...");
       
       const fallbackPayload = this.createFallbackContent(type, channel, target, theme);
       
       console.log("🆘 Usando contenido de respaldo con estructura válida");
       
-      // ✅ ESTO TAMBIÉN ACTIVARÁ LA NOTIFICACIÓN
       return await this.createContent({
         type,
         channel,
@@ -258,7 +240,6 @@ Reglas ESTRICTAS:
     }
   },
 
-  // ✅ NUEVA FUNCIÓN: Crear contenido de respaldo con estructura específica
   createFallbackContent(type, channel, target, theme) {
     const baseStructure = {
       theme: `${theme || 'Contenido educativo'} con Capibara Profesor para estudiantes`,
@@ -269,7 +250,6 @@ Reglas ESTRICTAS:
       }
     };
     
-    // ✅ ESTRUCTURAS ESPECÍFICAS DE RESPALDO POR TIPO
     switch (type) {
       case 'video':
         return {
@@ -443,11 +423,9 @@ Reglas ESTRICTAS:
   
   async findSimilarContents(contentParams, limit = 5) {
     try {
-      // Generar embedding para búsqueda
       const embeddingString = JSON.stringify(contentParams);
       const embeddingVector = await embeddings.embedQuery(embeddingString);
       
-      // Usar función de matching
       const { data, error } = await supabase.rpc('match_marketing_contents', {
         query_embedding: embeddingVector,
         match_count: limit
@@ -462,7 +440,6 @@ Reglas ESTRICTAS:
     }
   },
 
-  // 🆕 NUEVO: Eliminar contenido específico
   async deleteContent(contentId) {
     const client = await pool.connect();
     
@@ -471,7 +448,6 @@ Reglas ESTRICTAS:
       
       console.log('🔍 Verificando existencia de contenido:', contentId);
       
-      // Verificar que el contenido existe
       const checkResult = await client.query(
         'SELECT id, type, channel FROM marketing_contents WHERE id = $1',
         [contentId]
@@ -489,7 +465,6 @@ Reglas ESTRICTAS:
       const content = checkResult.rows[0];
       console.log('✅ Contenido encontrado:', content.type, '-', content.channel);
       
-      // Eliminar interacciones relacionadas
       try {
         await client.query(
           'DELETE FROM marketing_interactions WHERE content_id = $1',
@@ -498,10 +473,8 @@ Reglas ESTRICTAS:
         console.log('🧹 Interacciones relacionadas eliminadas');
       } catch (interactionError) {
         console.warn('⚠️ Error eliminando interacciones relacionadas:', interactionError.message);
-        // Continuar aunque falle la eliminación de interacciones
       }
       
-      // Eliminar el contenido
       const deleteResult = await client.query(
         'DELETE FROM marketing_contents WHERE id = $1 RETURNING id, type, channel',
         [contentId]
@@ -537,7 +510,6 @@ Reglas ESTRICTAS:
     }
   },
 
-  // 🆕 NUEVO: Eliminar todos los contenidos
   async deleteAllContents() {
     const client = await pool.connect();
     
@@ -546,7 +518,6 @@ Reglas ESTRICTAS:
       
       console.log('🔍 Contando contenidos antes de eliminar...');
       
-      // Contar contenidos antes de eliminar
       const countResult = await client.query('SELECT COUNT(*) FROM marketing_contents');
       const totalContents = parseInt(countResult.rows[0].count);
       
@@ -561,7 +532,6 @@ Reglas ESTRICTAS:
         };
       }
       
-      // Eliminar todas las interacciones relacionadas
       try {
         const interactionsDeleteResult = await client.query(
           'DELETE FROM marketing_interactions WHERE content_id IN (SELECT id FROM marketing_contents)'
@@ -570,10 +540,8 @@ Reglas ESTRICTAS:
         console.log(`🧹 ${interactionsDeleteResult.rowCount} interacciones eliminadas`);
       } catch (interactionError) {
         console.warn('⚠️ Error eliminando interacciones relacionadas:', interactionError.message);
-        // Continuar aunque falle la eliminación de interacciones
       }
       
-      // Eliminar todos los contenidos
       const deleteResult = await client.query('DELETE FROM marketing_contents');
       const deletedCount = deleteResult.rowCount;
       

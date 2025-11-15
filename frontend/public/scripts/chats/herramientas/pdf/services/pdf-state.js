@@ -48,7 +48,6 @@ export function on(eventName, callback) {
   
   eventCallbacks[eventName].push(callback);
   
-  // Devolver función para eliminar el listener
   return () => {
     const index = eventCallbacks[eventName].indexOf(callback);
     if (index !== -1) {
@@ -95,19 +94,16 @@ export async function checkPDF(forceCheck = false) {
     return false;
   }
   
-  // Verificar si ya hemos verificado recientemente
   const now = Date.now();
   const timeSinceLastCheck = now - pdfState.lastCheck;
   
   // Si se fuerza la verificación o ha pasado suficiente tiempo, o si acabamos de cambiar de chat
   if (forceCheck || timeSinceLastCheck > 3000 || pdfState.lastChatId !== chatId) {
-    // Actualizar el último chatId verificado
     pdfState.lastChatId = chatId;
     
     try {
       const result = await hasPDF(chatId);
       
-      // Actualizar estado
       updatePDFState({
         hasPDF: result.hasPDF,
         pdfInfo: result.pdfInfo,
@@ -123,7 +119,6 @@ export async function checkPDF(forceCheck = false) {
       
       return result.hasPDF;
     } catch (error) {
-      // Solo notificar si es un error persistente que afecta al usuario
       if (forceCheck && timeSinceLastCheck > 10000) {
         acadelWarning("Problema verificando PDF", "Acadel tiene dificultades accediendo a tu documento. Intenta recargar la página");
       }
@@ -139,13 +134,10 @@ export async function checkPDF(forceCheck = false) {
  * @param {Object} newState - Nuevos valores para el estado
  */
 export function updatePDFState(newState) {
-  // Verificar cambios en propiedades específicas para disparar eventos
   const oldState = { ...pdfState };
   
-  // Actualizar el estado
   Object.assign(pdfState, newState);
   
-  // Disparar eventos según los cambios (sin notificaciones, son cambios internos)
   if (oldState.currentPage !== pdfState.currentPage && 'currentPage' in newState) {
     triggerEvent('onPageChanged', pdfState.currentPage);
   }
@@ -162,7 +154,6 @@ export function updatePDFState(newState) {
     triggerEvent('onRegionSelected', pdfState.selectedRegion);
   }
   
-  // Verificar cambios en hasPDF para disparar el evento correspondiente
   if (oldState.hasPDF && !pdfState.hasPDF && 'hasPDF' in newState) {
     triggerEvent('onPDFRemoved', oldState.pdfInfo);
   }
@@ -183,7 +174,6 @@ export function getPDFState(property) {
  */
 export function setCurrentPage(pageNum) {
   if (pageNum < 1 || pageNum > pdfState.totalPages) {
-    // Solo notificar si el usuario intenta una página obviamente inválida
     if (pageNum < 1 || pageNum > pdfState.totalPages + 10) {
       acadelWarning("Página no disponible", `Acadel solo puede mostrar páginas del 1 al ${pdfState.totalPages}`);
     }
@@ -212,7 +202,6 @@ export function setViewMode(mode) {
     'split': 'vista dividida'
   };
   
-  // Solo notificar en modo split ya que es el más útil
   if (mode === 'split') {
     acadelInfo("Vista optimizada", "Acadel activó la vista dividida para que veas el PDF y el texto al mismo tiempo");
   }
@@ -225,7 +214,6 @@ export function setViewMode(mode) {
 export function togglePDFPanel(show = !pdfState.showPanel) {
   // Si el valor es el mismo, forzar actualización de todos modos
   if (show === pdfState.showPanel) {
-    // Disparar evento explícitamente sin notificación
     triggerEvent('onPanelToggled', show);
     return;
   }
@@ -282,7 +270,6 @@ export function cacheThumbnail(pageNum, url) {
 export function setLoading(isLoading) {
   updatePDFState({ loading: isLoading });
   
-  // Solo notificar si la carga toma mucho tiempo
   if (isLoading) {
     setTimeout(() => {
       if (pdfState.loading) {
@@ -314,11 +301,9 @@ export async function initPDFCheck() {
     showPanel: false // Siempre iniciar con el panel cerrado
   });
   
-  // Verificar si tiene PDF y devolver la promesa directamente
   return checkPDF(true).then(hasPDF => {
     setLoading(false);
     
-    // Actualizar visibilidad de botones
     return import('../utils/pdf-button-controller.js').then(module => {
       if (typeof module.updatePDFButtonsVisibility === 'function') {
         module.updatePDFButtonsVisibility(hasPDF);
@@ -350,7 +335,6 @@ export async function initPDFCheck() {
   }).catch(error => {
     setLoading(false);
     
-    // Solo notificar errores críticos que afecten al usuario
     if (error.message.includes('network') || error.message.includes('fetch')) {
       acadelWarning("Problema de conexión", "Acadel no puede verificar si hay documentos. Revisa tu conexión");
     }
@@ -382,7 +366,6 @@ export function forceCheckAndShowPanel() {
     showPanel: false
   });
   
-  // Esperar un momento y verificar
   setTimeout(async () => {
     const chatId = getState('currentChatId');
     if (!chatId) return;

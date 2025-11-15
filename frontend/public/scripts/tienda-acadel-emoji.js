@@ -19,7 +19,6 @@
             this.processing = false;
             this.processedElements = new WeakSet();
             
-            // 🎯 Ruta de tu imagen de capibara
             this.capibaraImagePath = '/images/capibara-emoji.webp';
             
             this.ultraFastObserver = null;
@@ -37,7 +36,6 @@
             console.log('🦫 Tienda Script: Cargando sistema de emojis del Profesor Acadel...');
             
             try {
-                // Verificar que la imagen existe
                 await this.preloadCapibaraImage();
                 
                 // CSS para la imagen
@@ -49,7 +47,6 @@
                 // Observer adicional para capturas perdidas
                 this.setupBackupObserver();
                 
-                // Procesar contenido existente
                 this.replaceExistingCapibaras();
                 
                 this.initialized = true;
@@ -166,9 +163,7 @@
             if (this.ultraFastObserver) return;
 
             this.ultraFastObserver = new MutationObserver((mutations) => {
-                // Procesar inmediatamente
                 mutations.forEach(mutation => {
-                    // Procesar nodos agregados
                     mutation.addedNodes.forEach(node => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             this.processElementInstantly(node);
@@ -177,7 +172,6 @@
                         }
                     });
                     
-                    // Procesar cambios de texto
                     if (mutation.type === 'characterData' && mutation.target.nodeType === Node.TEXT_NODE) {
                         if (this.containsCapibara(mutation.target.textContent)) {
                             this.replaceCapibaraInTextNode(mutation.target);
@@ -186,7 +180,6 @@
                 });
             });
 
-            // Observar todo el body
             this.ultraFastObserver.observe(document.body, {
                 childList: true,
                 subtree: true,
@@ -206,7 +199,6 @@
             this.backupInterval = setInterval(() => {
                 if (this.processing) return;
                 
-                // Buscar capibaras sin procesar
                 const walker = document.createTreeWalker(
                     document.body,
                     NodeFilter.SHOW_TEXT,
@@ -242,7 +234,6 @@
             if (!element || !this.initialized) return;
             
             try {
-                // Buscar todos los nodos de texto con capibaras
                 const walker = document.createTreeWalker(
                     element,
                     NodeFilter.SHOW_TEXT,
@@ -261,7 +252,6 @@
                     textNodes.push(node);
                 }
 
-                // Procesar todos los nodos encontrados
                 textNodes.forEach(textNode => {
                     this.replaceCapibaraInTextNode(textNode);
                 });
@@ -283,19 +273,15 @@
             try {
                 console.log('🦫 Tienda Script: ¡Profesor Acadel detectado! Reemplazando...');
                 
-                // Crear fragment para nuevos nodos
                 const fragment = document.createDocumentFragment();
                 
-                // Dividir texto por emoji
                 const parts = text.split('🦫');
                 
                 for (let i = 0; i < parts.length; i++) {
-                    // Agregar texto antes del emoji
                     if (parts[i]) {
                         fragment.appendChild(document.createTextNode(parts[i]));
                     }
                     
-                    // Agregar imagen (excepto última parte)
                     if (i < parts.length - 1) {
                         const img = document.createElement('img');
                         img.className = 'tienda-acadel-emoji-image';
@@ -308,7 +294,6 @@
                     }
                 }
                 
-                // Reemplazar nodo original
                 textNode.parentNode.replaceChild(fragment, textNode);
                 
                 console.log('✅ Tienda Script: Profesor Acadel reemplazado');
@@ -326,7 +311,6 @@
             
             console.log('🔄 Tienda Script: Buscando Profesor Acadel...');
             
-            // Procesar todo el body
             this.processElementInstantly(document.body);
             
             console.log('✅ Tienda Script: Procesamiento inicial completado');
@@ -341,10 +325,8 @@
             testDiv.style.cssText = 'position: fixed; top: 20px; left: 20px; background: #fff; padding: 15px; border: 2px solid #656d4a; border-radius: 8px; z-index: 9999; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #333;';
             document.body.appendChild(testDiv);
             
-            // Procesar inmediatamente
             this.processElementInstantly(testDiv);
             
-            // Remover después de 5 segundos
             setTimeout(() => testDiv.remove(), 5000);
             
             console.log('🦫 Tienda Script: Test ejecutado');
@@ -370,9 +352,7 @@
         }
     }
 
-    // ================= INICIALIZACIÓN AUTOMÁTICA =================
     
-    // Crear instancia global
     const tiendaEmojiSystem = new TiendaAcadelEmojiSystem();
     
     // Hacer disponible globalmente
@@ -381,7 +361,6 @@
     // Funciones de utilidad globales
     window.testTiendaAcadelEmoji = () => tiendaEmojiSystem.testAcadelEmoji();
     
-    // Función de inicialización
     async function initTiendaEmojiSystem() {
         console.log('🦫 Tienda Script: Inicializando sistema...');
         
@@ -391,7 +370,6 @@
             if (success) {
                 console.log('✅ Tienda Script: Sistema Acadel emoji listo');
                 
-                // Procesar después de un breve delay
                 setTimeout(() => {
                     tiendaEmojiSystem.replaceExistingCapibaras();
                 }, 300);
@@ -404,7 +382,6 @@
         }
     }
     
-    // Inicializar cuando esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(initTiendaEmojiSystem, 500);

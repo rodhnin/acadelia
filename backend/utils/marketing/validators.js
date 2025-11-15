@@ -30,7 +30,6 @@ export const validateProfileData = (profileData) => {
   if (!profileData.metadata || typeof profileData.metadata !== 'object') {
     errors.push("El campo metadata es requerido y debe ser un objeto");
   } else {
-    // Validar campos específicos en metadata
     if (profileData.metadata.edad && typeof profileData.metadata.edad !== 'number') {
       errors.push("El campo edad debe ser un número");
     }

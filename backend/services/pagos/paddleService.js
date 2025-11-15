@@ -2,12 +2,10 @@
 import pool from "../../lib/dbPool.js";
 import { Environment, Paddle } from '@paddle/paddle-node-sdk';
 
-// 🔧 CONFIGURACIÓN PARA LIVE con formato nuevo
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const PADDLE_ENV = process.env.PADDLE_ENV || 'live';
 const USE_PADDLE_PRODUCTION = PADDLE_ENV === 'live';
 
-// 🔧 VERIFICACIÓN DE FORMATO DE API KEY
 const API_KEY = process.env.PADDLE_SELLER_API_KEY;
 const IS_NEW_FORMAT = API_KEY && API_KEY.startsWith('pdl_live_apikey_');
 
@@ -20,13 +18,11 @@ if (!IS_NEW_FORMAT) {
 
 // Configuración
 const paddleConfig = {
-  // 🔧 NUEVO FORMATO: NO necesita vendor ID
   apiKey: API_KEY,
   environment: PADDLE_ENV,
   webhookSecret: process.env.PADDLE_WEBHOOK_SECRET
 };
 
-// 🔧 URL base basada en PADDLE_ENV
 const PADDLE_API_BASE = USE_PADDLE_PRODUCTION
     ? 'https://api.paddle.com'
     : 'https://sandbox-api.paddle.com';
@@ -41,11 +37,9 @@ console.log('🔧 Paddle Configuration (LIVE - New Format):', {
   API_KEY_PREFIX: paddleConfig.apiKey?.substring(0, 25) + '...' || 'NO API KEY'
 });
 
-// 🔧 Inicialización del cliente Paddle (formato nuevo, sin vendor ID)
 let paddle;
 try {
   paddle = new Paddle(paddleConfig.apiKey, {
-    // 🔧 NUEVO FORMATO: NO necesita vendor ID
     environment: USE_PADDLE_PRODUCTION ? Environment.production : Environment.sandbox,
     logLevel: IS_PRODUCTION ? 'error' : 'verbose'
   });
@@ -85,7 +79,6 @@ export const PaddleService = {
         format: 'NEW_FORMAT'
       });
       
-      // 🔧 DIAGNÓSTICO ESPECÍFICO DE PERMISOS
       if (error.response?.status === 403) {
         console.error('❌ ERROR DE PERMISOS:');
         console.error('   Tu API key no tiene los permisos necesarios');
@@ -178,7 +171,6 @@ export const PaddleService = {
           headers: paddleError.response?.headers
         });
 
-        // 🔧 DIAGNÓSTICO ESPECÍFICO DE PERMISOS
         if (paddleError.response?.status === 403) {
           console.error('❌ ERROR DE PERMISOS PARA SUSCRIPCIONES:');
           console.error('   Tu API key necesita el permiso "Subscriptions (Write)"');
@@ -272,7 +264,6 @@ export const PaddleService = {
           environment: USE_PADDLE_PRODUCTION ? 'production' : 'sandbox'
         });
         
-        // 🔧 DIAGNÓSTICO ESPECÍFICO DE PERMISOS
         if (response.status === 403) {
           console.error('❌ ERROR DE PERMISOS PARA PORTAL:');
           console.error('   Tu API key necesita el permiso "Customer portal sessions (Write)"');
@@ -439,7 +430,6 @@ export const PaddleService = {
             environment: USE_PADDLE_PRODUCTION ? 'production' : 'sandbox'
           });
           
-          // 🔧 DIAGNÓSTICO ESPECÍFICO DE PERMISOS
           if (response.status === 403) {
             console.error('❌ ERROR DE PERMISOS PARA FACTURAS:');
             console.error('   Tu API key necesita el permiso "Transactions (Read)"');

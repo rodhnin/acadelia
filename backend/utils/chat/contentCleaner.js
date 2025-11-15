@@ -1,9 +1,3 @@
-/**
- * 🧹 SIMPLE LANGCHAIN CLEANER - SOLO ESCAPA LLAVES PROBLEMÁTICAS
- * 
- * Una función súper simple que solo escapa las llaves {} para evitar errores de LangChain
- * SIN tocar el sistema de documentos, SIN cambiar cómo se guardan, SIN complicaciones.
- */
 
 /**
  * Escapa llaves para LangChain - SÚPER SIMPLE
@@ -32,7 +26,6 @@ export const cleanDocumentContextForPrompt = (documentContext) => {
     return '';
   }
 
-  // Solo escapar llaves y listo
   return escapeBracesForLangChain(documentContext);
 };
 

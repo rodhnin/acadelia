@@ -74,8 +74,6 @@ export class ApiService {
         adminExpensesByCategory: '/admin/finance/expenses/by-category'
       };
       
-      // Cache para datos comunes
-      // Cache para datos comunes
       this.cache = {
         products: null,
         users: null,
@@ -99,7 +97,6 @@ export class ApiService {
     async init() {
       console.log('Inicializando servicio API');
       
-      // Comprobar conexión al backend
       try {
         const response = await this.get('/price');
         console.log('Conexión a API establecida');
@@ -120,7 +117,6 @@ export class ApiService {
       try {
         const url = new URL(this.baseUrl + endpoint, window.location.origin);
         
-        // Añadir parámetros query string si existen
         if (Object.keys(params).length > 0) {
           Object.keys(params).forEach(key => {
             if (params[key] !== undefined && params[key] !== null) {
@@ -232,7 +228,6 @@ export class ApiService {
       }
     }
     
-    // ==================== MÉTODOS PARA USUARIOS ====================
     
     /**
      * Obtiene todos los usuarios
@@ -248,7 +243,6 @@ export class ApiService {
         
         const response = await this.get(this.endpoints.users, filters);
         
-        // Preparar datos según formato de respuesta
         let users = [];
         if (Array.isArray(response)) {
           users = response;
@@ -258,7 +252,6 @@ export class ApiService {
           console.warn('Formato de respuesta de usuarios inesperado:', response);
         }
         
-        // Almacenar en caché
         this.cache.users = users;
         
         return users;
@@ -290,7 +283,6 @@ export class ApiService {
       return this.put(`${this.endpoints.user}/${userId}`, userData);
     }
     
-    // ==================== MÉTODOS PARA PERFILES ====================
     
     /**
      * Obtiene el perfil de un usuario
@@ -349,7 +341,6 @@ export class ApiService {
       }
     }
     
-    // ==================== MÉTODOS PARA PAÍSES Y UNIVERSIDADES ====================
     
     /**
      * Obtiene todos los países
@@ -364,7 +355,6 @@ export class ApiService {
         
         const response = await this.get(this.endpoints.countries);
         
-        // Preparar datos según formato de respuesta
         let countries = [];
         if (Array.isArray(response)) {
           countries = response;
@@ -374,7 +364,6 @@ export class ApiService {
           console.warn('Formato de respuesta de países inesperado:', response);
         }
         
-        // Almacenar en caché
         this.cache.countries = countries;
         
         return countries;
@@ -408,7 +397,6 @@ export class ApiService {
         const endpoint = this.endpoints.universitiesByCountry.replace(':idPais', countryId);
         const response = await this.get(endpoint);
         
-        // Preparar datos según formato de respuesta
         let universities = [];
         if (Array.isArray(response)) {
           universities = response;
@@ -471,7 +459,6 @@ export class ApiService {
       }
     }
 
-        // ==================== MÉTODOS PARA SUSCRIPCIONES ====================
     
     /**
      * Obtiene todas las suscripciones de un usuario
@@ -482,7 +469,6 @@ export class ApiService {
       try {
         const response = await this.get(`${this.endpoints.userSubscriptions}/${userId}`);
         
-        // Preparar datos según formato de respuesta
         let subscriptions = [];
         if (Array.isArray(response)) {
           subscriptions = response;
@@ -507,18 +493,15 @@ export class ApiService {
      */
     async getAdminTransactions(filters = {}, pagination = {}) {
       try {
-        // Construir parámetros de consulta
         const params = { ...filters, ...pagination };
         const response = await this.get(this.endpoints.adminTransactions, params);
         
         // Si la respuesta incluye datos y no hay filtro a nivel backend,
-        // filtrar transacciones fallidas aquí también
         if (response && response.success && Array.isArray(response.data)) {
           response.data = response.data.filter(
             trans => trans.event_type !== 'transaction.payment_failed'
           );
           
-          // Actualizar el contador total si existe en la respuesta
           if (response.pagination && typeof response.pagination.totalItems === 'number') {
             const filteredItemsCount = response.data.length;
             response.pagination.totalItems = filteredItemsCount;
@@ -555,7 +538,6 @@ export class ApiService {
       }
     }
 
-        // ==================== MÉTODOS PARA TRANSACCIONES ====================
     
     /**
      * Obtiene todas las transacciones de un usuario
@@ -566,7 +548,6 @@ export class ApiService {
       try {
         const response = await this.get(`${this.endpoints.transactions}/${userId}`);
         
-        // Preparar datos según formato de respuesta
         let transactions = [];
         if (Array.isArray(response)) {
           transactions = response;
@@ -594,16 +575,13 @@ async getInvoiceUrl(transactionId) {
     
     // NUEVO: Primero intentar obtener la transacción completa para verificar invoice_url
     try {
-      // Obtener detalles completos de la transacción
       const transactionDetails = await this.get(`/transaction/${transactionId}`);
       
-      // Verificar si tiene URL de factura en Google Drive
       if (transactionDetails && transactionDetails.success && 
           transactionDetails.data && transactionDetails.data.invoice_url) {
         
         console.log(`URL de factura encontrada en base de datos: ${transactionDetails.data.invoice_url}`);
         
-        // Devolver la URL de la factura en el mismo formato que se espera
         return {
           success: true,
           data: {
@@ -619,7 +597,6 @@ async getInvoiceUrl(transactionId) {
     }
     
     // Si no hay URL en la base de datos, proceder con el flujo normal de Paddle
-    // Intentar primero con el endpoint seguro para admin/propietario
     try {
       const adminEndpoint = `/admin/finance/transaction/${transactionId}/invoice`;
       console.log(`Probando con endpoint administrativo: ${adminEndpoint}`);
@@ -669,7 +646,6 @@ async getInvoiceUrl(transactionId) {
     }
 
 
-        // ==================== MÉTODOS PARA CURSOS ====================
     
     /**
      * Obtiene todos los cursos/productos
@@ -684,7 +660,6 @@ async getInvoiceUrl(transactionId) {
         
         const response = await this.get(this.endpoints.courses);
         
-        // Preparar datos según formato de respuesta
         let courses = [];
         if (Array.isArray(response)) {
           courses = response;
@@ -694,7 +669,6 @@ async getInvoiceUrl(transactionId) {
           console.warn('Formato de respuesta de cursos inesperado:', response);
         }
         
-        // Almacenar en caché
         this.cache.products = courses;
         
         return courses;
@@ -714,7 +688,6 @@ async getInvoiceUrl(transactionId) {
     }
     
     
-    // ==================== MÉTODOS ESPECÍFICOS ====================
     
     /**
      * Obtiene todas las suscripciones activas
@@ -727,7 +700,6 @@ async getInvoiceUrl(transactionId) {
         if (this.cache.subscriptions && Object.keys(filters).length === 0) {
           return this.cache.subscriptions;
         }
-        // Combinar datos de múltiples usuarios
         let allSubscriptions = [];
         const users = await this.getUsers();
         
@@ -735,7 +707,6 @@ async getInvoiceUrl(transactionId) {
           const userSubscriptions = await this.get(`${this.endpoints.userSubscriptions}/${user.id_user}`);
           
           if (userSubscriptions && userSubscriptions.success && userSubscriptions.data) {
-            // Añadir referencia al usuario en cada suscripción
             const enhancedSubscriptions = userSubscriptions.data.map(sub => ({
               ...sub,
               user: {
@@ -749,10 +720,8 @@ async getInvoiceUrl(transactionId) {
           }
         }
         
-        // Almacenar en caché
         this.cache.subscriptions = allSubscriptions;
         
-        // Aplicar filtros si existen
         if (Object.keys(filters).length > 0) {
           return this.filterSubscriptions(allSubscriptions, filters);
         }
@@ -824,7 +793,6 @@ async getInvoiceUrl(transactionId) {
               trans => trans.event_type !== 'transaction.payment_failed'
             );
             
-            // Añadir referencia al usuario en cada transacción
             const enhancedTransactions = validTransactions.map(trans => ({
               ...trans,
               user: {
@@ -838,10 +806,8 @@ async getInvoiceUrl(transactionId) {
           }
         }
         
-        // Almacenar en caché
         this.cache.transactions = allTransactions;
         
-        // Aplicar filtros si existen
         if (Object.keys(filters).length > 0) {
           return this.filterTransactions(allTransactions, filters);
         }
@@ -987,7 +953,6 @@ async getInvoiceUrl(transactionId) {
         
         const courses = await this.get(this.endpoints.courses);
         
-        // Almacenar en caché
         this.cache.products = courses;
         
         return courses;
@@ -1014,7 +979,6 @@ async getInvoiceUrl(transactionId) {
     if (type) {
       this.cache[type] = null;
     } else {
-      // Limpiar toda la caché
       Object.keys(this.cache).forEach(key => {
         this.cache[key] = null;
       });
@@ -1022,7 +986,6 @@ async getInvoiceUrl(transactionId) {
     console.log(`Caché ${type || 'completa'} limpiada`);
   }
     
- // ==================== MÉTODOS DE SUSCRIPCIONES ====================
 
 /**
  * Obtiene todas las suscripciones con filtros opcionales
@@ -1032,7 +995,6 @@ async getInvoiceUrl(transactionId) {
  */
 async getAdminSubscriptions(filters = {}, pagination = {}) {
   try {
-    // Construir parámetros de consulta
     const params = { ...filters, ...pagination };
     return await this.get(this.endpoints.adminSubscriptions, params);
   } catch (error) {
@@ -1231,7 +1193,6 @@ async getTaxHistory(filters = {}) {
   }
 }
 
-// Añadir estos métodos para las nuevas funcionalidades de informes
 /**
  * Genera un informe personalizado
  * @param {Object} params - Parámetros para el informe
@@ -1254,7 +1215,6 @@ async generateReport(params) {
  */
 async getReportsList(filters = {}, pagination = {}) {
   try {
-    // Construir parámetros de consulta
     const params = { ...filters, ...pagination };
     return await this.get(this.endpoints.adminReportsList, params);
   } catch (error) {
@@ -1286,7 +1246,6 @@ async downloadReport(reportId) {
   try {
     const url = `${this.endpoints.adminReportDownload}/${reportId}/download`;
     
-    // Para descargar archivos, podemos necesitar un manejo especial
     const response = await window.csrfUtils.fetch(url, {
       method: 'GET',
       credentials: 'include'
@@ -1302,11 +1261,9 @@ async downloadReport(reportId) {
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       
-      // Crear link y forzar descarga
       const a = document.createElement('a');
       a.href = downloadUrl;
       
-      // Obtener nombre de archivo de los headers o usar uno por defecto
       const filename = response.headers.get('content-disposition')?.split('filename=')[1]?.trim() || `informe_${reportId}.xlsx`;
       a.download = filename;
       
@@ -1330,7 +1287,6 @@ async downloadReport(reportId) {
   }
 }
 
-// Añadir estos métodos para las nuevas funcionalidades de egresos
 /**
  * Obtiene todos los egresos con filtros opcionales
  * @param {Object} filters - Filtros para la consulta
@@ -1344,11 +1300,9 @@ async getExpenses(filters = {}, pagination = {}) {
       return this.cache.expenses;
     }
     
-    // Construir parámetros de consulta
     const params = { ...filters, ...pagination };
     const response = await this.get(this.endpoints.adminExpenses, params);
     
-    // Guardar en caché si no hay filtros
     if (Object.keys(filters).length === 0 && Object.keys(pagination).length === 0) {
       this.cache.expenses = response;
     }
@@ -1445,7 +1399,6 @@ async getExpenseCategories() {
     
     const response = await this.get(this.endpoints.adminExpenseCategories);
     
-    // Guardar en caché
     this.cache.expenseCategories = response;
     
     return response;
@@ -1484,7 +1437,6 @@ async uploadExpenseInvoice(expenseId, formData) {
   try {
     const url = `${this.baseUrl}/admin/finance/expenses/${expenseId}/invoice`;
     
-    // Usar fetch directamente para enviar archivos
     const response = await window.csrfUtils.fetch(url, {
       method: 'POST',
       credentials: 'include',
@@ -1554,7 +1506,6 @@ async createExpenseWithInvoice(formData) {
   try {
     const url = `${this.baseUrl}/admin/finance/expenses/with-invoice`;
     
-    // Usar fetch directamente para enviar datos de FormData
     const response = await window.csrfUtils.fetch(url, {
       method: 'POST',
       credentials: 'include',
@@ -1579,7 +1530,6 @@ async createExpenseWithInvoice(formData) {
   }
 }
 
-// ==================== MÉTODOS PARA INFORMES INTEGRALES AUTOMÁTICOS ====================
 
 /**
  * Obtiene la configuración actual de informes automáticos
@@ -1639,7 +1589,6 @@ async generateIntegralReport(params) {
  */
 async getSavedIntegralReports() {
   try {
-    // Filtrar solo informes tipo 'integral'
     return await this.get('/admin/finance/reports/list', { type: 'integral' });
   } catch (error) {
     console.error('Error al obtener informes integrales guardados:', error);
@@ -1656,7 +1605,6 @@ async deleteReport(reportId) {
   try {
     console.log(`Intentando eliminar informe con ID: ${reportId}`);
     
-    // Construir URL completa para el endpoint de eliminación
     const url = `${this.baseUrl}/admin/finance/reports/${reportId}`;
     
     // Realizar petición DELETE
@@ -1668,14 +1616,12 @@ async deleteReport(reportId) {
       }
     });
     
-    // Verificar si la respuesta es exitosa
     if (!response.ok) {
       const errorData = await response.json();
       console.error(`Error HTTP ${response.status} al eliminar informe:`, errorData);
       throw new Error(errorData.message || `Error HTTP: ${response.status}`);
     }
     
-    // Parsear y retornar la respuesta
     const result = await response.json();
     console.log('Informe eliminado correctamente:', result);
     return result;

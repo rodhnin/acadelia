@@ -20,7 +20,6 @@ export function getSelectedText() {
       };
     }
     
-    // Obtener información de rango y rectángulo
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     
@@ -54,10 +53,8 @@ export function getSelectedText() {
    * @returns {HTMLElement} - Elemento del tooltip
    */
   export function createSelectionTooltip(position, actions) {
-    // Verificar si ya existe un tooltip y eliminarlo
     removeSelectionTooltip();
     
-    // Crear nuevo tooltip
     const tooltip = document.createElement('div');
     tooltip.className = 'selection-tooltip';
     tooltip.style.position = 'absolute';
@@ -65,7 +62,6 @@ export function getSelectedText() {
     tooltip.style.left = `${position.left}px`;
     tooltip.style.top = `${position.top}px`;
     
-    // Crear botones para cada acción
     actions.forEach(action => {
       const button = document.createElement('button');
       button.className = 'selection-action-btn';
@@ -73,7 +69,6 @@ export function getSelectedText() {
       button.innerHTML = `<i class='bx ${action.icon}'></i>`;
       button.dataset.action = action.id;
       
-      // Agregar evento de clic
       button.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -84,7 +79,6 @@ export function getSelectedText() {
       tooltip.appendChild(button);
     });
     
-    // Agregar al DOM
     document.body.appendChild(tooltip);
     
     // Centrar horizontalmente
@@ -161,16 +155,13 @@ export function getSelectedText() {
     // Escapar caracteres especiales en el texto a resaltar
     const escapedText = textToHighlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     
-    // Crear regex con palabras completas
     const regex = new RegExp(`(${escapedText})`, 'gi');
     
-    // Aplicar resaltado
     element.innerHTML = originalContent.replace(
       regex, 
       '<span class="pdf-highlighted-text">$1</span>'
     );
     
-    // Restaurar después del tiempo especificado
     setTimeout(() => {
       element.innerHTML = originalContent;
     }, duration);
@@ -256,23 +247,19 @@ export function getSelectedText() {
       let sentSuccessfully = false;
       
       try {
-        // Intentar importar handleSendMessage de chat-controller
         const chatController = await import('../../core/chat-controller.js');
         
         if (chatController && chatController.handleSendMessage) {
-          // Configurar mensaje en el textarea
           const textarea = document.getElementById('messageInput');
           if (textarea) {
             textarea.value = message;
             
-            // Disparar evento para avisarle al sistema de chat
             const event = new CustomEvent('sendMessageRequest');
             window.dispatchEvent(event);
             
             sentSuccessfully = true;
           }
         } else if (typeof window.handleSendMessage === 'function') {
-          // Usar función global si está disponible
           const textarea = document.getElementById('messageInput');
           if (textarea) {
             textarea.value = message;
@@ -285,9 +272,7 @@ export function getSelectedText() {
         console.warn('No se pudo importar chat-controller:', importError);
       }
       
-      // Si no se pudo enviar por métodos regulares, intenta con API
       if (!sentSuccessfully) {
-        // Importar función de envío de mensaje
         const { sendMessage } = await import('../../api/messages.js');
         const { getState } = await import('../../core/state.js');
         
@@ -296,7 +281,6 @@ export function getSelectedText() {
           await sendMessage(message, chatId);
           sentSuccessfully = true;
           
-          // Cerrar panel de PDF si está abierto
           const { togglePDFPanel } = await import('../services/pdf-state.js');
           togglePDFPanel(false);
         }

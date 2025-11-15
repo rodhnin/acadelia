@@ -26,7 +26,6 @@ const TEMP_DIR = path.join(ROOT_DIR, 'tmp', 'audio_processing');
 // Configuración de multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // REEMPLAZAR ESTA LÍNEA:
     // const uploadsDir = path.join(__dirname, '../../uploads/audio');
 
     // CON ESTA:
@@ -74,11 +73,9 @@ export const processAudioFile = (req, res) => {
   const processingStart = Date.now();
   let audioFilePath = null;
 
-  // Usar multer para manejar la subida de archivos
   const uploadWithSecurity = (req, res, next) => {
     upload.single('audioFile')(req, res, async (err) => {
       if (err instanceof multer.MulterError) {
-        // Log de error de multer (tamaño excedido, etc.)
         logSecurityEvent('AUDIO_UPLOAD_ERROR', 'Error en la carga del archivo de audio', {
           userId: req.body.userId,
           error: err.message,
@@ -91,7 +88,6 @@ export const processAudioFile = (req, res) => {
           error: `Error en la carga del archivo: ${err.message}`
         });
       } else if (err) {
-        // Log de otro tipo de error en carga
         logSecurityEvent('AUDIO_UPLOAD_ERROR', 'Error en la carga del archivo de audio', {
           userId: req.body.userId,
           error: err.message,
@@ -104,7 +100,6 @@ export const processAudioFile = (req, res) => {
         });
       }
 
-      // Verificar si se recibió un archivo
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -112,11 +107,9 @@ export const processAudioFile = (req, res) => {
         });
       }
 
-      // Guardar la ruta del archivo para manejo de errores
       audioFilePath = req.file.path;
 
       try {
-        // MODIFICACIÓN: Implementar la lógica de seguridad directamente aquí
         // en lugar de llamar al middleware como un paso separado
 
         // 1. Verificación de firma de audio
@@ -129,7 +122,6 @@ export const processAudioFile = (req, res) => {
 
           const audioType = AudioSecurityService.identifyAudioType(buffer);
           if (!audioType.valid) {
-            // Log de archivo sin firma de audio válida
             logSecurityEvent('INVALID_AUDIO_SIGNATURE', 'Archivo sin firma de audio válida', {
               userId: req.body.userId,
               fileInfo: {
@@ -140,7 +132,6 @@ export const processAudioFile = (req, res) => {
               reason: audioType.reason,
               ip: req.ip
             }, 'high');
-            // Limpiar archivo
             cleanupFile(audioFilePath);
 
             return res.status(400).json({
@@ -152,17 +143,13 @@ export const processAudioFile = (req, res) => {
           console.log(`Tipo de audio identificado: ${audioType.name}`);
         } catch (error) {
           console.error("Error al leer archivo para verificación:", error);
-          // Continuar con el proceso en caso de error de verificación
         }
 
         // 2. Escaneo con ClamAV
         console.log("Realizando escaneo con ClamAV...");
         const scanResult = await AudioSecurityService.scanFile(audioFilePath);
 
-        // Verificar resultados de seguridad
-        // Solo bloquear si ClamAV detectó virus específicos
         if (!scanResult.clean && !scanResult.skipped && scanResult.viruses && scanResult.viruses.length > 0) {
-          // Log de detección de malware
           logSecurityEvent('MALWARE_DETECTED', 'Malware detectado en archivo de audio', {
             userId: req.body.userId,
             fileInfo: {
@@ -176,7 +163,6 @@ export const processAudioFile = (req, res) => {
 
           cleanupFile(audioFilePath);
 
-          // Devolver respuesta de error estructurada
           return res.status(400).json({
             success: false,
             error: "Se ha detectado contenido malicioso en el archivo de audio",
@@ -194,17 +180,14 @@ export const processAudioFile = (req, res) => {
           });
         }
 
-        // Añadir información de seguridad a la solicitud
         req.securityInfo = scanResult.securityNotes || {
           scanned: true,
           clean: true,
           overridden: scanResult.overridden
         };
 
-        // Si todo está bien, continuar al siguiente paso
         next();
       } catch (securityError) {
-        // Limpiar archivo en caso de error en la seguridad
         logSecurityEvent('AUDIO_SECURITY_ERROR', 'Error en verificación de seguridad de audio', {
           userId: req.body.userId,
           fileInfo: req.file ? {
@@ -226,19 +209,16 @@ export const processAudioFile = (req, res) => {
     });
   };
 
-  // Aplicar middleware de carga con seguridad
   uploadWithSecurity(req, res, async () => {
     const { userId, chatId, herramientaId } = req.body;
 
     try {
-      // ✅ SOLUCIÓN: Limpiar banderas de cancelación anterior para permitir nuevo procesamiento
       await (await import('../../services/chat/chatServices.js')).resetCancellationFlagsForNewProcess(chatId, 'audio');
       console.log(`✅ Banderas de cancelación limpiadas para nuevo procesamiento de audio en chat ${chatId}`);
     } catch (error) {
       console.warn('Error limpiando banderas de cancelación:', error);
     }
 
-    // Validación básica
     if (!userId || !chatId) {
       cleanupFile(audioFilePath);
       return res.status(400).json({
@@ -247,7 +227,6 @@ export const processAudioFile = (req, res) => {
       });
     }
 
-    // Validar formato de chatId (UUID)
     if (!isValidUUID(chatId)) {
       cleanupFile(audioFilePath);
       return res.status(400).json({
@@ -257,23 +236,20 @@ export const processAudioFile = (req, res) => {
     }
 
     try {
-      // Obtener conexión a la base de datos para el procesamiento
       const client = await pool.connect();
 
       try {
         const securityInfo = req.securityNotes || { scanned: true, clean: true };
 
-        // ✅ CAMBIO PRINCIPAL: No usar initialResponse, procesar completamente como YouTube
         const fileInfo = {
           path: req.file.path,
           fileName: req.file.originalname,
           fileType: req.file.mimetype,
           fileSize: req.file.size,
-          initialResponse: false, // ✅ Cambiar a false para procesar completamente
+          initialResponse: false,
           securityInfo
         };
 
-        // ✅ Procesar completamente y esperar el resultado
         const result = await processAudioQuery({
           userId: parseInt(userId),
           fileInfo,
@@ -283,7 +259,6 @@ export const processAudioFile = (req, res) => {
           client
         });
 
-        // ✅ Retornar el resultado directamente (igual que YouTube)
         return res.status(200).json({
           ...result,
           securityInfo: {
@@ -332,7 +307,6 @@ export const processRecordedAudio = async (req, res) => {
   try {
     const { userId, chatId, audioData, herramientaId } = req.body;
 
-    // Validación básica
     if (!userId || !chatId || !audioData) {
       return res.status(400).json({
         success: false,
@@ -341,7 +315,6 @@ export const processRecordedAudio = async (req, res) => {
       });
     }
 
-    // Validar formato de chatId (UUID)
     if (!isValidUUID(chatId)) {
       return res.status(400).json({
         success: false,
@@ -350,7 +323,6 @@ export const processRecordedAudio = async (req, res) => {
       });
     }
 
-    // Verificar que audioData es una cadena base64 válida
     if (!audioData.startsWith('data:audio/')) {
       return res.status(400).json({
         success: false,
@@ -359,13 +331,11 @@ export const processRecordedAudio = async (req, res) => {
       });
     }
 
-    // Aplicar middleware de seguridad
     const securityReq = {
       body: { audioData },
       file: null
     };
 
-    // Verificar seguridad del audio
     let securityInfo = null;
     try {
       await new Promise((resolve, reject) => {
@@ -406,25 +376,20 @@ export const processRecordedAudio = async (req, res) => {
       });
     }
 
-    // Obtener el formato MIME real del audio
     const mimeMatch = audioData.match(/^data:(audio\/[^;]+)/);
     let mimeType = mimeMatch ? mimeMatch[1] : 'audio/webm';
     console.log('Tipo MIME detectado:', mimeType);
 
-    // Verificar si hay parámetros de codecs en la cadena base64
     const codecMatch = audioData.match(/^data:audio\/[^;]+;codecs=([^;,]+)/);
     if (codecMatch) {
       console.log('Codec detectado:', codecMatch[1]);
     }
 
-    // Decodificar la cadena base64 del audio
     const base64Data = audioData.replace(/^data:audio\/[^;]+;?(?:codecs=[^;,]+)?;base64,/, '');
     const audioBuffer = Buffer.from(base64Data, 'base64');
 
-    // Guardar una copia de los datos raw para posible recuperación
     rawAudioData = audioData;
 
-    // Determinar la extensión adecuada
     let extension = '.wav';
 
     if (mimeType === 'audio/mp3' || mimeType === 'audio/mpeg') {
@@ -447,23 +412,20 @@ export const processRecordedAudio = async (req, res) => {
 
     fs.writeFileSync(audioFilePath, audioBuffer);
 
-    // ✅ CAMBIO PRINCIPAL: Obtener conexión y procesar completamente
     const client = await pool.connect();
 
     try {
-      // ✅ CAMBIO: No usar initialResponse, procesar directamente como YouTube
       const fileInfo = {
         path: audioFilePath,
         fileName: "Audio grabado",
         fileType: mimeType,
         fileSize: audioBuffer.length,
         source: 'recording',
-        initialResponse: false, // ✅ CAMBIO: false en lugar de true
+        initialResponse: false,
         rawAudioData: rawAudioData,
         securityInfo
       };
 
-      // ✅ CAMBIO: Procesar completamente y esperar el resultado
       const result = await processAudioQuery({
         userId: parseInt(userId),
         fileInfo,
@@ -473,7 +435,6 @@ export const processRecordedAudio = async (req, res) => {
         client
       });
 
-      // ✅ CAMBIO: Retornar el resultado directamente (igual que YouTube)
       return res.status(200).json({
         ...result,
         securityInfo: {

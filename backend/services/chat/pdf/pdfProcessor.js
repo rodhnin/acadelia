@@ -23,10 +23,8 @@ export const PDFProcessor = {
     console.log(`Procesando PDF con Mistral OCR: ${originalFilename}`);
     
     try {
-      // Usar la cola de procesamiento para tareas intensivas
       const { result } = await pdfProcessingQueue.enqueue(
         async () => {
-          // Procesar con Mistral OCR
           const ocrResult = await MistralOCRService.processPDFWithOCR({
             fileBuffer,
             originalFilename
@@ -69,7 +67,6 @@ export const PDFProcessor = {
         format = 'png'
       } = options;
       
-      // Verificar que el archivo existe
       if (!fs.existsSync(pdfPath)) {
         throw new Error(`El archivo PDF no existe: ${pdfPath}`);
       }
@@ -79,25 +76,21 @@ export const PDFProcessor = {
       
       console.log(`Generando vista previa para página ${pageNum} de ${pdfPath}`);
       
-      // Usar la cola de procesamiento para tareas de renderizado
       const { result: imageBuffer } = await pdfProcessingQueue.enqueue(
         async () => {
           try {
-            // Verificar disponibilidad de pdftocairo
             const pdftocairoAvailable = await PDFImageRenderer.checkPdftocairoAvailability();
             
             if (!pdftocairoAvailable) {
               throw new Error('pdftocairo no está disponible para renderizado de PDF');
             }
             
-            // Renderizar página con pdftocairo
             const rawImageBuffer = await PDFImageRenderer.renderWithPdftocairo(
               pdfPath,
               pageNum,
               width
             );
             
-            // Procesar imagen si es necesario (recortar, redimensionar)
             if (crop || (height && height > 0)) {
               return await PDFImageRenderer.processImage(rawImageBuffer, {
                 width, 
@@ -134,7 +127,6 @@ export const PDFProcessor = {
       
       console.log(`Solicitud de extracción de texto para región en página ${pageNum}: (${region.x1},${region.y1})-(${region.x2},${region.y2})`);
       
-      // Verificar que el archivo existe
       if (!fs.existsSync(pdfPath)) {
         return {
           success: false,
@@ -149,7 +141,6 @@ export const PDFProcessor = {
       // 1. Generar una vista previa de la región específica
       // 2. Devolver el texto completo de la página con una nota
       
-      // Generar vista previa de la región para uso del cliente
       const previewOptions = {
         width: Math.abs(region.x2 - region.x1) * (region.scale || 1),
         crop: {
@@ -160,10 +151,8 @@ export const PDFProcessor = {
         }
       };
       
-      // Intentar generar la vista previa (sólo para mostrar la región seleccionada)
       let previewUrl = null;
       try {
-        // Usar la cola de procesamiento para tareas intensivas
         const { result: previewBuffer } = await pdfProcessingQueue.enqueue(
           async () => {
             return await this.generatePagePreview(pdfPath, pageNum, previewOptions);

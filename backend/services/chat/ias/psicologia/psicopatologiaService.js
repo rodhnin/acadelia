@@ -1,10 +1,4 @@
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOPATOLOGÍA - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO PSICOLÓGICO - PROFESOR DE PSICOPATOLOGÍA SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Diagnóstico Psicológico ✅ Manuales Diagnósticos ✅ Enfoques Teóricos ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
     
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
     
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -317,9 +301,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🧠🦫 PROFESOR ACADEL PSICOPATOLOGÍA DNA - PERSONALIDAD DEL CAPIBARA ESPECIALISTA SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🧠🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE PSICOPATOLOGÍA SUPREMO:
@@ -360,11 +341,7 @@ Hacer que CUALQUIER estudiante de psicología:
 ¡RECUERDA: No eres solo un tutor de psicopatología, eres EL PROFESOR que integra diagnóstico, manuales y enfoques teóricos como la psicología clínica real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DE PSICOPATOLOGÍA - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DE PSICOPATOLOGÍA
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Psicopatología.
 
 🎯 FUNCIÓN: Analizar imágenes de psicopatología (casos clínicos, criterios diagnósticos, esquemas teóricos, evaluaciones) con precisión clínica extrema.
@@ -391,7 +368,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ps
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría pedagógica psicopatológica.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DE PSICOPATOLOGÍA (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara psicólogo más brillante del universo en psicopatología.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información psicopatológica de esta imagen clínica para que Acadel pueda enseñar efectivamente integrando diagnóstico, manuales y enfoques teóricos.
@@ -437,7 +413,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en psicopatología. No enseñes ni expliques - solo analiza y reporta hallazgos clínicos. Acadel se encargará de la pedagogía psicopatológica pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DE PSICOPATOLOGÍA NORMALES (con y sin guardar)
 const UNIFIED_PSYCHOPATHOLOGY_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DE PSICOPATOLOGÍA INTEGRADA:
 - Consulta del estudiante de psicología: "${query}"
@@ -464,7 +439,6 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DE PSICOPATOLOGÍA MULTIMODALES (con y sin guardar)
 const UNIFIED_PSYCHOPATHOLOGY_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DE PSICOPATOLOGÍA PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -512,14 +486,10 @@ ${queryInfo.hasEmotionalContent ?
   ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DE PSICOPATOLOGÍA
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
   
-  // ✅ CACHE CHECK CORRECTO usando generateContentHash
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
   
@@ -529,7 +499,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
   
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -551,7 +520,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
   
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery = 
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -559,7 +527,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
   
-  // DETECTAR GENERACIÓN DE IMÁGENES DE PSICOPATOLOGÍA
   const psychopathologyImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -584,7 +551,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // Detectar exámenes de psicopatología
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de psicopatología", "test de diagnóstico", "evaluación de casos clínicos", "cuestionario de DSM-5"
@@ -613,7 +579,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsAcademicSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -628,18 +594,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
   
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsAcademicSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
   
-  // 🔍 DETECTAR TÉRMINOS PSICOPATOLÓGICOS ESPECÍFICOS
   const psychopathologyTerms = [
     // Diagnóstico Psicológico
     'diagnóstico', 'síntoma', 'síndrome', 'trastorno', 'evaluación psicológica', 'entrevista clínica',
@@ -666,29 +629,25 @@ const classifyQuery = (query, content = null) => {
     'funcionamiento', 'deterioro', 'remisión', 'recaída', 'cronicidad'
   ];
   
-  // 🔍 DETECTAR INSTRUMENTOS Y EVALUACIONES PSICOLÓGICAS
   const psychologicalInstruments = [
     'mmpi', 'beck', 'hamilton', 'phq-9', 'gad-7', 'rorschach', 'tat', 'wais', 'wisc',
     'inventario', 'escala', 'cuestionario', 'batería', 'protocolo', 'test', 'prueba',
     'evaluación neuropsicológica', 'psicodiagnóstico', 'perfil psicológico'
   ];
   
-  // 🔍 DETECTAR CONTEXTOS CLÍNICOS
   const clinicalContexts = [
     'consulta', 'terapia', 'psicoterapia', 'intervención', 'tratamiento', 'caso clínico',
     'paciente', 'cliente', 'supervisión', 'práctica clínica', 'internado', 'residencia',
     'hospital', 'clínica', 'centro de salud mental', 'consultorio'
   ];
   
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS PSICOPATOLÓGICOS REALES
   const hasPsychopathologyContent = 
     psychopathologyTerms.some(term => lowercaseQuery.includes(term)) ||
     psychologicalInstruments.some(term => lowercaseQuery.includes(term)) ||
     clinicalContexts.some(term => lowercaseQuery.includes(term));
   
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasPsychopathologyContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -711,7 +670,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
   
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'criterios de', 'síntomas de', 'diagnóstico de'];
   const diagnosticKeywords = ['identificar', 'diagnosticar', 'evaluar', 'reconocer', 'caso clínico', 'evaluación psicológica', 'diagnóstico diferencial'];
   const dsmKeywords = ['dsm-5', 'dsm5', 'manual diagnóstico', 'criterios diagnósticos', 'códigos', 'especificadores'];
@@ -721,7 +679,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'artículos de psicopatología', 'avances en diagnóstico', 'nuevos hallazgos clínicos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos'];
   
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -758,7 +715,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
   
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -768,14 +724,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
   
-  // Detectar frustración o confusión emocional clínica
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
   
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsAcademicSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -794,11 +749,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS DE PSICOPATOLOGÍA OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DE PSICOPATOLOGÍA
 const ACADEL_PSYCHOPATHOLOGY_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara profesor más brillante del universo en psicopatología.
 
@@ -813,7 +764,6 @@ const createPsychopathologyKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal (Knowledge Base): ${query}`);
       
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
       
@@ -823,17 +773,15 @@ const createPsychopathologyKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_psicopatologia",
         similarityQueryName: "match_emb_psicopatologia",
         keywordQueryName: "kw_match_emb_psicopatologia",
       });
       
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -845,7 +793,6 @@ const createPsychopathologyKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_PSYCHOPATHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido psicopatológico específico sobre "${query}" en su biblioteca de diagnóstico, manuales y enfoques teóricos. Proceder con conocimiento psicopatológico general integrado y experiencia docente.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -865,7 +812,6 @@ ACADEL_PSYCHOPATHOLOGY_MEMORY_BANK: El cerebro principal de Acadel no tiene cont
 
 ACADEL_PSYCHOPATHOLOGY_MEMORY_BANK: El cerebro principal de Acadel encontró información psicopatológica sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base psicopatológico integrado, analogías y experiencia docente acumulada.`;
         
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -892,7 +838,6 @@ ACADEL_PSYCHOPATHOLOGY_MEMORY_BANK: El cerebro principal de Acadel activó la si
 
 INTEGRATION_NOTES: Este es el conocimiento psicopatológico central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en diagnóstico psicológico, manuales diagnósticos y enfoques teóricos. Debe integrar esta información naturalmente como si fuera su propia sabiduría clínica, enriqueciéndola con casos clínicos específicos, analogías y profesionalismo psicopatológico que conecte las tres disciplinas de manera pedagógica magistral.`;
       
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1118,17 +1063,15 @@ const createPsychopathologyConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto psicopatológico integrado: ${concept}`);
       
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_psicopatologia",
         similarityQueryName: "match_emb_psicopatologia",
         keywordQueryName: "kw_match_emb_psicopatologia",
       });
       
-      // 📚 BÚSQUEDAS PSICOPATOLÓGICAS ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `diagnóstico diferencial ${concept}`,
@@ -1140,7 +1083,6 @@ const createPsychopathologyConceptAnalyzerTool = (embeddings) => tool(
         `tratamiento intervención ${concept}`
       ];
       
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) => 
@@ -1160,7 +1102,6 @@ const createPsychopathologyConceptAnalyzerTool = (embeddings) => tool(
         }
       });
       
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1173,7 +1114,6 @@ const createPsychopathologyConceptAnalyzerTool = (embeddings) => tool(
       
       const conceptInfo = formatDocumentsAsString(allDocs);
       
-      // Limpiar información para integración natural psicopatológica
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/📚|✅|⚠️|📊|🎯|💡/g, '')
@@ -1351,9 +1291,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia psicopatológica según est
   }
 );
 
-// ============================================================================
-// 📷 PSYCHOPATHOLOGY IMAGEN API - ESPECIALIZADA PARA GENERAR IMAGENES (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectPsychopathologyImageRequest = (query) => {
   const psychopathologyImageKeywords = [
@@ -1384,7 +1321,6 @@ export const extractPsychopathologyImagePrompt = (query) => {
     .trim();
 };
 
-// Agregar esta herramienta al sistema psicopatológico
 const createPsychopathologyVisualizationTool = () => tool(
   async ({ prompt }) => {
     try {
@@ -1395,7 +1331,7 @@ const createPsychopathologyVisualizationTool = () => tool(
         size: "1024x1024",
         quality: "standard",
         n: 1,
-        apiKey: process.env.OPENAI_API_KEY, // ✅ Usar variable de entorno
+        apiKey: process.env.OPENAI_API_KEY,
       });
       
       const imageUrl = await dalle.invoke(prompt);
@@ -1419,7 +1355,6 @@ const createPsychopathologyVisualizationTool = () => tool(
   }
 );
 
-// Función para mejorar prompts psicopatológicos
 const enhancePsychopathologyImagePrompt = (prompt) => {
   // La nueva API es mejor siguiendo instrucciones, podemos ser más específicos
   return `Crea una ilustración psicopatológica educativa de alta calidad integrando diagnóstico, manuales y enfoques teóricos: ${prompt}. 
@@ -1437,16 +1372,10 @@ const enhancePsychopathologyImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DE PSICOPATOLOGÍA
-// ============================================================================
 
 const createSpecializedPsychopathologyPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🧠 INSTRUCCIONES TÉCNICAS DE PSICOPATOLOGÍA CONSOLIDADAS
-  // ============================================================================
   
   const corePsychopathologyInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE PSICOPATOLOGÍA INTEGRADO
@@ -1547,9 +1476,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas psicopatológicas importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA PSICOPATOLÓGICA - OPTIMIZADAS
-  // ============================================================================
   
   const psychopathologyTypeInstructions = {
     casual_conversation: `
@@ -1631,9 +1557,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las disciplinas fundamentales`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT PSICOPATOLÓGICO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
   
   return `${basePersonality}
 
@@ -1656,21 +1579,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
   'Enseña como el capibara psicólogo más brillante del universo, integrando diagnóstico, manuales y enfoques teóricos, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta psicopatológica importante, y complementando con todas tus capacidades paralelas para una explicación clínica magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE PSICOPATOLÓGICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelPsychopathologyAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🧠🦫 Acadel configurando sistema optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
   
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBraveWebSearchTool(),
     createBraveImageSearchTool(),
     createBraveAcademicSiteSearchTool(),
   ];
   
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL (Knowledge Base) - núcleo del sistema psicopatológico`);
     tools.unshift(createPsychopathologyKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1678,7 +1596,6 @@ const createAcadelPsychopathologyAgent = async (llm, queryInfo, studentQuery) =>
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido psicopatológico`);
   }
   
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsAcademicSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando PsychopathologyConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createPsychopathologyConceptAnalyzerTool(embeddings));
@@ -1694,7 +1611,6 @@ const createAcadelPsychopathologyAgent = async (llm, queryInfo, studentQuery) =>
     tools.push(createPsychopathologyComprehensionCheckerTool());
   }
   
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createPsychopathologyFeedbackAnalyzerTool());
   
   console.log(`🧠🦫 Acadel SISTEMA COMPLETO configurado con ${tools.length} herramientas psicopatológicas:`, tools.map(t => t.name));
@@ -1707,7 +1623,6 @@ const createAcadelPsychopathologyAgent = async (llm, queryInfo, studentQuery) =>
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
   
-  // Crear prompt psicopatológico especializado y escapado
   const specializedPrompt = createSpecializedPsychopathologyPrompt(queryInfo.type, queryInfo, studentQuery);
   
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1738,9 +1653,6 @@ const createAcadelPsychopathologyAgent = async (llm, queryInfo, studentQuery) =>
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES PSICOPATOLÓGICAS OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1788,7 +1700,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen psicopatológico: ${input}`);
           
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
           
@@ -1798,17 +1709,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
           
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_psicopatologia",
             similarityQueryName: "match_emb_psicopatologia",
             keywordQueryName: "kw_match_emb_psicopatologia",
           });
           
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1820,7 +1729,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
           
           const context = formatDocumentsAsString(docs);
           
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1835,7 +1743,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
           
-          // Fallback para exámenes
           return `Contexto psicopatológico base para "${input}": conocimiento fundamental en diagnóstico psicológico, manuales diagnósticos y enfoques teóricos. Acadel debe generar preguntas desde su experiencia clínica consolidada, integrando las tres disciplinas psicopatológicas con casos clínicos realistas y conceptos fundamentales.`;
         }
       },
@@ -1941,9 +1848,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA PSICOPATOLÓGICA - handlePsychopathologyQuery
-// ============================================================================
 
 export const handlePsychopathologyQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1952,7 +1856,6 @@ export const handlePsychopathologyQuery = async (params) => {
   try {
     const startTime = Date.now();
     
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1968,13 +1871,11 @@ export const handlePsychopathologyQuery = async (params) => {
     // CLASIFICAR EL QUERY PSICOPATOLÓGICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOPATOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychopathologyImageRequest(query);
     
     console.log(`🧠🦫 Acadel analizando query psicopatológico integrado: "${query}"`);
     console.log(`📊 Clasificación psicopatológica: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOPATOLÓGICAS
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización psicopatológica integrada: ${imagePrompt}`);
       
@@ -1983,7 +1884,6 @@ export const handlePsychopathologyQuery = async (params) => {
       const psychopathologyVisualizationTool = createPsychopathologyVisualizationTool();
       const imageResponse = await psychopathologyVisualizationTool.invoke({ prompt: enhancedPrompt });
       
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1996,7 +1896,6 @@ export const handlePsychopathologyQuery = async (params) => {
         };
       }
       
-      // Guardar la imagen psicopatológica localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       const formattedResponse = {
@@ -2022,7 +1921,6 @@ export const handlePsychopathologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2034,7 +1932,6 @@ export const handlePsychopathologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2048,7 +1945,6 @@ export const handlePsychopathologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para generación de imágenes
         if (isCacheable(query, 'psicopatologia')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2060,7 +1956,6 @@ export const handlePsychopathologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen psicopatológica en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2070,7 +1965,6 @@ export const handlePsychopathologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2081,7 +1975,6 @@ export const handlePsychopathologyQuery = async (params) => {
       return responseData;
     }
     
-    // Manejar exámenes psicopatológicos
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen psicopatológico integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
       
@@ -2114,7 +2007,6 @@ export const handlePsychopathologyQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2126,7 +2018,6 @@ export const handlePsychopathologyQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2143,7 +2034,6 @@ export const handlePsychopathologyQuery = async (params) => {
 
         await client.query("COMMIT");
         
-        // Cache para exámenes
         if (isCacheable(query, 'psicopatologia')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2156,7 +2046,6 @@ export const handlePsychopathologyQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen psicopatológico en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2166,7 +2055,6 @@ export const handlePsychopathologyQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2177,7 +2065,6 @@ export const handlePsychopathologyQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA PSICOPATOLÓGICA (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2194,10 +2081,8 @@ export const handlePsychopathologyQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico psicopatológico
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE PSICOPATOLÓGICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelPsychopathologyAgent(llm, queryInfo, query);
     
     const agentExecutor = new AgentExecutor({
@@ -2224,7 +2109,6 @@ export const handlePsychopathologyQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
       
-      // Fallback con personalidad Acadel psicopatológica integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas psicopatológicas, pero no me rendiré.
 
 Sobre tu pregunta psicopatológica: **"${query}"**
@@ -2250,7 +2134,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
       };
     }
 
-    // Procesar respuesta psicopatológica
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2265,7 +2148,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2277,7 +2159,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2291,7 +2172,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
 
       await client.query("COMMIT");
       
-      // Cache inteligente
       if (isCacheable(query, 'psicopatologia')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2305,7 +2185,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes psicopatológicos en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2321,7 +2200,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2347,9 +2225,6 @@ Si necesitas más detalles psicopatológicos, pregúntame de nuevo y activaré t
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA PSICOPATOLÓGICA - handlePsychopathologyMultimodalQuery  
-// ============================================================================
 
 export const handlePsychopathologyMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2374,7 +2249,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2386,7 +2260,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación psicopatológica
     const extractedText = extractTextFromMultimodal(content);
     
     console.log("📝 Texto psicopatológico extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2397,7 +2270,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
     
     console.log(`🧠 Query multimodal psicopatológico integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
     
-    // PROCESAR DOCUMENTOS PSICOPATOLÓGICOS CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2435,7 +2307,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES PSICOPATOLÓGICAS CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2495,7 +2366,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS PSICOPATOLÓGICOS ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
             
-            // Filtrar imágenes psicopatológicas seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
               
@@ -2565,11 +2435,9 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE PSICOPATOLÓGICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicopatológica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA PSICOPATOLÓGICA
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -2602,7 +2470,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE PSICOPATOLÓGICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
     
@@ -2629,7 +2496,6 @@ export const handlePsychopathologyMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
       
-      // Fallback robusto psicopatológico
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal psicopatológico, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes psicopatológicas:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2655,7 +2521,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
       };
     }
 
-    // PROCESAR RESPUESTA PSICOPATOLÓGICA Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
@@ -2670,7 +2535,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal psicopatológico con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2688,10 +2552,8 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
           client,
           userId,
@@ -2703,7 +2565,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2717,7 +2578,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
 
       await client.query("COMMIT");
       
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'psicopatologia')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2731,7 +2591,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes psicopatológicos multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2748,7 +2607,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
       chatId,
       timestamp: new Date().toISOString(),
       
-      // Información de archivos psicopatológicos procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2762,12 +2620,10 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
         }
       },
       
-      // Información de seguridad psicopatológica
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
       
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2798,9 +2654,6 @@ Si necesitas una explicación psicopatológica más detallada, pregúntame de nu
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS PSICOPATOLÓGICAS
-// ============================================================================
 
 export const handlePsychopathologyQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2822,12 +2675,10 @@ export const handlePsychopathologyQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES PSICOPATOLÓGICAS
     const { isImageRequest, prompt: imagePrompt } = detectPsychopathologyImageRequest(query);
     
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES PSICOPATOLÓGICAS (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2860,7 +2711,6 @@ export const handlePsychopathologyQueryWithoutSaving = async (params) => {
         };
       }
       
-      // Guardar imagen psicopatológica localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
       
       await clearCancellationFlag(chatId);
@@ -2920,7 +2770,6 @@ export const handlePsychopathologyQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA PSICOPATOLÓGICA (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2939,7 +2788,6 @@ export const handlePsychopathologyQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE PSICOPATOLÓGICO CORREGIDO
       const { agent, tools } = await createAcadelPsychopathologyAgent(llm, queryInfo, query);
       
       const agentExecutor = new AgentExecutor({
@@ -3042,7 +2890,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content psicopatológico
     if (!content || !Array.isArray(content)) {
       console.error("Error: content psicopatológico no es un array válido en modo sin guardar:", content);
       return {
@@ -3061,7 +2908,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
     
     console.log(`🧠 Query multimodal psicopatológico integrado (sin guardar) clasificado como: ${queryInfo.type}`);
     
-    // Procesar documentos psicopatológicos en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3074,7 +2920,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
           item && (item.type === 'file' || item.type === 'document')
         );
         
-        // *** NUEVA LÓGICA: Recuperar contenido psicopatológico de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO PSICOPATOLÓGICO INTEGRADO: ${doc.name || doc.filename || 'documento psicopatológico'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3088,7 +2933,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
           
-          // *** RECUPERAR CONTENIDO PSICOPATOLÓGICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido psicopatológico para: ${doc.name || doc.filename}`);
           
           // Método 1: Por fileId si existe
@@ -3149,7 +2993,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
                 console.log(`✅ [RETRY/EDIT] Contenido psicopatológico recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
                 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3169,10 +3012,8 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
           return `${fileInfo} ${typeInfo}\n[Contenido psicopatológico no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
         
-        // Unir todas las partes del contexto psicopatológico
         documentContext = documentContextParts.join('\n');
         
-        // Contar documentos psicopatológicos exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part => 
           !part.includes('[Contenido psicopatológico no pudo ser recuperado') && 
           !part.includes('[Contenido no disponible]')
@@ -3206,7 +3047,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
       }
     }
 
-    // Procesar imágenes psicopatológicas en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3266,7 +3106,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
               analysisContext += `\n\nCONTEXTO PSICOPATOLÓGICO: ${documentContext.substring(0, 2000)}`;
             }
             
-            // Usar imágenes psicopatológicas convertidas para retry/edit
             const imageContentForAnalysis = [];
             
             for (const img of savedImages) {
@@ -3351,11 +3190,9 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Cargar historial psicopatológico relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal psicopatológica integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada psicopatológica
     let combinedQuery = extractedText || "";
     
     if (documentContext) {
@@ -3386,7 +3223,6 @@ export const handlePsychopathologyMultimodalQueryWithoutSaving = async (params) 
       };
     }
 
-    // Crear agente psicopatológico especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelPsychopathologyAgent(llm, queryInfo, combinedQuery);
 

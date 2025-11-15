@@ -1,4 +1,3 @@
-// backend/services/usuarios/deleteAccountService.js
 import pool from "../../lib/dbPool.js";
 import { logSecurityEvent } from '../../utils/securityLogger.js';
 import crypto from 'crypto';
@@ -14,20 +13,16 @@ import { emailService } from "../email/emailService.js";
 async function generateDeletionRequest(userData) {
   const { userId, ip, userAgent } = userData;
   
-  // Registrar intento de eliminación de cuenta
   logSecurityEvent('ACCOUNT_DELETION_REQUEST', 'Usuario solicitó eliminación de cuenta', {
     userId,
     ip,
     userAgent
   }, 'high');
   
-  // Generar código de 6 dígitos
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
   
-  // Generar token único
   const deletionToken = crypto.randomBytes(32).toString('hex');
   
-  // Establecer fecha de expiración (1 hora)
   const expiryDate = new Date();
   expiryDate.setHours(expiryDate.getHours() + 1);
   
@@ -38,7 +33,6 @@ async function generateDeletionRequest(userData) {
   console.log('- Fecha actual:', new Date().toISOString());
   console.log('- Fecha expiración:', expiryISOString);
   
-  // Guardar en base de datos
   const query = `
     INSERT INTO account_deletion_requests (
       user_id,
@@ -65,7 +59,6 @@ async function generateDeletionRequest(userData) {
   const { rows } = await pool.query(query, values);
   const requestId = rows[0].id;
   
-  // Guardar también en Redis para acceso rápido
   await redisService.set(
     `deletion_request:${userId}:${deletionToken}`,
     {
@@ -129,7 +122,6 @@ async function validateDeletionRequest(requestData) {
   console.log('- verificationCode:', verificationCode);
   console.log('- deletionToken:', deletionToken);
   
-  // Verificar directamente en la base de datos (más confiable)
   const dbQuery = `
     SELECT verification_code, expires_at > NOW() as valid, status
     FROM account_deletion_requests
@@ -150,7 +142,6 @@ async function validateDeletionRequest(requestData) {
   
   console.log('Datos de base de datos:', rows[0]);
   
-  // Verificar estado de la solicitud
   if (rows[0].status !== 'pending') {
     console.log('La solicitud ya fue procesada:', rows[0].status);
     return {
@@ -159,7 +150,6 @@ async function validateDeletionRequest(requestData) {
     };
   }
   
-  // Verificar si ha expirado
   if (!rows[0].valid) {
     console.log('La solicitud ha expirado según PostgreSQL');
     return {
@@ -168,7 +158,6 @@ async function validateDeletionRequest(requestData) {
     };
   }
   
-  // Verificar el código
   if (rows[0].verification_code !== verificationCode) {
     console.log('Código incorrecto:');
     console.log('- Esperado:', rows[0].verification_code);
@@ -191,7 +180,6 @@ async function validateDeletionRequest(requestData) {
 async function markRequestCompleted(requestData) {
   const { userId, deletionToken, reason } = requestData;
   
-  // Actualizar estado de la solicitud
   const updateQuery = `
     UPDATE account_deletion_requests
     SET status = 'completed', updated_at = NOW(), deletion_reason = $3
@@ -200,7 +188,6 @@ async function markRequestCompleted(requestData) {
   
   await pool.query(updateQuery, [userId, deletionToken, reason || null]);
   
-  // Eliminar de Redis (si existiera)
   const redisKey = `deletion_request:${userId}:${deletionToken}`;
   await redisService.delete(redisKey);
 }
@@ -245,7 +232,6 @@ async function _getUserInfo(client, userId) {
 async function _registerAccountDeletion(client, data) {
   const { emailHash, userAgent, ipAddress, reason, subscriptionActive } = data;
   
-  // Crear tabla si no existe
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS deleted_accounts (
       id SERIAL PRIMARY KEY,
@@ -288,14 +274,12 @@ async function _registerAccountDeletion(client, data) {
  * @private
  */
 async function _deleteChatData(client, userId) {
-  // Obtener IDs de chats del usuario
   const chatIdsQuery = `SELECT id_chat FROM chat WHERE id_user = $1`;
   const chatIdsResult = await client.query(chatIdsQuery, [userId]);
   
   if (chatIdsResult.rows.length > 0) {
     console.log(`Encontrados ${chatIdsResult.rows.length} chats para eliminar`);
     
-    // Eliminar historial de chat para cada chat
     for (const chatRow of chatIdsResult.rows) {
       const chatId = chatRow.id_chat;
       try {
@@ -306,12 +290,10 @@ async function _deleteChatData(client, userId) {
       }
     }
     
-    // Eliminar todos los chats del usuario
     await client.query('DELETE FROM chat WHERE id_user = $1', [userId]);
     console.log('Chats eliminados correctamente');
   }
   
-  // Eliminar todo el historial de chat asociado al usuario directamente
   await client.query('DELETE FROM chat_history WHERE id_user = $1', [userId]);
   console.log('Historial de chat eliminado correctamente');
 }
@@ -388,7 +370,6 @@ async function _deleteRelatedData(client, userId) {
       console.log(`✅ ${name} procesado correctamente`);
     } catch (error) {
       console.error(`❌ ERROR CRÍTICO en ${name}:`, error.message);
-      // DETENER TODO si hay un error, no continuar con transacción corrupta
       throw new Error(`Error crítico al procesar ${name}: ${error.message}`);
     }
   }
@@ -405,7 +386,6 @@ async function _deleteRelatedData(client, userId) {
 async function _anonymizeSecurityEvents(client, userId) {
   console.log('🔧 Anonimizando eventos de seguridad para cumplir con FK...');
   
-  // Verificar si existen eventos de seguridad para este usuario
   const checkEventsQuery = 'SELECT COUNT(*) as count FROM security_events WHERE user_id = $1';
   const eventCountResult = await client.query(checkEventsQuery, [userId]);
   const eventCount = eventCountResult.rows[0].count;
@@ -431,7 +411,6 @@ async function _anonymizeSecurityEvents(client, userId) {
       const result = await client.query(anonymizeQuery, [userId]);
       console.log(`✅ ${result.rowCount} eventos de seguridad anonimizados correctamente`);
       
-      // Verificar que la anonimización fue exitosa
       const verifyQuery = 'SELECT COUNT(*) as remaining FROM security_events WHERE user_id = $1';
       const verifyResult = await client.query(verifyQuery, [userId]);
       const remainingEvents = verifyResult.rows[0].remaining;
@@ -489,7 +468,6 @@ async function _deleteMainUser(client, userId) {
  * @param {string} reason - Razón de la eliminación (opcional)
  */
 async function deleteUserAccount(userId, ipAddress, userAgent, reason = null) {
-  // Crear una transacción para asegurar que todas las operaciones se completen o ninguna
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -523,7 +501,6 @@ async function deleteUserAccount(userId, ipAddress, userAgent, reason = null) {
     // 6. Eliminar usuario principal
     await _deleteMainUser(client, userId);
     
-    // Registrar evento de seguridad final
     logSecurityEvent('ACCOUNT_DELETED', 'Cuenta de usuario eliminada permanentemente', {
       emailHash,
       hadSubscription: user.subscription_active,
@@ -552,7 +529,6 @@ async function deleteUserAccount(userId, ipAddress, userAgent, reason = null) {
   }
 }
 
-// Exportar todas las funciones públicas
 export const deleteAccountService = {
   generateDeletionRequest,
   getUserEmail,

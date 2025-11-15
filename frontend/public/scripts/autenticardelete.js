@@ -2,10 +2,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Oculta el contenido inicialmente
     document.body.style.display = 'none';
     
-    // Función para verificar la autenticación usando la ruta pública
     const checkAuthentication = async () => {
         try {
-            // Usar la API pública que siempre devuelve 200 OK
             const response = await fetch('/api/usuarios/auth-status', {
                 method: 'GET',
                 credentials: 'include',
@@ -18,10 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const data = await response.json();
             
-            // Verificar si está autenticado según el campo 'authenticated'
             if (data.authenticated) {
                 console.log('Usuario autenticado:', data.user);
-                // Mostrar el contenido de la página ya que el usuario está autenticado
                 document.body.style.display = 'block';
             } else {
                 console.log('Usuario no autenticado, redirigiendo...');
@@ -35,6 +31,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Ejecuta la verificación de autenticación
     await checkAuthentication();
 });

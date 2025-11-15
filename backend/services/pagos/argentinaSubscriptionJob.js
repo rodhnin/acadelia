@@ -1,4 +1,3 @@
-// backend/jobs/argentinaSubscriptionJob.js - 🕒 JOB COMPLETO CON EMAILS
 import cron from 'node-cron';
 import pool from '../../lib/dbPool.js';
 import { argentinaEmailService } from '../email/argentinaEmailService.js';
@@ -10,9 +9,6 @@ class ArgentinaSubscriptionJob {
     this.job = null;
   }
 
-  /**
-   * 🚀 Iniciar el job automático
-   */
   start() {
     if (this.job) {
       console.log('⚠️ Job de suscripciones Argentina ya está ejecutándose');
@@ -29,7 +25,6 @@ class ArgentinaSubscriptionJob {
       timezone: "America/Argentina/Buenos_Aires" // Zona horaria Argentina
     });
 
-    // Ejecutar una vez al iniciar (opcional - para testing)
     if (process.env.NODE_ENV === 'development') {
       console.log('🧪 Modo desarrollo: ejecutando job inicial en 10 segundos...');
       setTimeout(() => {
@@ -40,9 +35,6 @@ class ArgentinaSubscriptionJob {
     console.log('✅ Job de suscripciones Argentina iniciado correctamente');
   }
 
-  /**
-   * 🛑 Detener el job
-   */
   stop() {
     if (this.job) {
       this.job.stop();
@@ -51,17 +43,11 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * ▶️ Ejecutar el job manualmente
-   */
   async executeManually() {
     console.log('🔧 Ejecutando job de suscripciones Argentina manualmente...');
     return await this.executeJob();
   }
 
-  /**
-   * 🔄 Ejecutar el proceso completo de expiración + emails
-   */
   async executeJob() {
     if (this.isRunning) {
       console.log('⏳ Job de suscripciones Argentina ya está ejecutándose, saltando...');
@@ -89,7 +75,6 @@ class ArgentinaSubscriptionJob {
 
       const estadisticas = result.rows[0];
       
-      // ✅ DESPUÉS (mostrará tiempo correcto):
         console.log(`✅ Función SQL completada:`);
         console.log(`   • Suscripciones expiradas: ${estadisticas.total_vencidas}`);
         console.log(`   • Usuarios degradados: ${estadisticas.usuarios_degradados}`);
@@ -102,7 +87,6 @@ class ArgentinaSubscriptionJob {
         console.log('');
         console.log('📧 PASO 2: Enviando emails de suscripciones expiradas...');
         
-        // Obtener IDs de suscripciones que se acaban de expirar
         const expiredSubscriptions = await pool.query(`
           SELECT 
             s.id as subscription_id,
@@ -203,7 +187,6 @@ class ArgentinaSubscriptionJob {
       console.error('❌='.repeat(40));
       console.error('');
 
-      // Log del error
       try {
         await this.logJobExecution({
           start_time: startTime,
@@ -222,9 +205,6 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * 📝 Guardar log de ejecución para auditoría
-   */
   async logJobExecution(data) {
     try {
       // Opcional: Si quieres guardar logs en BD, crear tabla job_executions_arg
@@ -257,9 +237,6 @@ class ArgentinaSubscriptionJob {
     }
   }
 
-  /**
-   * 📊 Obtener estado del job
-   */
   getStatus() {
     return {
       isRunning: this.isRunning,
@@ -270,9 +247,6 @@ class ArgentinaSubscriptionJob {
     };
   }
 
-  /**
-   * 🔍 Obtener próximas suscripciones a expirar (para testing)
-   */
   async getUpcomingExpirations(hours = 24) {
     try {
       const result = await pool.query(`
@@ -299,7 +273,6 @@ class ArgentinaSubscriptionJob {
   }
 }
 
-// Crear instancia única
 const argentinaSubscriptionJob = new ArgentinaSubscriptionJob();
 
 export { argentinaSubscriptionJob };

@@ -1,4 +1,3 @@
-// backend/middlewares/authMiddleware.js - VERSIÓN MEJORADA PARA PRODUCCIÓN
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/usuarios/authService.js";
 import { redisService } from "../lib/redis.js";
@@ -13,11 +12,9 @@ const projectRoot = path.resolve(__dirname, '..', '..');
 
 const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET;
 
-// 🆕 Cache mejorado con cleanup automático
 const renewalCache = new Map();
 const RENEWAL_CACHE_TTL = 30000; // 30 segundos
 
-// 🆕 Cleanup automático para prevenir memory leaks
 const cleanupRenewalCache = () => {
     const now = Date.now();
     for (const [key, data] of renewalCache) {
@@ -27,17 +24,14 @@ const cleanupRenewalCache = () => {
     }
 };
 
-// 🆕 Ejecutar cleanup cada 5 minutos
 setInterval(cleanupRenewalCache, 5 * 60 * 1000);
 
 /**
  * Maneja respuestas 401 según el tipo de solicitud
  */
 const handle401 = (req, res, errorMessage = "Acceso denegado, no hay token", errorCode = "NO_TOKEN") => {
-    // Log básico para monitoreo
     console.log(`[AUTH] 401 - ${errorCode}: ${errorMessage} | Path: ${req.path} | RefreshToken: ${!!req.cookies.refresh_token}`);
     
-    // Respuesta JSON para APIs
     if (req.path.startsWith('/api/') || 
         req.xhr || 
         req.get('accept')?.includes('application/json') ||
@@ -49,7 +43,6 @@ const handle401 = (req, res, errorMessage = "Acceso denegado, no hay token", err
         });
     }
     
-    // Respuesta HTML para páginas web
     const errorPath = path.join(projectRoot, 'frontend', 'views', 'error', '401.html');
     if (fs.existsSync(errorPath)) {
         return res.status(401).sendFile(errorPath);
@@ -58,27 +51,21 @@ const handle401 = (req, res, errorMessage = "Acceso denegado, no hay token", err
     res.status(401).send('Es necesario iniciar sesión para acceder a este recurso');
 };
 
-/**
- * 🆕 Renueva tokens de forma segura con sistema de locks mejorado
- */
 async function renewTokenWithLock(refreshToken, res, req) {
     const lockKey = `renewal_lock:${refreshToken}`;
     const traceId = Math.random().toString(36).substring(2, 8);
     
     try {
-        // 🆕 Verificar si ya hay una renovación en progreso con TTL
         const existingRenewal = renewalCache.get(refreshToken);
         if (existingRenewal) {
             if (existingRenewal.expiry > Date.now()) {
                 console.log(`[AUTH] Esperando renovación en progreso [${traceId}]`);
                 return await existingRenewal.promise;
             } else {
-                // 🆕 Cleanup de entrada expirada
                 renewalCache.delete(refreshToken);
             }
         }
         
-        // 🆕 Verificar lock en Redis con timeout
         const existingLock = await Promise.race([
             redisService.get(lockKey),
             new Promise((_, reject) => 
@@ -90,7 +77,6 @@ async function renewTokenWithLock(refreshToken, res, req) {
             console.log(`[AUTH] Lock Redis detectado, esperando... [${traceId}]`);
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            // 🆕 Intentar una vez más después de esperar
             try {
                 return await AuthService.refreshTokens(refreshToken);
             } catch (retryError) {
@@ -99,7 +85,6 @@ async function renewTokenWithLock(refreshToken, res, req) {
             }
         }
         
-        // 🆕 Crear lock en Redis con timeout más corto
         const lockSet = await Promise.race([
             redisService.set(lockKey, traceId, 10), // 10 segundos
             new Promise((_, reject) => 
@@ -111,7 +96,6 @@ async function renewTokenWithLock(refreshToken, res, req) {
             console.warn(`[AUTH] No se pudo establecer lock [${traceId}]`);
         }
         
-        // 🆕 Crear promesa de renovación con TTL
         const renewalPromise = AuthService.refreshTokens(refreshToken);
         renewalCache.set(refreshToken, {
             promise: renewalPromise,
@@ -120,7 +104,6 @@ async function renewTokenWithLock(refreshToken, res, req) {
         
         const tokens = await renewalPromise;
         
-        // 🆕 Establecer nueva cookie inmediatamente con verificación
         if (res && typeof res.cookie === 'function') {
             res.cookie("token", tokens.accessToken, {
                 httpOnly: true,
@@ -138,17 +121,14 @@ async function renewTokenWithLock(refreshToken, res, req) {
     } catch (error) {
         console.error(`[AUTH] Error en renovación [${traceId}]:`, error.message);
         
-        // 🆕 Cleanup en caso de error
         renewalCache.delete(refreshToken);
         
         throw error;
     } finally {
-        // 🆕 Limpiar cache y lock con timeout para evitar bloqueos
         setTimeout(() => {
             renewalCache.delete(refreshToken);
         }, 100);
         
-        // 🆕 Limpiar lock con timeout para evitar bloqueos
         setTimeout(async () => {
             try {
                 await Promise.race([
@@ -164,9 +144,6 @@ async function renewTokenWithLock(refreshToken, res, req) {
     }
 }
 
-/**
- * 🆕 Verificar sesión con reintentos mejorados
- */
 async function verifySessionWithRetry(decoded, tokenWasRenewed = false) {
     const maxRetries = tokenWasRenewed ? 3 : 1;
     let retryCount = 0;
@@ -229,13 +206,10 @@ export const authenticateUser = async (req, res, next) => {
                 console.log(`[AUTH] Sin access token, intentando renovación inmediata | Path: ${req.path}`);
                 
                 try {
-                    // 🆕 Renovar usando refresh token con manejo de errores mejorado
                     const tokens = await renewTokenWithLock(refreshToken, res, req);
                     
-                    // 🆕 Verificar token inmediatamente después de renovación
                     const decoded = jwt.verify(tokens.accessToken, ACCESS_TOKEN_SECRET);
                     
-                    // 🆕 Verificar sesión con reintentos
                     const sessionCheck = await verifySessionWithRetry(decoded, true);
                     if (!sessionCheck.valid) {
                         console.error(`[AUTH] Sesión no válida después de renovación inmediata: ${sessionCheck.reason}`);
@@ -284,13 +258,11 @@ export const authenticateUser = async (req, res, next) => {
             }
         }
         
-        // Verificar estructura del token
         if (!decoded.id_user || !decoded.sessionId) {
             console.error(`[AUTH] Token con formato incorrecto`);
             return handle401(req, res, "Token inválido: formato incorrecto", "INVALID_TOKEN");
         }
 
-        // 🆕 Verificar sesión activa con sistema de reintentos mejorado
         const sessionCheck = await verifySessionWithRetry(decoded, tokenWasRenewed);
         if (!sessionCheck.valid) {
             return handle401(req, res, `Sesión no válida: ${sessionCheck.reason}`, sessionCheck.reason);
@@ -360,7 +332,6 @@ export const checkAuthStatus = async (req, res) => {
             });
         }
 
-        // 🆕 Verificar sesión activa con sistema de reintentos
         const sessionCheck = await verifySessionWithRetry(decoded, tokenRenewed);
         if (!sessionCheck.valid) {
             return res.status(200).json({ 
@@ -413,7 +384,6 @@ export const optionalAuthenticateUser = async (req, res, next) => {
                 return next();
             }
 
-            // 🆕 Verificar sesión activa (sin retry para optional auth)
             const sessionCheck = await verifySessionWithRetry(decoded, false);
             if (!sessionCheck.valid) {
                 req.user = null;
@@ -424,13 +394,11 @@ export const optionalAuthenticateUser = async (req, res, next) => {
             next();
             
         } catch (jwtError) {
-            // Intentar renovación si el token expiró
             if (jwtError.name === 'TokenExpiredError' && req.cookies.refresh_token) {
                 try {
                     const tokens = await renewTokenWithLock(req.cookies.refresh_token, res, req);
                     decoded = jwt.verify(tokens.accessToken, ACCESS_TOKEN_SECRET);
                     
-                    // 🆕 Verificar sesión para el token renovado
                     const sessionCheck = await verifySessionWithRetry(decoded, true);
                     if (sessionCheck.valid) {
                         req.user = decoded;
@@ -510,7 +478,6 @@ export const hasRole = (roleId) => {
     };
 };
 
-// 🆕 Cleanup al cerrar la aplicación
 process.on('SIGINT', () => {
     console.log('[AUTH] Limpiando cache de renovaciones...');
     renewalCache.clear();

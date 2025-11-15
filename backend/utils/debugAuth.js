@@ -1,4 +1,3 @@
-// backend/utils/debugAuth.js - HERRAMIENTAS DE DEBUGGING INTENSIVO
 import jwt from 'jsonwebtoken';
 import { redisService } from '../lib/redis.js';
 
@@ -32,13 +31,11 @@ class AuthDebugger {
             stack: new Error().stack.split('\n').slice(2, 4) // Context de dónde se llamó
         };
         
-        // Agregar a logs internos
         this.logs.push(logEntry);
         if (this.logs.length > this.maxLogs) {
             this.logs = this.logs.slice(-500); // Mantener últimos 500
         }
         
-        // Log a consola con formato claro
         const prefix = this.getLogPrefix(type);
         console.log(`${prefix} [${timestamp}] ${message}`);
         
@@ -369,7 +366,6 @@ class AuthDebugger {
     startRenewalMonitoring() {
         this.log('INFO', '🚀 Iniciando monitoreo de renovaciones');
         
-        // Tracking de renovaciones en progreso
         this.renewalTracking = new Map();
         
         // Interceptar función de renovación (si existe)
@@ -455,7 +451,6 @@ export const authDebugger = new AuthDebugger();
 
 // Middleware de debugging para insertar en rutas
 export const debugAuthMiddleware = (req, res, next) => {
-    // Solo ejecutar en rutas que requieren autenticación
     if (req.path.startsWith('/api/') && req.method !== 'GET') {
         authDebugger.traceAuthentication(req, 'middleware')
             .then(trace => {

@@ -17,7 +17,6 @@ const state = {
 export function initDashboardModule() {
     console.log('Inicializando módulo de dashboard...');
     
-    // Escuchar activación de vista
     document.addEventListener('viewActivated', (event) => {
         if (event.detail.view === 'dashboard') {
             loadDashboardData();
@@ -35,19 +34,16 @@ export function initDashboardModule() {
  */
 async function loadStats() {
     try {
-        // Cargar contadores
         const [carrerasResponse, avasResponse, herramientasResponse] = await Promise.all([
             fetchWithCSRF('/api/carrera/carrera'),
             fetchWithCSRF('/api/avas'),
             fetchWithCSRF('/api/herramientas')
         ]);
         
-        // Actualizar estado
         state.stats.carrerasCount = Array.isArray(carrerasResponse) ? carrerasResponse.length : 0;
         state.stats.avasCount = Array.isArray(avasResponse) ? avasResponse.length : 0;
         state.stats.herramientasCount = Array.isArray(herramientasResponse) ? herramientasResponse.length : 0;
         
-        // Actualizar UI
         updateStatsUI();
     } catch (error) {
         console.error('Error al cargar estadísticas:', error);
@@ -81,7 +77,6 @@ async function loadDashboardData() {
 
 async function loadRecentActivities() {
     try {
-        // Mostrar indicador de carga
         const activityTimeline = document.querySelector('.activity-timeline');
         if (activityTimeline) {
             activityTimeline.innerHTML = `
@@ -92,19 +87,16 @@ async function loadRecentActivities() {
             `;
         }
         
-        // Obtener actividades recientes (límite 10)
         const response = await fetchWithCSRF('/api/activitymente?limit=10');
         
         if (!response.success || !Array.isArray(response.activities)) {
             throw new Error('Formato de respuesta inválido');
         }
         
-        // Actualizar UI con las actividades
         updateRecentActivitiesUI(response.activities);
     } catch (error) {
         console.error('Error al cargar actividades recientes:', error);
         
-        // Mostrar mensaje de error
         const activityTimeline = document.querySelector('.activity-timeline');
         if (activityTimeline) {
             activityTimeline.innerHTML = `
@@ -117,13 +109,11 @@ async function loadRecentActivities() {
     }
 }
 
-// Función para actualizar la UI con las actividades
 function updateRecentActivitiesUI(activities) {
     const activityTimeline = document.querySelector('.activity-timeline');
     
     if (!activityTimeline) return;
     
-    // Limpiar contenido actual
     activityTimeline.innerHTML = '';
     
     // Si no hay actividades, mostrar mensaje
@@ -137,12 +127,10 @@ function updateRecentActivitiesUI(activities) {
         return;
     }
     
-    // Crear elementos para cada actividad
     activities.forEach(activity => {
         const timelineItem = document.createElement('div');
         timelineItem.className = 'timeline-item';
         
-        // Determinar ícono según el tipo de acción
         let iconClass = 'bx-info-circle';
         let iconType = 'info-icon';
         
@@ -160,14 +148,11 @@ function updateRecentActivitiesUI(activities) {
             iconType = 'upload-icon';
         }
         
-        // Formatear el tiempo relativo (hace cuánto tiempo)
         const relativeTime = formatRelativeTime(new Date(activity.created_at));
         
-        // Crear un título para la actividad
         let title = 'Actividad Registrada';
         let entityBadge = '';
         
-        // Determinar el título basado en el tipo de acción y entidad
         if (activity.action_type === 'create') {
             if (activity.entity_type === 'carrera') title = 'Nueva Carrera Creada';
             if (activity.entity_type === 'ava') title = 'Nuevo AVA Creado';
@@ -187,7 +172,6 @@ function updateRecentActivitiesUI(activities) {
             title = 'Nuevos Documentos';
         }
         
-        // Generar badge para el tipo de entidad
         if (activity.entity_type === 'carrera') {
             entityBadge = `<span class="entity-badge carrera-badge"><i class='bx bxs-graduation'></i> Carrera</span>`;
         } else if (activity.entity_type === 'ava') {
@@ -198,7 +182,6 @@ function updateRecentActivitiesUI(activities) {
             entityBadge = `<span class="entity-badge documento-badge"><i class='bx bx-file'></i> Documento</span>`;
         }
         
-        // Formatear la fecha exacta en formato legible
         const exactDate = formatExactDate(new Date(activity.created_at));
         
         timelineItem.innerHTML = `
@@ -227,17 +210,13 @@ function updateRecentActivitiesUI(activities) {
         activityTimeline.appendChild(timelineItem);
     });
     
-    // Agregar botón de refresh a los controles
     const refreshButton = document.querySelector('.activity-control-button');
     if (refreshButton) {
-        // Remover listener anterior si existe
         refreshButton.removeEventListener('click', loadRecentActivities);
-        // Agregar nuevo listener
         refreshButton.addEventListener('click', loadRecentActivities);
     }
 }
 
-// Función para formatear el tiempo relativo
 function formatRelativeTime(date) {
     const now = new Date();
     const diffMs = now - date;
@@ -279,7 +258,6 @@ function formatExactDate(date) {
  */
 async function loadFeaturedCarreras() {
     try {
-        // Obtener todas las carreras
         const carreras = await fetchWithCSRF('/api/carrera/carrera');
         
         if (!Array.isArray(carreras)) {
@@ -289,7 +267,6 @@ async function loadFeaturedCarreras() {
         // Tomar hasta 6 carreras para mostrar
         state.featuredCarreras = carreras.slice(0, 6);
         
-        // Actualizar UI
         updateFeaturedCarrerasUI();
     } catch (error) {
         console.error('Error al cargar carreras destacadas:', error);
@@ -304,7 +281,6 @@ function updateFeaturedCarrerasUI() {
     
     if (!container) return;
     
-    // Limpiar contenido actual
     container.innerHTML = '';
     
     // Si no hay carreras, mostrar mensaje
@@ -319,7 +295,6 @@ function updateFeaturedCarrerasUI() {
         return;
     }
     
-    // Crear tarjetas para cada carrera
     state.featuredCarreras.forEach(carrera => {
         // Imagen predeterminada si no tiene
         const imageSrc = carrera.imagen || '/images/default-carrera.jpg';
@@ -372,16 +347,13 @@ function updateFeaturedCarrerasUI() {
         
         container.appendChild(carreraCard);
         
-        // Configurar manejo de error de imagen (reemplazo del onerror inline)
         const imageElement = carreraCard.querySelector('img');
         if (imageElement) {
             setupImageErrorHandler(imageElement);
         }
         
-        // Cargar conteo de AVAs para esta carrera
         loadAVAsCountForCarrera(carrera.id_carrera);
         
-        // Asignar evento a botones
         const editButton = carreraCard.querySelector('.edit-carrera');
         const viewAVAsButton = carreraCard.querySelector('.view-avas');
         
@@ -425,7 +397,6 @@ function handleEditCarrera(carreraId) {
     // Navegar a la vista de edición y pasar ID de carrera
     window.location.hash = 'edition';
     
-    // Guardar ID de carrera para editar
     sessionStorage.setItem('editCarreraId', carreraId);
     
     // Asegurarse de que la pestaña de carreras esté activa
@@ -443,14 +414,12 @@ function handleEditCarrera(carreraId) {
  * @param {string} carreraName - Nombre de la carrera
  */
 function handleViewAVAs(carreraId, carreraName) {
-    // Crear un objeto con la información que queremos preservar
     const navigationState = {
         targetTab: 'edit-ava-tab',
         carreraId: carreraId,
         carreraName: carreraName
     };
     
-    // Guardar este estado en localStorage (más persistente que sessionStorage)
     localStorage.setItem('navigationState', JSON.stringify(navigationState));
     
     // Navegar a la vista de edición
@@ -469,7 +438,6 @@ async function loadAVAsCountForCarrera(carreraId) {
             const count = Array.isArray(avas) ? avas.length : 0;
             countElement.textContent = `${count} AVA${count !== 1 ? 's' : ''}`;
             
-            // Añadir clase para estilo visual basado en la cantidad
             if (count > 0) {
                 countElement.classList.add('has-avas');
             }

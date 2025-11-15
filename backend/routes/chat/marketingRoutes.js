@@ -9,7 +9,6 @@ import {
   getNotifications,
   getNotificationCounts,
   clearNotifications,
-  // 🆕 NUEVAS IMPORTACIONES PARA LIMPIEZA POR SECCIÓN
   clearSectionNotifications,
   markSectionAsViewed,
   profileController, 
@@ -33,7 +32,6 @@ router.get('/notifications', authenticateUser, getNotifications);
 router.get('/notifications/counts', authenticateUser, getNotificationCounts);
 router.post('/notifications/clear', authenticateUser, clearNotifications);
 
-// 🆕 NUEVAS RUTAS PARA LIMPIEZA POR SECCIÓN
 router.post('/notifications/clear/:section', authenticateUser, clearSectionNotifications);
 router.post('/notifications/mark-viewed/:section', authenticateUser, markSectionAsViewed);
 
@@ -41,20 +39,18 @@ router.post('/notifications/mark-viewed/:section', authenticateUser, markSection
 router.post('/explain', authenticateUser, explainQueryController);
 router.post('/visualize', authenticateUser, visualizeDecisionController);
 
-// ✅ RUTAS PARA PERFILES - ORDEN CORREGIDO
 // IMPORTANTE: Las rutas específicas (como 'all') DEBEN ir ANTES que las rutas con parámetros (:id)
-router.delete('/profiles/all', authenticateUser, profileController.deleteAllProfiles);  // ⬆️ MOVIDO ARRIBA
+router.delete('/profiles/all', authenticateUser, profileController.deleteAllProfiles);
 router.post('/profiles', authenticateUser, profileController.createProfile);
 router.get('/profiles', authenticateUser, profileController.getProfiles);
 router.put('/profiles/:id', authenticateUser, profileController.updateProfile);
-router.delete('/profiles/:id', authenticateUser, profileController.deleteProfile);      // ⬇️ DESPUÉS DE 'all'
+router.delete('/profiles/:id', authenticateUser, profileController.deleteProfile);
 
-// ✅ RUTAS PARA CONTENIDOS - ORDEN CORREGIDO
-router.delete('/contents/all', authenticateUser, contentController.deleteAllContents);  // ⬆️ ANTES DE :id
+router.delete('/contents/all', authenticateUser, contentController.deleteAllContents);
 router.post('/contents', authenticateUser, contentController.createContent);
 router.get('/contents', authenticateUser, contentController.getContents);
 router.post('/generate-content', authenticateUser, contentController.generateContent);
-router.delete('/contents/:id', authenticateUser, contentController.deleteContent);     // ⬇️ DESPUÉS DE 'all'
+router.delete('/contents/:id', authenticateUser, contentController.deleteContent);
 
 // Rutas para matching
 router.get('/match/profile/:profileId/contents', authenticateUser, matchingController.matchProfileToContent);
@@ -64,21 +60,19 @@ router.post('/interactions', authenticateUser, matchingController.recordInteract
 // Rutas para simulación
 router.post('/simulate', authenticateUser, simulationController.simulateCampaign);
 
-// ✅ RUTAS PARA TENDENCIAS - ORDEN CORREGIDO
-router.delete('/trends/all', authenticateUser, trendController.deleteAllTrends);        // ⬆️ ANTES DE :id
+router.delete('/trends/all', authenticateUser, trendController.deleteAllTrends);
 router.get('/trends', authenticateUser, trendController.getTrends);
 router.post('/trends', authenticateUser, trendController.saveTrend);
-router.delete('/trends/:id', authenticateUser, trendController.deleteTrend);           // ⬇️ DESPUÉS DE 'all'
+router.delete('/trends/:id', authenticateUser, trendController.deleteTrend);
 
 // Rutas para resumen
 router.get('/summary', authenticateUser, summaryController.getMarketingSummary);
 
-// ✅ RUTAS PARA GESTIÓN DE MEMORIA IA - ORDEN CORREGIDO
-router.delete('/memory/reset-all', authenticateUser, memoryController.resetAllMemory);  // ⬆️ ANTES DE :id
+router.delete('/memory/reset-all', authenticateUser, memoryController.resetAllMemory);
 router.get('/memory', authenticateUser, memoryController.getMemoryInsights);
 router.get('/memory/stats', authenticateUser, memoryController.getMemoryStats);
 router.post('/memory/search', authenticateUser, memoryController.searchMemory);
-router.get('/memory/:id', authenticateUser, memoryController.getMemoryInsight);        // ⬇️ DESPUÉS DE rutas específicas
+router.get('/memory/:id', authenticateUser, memoryController.getMemoryInsight);
 router.put('/memory/:id', authenticateUser, memoryController.updateMemoryInsight);
 router.delete('/memory/:id', authenticateUser, memoryController.deleteMemoryInsight);
 

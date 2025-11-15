@@ -1,4 +1,3 @@
-// backend/config/ualaBisConfig.js - ✅ VERSIÓN CON RETRY Y MEJOR ERROR HANDLING
 import UalaApiCheckout from 'ualabis-nodejs';
 import dotenv from 'dotenv';
 
@@ -64,7 +63,6 @@ class UalaBisConfig {
     }
   }
 
-  // ✅ NUEVA FUNCIÓN: Rate limiting para evitar spam
   async enforceRateLimit() {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
@@ -78,7 +76,6 @@ class UalaBisConfig {
     this.lastRequestTime = Date.now();
   }
 
-  // ✅ NUEVA FUNCIÓN: Retry logic
   async executeWithRetry(operation, maxRetries = 3) {
     let lastError;
     
@@ -89,7 +86,6 @@ class UalaBisConfig {
         // Enforcar rate limiting
         await this.enforceRateLimit();
         
-        // Ejecutar operación
         const result = await operation();
         
         if (attempt > 1) {
@@ -108,7 +104,6 @@ class UalaBisConfig {
           break;
         }
         
-        // Calcular delay exponencial: 2^attempt segundos
         const delay = Math.pow(2, attempt) * 1000;
         console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -119,7 +114,6 @@ class UalaBisConfig {
     throw lastError;
   }
 
-  // ✅ NUEVA FUNCIÓN: Mejor análisis de errores
   analyzeError(error) {
     const errorInfo = {
       type: error.type || 'unknown',
@@ -129,7 +123,6 @@ class UalaBisConfig {
       userMessage: 'Error al procesar el pago'
     };
 
-    // Determinar si el error es reintentable y el mensaje para el usuario
     if (error.statusCode === 500) {
       errorInfo.isRetryable = true;
       errorInfo.userMessage = 'Error temporal en Ualá Bis. Reintentando...';
@@ -166,7 +159,6 @@ class UalaBisConfig {
         ambiente: this.isDev ? 'desarrollo' : 'producción'
       });
 
-      // ✅ Ejecutar con retry automático
       const order = await this.executeWithRetry(async () => {
         return await UalaApiCheckout.createOrder({
           amount: orderData.amount,
@@ -181,7 +173,6 @@ class UalaBisConfig {
       console.log('🔍 ESTRUCTURA ORIGINAL DEL SDK:');
       console.log(JSON.stringify(order, null, 2));
 
-      // Extraer URL de checkout
       const checkoutUrl = order.links?.checkoutLink;
       
       if (!checkoutUrl) {
@@ -191,7 +182,6 @@ class UalaBisConfig {
 
       console.log(`✅ URL de checkout extraída: ${checkoutUrl}`);
 
-      // Crear estructura compatible
       const finalOrder = {
         uuid: order.uuid,
         status: order.status,
@@ -209,7 +199,6 @@ class UalaBisConfig {
       return finalOrder;
 
     } catch (error) {
-      // ✅ Análisis detallado del error
       const errorInfo = this.analyzeError(error);
       
       console.error('❌ Error detallado creando orden:');
@@ -235,7 +224,6 @@ class UalaBisConfig {
       
       console.log(`🔍 Obteniendo orden: ${uuid}`);
       
-      // ✅ También con retry para consultas
       const order = await this.executeWithRetry(async () => {
         return await UalaApiCheckout.getOrder(uuid);
       }, 2); // Menos reintentos para consultas

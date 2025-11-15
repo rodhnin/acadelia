@@ -1,4 +1,3 @@
-// backend/services/usuarios/passwordRecoveryService.js
 import crypto from 'crypto';
 import pool from "../../lib/dbPool.js";
 import bcrypt from "bcryptjs";
@@ -41,18 +40,14 @@ async function _deleteOldTokens(userId) {
  * @returns {Object} - Token generado y datos relacionados
  */
 async function generateResetToken(userId) {
-  // Generar token único
   const resetToken = crypto.randomBytes(32).toString('hex');
   const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
   
-  // Establecer expiración (30 minutos)
   const tokenExpiry = new Date(Date.now() + 30 * 60 * 1000);
   
   try {
-    // Eliminar tokens antiguos primero
     await _deleteOldTokens(userId);
     
-    // Insertar nuevo token
     console.log('Insertando nuevo token para usuario:', userId);
     const insertTokenQuery = `
       INSERT INTO password_reset_tokens (user_id, token, expires_at, created_at)
@@ -81,10 +76,8 @@ async function generateResetToken(userId) {
 async function sendResetEmail(emailData) {
   const { email, resetToken, userId } = emailData;
   
-  // Crear URL de reset
   const resetUrl = `${emailService.baseUrl}/reset-password?token=${resetToken}&id=${userId}`;
   
-  // Enviar correo con el link de recuperación
   await emailService.sendPasswordResetEmail(email, resetToken, resetUrl);
 }
 
@@ -135,7 +128,6 @@ async function validateResetToken(tokenData) {
 async function updatePassword(passwordData) {
   const { userId, newPassword } = passwordData;
   
-  // Validar que las contraseñas coincidan (esto debería validarse en el controlador)
   if (passwordData.newPassword !== passwordData.confirmPassword) {
     throw new Error("Las contraseñas no coinciden");
   }
@@ -144,7 +136,6 @@ async function updatePassword(passwordData) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(newPassword, salt);
   
-  // Actualizar contraseña
   const updatePasswordQuery = `
     UPDATE usuario 
     SET contraseña = $1 
@@ -226,7 +217,6 @@ async function getTokenInfo(tokenData) {
     };
   }
   
-  // Calcular tiempo restante en minutos
   const expiryDate = new Date(rows[0].expires_at);
   const minutesRemaining = Math.floor((expiryDate - new Date()) / (1000 * 60));
   
@@ -236,7 +226,6 @@ async function getTokenInfo(tokenData) {
   };
 }
 
-// Exportar todas las funciones
 export const passwordRecoveryService = {
   findUserByEmail,
   generateResetToken,

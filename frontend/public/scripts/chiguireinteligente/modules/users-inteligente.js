@@ -38,7 +38,6 @@ export class UsersModule {
   async init() {
   console.log('Inicializando módulo de usuarios');
   
-  // Configurar event listeners
   this.setupEventListeners();
   
   // MODIFICADO: Suscribirse a cambios de fecha pero ignorarlos
@@ -47,7 +46,6 @@ export class UsersModule {
     // No hacer nada con este evento
   });
   
-  // Cargar datos iniciales (solo una vez)
   await this.loadUserData();
   
   return true;
@@ -76,7 +74,6 @@ setupEventListeners() {
     });
   }
 
-    // Añadir botón de reinicio de filtros
 this.resetButton = this.ui.addResetFiltersButton(
   'users-section', 
   'reset-user-filters',
@@ -88,7 +85,6 @@ this.resetButton = this.ui.addResetFiltersButton(
 document.addEventListener('click', (e) => {
   const filterButton = e.target.closest('#apply-user-filters');
   if (filterButton && this.currentSection === 'users') {
-    // Actualizar estado del botón al aplicar filtros
     setTimeout(() => {
       this.updateResetButtonVisibility();
     }, 100);
@@ -136,7 +132,6 @@ document.addEventListener('click', (e) => {
     
     // Eventos desde otros módulos
     this.eventBus.on('dateRangeChanged', (range) => {
-      // Actualizar datos si cambia el rango de fechas
       this.refreshUsers();
     });
     
@@ -156,7 +151,6 @@ document.addEventListener('click', (e) => {
  * @param {boolean} forceApi - Fuerza recarga desde API ignorando caché
  */
 async refreshUsers(forceApi = false) {
-  // Si no se fuerza API y ya tenemos datos, no hacer nada
   if (!forceApi && this.users.length > 0) {
     console.log('Users: Usando datos existentes en memoria');
     this.ui.showSuccessMessage('Usando datos existentes', {
@@ -164,20 +158,16 @@ async refreshUsers(forceApi = false) {
       icon: 'bi-speedometer'
     });
     
-    // Solo actualizar la UI sin recargar datos
     this.calculateUserStats();
     this.applyFilters();
     
     return;
   }
   
-  // Solo si se fuerza explícitamente, recargar desde API
   console.log('Users: Solicitando datos frescos desde API');
   
-  // Limpiar caché para obtener datos frescos
   this.api.clearCache('users');
   
-  // Mostrar indicador de carga
   this.ui.showLoading('Actualizando datos de usuarios...');
   
   try {
@@ -187,16 +177,12 @@ async refreshUsers(forceApi = false) {
     // Recargar datos
     await this.loadUserData();
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage('Datos actualizados correctamente');
   } catch (error) {
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
-    // Mostrar mensaje de error
     this.ui.showErrorMessage('Error al actualizar', 'No se pudieron recargar los datos');
     console.error('Error al actualizar usuarios:', error);
   }
@@ -225,16 +211,13 @@ resetFilters() {
   if (countryFilter) countryFilter.value = '';
   if (universityFilter) universityFilter.value = '';
   
-  // Resetear paginación
   this.currentPage = 1;
   
-  // Notificar al usuario
   this.ui.showSuccessMessage('Filtros reiniciados');
   
   // Recargar datos
   this.applyFilters();
   
-  // Actualizar estado del botón
   this.updateResetButtonVisibility();
 }
 
@@ -259,7 +242,6 @@ onSectionActivated() {
   if (this.users && this.users.length > 0) {
     console.log('Users: Usando datos existentes en memoria, sin peticiones adicionales');
     
-    // Actualizar gráficos si existen, sin recargar datos
     const countryChartEl = document.getElementById('users-country-chart');
     const productChartEl = document.getElementById('users-product-chart');
     
@@ -271,12 +253,10 @@ onSectionActivated() {
       this.initCharts();
     }
     
-    // Aplicar filtros sin recargar datos
     this.applyFilters();
     return;
   }
   
-  // Solo si no hay datos, cargarlos
   console.log('Users: Cargando datos iniciales');
   this.loadUserData();
 }
@@ -286,12 +266,10 @@ onSectionActivated() {
    */
   async loadCountriesAndUniversities() {
     try {
-      // Cargar países
       const response = await this.api.get('/paises');
       if (response.success) {
         this.countries = response.data;
         
-        // Actualizar selector de países en el filtro
         this.populateCountrySelect();
       } else {
         console.error('Error al cargar países:', response.error);
@@ -315,7 +293,6 @@ onSectionActivated() {
     // Mantener la opción por defecto
     let options = `<option value="">Todos los países</option>`;
     
-    // Añadir opciones de países
     this.countries.forEach(country => {
       options += `<option value="${country.id_pais}">${country.nombre_pais}</option>`;
     });
@@ -335,13 +312,11 @@ onSectionActivated() {
     
     if (countryId) {
       try {
-        // Cargar universidades del país seleccionado
         const response = await this.api.get(`/paises/${countryId}/universidades`);
         
         if (response.success && response.data.length > 0) {
           this.universities = response.data;
           
-          // Añadir opciones de universidades
           this.universities.forEach(univ => {
             options += `<option value="${univ.id_universidad}">${univ.nom_universidad}</option>`;
           });
@@ -359,10 +334,8 @@ onSectionActivated() {
    */
   async loadUserData() {
     try {
-      // Mostrar indicador de carga
       this.ui.updateTable('users-table', [], null, 'Cargando usuarios...');
       
-      // Obtener usuarios
       const response = await this.api.get('/usuarios/usuarios');
       let users = [];
       
@@ -378,13 +351,10 @@ onSectionActivated() {
       // Enriquecer con datos de perfiles y suscripciones
       this.users = await this.enrichUsersWithCompleteData(users);
       
-      // Calcular estadísticas
       this.calculateUserStats();
       
-      // Aplicar filtros iniciales - mostrar todos los usuarios automáticamente
       this.applyFilters();
       
-      // Inicializar gráficos
       this.initCharts();
       
       return true;
@@ -408,10 +378,8 @@ async enrichUsersWithCompleteData(users) {
     // Caché de detalles de usuarios para evitar peticiones duplicadas
     const userDetailsCache = {};
     
-    // Procesar cada usuario en paralelo para mejor rendimiento
     const enrichPromises = users.map(async (user) => {
       try {
-        // Verificar si ya tenemos datos enriquecidos para este usuario
         const cachedUser = this.users.find(u => u.id_user === user.id_user);
         if (cachedUser) {
           console.log(`Reutilizando datos en caché para usuario ${user.id_user}`);
@@ -421,7 +389,6 @@ async enrichUsersWithCompleteData(users) {
         // Si no está en caché, obtener detalles
         let userDetails = null;
         
-        // Verificar si ya consultamos este usuario en esta sesión
         if (userDetailsCache[user.id_user]) {
           userDetails = userDetailsCache[user.id_user];
         } else {
@@ -432,7 +399,6 @@ async enrichUsersWithCompleteData(users) {
             if (detailResponse.success && detailResponse.data) {
               userDetails = detailResponse.data;
               
-              // Guardar en caché para evitar peticiones repetidas
               userDetailsCache[user.id_user] = userDetails;
               
               // Si obtenemos los detalles, actualizar last_login desde userDetails.usuario
@@ -445,7 +411,6 @@ async enrichUsersWithCompleteData(users) {
           }
         }
         
-        // Obtener perfil con universidad
         let perfil = null;
         try {
           const perfilResponse = await this.api.get(`/perfil/with-university/${user.id_user}`);
@@ -460,7 +425,6 @@ async enrichUsersWithCompleteData(users) {
           }
         }
         
-        // Obtener suscripciones
         let subscriptions = [];
         try {
           const subsResponse = await this.api.get(`/payment/user/subscriptions/${user.id_user}`);
@@ -473,7 +437,6 @@ async enrichUsersWithCompleteData(users) {
           console.warn(`No se pudo obtener suscripciones del usuario ${user.id_user}:`, subsError);
         }
         
-        // Obtener transacciones
         let transactions = [];
         try {
           const transResponse = await this.api.get(`/payment/user/transactions/${user.id_user}`);
@@ -488,7 +451,6 @@ async enrichUsersWithCompleteData(users) {
         
         // CORRECCIÓN: Calcular gasto total priorizando amount_eur
         const totalSpend = transactions.reduce((sum, trans) => {
-          // Priorizar el uso de amount_eur si está disponible
           if (trans.amount_eur !== undefined && trans.amount_eur !== null) {
             return sum + this.normalizeAmount(trans.amount_eur);
           }
@@ -503,7 +465,6 @@ async enrichUsersWithCompleteData(users) {
           return sum + this.normalizeAmount(trans.amount);
         }, 0);
       
-        // Añadir usuario enriquecido - usando last_login obtenido de perfil/detail
         return {
           ...user,
           nombre: perfil?.nombre || (userDetails?.perfil?.nombre || ''),
@@ -532,7 +493,6 @@ async enrichUsersWithCompleteData(users) {
         };
       } catch (userError) {
         console.error(`Error procesando usuario ${user.id_user}:`, userError);
-        // Devolver usuario con datos mínimos
         return {
           ...user,
           nombre: '',
@@ -553,10 +513,8 @@ async enrichUsersWithCompleteData(users) {
       }
     });
     
-    // Esperar a que todos los usuarios sean procesados
     const results = await Promise.allSettled(enrichPromises);
     
-    // Filtrar solo los resultados exitosos
     results.forEach(result => {
       if (result.status === 'fulfilled') {
         enrichedUsers.push(result.value);
@@ -576,7 +534,6 @@ async enrichUsersWithCompleteData(users) {
  * @returns {Date} Fecha del último acceso
  */
 getLastAccess(user) {
-  // Quitar logs excesivos
   
   // 1. Si el usuario tiene last_login directamente
   if (user.last_login) {
@@ -630,9 +587,7 @@ getLastAccess(user) {
     this.userCountryStats = {};
     this.userProductStats = {};
     
-    // Procesar cada usuario
     this.users.forEach(user => {
-      // Calcular estadísticas por país
       if (user.pais) {
         if (!this.userCountryStats[user.pais]) {
           this.userCountryStats[user.pais] = {
@@ -677,11 +632,9 @@ getLastAccess(user) {
           // CORRECCIÓN: Añadir ingresos del producto priorizando amount_eur
           const transactions = user.transactions.filter(t => t.product_id == productId);
           transactions.forEach(trans => {
-            // Priorizar amount_eur
             if (trans.amount_eur !== undefined && trans.amount_eur !== null) {
               this.userProductStats[productId].totalRevenue += this.normalizeAmount(trans.amount_eur);
             }
-            // Fallback a conversión manual
             else if (trans.currency_code && trans.currency_code !== 'EUR' && trans.exchange_rate) {
               const convertedAmount = this.normalizeAmount(trans.amount) * trans.exchange_rate;
               this.userProductStats[productId].totalRevenue += convertedAmount;
@@ -700,11 +653,9 @@ getLastAccess(user) {
  * Actualiza la tabla de usuarios con los datos filtrados
  */
 updateUsersTable() {
-  // Calcular índices de paginación
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
   const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredUsers.length);
   
-  // Obtener datos de la página actual
   const pageData = this.filteredUsers.slice(startIndex, endIndex);
   
   // DEBUG
@@ -714,9 +665,7 @@ updateUsersTable() {
     console.log('TABLA - Valor de last_login:', pageData[0].last_login);
   }
   
-  // Renderizar tabla
   this.ui.updateTable('users-table', pageData, (user) => {
-    // Formatear last_login - asegurarnos de convertirlo a Date si es string
     let lastLoginDate = null;
     if (user.last_login) {
       lastLoginDate = user.last_login instanceof Date ? 
@@ -724,7 +673,6 @@ updateUsersTable() {
                     new Date(user.last_login);
     }
     
-    // Formatear suscripciones
     let subscriptionsDisplay;
     if (user.stats.subscriptionsCount === 0) {
       subscriptionsDisplay = '0';
@@ -761,13 +709,10 @@ updateUsersTable() {
     `;
   });
   
-  // Configurar botones de acción
   this.setupActionButtons();
   
-  // Actualizar paginación
   this.ui.updatePagination('user', startIndex + 1, endIndex, this.filteredUsers.length);
   
-  // Actualizar estado de botones de paginación
   const prevButton = document.getElementById('user-prev-page');
   const nextButton = document.getElementById('user-next-page');
   
@@ -792,7 +737,6 @@ updateUsersTable() {
         const action = button.getAttribute('data-action');
         const userId = button.getAttribute('data-id');
         
-        // Manejar acciones
         switch (action) {
           case 'view':
             this.viewUserDetails(userId);
@@ -814,10 +758,8 @@ updateUsersTable() {
  */
 async viewUserDetails(userId) {
   try {
-    // Mostrar loader
     this.ui.showLoading('Cargando detalles de usuario...');
     
-    // Obtener detalles completos del perfil
     let userDetails = null;
     try {
       const response = await this.api.get(`/perfil/detail/${userId}`);
@@ -837,7 +779,6 @@ async viewUserDetails(userId) {
       try {
         const basicUserResponse = await this.api.get(`/usuarios/usuarios/${userId}`);
         if (basicUserResponse) {
-          // Crear estructura básica con datos mínimos
           userDetails = {
             usuario: basicUserResponse,
             perfil: null,
@@ -850,7 +791,6 @@ async viewUserDetails(userId) {
       }
     }
     
-    // Ocultar loader
     this.ui.hideLoading();
     
     // Si no tenemos datos, mostrar mensaje
@@ -864,11 +804,9 @@ async viewUserDetails(userId) {
       userDetails.usuario = { id_user: userId };
     }
     
-    // Verificar si ya existe un modal
     let modalElement = document.getElementById('userDetailsModal');
     
     if (!modalElement) {
-      // Crear modal si no existe
       const modalHTML = `
         <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-lg">
@@ -888,7 +826,6 @@ async viewUserDetails(userId) {
         </div>
       `;
       
-      // Añadir modal al DOM
       document.body.insertAdjacentHTML('beforeend', modalHTML);
       modalElement = document.getElementById('userDetailsModal');
     }
@@ -897,21 +834,17 @@ async viewUserDetails(userId) {
     const user = userDetails.usuario || {};
     console.log('MODAL - usuario pasado a getLastAccess:', user);
     
-    // Determinar último acceso: usar last_login si existe, o calcular uno basado en otras propiedades
     const lastAccess = this.getLastAccess(user);
     console.log('MODAL - lastAccess obtenido:', lastAccess);
 
-    // Actualizar contenido del modal
     const modalContent = document.getElementById('userDetailsContent');
     
     if (modalContent) {
-      // Obtener datos seguros para el modal (con valores por defecto)
       const user = userDetails.usuario || {};
       const perfil = userDetails.perfil || {};
       const suscripciones = userDetails.suscripciones || { activas: [], total: 0 };
       const transacciones = userDetails.transacciones || { recientes: [], total: 0 };
       
-      // Determinar último acceso: usar last_login si existe, o calcular uno basado en otras propiedades
       const lastAccess = this.getLastAccess(user);
       
       // CORRECCIÓN: Convertir los montos de transacciones a EUR en el modal
@@ -933,7 +866,6 @@ async viewUserDetails(userId) {
         });
       }
       
-      // Generar HTML para el modal con verificación de datos null/undefined
       modalContent.innerHTML = `
         <div class="user-details">
           <div class="row">
@@ -1019,20 +951,16 @@ async viewUserDetails(userId) {
       `;
     }
     
-    // Mostrar modal
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
     
 // Solución para el problema de accesibilidad con aria-hidden
-// Usar una función con nombre para poder eliminarla correctamente
 const handleModalHidden = function() {
   // Enfocar un elemento fuera del modal (por ejemplo, el body)
   document.body.focus();
-  // Eliminar este evento correctamente
   modalElement.removeEventListener('hidden.bs.modal', handleModalHidden);
 };
 
-// Añadir el event listener con la función nombrada
 modalElement.addEventListener('hidden.bs.modal', handleModalHidden);
     
   } catch (error) {
@@ -1047,10 +975,8 @@ modalElement.addEventListener('hidden.bs.modal', handleModalHidden);
    * @param {string} userId - ID del usuario
    */
   viewUserSubscriptions(userId) {
-    // Emitir evento para filtrar suscripciones por usuario
     this.eventBus.emit('showSubscriptionsByUser', { userId });
     
-    // Cambiar a la sección de suscripciones
     const subscriptionsLink = document.querySelector(`.nav-link[data-section="subscriptions"]`);
     if (subscriptionsLink) {
       subscriptionsLink.click();
@@ -1062,10 +988,8 @@ modalElement.addEventListener('hidden.bs.modal', handleModalHidden);
    * @param {string} userId - ID del usuario
    */
   viewUserTransactions(userId) {
-    // Emitir evento para filtrar transacciones por usuario
     this.eventBus.emit('showTransactionsByUser', { userId });
     
-    // Cambiar a la sección de transacciones
     const transactionsLink = document.querySelector(`.nav-link[data-section="transactions"]`);
     if (transactionsLink) {
       transactionsLink.click();
@@ -1076,13 +1000,11 @@ modalElement.addEventListener('hidden.bs.modal', handleModalHidden);
  * Aplica filtros a los usuarios
  */
 applyFilters() {
-  // Verificar que estamos en la sección correcta
   if (this.currentSection !== 'users') {
     console.warn('Intentando aplicar filtros de usuarios fuera de la sección de usuarios');
     return;
   }
 
-  // Obtener valores de filtros
   const subscriptionFilter = document.getElementById('user-subscription-filter')?.value || '';
   const countryFilter = document.getElementById('user-country-filter')?.value || '';
   const universityFilter = document.getElementById('user-university-filter')?.value || '';
@@ -1095,7 +1017,6 @@ applyFilters() {
     search: searchFilter
   });
   
-  // Actualizar configuración de filtros
   this.filterSettings = {
     subscription: subscriptionFilter,
     country: countryFilter,
@@ -1103,10 +1024,8 @@ applyFilters() {
     search: searchFilter
   };
   
-  // Resetear paginación
   this.currentPage = 1;
   
-  // Verificar que tenemos datos para filtrar
   if (!this.users || this.users.length === 0) {
     console.warn('No hay usuarios para filtrar');
     this.filteredUsers = [];
@@ -1114,7 +1033,6 @@ applyFilters() {
     return;
   }
   
-  // Aplicar filtros
   this.filteredUsers = this.users.filter(user => {
     
     // Filtro por suscripción (con/sin)
@@ -1141,7 +1059,6 @@ applyFilters() {
     if (searchFilter) {
       const searchTerm = searchFilter.toLowerCase();
       
-      // Buscar en varios campos
       const matchesId = user.id_user?.toString().includes(searchTerm);
       const matchesEmail = user.correo?.toLowerCase().includes(searchTerm);
       const matchesName = 
@@ -1158,17 +1075,14 @@ applyFilters() {
   
   console.log(`Filtrado completado: ${this.filteredUsers.length} de ${this.users.length} usuarios`);
   
-  // Ordenar por fecha de registro (más recientes primero)
   this.filteredUsers.sort((a, b) => {
     const dateA = new Date(a.fecha_registro || a.created_at || 0);
     const dateB = new Date(b.fecha_registro || b.created_at || 0);
     return dateB - dateA;
   });
   
-  // Actualizar tabla
   this.updateUsersTable();
   
-  // Actualizar gráficos
   this.updateCharts();
   this.updateResetButtonVisibility();
 }
@@ -1182,10 +1096,8 @@ initCharts() {
   // Destruir gráficos existentes para evitar errores
   this.destroyCharts();
   
-  // Inicializar gráfico de países
   this.initCountryChart();
   
-  // Inicializar gráfico de productos
   this.initProductChart();
 }
 
@@ -1217,7 +1129,6 @@ initCountryChart() {
   // Asegurarnos de que cualquier gráfico previo en este canvas sea destruido
   Chart.getChart(ctx)?.destroy();
   
-  // Convertir estadísticas a array y ordenar
   const countryData = Object.values(this.userCountryStats)
     .sort((a, b) => b.count - a.count);
   
@@ -1249,12 +1160,10 @@ initCountryChart() {
     // Limitar a los 10 principales países
     const topCountries = countryData.slice(0, 10);
     
-    // Preparar datos para el gráfico
     const labels = topCountries.map(c => c.name);
     const userData = topCountries.map(c => c.count);
     const subscriptionData = topCountries.map(c => c.usersWithSubscriptions);
     
-    // Crear configuración
     const config = {
       type: 'bar',
       data: {
@@ -1301,7 +1210,6 @@ initCountryChart() {
       }
     };
     
-    // Crear gráfico
     this.charts.country = new Chart(ctx, config);
   }
   
@@ -1314,7 +1222,6 @@ initCountryChart() {
 
     Chart.getChart(ctx)?.destroy();
     
-    // Convertir estadísticas a array y ordenar
     const productData = Object.values(this.userProductStats)
       .sort((a, b) => b.count - a.count);
     
@@ -1340,7 +1247,6 @@ initCountryChart() {
     // Limitar a los 5 principales productos
     const topProducts = productData.slice(0, 5);
     
-    // Preparar datos para el gráfico
     const labels = topProducts.map(p => p.name);
     const userData = topProducts.map(p => p.count);
     const colors = [
@@ -1387,7 +1293,6 @@ initCountryChart() {
       }
     };
     
-    // Crear gráfico
     this.charts.product = new Chart(ctx, config);
   }
   
@@ -1405,7 +1310,6 @@ initCountryChart() {
     const filteredCountryStats = {};
     const filteredProductStats = {};
     
-    // Procesar solo los usuarios filtrados
     this.filteredUsers.forEach(user => {
       // Estadísticas por país
       if (user.pais) {
@@ -1448,10 +1352,8 @@ initCountryChart() {
       }
     });
     
-    // Actualizar gráfico de países
     this.updateCountryChart(filteredCountryStats);
     
-    // Actualizar gráfico de productos
     this.updateProductChart(filteredProductStats);
   }
   
@@ -1462,7 +1364,6 @@ initCountryChart() {
   updateCountryChart(countryStats) {
     if (!this.charts.country) return;
     
-    // Convertir estadísticas a array y ordenar
     const countryData = Object.values(countryStats)
       .sort((a, b) => b.count - a.count);
     
@@ -1479,12 +1380,10 @@ initCountryChart() {
     // Limitar a los 10 principales países
     const topCountries = countryData.slice(0, 10);
     
-    // Preparar datos para el gráfico
     const labels = topCountries.map(c => c.name);
     const userData = topCountries.map(c => c.count);
     const subscriptionData = topCountries.map(c => c.usersWithSubscriptions);
     
-    // Actualizar datos
     this.charts.country.data.labels = labels;
     this.charts.country.data.datasets[0].data = userData;
     
@@ -1499,7 +1398,6 @@ initCountryChart() {
       this.charts.country.data.datasets[1].data = subscriptionData;
     }
     
-    // Actualizar gráfico
     this.charts.country.update();
   }
   
@@ -1510,7 +1408,6 @@ initCountryChart() {
   updateProductChart(productStats) {
     if (!this.charts.product) return;
     
-    // Convertir estadísticas a array y ordenar
     const productData = Object.values(productStats)
       .sort((a, b) => b.count - a.count);
     
@@ -1526,19 +1423,16 @@ initCountryChart() {
     // Limitar a los 5 principales productos
     const topProducts = productData.slice(0, 5);
     
-    // Preparar datos para el gráfico
     const labels = topProducts.map(p => p.name);
     const userData = topProducts.map(p => p.count);
     const colors = [
       '#582f0e', '#7f4f24', '#936639', '#a68a64', '#b6ad90'
     ].slice(0, topProducts.length);
     
-    // Actualizar datos
     this.charts.product.data.labels = labels;
     this.charts.product.data.datasets[0].data = userData;
     this.charts.product.data.datasets[0].backgroundColor = colors;
     
-    // Actualizar gráfico
     this.charts.product.update();
   }
   
@@ -1557,19 +1451,15 @@ initCountryChart() {
    * Refresca los datos de usuarios
    */
   async refreshUsers() {
-    // Limpiar caché para obtener datos frescos
     this.api.clearCache('users');
     
-    // Mostrar indicador de carga
     this.ui.showLoading('Actualizando datos de usuarios...');
     
     // Recargar datos
     await this.loadUserData();
     
-    // Ocultar indicador de carga
     this.ui.hideLoading();
     
-    // Mostrar mensaje de éxito
     this.ui.showSuccessMessage('Datos actualizados correctamente');
   }
   
@@ -1578,7 +1468,6 @@ initCountryChart() {
  */
 exportUsers() {
   try {
-    // Obtener formato seleccionado o usar formato preferido del usuario
     const selectedFormat = document.getElementById('export-format')?.value;
     const format = selectedFormat || exportManager.getPreferredFormat('excel');
     
@@ -1607,18 +1496,14 @@ exportUsers() {
       user['Total Suscripciones'] > 0 && user['Suscripciones Activas'] === 0
     );
     
-    // Calcular estadísticas para el resumen
     const totalUsers = data.length;
     const inactiveCount = inactiveUsers.length;
     const inactivePercentage = totalUsers > 0 ? ((inactiveCount / totalUsers) * 100).toFixed(2) : 0;
     
-    // Calcular gasto total de usuarios inactivos
     const inactiveSpend = inactiveUsers.reduce((sum, user) => sum + user['Gasto Total (EUR)'], 0);
     
-    // Calcular transacciones totales de usuarios inactivos
     const inactiveTransactions = inactiveUsers.reduce((sum, user) => sum + user['Transacciones'], 0);
     
-    // Calcular promedio de gasto por usuario inactivo
     const avgInactiveSpend = inactiveCount > 0 ? (inactiveSpend / inactiveCount).toFixed(2) : 0;
     
     // Título con posible rango de fechas
@@ -1641,14 +1526,10 @@ exportUsers() {
     // Opciones específicas para formato PDF
     const pdfOptions = {
       pdf: {
-        // Usar A4 para PDF para más espacio horizontal
         pageSize: 'A4',
         orientation: 'landscape',
-        // Activar la optimización para tablas anchas
         optimizeForWideTables: true,
-        // Usar reducción agresiva de fuente
         fontSizeReduction: 'large',
-        // Activar compresión
         compressImages: true,
         // CLAVE: Forzar ajuste a página
         fitToPage: true,
@@ -1657,7 +1538,6 @@ exportUsers() {
       }
     };
     
-    // Definir anchos explícitos para el cálculo de ajuste forzado
     // Estos valores serán usados como guía pero el algoritmo se asegurará
     // de que todo quepa en la página
     const columnWidths = {
@@ -1713,7 +1593,6 @@ exportUsers() {
       }
     };
     
-    // Exportar con formato avanzado y configuración personalizada
     exportManager.exportData(data, {
       fileName,
       format,
@@ -1725,18 +1604,15 @@ exportUsers() {
       logoUrl: '/images/Imagotipo.webp',
       title: title,
       columnsWithTotals: columnsWithTotals,
-      // Definir anchos de columna como guía
       columnWidths: columnWidths,
       // Integrar todas las opciones de formato
       ...dataFormats,
       // Opciones para resaltar usuarios inactivos
       highlightInactiveUsers: true,
       inactiveUserColor: 'ffebee',
-      // Incluir análisis completo
       ...userAnalysis,
       // Opciones de truncamiento de texto para PDF
       ...truncateOptions,
-      // Incluir opciones específicas para PDF si es el formato seleccionado
       ...(format === 'pdf' ? pdfOptions : {})
     });
     

@@ -11,7 +11,6 @@
   let savedTheme = 'light'; // Tema predeterminado
   
   try {
-    // Intentar obtener el tema directamente de localStorage
     // Sin verificar consentimiento para evitar delay
     const themeFromStorage = localStorage.getItem('theme');
     
@@ -26,7 +25,6 @@
     console.log('localStorage no disponible, usando tema predeterminado: light');
   }
   
-  // Aplicar el tema INMEDIATAMENTE a html y body
   document.documentElement.setAttribute('data-theme', savedTheme);
   
   // Si el body ya existe, aplicar también
@@ -39,7 +37,6 @@
     });
   }
   
-  // Aplicar clase CSS legacy si es necesario (para compatibilidad)
   if (savedTheme === 'dark') {
     if (document.body) {
       document.body.classList.add('dark-theme');
@@ -50,7 +47,6 @@
     }
   }
   
-  // Guardar el tema aplicado para que otros scripts puedan verificarlo
   window._immediateThemeApplied = savedTheme;
   
   console.log(`🎨 Tema aplicado inmediatamente: ${savedTheme}`);

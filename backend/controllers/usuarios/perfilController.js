@@ -35,7 +35,6 @@ export const createPerfil = async (req, res) => {
 
         const perfil = await perfilService.createPerfil(req.body);
         
-        // Log de creación de perfil
         logSecurityEvent('PROFILE_CREATED', 'Perfil creado', {
             userId: req.body.id_usuario || req.user?.id_user,
             profileId: perfil.id_usuario,
@@ -50,7 +49,6 @@ export const createPerfil = async (req, res) => {
     } catch (error) {
         console.error("Error en createPerfil controller:", error);
         
-        // Log de error en creación de perfil
         logSecurityEvent('PROFILE_CREATION_ERROR', 'Error creando perfil', {
             userId: req.body.id_usuario || req.user?.id_user,
             error: error.message,
@@ -87,7 +85,6 @@ export const updatePerfil = async (req, res) => {
 
         const perfil = await perfilService.updatePerfil({ id, ...req.body });
         
-        // Log de actualización de perfil
         logSecurityEvent('PROFILE_UPDATED', 'Perfil actualizado', {
             profileId: id,
             userId: req.body.id_usuario || req.user?.id_user,
@@ -102,7 +99,6 @@ export const updatePerfil = async (req, res) => {
     } catch (error) {
         console.error("Error en updatePerfil controller:", error);
         
-        // Log de error en actualización de perfil
         logSecurityEvent('PROFILE_UPDATE_ERROR', 'Error actualizando perfil', {
             profileId: req.params.id,
             userId: req.body.id_usuario || req.user?.id_user,
@@ -165,7 +161,6 @@ export const getAllPerfiles = async (req, res) => {
     try {
         const perfiles = await perfilService.getAllPerfiles();
         
-        // Log de acceso a todos los perfiles (información sensible)
         logSecurityEvent('ALL_PROFILES_ACCESS', 'Acceso a todos los perfiles', {
             userId: req.user?.id_user,
             ip: req.ip
@@ -178,7 +173,6 @@ export const getAllPerfiles = async (req, res) => {
     } catch (error) {
         console.error("Error en getAllPerfiles controller:", error);
         
-        // Log de error en acceso a perfiles
         logSecurityEvent('PROFILES_ACCESS_ERROR', 'Error accediendo a todos los perfiles', {
             userId: req.user?.id_user,
             error: error.message,
@@ -208,7 +202,6 @@ export const deletePerfil = async (req, res) => {
 
         await perfilService.deletePerfil(id);
         
-        // Log de eliminación de perfil
         logSecurityEvent('PROFILE_DELETED', 'Perfil eliminado', {
             profileId: id,
             userId: req.user?.id_user,
@@ -222,7 +215,6 @@ export const deletePerfil = async (req, res) => {
     } catch (error) {
         console.error("Error en deletePerfil controller:", error);
         
-        // Log de error en eliminación de perfil
         logSecurityEvent('PROFILE_DELETION_ERROR', 'Error eliminando perfil', {
             profileId: req.params.id,
             userId: req.user?.id_user,
@@ -296,9 +288,7 @@ export const getPerfilDetailsByUserId = async (req, res) => {
     }
 };
 
-// ========================================
 // FUNCIONES HELPER PRIVADAS DEL CONTROLLER
-// ========================================
 
 /**
  * Validar entrada HTTP para creación de perfil
@@ -316,7 +306,6 @@ function validateCreatePerfilInput(data) {
         };
     }
     
-    // Validar tipos
     if (isNaN(parseInt(id_usuario))) {
         return {
             success: false,
@@ -340,7 +329,6 @@ function validateCreatePerfilInput(data) {
 function validateUpdatePerfilInput(data) {
     const { id_rol, id_pais, id_universidad } = data;
     
-    // Para actualización, validar solo si están presentes
     if (id_rol !== undefined && isNaN(parseInt(id_rol))) {
         return {
             success: false,

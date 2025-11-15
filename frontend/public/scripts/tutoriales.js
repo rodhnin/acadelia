@@ -466,9 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     };
     
-    // Función para añadir las burbujas a los personajes
 const setupCharacterBubbles = () => {
-    // Añadir estilos para las burbujas dinámicamente
     const bubbleStyles = document.createElement('style');
     bubbleStyles.textContent = `
         .character-bubble {
@@ -543,7 +541,6 @@ const setupCharacterBubbles = () => {
     `;
     document.head.appendChild(bubbleStyles);
     
-    // Definir los textos para cada tipo de tutorial
     const bubbleTexts = {
         'conceptMaps': '¡Organiza tus ideas!',
         'calculator': '¡Resuelve paso a paso!',
@@ -553,14 +550,11 @@ const setupCharacterBubbles = () => {
         'exams': '¡Prepárate para exámenes!'
     };
     
-    // Crear y añadir burbujas al header en lugar de al corner
     const tutorialHeaders = document.querySelectorAll('.tutorial-header');
     tutorialHeaders.forEach(header => {
-        // Buscar a qué tutorial pertenece
         const tutorialItem = header.closest('.tutorial-item');
         const tutorialId = tutorialItem ? tutorialItem.id : '';
         
-        // Crear la burbuja si no existe
         if (!header.querySelector('.character-bubble')) {
             const bubble = document.createElement('div');
             bubble.className = 'character-bubble';
@@ -596,7 +590,6 @@ const setupCharacterBubbles = () => {
         });
     });
     
-    // Observar cambios en el contenedor de tutoriales
     const tutorialContainer = document.querySelector('.tutorial-container');
     if (tutorialContainer) {
         observer.observe(tutorialContainer, { childList: true, subtree: true });

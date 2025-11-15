@@ -46,35 +46,26 @@ const securityApp = {
      * Inicializa la aplicación
      */
     async init() {
-        // Mostrar loader
         loader.init();
         loader.show();
         
         try {
-            // Inicializar componentes de UI
             this.initUIComponents();
             
-            // Inicializar módulos de manera progresiva
             await this.initModulesProgressively();
             
-            // Configurar listeners globales
             this.setupGlobalEventListeners();
             
-            // Marcar como inicializado
             this.state.initialized = true;
             
-            // Ocultar loader después de completar inicialización
             loader.hide();
             
-            // Mostrar notificación de bienvenida
             showNotification('Bienvenido', 'Panel de seguridad inicializado correctamente', 'success');
         } catch (error) {
             console.error('Error iniciando la aplicación:', error);
             
-            // Actualizar loader con error
             loader.updateProgress(100, 'Error al inicializar la aplicación');
             
-            // Mostrar mensaje de error
             setTimeout(() => {
                 loader.hide();
                 showNotification('Error', 'No se pudo inicializar la aplicación: ' + error.message, 'error');
@@ -86,19 +77,14 @@ const securityApp = {
      * Inicializa los componentes de UI
      */
     initUIComponents() {
-        // Inicializar tema
         theme.init();
         
-        // Inicializar sistema de notificaciones
         initNotifications();
         
-        // Inicializar navegación
         navigation.init();
         
-        // Inicializar modales
         modals.init();
         
-        // Actualizar progreso
         loader.updateProgress(20, 'Inicializando interfaz de usuario...');
     },
 
@@ -112,24 +98,19 @@ const securityApp = {
         
         let currentProgress = 20; // Comenzamos en 20% después de la UI
         
-        // Inicializar cada módulo secuencialmente
         for (const [name, module] of modules) {
             try {
                 loader.updateProgress(currentProgress, `Cargando módulo: ${this.formatModuleName(name)}...`);
                 
-                // Inicializar módulo
                 await module.init();
                 
-                // Actualizar progreso
                 currentProgress += progressStep;
                 loader.updateProgress(currentProgress);
             } catch (error) {
                 console.error(`Error inicializando módulo ${name}:`, error);
-                // Continuar con el siguiente módulo
             }
         }
         
-        // Completar progreso
         loader.updateProgress(100, 'Inicialización completada');
     },
 
@@ -184,15 +165,12 @@ const securityApp = {
      * @param {string} section - ID de la sección
      */
     handleSectionChange(section) {
-        // Actualizar estado
         this.state.currentSection = section;
         
-        // Ejecutar callbacks específicos del módulo si es necesario
         if (section === 'blocked-ips' && this.state.modules.blockedIps.onSectionActivated) {
             this.state.modules.blockedIps.onSectionActivated();
         }
         
-        // Ejecutar callback para el módulo de colas
         if (section === 'queues' && this.state.modules.queues.onSectionActivated) {
             this.state.modules.queues.onSectionActivated();
         }
@@ -211,7 +189,6 @@ const securityApp = {
      * Refresca los datos de seguridad en múltiples módulos
      */
     refreshSecurityData() {
-        // Disparar evento global para que los módulos se actualicen
         window.dispatchEvent(new CustomEvent('securityDataUpdated'));
     },
 
@@ -240,7 +217,6 @@ const securityApp = {
      * Limpia recursos al destruir la aplicación
      */
     destroy() {
-        // Limpiar event listeners globales
         window.removeEventListener('sectionChanged', this.handleSectionChange);
         window.removeEventListener('themechange', this.handleThemeChange);
         window.removeEventListener('viewAllThreats', () => {});

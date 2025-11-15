@@ -13,9 +13,7 @@ export const processYouTubeURL = async (req, res) => {
   try {
     const { url, userId, chatId } = req.body;
     
-    // Validación básica
     if (!url || !userId || !chatId) {
-      // Log de solicitud con datos incompletos
       logSecurityEvent('YOUTUBE_INCOMPLETE_REQUEST', 'Solicitud incompleta de procesamiento de YouTube', {
         url: url ? url.substring(0, 100) + '...' : 'no proporcionada',
         userId: userId || 'no proporcionado',
@@ -29,9 +27,7 @@ export const processYouTubeURL = async (req, res) => {
       });
     }
     
-    // Validar formato de chatId (UUID)
     if (!isValidUUID(chatId)) {
-      // Log de intento con chatId inválido
       logSecurityEvent('INVALID_CHAT_ID', 'Intento de procesar YouTube con chatId inválido', {
         userId: userId,
         chatId: chatId,
@@ -44,9 +40,7 @@ export const processYouTubeURL = async (req, res) => {
       });
     }
     
-    // Validar URL de YouTube
     if (!YouTubeAudioService.isValidYouTubeUrl(url)) {
-      // Log de intento con URL de YouTube inválida
       logSecurityEvent('INVALID_YOUTUBE_URL', 'Intento de procesar URL de YouTube inválida', {
         userId: userId,
         url: url,
@@ -59,7 +53,6 @@ export const processYouTubeURL = async (req, res) => {
       });
     }
 
-    // Procesar URL
     console.log(`Iniciando procesamiento de URL de YouTube: ${url} para chat ${chatId}`);
     const result = await YouTubeAudioService.processYouTubeURL(
       url, 
@@ -86,7 +79,6 @@ export const processYouTubeURL = async (req, res) => {
     });
 
   } catch (error) {
-    // Log de error en procesamiento de YouTube
     logSecurityEvent('YOUTUBE_PROCESSING_ERROR', 'Error procesando URL de YouTube', {
       userId: req.body.userId,
       chatId: req.body.chatId,

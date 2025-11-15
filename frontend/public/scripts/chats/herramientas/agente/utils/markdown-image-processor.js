@@ -1,15 +1,6 @@
-/**
- * markdown-image-processor.js - Sistema robusto de procesamiento de imágenes en Markdown
- * ✅ VERSIÓN FINAL: Sistema centralizado de URLs fallidas + CSP optimizado
- * ✅ PREVENCIÓN: No reintenta URLs fallidas al recargar
- * ✅ PERSISTENCIA: URLs fallidas se guardan con expiración
- */
 
 import { createElement, setManagedTimeout } from '../../../shared/dom-helpers.js';
 
-// ==========================================
-// ✅ CONFIGURACIÓN DEL SISTEMA - OPTIMIZADA
-// ==========================================
 
 export const IMAGE_CONFIG = {
   BATCH_SIZE: 6,                    
@@ -23,19 +14,14 @@ export const IMAGE_CONFIG = {
   TIMEOUT: 15000,                   
   PARALLEL_CHUNK_DELAY: 300,
   
-  // ✅ NUEVAS CONFIGURACIONES PARA URLs FALLIDAS
   FAILED_URL_EXPIRY: 3600000,       // 1 hora antes de reintentar URL fallida
   MAX_FAILED_URLS: 1000,            // Máximo 1000 URLs fallidas en cache
   CLEANUP_INTERVAL: 300000,         // Limpiar cache cada 5 minutos
   PERMANENT_FAIL_CODES: [403, 404, 410, 451] // Códigos que no se reintentarán
 };
 
-// ✅ NUEVO: Sistema para prevenir múltiples llamadas concurrentes
 const PROCESSING_CONTAINERS = new Set();
 
-// ==========================================
-// ✅ SISTEMA CENTRALIZADO DE URLs FALLIDAS
-// ==========================================
 
 class FailedURLManager {
   constructor() {
@@ -45,9 +31,6 @@ class FailedURLManager {
     this.startCleanupInterval();
   }
 
-  /**
-   * ✅ Marcar URL como fallida con código de error específico
-   */
   markAsFailed(url, errorCode = null, errorMessage = null) {
     const now = Date.now();
     const isPermanent = errorCode && IMAGE_CONFIG.PERMANENT_FAIL_CODES.includes(errorCode);
@@ -68,9 +51,6 @@ class FailedURLManager {
     console.log(`🚫 [FAILED-URL] Marcada como fallida: ${url.substring(0, 50)}... (${errorCode}) - Expira: ${isPermanent ? '24h' : '1h'}`);
   }
 
-  /**
-   * ✅ Verificar si URL está marcada como fallida y no ha expirado
-   */
   isFailedUrl(url) {
     const failureInfo = this.failedUrls.get(url);
     if (!failureInfo) return false;
@@ -87,16 +67,10 @@ class FailedURLManager {
     return true;
   }
 
-  /**
-   * ✅ Obtener información de fallo de una URL
-   */
   getFailureInfo(url) {
     return this.failedUrls.get(url);
   }
 
-  /**
-   * ✅ Limpiar URL de la lista de fallidas (para retry manual)
-   */
   clearFailedUrl(url) {
     if (this.failedUrls.delete(url)) {
       this.saveToStorage();
@@ -106,9 +80,6 @@ class FailedURLManager {
     return false;
   }
 
-  /**
-   * ✅ Cargar URLs fallidas desde localStorage
-   */
   loadFromStorage() {
     try {
       const stored = localStorage.getItem(this.storageKey);
@@ -123,9 +94,6 @@ class FailedURLManager {
     }
   }
 
-  /**
-   * ✅ Guardar URLs fallidas en localStorage
-   */
   saveToStorage() {
     try {
       const data = {
@@ -138,9 +106,6 @@ class FailedURLManager {
     }
   }
 
-  /**
-   * ✅ Limpieza automática de URLs expiradas
-   */
   cleanup() {
     const now = Date.now();
     let cleanedCount = 0;
@@ -169,18 +134,12 @@ class FailedURLManager {
     }
   }
 
-  /**
-   * ✅ Iniciar intervalo de limpieza automática
-   */
   startCleanupInterval() {
     setInterval(() => {
       this.cleanup();
     }, IMAGE_CONFIG.CLEANUP_INTERVAL);
   }
 
-  /**
-   * ✅ Obtener estadísticas de URLs fallidas
-   */
   getStats() {
     const now = Date.now();
     let permanent = 0;
@@ -206,22 +165,14 @@ class FailedURLManager {
   }
 }
 
-// ✅ INSTANCIA GLOBAL DEL MANAGER
 const failedURLManager = new FailedURLManager();
 
-// ==========================================
-// ✅ VALIDACIÓN PROFESIONAL DE URLs + FAILED URLs
-// ==========================================
 
-/**
- * ✅ FUNCIÓN MEJORADA: Detecta URLs problemáticas + verifica failed URLs
- */
 function isProblematicUrl(imageUrl) {
   if (!imageUrl || typeof imageUrl !== 'string') {
     return { problematic: true, reason: 'URL inválida' };
   }
   
-  // ✅ PRIORIDAD 1: Verificar si está en lista de URLs fallidas
   if (failedURLManager.isFailedUrl(imageUrl)) {
     const failureInfo = failedURLManager.getFailureInfo(imageUrl);
     return { 
@@ -272,9 +223,6 @@ function isProblematicUrl(imageUrl) {
   return { problematic: false };
 }
 
-/**
- * ✅ MEJORADO: Valida si una URL es procesable (ahora con failed URLs)
- */
 export function isValidExternalImageURL(url) {
   if (!url || typeof url !== 'string' || !url.trim()) {
     return false;
@@ -287,12 +235,10 @@ export function isValidExternalImageURL(url) {
     return false;
   }
 
-  // Solo procesar URLs que empiecen con http:// o https://
   if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
     return false;
   }
 
-  // ✅ VERIFICACIÓN MEJORADA: URLs problemáticas + failed URLs
   const urlCheck = isProblematicUrl(url);
   if (urlCheck.problematic) {
     console.log(`🚫 [VALIDATION] ${urlCheck.reason}: ${url.substring(0, 50)}...`);
@@ -314,7 +260,6 @@ export function filterValidImages(images) {
     if (isValidExternalImageURL(originalSrc)) {
       validImages.push(img);
     } else {
-      // Marcar como no procesable
       img.classList.remove('image-processing');
       img.removeAttribute('data-needs-storage');
       img.classList.add('invalid-url');
@@ -326,18 +271,12 @@ export function filterValidImages(images) {
   return validImages;
 }
 
-// ==========================================
-// 🔒 SISTEMA DE LOCKS GLOBAL MEJORADO PARA PARALELISMO
-// ==========================================
 
 const GLOBAL_IMAGE_LOCKS = {
   _locks: new Map(),
   _cache: new Map(),
   _stats: { hits: 0, misses: 0, concurrent: 0, parallel: 0 },
 
-  /**
-   * ✅ FUNCIÓN PRINCIPAL: Procesar imagen con lock garantizado
-   */
   async processWithLock(chatId, originalSrc, processingFunction) {
     const lockKey = `${chatId}:${this._hashUrl(originalSrc)}`;
     
@@ -361,7 +300,6 @@ const GLOBAL_IMAGE_LOCKS = {
       } catch (error) {
         console.log(`❌ [LOCK] Error en procesamiento concurrente: ${error.message}`);
         this._locks.delete(lockKey);
-        // Continuar con procesamiento nuevo
       }
     }
     
@@ -374,7 +312,6 @@ const GLOBAL_IMAGE_LOCKS = {
       try {
         const result = await processingFunction();
         
-        // Guardar en TODOS los caches si es exitoso
         if (result.success && result.filePath) {
           this._updateAllCaches(chatId, originalSrc, result.filePath);
         }
@@ -385,7 +322,6 @@ const GLOBAL_IMAGE_LOCKS = {
         throw error;
       } finally {
         this._stats.parallel--;
-        // Cleanup automático del lock
         setTimeout(() => {
           if (this._locks.has(lockKey)) {
             this._locks.delete(lockKey);
@@ -395,28 +331,21 @@ const GLOBAL_IMAGE_LOCKS = {
       }
     })();
     
-    // Establecer lock
     this._locks.set(lockKey, processingPromise);
     
     return await processingPromise;
   },
 
-  /**
-   * ✅ VERIFICACIÓN TRIPLE DE CACHE
-   */
   _checkAllCaches(chatId, originalSrc) {
-    // Cache 1: imageUrlCache principal
     const cache1 = imageUrlCache.get(chatId, originalSrc, 'path');
     if (cache1) return cache1;
     
-    // Cache 2: Cache interno del lock
     const lockKey = `${chatId}:${this._hashUrl(originalSrc)}`;
     const cache2 = this._cache.get(lockKey);
     if (cache2 && (Date.now() - cache2.timestamp) < IMAGE_CONFIG.CACHE_DURATION) {
       return cache2.filePath;
     }
     
-    // Cache 3: Verificación de URL local
     if (originalSrc.startsWith('/uploads/')) {
       return originalSrc;
     }
@@ -424,14 +353,9 @@ const GLOBAL_IMAGE_LOCKS = {
     return null;
   },
 
-  /**
-   * ✅ ACTUALIZACIÓN MÚLTIPLE DE CACHES
-   */
   _updateAllCaches(chatId, originalSrc, filePath) {
-    // Cache 1: imageUrlCache principal
     imageUrlCache.set(chatId, originalSrc, filePath, 'path');
     
-    // Cache 2: Cache interno
     const lockKey = `${chatId}:${this._hashUrl(originalSrc)}`;
     this._cache.set(lockKey, {
       filePath,
@@ -439,9 +363,6 @@ const GLOBAL_IMAGE_LOCKS = {
     });
   },
 
-  /**
-   * ✅ HASH MEJORADO
-   */
   _hashUrl(url) {
     let hash = 0;
     for (let i = 0; i < url.length; i++) {
@@ -452,13 +373,9 @@ const GLOBAL_IMAGE_LOCKS = {
     return hash.toString(16);
   },
 
-  /**
-   * ✅ LIMPIEZA PERIÓDICA
-   */
   cleanup() {
     const now = Date.now();
     
-    // Limpiar cache interno
     for (const [key, value] of this._cache.entries()) {
       if (now - value.timestamp > IMAGE_CONFIG.CACHE_DURATION) {
         this._cache.delete(key);
@@ -472,9 +389,6 @@ const GLOBAL_IMAGE_LOCKS = {
 // Limpieza periódica cada 30 segundos
 setInterval(() => GLOBAL_IMAGE_LOCKS.cleanup(), 30000);
 
-// ==========================================
-// SISTEMA DE CACHE UNIFICADO (MEJORADO)
-// ==========================================
 
 export const imageUrlCache = {
   _cache: {},
@@ -511,7 +425,6 @@ export const imageUrlCache = {
         this._persistToStorage('imageUrlCache', this._cache);
         break;
       case 'failed':
-        // ✅ REDIRIGIR AL SISTEMA CENTRALIZADO
         if (value) {
           failedURLManager.markAsFailed(url);
         } else {
@@ -603,22 +516,15 @@ export const imageUrlCache = {
   }
 };
 
-// Inicializar el caché al cargar el módulo
 imageUrlCache.loadFromStorage();
 
-// ==========================================
 // DETECCIÓN DE ERRORES TEMPORALES + ANÁLISIS DE CÓDIGOS HTTP
-// ==========================================
 
-/**
- * ✅ MEJORADO: Detecta errores temporales de red que ameritan retry + códigos HTTP
- */
 export function isTemporaryError(errorMessage, httpStatus = null) {
   if (!errorMessage || typeof errorMessage !== 'string') {
     return false;
   }
   
-  // ✅ VERIFICAR CÓDIGOS HTTP PERMANENTES
   if (httpStatus && IMAGE_CONFIG.PERMANENT_FAIL_CODES.includes(httpStatus)) {
     return false; // No es temporal, es permanente
   }
@@ -642,9 +548,6 @@ export function isTemporaryError(errorMessage, httpStatus = null) {
   );
 }
 
-/**
- * ✅ NUEVA: Extraer código HTTP de mensaje de error
- */
 function extractHttpStatusFromError(errorMessage) {
   if (!errorMessage) return null;
   
@@ -655,15 +558,8 @@ function extractHttpStatusFromError(errorMessage) {
   return statusMatch ? parseInt(statusMatch[1]) : null;
 }
 
-// ==========================================
-// ✅ PROCESAMIENTO CON LOCKS Y REINTENTOS MEJORADO
-// ==========================================
 
-/**
- * ✅ FUNCIÓN PRINCIPAL MEJORADA: Procesa una imagen con sistema de locks y análisis de errores
- */
 export async function processImageWithRetry(originalSrc, chatId, maxRetries = IMAGE_CONFIG.MAX_RETRIES) {
-  // ✅ VALIDACIÓN PROFESIONAL INTEGRADA: Verificar URL antes de procesar
   if (!isValidExternalImageURL(originalSrc)) {
     console.log(`🚫 [RETRY] URL no válida, saltando procesamiento: ${originalSrc.substring(0, 50)}...`);
     return { 
@@ -673,7 +569,6 @@ export async function processImageWithRetry(originalSrc, chatId, maxRetries = IM
     };
   }
 
-  // ✅ USAR SISTEMA DE LOCKS GLOBAL
   return await GLOBAL_IMAGE_LOCKS.processWithLock(chatId, originalSrc, async () => {
     let lastError = null;
     let httpStatus = null;
@@ -695,7 +590,6 @@ export async function processImageWithRetry(originalSrc, chatId, maxRetries = IM
           lastError = result.error;
           httpStatus = extractHttpStatusFromError(result.error);
           
-          // ✅ ANÁLISIS INTELIGENTE DE ERRORES
           if (httpStatus && IMAGE_CONFIG.PERMANENT_FAIL_CODES.includes(httpStatus)) {
             console.log(`🚫 [RETRY] Error permanente (${httpStatus}), marcando como fallida: ${result.error}`);
             failedURLManager.markAsFailed(originalSrc, httpStatus, result.error);
@@ -752,13 +646,8 @@ export async function processImageWithRetry(originalSrc, chatId, maxRetries = IM
   });
 }
 
-// ==========================================
 // ACTUALIZACIÓN VISUAL DE IMÁGENES
-// ==========================================
 
-/**
- * ✅ FUNCIÓN CORREGIDA: Actualiza inmediatamente la visualización de una imagen después de descarga exitosa
- */
 export function updateImageDisplay(img, newSrc = null) {
   if (!img || !img.isConnected) {
     console.warn('⚠️ [DISPLAY] Imagen no válida o desconectada del DOM');
@@ -767,26 +656,21 @@ export function updateImageDisplay(img, newSrc = null) {
   
   console.log(`🔄 [DISPLAY] Actualizando visualización de imagen: ${newSrc || img.src}`);
   
-  // ✅ FORZAR ACTUALIZACIÓN DEL SRC SI SE PROPORCIONA
   if (newSrc) {
     img.src = newSrc;
     img.dataset.originalSrc = newSrc;
   }
   
-  // ✅ LIMPIAR TODOS LOS ESTADOS DE ERROR Y PROCESAMIENTO
   img.classList.remove('error-processed', 'failed-image', 'image-processing', 'external-image');
   img.classList.add('stored-image', 'loaded');
   
-  // ✅ FORZAR VISIBILIDAD INMEDIATA
   img.style.display = '';
   img.style.visibility = 'visible';
   img.style.opacity = '1';
   img.removeAttribute('data-needs-storage');
   
-  // ✅ MANEJO DEL CONTENEDOR
   const container = img.closest('.markdown-image-container, .image-preview');
   if (container) {
-    // Eliminar TODOS los placeholders
     const placeholders = container.querySelectorAll('.expired-image-placeholder, .image-placeholder, .mermaid-loading');
     placeholders.forEach(placeholder => {
       placeholder.style.display = 'none';
@@ -797,25 +681,21 @@ export function updateImageDisplay(img, newSrc = null) {
       }, 50);
     });
     
-    // Mostrar overlay de preview si existe
     const overlay = container.querySelector('.image-overlay, .markdown-image-wrapper');
     if (overlay) {
       overlay.style.display = '';
       overlay.style.visibility = 'visible';
     }
     
-    // ✅ ASEGURAR CLICK HANDLER
     if (!container.hasAttribute('data-preview-click-handler')) {
       container.setAttribute('data-preview-click-handler', 'true');
       container.style.cursor = 'pointer';
     }
   }
   
-  // ✅ FORZAR REFLOW PARA ACTUALIZACIÓN INMEDIATA
   img.offsetHeight;
   img.offsetWidth;
   
-  // ✅ ACTUALIZAR CACHE INMEDIATAMENTE
   const chatId = getChatId();
   const imageSrc = newSrc || img.src;
   if (imageSrc && imageSrc.startsWith('/uploads/') && chatId) {
@@ -828,7 +708,6 @@ export function updateImageDisplay(img, newSrc = null) {
   
   console.log(`✅ [DISPLAY] Imagen visible exitosamente: ${imageSrc}`);
   
-  // ✅ EMITIR EVENTO PERSONALIZADO PARA DEBUGGING
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('imageDisplayUpdated', {
       detail: { img, src: imageSrc, container }
@@ -836,13 +715,7 @@ export function updateImageDisplay(img, newSrc = null) {
   }
 }
 
-// ==========================================
-// ✅ PROCESAMIENTO EN TIEMPO REAL CON PARALELISMO CONTROLADO
-// ==========================================
 
-/**
- * ✅ NUEVO: Procesa imágenes en paralelo con límite controlado + failed URLs
- */
 export async function processImagesRealTime(container, externalImages, chatId) {
   console.log(`🖼️ [REALTIME] Procesando ${externalImages.length} imágenes con paralelismo controlado (max: ${IMAGE_CONFIG.PARALLEL_LIMIT})`);
   
@@ -854,17 +727,14 @@ export async function processImagesRealTime(container, externalImages, chatId) {
     skippedFailed: 0
   };
   
-  // ✅ PROCESAR EN CHUNKS DE TAMAÑO PARALLEL_LIMIT
   for (let i = 0; i < externalImages.length; i += IMAGE_CONFIG.PARALLEL_LIMIT) {
     const chunk = Array.from(externalImages).slice(i, i + IMAGE_CONFIG.PARALLEL_LIMIT);
     console.log(`🖼️ [REALTIME] Procesando chunk ${Math.floor(i / IMAGE_CONFIG.PARALLEL_LIMIT) + 1}: ${chunk.length} imágenes en paralelo`);
     
-    // Procesar chunk en paralelo
     const chunkPromises = chunk.map(async (img, chunkIndex) => {
       const globalIndex = i + chunkIndex;
       const originalSrc = img.dataset.originalSrc || img.src;
       
-      // ✅ VALIDACIÓN INTEGRADA: Verificar antes de procesar
       if (!isValidExternalImageURL(originalSrc)) {
         img.removeAttribute('data-needs-storage');
         img.classList.add('invalid-url');
@@ -881,35 +751,27 @@ export async function processImagesRealTime(container, externalImages, chatId) {
 
       console.log(`🖼️ [REALTIME] Procesando imagen ${globalIndex + 1}/${externalImages.length}: ${originalSrc.substring(0, 50)}...`);
       
-      // ✅ MARCAR COMO PROCESANDO VISUALMENTE
       img.classList.add('image-processing');
       img.style.opacity = '0.7';
       
-      // ✅ USAR SISTEMA DE LOCKS MEJORADO
       const result = await processImageWithRetry(originalSrc, chatId);
       
-      // ✅ ACTUALIZACIÓN INMEDIATA Y FORZADA DEL DOM
       if (result.success && result.filePath) {
         console.log(`🎯 [REALTIME] Actualizando DOM para imagen ${globalIndex + 1}: ${result.filePath}`);
         
-        // ✅ ACTUALIZACIÓN INMEDIATA DEL SRC
         img.src = result.filePath;
         img.dataset.originalSrc = result.filePath;
         
-        // ✅ LIMPIAR ATRIBUTOS Y CLASES
         img.removeAttribute('data-needs-storage');
         img.classList.remove('external-image', 'image-processing');
         img.classList.add('stored-image', 'loaded');
         
-        // ✅ FORZAR VISIBILIDAD INMEDIATA
         img.style.opacity = '1';
         img.style.visibility = 'visible';
         img.style.display = '';
         
-        // ✅ LLAMAR FUNCIÓN DE ACTUALIZACIÓN
         updateImageDisplay(img, result.filePath);
         
-        // ✅ FORZAR MÚLTIPLES REFLOWS
         img.offsetHeight;
         setTimeout(() => img.offsetHeight, 10);
         setTimeout(() => img.offsetHeight, 50);
@@ -934,10 +796,8 @@ export async function processImagesRealTime(container, externalImages, chatId) {
       return result;
     });
     
-    // Esperar a que termine el chunk completo
     await Promise.allSettled(chunkPromises);
     
-    // ✅ VERIFICACIÓN POST-CHUNK: Asegurar que las imágenes sean visibles
     setTimeout(() => {
       chunk.forEach(img => {
         if (img.classList.contains('stored-image') && img.src.startsWith('/uploads/')) {
@@ -956,7 +816,6 @@ export async function processImagesRealTime(container, externalImages, chatId) {
     }
   }
   
-  // ✅ VERIFICACIÓN FINAL: Forzar visibilidad de todas las imágenes procesadas
   setTimeout(() => {
     console.log(`🔍 [FINAL-CHECK] Verificando visibilidad de ${results.successful} imágenes procesadas`);
     container.querySelectorAll('img.stored-image').forEach(img => {
@@ -965,7 +824,6 @@ export async function processImagesRealTime(container, externalImages, chatId) {
         img.style.opacity = '1';
         img.style.display = '';
         
-        // Eliminar cualquier placeholder residual
         const container = img.closest('.markdown-image-container');
         if (container) {
           const placeholders = container.querySelectorAll('.image-placeholder, .expired-image-placeholder');
@@ -979,13 +837,7 @@ export async function processImagesRealTime(container, externalImages, chatId) {
   return results;
 }
 
-// ==========================================
-// ✅ PROCESAMIENTO POR LOTES CON PARALELISMO MEJORADO
-// ==========================================
 
-/**
- * ✅ NUEVO: Procesa múltiples imágenes con paralelismo controlado + failed URLs
- */
 export async function processImagesBatch(container, externalImages, chatId) {
   console.log(`📦 [BATCH] Procesando ${externalImages.length} imágenes con paralelismo controlado (max: ${IMAGE_CONFIG.PARALLEL_LIMIT})`);
   
@@ -994,7 +846,6 @@ export async function processImagesBatch(container, externalImages, chatId) {
   let totalFromCache = 0;
   let totalSkippedFailed = 0;
   
-  // ✅ PROCESAMIENTO EN CHUNKS PARALELOS CONTROLADOS
   for (let i = 0; i < externalImages.length; i += IMAGE_CONFIG.PARALLEL_LIMIT) {
     const chunk = Array.from(externalImages).slice(i, i + IMAGE_CONFIG.PARALLEL_LIMIT);
     const chunkNumber = Math.floor(i / IMAGE_CONFIG.PARALLEL_LIMIT) + 1;
@@ -1002,12 +853,10 @@ export async function processImagesBatch(container, externalImages, chatId) {
     
     console.log(`📦 [BATCH] Procesando chunk ${chunkNumber}/${totalChunks}: ${chunk.length} imágenes en paralelo`);
     
-    // Procesar todas las imágenes del chunk en paralelo
     const chunkPromises = chunk.map(async (img, chunkIndex) => {
       const globalIndex = i + chunkIndex;
       const originalSrc = img.dataset.originalSrc || img.src;
       
-      // ✅ VALIDACIÓN PROFESIONAL INTEGRADA + FAILED URLs
       if (!isValidExternalImageURL(originalSrc)) {
         img.removeAttribute('data-needs-storage');
         img.classList.add('invalid-url');
@@ -1022,7 +871,6 @@ export async function processImagesBatch(container, externalImages, chatId) {
         }
       }
       
-      // ✅ VERIFICACIÓN DE CACHE MÁS AGRESIVA
       const cachedPath = GLOBAL_IMAGE_LOCKS._checkAllCaches(chatId, originalSrc);
       if (cachedPath) {
         img.src = cachedPath;
@@ -1038,7 +886,6 @@ export async function processImagesBatch(container, externalImages, chatId) {
       
       console.log(`📥 [BATCH] Descargando imagen ${globalIndex + 1}: ${originalSrc.substring(0, 50)}...`);
       
-      // ✅ USAR SISTEMA DE LOCKS Y RETRY MEJORADO
       const result = await processImageWithRetry(originalSrc, chatId);
       
       if (result.success && result.filePath) {
@@ -1060,10 +907,8 @@ export async function processImagesBatch(container, externalImages, chatId) {
       }
     });
     
-    // Esperar a que termine todo el chunk
     const chunkResults = await Promise.allSettled(chunkPromises);
     
-    // Contar resultados del chunk
     chunkResults.forEach(promiseResult => {
       if (promiseResult.status === 'fulfilled' && promiseResult.value.processed) {
         totalProcessed++;
@@ -1091,7 +936,6 @@ export async function processImagesBatch(container, externalImages, chatId) {
   console.log(`🎉 [BATCH] Procesamiento paralelo completado: ${totalSuccessful}/${totalProcessed} imágenes guardadas, ${totalFromCache} desde cache, ${totalSkippedFailed} URLs fallidas saltadas`);
   console.log(`📊 [STATS] Cache hits: ${GLOBAL_IMAGE_LOCKS._stats.hits}, misses: ${GLOBAL_IMAGE_LOCKS._stats.misses}, concurrent: ${GLOBAL_IMAGE_LOCKS._stats.concurrent}, parallel: ${GLOBAL_IMAGE_LOCKS._stats.parallel}`);
   
-  // ✅ MOSTRAR ESTADÍSTICAS DE URLs FALLIDAS
   const failedStats = failedURLManager.getStats();
   if (failedStats.total > 0) {
     console.log(`📊 [FAILED-URLS] Total: ${failedStats.total}, Permanentes: ${failedStats.permanent}, Temporales: ${failedStats.temporary}, Expiradas: ${failedStats.expired}`);
@@ -1119,15 +963,8 @@ export async function processImagesBatch(container, externalImages, chatId) {
   };
 }
 
-// ==========================================
-// ✅ FUNCIÓN PRINCIPAL OPTIMIZADA CON PARALELISMO Y PROTECCIÓN CONTRA CONCURRENCIA
-// ==========================================
 
-/**
- * ✅ FUNCIÓN CORREGIDA: processImagesOptimized con protección contra múltiples llamadas + failed URLs
- */
 export async function processImagesOptimized(container, externalImages = null) {
-  // ✅ VERIFICAR si ya se está procesando este contenedor
   const containerKey = container.dataset.containerId || container.outerHTML.slice(0, 100);
   
   if (PROCESSING_CONTAINERS.has(containerKey)) {
@@ -1135,7 +972,6 @@ export async function processImagesOptimized(container, externalImages = null) {
     return { total: 0, successful: 0, failed: 0, skipped: true };
   }
 
-  // ✅ MARCAR como en procesamiento
   PROCESSING_CONTAINERS.add(containerKey);
   
   try {
@@ -1148,7 +984,6 @@ export async function processImagesOptimized(container, externalImages = null) {
       return { total: 0, successful: 0, failed: 0 };
     }
 
-    // Filtrar imágenes válidas (ahora con validación profesional integrada + failed URLs)
     const validImages = filterValidImages(externalImages);
     
     if (validImages.length === 0) {
@@ -1160,7 +995,6 @@ export async function processImagesOptimized(container, externalImages = null) {
     
     console.log(`🚀 [OPTIMIZED] Procesando ${validImages.length} imágenes válidas con paralelismo (max: ${IMAGE_CONFIG.PARALLEL_LIMIT}) - ${externalImages.length - validImages.length} filtradas`);
     
-    // ✅ NUEVA LÓGICA: Usar paralelismo siempre, ajustado por configuración
     let result;
     if (validImages.length <= IMAGE_CONFIG.REALTIME_THRESHOLD) {
       result = await processImagesRealTime(container, validImages, chatId);
@@ -1171,29 +1005,21 @@ export async function processImagesOptimized(container, externalImages = null) {
     return result;
     
   } finally {
-    // ✅ LIBERAR el lock después de un delay para evitar reentrada inmediata
     setTimeout(() => {
       PROCESSING_CONTAINERS.delete(containerKey);
     }, 1000); // 1 segundo de "cooldown"
   }
 }
 
-// ==========================================
 // UTILIDADES
-// ==========================================
 
-/**
- * ✅ FUNCIÓN CORREGIDA: getChatId() prioriza el estado actual
- */
 export function getChatId() {
   try {
-    // ✅ PRIORIDAD 1: Chat temporal para primer mensaje con archivos
     if (window.tempChatIdForFiles) {
       console.log('🆔 Usando chat temporal para archivos:', window.tempChatIdForFiles);
       return window.tempChatIdForFiles;
     }
     
-    // ✅ PRIORIDAD 2: Estado actual del chat
     if (typeof window !== 'undefined') {
       // Método 1: Estado global directo
       if (window.app?.state?.currentChat?.id) {
@@ -1217,13 +1043,11 @@ export function getChatId() {
       }
     }
     
-    // ✅ PRIORIDAD 3: URL como fallback
     const urlMatch = window.location.pathname.match(/\/[^\/]+\/([a-f0-9-]+)/i);
     if (urlMatch && urlMatch[1]) {
       return urlMatch[1];
     }
     
-    // ✅ FALLBACK: default_chat
     console.warn('⚠️ [UTILS] No se pudo determinar el chatId, usando default_chat');
     return 'default_chat';
     
@@ -1233,21 +1057,14 @@ export function getChatId() {
   }
 }
 
-// ==========================================
 // INICIALIZACIÓN Y HANDLERS DE VISTA PREVIA
-// ==========================================
 
-/**
- * ✅ FUNCIÓN CORREGIDA: initializeImagePreviewHandlers sin múltiples llamadas
- */
 export function initializeImagePreviewHandlers(container) {
-  // ✅ VERIFICAR si ya fue inicializado
   if (container.hasAttribute('data-images-initialized')) {
     console.log('📦 [INIT] Contenedor ya inicializado, saltando');
     return;
   }
   
-  // ✅ MARCAR como inicializado
   container.setAttribute('data-images-initialized', 'true');
   
   const imageContainers = container.querySelectorAll('.markdown-image-container, .image-preview');
@@ -1266,11 +1083,9 @@ export function initializeImagePreviewHandlers(container) {
       return;
     }
 
-    // ✅ DETECCIÓN MEJORADA de imágenes locales con verificación de cache
     const imageSrc = image.src || image.dataset.originalSrc;
     const chatId = getChatId();
     
-    // Verificar en todos los caches disponibles
     const cachedPath = GLOBAL_IMAGE_LOCKS._checkAllCaches(chatId, imageSrc);
     
     if (cachedPath || (imageSrc && imageSrc.startsWith('/uploads/'))) {
@@ -1280,7 +1095,6 @@ export function initializeImagePreviewHandlers(container) {
       image.style.visibility = 'visible';
       image.style.opacity = '1';
       
-      // Eliminar placeholders inmediatamente
       const placeholder = imageContainer.querySelector('.expired-image-placeholder, .image-placeholder');
       if (placeholder) {
         placeholder.style.display = 'none';
@@ -1317,7 +1131,6 @@ export function initializeImagePreviewHandlers(container) {
       console.log(`✅ [INIT] Imagen cargada: ${image.src}`);
     });
 
-    // Manejo de errores
     image.addEventListener('error', () => {
       const imageSrc = image.src || image.dataset.originalSrc;
       if (!imageSrc || !imageSrc.startsWith('/uploads/')) {
@@ -1368,7 +1181,6 @@ export function initializeImagePreviewHandlers(container) {
     }
   });
 
-  // ✅ PROCESAMIENTO AUTOMÁTICO SOLO UNA VEZ
   const externalImages = container.querySelectorAll('img.markdown-image[data-needs-storage="true"]');
   if (externalImages.length > 0) {
     console.log(`🔄 [INIT] Iniciando procesamiento automático de ${externalImages.length} imágenes externas con paralelismo`);
@@ -1376,9 +1188,6 @@ export function initializeImagePreviewHandlers(container) {
   }
 }
 
-// ==========================================
-// MANEJO DE ERRORES DE IMÁGENES
-// ==========================================
 
 /**
  * Maneja errores de carga de imágenes con placeholders
@@ -1397,12 +1206,10 @@ export function handleImageError(img, mode = 'inline', options = {}) {
 
   const settings = { ...options };
 
-  // ✅ MARCAR EN SISTEMA CENTRALIZADO DE URLs FALLIDAS
   if (settings.chatId && imageSrc && !imageSrc.startsWith('/uploads/')) {
     failedURLManager.markAsFailed(imageSrc, null, 'Error de carga en imagen');
   }
 
-  // Ocultar la imagen
   img.style.display = 'none';
   img.removeAttribute('data-needs-storage');
   img.classList.remove('external-image');
@@ -1493,13 +1300,7 @@ function showErrorModal(options = {}) {
   }
 }
 
-// ==========================================
-// ✅ NUEVAS FUNCIONES DE DEBUGGING Y MANAGEMENT
-// ==========================================
 
-/**
- * ✅ NUEVA: Verifica y repara la visualización de imágenes procesadas
- */
 export function verifyAndRepairImageDisplay(container = document) {
   console.log('🔧 [REPAIR] Verificando y reparando visualización de imágenes...');
   
@@ -1508,7 +1309,6 @@ export function verifyAndRepairImageDisplay(container = document) {
   
   processedImages.forEach(img => {
     if (img.src.startsWith('/uploads/')) {
-      // ✅ REPARAR VISIBILIDAD
       if (img.style.visibility === 'hidden' || img.style.opacity === '0' || img.style.display === 'none') {
         img.style.visibility = 'visible';
         img.style.opacity = '1';
@@ -1519,7 +1319,6 @@ export function verifyAndRepairImageDisplay(container = document) {
         console.log(`🔧 [REPAIR] Imagen reparada: ${img.src}`);
       }
       
-      // ✅ ELIMINAR PLACEHOLDERS RESIDUALES
       const container = img.closest('.markdown-image-container, .image-preview');
       if (container) {
         const placeholders = container.querySelectorAll('.image-placeholder, .expired-image-placeholder, .mermaid-loading');
@@ -1537,9 +1336,6 @@ export function verifyAndRepairImageDisplay(container = document) {
   return repairedCount;
 }
 
-/**
- * ✅ NUEVA: Gestión centralizada de URLs fallidas
- */
 export function manageFailedUrls() {
   return {
     getStats: () => failedURLManager.getStats(),
@@ -1554,9 +1350,6 @@ export function manageFailedUrls() {
   };
 }
 
-/**
- * ✅ NUEVA: Debugging de estado de imágenes en tiempo real
- */
 export function startImageMonitoring(interval = 2000) {
   if (window._imageMonitoringActive) return;
   window._imageMonitoringActive = true;
@@ -1573,7 +1366,6 @@ export function startImageMonitoring(interval = 2000) {
     console.log(`📊 [MONITOR] Imágenes: ${allImages.length} total, ${external.length} externas, ${processing.length} procesando, ${stored.length} almacenadas, ${needsStorage.length} pendientes`);
     console.log(`📊 [MONITOR] URLs fallidas: ${failedStats.total} total (${failedStats.permanent} permanentes, ${failedStats.temporary} temporales)`);
     
-    // Verificar imágenes que deberían estar visibles pero no lo están
     stored.forEach(img => {
       if (img.src.startsWith('/uploads/') && (img.style.visibility === 'hidden' || img.style.opacity === '0')) {
         console.warn(`⚠️ [MONITOR] Imagen almacenada pero oculta: ${img.src}`);
@@ -1584,7 +1376,6 @@ export function startImageMonitoring(interval = 2000) {
   
   const monitorInterval = setInterval(monitor, interval);
   
-  // Detener después de 30 segundos
   setTimeout(() => {
     clearInterval(monitorInterval);
     window._imageMonitoringActive = false;
@@ -1595,11 +1386,7 @@ export function startImageMonitoring(interval = 2000) {
   return monitorInterval;
 }
 
-// ==========================================
-// ✅ INICIALIZACIÓN AUTOMÁTICA EN EL DOM
-// ==========================================
 
-// ✅ AUTO-REPARACIÓN cada 5 segundos durante los primeros 30 segundos
 if (typeof window !== 'undefined') {
   let repairCount = 0;
   const maxRepairs = 6; // 6 x 5s = 30s
@@ -1614,12 +1401,10 @@ if (typeof window !== 'undefined') {
     }
   }, 5000);
   
-  // ✅ EVENTO DE DEBUGGING TEMPORAL
   window.addEventListener('imageDisplayUpdated', (e) => {
     console.log('🎉 [EVENT] Imagen actualizada:', e.detail);
   });
   
-  // ✅ FUNCIONES GLOBALES PARA DEBUGGING Y MANAGEMENT
   window.debugImages = {
     verify: () => verifyAndRepairImageDisplay(),
     monitor: (interval) => startImageMonitoring(interval),
@@ -1640,9 +1425,6 @@ if (typeof window !== 'undefined') {
   };
 }
 
-// ==========================================
-// ✅ EXPORTACIONES PRINCIPALES CON PARALELISMO Y FAILED URLS
-// ==========================================
 
 export default {
   processImagesOptimized,
@@ -1654,7 +1436,6 @@ export default {
   getChatId,
   handleImageError,
   IMAGE_CONFIG,
-  // ✅ NUEVAS EXPORTACIONES
   GLOBAL_IMAGE_LOCKS,
   processImageWithRetry,
   processImagesRealTime,

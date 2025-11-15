@@ -14,7 +14,6 @@ import {
 // Variable para controlar si Chart.js está disponible
 let chartJsAvailable = false;
 
-// Verificar disponibilidad de Chart.js
 function checkChartJsAvailability() {
   chartJsAvailable = typeof Chart !== 'undefined';
   if (!chartJsAvailable) {
@@ -23,19 +22,15 @@ function checkChartJsAvailability() {
   return chartJsAvailable;
 }
 
-// Función principal para inicializar la modal de información
 export function initInformationModal() {
-  // Verificar Chart.js
   checkChartJsAvailability();
   
-  // Buscar el modal de información
   const informationModal = document.getElementById('informationModal');
   if (!informationModal) {
     console.error('Modal de información no encontrado');
     return;
   }
   
-  // 🔄 SOLO ESCUCHAR EL EVENTO modal:open (eliminar duplicado)
   informationModal.addEventListener('modal:open', async () => {
     console.log('🎯 Modal abierta - cargando dashboard...');
     await loadInformationDashboard();
@@ -44,7 +39,6 @@ export function initInformationModal() {
   console.log('✅ Modal de información inicializada (sin duplicados)');
 }
 
-// Función para cargar el dashboard completo
 export async function loadInformationDashboard() {
   const modalBody = document.querySelector('#informationModal .modal-body');
   if (!modalBody) {
@@ -52,11 +46,9 @@ export async function loadInformationDashboard() {
     return;
   }
   
-  // Mostrar interfaz de carga
   showDashboardLoader(modalBody);
   
   try {
-    // Cargar datos de forma paralela pero manejando errores individuales
     const [summaryResult, profilesResult, contentsResult, trendsResult] = await Promise.allSettled([
       getMarketingSummary(),
       getProfiles(),
@@ -64,7 +56,6 @@ export async function loadInformationDashboard() {
       getTrends()
     ]);
     
-    // Procesar resultados
     const summary = summaryResult.status === 'fulfilled' && summaryResult.value?.success 
       ? summaryResult.value 
       : { stats: { profilesCount: 0, contentsCount: 0, interactions: [], recentTrends: [] }, predictions: [] };
@@ -81,10 +72,8 @@ export async function loadInformationDashboard() {
       ? trendsResult.value.trends || [] 
       : [];
     
-    // Renderizar dashboard
     renderDashboard(modalBody, summary, profiles, contents, trends);
     
-    // Mostrar notificación de éxito
     if (window.showNotification) {
       window.showNotification('Dashboard de información cargado', 'success', 2000);
     }
@@ -92,7 +81,6 @@ export async function loadInformationDashboard() {
   } catch (error) {
     console.error('Error cargando dashboard de información:', error);
     
-    // Mostrar error en el dashboard
     showDashboardError(modalBody, error);
     
     if (window.showNotification) {
@@ -101,7 +89,6 @@ export async function loadInformationDashboard() {
   }
 }
 
-// Función para mostrar loader
 function showDashboardLoader(container) {
   container.innerHTML = `
     <div class="dashboard-container">
@@ -152,7 +139,6 @@ function showDashboardLoader(container) {
     </div>
   `;
   
-  // 🆕 AGREGAR EVENT LISTENER PARA EL BOTÓN DE REFRESH (sin inline handler)
   const refreshBtn = container.querySelector('#dashboard-refresh-btn');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', async (e) => {
@@ -163,7 +149,6 @@ function showDashboardLoader(container) {
   }
 }
 
-// Función para mostrar error
 function showDashboardError(container, error) {
   container.innerHTML = `
     <div class="dashboard-container">
@@ -192,7 +177,6 @@ function showDashboardError(container, error) {
     </div>
   `;
   
-  // 🆕 AGREGAR EVENT LISTENERS PARA BOTONES DE RETRY (sin inline handlers)
   const retryBtn = container.querySelector('#dashboard-error-retry-btn');
   const manualRetryBtn = container.querySelector('#dashboard-manual-retry-btn');
   
@@ -213,7 +197,6 @@ function showDashboardError(container, error) {
   }
 }
 
-// Función para renderizar el dashboard completo
 function renderDashboard(container, summary, profiles, contents, trends) {
   container.innerHTML = `
     <div class="dashboard-container">
@@ -267,7 +250,6 @@ function renderDashboard(container, summary, profiles, contents, trends) {
     </div>
   `;
   
-  // 🆕 CONFIGURAR EVENT LISTENERS (sin inline handlers)
   const mainRefreshBtn = container.querySelector('#dashboard-main-refresh-btn');
   
   if (mainRefreshBtn) {
@@ -281,7 +263,6 @@ function renderDashboard(container, summary, profiles, contents, trends) {
     });
   }
   
-  // Renderizar cada sección
   renderSummaryCards(summary);
   renderProfilesChart(profiles);
   renderContentsChart(contents);
@@ -289,7 +270,6 @@ function renderDashboard(container, summary, profiles, contents, trends) {
   renderPredictionsSection(summary.predictions || []);
 }
 
-// Renderizar tarjetas de resumen
 function renderSummaryCards(summary) {
   const container = document.getElementById('summary-cards');
   if (!container) return;
@@ -332,7 +312,6 @@ function renderSummaryCards(summary) {
   `;
 }
 
-// Renderizar gráfico de perfiles
 function renderProfilesChart(profiles) {
   const container = document.getElementById('profiles-chart-wrapper');
   if (!container) return;
@@ -347,7 +326,6 @@ function renderProfilesChart(profiles) {
     return;
   }
   
-  // Preparar contenedor con layout horizontal
   container.innerHTML = `
     <div class="profiles-chart">
       <div class="profiles-chart-container">
@@ -366,7 +344,6 @@ function renderProfilesChart(profiles) {
     </div>
   `;
   
-  // Solo crear gráficos si Chart.js está disponible
   if (chartJsAvailable) {
     // Agrupar perfiles por carrera
     const carreraGroups = {};
@@ -378,7 +355,6 @@ function renderProfilesChart(profiles) {
       carreraGroups[carrera]++;
     });
     
-    // Crear gráfico de torta para carreras
     const ctx = document.getElementById('profiles-chart-canvas');
     if (ctx) {
       new Chart(ctx.getContext('2d'), {
@@ -482,7 +458,6 @@ function renderProfilesChart(profiles) {
   }
 }
 
-// Renderizar gráfico de contenidos
 function renderContentsChart(contents) {
   const container = document.getElementById('content-chart-wrapper');
   const typesContainer = document.getElementById('content-types');
@@ -510,7 +485,6 @@ function renderContentsChart(contents) {
     typeGroups[type]++;
   });
   
-  // Crear botones de filtro por tipo
   if (typesContainer) {
     typesContainer.innerHTML = `
       <button class="content-type-btn active" data-type="all">Todos</button>
@@ -519,12 +493,10 @@ function renderContentsChart(contents) {
       ).join('')}
     `;
     
-    // 🆕 AÑADIR EVENT LISTENERS A BOTONES (sin inline handlers)
     typesContainer.querySelectorAll('.content-type-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         
-        // Actualizar estado activo
         typesContainer.querySelectorAll('.content-type-btn').forEach(b => 
           b.classList.remove('active')
         );
@@ -538,12 +510,10 @@ function renderContentsChart(contents) {
     });
   }
   
-  // Preparar contenedor del gráfico
   container.innerHTML = chartJsAvailable 
     ? '<canvas id="content-chart-canvas"></canvas>'
     : '<div class="chart-placeholder">Gráfico no disponible (Chart.js requerido)</div>';
   
-  // Solo crear gráfico si Chart.js está disponible
   if (chartJsAvailable) {
     // Agrupar contenidos por canal
     const channelGroups = {};
@@ -610,7 +580,6 @@ function renderContentsChart(contents) {
   }
 }
 
-// Renderizar sección de tendencias
 function renderTrendsSection(trends) {
   const container = document.getElementById('trends-list');
   if (!container) return;
@@ -650,7 +619,6 @@ function renderTrendsSection(trends) {
     </div>
   `).join('');
   
-  // 🆕 AÑADIR EVENT LISTENERS A TENDENCIAS (sin inline handlers)
   container.querySelectorAll('.trend-item').forEach((item) => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
@@ -664,7 +632,6 @@ function renderTrendsSection(trends) {
   });
 }
 
-// Renderizar sección de predicciones
 function renderPredictionsSection(predictions) {
   const container = document.getElementById('prediction-cards');
   if (!container) return;
@@ -750,7 +717,6 @@ function generateSkeletonPredictions() {
   `).join('');
 }
 
-// Formatear etiquetas de métricas
 function formatMetricLabel(key) {
   const labels = {
     'open_rate': 'Tasa de apertura',
@@ -763,6 +729,5 @@ function formatMetricLabel(key) {
   return labels[key] || key.charAt(0).toUpperCase() + key.slice(1);
 }
 
-// Exportar funciones para uso global
 window.loadInformationDashboard = loadInformationDashboard;
 window.initInformationModal = initInformationModal;

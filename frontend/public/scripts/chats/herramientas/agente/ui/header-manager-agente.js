@@ -28,7 +28,6 @@ const TITLE_MAX_LENGTH = 25;
 // Control de inicialización
 let isInitialized = false;
 
-// Cache de elementos DOM frecuentemente utilizados
 const elements = {
   actionButton: null,
   dropdownContent: null,
@@ -45,14 +44,12 @@ export function setupHeaderEventListeners() {
   // Evitar inicializaciones múltiples
   if (isInitialized) return;
   
-  // Configurar componentes según el estado del DOM
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeHeaderComponents);
   } else {
     initializeHeaderComponents();
   }
   
-  // Actualizar el subtítulo del header inicialmente si hay un chat activo
   const currentChatId = getState('currentChatId');
   if (currentChatId && validateUUID(currentChatId)) {
     updateHeaderForChat(currentChatId, true);
@@ -66,10 +63,8 @@ function initializeHeaderComponents() {
   // Evitar inicialización múltiple
   if (isInitialized) return;
   
-  // Cachear elementos DOM frecuentemente utilizados
   cacheElements();
   
-  // Inicializar componentes solo si los elementos existen
   if (elements.actionButton && elements.dropdownContent) {
     setupDropdownMenu();
   }
@@ -86,7 +81,6 @@ function initializeHeaderComponents() {
     setupDeleteOption();
   }
   
-  // Marcar como inicializado
   isInitialized = true;
 }
 
@@ -108,15 +102,12 @@ function cacheElements() {
 function setupDropdownMenu() {
   const { actionButton, dropdownContent } = elements;
   
-  // Verificar si el botón ya tiene el evento configurado
   if (getAttribute(actionButton, 'data-event-configured')) return;
   
-  // Mostrar/ocultar el dropdown al hacer click en el botón de acciones
   addEvent(actionButton, 'click', function(e) {
     e.stopPropagation();
     const isCurrentlyOpen = dropdownContent.classList.contains('show');
     
-    // Cerrar todos los dropdowns primero
     document.querySelectorAll('.dropdown-content.show').forEach(dropdown => {
       removeClass(dropdown, 'show');
     });
@@ -130,27 +121,22 @@ function setupDropdownMenu() {
     }
   });
   
-  // Marcar el botón como configurado
   setAttribute(actionButton, 'data-event-configured', 'true');
   
-  // Cerrar dropdown al hacer click en cualquier otro lugar de la página
   if (!getAttribute(document.documentElement, 'data-dropdown-listener')) {
     addEvent(document, 'click', function(e) {
-      // Cerrar TODOS los dropdowns si el click es fuera de cualquier botón de acción
       const clickedActionButton = e.target.closest('.action-button');
       if (!clickedActionButton) {
         document.querySelectorAll('.dropdown-content.show').forEach(dropdown => {
           removeClass(dropdown, 'show');
         });
         
-        // Limpiar todos los aria-expanded
         document.querySelectorAll('.action-button[aria-expanded="true"]').forEach(button => {
           removeAttribute(button, 'aria-expanded');
         });
       }
     });
     
-    // Cerrar dropdown con tecla Escape
     addEvent(document, 'keydown', function(e) {
       if (e.key === 'Escape') {
         document.querySelectorAll('.dropdown-content.show').forEach(dropdown => {
@@ -180,13 +166,11 @@ function setupNewChatButton() {
   if (getAttribute(newChatButton, 'data-event-configured')) return;
   
   addEvent(newChatButton, 'click', function() {
-    // Cerrar el dropdown si está abierto
     if (dropdownContent) removeClass(dropdownContent, 'show');
     
     // Reutilizar la función existente de handleNewChat
     handleNewChat();
     
-    // Actualizar el subtítulo del header a un valor por defecto
     updateHeaderSubtitle(null);
   });
   
@@ -203,7 +187,6 @@ function setupRenameOption() {
   if (getAttribute(renameOption, 'data-event-configured')) return;
   
   addEvent(renameOption, 'click', function() {
-    // Obtener el ID del chat actual
     const currentChatId = getState('currentChatId');
     
     if (!currentChatId || !validateUUID(currentChatId)) {
@@ -211,10 +194,8 @@ function setupRenameOption() {
       return;
     }
     
-    // Cerrar dropdown
     if (dropdownContent) removeClass(dropdownContent, 'show');
     
-    // Activar edición inline en lugar de mostrar diálogo
     enableTitleEditing(currentChatId);
   });
   
@@ -230,12 +211,10 @@ function enableTitleEditing(chatId) {
   
   if (!headerSubtitle) return;
   
-  // Guardar el título actual para restaurarlo si se cancela
   const currentTitle = headerSubtitle.textContent;
   setAttribute(headerSubtitle, 'data-original-title', currentTitle);
   setAttribute(headerSubtitle, 'data-chat-id', chatId);
   
-  // Añadir la clase de edición y hacer el campo editable
   addClass(headerSubtitle, 'editing');
   headerSubtitle.contentEditable = true;
   
@@ -247,11 +226,9 @@ function enableTitleEditing(chatId) {
   selection.removeAllRanges();
   selection.addRange(range);
   
-  // Remover listeners anteriores para evitar duplicados
   removeEvent(headerSubtitle, 'keydown', handleTitleKeydown);
   removeEvent(headerSubtitle, 'blur', saveTitleChanges);
   
-  // Añadir listeners para manejar la edición
   addEvent(headerSubtitle, 'keydown', handleTitleKeydown);
   addEvent(headerSubtitle, 'blur', saveTitleChanges);
 }
@@ -284,16 +261,13 @@ function cancelTitleEditing() {
   
   if (!headerSubtitle) return;
   
-  // Restaurar el título original
   const originalTitle = getAttribute(headerSubtitle, 'data-original-title');
   headerSubtitle.textContent = originalTitle;
   
-  // Quitar atributos de edición
   removeAttribute(headerSubtitle, 'data-original-title');
   headerSubtitle.contentEditable = false;
   removeClass(headerSubtitle, 'editing');
   
-  // Remover los event listeners
   removeEvent(headerSubtitle, 'keydown', handleTitleKeydown);
   removeEvent(headerSubtitle, 'blur', saveTitleChanges);
 }
@@ -306,21 +280,16 @@ async function saveTitleChanges() {
   
   if (!headerSubtitle) return;
   
-  // Obtener el nuevo título y el ID del chat
   let newTitle = headerSubtitle.textContent.trim();
   const chatId = getAttribute(headerSubtitle, 'data-chat-id');
   
-  // Guardar una copia para mostrar en la notificación
   const displayTitle = newTitle; // Este es el título sin sanitizar para mostrar
   
-  // Sanitizar el título para prevenir XSS
   newTitle = sanitizeText(newTitle);
   
-  // Desactivar la edición
   headerSubtitle.contentEditable = false;
   removeClass(headerSubtitle, 'editing');
   
-  // Remover los event listeners
   removeEvent(headerSubtitle, 'keydown', handleTitleKeydown);
   removeEvent(headerSubtitle, 'blur', saveTitleChanges);
   
@@ -330,34 +299,27 @@ async function saveTitleChanges() {
     return;
   }
   
-  // Guardar el título original para restaurarlo en caso de error
   const originalTitle = getAttribute(headerSubtitle, 'data-original-title');
   headerSubtitle.textContent = 'Guardando...';
   
   try {
-    // Actualizar el título en la base de datos
     const result = await updateChatTitle(chatId, newTitle);
     
         if (result) {
-      // Mostrar notificación de éxito con el título visible (no sanitizado)
       acadelExito("✏️ ¡Título perfecto!", `Acadel cambió el nombre a: "${displayTitle}"`);
       
-      // Actualizar el subtítulo del header
       updateHeaderSubtitle(newTitle);
       
-      // Actualizar el título en el sidebar si existe
       const chatItem = document.querySelector(`[data-chat-id="${chatId}"] .chat-title`);
       if (chatItem) {
         // Preservar el icono al actualizar el título
         const icon = '<i class="bx bx-message-square-dots"></i>';
         
-        // Truncar el título para mostrar en el sidebar
         let displayTitle = newTitle;
         if (newTitle.length > TITLE_MAX_LENGTH) {
           displayTitle = newTitle.substring(0, TITLE_MAX_LENGTH) + '...';
         }
         
-        // Usar createElementWithHTML para mayor seguridad en la actualización con HTML
         const safeHTMLContent = `${icon} ${sanitizeText(displayTitle)}`;
         chatItem.innerHTML = safeHTMLContent;
         setAttribute(chatItem, 'title', newTitle);
@@ -374,7 +336,6 @@ async function saveTitleChanges() {
     headerSubtitle.textContent = originalTitle;
     acadelError("✏️ ¡Algo salió mal!", "Acadel no pudo guardar el título, pero no te preocupes");
   } finally {
-    // Limpiar datos temporales
     removeAttribute(headerSubtitle, 'data-original-title');
   }
 }
@@ -389,7 +350,6 @@ function setupDeleteOption() {
   if (getAttribute(deleteOption, 'data-event-configured')) return;
   
   addEvent(deleteOption, 'click', function() {
-    // Obtener el ID del chat actual
     const currentChatId = getState('currentChatId');
     
     if (!currentChatId || !validateUUID(currentChatId)) {
@@ -397,10 +357,8 @@ function setupDeleteOption() {
       return;
     }
     
-    // Cerrar dropdown
     if (dropdownContent) removeClass(dropdownContent, 'show');
     
-    // Llamar directamente a handleDeleteChat sin mostrar confirmación previa
     // La función handleDeleteChat ya tiene su propia lógica de confirmación
     handleDeleteChat(currentChatId);
   });
@@ -416,7 +374,6 @@ function setupDeleteOption() {
 function truncateTitle(title) {
   if (!title) return '';
   
-  // Sanitizar el título para prevenir XSS
   title = sanitizeText(title);
   
   // Si el título es más largo que el máximo, truncarlo y añadir "..."
@@ -442,20 +399,16 @@ export function updateHeaderSubtitle(chatTitle) {
     headerSubtitle.textContent = 'Asistente virtual académico';
     removeAttribute(headerSubtitle, 'title');
   } else {
-    // Sanitizar y truncar el título
     const safeTitle = sanitizeText(chatTitle);
     const truncatedTitle = truncateTitle(safeTitle);
     
-    // Actualizar el contenido del elemento
     headerSubtitle.textContent = truncatedTitle;
     
-    // Añadir el título completo como tooltip
     setAttribute(headerSubtitle, 'title', safeTitle);
   }
 }
 
 export function closeHeaderDropdown() {
-  // Buscar tanto en cache como en DOM por si acaso
   const dropdownContent = elements.dropdownContent || document.querySelector('.dropdown-content');
   
   if (dropdownContent && dropdownContent.classList.contains('show')) {
@@ -492,13 +445,11 @@ export function isDropdownOpen() {
  */
 export async function updateHeaderForChat(chatId, silentErrors = false) {
   try {
-    // Importar UI module para usar skeleton
     const uiModule = await import('./ui-manager-agente.js');
     if (typeof uiModule.applyHeaderSkeleton === 'function') {
       uiModule.applyHeaderSkeleton();
     }
     
-    // Limpiar skeleton al finalizar
     const cleanupSkeleton = () => {
       if (typeof uiModule.removeHeaderSkeleton === 'function') {
         setManagedTimeout(() => uiModule.removeHeaderSkeleton(), 300, 'header-skeleton-cleanup');
@@ -512,7 +463,6 @@ export async function updateHeaderForChat(chatId, silentErrors = false) {
       return;
     }
     
-    // Intentar obtener título desde el estado
     const chatFromState = getState(`chats.${chatId}`);
     if (chatFromState && chatFromState.title) {
       updateHeaderSubtitle(chatFromState.title);
@@ -521,7 +471,6 @@ export async function updateHeaderForChat(chatId, silentErrors = false) {
     }
     
     try {
-      // Intentar obtener del historial de chats
       const chatModule = await import('../api/chat-agente.js');
       if (typeof chatModule.loadChatHistory === 'function') {
         const chats = await chatModule.loadChatHistory();
@@ -538,7 +487,6 @@ export async function updateHeaderForChat(chatId, silentErrors = false) {
     } catch (error) {
       updateHeaderSubtitle('Nuevo chat');
     } finally {
-      // Limpiar skeleton con un pequeño retraso para la transición
       setManagedTimeout(cleanupSkeleton, 500, 'header-skeleton-final-cleanup');
     }
   } catch (error) {
@@ -562,8 +510,6 @@ export async function updateHeaderForChat(chatId, silentErrors = false) {
 // Asegurar limpieza de timeouts antes de descargar la página
 window.addEventListener('beforeunload', clearManagedTimeouts);
 
-// Exportar funciones y objetos públicos
-// Exportar funciones y objetos públicos
 export default {
   setupHeaderEventListeners,
   updateHeaderForChat,
@@ -573,5 +519,4 @@ export default {
   isDropdownOpen
 };
 
-// Inicializar una sola vez
 setupHeaderEventListeners();

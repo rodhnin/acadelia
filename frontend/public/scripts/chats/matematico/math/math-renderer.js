@@ -25,7 +25,6 @@ const REGEX = {
   WHITESPACE: /(\s+)/
 };
 
-// Cache de procesamiento
 const processedNodesCache = new WeakMap();
 
 // Observador central para matemáticas
@@ -44,7 +43,6 @@ export function prepareTextWithMath(text) {
     return text;
   }
   
-  // Procesar partes sin delimitadores
   const parts = text.split(REGEX.WHITESPACE);
   const processedParts = parts.map(part => {
     if (LATEX_PATTERNS.commands.test(part)) {
@@ -63,12 +61,10 @@ export function prepareTextWithMath(text) {
 export function detectAndMarkMathInElement(element) {
   if (!element) return;
   
-  // Verificar cache para evitar procesamiento repetido
   if (processedNodesCache.has(element)) {
     return;
   }
   
-  // Procesar nodos de texto con contenido matemático
   const textNodes = Array.from(element.childNodes)
     .filter(node => node.nodeType === Node.TEXT_NODE);
   
@@ -85,10 +81,8 @@ export function detectAndMarkMathInElement(element) {
     }
   });
   
-  // Marcar este elemento como procesado
   processedNodesCache.set(element, true);
   
-  // Procesar recursivamente elementos hijos
   const childElements = Array.from(element.children)
     .filter(child => 
       !child.classList.contains('math-content') && 
@@ -112,7 +106,6 @@ export function preprocessMathForSubmission(message) {
       const math = block || inline;
       if (!math) return match;
       
-      // Usar processTrigFunctions centralizado de latex-utils.js
       let processed = processTrigFunctions(math);
       
       return match.startsWith('$$') ? 
@@ -139,7 +132,6 @@ export function cleanupMathObserver() {
     mathObserver = null;
   }
   
-  // Limpiar timeouts pendientes
   clearManagedTimeouts(CONFIG.PROCESS_BATCH_KEY);
 }
 
@@ -151,7 +143,6 @@ export function setupMathObserver() {
   // Evitar observadores duplicados
   cleanupMathObserver();
   
-  // Crear observador para renderizar matemáticas en nuevos mensajes
   mathObserver = new MutationObserver(mutations => {
     const elementsToProcess = [];
     
@@ -168,10 +159,8 @@ export function setupMathObserver() {
       }
     });
     
-    // Procesar elementos en batch para mejor rendimiento
     if (elementsToProcess.length > 0) {
       setManagedTimeout(() => {
-        // Procesar y renderizar como lote
         elementsToProcess.forEach(detectAndMarkMathInElement);
         renderMath(elementsToProcess).catch(() => {
           // Silenciar errores en producción
@@ -180,7 +169,6 @@ export function setupMathObserver() {
     }
   });
   
-  // Observar el contenedor de mensajes
   const chatMessages = document.querySelector('.chat-messages');
   if (chatMessages) {
     mathObserver.observe(chatMessages, { childList: true, subtree: true });
@@ -200,7 +188,6 @@ export function processAllChatMessages() {
     return Promise.resolve();
   }
   
-  // Filtrar mensajes ya procesados
   const messagesToProcess = Array.from(messages).filter(
     msg => !processedNodesCache.has(msg)
   );
@@ -209,10 +196,8 @@ export function processAllChatMessages() {
     return Promise.resolve();
   }
   
-  // Detectar y marcar matemáticas en todos los mensajes
   messagesToProcess.forEach(detectAndMarkMathInElement);
   
-  // Renderizar matemáticas en todos los mensajes como lote
   return renderMath(messagesToProcess).catch(() => {
     // Silenciar errores en producción
   });
@@ -231,12 +216,10 @@ export function clearProcessedCache(node = null) {
   }
 }
 
-// Limpiar observer al descargar página
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', cleanupMathObserver);
 }
 
-// Exportar todas las funciones
 export default {
   prepareTextWithMath,
   detectAndMarkMathInElement,

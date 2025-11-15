@@ -8,19 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const totalWaitTime = 120;
   let secondsLeft = totalWaitTime;
   
-  // Iniciar la barra de progreso y el contador
   function startTimer() {
     timerBar.style.width = '0%';
     
     // Actualización cada segundo
     const timerInterval = setInterval(function() {
-      // Reducir tiempo restante
       secondsLeft--;
       
-      // Calcular porcentaje completado
       const percentComplete = ((totalWaitTime - secondsLeft) / totalWaitTime) * 100;
       
-      // Actualizar UI
       timerBar.style.width = percentComplete + '%';
       timeRemaining.textContent = secondsLeft > 0 
         ? `${secondsLeft} ${secondsLeft === 1 ? 'segundo' : 'segundos'}`
@@ -30,13 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (secondsLeft <= 0) {
         clearInterval(timerInterval);
         
-        // Cambiar estilo de botón "Volver atrás" para indicar que se puede reintentar
         const backButton = document.querySelector('.back-btn');
         backButton.innerHTML = '<i class="bx bx-refresh"></i> Intentar nuevamente';
         backButton.style.backgroundColor = '#6a994e';
         backButton.style.borderColor = '#6a994e';
         
-        // Modificar onclick para recargar en lugar de ir hacia atrás
         backButton.onclick = function() {
           window.location.reload();
         };
@@ -64,6 +58,5 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  // Iniciar el temporizador
   startTimer();
 });

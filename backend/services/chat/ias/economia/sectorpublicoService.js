@@ -1,10 +1,4 @@
-// ============================================================================
-// 🏛️🦫 PROFESOR ACADEL ECONOMÍA DEL SECTOR PÚBLICO - SISTEMA ACADÉMICO REVOLUCIONARIO OPTIMIZADO
-// ============================================================================
 // EL CAPIBARA MÁS SABIO DEL UNIVERSO EN SECTOR PÚBLICO - PROFESOR SUPREMO
-// Sistema optimizado con Knowledge Base como cerebro principal y ejecución paralela
-// Especialidades: Hacienda Pública ✅ Política Fiscal ✅ Evaluación de Políticas Públicas ✅
-// ============================================================================
 
 import { supabase } from "../../../../lib/supabaseService.js";
 import { SupabaseHybridSearch } from "@langchain/community/retrievers/supabase";
@@ -26,14 +20,8 @@ import { imageStorageService } from '../../imageStorageService.js';
 import { documentStorageService } from '../../documentStorageService.js';
 import { createMultimodalMessageReference } from '../../../../utils/chat/documentReferenceHelper.js';
 
-// ============================================================================
-// 🚀 SISTEMA DE CACHE INTELIGENTE CENTRALIZADO
-// ============================================================================
 import { intelligentCache, generateContentHash, isCacheable, categorizeQuery } from '../../../../utils/chat/AcadelCache.js';
 
-// ============================================================================
-// 🌟 BRAVE SEARCH ORCHESTRATOR INTEGRADO PARA SECTOR PÚBLICO
-// ============================================================================
 
 class BraveSearchOrchestrator {
   constructor() {
@@ -99,7 +87,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'web', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -173,7 +160,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'web', options, {
         hash: cacheKey,
         searchType: 'web',
@@ -194,7 +180,6 @@ class BraveSearchOrchestrator {
       throw new Error('Brave Search API key no configurada');
     }
 
-    // ✅ CACHE CHECK CORRECTO usando generateContentHash
     const searchKey = { type: 'images', query, options };
     const cacheKey = generateContentHash(searchKey);
 
@@ -263,7 +248,6 @@ class BraveSearchOrchestrator {
         cachedAt: Date.now()
       };
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setBraveSearch(query, result, 'images', options, {
         hash: cacheKey,
         searchType: 'images',
@@ -322,9 +306,6 @@ class BraveSearchOrchestrator {
 
 const braveSearchOrchestrator = new BraveSearchOrchestrator();
 
-// ============================================================================
-// 🏛️🦫 PROFESOR ACADEL SECTOR PÚBLICO DNA - PERSONALIDAD DEL CAPIBARA EXPERTO SUPREMO
-// ============================================================================
 
 const PROFESOR_ACADEL_DNA = `
 🏛️🦫 TU IDENTIDAD COMO ACADEL - PROFESOR DE ECONOMÍA DEL SECTOR PÚBLICO:
@@ -364,11 +345,7 @@ Hacer que CUALQUIER estudiante de economía del sector público:
 ¡RECUERDA: No eres solo un tutor de hacienda, eres EL PROFESOR que integra hacienda pública, política fiscal y evaluación como el sector público real!
 `;
 
-// ============================================================================
-// 📝 PROMPTS CONSOLIDADOS DEL SECTOR PÚBLICO - REUTILIZABLES PARA TODAS LAS FUNCIONES
-// ============================================================================
 
-// 🔍 PROMPT SYSTEM PARA ANÁLISIS DE IMÁGENES DEL SECTOR PÚBLICO
 const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Economía del Sector Público.
 
 🎯 FUNCIÓN: Analizar imágenes del sector público (gráficas, presupuestos, políticas) con precisión académica extrema.
@@ -395,7 +372,6 @@ const image_ANALYSIS_SYSTEM = `Eres la MENTE ANALÍTICA TÉCNICA de Acadel en Ec
 
 Eres los OJOS ANALÍTICOS de Acadel - él interpretará tu análisis con su sabiduría del sector público integrada.`;
 
-// 🔍 PROMPT USER PARA ANÁLISIS DE IMÁGENES DEL SECTOR PÚBLICO (analysisContext)
 const image_ANALYSIS_USER_CONTEXT = `Eres la MENTE ANALÍTICA AVANZADA de Acadel, el capibara experto más brillante del universo en hacienda pública, política fiscal y evaluación de políticas públicas.
 
 🔍 TU MISIÓN: Extraer MÁXIMA información del sector público de esta imagen para que Acadel pueda enseñar efectivamente integrando las tres disciplinas.
@@ -441,7 +417,6 @@ Proporciona un análisis estructurado, preciso y exhaustivo que permita a Acadel
 
 **IMPORTANTE:** Sé OBSERVADOR, PRECISO y DETALLADO en las tres disciplinas. No enseñes ni expliques - solo analiza y reporta hallazgos del sector público. Acadel se encargará de la pedagogía integrada pero necesita que seas muy detallista con todo lo que observas en la imagen.`;
 
-// 🎯 PROMPT UNIFICADO PARA CONSULTAS DEL SECTOR PÚBLICO NORMALES (con y sin guardar)
 const UNIFIED_PUBLIC_SECTOR_NORMAL_QUERY_INPUT = (query, queryInfo, tools, isRetry = false) => `
 📋 CONTEXTO DE LA CONSULTA DEL SECTOR PÚBLICO INTEGRADA:
 - Consulta del estudiante del sector público: "${query}"
@@ -468,7 +443,6 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// 🖼️ PROMPT UNIFICADO PARA CONSULTAS DEL SECTOR PÚBLICO MULTIMODALES (con y sin guardar)
 const UNIFIED_PUBLIC_SECTOR_MULTIMODAL_QUERY_INPUT = (extractedText, documentContext, imageAnalysisText, queryInfo, tools, isRetry = false) => `
 📋 INFORMACIÓN DEL SECTOR PÚBLICO PRE-PROCESADA POR TU SISTEMA ANALÍTICO:
 
@@ -516,14 +490,10 @@ ${queryInfo.hasEmotionalContent ?
     ''}
 `;
 
-// ============================================================================
-// 🧠 SISTEMA DE CLASIFICACIÓN INTELIGENTE OPTIMIZADO DEL SECTOR PÚBLICO
-// ============================================================================
 
 const classifyQuery = (query, content = null) => {
   const lowercaseQuery = query.toLowerCase();
 
-  // ✅ CACHE CHECK (mantener existente)
   const classificationKey = { query: lowercaseQuery, hasContent: !!content };
   const cacheKey = generateContentHash(classificationKey);
 
@@ -533,7 +503,6 @@ const classifyQuery = (query, content = null) => {
     return cached.result;
   }
 
-  // 🚫 DETECTAR CONSULTAS QUE NO NECESITAN KNOWLEDGE BASE
   const casualGreetings = [
     'hola', 'hello', 'hi', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches',
     'hey', 'qué tal', 'cómo estás', 'como estas', 'saludos', 'buen día'
@@ -555,7 +524,6 @@ const classifyQuery = (query, content = null) => {
     'cómo funciona', 'como funciona', 'qué es esto', 'que es esto', 'para qué sirve'
   ];
 
-  // 🔍 VERIFICAR SI ES CONSULTA SIMPLE QUE NO NECESITA KNOWLEDGE BASE
   const isSimpleQuery =
     casualGreetings.some(greeting => lowercaseQuery.includes(greeting) && lowercaseQuery.length < 50) ||
     identityQuestions.some(question => lowercaseQuery.includes(question)) ||
@@ -563,7 +531,6 @@ const classifyQuery = (query, content = null) => {
     systemQuestions.some(question => lowercaseQuery.includes(question)) ||
     lowercaseQuery.length < 10; // Consultas muy cortas probablemente son casuales
 
-  // DETECTAR GENERACIÓN DE IMÁGENES DEL SECTOR PÚBLICO
   const publicSectorImageKeywords = [
     "genera una imagen", "crear imagen", "generar imagen",
   ];
@@ -588,7 +555,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // Detectar exámenes del sector público
   const examKeywords = [
     "generar examen", "crear examen", "hacer un examen",
     "examen de sector público", "test de hacienda", "evaluación de política fiscal", "cuestionario de evaluación"
@@ -617,7 +583,7 @@ const classifyQuery = (query, content = null) => {
       format,
       questionCount,
       topic,
-      needsKnowledgeBase: true, // ✅ SÍ necesita para exámenes porque requiere contenido específico
+      needsKnowledgeBase: true,
       needsPublicSectorSearch: false,
       needsCaseStudyGeneration: false,
       needsComprehensionCheck: false,
@@ -632,18 +598,15 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 OPTIMIZACIÓN CRÍTICA: KNOWLEDGE BASE COMO CEREBRO PRINCIPAL
 
-  // Inicializar con valores por defecto
   let type = 'general';
   let complexity = 'low';
-  let needsKnowledgeBase = true; // 🚀 CAMBIO CRÍTICO: TRUE por defecto para ser el cerebro principal
+  let needsKnowledgeBase = true;
   let needsPublicSectorSearch = false;
   let needsCaseStudyGeneration = false;
   let needsComprehensionCheck = false;
   let needsWebSearch = false;
 
-  // 🔍 DETECTAR TÉRMINOS DEL SECTOR PÚBLICO ESPECÍFICOS
   const publicSectorTerms = [
     // Hacienda Pública
     'hacienda pública', 'public finance', 'bienes públicos', 'public goods', 'externalidades', 'externalities',
@@ -669,29 +632,25 @@ const classifyQuery = (query, content = null) => {
     'instituciones', 'institutions', 'regulación', 'regulation', 'intervención', 'intervention'
   ];
 
-  // 🔍 DETECTAR INSTITUCIONES Y ORGANISMOS QUE REQUIEREN KNOWLEDGE BASE
   const publicSectorInstitutions = [
     'hacienda', 'treasury', 'banco central', 'central bank', 'fmi', 'imf', 'banco mundial',
     'world bank', 'ocde', 'oecd', 'cepal', 'eclac', 'coneval', 'shcp', 'banxico',
     'federal reserve', 'bce', 'european central bank', 'ministerio', 'ministry'
   ];
 
-  // 🔍 DETECTAR CONCEPTOS Y TEORÍAS DEL SECTOR PÚBLICO
   const publicSectorConcepts = [
     'teoría', 'theory', 'modelo', 'model', 'función', 'function', 'óptimo', 'optimal',
     'equilibrio', 'equilibrium', 'bienestar', 'welfare', 'pareto', 'rawls', 'pigou',
     'samuelson', 'musgrave', 'buchanan', 'stiglitz', 'atkinson', 'mirrlees'
   ];
 
-  // ✅ VERIFICAR SI LA CONSULTA CONTIENE TÉRMINOS DEL SECTOR PÚBLICO REALES
   const hasPublicSectorContent =
     publicSectorTerms.some(term => lowercaseQuery.includes(term)) ||
     publicSectorInstitutions.some(term => lowercaseQuery.includes(term)) ||
     publicSectorConcepts.some(term => lowercaseQuery.includes(term));
 
-  // 🚫 SOLO PARA CONSULTAS REALMENTE SIMPLES, DESACTIVAR KNOWLEDGE BASE
   if (isSimpleQuery && !hasPublicSectorContent) {
-    needsKnowledgeBase = false; // Solo aquí se desactiva el cerebro principal
+    needsKnowledgeBase = false;
     const result = {
       type: 'casual_conversation',
       complexity: 'low',
@@ -714,7 +673,6 @@ const classifyQuery = (query, content = null) => {
     return result;
   }
 
-  // 🎯 CLASIFICAR CONSULTAS CON KNOWLEDGE BASE SIEMPRE ACTIVO
   const conceptKeywords = ['qué es', 'define', 'concepto', 'explicar', 'significado', 'diferencia entre', 'teoría de', 'función de'];
   const diagnosticKeywords = ['analizar', 'evaluar', 'interpretar', 'diagnosticar', 'caso fiscal', 'situación', 'problema'];
   const haciendaKeywords = ['hacienda pública', 'public finance', 'bienes públicos', 'externalidades', 'ingresos públicos', 'deuda pública'];
@@ -724,7 +682,6 @@ const classifyQuery = (query, content = null) => {
   const researchKeywords = ['investigación', 'estudios recientes', 'papers del sector público', 'avances en políticas', 'nuevos hallazgos'];
   const practiceKeywords = ['casos', 'práctica', 'ejemplos', 'ejercicios', 'más casos', 'aplicaciones'];
 
-  // ✅ CLASIFICACIÓN CON KNOWLEDGE BASE ACTIVO
   if (conceptKeywords.some(k => lowercaseQuery.includes(k))) {
     type = 'concept_explanation';
     complexity = 'medium';
@@ -762,7 +719,6 @@ const classifyQuery = (query, content = null) => {
     complexity = 'low';
   }
 
-  // Detectar si necesita búsqueda web actualizada
   if (researchKeywords.some(k => lowercaseQuery.includes(k))) {
     needsWebSearch = true;
   }
@@ -772,14 +728,13 @@ const classifyQuery = (query, content = null) => {
     needsWebSearch = true;
   }
 
-  // Detectar frustración o confusión emocional del sector público
   const emotionalKeywords = ['no entiendo', 'confuso', 'difícil', 'complicado', 'frustrado', 'odio', 'ayuda', 'no puedo entender'];
   const hasEmotionalContent = emotionalKeywords.some(k => lowercaseQuery.includes(k));
 
   const result = {
     type,
     complexity,
-    needsKnowledgeBase, // 🚀 AHORA TRUE por defecto - Knowledge Base como cerebro principal
+    needsKnowledgeBase,
     needsPublicSectorSearch,
     needsCaseStudyGeneration,
     needsComprehensionCheck,
@@ -798,11 +753,7 @@ const classifyQuery = (query, content = null) => {
   return result;
 };
 
-// ============================================================================
-// 🔧 HERRAMIENTAS DEL SECTOR PÚBLICO OPTIMIZADAS CON EJECUCIÓN PARALELA
-// ============================================================================
 
-// ⚡ CONTEXTO COMPARTIDO PARA TODAS LAS HERRAMIENTAS DEL SECTOR PÚBLICO
 const ACADEL_PUBLIC_SECTOR_TOOL_CONTEXT = `
 CONTEXTO CRÍTICO: Esto es parte de la mente de ACADEL UNIVERSAL, el capibara experto más brillante del universo en hacienda pública, política fiscal y evaluación de políticas públicas.
 
@@ -817,7 +768,6 @@ const createPublicSectorKnowledgeBaseTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel activando cerebro principal del sector público (Knowledge Base): ${query}`);
 
-      // ✅ CACHE CHECK CORRECTO usando generateContentHash
       const knowledgeKey = { query, relevance_threshold };
       const cacheKey = generateContentHash(knowledgeKey);
 
@@ -827,17 +777,15 @@ const createPublicSectorKnowledgeBaseTool = (embeddings) => tool(
         return cached.result;
       }
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA PARA SER EL CEREBRO PRINCIPAL
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 8,  // 🔥 AUMENTADO: más contexto para mejores decisiones
-        keywordK: 6,     // 🔥 AUMENTADO: mayor cobertura textual
+        similarityK: 8,
+        keywordK: 6,
         tableName: "emb_sectorpublico",
         similarityQueryName: "match_emb_sectorpublico",
         keywordQueryName: "kw_match_emb_sectorpublico",
       });
 
-      // ⏱️ TIMEOUT OPTIMIZADO PARA CEREBRO PRINCIPAL
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Knowledge Base timeout')), 30000)
       );
@@ -849,7 +797,6 @@ const createPublicSectorKnowledgeBaseTool = (embeddings) => tool(
 
 ACADEL_PUBLIC_SECTOR_MEMORY_BANK: El cerebro principal de Acadel no tiene contenido del sector público específico sobre "${query}" en su biblioteca de hacienda pública, política fiscal y evaluación. Proceder con conocimiento del sector público general integrado y experiencia docente acumulada en las tres disciplinas.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: 0,
@@ -869,7 +816,6 @@ ACADEL_PUBLIC_SECTOR_MEMORY_BANK: El cerebro principal de Acadel no tiene conten
 
 ACADEL_PUBLIC_SECTOR_MEMORY_BANK: El cerebro principal de Acadel encontró información del sector público sobre "${query}" pero no suficientemente específica. Proceder con conocimiento base del sector público integrado, analogías memorables y experiencia docente acumulada en hacienda pública, política fiscal y evaluación.`;
 
-        // ✅ CACHE SET CORRECTO
         intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
           hash: cacheKey,
           docsFound: docs.length,
@@ -896,7 +842,6 @@ ACADEL_PUBLIC_SECTOR_MEMORY_BANK: El cerebro principal de Acadel activó la sigu
 
 INTEGRATION_NOTES: Este es el conocimiento del sector público central que Acadel usará como base neurológica principal para su respuesta. Representa su comprensión profunda acumulada en hacienda pública, política fiscal y evaluación. Debe integrar esta información naturalmente como si fuera su propia sabiduría del sector público, enriqueciéndola con casos específicos, analogías memorables y humor inteligente que conecte las tres disciplinas de manera pedagógica magistral.`;
 
-      // ✅ CACHE SET CORRECTO
       intelligentCache.setKnowledgeBase(query, result, relevance_threshold, {
         hash: cacheKey,
         docsFound: docs.length,
@@ -1122,17 +1067,15 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
     try {
       console.log(`🧠 Acadel analizando concepto del sector público integrado: ${concept}`);
 
-      // 🚀 CONFIGURACIÓN ULTRA-OPTIMIZADA CON PARALELIZACIÓN
       const retriever = new SupabaseHybridSearch(embeddings, {
         client: supabase,
-        similarityK: 10,  // 🔥 MAXIMIZADO: aprovechar índices ultra-rápidos
-        keywordK: 8,      // 🔥 MAXIMIZADO: cobertura textual completa
+        similarityK: 10,
+        keywordK: 8,
         tableName: "emb_sectorpublico",
         similarityQueryName: "match_emb_sectorpublico",
         keywordQueryName: "kw_match_emb_sectorpublico",
       });
 
-      // 📚 BÚSQUEDAS DEL SECTOR PÚBLICO ESPECIALIZADAS PARALELAS (OPTIMIZADAS)
       const searches = [
         `definición concepto ${concept}`,
         `hacienda pública ${concept}`,
@@ -1142,7 +1085,6 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
         `aplicaciones prácticas ${concept}`
       ];
 
-      // 🚀 EJECUCIÓN COMPLETAMENTE PARALELA
       const searchPromises = searches.map(async (searchTerm) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
@@ -1162,7 +1104,6 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
         }
       });
 
-      // ⚡ ESPERAR TODAS LAS BÚSQUEDAS PARALELAS
       const searchResults = await Promise.allSettled(searchPromises);
       const allDocs = searchResults
         .filter(result => result.status === 'fulfilled')
@@ -1175,7 +1116,6 @@ const createPublicSectorConceptAnalyzerTool = (embeddings) => tool(
 
       const conceptInfo = formatDocumentsAsString(allDocs);
 
-      // Limpiar información para integración natural del sector público
       const cleanInfo = conceptInfo
         .replace(/CONTEXTO:|FUENTE:|DOCUMENTO:|INFORMACIÓN:/gi, '')
         .replace(/🏛️|✅|⚠️|📊|🎯|💡/g, '')
@@ -1353,9 +1293,6 @@ INTEGRATION_NOTES: Acadel debe ajustar su estrategia del sector público según 
   }
 );
 
-// ============================================================================
-// 📷 HERRAMIENTA DE VISUALIZACIÓN DEL SECTOR PÚBLICO (MANTENIDA ORIGINAL)
-// ============================================================================
 
 export const detectPublicSectorImageRequest = (query) => {
   const publicSectorImageKeywords = [
@@ -1437,16 +1374,10 @@ const enhancePublicSectorImagePrompt = (prompt) => {
   - Perspectiva clara y comprensible que integre conceptos del sector público cuando sea apropiado`;
 };
 
-// ============================================================================
-// 🎯 PROMPTS ESPECIALIZADOS COMPLETAMENTE SINCRONIZADOS DEL SECTOR PÚBLICO
-// ============================================================================
 
 const createSpecializedPublicSectorPrompt = (queryType, queryInfo, studentQuery) => {
   const basePersonality = PROFESOR_ACADEL_DNA;
 
-  // ============================================================================
-  // 🏛️ INSTRUCCIONES TÉCNICAS DEL SECTOR PÚBLICO CONSOLIDADAS
-  // ============================================================================
 
   const corePublicSectorInstructions = `
 # INSTRUCCIONES TÉCNICAS PARA ACADEL DE ECONOMÍA DEL SECTOR PÚBLICO INTEGRADO
@@ -1545,9 +1476,6 @@ Tipos de diagramas: graph, flowchart, sequenceDiagram, classDiagram, pie, stateD
 - **TU CEREBRO PRINCIPAL (Knowledge Base) ES OBLIGATORIO para consultas del sector público importantes**
 `;
 
-  // ============================================================================
-  // 🎯 INSTRUCCIONES ESPECÍFICAS POR TIPO DE CONSULTA DEL SECTOR PÚBLICO - OPTIMIZADAS
-  // ============================================================================
 
   const publicSectorTypeInstructions = {
     casual_conversation: `
@@ -1628,9 +1556,6 @@ ${queryInfo.hasEmotionalContent ? '💝 **NOTA EMOCIONAL:** Estudiante frustrado
 - Mantén foco en comprensión integrada real y aplicación de las tres disciplinas`
   };
 
-  // ============================================================================
-  // 🔄 ENSAMBLAR PROMPT DEL SECTOR PÚBLICO FINAL ULTRA-OPTIMIZADO
-  // ============================================================================
 
   return `${basePersonality}
 
@@ -1653,21 +1578,16 @@ ${queryInfo.needsKnowledgeBase ? '🧠 CEREBRO PRINCIPAL (Knowledge Base) | ' : 
       'Enseña como el capibara experto más brillante del universo en sector público, integrando hacienda pública, política fiscal y evaluación, usando tu CEREBRO PRINCIPAL (Knowledge Base) para fundamentar toda respuesta del sector público importante, y complementando con todas tus capacidades paralelas para una explicación integrada magistral'}.`;
 };
 
-// ============================================================================
-// 🤖 CREACIÓN DEL AGENTE DEL SECTOR PÚBLICO ULTRA-OPTIMIZADO CON EJECUCIÓN PARALELA
-// ============================================================================
 
 const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
   console.log(`🏛️🦫 Acadel configurando sistema del sector público optimizado para query tipo: ${queryInfo.type}, Cerebro Principal: ${queryInfo.needsKnowledgeBase}`);
 
-  // ✅ HERRAMIENTAS BÁSICAS SIEMPRE DISPONIBLES
   const tools = [
     createBravePublicSectorWebSearchTool(),
     createBravePublicSectorImageSearchTool(),
     createBravePublicSectorSiteSearchTool(),
   ];
 
-  // 🧠 CEREBRO PRINCIPAL (Knowledge Base) - PRIORIDAD MÁXIMA
   if (queryInfo.needsKnowledgeBase) {
     console.log(`🧠 ACTIVANDO CEREBRO PRINCIPAL del sector público (Knowledge Base) - núcleo del sistema`);
     tools.unshift(createPublicSectorKnowledgeBaseTool(embeddings)); // Primer lugar para máxima prioridad
@@ -1675,7 +1595,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
     console.log(`💤 Cerebro Principal INACTIVO - consulta muy casual sin contenido del sector público`);
   }
 
-  // ✅ HERRAMIENTAS AVANZADAS PARA EJECUCIÓN PARALELA
   if (queryInfo.needsPublicSectorSearch || queryInfo.complexity === 'high') {
     console.log(`🧠 Activando PublicSectorConceptAnalyzer para análisis paralelo profundo`);
     tools.push(createPublicSectorConceptAnalyzerTool(embeddings));
@@ -1691,7 +1610,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
     tools.push(createPublicSectorComprehensionCheckerTool());
   }
 
-  // ✅ INTELIGENCIA EMOCIONAL SIEMPRE DISPONIBLE
   tools.push(createPublicSectorFeedbackAnalyzerTool());
 
   console.log(`🏛️🦫 Acadel SISTEMA DEL SECTOR PÚBLICO COMPLETO configurado con ${tools.length} herramientas:`, tools.map(t => t.name));
@@ -1704,7 +1622,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
     inteligenciaEmocional: '💭 SIEMPRE ACTIVA'
   });
 
-  // Crear prompt del sector público especializado y escapado
   const specializedPrompt = createSpecializedPublicSectorPrompt(queryInfo.type, queryInfo, studentQuery);
 
   // CORRECCIÓN CRÍTICA: Escapar llaves correctamente
@@ -1735,9 +1652,6 @@ const createAcadelPublicSectorAgent = async (llm, queryInfo, studentQuery) => {
   return { agent, tools };
 };
 
-// ============================================================================
-// 📝 FUNCIONES AUXILIARES DEL SECTOR PÚBLICO OPTIMIZADAS (MANTENIDAS ORIGINALES)
-// ============================================================================
 
 export const detectExamRequest = (query) => {
   const examKeywords = [
@@ -1785,7 +1699,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         try {
           console.log(`📝 Acadel generando contexto para examen del sector público: ${input}`);
 
-          // ✅ CACHE CHECK CORRECTO usando generateContentHash
           const contextKey = { topic: input, operation: 'exam_context' };
           const cacheKey = generateContentHash(contextKey);
 
@@ -1795,17 +1708,15 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
             return cached.result;
           }
 
-          // 🚀 CONFIGURACIÓN OPTIMIZADA CON ÍNDICES
           const retriever = new SupabaseHybridSearch(embeddings, {
             client: supabase,
-            similarityK: 6,  // 🔥 OPTIMIZADO: para exámenes necesitamos variedad
-            keywordK: 5,     // 🔥 AUMENTADO: aprovechar GIN index
+            similarityK: 6,
+            keywordK: 5,
             tableName: "emb_sectorpublico",
             similarityQueryName: "match_emb_sectorpublico",
             keywordQueryName: "kw_match_emb_sectorpublico",
           });
 
-          // ⏱️ TIMEOUT OPTIMIZADO PARA EXÁMENES
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Exam context timeout')), 30000)
           );
@@ -1817,7 +1728,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
 
           const context = formatDocumentsAsString(docs);
 
-          // ✅ CACHE SET CORRECTO
           intelligentCache.setComponent('exam_context', { topic: input }, context, {
             hash: cacheKey,
             docsFound: docs.length,
@@ -1832,7 +1742,6 @@ const createExamChain = (llm, format, topic, questionCount = 5) => {
         } catch (error) {
           console.warn(`⚠️ Exam context error: ${error.message}`);
 
-          // Fallback para exámenes del sector público
           return `Contexto del sector público base para "${input}": conocimiento fundamental en hacienda pública, política fiscal y evaluación. Acadel debe generar preguntas desde su experiencia consolidada, integrando las tres disciplinas del sector público con casos realistas y conceptos fundamentales.`;
         }
       },
@@ -1941,9 +1850,6 @@ const hasDocuments = (content) => {
   );
 };
 
-// ============================================================================
-// 🚀 FUNCIÓN PRINCIPAL MEJORADA DEL SECTOR PÚBLICO - handlePublicSectorQuery
-// ============================================================================
 
 export const handlePublicSectorQuery = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -1952,7 +1858,6 @@ export const handlePublicSectorQuery = async (params) => {
   try {
     const startTime = Date.now();
 
-    // Verificar cancelación inicial
     const wasCancelled = await wasRequestCancelled(chatId);
     if (wasCancelled) {
       await clearCancellationFlag(chatId);
@@ -1968,13 +1873,11 @@ export const handlePublicSectorQuery = async (params) => {
     // CLASIFICAR EL QUERY DEL SECTOR PÚBLICO INTELIGENTEMENTE
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES DEL SECTOR PÚBLICO
     const { isImageRequest, prompt: imagePrompt } = detectPublicSectorImageRequest(query);
 
     console.log(`🏛️🦫 Acadel analizando query del sector público integrado: "${query}"`);
     console.log(`📊 Clasificación del sector público: tipo=${queryInfo.type}, complejidad=${queryInfo.complexity}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES DEL SECTOR PÚBLICO
     if (isImageRequest) {
       console.log(`🎨 Acadel generando visualización del sector público integrada: ${imagePrompt}`);
 
@@ -1983,7 +1886,6 @@ export const handlePublicSectorQuery = async (params) => {
       const publicSectorVisualizationTool = createPublicSectorVisualizationTool();
       const imageResponse = await publicSectorVisualizationTool.invoke({ prompt: enhancedPrompt });
 
-      // Verificar cancelación antes de guardar
       const wasCancelledBeforeSave = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeSave) {
         await clearCancellationFlag(chatId);
@@ -1996,7 +1898,6 @@ export const handlePublicSectorQuery = async (params) => {
         };
       }
 
-      // Guardar la imagen del sector público localmente
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       const formattedResponse = {
@@ -2011,7 +1912,6 @@ export const handlePublicSectorQuery = async (params) => {
         locallyStored: savedImageResult.success
       };
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE IMÁGENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2023,7 +1923,6 @@ export const handlePublicSectorQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(formattedResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2035,7 +1934,6 @@ export const handlePublicSectorQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2049,7 +1947,6 @@ export const handlePublicSectorQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para generación de imágenes
         if (isCacheable(query, 'sectorpublico')) {
           intelligentCache.setResponse(userId, query, formattedResponse, 'image_generation', {
             queryType: 'image_generation',
@@ -2061,7 +1958,6 @@ export const handlePublicSectorQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de imagen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2071,7 +1967,6 @@ export const handlePublicSectorQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2082,7 +1977,6 @@ export const handlePublicSectorQuery = async (params) => {
       return responseData;
     }
 
-    // Manejar exámenes del sector público
     if (queryInfo.type === 'exam') {
       console.log(`📝 Generando examen del sector público integrado: formato=${queryInfo.format}, preguntas=${queryInfo.questionCount}, tema=${queryInfo.topic}`);
 
@@ -2104,7 +1998,6 @@ export const handlePublicSectorQuery = async (params) => {
       const cleanExamResponse = JSON.parse(JSON.stringify(examResponse));
       validateExamResponse(cleanExamResponse, queryInfo.format, queryInfo.questionCount);
 
-      // 🚀 GUARDADO INMEDIATO PARA GENERACIÓN DE EXÁMENES
       let userMessageId = null;
       let assistantMessageId = null;
 
@@ -2116,7 +2009,6 @@ export const handlePublicSectorQuery = async (params) => {
           embeddings.embedQuery(JSON.stringify(examResponse))
         ]);
 
-        // Guardar mensaje del usuario y capturar ID
         const userMessageResult = await saveMessage({
           client,
           userId,
@@ -2128,7 +2020,6 @@ export const handlePublicSectorQuery = async (params) => {
         });
         userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-        // Guardar respuesta de la IA y capturar ID
         const assistantMessageResult = await saveMessage({
           client,
           userId,
@@ -2145,7 +2036,6 @@ export const handlePublicSectorQuery = async (params) => {
 
         await client.query("COMMIT");
 
-        // Cache para exámenes
         if (isCacheable(query, 'sectorpublico')) {
           intelligentCache.setResponse(userId, query, examResponse, 'exam', {
             queryType: 'exam',
@@ -2158,7 +2048,6 @@ export const handlePublicSectorQuery = async (params) => {
       } catch (saveError) {
         await client.query("ROLLBACK");
         console.error('Error guardando mensajes de examen en tiempo real:', saveError);
-        // Continuar sin IDs en caso de error de guardado
       }
 
       const responseData = {
@@ -2168,7 +2057,6 @@ export const handlePublicSectorQuery = async (params) => {
         processingTime: Date.now() - startTime,
         chatId,
         timestamp: new Date().toISOString(),
-        // 🆕 IDs de mensajes en tiempo real
         messageIds: {
           userMessage: userMessageId,
           assistantMessage: assistantMessageId
@@ -2179,7 +2067,6 @@ export const handlePublicSectorQuery = async (params) => {
       return responseData;
     }
 
-    // CARGAR MEMORIA HÍBRIDA DEL SECTOR PÚBLICO (cronológica + semántica + usuario)
     const [hybridMemory] = await Promise.all([
       loadHybridChatMemory(userId, avaId, chatId, query),
     ]);
@@ -2196,10 +2083,8 @@ export const handlePublicSectorQuery = async (params) => {
       };
     }
 
-    // Formatear historial para contexto pedagógico del sector público
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CREAR AGENTE DEL SECTOR PÚBLICO ESPECIALIZADO CORREGIDO
     const { agent, tools } = await createAcadelPublicSectorAgent(llm, queryInfo, query);
 
     const agentExecutor = new AgentExecutor({
@@ -2226,7 +2111,6 @@ export const handlePublicSectorQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente Acadel:", error);
 
-      // Fallback con personalidad Acadel del sector público integrada
       answer = `¡Oye! Tuve un problemita técnico con mis herramientas del sector público, pero no me rendiré.
 
 Sobre tu pregunta del sector público: **"${query}"**
@@ -2252,11 +2136,9 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
       };
     }
 
-    // Procesar respuesta del sector público
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2268,7 +2150,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Guardar mensaje del usuario y capturar ID
       const userMessageResult = await saveMessage({
         client,
         userId,
@@ -2280,7 +2161,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2294,7 +2174,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
 
       await client.query("COMMIT");
 
-      // Cache inteligente
       if (isCacheable(query, 'sectorpublico')) {
         const categoryType = categorizeQuery(query);
         intelligentCache.setResponse(userId, query, processedAnswer, categoryType, {
@@ -2308,7 +2187,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2324,7 +2202,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
       processingTime: totalTime,
       chatId,
       timestamp: new Date().toISOString(),
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2350,9 +2227,6 @@ Si necesitas más detalles del sector público, pregúntame de nuevo y activaré
   }
 };
 
-// ============================================================================
-// 🖼️ FUNCIÓN MULTIMODAL CORREGIDA DEL SECTOR PÚBLICO - handlePublicSectorMultimodalQuery  
-// ============================================================================
 
 export const handlePublicSectorMultimodalQuery = async (params) => {
   const { userId, avaId, chatId, content } = params;
@@ -2377,7 +2251,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
       (content || []).map(item => item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar que content existe y es array
     if (!content || !Array.isArray(content)) {
       console.error("Error: content no es un array válido:", content);
       return {
@@ -2389,7 +2262,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
       };
     }
 
-    // Extraer texto para clasificación del sector público
     const extractedText = extractTextFromMultimodal(content);
 
     console.log("📝 Texto del sector público extraído:", extractedText ? extractedText.substring(0, 100) + "..." : "No hay texto");
@@ -2400,7 +2272,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
 
     console.log(`🧠 Query multimodal del sector público integrado clasificado como: ${queryInfo.type}, complejidad: ${queryInfo.complexity}`);
 
-    // PROCESAR DOCUMENTOS DEL SECTOR PÚBLICO CON VALIDACIÓN
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -2438,7 +2309,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
       }
     }
 
-    // PROCESAR IMÁGENES DEL SECTOR PÚBLICO CON VALIDACIÓN
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -2498,7 +2368,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
               analysisContext += `\n\nCONTEXTO DE DOCUMENTOS DEL SECTOR PÚBLICO ADJUNTOS:\n${documentContext.substring(0, 2000)}`;
             }
 
-            // Filtrar imágenes del sector público seguras para análisis
             const safeImageContent = content.filter(item => {
               if (!item || item.type !== 'image_url') return true;
 
@@ -2568,11 +2437,9 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
       };
     }
 
-    // CARGAR HISTORIAL RELEVANTE DEL SECTOR PÚBLICO
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal del sector público integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // CONSTRUIR CONSULTA COMBINADA DEL SECTOR PÚBLICO
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -2605,7 +2472,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
       };
     }
 
-    // CREAR AGENTE DEL SECTOR PÚBLICO ESPECIALIZADO CORREGIDO
     queryInfo.needsKnowledgeBase = true;
     queryInfo.needsComprehensionCheck = true;
 
@@ -2632,7 +2498,6 @@ export const handlePublicSectorMultimodalQuery = async (params) => {
     } catch (error) {
       console.error("Error en agente multimodal Acadel:", error);
 
-      // Fallback robusto del sector público
       answer = `¡Oye! Tuve un problemita técnico procesando todo tu contenido multimodal del sector público, pero no me rendiré. 
 
 ${imageAnalysisText ? `🔍 **Sobre las imágenes del sector público:** ${imageAnalysisText.substring(0, 600)}...` : ''}
@@ -2658,11 +2523,9 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
       };
     }
 
-    // PROCESAR RESPUESTA DEL SECTOR PÚBLICO Y GUARDAR
     const processedAnswer = answer;
     const totalTime = Date.now() - startTime;
 
-    // 🚀 GUARDADO MULTIMODAL INMEDIATO CON IDs EN TIEMPO REAL
     let userMessageId = null;
     let assistantMessageId = null;
 
@@ -2674,7 +2537,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
         embeddings.embedQuery(processedAnswer)
       ]);
 
-      // Preparar mensaje multimodal de desarrollo con referencias
       const userMessageToSave = createMultimodalMessageReference({
         extractedText: extractedText || "",
         processedImages: savedImages || [],
@@ -2692,10 +2554,8 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
         imagesWithVirusCount: imagesWithVirusCount
       });
 
-      // ⭐ CRÍTICO: DOBLE STRINGIFY PARA COLUMNA TEXT ⭐
       const userMessageJson = JSON.stringify(JSON.stringify(userMessageToSave));
 
-      // Guardar mensaje multimodal del usuario y capturar ID
       const userMessageResult = await saveMultimodalMessage({
         client,
         userId,
@@ -2707,7 +2567,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
       });
       userMessageId = userMessageResult?.id || userMessageResult?.messageId;
 
-      // Guardar respuesta de la IA y capturar ID
       const assistantMessageResult = await saveMessage({
         client,
         userId,
@@ -2721,7 +2580,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
 
       await client.query("COMMIT");
 
-      // Cache para consultas multimodales solo texto
       if (extractedText && !hasImages && !hasDocumentFiles && isCacheable(extractedText, 'sectorpublico')) {
         const categoryType = categorizeQuery(extractedText);
         intelligentCache.setResponse(userId, extractedText, processedAnswer, categoryType, {
@@ -2735,7 +2593,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
     } catch (saveError) {
       await client.query("ROLLBACK");
       console.error('Error guardando mensajes multimodales en tiempo real:', saveError);
-      // Continuar sin IDs en caso de error de guardado
     }
 
     const responseData = {
@@ -2752,7 +2609,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
       chatId,
       timestamp: new Date().toISOString(),
 
-      // Información de archivos de desarrollo procesados
       attachments: {
         images: {
           processed: (savedImages || []).filter(img => img && img.success).length,
@@ -2766,12 +2622,10 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
         }
       },
 
-      // Información de seguridad de desarrollo
       securityInfo: imagesWithVirusCount > 0 ? {
         imagesBlockedByAntivirus: imagesWithVirusCount
       } : undefined,
 
-      // 🆕 IDs de mensajes en tiempo real
       messageIds: {
         userMessage: userMessageId,
         assistantMessage: assistantMessageId
@@ -2802,9 +2656,6 @@ Si necesitas una explicación del sector público más detallada, pregúntame de
   }
 };
 
-// ============================================================================
-// 💾 FUNCIONES SIN GUARDAR CORREGIDAS DEL SECTOR PÚBLICO
-// ============================================================================
 
 export const handlePublicSectorQueryWithoutSaving = async (params) => {
   const { userId, avaId, chatId, query } = params;
@@ -2826,12 +2677,10 @@ export const handlePublicSectorQueryWithoutSaving = async (params) => {
 
     const queryInfo = classifyQuery(query);
 
-    // DETECTAR GENERACIÓN DE IMÁGENES DEL SECTOR PÚBLICO
     const { isImageRequest, prompt: imagePrompt } = detectPublicSectorImageRequest(query);
 
     console.log(`🔄 Acadel (modo sin guardar): "${query}" - tipo=${queryInfo.type}`);
 
-    // MANEJAR GENERACIÓN DE IMÁGENES DEL SECTOR PÚBLICO (sin guardar en BD)
     if (isImageRequest) {
       const wasCancelledBeforeImage = await wasRequestCancelled(chatId);
       if (wasCancelledBeforeImage) {
@@ -2864,7 +2713,6 @@ export const handlePublicSectorQueryWithoutSaving = async (params) => {
         };
       }
 
-      // Guardar imagen del sector público localmente (incluso en modo sin guardar en DB)
       const savedImageResult = await imageStorageService.saveImageFromUrl(imageResponse.url, chatId);
 
       await clearCancellationFlag(chatId);
@@ -2924,7 +2772,6 @@ export const handlePublicSectorQueryWithoutSaving = async (params) => {
         timestamp: new Date().toISOString(),
       };
     } else {
-      // CARGAR MEMORIA HÍBRIDA DEL SECTOR PÚBLICO (modo sin guardar)
       const [hybridMemory] = await Promise.all([
         loadHybridChatMemory(userId, avaId, chatId, query),
       ]);
@@ -2943,7 +2790,6 @@ export const handlePublicSectorQueryWithoutSaving = async (params) => {
 
       const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-      // USAR AGENTE DEL SECTOR PÚBLICO CORREGIDO
       const { agent, tools } = await createAcadelPublicSectorAgent(llm, queryInfo, query);
 
       const agentExecutor = new AgentExecutor({
@@ -3046,7 +2892,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
       (content || []).map(item => item && item.type).join(", ")
     );
 
-    // VALIDACIÓN CRÍTICA: Verificar content del sector público
     if (!content || !Array.isArray(content)) {
       console.error("Error: content del sector público no es un array válido en modo sin guardar:", content);
       return {
@@ -3065,7 +2910,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
 
     console.log(`🧠 Query multimodal del sector público integrado (sin guardar) clasificado como: ${queryInfo.type}`);
 
-    // Procesar documentos del sector público en modo retry/edit
     const hasDocumentFiles = hasDocuments(content);
     let processedDocuments = [];
     let documentContext = "";
@@ -3078,7 +2922,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
           item && (item.type === 'file' || item.type === 'document')
         );
 
-        // *** NUEVA LÓGICA: Recuperar contenido del sector público de BD para documentos sin contenido ***
         const documentContextParts = await Promise.all(documentItems.map(async (doc) => {
           const fileInfo = `[📚 DOCUMENTO DEL SECTOR PÚBLICO INTEGRADO: ${doc.name || doc.filename || 'documento del sector público'}]`;
           const typeInfo = doc.language ? `[TIPO: ${doc.language.toUpperCase()}]` : `[TIPO: ${doc.attachment_type || 'document'}]`;
@@ -3092,7 +2935,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
             return `${fileInfo} ${typeInfo}\n${doc.content}\n---\n`;
           }
 
-          // *** RECUPERAR CONTENIDO DEL SECTOR PÚBLICO DE BD SI NO LO TIENE ***
           console.log(`🔍 [RETRY/EDIT] Intentando recuperar contenido del sector público para: ${doc.name || doc.filename}`);
 
           // Método 1: Por fileId si existe
@@ -3153,7 +2995,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
                 console.log(`✅ [RETRY/EDIT] Contenido del sector público recuperado por nombre: ${dbDoc.original_name} (${dbDoc.extracted_content?.length || 0} chars)`);
 
                 if (dbDoc.extracted_content) {
-                  // Actualizar doc con información recuperada para futuras referencias
                   doc.fileId = dbDoc.file_id;
                   doc.attachment_type = dbDoc.attachment_type;
                   doc.language = dbDoc.language;
@@ -3173,10 +3014,8 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
           return `${fileInfo} ${typeInfo}\n[Contenido del sector público no pudo ser recuperado - documento puede haber sido eliminado o no procesado]\n---\n`;
         }));
 
-        // Unir todas las partes del contexto del sector público
         documentContext = documentContextParts.join('\n');
 
-        // Contar documentos del sector público exitosos (con contenido real)
         const successfulDocsCount = documentContextParts.filter(part =>
           !part.includes('[Contenido del sector público no pudo ser recuperado') &&
           !part.includes('[Contenido no disponible]')
@@ -3210,7 +3049,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
       }
     }
 
-    // Procesar imágenes del sector público en modo retry/edit
     const hasImages = content.some(item => item && item.type === 'image_url');
     let imageAnalysisText = "";
     let savedImages = [];
@@ -3270,7 +3108,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
               analysisContext += `\n\nCONTEXTO DEL SECTOR PÚBLICO: ${documentContext.substring(0, 2000)}`;
             }
 
-            // Usar imágenes del sector público convertidas para retry/edit
             const imageContentForAnalysis = [];
 
             for (const img of savedImages) {
@@ -3355,11 +3192,9 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Cargar historial del sector público relevante
     const hybridMemory = await loadHybridChatMemory(userId, avaId, chatId, extractedText || "consulta multimodal del sector público integrada");
     const formattedHistory = formatHybridMemoryForPrompt(hybridMemory);
 
-    // Construir consulta combinada del sector público
     let combinedQuery = extractedText || "";
 
     if (documentContext) {
@@ -3390,7 +3225,6 @@ export const handlePublicSectorMultimodalQueryWithoutSaving = async (params) => 
       };
     }
 
-    // Crear agente del sector público especializado corregido
     queryInfo.needsKnowledgeBase = true;
     const { agent, tools } = await createAcadelPublicSectorAgent(llm, queryInfo, combinedQuery);
 
