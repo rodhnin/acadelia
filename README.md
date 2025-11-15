@@ -352,41 +352,328 @@ sequenceDiagram
 
 ## 🧠 Agente de Marketing (autónomo)
 
-Subsistema enfocado en **branding, estrategia y contenido** de Acadelia. Un **DirectorAgent** orquesta subagentes y servicios para extraer, evaluar, recordar y producir piezas accionables.
+El **Agente de Marketing** es un sistema multi-agente autónomo especializado en **branding, estrategia y generación de contenido** para Acadelia. A diferencia de los agentes académicos que responden a queries específicas, este agente funciona como un **equipo de marketing completo** que analiza tendencias, genera estrategias, crea contenido y aprende continuamente de su entorno.
 
-### 🧩 Componentes
+### 🎯 ¿Qué lo hace diferente?
 
--   **DirectorAgent** (orquestador): decide qué subagente actúa y cómo prioriza.
--   **ExtractionService**: detecta temas, entidades y oportunidades (desde texto y/o web).
--   **MatchingService**: _clustering_ y **deduplicación**; evita repetir ideas.
--   **MemoryService**: elige qué persiste en **Supabase** (memoria a largo plazo) y lo relaciona en un **grafo de ideas**.
--   **ContentService**: genera **briefs**, copies largos/cortos, matrices y **Mermaid**.
--   **SimulationService**: simula audiencia/competencia/canales para evaluar impacto.
--   **ExplainService**: explica razones y trade-offs de las decisiones.
+**Sistema Multi-Agente**:
+- No es un solo agente, sino un **sistema orquestado** de 7 servicios especializados
+- Cada servicio tiene un rol específico (extracción, análisis, creatividad, simulación)
+- El **DirectorAgent** actúa como "gerente" que coordina qué agentes se activan según la tarea
 
-### 🔁 Flujo del DirectorAgent
+**Memoria Persistente y Evolutiva**:
+- Construye un **grafo de conocimiento** de ideas y tendencias en Supabase
+- Relaciona conceptos automáticamente (ej: "IA en educación" ↔ "personalización del aprendizaje")
+- Evita duplicación mediante clustering y deduplicación semántica
+- Aprende de cada interacción y lo integra a su base de conocimiento
 
-```mermaid
-flowchart LR
-    A[Input del usuario / evento] --> B(DirectorAgent)
-    B --> C[ExtractionService]
-    B --> D[MatchingService]
-    D --> E[MemoryService]
-    C --> F[ContentService]
-    F --> G[ExplainService]
-    G --> H[SimulationService]
-    H --> I[Salida: estrategia, briefs, ideas persistidas]
+**Capacidades de Investigación**:
+- Busca tendencias en tiempo real con **Brave Search API**
+- Analiza competencia, audiencia y oportunidades de mercado
+- Simula diferentes escenarios antes de recomendar estrategias
+
+### 🧩 Componentes del Sistema
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    DIRECTOR AGENT                           │
+│  (Orquestador - Decide qué agentes activar)                 │
+└────────────┬────────────────────────────────────────────────┘
+             │
+    ┌────────┴────────┐
+    │                 │
+┌───▼────────────┐ ┌─▼──────────────┐
+│ STRATEGIST     │ │ ANALYST        │
+│ (Estrategia)   │ │ (Análisis)     │
+└────────────────┘ └────────────────┘
+    │                 │
+┌───▼────────────┐ ┌─▼──────────────┐
+│ CREATIVE       │ │ PROFILE        │
+│ (Contenido)    │ │ (Audiencia)    │
+└────────────────┘ └────────────────┘
 ```
 
-### ⭐ Habilidades
+**1. DirectorAgent** (Orquestador):
+- Analiza el input del usuario y determina qué servicios necesita activar
+- Prioriza tareas (investigación → análisis → generación → validación)
+- Coordina el flujo de información entre servicios
+- Usa GPT-4o-mini para decisiones rápidas y económicas
 
--   **Calendar builder** (objetivos, CTA y canales)
--   **Topic clustering** (por intención / etapa del funnel)
--   **Trend mining** (tendencias externas ↔ memoria interna)
--   **Idea graph** (relaciones temáticas persistentes)
--   **Content scoring** (calidad, coherencia, potencial SEO/social)
+**2. ExtractionService** (Investigación):
+- **Detección de tendencias**: Busca en web con Brave Search
+- **Extracción de oportunidades**: Identifica gaps en el mercado
+- **Análisis de competencia**: Detecta qué están haciendo otros
+- **Extracción de entidades**: Identifica temas, personas, empresas relevantes
 
-> Corre sobre **Redis** (colas), **Supabase** (persistencia), y herramientas externas (Brave Search, DALL·E, Whisper). La memoria se retroalimenta en tiempo real.
+**3. MatchingService** (Deduplicación):
+- **Clustering de temas**: Agrupa ideas similares automáticamente
+- **Similarity search**: Compara con memoria existente (embeddings)
+- **Deduplicación**: Evita repetir ideas ya exploradas
+- **Scoring**: Califica novedad y relevancia de cada idea
+
+**4. MemoryService** (Persistencia):
+- **Almacenamiento en Supabase**: Guarda ideas, tendencias, contenido
+- **Grafo de conocimiento**: Relaciona conceptos entre sí
+- **Embeddings**: Vectoriza todo para búsqueda semántica
+- **Priorización**: Decide qué ideas merecen persistirse
+
+**5. ContentService** (Generación):
+- **Briefs de contenido**: Documentos estratégicos completos
+- **Copies**: Textos para redes, emails, landing pages
+- **Matrices de contenido**: Calendarios editoriales estructurados
+- **Diagramas Mermaid**: Visualización de funnels, estrategias, flujos
+
+**6. SimulationService** (Validación):
+- **Simulación de audiencia**: ¿Cómo reaccionaría el público objetivo?
+- **Análisis de competencia**: ¿Qué hacen otros en el nicho?
+- **Evaluación de canales**: ¿Qué canal es mejor para cada objetivo?
+- **Scoring de impacto**: Califica potencial de cada idea
+
+**7. ExplainService** (Transparencia):
+- **Explicación de decisiones**: Por qué se eligió X estrategia
+- **Trade-offs identificados**: Ventajas vs desventajas de cada opción
+- **Recomendaciones accionables**: Pasos concretos a seguir
+
+### 🔄 Flujo Completo Explicado
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant DA as DirectorAgent
+    participant ES as ExtractionService
+    participant MS as MatchingService
+    participant MEM as MemoryService
+    participant CS as ContentService
+    participant SIM as SimulationService
+    participant EX as ExplainService
+    participant DB as Supabase (Memoria)
+    participant WEB as Brave Search
+
+    U->>DA: "Analiza tendencias de IA en educación para Q1 2025"
+
+    Note over DA: Análisis de intención:<br/>Requiere: strategist, analyst, creative
+
+    DA->>ES: Activar extracción de tendencias
+    ES->>WEB: Buscar "AI education trends 2025"
+    WEB-->>ES: Artículos, noticias, reportes
+    ES->>ES: Detectar temas, entidades, oportunidades
+
+    ES->>MS: Enviar ideas extraídas
+    MS->>DB: Buscar en memoria (similarity search)
+    DB-->>MS: Ideas existentes relacionadas
+    MS->>MS: Clustering + deduplicación
+    MS->>MS: Scoring de novedad
+
+    MS->>MEM: Persistir ideas nuevas (score > 0.7)
+    MEM->>DB: INSERT ideas + embeddings + relaciones
+
+    MS->>CS: Enviar ideas validadas
+    CS->>CS: Generar brief estratégico
+    CS->>CS: Crear matriz de contenido
+    CS->>CS: Diseñar copies para redes
+
+    CS->>SIM: Validar estrategia propuesta
+    SIM->>SIM: Simular audiencia (estudiantes, profesores)
+    SIM->>SIM: Analizar competencia (Duolingo, Khan Academy)
+    SIM->>SIM: Evaluar canales (TikTok vs LinkedIn)
+
+    SIM->>EX: Enviar resultados de simulación
+    EX->>EX: Explicar decisiones tomadas
+    EX->>EX: Identificar trade-offs
+    EX->>EX: Generar recomendaciones
+
+    EX-->>DA: Respuesta completa estructurada
+    DA-->>U: Estrategia + Brief + Contenido + Explicaciones
+```
+
+**Descripción paso a paso**:
+
+1. **Usuario hace una petición** (ej: "Analiza tendencias de IA en educación")
+2. **DirectorAgent analiza** qué servicios necesita (strategist, analyst, creative)
+3. **ExtractionService busca** en Brave Search tendencias actuales
+4. **Extrae insights**: Temas emergentes, oportunidades, competencia
+5. **MatchingService compara** con memoria existente (evita repetir)
+6. **Clustering**: Agrupa ideas similares
+7. **Scoring**: Califica novedad y relevancia (0-1)
+8. **MemoryService persiste** ideas con score > 0.7 en Supabase
+9. **Grafo de conocimiento**: Relaciona con conceptos existentes
+10. **ContentService genera**:
+    - Brief estratégico completo
+    - Matriz de contenido (calendario)
+    - Copies para diferentes canales
+    - Diagramas Mermaid de flujos
+11. **SimulationService valida**:
+    - Simula reacción de audiencia
+    - Analiza qué hace competencia
+    - Evalúa mejores canales
+12. **ExplainService documenta**:
+    - Por qué se tomaron decisiones
+    - Trade-offs de cada opción
+    - Pasos accionables
+13. **Respuesta completa** al usuario con toda la información
+
+### 💬 Ejemplos de Uso
+
+**Ejemplo 1: Análisis de Competencia**
+```
+Usuario: "¿Qué estrategias usa Duolingo que podríamos adaptar?"
+
+Agente:
+1. Busca información sobre estrategias de Duolingo
+2. Identifica: gamificación, streaks, notificaciones push
+3. Compara con Acadelia (gaps y oportunidades)
+4. Genera recomendaciones adaptadas:
+   - "Rachas de estudio" con Acadel
+   - Sistema de logros por materia
+   - Notificaciones educativas personalizadas
+5. Crea brief de implementación
+6. Simula impacto en retención de usuarios
+```
+
+**Ejemplo 2: Generación de Contenido**
+```
+Usuario: "Necesito contenido para lanzamiento en redes sociales"
+
+Agente:
+1. Analiza tendencias actuales en educación
+2. Identifica mejores momentos (inicio de semestre, exámenes)
+3. Genera calendario de contenido (4 semanas):
+   - Semana 1: Testimonios de estudiantes
+   - Semana 2: Tips de estudio con IA
+   - Semana 3: Comparación con métodos tradicionales
+   - Semana 4: CTA lanzamiento
+4. Crea copies específicos por red (Twitter, Instagram, LinkedIn)
+5. Sugiere hashtags y mejores horarios
+6. Genera diagramas del funnel
+```
+
+**Ejemplo 3: Investigación de Mercado**
+```
+Usuario: "Analiza oportunidades en el mercado latinoamericano"
+
+Agente:
+1. Busca datos sobre educación online en LATAM
+2. Identifica países con mayor crecimiento
+3. Detecta pain points de estudiantes latinos
+4. Compara con competencia local
+5. Genera matriz FODA
+6. Propone estrategia de entrada por país
+7. Crea brief de localización (idioma, precios, marketing)
+```
+
+### 📸 Capturas del Sistema
+
+**Interfaz del Chat de Marketing**:
+
+<p align="center">
+  <img src="docs/media/marketing-chat-interface.png" alt="Interfaz del chat de marketing" width="800">
+  <br/>
+  <sub><em>Panel principal del agente de marketing mostrando análisis en tiempo real</em></sub>
+</p>
+
+**Generación de Estrategia en Acción**:
+
+<p align="center">
+  <img src="docs/media/marketing-strategy-generation.gif" alt="Generación de estrategia" width="800">
+  <br/>
+  <sub><em>GIF mostrando cómo el agente analiza, piensa y genera una estrategia completa</em></sub>
+</p>
+
+**Ejemplo de Brief Generado**:
+
+<p align="center">
+  <img src="docs/media/marketing-brief-example.png" alt="Ejemplo de brief generado" width="800">
+  <br/>
+  <sub><em>Brief de contenido completo con calendario, copies y diagramas Mermaid</em></sub>
+</p>
+
+**Análisis de Tendencias con Brave Search**:
+
+<p align="center">
+  <img src="docs/media/marketing-trend-analysis.gif" alt="Análisis de tendencias" width="800">
+  <br/>
+  <sub><em>Proceso de búsqueda web, extracción de insights y generación de recomendaciones</em></sub>
+</p>
+
+**Grafo de Conocimiento (Memoria)**:
+
+<p align="center">
+  <img src="docs/media/marketing-knowledge-graph.png" alt="Grafo de conocimiento" width="800">
+  <br/>
+  <sub><em>Visualización de cómo el agente relaciona conceptos en su memoria</em></sub>
+</p>
+
+### ⭐ Capacidades Avanzadas
+
+**Calendar Builder (Constructor de Calendarios)**:
+- Genera calendarios editoriales completos
+- Define objetivos por semana/mes
+- Asigna CTAs específicos
+- Recomienda mejores canales por objetivo
+- Incluye métricas de éxito
+
+**Topic Clustering (Agrupación de Temas)**:
+- Agrupa ideas por intención (awareness, consideration, decision)
+- Organiza por etapa del funnel
+- Detecta contenido faltante en el funnel
+- Balancea contenido educativo vs promocional
+
+**Trend Mining (Minería de Tendencias)**:
+- Correlaciona tendencias externas con memoria interna
+- Detecta tendencias emergentes antes de que sean mainstream
+- Identifica cuándo una tendencia está saturada
+- Recomienda momento óptimo para actuar
+
+**Idea Graph (Grafo de Ideas)**:
+- Relaciones persistentes entre conceptos
+- Descubre conexiones no obvias
+- Sugiere ideas basadas en relaciones del grafo
+- Evoluciona con cada interacción
+
+**Content Scoring (Evaluación de Contenido)**:
+- Califica calidad (coherencia, profundidad)
+- Evalúa potencial SEO (keywords, estructura)
+- Analiza potencial social (viralidad, engagement)
+- Recomienda mejoras específicas
+
+### 🔧 Infraestructura
+
+**Corre sobre**:
+- **Redis**: Colas de procesamiento (BullMQ) para tareas asíncronas
+- **Supabase**: Persistencia de memoria, embeddings, grafo de conocimiento
+- **Brave Search**: Investigación de tendencias en tiempo real
+- **OpenAI**: GPT-4o para generación, GPT-4o-mini para decisiones
+- **DALL-E**: Generación de imágenes para contenido (opcional)
+
+**Tablas en Supabase**:
+```sql
+marketing_trends      -- Tendencias detectadas (con embeddings)
+marketing_profiles    -- Perfiles de audiencia analizados
+marketing_content     -- Contenido generado y evaluado
+marketing_memory      -- Memoria a largo plazo (grafo)
+```
+
+### 🎓 Casos de Uso Reales
+
+1. **Planificación de lanzamiento**: Estrategia completa para lanzar nueva funcionalidad
+2. **Análisis de competencia**: Identificar ventajas competitivas y gaps
+3. **Generación de contenido**: Calendario editorial mensual para redes
+4. **Investigación de mercado**: Análisis de oportunidades en nuevos segmentos
+5. **Optimización de funnel**: Identificar cuellos de botella y optimizaciones
+6. **Crisis management**: Estrategias de comunicación para situaciones complejas
+7. **Partnership strategy**: Identificar y evaluar potenciales alianzas
+
+### 🚀 Futuras Mejoras
+
+- [ ] Integración con Google Analytics (análisis de métricas reales)
+- [ ] A/B testing automatizado de contenido
+- [ ] Generación de imágenes con DALL-E integrado
+- [ ] Análisis de sentimiento en redes sociales
+- [ ] Predicción de tendencias con ML
+- [ ] Multi-idioma (español, inglés, portugués)
+
+> **Nota**: Este agente representa el estado del arte en marketing autónomo, combinando investigación en tiempo real, memoria persistente y generación creativa en un solo sistema integrado.
 
 ---
 
