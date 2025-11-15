@@ -72,7 +72,6 @@ import paisesUniRoutes from './backend/routes/usuarios/PaisesUniRoutes.js';
 import feedbackRoutes from './backend/routes/chat/feedbackRoutes.js';
 import { setupCSP } from './backend/middlewares/cspMiddleware.js';
 
-// ===== 🔒 IMPORTACIONES CSRF OPTIMIZADAS Y DEBUG =====
 import {
   setupCookieCsrf,
   verifyCookieCsrf,
@@ -90,7 +89,6 @@ import { runUsersTasks } from './backend/services/security/scheduledTasks.js';
 import { fileCleanupService } from './backend/services/chat/fileCleanupService.js';
 import { cleanupServiceUsers } from './backend/services/usuarios/cleanupServiceUsers.js';
 
-// ===== 🚀 OPTIMIZACIONES DE PERFORMANCE PARA FLY.IO =====
 import http from 'http';
 import https from 'https';
 
@@ -98,13 +96,11 @@ import https from 'https';
 process.env.UV_THREADPOOL_SIZE = process.env.UV_THREADPOOL_SIZE || '16';
 process.env.NODE_OPTIONS = process.env.NODE_OPTIONS || '--max-old-space-size=6144';
 
-// ===== 🎯 CONFIGURACIÓN AMBIENTE =====
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 const IS_PRODUCTION = !IS_DEVELOPMENT;
 
 console.log(`🌍 Iniciando servidor en modo: ${IS_DEVELOPMENT ? 'DESARROLLO' : 'PRODUCCIÓN'}`);
 
-// ⭐ CONFIGURAR KEEP-ALIVE PARA CONEXIONES HTTP
 const keepAliveAgent = new http.Agent({
   keepAlive: true,
   keepAliveMsecs: 30000,
@@ -121,7 +117,6 @@ const httpsKeepAliveAgent = new https.Agent({
   timeout: 60000
 });
 
-// ⭐ CONFIGURAR PROCESO PARA MEJOR RENDIMIENTO
 if (process.env.NODE_ENV === 'production') {
   if (global.gc) {
     setInterval(() => {
@@ -195,29 +190,26 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
-// ===== 🌐 CONFIGURACIÓN CORS (Docker-friendly) =====
 const corsOptions = {
   origin: IS_DEVELOPMENT
     ? ['http://localhost:3000', 'http://frontend:80', 'http://localhost:5000']  // DESARROLLO: más permisivo
     : [process.env.FRONTEND_URL, process.env.DOMAIN_URL].filter(Boolean),      // PRODUCCIÓN: estricto
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // ⭐ AGREGAR OPTIONS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Content-Type',
     'Authorization',
     'X-CSRF-Token',
     'X-XSRF-Token',
-    'Cache-Control',        // ⭐ AGREGAR
-    'Pragma',              // ⭐ AGREGAR
-    'Expires'              // ⭐ AGREGAR
+    'Cache-Control',
+    'Pragma',
+    'Expires'
   ]
 };
 app.use(cors(corsOptions));
 
-// ⭐ AGREGAR: Middleware para manejar OPTIONS preflight
 app.options('*', cors(corsOptions));
 
-// ===== 🛠️ MIDDLEWARE MANTENIMIENTO =====
 app.use((req, res, next) => {
   // Permitir acceso a recursos estáticos esenciales para la página de mantenimiento
   if (req.path.includes('/images/') ||
@@ -238,19 +230,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== 📦 WEBHOOK PADDLE (ANTES de body parsers) =====
 app.use(
   "/api/webhook/paddle",
   express.raw({ type: 'application/json' }),
   webhookPaddle
 );
 
-// ===== 🔧 MIDDLEWARES GLOBALES =====
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
 
-// ===== 🍪 CONFIGURACIÓN SESIONES =====
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'clave_secreta',
@@ -268,7 +257,6 @@ app.use(
 
 app.use(captureRequestData);
 
-// ⭐ CONFIGURAR TIMEOUT PARA REQUESTS
 app.use((req, res, next) => {
   let timeout = 90000; // 90 segundos por defecto
   
@@ -302,7 +290,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ⭐ MIDDLEWARE DE PERFORMANCE MONITORING
 app.use((req, res, next) => {
   const startTime = Date.now();
   
@@ -319,7 +306,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== 🔒 MIDDLEWARES DE SEGURIDAD =====
 configureHelmet(app);
 app.use(setupCSP);
 app.use(securityMonitor);
@@ -328,7 +314,6 @@ app.use(routeMapper);
 app.use(normalizeErrors);
 configureLimiters(app);
 
-// ===== 🔒 CSRF PROTECTION - CONFIGURACIÓN OPTIMIZADA =====
 
 // 1. SETUP: Generar tokens CSRF (aplicar a TODAS las rutas)
 app.use(setupCookieCsrf);
@@ -402,13 +387,11 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// ===== 📁 ARCHIVOS ESTÁTICOS =====
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use('/dist', express.static(path.join(__dirname, 'frontend', 'public', 'dist')));
 app.use(express.static(path.join(__dirname, 'frontend', 'views')));
 
-// ===== 🩺 HEALTH CHECK ENDPOINTS OPTIMIZADOS =====
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -418,7 +401,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ⭐ ENDPOINT DE READINESS CHECK
 app.get('/ready', (req, res) => {
   res.status(200).json({
     status: 'ready',
@@ -455,7 +437,6 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// ===== 🏠 RUTA PRINCIPAL =====
 app.get('/', redirectAuthenticatedUsers, (req, res) => {
   const indexPath = path.join(__dirname, 'frontend', 'index.html');
 
@@ -466,7 +447,6 @@ app.get('/', redirectAuthenticatedUsers, (req, res) => {
   }
 });
 
-// ===== 🚫 RUTAS DE ERROR =====
 app.get('/cuenta-suspendida', (req, res) => {
   const errorPath = path.join(__dirname, 'frontend', 'views', 'error', 'ban.html');
   if (fs.existsSync(errorPath)) {
@@ -497,7 +477,6 @@ app.get('/402', (req, res) => {
   res.status(402).send('Error 402: Carrera requerida para acceder a este contenido.');
 });
 
-// ===== 🔐 ENDPOINTS CSRF =====
 
 // Endpoint para obtener token CSRF
 app.get('/api/csrf-token', getCsrfTokenEndpoint);
@@ -568,20 +547,16 @@ if (IS_DEVELOPMENT) {
   });
 }
 
-// ===== 🔒 MIDDLEWARE DE SEGUIMIENTO =====
 app.use('/api/usuarios/login', trackFailedLogins);
 
-// ===== 🔍 LOGGING INTELIGENTE (CORREGIDO) =====
 const createIntelligentLogger = () => {
   return (req, res, next) => {
     if (IS_DEVELOPMENT && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-      // ✅ SOLUCIÓN: Evaluar autenticación de manera inteligente
       const hasAuthToken = !!(req.cookies.token || req.headers.authorization?.split(' ')[1]);
       const csrfToken = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
       const cookieToken = req.cookies['XSRF-TOKEN'];
 
       console.log(`🔒 [${new Date().toISOString()}] ${req.method} ${req.path}`, {
-        // ✅ Estado de autenticación más preciso
         hasAuthToken,
         userIdFromToken: req.user?.id_user || 'pending-verification',
         authStatus: req.user ? 'authenticated' : (hasAuthToken ? 'token-present' : 'no-token'),
@@ -600,7 +575,6 @@ const createIntelligentLogger = () => {
   };
 };
 
-// ===== 🎨 RUTAS DINÁMICAS CON SOPORTE DE VISTAS =====
 const viewCategories = [
   { category: 'content/herramientas', views: ['pdf', 'agente'] },
   { category: 'content/medicina', views: ['patologia', 'Semiologia', 'CienciasBasicas', 'medicinainterna', 'CienciasAplicadas', 'CirugiaYUrgencias', 'EspecialidadesMed1', 'EspecialidadesMedicasII', 'Epidemiologia', 'MatematicaMedica'] },
@@ -633,43 +607,35 @@ const handleUuidRoute = (req, res, category, view) => {
   handle404(req, res);
 };
 
-// ===== 🎯 FUNCIÓN 1: RUTAS CON SOPORTE UUID (CORREGIDA) =====
 // Reemplazar la función completa en server.js (líneas ~470-490)
 
 viewCategories.forEach(({ category, views }) => {
   views.forEach(view => {
     if (category === 'admin') {
-      // 🔒 VISTAS ADMIN: Requieren autenticación + rol admin
       app.get(`/${view}/:chat_uuid?`, requireAdmin, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else if (category === 'dashboard') {
-      // 🔒 VISTAS DASHBOARD: Requieren autenticación obligatoria
       app.get(`/${view}/:chat_uuid?`, requireAuth, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else if (category === 'payments') {
-      // 🔒 VISTAS PAYMENTS: Requieren autenticación obligatoria
       app.get(`/${view}/:chat_uuid?`, requireAuth, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else if (category.startsWith('content/')) {
-      // 🆓 VISTAS CONTENT: Usar middleware refactorizado (como dashboard)
       app.get(`/${view}/:chat_uuid?`, requireAuth, protectFrontendRoutes, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else if (category === 'error') {
-      // 🚨 VISTAS ERROR: Sin protección, acceso directo
       app.get(`/${view}/:chat_uuid?`, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else if (category === 'auth') {
-      // 🔄 VISTAS AUTH: Redirigir usuarios autenticados
       app.get(`/${view}/:chat_uuid?`, redirectAuthenticatedUsers, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
     } else {
-      // 🆓 OTRAS VISTAS: Sin protección especial (other)
       app.get(`/${view}/:chat_uuid?`, (req, res) => {
         handleUuidRoute(req, res, category, view);
       });
@@ -677,7 +643,6 @@ viewCategories.forEach(({ category, views }) => {
   });
 });
 
-// ===== 🎯 FUNCIÓN 2: RUTAS SIN UUID (CORREGIDA) =====
 // Reemplazar la función completa en server.js (líneas ~492-570)
 
 app.get('/:view', (req, res, next) => {
@@ -687,7 +652,6 @@ app.get('/:view', (req, res, next) => {
     if (views.includes(view)) {
 
       if (category === 'admin') {
-        // 🔒 VISTAS ADMIN: Requieren autenticación + rol admin
         return requireAdmin(req, res, () => {
           const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
@@ -698,7 +662,6 @@ app.get('/:view', (req, res, next) => {
           return handle404(req, res);
         });
       } else if (category === 'dashboard') {
-        // 🔒 VISTAS DASHBOARD: Requieren autenticación obligatoria
         return requireAuth(req, res, () => {
           const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
@@ -709,7 +672,6 @@ app.get('/:view', (req, res, next) => {
           return handle404(req, res);
         });
       } else if (category === 'payments') {
-        // 🔒 VISTAS PAYMENTS: Requieren autenticación obligatoria
         return requireAuth(req, res, () => {
           const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
@@ -720,7 +682,6 @@ app.get('/:view', (req, res, next) => {
           return handle404(req, res);
         });
       } else if (category.startsWith('content/')) {
-        // 🆓 VISTAS CONTENT: Usar middleware refactorizado (como dashboard)
         return requireAuth(req, res, () => {
           protectFrontendRoutes(req, res, () => {
             const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
@@ -733,7 +694,6 @@ app.get('/:view', (req, res, next) => {
           });
         });
       } else if (category === 'error') {
-        // 🚨 VISTAS ERROR: Sin protección, acceso directo
         const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
         if (fs.existsSync(filePath)) {
@@ -742,7 +702,6 @@ app.get('/:view', (req, res, next) => {
 
         return handle404(req, res);
       } else if (category === 'auth') {
-        // 🔄 VISTAS AUTH: Redirigir usuarios autenticados
         return redirectAuthenticatedUsers(req, res, () => {
           const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
@@ -753,7 +712,6 @@ app.get('/:view', (req, res, next) => {
           return handle404(req, res);
         });
       } else {
-        // 🆓 OTRAS CATEGORÍAS: Sin protección especial (other)
         const filePath = path.join(__dirname, 'frontend', 'views', category, `${view}.html`);
 
         if (fs.existsSync(filePath)) {
@@ -771,7 +729,6 @@ app.get('/:view', (req, res, next) => {
   handle404(req, res);
 });
 
-// ===== 🔧 RUTAS DE ADMINISTRACIÓN =====
 app.post('/api/admin/run-security-cleanup', authenticateUser, isAdmin, async (req, res) => {
   try {
     const result = await runSecurityCleanup();
@@ -809,7 +766,6 @@ app.post('/api/admin/maintenance', authenticateUser, isAdmin, (req, res) => {
   }
 });
 
-// ===== 🔄 RUTAS DE ADMINISTRACIÓN ARGENTINA - SUSCRIPCIONES =====
 app.post('/api/admin/actualizar-suscripciones-vencidas', authenticateUser, isAdmin, async (req, res) => {
   try {
     const { actualizarSuscripcionesVencidas } = await import('./backend/controllers/pagos/argentinaAdminController.js');
@@ -850,7 +806,6 @@ app.get('/api/admin/verificar-pgcron', authenticateUser, isAdmin, async (req, re
   }
 });
 
-// ===== ⚙️ RUTA DE CONFIGURACIÓN =====
 app.get('/api/config', (req, res) => {
   res.json({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
@@ -871,7 +826,6 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// ===== 📧 RUTAS DE VERIFICACIÓN =====
 app.get('/verify-email', (req, res) => {
   const nonce = crypto.randomBytes(16).toString('hex');
   const csrfToken = crypto.randomBytes(64).toString('hex');
@@ -896,7 +850,6 @@ app.get('/reset-password', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'views', 'auth', 'reset-password.html'));
 });
 
-// ===== 📋 INICIALIZAR TAREAS PROGRAMADAS =====
 runUsersTasks()
   .then(() => console.log('✅ Sistema de tareas programadas de usuarios inicializado'))
   .catch(err => console.error('❌ Error al inicializar tareas de usuarios:', err));
@@ -905,9 +858,7 @@ initReportScheduledTasks()
   .then(() => console.log('✅ Sistema de informes automáticos inicializado'))
   .catch(err => console.error('❌ Error al inicializar informes automáticos:', err));
 
-// ===== 🌐 RUTAS DE LA API CON LIMITADORES Y LOGGING INTELIGENTE =====
 
-// ✅ LOGGING DESPUÉS DE AUTENTICACIÓN PARA RUTAS PROTEGIDAS
 const intelligentLogger = createIntelligentLogger();
 
 // Media/YouTube
@@ -947,7 +898,6 @@ app.use('/api/openai', (req, res, next) => {
   next();
 }, intelligentLogger, openaiRoutes);
 
-// ===== 🔗 RESTO DE RUTAS API CON LOGGING INTELIGENTE =====
 app.use('/api/payments-arg', argentinaPaymentRoutes);
 app.use('/api/admin/queues', authenticateUser, isAdmin, queueMonitor);
 app.use('/api/ava', embeddingAvaRoutes);
@@ -960,7 +910,6 @@ app.use('/api/carrera', carreraRoutes);
 app.use('/api/test-queues', queueMonitor);
 app.use('/api/avas', avaRoutes);
 
-// ✅ RUTAS CON AUTENTICACIÓN + LOGGING INTELIGENTE
 app.use('/api/chats', authenticateUser, intelligentLogger, chatRoutes);
 app.use('/api', paisesUniRoutes);
 app.use('/api/compra', useravaRoutes);
@@ -982,7 +931,6 @@ app.use('/api/cookie-consent', cookieConsentRoutes);
 app.use('/api/access', accessStatusRoutes);
 app.use('/api/contact', contactRoutes);
 
-// ===== 🚨 FUNCIONES DE MANEJO DE ERRORES =====
 
 // Función helper para manejar 503 (Mantenimiento)
 const handle503 = (req, res) => {
@@ -1026,7 +974,6 @@ const handle404 = (req, res) => {
   res.status(404).send('Página no encontrada');
 };
 
-// ===== 🛠️ MIDDLEWARE DE ERRORES =====
 app.use((err, req, res, next) => {
   // DESARROLLO: Log completo del error
   if (IS_DEVELOPMENT) {
@@ -1058,7 +1005,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Error interno del servidor');
 });
 
-// ===== 🔄 FUNCIÓN DE LIMPIEZA =====
 const cleanupQueues = async () => {
   try {
     console.log('🔄 Cerrando conexiones de colas...');
@@ -1071,7 +1017,6 @@ const cleanupQueues = async () => {
   }
 };
 
-// ===== 🚀 APLICAR OPTIMIZACIONES AL INICIAR SERVIDOR =====
 const optimizeDbConnections = () => {
   const poolConfig = {
     max: 20,
@@ -1148,7 +1093,6 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   process.on(signal, () => gracefulShutdown(signal));
 });
 
-// ===== 📝 COMENTARIOS DE CAMBIO A PRODUCCIÓN =====
 /*
 🚀 PARA CAMBIAR A PRODUCCIÓN:
 
