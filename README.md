@@ -1515,25 +1515,225 @@ sudo apt-get install ffmpeg
 
 ---
 
-## 🔌 Endpoints clave (extracto)
+## 🔌 Endpoints de la API
 
-> Rutas representativas (pueden variar según prefijo/baseURL). Ver `server.js` y `/controllers`.
+La API REST de Acadelia está organizada en 7 categorías principales con más de **150 endpoints** documentados.
 
-| Área     | Método | Ruta                           | Descripción                                |
-| -------- | ------ | ------------------------------ | ------------------------------------------ |
-| Chat/RAG | POST   | `/api/chat/document`           | Ingresa documento → OCR → embeddings       |
-| Chat/RAG | POST   | `/api/chat/pdf`                | Chat contextual sobre documentos indexados |
-| Chat/RAG | POST   | `/api/chat/youtubeAudio`       | Descarga YouTube → MP3 → transcribe        |
-| Chat/RAG | POST   | `/api/chat/videoTranscription` | Transcribe video subido                    |
-| Chat/RAG | POST   | `/api/chat/audioTranscription` | Transcribe audio subido                    |
-| Chat/RAG | POST   | `/api/chat/openai`             | Chat general / fallback                    |
-| Usuarios | GET    | `/api/users/profile`           | Perfil / estado de acceso                  |
-| Usuarios | POST   | `/api/users/update`            | Actualiza perfil/ajustes                   |
-| Pagos    | POST   | `/api/payments/paddle/webhook` | Webhook de Paddle                          |
-| Pagos    | GET    | `/api/payments/subscriptions`  | Listado/estado de suscripciones            |
-| Admin    | GET    | `/api/admin/queueMonitor`      | Monitor de colas (BullMQ)                  |
-| Admin    | GET    | `/api/admin/security/logs`     | Logs de seguridad                          |
-| Shared   | POST   | `/api/shared/contact`          | Contacto/feedback                          |
+> **📖 Documentación completa**: Ver [docs/API.md](docs/API.md) para ejemplos de request/response, autenticación, rate limits y códigos de error.
+
+### 📊 Resumen de Endpoints por Categoría
+
+| Categoría | Endpoints | Descripción |
+|-----------|-----------|-------------|
+| **Agentes IA** | 120+ | 40+ agentes con 3 endpoints cada uno (query, multimodal, multimodal-without-saving) |
+| **Chat/RAG** | 15 | Gestión de chats, historial, archivos, transcripciones |
+| **Usuarios** | 25 | Autenticación, perfiles, sesiones, recuperación de contraseña |
+| **Pagos** | 20 | Suscripciones, transacciones, webhooks (Paddle, Ualá Bis) |
+| **Admin** | 15 | Colas, finanzas, seguridad, reportes |
+| **Shared** | 10 | Contacto, feedback, acceso, configuración |
+| **Security** | 5 | Logs, eventos, auditoría |
+
+### 🤖 Agentes IA (40+ agentes especializados)
+
+Cada agente tiene 3 endpoints con el mismo patrón:
+
+| Método | Patrón de Ruta | Descripción |
+|--------|----------------|-------------|
+| POST | `/api/openai/query-{agente}` | Chat de texto estándar |
+| POST | `/api/openai/multimodal-{agente}` | Chat con texto + imágenes |
+| POST | `/api/openai/multimodal-{agente}-without-saving` | Multimodal sin guardar (para retry/edit) |
+
+**Agentes disponibles** (sustituir `{agente}` por):
+
+**📐 Ingeniería (10 agentes)**:
+- `Algebra`, `Calculo`, `Fisica`, `Quimica`, `ComputacionSistemas`
+- `ElectricidadElectronica`, `Estadistica`, `MatematicaAvz`, `RedesSeguridad`, `ResistenciaMateriales`
+
+**🏥 Medicina (10 agentes)**:
+- `CienciasBasicas`, `CienciasAplicadas`, `Patologia`, `Semiologia`, `MedicinaInterna`
+- `EspecialidadesMed1`, `EspecialidadesMedicasII`, `CirugiaYUrgencias`, `Epidemiologia`, `MatematicaMedica`
+
+**💰 Economía (10 agentes)**:
+- `Microeconomia`, `Macroeconomia`, `Econometria`, `CalculoEconomico`, `Finanzas`
+- `HistoriaEconomica`, `DesarrolloEconomico`, `EconomiaInternacional`, `EconomiaLaboral`, `SectorPublico`
+
+**🧠 Psicología (10 agentes)**:
+- `DSM5`, `Psicoanalisis`, `Neuropsicologia`, `PsicologiaEvolutiva`, `PsicologiaGeneral`
+- `PsicologiaSocial`, `Epistemologia`, `Psicopatologia`, `PsicDiagnostico`, `Psicoestadistica`
+
+**🛠️ Herramientas (2 agentes)**:
+- `agent` — Agente General multimodal
+- `pdf` — PDF IA (chat sobre documentos)
+
+**Ejemplo de uso**:
+```bash
+# Chat de texto con el agente de Álgebra
+POST /api/openai/query-Algebra
+{
+  "chatId": "uuid",
+  "message": "Explica el teorema fundamental del álgebra",
+  "options": { "temperature": 0.7 }
+}
+
+# Chat multimodal con el agente de Física
+POST /api/openai/multimodal-Fisica
+{
+  "chatId": "uuid",
+  "message": "Analiza este diagrama de fuerzas",
+  "images": ["base64..."],
+  "options": { "includeReferences": true }
+}
+```
+
+### 💬 Chat y RAG
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| **Gestión de Chats** |
+| GET | `/api/chats/all` | Listar todos los chats del usuario |
+| POST | `/api/chats/create` | Crear nuevo chat |
+| DELETE | `/api/chats/:chatId` | Eliminar chat |
+| GET | `/api/chats/:chatId/history` | Obtener historial de mensajes |
+| **Procesamiento de Archivos** |
+| POST | `/api/documents/process` | Procesar PDF/documento → OCR → embeddings |
+| POST | `/api/file/extract-content/:chatId` | Extraer contenido de PDF |
+| POST | `/api/file/extract-text/:chatId` | Extraer texto plano de PDF |
+| GET | `/api/file/list/:chatId` | Listar archivos adjuntos |
+| DELETE | `/api/file/delete/:fileId` | Eliminar archivo |
+| **Transcripciones** |
+| POST | `/api/media/process-youtube` | YouTube → MP3 → Whisper → embeddings |
+| POST | `/api/video-transcription/process-video-file` | Procesar video subido |
+| POST | `/api/audio-transcription/process-audio-file` | Procesar audio subido |
+| POST | `/api/audio-transcription/process-recorded-audio` | Procesar grabación en tiempo real |
+| **Marketing** |
+| POST | `/api/marketing/query` | Chat con agente de marketing |
+| GET | `/api/marketing/trends` | Obtener tendencias detectadas |
+| GET | `/api/marketing/memory` | Consultar memoria del agente |
+
+### 👤 Usuarios y Autenticación
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| **Autenticación** |
+| POST | `/api/usuarios/login` | Iniciar sesión |
+| POST | `/api/usuarios/logout` | Cerrar sesión |
+| GET | `/api/usuarios/google-login` | Login con Google OAuth |
+| POST | `/api/usuarios/refresh-token` | Refrescar JWT token |
+| GET | `/api/usuarios/auth-status` | Verificar estado de autenticación |
+| POST | `/api/usuarios/revoke-sessions/:userId` | Revocar todas las sesiones |
+| GET | `/api/usuarios/check-session` | Verificar sesión activa |
+| **Registro y Verificación** |
+| POST | `/api/usuarios/register` | Crear nueva cuenta |
+| POST | `/api/usuarios/verify-email` | Verificar correo electrónico |
+| POST | `/api/usuarios/resend-verification` | Reenviar código de verificación |
+| GET | `/api/usuarios/check-registration-status` | Estado de registro |
+| **Recuperación de Contraseña** |
+| POST | `/api/usuarios/request-password-reset` | Solicitar reset de contraseña |
+| POST | `/api/usuarios/reset-password` | Confirmar nuevo password |
+| GET | `/api/usuarios/verify-reset-token` | Verificar token de reset |
+| **Perfil** |
+| GET | `/api/perfil/profile` | Obtener perfil completo |
+| PUT | `/api/perfil/update` | Actualizar perfil |
+| POST | `/api/usuarios/delete-account` | Solicitar eliminación de cuenta |
+| GET | `/api/perfil/preferences` | Obtener preferencias |
+| PUT | `/api/perfil/preferences` | Actualizar preferencias |
+| **Avas (Agentes)** |
+| GET | `/api/avas/all` | Listar agentes disponibles |
+| GET | `/api/avas/:avaId` | Detalles de un agente |
+| POST | `/api/compra/purchase-ava` | Comprar acceso a agente |
+| GET | `/api/compra/my-avas` | Mis agentes adquiridos |
+
+### 💳 Pagos y Suscripciones
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| **Paddle (Internacional)** |
+| POST | `/api/paddle/create-checkout` | Crear sesión de pago |
+| POST | `/api/paddle/webhook` | Webhook de Paddle |
+| GET | `/api/paddle/subscriptions` | Listar suscripciones |
+| POST | `/api/paddle/cancel-subscription` | Cancelar suscripción |
+| **Ualá Bis (Argentina)** |
+| POST | `/api/payments-arg/create-payment` | Crear pago con Ualá |
+| POST | `/api/payments-arg/webhook` | Webhook de Ualá Bis |
+| GET | `/api/payments-arg/status/:paymentId` | Estado de pago |
+| **Transacciones** |
+| GET | `/api/payment/transactions` | Historial de transacciones |
+| GET | `/api/payment/transaction/:id` | Detalles de transacción |
+| POST | `/api/payment/refund` | Procesar reembolso |
+| **Precios** |
+| GET | `/api/price/plans` | Listar planes disponibles |
+| GET | `/api/price/plan/:planId` | Detalles de plan |
+| GET | `/api/price/calculate` | Calcular precio con descuentos |
+
+### 🔧 Administración
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| **Colas y Jobs** |
+| GET | `/api/admin/queues/monitor` | Monitor de colas BullMQ |
+| GET | `/api/admin/queues/jobs/:queueName` | Jobs de una cola |
+| POST | `/api/admin/queues/retry/:jobId` | Reintentar job fallido |
+| DELETE | `/api/admin/queues/clean/:queueName` | Limpiar cola |
+| **Finanzas** |
+| GET | `/api/admin/finance/subscriptions` | Gestión de suscripciones |
+| GET | `/api/admin/finance/transactions` | Transacciones completas |
+| GET | `/api/admin/finance/reports` | Reportes financieros |
+| POST | `/api/admin/finance/export` | Exportar datos financieros |
+| GET | `/api/admin/finance/expenses` | Egresos y gastos |
+| POST | `/api/admin/finance/expense` | Registrar egreso |
+| GET | `/api/admin/finance/tax-analysis` | Análisis de impuestos |
+| **Argentina Admin** |
+| GET | `/api/admin/argentina/payments` | Pagos de Argentina |
+| GET | `/api/admin/argentina/analytics` | Analytics ARG |
+
+### 🔒 Seguridad y Shared
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| **Seguridad** |
+| GET | `/api/security/events` | Logs de eventos de seguridad |
+| GET | `/api/security/failed-logins` | Intentos fallidos de login |
+| POST | `/api/security/report-incident` | Reportar incidente |
+| GET | `/api/activitymente/logs` | Logs de actividad |
+| **Shared** |
+| POST | `/api/contact` | Formulario de contacto |
+| POST | `/api/feedback` | Enviar feedback |
+| GET | `/api/access/status` | Estado de acceso (herramientas/avas) |
+| POST | `/api/cookie-consent` | Registrar consentimiento GDPR |
+| GET | `/api/cookie-consent/status` | Estado de consentimientos |
+| GET | `/api/terminos/latest` | Últimos términos y condiciones |
+| POST | `/api/terminos/accept` | Aceptar términos |
+
+### 📝 Notas de Implementación
+
+**Rate Limiting**:
+- Endpoints de OpenAI: 20 requests/minuto
+- Endpoints de PDF/OCR: 10 requests/minuto
+- Endpoints de audio/video: 5 requests/minuto
+- Endpoints generales: 100 requests/minuto
+
+**Autenticación**:
+- La mayoría de endpoints requieren JWT token en cookie `auth-token`
+- Endpoints públicos: `/login`, `/register`, `/auth-status`, `/contact`
+- CSRF token requerido para POST/PUT/DELETE (header `x-csrf-token`)
+
+**Respuestas**:
+```json
+// Éxito
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operación exitosa"
+}
+
+// Error
+{
+  "success": false,
+  "error": "Mensaje de error",
+  "code": "ERROR_CODE",
+  "status": 400
+}
+```
 
 ---
 
