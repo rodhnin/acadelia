@@ -23,11 +23,84 @@
 
 ---
 
+## 📑 Índice
+
+- [📚 Documentación Completa](#-documentación-completa)
+- [🚀 Resumen](#-resumen)
+- [✨ Highlights](#-highlights)
+- [🧱 Arquitectura](#-arquitectura-alto-nivel)
+- [🗨️ Estilos de Chat](#️-estilos-de-chat-4)
+- [🧠 Agente de Marketing](#-agente-de-marketing-autónomo)
+- [📚 Catálogo de Agentes](#-catálogo-de-agentes-por-áreas)
+- [🧑‍🏫 Acadel](#-acadel-la-personalidad)
+- [🔬 Sistema RAG](#-sistema-rag-retrieval-augmented-generation)
+- [💾 Base de Datos](#-base-de-datos-supabase--pgvector)
+- [🚀 Instalación y Ejecución](#-instalación-y-ejecución)
+- [🔌 Endpoints](#-endpoints-clave-extracto)
+- [👥 Autores](#-autores)
+- [🧭 Roadmap](#-roadmap-breve)
+- [🔖 Changelog](#-changelog)
+- [🐛 Bugs](#-encontraste-un-bug)
+- [📝 Licencia](#-licencia)
+
+---
+
+## 📚 Documentación Completa
+
+Esta documentación está organizada en módulos especializados para facilitar la navegación:
+
+| Documento | Descripción |
+|-----------|-------------|
+| **[README.md](README.md)** | 👋 **Inicio aquí** - Resumen completo del sistema, arquitectura, instalación |
+| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | 🏗️ Arquitectura técnica detallada, patrones de diseño, flujos de datos |
+| **[docs/DATABASE.md](docs/DATABASE.md)** | 💾 Esquema completo de base de datos (82 tablas), índices, queries |
+| **[docs/SECURITY.md](docs/SECURITY.md)** | 🔒 Modelo de seguridad (8 capas), JWT, CSRF, rate limiting, ClamAV |
+| **[docs/API.md](docs/API.md)** | 🔌 Referencia completa de API REST (40+ endpoints documentados) |
+| **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** | 👨‍💻 Guía de desarrollo, cómo crear agentes, testing, debugging |
+
+> **💡 Tip**: Si eres desarrollador nuevo en el proyecto, lee en orden: README → ARCHITECTURE → DEVELOPMENT → API
+
+---
+
 ## 🚀 Resumen
 
-**Acadelia** es una plataforma integral de estudio impulsada por IA. Combina **RAG 100% en Supabase** (embeddings OpenAI + **Supabase Hybrid Search**), **agentes por materia**, **4 estilos de chat** (PDF, Audio/Video, Matemáticos, Teóricos), un **panel admin**, **pagos**, y un **Agente de Marketing** autónomo. Seguridad con **JWT**, **CSRF**, **Helmet**, **rate limiting**, **ClamAV** y **ofuscación** de endpoints.
+**Acadelia** es una plataforma integral de estudio impulsada por IA que combina tecnologías de última generación para crear una experiencia educativa personalizada.
 
-> Es un proyecto de **portafolio** ambicioso que muestra arquitectura real, muchas integraciones y decisiones de ingeniería. El código puede contener redundancias/errores de lógica; la documentación crecerá poco a poco.
+### 🎯 Características Principales
+
+**🧠 Sistema RAG Avanzado**:
+-   **100% en Supabase** con pgvector (sin dependencias de bases vectoriales externas)
+-   **Hybrid Search**: BM25 (keywords) + Vector Similarity (embeddings OpenAI)
+-   **40+ bases de conocimiento especializadas** (una por materia)
+-   **Cache inteligente** con categorización automática (AcadelCache)
+
+**🤖 Multi-Agente Autónomo**:
+-   **40+ agentes especializados** por materia (Ingeniería, Medicina, Economía, Psicología)
+-   **Agente de Marketing** autónomo con 7 servicios (investigación, análisis, generación)
+-   **4 estilos de chat**: PDF, Audio/Video, Matemáticos, Teóricos
+
+**💾 Base de Datos Robusta**:
+-   **82 tablas** en PostgreSQL con pgvector
+-   **RLS (Row Level Security)** para todas las tablas sensibles
+-   **Índices especializados**: IVFFlat (vectores) + GIN (full-text)
+
+**🔒 Seguridad Multicapa**:
+-   **8 capas de protección**: Helmet, CORS, CSRF, JWT, Rate Limiting, ClamAV, RBAC, Monitoring
+-   **Single-session enforcement** con Redis
+-   **Ofuscación de endpoints** en producción
+
+**💰 Sistema Completo de Pagos**:
+-   Integración con **Paddle** (internacional)
+-   **Ualá Bis** para Argentina
+-   Panel financiero con análisis de impuestos
+
+**🛠️ Procesamiento Multimodal**:
+-   **PDF → OCR** (Mistral) → embeddings → chat contextual
+-   **YouTube → MP3** (ytdl) → **Whisper** (STT) → chat sobre videos
+-   **Imágenes** con GPT-4o Vision
+-   **Audio** en tiempo real con Whisper
+
+> Es un proyecto de **portafolio ambicioso** que muestra arquitectura real de producción, múltiples integraciones complejas y decisiones de ingeniería. Toda la arquitectura, seguridad, base de datos y APIs están completamente documentadas en [docs/](docs/).
 
 <h3><strong>Demos (GIF) — Flujo de usuario</strong></h3>
 <p align="center">
@@ -1088,6 +1161,163 @@ Sistema de cache con categorización automática:
 
 ---
 
+## 💾 Base de Datos (Supabase + pgvector)
+
+Acadelia utiliza **Supabase** (PostgreSQL 14+) como base de datos principal, aprovechando la extensión **pgvector** para búsqueda semántica vectorial.
+
+### 🗄️ Esquema de Base de Datos
+
+El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
+
+**1. Usuarios & Autenticación (10 tablas)**:
+-   `usuario` — Datos principales de usuarios
+-   `perfil` — Información extendida de perfil
+-   `rol`, `rol_usuario`, `permiso_rol` — Sistema RBAC (Role-Based Access Control)
+-   `cookie_consent` — Gestión de consentimientos GDPR
+-   `account_deletion_requests` — Solicitudes de eliminación de cuenta
+-   `session_revocation` — Revocación de sesiones (single-session enforcement)
+-   `failed_login_attempts` — Seguimiento de intentos fallidos (anti-brute force)
+-   `security_events` — Auditoría de eventos de seguridad
+
+**2. Sistema de Chat (4 tablas)**:
+-   `chat` — Metadatos de conversaciones
+-   `chat_history` — Mensajes completos (usuario + IA)
+-   `ava` — Agentes especializados (40+ agentes)
+-   `herramienta` — Herramientas disponibles (PDF IA, Agente General, etc.)
+
+**3. Embeddings RAG (40+ tablas)**:
+-   Una tabla por cada agente/materia: `emb_algebra`, `emb_calculo`, `emb_fisica`, etc.
+-   Cada tabla almacena:
+    -   `content` (TEXT) — Contenido original
+    -   `embedding` (VECTOR(1536)) — Vector de OpenAI
+    -   `metadata` (JSONB) — Información adicional
+-   **Índices especializados**:
+    -   `ivfflat` para búsqueda vectorial (cosine similarity)
+    -   `gin` para búsqueda full-text (BM25)
+
+**4. Marketing (5 tablas)**:
+-   `marketing_trends` — Tendencias detectadas por el agente
+-   `marketing_profiles` — Perfiles de audiencia analizados
+-   `marketing_contents` — Contenido generado (briefs, copies)
+-   `marketing_memory` — Grafo de conocimiento del agente
+-   `marketing_interactions` — Historial de interacciones
+
+**5. Pagos & Suscripciones (7 tablas)**:
+-   `suscripciones` — Planes y estados de suscripción
+-   `historial_transacciones` — Registro de todas las transacciones
+-   `payments_arg` — Procesamiento de pagos para Argentina (Ualá Bis)
+-   `egresos`, `categorias_egresos`, `analisis_impuestos` — Panel financiero
+
+**6. Archivos (3 tablas)**:
+-   `pdfs` — PDFs procesados con OCR
+-   `file_attachments` — Archivos adjuntos en chats (imágenes, audio)
+-   `agentetube` — Transcripciones de YouTube/videos
+
+**7. Administración (8 tablas)**:
+-   `config` — Configuración global del sistema
+-   `system_config` — Parámetros técnicos
+-   `security_events` — Logs de seguridad
+-   `queue_jobs` — Estado de trabajos en BullMQ
+-   `rate_limit_tracking` — Tracking de rate limiting
+
+**8. Datos de Referencia (4 tablas)**:
+-   `carrera` — Carreras universitarias
+-   `universidad` — Instituciones educativas
+-   `pais` — Países y regiones
+-   `anatomia` — Terminología médica
+
+### 🔍 Ejemplo de Esquema (Tabla de Embeddings)
+
+```sql
+CREATE TABLE public.emb_algebra (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  content TEXT NOT NULL,
+  embedding VECTOR(1536),
+  metadata JSONB,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Índice para búsqueda vectorial (cosine similarity)
+CREATE INDEX idx_emb_algebra_embedding
+ON emb_algebra
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 100);
+
+-- Índice para búsqueda full-text (BM25)
+CREATE INDEX idx_emb_algebra_fts
+ON emb_algebra
+USING gin(to_tsvector('spanish', content));
+
+-- Trigger para actualizar updated_at
+CREATE TRIGGER update_emb_algebra_updated_at
+BEFORE UPDATE ON emb_algebra
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+```
+
+### 📊 Queries de Ejemplo (Hybrid Search)
+
+**Búsqueda Híbrida Completa**:
+```sql
+WITH vector_search AS (
+  SELECT id, content, metadata,
+         1 - (embedding <=> '[0.1, 0.2, ...]'::vector) AS similarity
+  FROM emb_algebra
+  WHERE 1 - (embedding <=> '[0.1, 0.2, ...]'::vector) > 0.6
+  ORDER BY similarity DESC
+  LIMIT 3
+),
+keyword_search AS (
+  SELECT id, content, metadata,
+         ts_rank(to_tsvector('spanish', content),
+                 plainto_tsquery('spanish', 'ecuaciones diferenciales')) AS rank
+  FROM emb_algebra
+  WHERE to_tsvector('spanish', content) @@
+        plainto_tsquery('spanish', 'ecuaciones diferenciales')
+  ORDER BY rank DESC
+  LIMIT 2
+)
+SELECT * FROM vector_search
+UNION ALL
+SELECT id, content, metadata, similarity FROM keyword_search
+ORDER BY similarity DESC;
+```
+
+### 🔐 Row Level Security (RLS)
+
+Todas las tablas sensibles tienen **RLS habilitado**:
+```sql
+-- Ejemplo: Solo el propietario puede ver sus chats
+CREATE POLICY "Users can view their own chats"
+ON chat FOR SELECT
+USING (auth.uid() = user_id);
+
+-- Solo el propietario puede insertar en su historial
+CREATE POLICY "Users can insert their own messages"
+ON chat_history FOR INSERT
+WITH CHECK (auth.uid() = (SELECT user_id FROM chat WHERE id = chat_id));
+```
+
+### 📈 Migraciones y Mantenimiento
+
+**Importar esquema completo**:
+```bash
+# Desde Supabase Dashboard → SQL Editor
+# Pegar contenido de db/Acadelia-DB.sql y ejecutar
+```
+
+**Backup automático**:
+```bash
+# Supabase provee backups diarios automáticos
+# Backups manuales vía CLI:
+supabase db dump -f backup-$(date +%Y%m%d).sql
+```
+
+> **📖 Documentación completa**: Ver [docs/DATABASE.md](docs/DATABASE.md) para esquemas detallados, ER diagrams, índices y queries avanzados.
+
+---
+
 ## 🚀 Instalación y Ejecución
 
 ### Requisitos Previos
@@ -1328,8 +1558,16 @@ sudo apt-get install ffmpeg
 
 ## 🔖 Changelog
 
--   **v0.1.0 — MVP público de portafolio**  
+-   **v0.1.0 — MVP público de portafolio (Enero 2025)**
     RAG + agentes + **4 chats** + **Agente de Marketing**; **sistema de tienda**, **usuarios**, **chats funcionales con agentes IA**, **análisis de imágenes**, **panel de administrador**, **5 carreras con ~10 chats cada una** (teórico + matemático), **marketing agent inteligente y funcional**, **panel de finanzas y administración**, **configuración de usuario**, **páginas de inicio y branding** — todo lo que una página **SaaS** necesita para demostración de arquitectura y capacidades.
+
+    **📚 Documentación completa añadida**:
+    -   ✅ **README.md** mejorado con tabla de contenidos, resumen detallado, arquitectura, RAG, base de datos
+    -   ✅ **docs/ARCHITECTURE.md** - Arquitectura técnica completa (3 capas, patrones de diseño, flujos)
+    -   ✅ **docs/DATABASE.md** - Esquema completo (82 tablas, índices, queries, migraciones)
+    -   ✅ **docs/SECURITY.md** - Modelo de seguridad (8 capas, implementación, mejores prácticas)
+    -   ✅ **docs/API.md** - Referencia completa de API (40+ endpoints con ejemplos)
+    -   ✅ **docs/DEVELOPMENT.md** - Guía de desarrollo (cómo crear agentes, testing, debugging)
 
 ---
 
