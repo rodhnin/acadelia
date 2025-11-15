@@ -267,13 +267,13 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │SUPABASE│ │ REDIS │ │ BullMQ  │ │   APIS EXTERNAS            │
 │        │ │       │ │         │ │                            │
 │- Postgr│ │- Cache│ │- Colas: │ │- OpenAI GPT-4o / Whisper   │
-│  esQL  │ │- Sessi│ │  * openai│ │- Mistral OCR               │
-│- Vector│ │  ons  │ │  * pdf  │ │- WolframAlpha              │
-│  DB    │ │- Rate │ │  * audio│ │- Brave Search              │
-│  (RAG) │ │  Limit│ │  * youtube│ │- DALL-E                    │
-│- Storag│ │- Jobs │ │- Throttl│ │- Paddle (pagos)            │
+│  esQL  │ │- Sessi│ │  openai │ │- Mistral OCR               │
+│- Vector│ │  ons  │ │  pdf    │ │- WolframAlpha              │
+│  DB    │ │- Rate │ │  audio  │ │- Brave Search              │
+│  (RAG) │ │  Limit│ │  youtube│ │- DALL-E                    │
+│- Storag│ │- Jobs │ │  Throttl│ │- Paddle (pagos)            │
 │  e     │ │- Locks│ │  ing    │ │- Ualá Bis (pagos ARG)      │
-│- Auth  │ │       │ │- Retry  │ │- YouTube (descarga)        │
+│- Auth  │ │       │ │-Retry   │ │- YouTube (descarga)        │
 └────────┘ └───────┘ └─────────┘ └────────────────────────────┘
 ```
 
