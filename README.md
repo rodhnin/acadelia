@@ -221,46 +221,46 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │                   CAPA DE APLICACIÓN                         │
 │                 (Node.js 22+ Express)                        │
 │                                                              │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  MIDDLEWARES DE SEGURIDAD (capas de protección)      │  │
-│  │  1. Helmet (Headers HTTP seguros)                    │  │
-│  │  2. CORS (configuración estricta)                    │  │
-│  │  3. CSRF Protection (cookie-based tokens)            │  │
-│  │  4. Rate Limiting (Redis distribuido)                │  │
-│  │  5. JWT Authentication (+ Refresh Tokens)            │  │
-│  │  6. Access Control (AVA/Herramientas)                │  │
-│  │  7. ClamAV (Antivirus en tiempo real)                │  │
-│  │  8. Request Monitoring & Logging                     │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │  MIDDLEWARES DE SEGURIDAD (capas de protección)      │    │
+│  │  1. Helmet (Headers HTTP seguros)                    │    │
+│  │  2. CORS (configuración estricta)                    │    │
+│  │  3. CSRF Protection (cookie-based tokens)            │    │
+│  │  4. Rate Limiting (Redis distribuido)                │    │
+│  │  5. JWT Authentication (+ Refresh Tokens)            │    │
+│  │  6. Access Control (AVA/Herramientas)                │    │
+│  │  7. ClamAV (Antivirus en tiempo real)                │    │
+│  │  8. Request Monitoring & Logging                     │    │
+│  └──────────────────────────────────────────────────────┘    │
 │                                                              │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  SISTEMA DE ENRUTAMIENTO                             │  │
-│  │  - /api/chat/*     → RAG, embeddings, agentes        │  │
-│  │  - /api/users/*    → Autenticación, perfiles         │  │
-│  │  - /api/payments/* → Paddle, Ualá Bis                │  │
-│  │  - /api/admin/*    → Analytics, seguridad, colas     │  │
-│  │  - /api/shared/*   → Recursos compartidos            │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │  SISTEMA DE ENRUTAMIENTO                             │    │
+│  │  - /api/chat/*     → RAG, embeddings, agentes        │    │
+│  │  - /api/users/*    → Autenticación, perfiles         │    │
+│  │  - /api/payments/* → Paddle, Ualá Bis                │    │
+│  │  - /api/admin/*    → Analytics, seguridad, colas     │    │
+│  │  - /api/shared/*   → Recursos compartidos            │    │
+│  └──────────────────────────────────────────────────────┘    │
 │                                                              │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  CONTROLADORES (40+ agentes especializados)          │  │
-│  │  📐 Ingeniería: Álgebra, Cálculo, Física, etc.       │  │
-│  │  🏥 Medicina: Patología, Semiología, Anatomía, etc.  │  │
-│  │  💰 Economía: Micro, Macro, Econometría, etc.        │  │
-│  │  🧠 Psicología: DSM-5, Psicoanálisis, etc.           │  │
-│  │  🛠️  Herramientas: PDF IA, Agente Multimodal         │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │  CONTROLADORES (40+ agentes especializados)          │    │
+│  │  📐 Ingeniería: Álgebra, Cálculo, Física, etc.       │    │
+│  │  🏥 Medicina: Patología, Semiología, Anatomía, etc.  │    │
+│  │  💰 Economía: Micro, Macro, Econometría, etc.        │    │
+│  │  🧠 Psicología: DSM-5, Psicoanálisis, etc.           │    │
+│  │  🛠️  Herramientas: PDF IA, Agente Multimodal         │    │
+│  └──────────────────────────────────────────────────────┘    │
 │                                                              │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  SERVICIOS DE IA Y PROCESAMIENTO                     │  │
-│  │  - chatServices.js (orquestador central RAG)         │  │
-│  │  - RAG Services (Hybrid Search: BM25 + Vector)       │  │
-│  │  - Marketing Agent (sistema autónomo multi-agente)   │  │
-│  │  - Transcription Services (Whisper STT)              │  │
-│  │  - OCR Services (Mistral para PDFs)                  │  │
-│  │  - File Processing (PDF, audio, video, imágenes)     │  │
-│  │  - Image Storage & Analysis (GPT-4o Vision)          │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │  SERVICIOS DE IA Y PROCESAMIENTO                     │    │
+│  │  - chatServices.js (orquestador central RAG)         │    │
+│  │  - RAG Services (Hybrid Search: BM25 + Vector)       │    │
+│  │  - Marketing Agent (sistema autónomo multi-agente)   │    │
+│  │  - Transcription Services (Whisper STT)              │    │
+│  │  - OCR Services (Mistral para PDFs)                  │    │
+│  │  - File Processing (PDF, audio, video, imágenes)     │    │
+│  │  - Image Storage & Analysis (GPT-4o Vision)          │    │
+│  └──────────────────────────────────────────────────────┘    │
 └──┬───────────┬──────────┬──────────┬─────────────────────────┘
    │           │          │          │
 ┌──▼─────┐ ┌──▼────┐ ┌──▼──────┐ ┌─▼──────────────────────────┐
@@ -1523,15 +1523,15 @@ La API REST de Acadelia está organizada en 7 categorías principales con más d
 
 ### 📊 Resumen de Endpoints por Categoría
 
-| Categoría | Endpoints | Descripción |
-|-----------|-----------|-------------|
+| Categoría | Endpoints | Descripción                                                                         |
+|-----------|-----------|-------------------------------------------------------------------------------------|
 | **Agentes IA** | 120+ | 40+ agentes con 3 endpoints cada uno (query, multimodal, multimodal-without-saving) |
-| **Chat/RAG** | 15 | Gestión de chats, historial, archivos, transcripciones |
-| **Usuarios** | 25 | Autenticación, perfiles, sesiones, recuperación de contraseña |
-| **Pagos** | 20 | Suscripciones, transacciones, webhooks (Paddle, Ualá Bis) |
-| **Admin** | 15 | Colas, finanzas, seguridad, reportes |
-| **Shared** | 10 | Contacto, feedback, acceso, configuración |
-| **Security** | 5 | Logs, eventos, auditoría |
+| **Chat/RAG** | 15 | Gestión de chats, historial, archivos, transcripciones                                  |
+| **Usuarios** | 25 | Autenticación, perfiles, sesiones, recuperación de contraseña                           |
+| **Pagos** | 20 | Suscripciones, transacciones, webhooks (Paddle, Ualá Bis)                                  |                                 
+| **Admin** | 15 | Colas, finanzas, seguridad, reportes                                                       |
+| **Shared** | 10 | Contacto, feedback, acceso, configuración                                                 |
+| **Security** | 5 | Logs, eventos, auditoría                                                                 |
 
 ### 🤖 Agentes IA (40+ agentes especializados)
 
