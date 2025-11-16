@@ -1,3 +1,4 @@
+// tienda.js - ACTUALIZADO PARA SISTEMA ARGENTINA - CORREGIDO CSP
 document.addEventListener("DOMContentLoaded", function () {
     // Referencias a elementos del DOM
     const searchInput = document.getElementById("searchInput");
@@ -27,7 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Variable para controlar el estado de la vista
     let isDetailView = false;
 
+    // ================= FUNCIONES CORE =================
     
+    // Función para determinar cuántos items mostrar según el ancho de la pantalla
     function getItemsToShow() {
         if (window.innerWidth <= 576) return 1;
         if (window.innerWidth <= 768) return 2;
@@ -43,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             card.style.display !== 'none' && card.classList.contains('content-box')
         );
         
+        // Solo se activa el carousel si hay más que el número visible de tarjetas
         if (visibleCards.length <= itemsToShow) {
             track.style.transition = 'none';
             track.style.transform = 'none';
@@ -56,12 +60,14 @@ document.addEventListener("DOMContentLoaded", function () {
         currentIndex = Math.min(currentIndex, maxIndex);
         
         // Asegurarse de que el track esté en el DOM antes de manipularlo
-    if (track.parentNode) {
-        track.style.transition = smooth ? 'transform 0.3s ease-out' : 'none';
-        track.style.transform = `translateX(-${(currentIndex * cardWidth) + 30}px)`;
-        updateNavigation();
+        if (track.parentNode) {
+            track.style.transition = smooth ? 'transform 0.3s ease-out' : 'none';
+            // Añadir 10px adicionales al desplazamiento
+            track.style.transform = `translateX(-${(currentIndex * cardWidth) + 30}px)`;
+            updateNavigation();
+        }
     }
-}
+    
     function moveSlide(direction) {
         const newIndex = currentIndex + direction;
         if (newIndex >= 0 && newIndex <= maxIndex) {
@@ -90,7 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
         nextBtn.style.display = currentIndex < maxIndex ? 'flex' : 'none';
     }
 
+    // ================= MEJORAS VISUALES =================
 
+    // Añadir efectos de entrada para elementos de la página
     const addEntranceEffects = () => {
         if (!track) return;
         
@@ -109,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 100 * index);
         });
         
+        // Añadir clase para animar la sección de comparación
         if (comparisonSection) {
             setTimeout(() => {
                 comparisonSection.classList.add('visible');
@@ -123,6 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const contentBoxes = track.querySelectorAll('.content-box');
         if (contentBoxes.length === 0) return;
         
+        // Añadir efecto hover individual a cada tarjeta
         contentBoxes.forEach(box => {
             box.addEventListener('mouseenter', function() {
                 box.classList.add('hover-active');
@@ -146,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const enhanceSearchInput = () => {
         if (!searchInput || !searchIcon) return;
         
+        // Animar el icono del buscador al hacer focus
         searchInput.addEventListener('focus', function() {
             searchIcon.classList.add('searching');
         });
@@ -156,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         
+        // Añadir texto de placeholder dinámico
         const placeholders = [
             "Busca tu carrera ideal...",
             "Encuentra tu AVA perfecto...",
@@ -176,6 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     };
     
+    // Añadir efecto de desplazamiento suave
     const addSmoothScrolling = () => {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -193,7 +206,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
     
+    // Mejorar los selectores de país y ciclo de facturación
     const enhanceControls = () => {
+        // Añadir efecto de hover a los botones de facturación
         if (billingButtons.length > 0) {
             billingButtons.forEach(btn => {
                 btn.addEventListener('mouseenter', function() {
@@ -209,18 +224,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         }
-        
-        if (countrySelect) {
-            countrySelect.addEventListener('change', function() {
-                this.classList.add('selected');
-                setTimeout(() => {
-                    this.classList.remove('selected');
-                }, 500);
-            });
-        }
     };
     
+    // Añadir efecto confeti al hacer clic en "Comprar"
     const setupConfettiEffect = () => {
+        // Función para crear el efecto de confeti
         const triggerConfetti = () => {
             const colors = ['#a4ac86', '#656d4a', '#f0efe7', '#8B4513'];
             const confettiCount = 150;
@@ -242,6 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 8000);
         };
         
+        // Añadir listener a los botones de compra
         document.addEventListener('click', function(e) {
             const comprarBtn = e.target.closest('.comprar-btn');
             if (comprarBtn) {
@@ -250,6 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
     
+    // Añadir contadores animados de usuarios o ventajas
     const addCounters = () => {
         if (!comparisonSection) return;
         
@@ -260,9 +270,11 @@ document.addEventListener("DOMContentLoaded", function () {
             { number: 95, text: 'Satisfacción', icon: 'bx-like', suffix: '%' }
         ];
         
+        // Crear contenedor de estadísticas
         const statsContainer = document.createElement('div');
         statsContainer.className = 'stats-container';
         
+        // Añadir las estadísticas
         stats.forEach(stat => {
             const statItem = document.createElement('div');
             statItem.className = 'stat-item';
@@ -274,8 +286,10 @@ document.addEventListener("DOMContentLoaded", function () {
             statsContainer.appendChild(statItem);
         });
         
+        // Insertar antes de la sección de comparación
         comparisonSection.parentNode.insertBefore(statsContainer, comparisonSection);
         
+        // Animar contadores cuando sean visibles
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -306,125 +320,47 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(statsContainer);
     };
     
+    // Añadir testimonios deslizantes
     const addTestimonials = () => {
         const testimonials = [
             {
-                name: "Jose Ramiez",
+                name: "Ana García",
                 role: "Estudiante de Medicina",
                 text: "Los AVAs de Acadelia revolucionaron mi forma de estudiar anatomía. Las explicaciones visuales son increíbles.",
-                avatar: "/images/avatars/avatar1.webp"
+                avatar: "/images/avatars/avatar1.png"
             },
             {
                 name: "Carlos Rodríguez",
                 role: "Estudiante de Ingeniería",
                 text: "El asistente matemático me ayudó a superar cálculo avanzado. Las explicaciones paso a paso son muy claras.",
-                avatar: "/images/avatars/avatar2.webp"
+                avatar: "/images/avatars/avatar2.png"
             },
             {
                 name: "María López",
                 role: "Estudiante de Derecho",
                 text: "La herramienta de PDF me permite analizar casos complejos en minutos. Increíblemente útil para mis estudios.",
-                avatar: "/images/avatars/avatar3.webp"
+                avatar: "/images/avatars/avatar3.png"
             }
         ];
-
-        initIvaNoticeSystem();
-
-
-function initIvaNoticeSystem() {
-    addIvaNoticeToCards();
-    handleFloatingNotice();
-}
-
-function addIvaNoticeToCards() {
-    const contentBoxes = document.querySelectorAll('.content-box');
-    
-    contentBoxes.forEach(box => {
-        if (box.querySelector('.price-disclaimer')) return;
         
-        const priceElement = box.querySelector('.price, h1.price');
-        if (priceElement) {
-            if (!priceElement.parentElement.classList.contains('price-container')) {
-                const priceContainer = document.createElement('div');
-                priceContainer.className = 'price-container';
-                priceElement.parentNode.insertBefore(priceContainer, priceElement);
-                priceContainer.appendChild(priceElement);
-            }
-            
-            const disclaimer = document.createElement('div');
-            disclaimer.className = 'price-disclaimer';
-            disclaimer.innerHTML = '<i class="bx bx-info-circle" style="margin-right: 0.25rem;"></i>Sin IVA';
-            
-            priceElement.parentElement.appendChild(disclaimer);
-        }
-    });
-}
-
-function handleFloatingNotice() {
-    const floatingNotice = document.getElementById('floatingIvaNotice');
-    const mainNotice = document.getElementById('mainIvaNotice');
-    
-    if (!floatingNotice || !mainNotice) return;
-    
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
-    
-    function updateFloatingVisibility() {
-        // Si estamos en vista detalle, siempre mostrar flotante
-        if (isDetailView) {
-            floatingNotice.classList.add('show');
-            return;
-        }
-        
-        if (isMobile()) {
-            floatingNotice.classList.add('show');
-            return;
-        }
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (isDetailView) {
-                    floatingNotice.classList.add('show');
-                } else if (entry.isIntersecting) {
-                    floatingNotice.classList.remove('show');
-                } else {
-                    floatingNotice.classList.add('show');
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        observer.observe(mainNotice);
-    }
-    
-    updateFloatingVisibility();
-    
-    window.addEventListener('resize', updateFloatingVisibility);
-    
-    floatingNotice.addEventListener('click', () => {
-        floatingNotice.classList.remove('show');
-        setTimeout(() => {
-            if (isDetailView || isMobile() || !mainNotice.getBoundingClientRect().top > 0) {
-                floatingNotice.classList.add('show');
-            }
-        }, 5000);
-    });
-}
-        
+        // Crear contenedor de testimonios
         const testimonialsContainer = document.createElement('div');
         testimonialsContainer.className = 'testimonials-container';
         testimonialsContainer.style.maxWidth = '100%';
         testimonialsContainer.style.overflowX = 'hidden';
         
+        // Crear encabezado
         const header = document.createElement('h2');
         header.textContent = 'Lo que dicen nuestros usuarios';
         testimonialsContainer.appendChild(header);
         
+        // Crear slider
         const slider = document.createElement('div');
         slider.className = 'testimonials-slider';
         slider.style.width = '300%';
         slider.style.transition = 'transform 0.5s ease';
         
+        // Añadir las tarjetas de testimonios
         testimonials.forEach(t => {
             const card = document.createElement('div');
             card.className = 'testimonial-card';
@@ -475,6 +411,7 @@ function handleFloatingNotice() {
         
         testimonialsContainer.appendChild(slider);
         
+        // Crear dots para navegación
         const dotsContainer = document.createElement('div');
         dotsContainer.className = 'testimonial-dots';
         
@@ -491,18 +428,22 @@ function handleFloatingNotice() {
         
         testimonialsContainer.appendChild(dotsContainer);
         
+        // Insertar antes del footer
         const footer = document.querySelector('.main-footer');
         if (footer) {
             footer.parentNode.insertBefore(testimonialsContainer, footer);
             
-            const slider = testimonialsContainer.querySelector('.testimonials-slider');
+            // Configurar el slider de testimonios
+            const sliderElement = testimonialsContainer.querySelector('.testimonials-slider');
             const dots = testimonialsContainer.querySelectorAll('.dot');
             let currentSlide = 0;
             
+            // Función para cambiar el slide
             const goToSlide = (index) => {
                 currentSlide = index;
-                slider.style.transform = `translateX(-${index * 100 / testimonials.length}%)`;
+                sliderElement.style.transform = `translateX(-${index * 100 / testimonials.length}%)`;
                 
+                // Actualizar los puntos
                 dots.forEach((dot, i) => {
                     if (i === index) {
                         dot.classList.add('active');
@@ -512,6 +453,7 @@ function handleFloatingNotice() {
                 });
             };
             
+            // Añadir eventos a los puntos usando delegación
             dotsContainer.addEventListener('click', (e) => {
                 const dot = e.target.closest('.dot');
                 if (dot) {
@@ -530,7 +472,9 @@ function handleFloatingNotice() {
         }
     };
 
+    // ================= FUNCIONES DE TARJETAS Y DATOS =================
     
+    // Función para mostrar el skeleton loading
     function showSkeleton() {
         const itemsToShow = getItemsToShow();
         const skeletonHTML = Array(itemsToShow).fill().map(() => `
@@ -553,10 +497,12 @@ function handleFloatingNotice() {
 
         track.innerHTML = skeletonHTML;
         
+        // Ocultar la navegación del carousel mientras se muestran los skeletons
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
     }
 
+    // Función para filtrar elementos
     function filterItems(searchTerm) {
         if (!track) return;
         
@@ -581,6 +527,7 @@ function handleFloatingNotice() {
                 });
             }
             
+            // Mostrar un mensaje si no hay resultados
             const noResultsMsg = track.querySelector('.no-results-message');
             if (!anyVisible && searchTerm) {
                 if (!noResultsMsg) {
@@ -596,10 +543,12 @@ function handleFloatingNotice() {
             currentIndex = 0;
             updateCarousel(false);
             
+            // Aplicar efectos de hover a las tarjetas visibles
             setupCardHoverEffects();
         }, 300);
     }
 
+    // Función mejorada para mostrar las sugerencias
     async function showSuggestions(searchTerm) {
         suggestionsBox.innerHTML = "";
         if (!searchTerm) {
@@ -634,6 +583,7 @@ function handleFloatingNotice() {
         suggestionsBox.style.display = filtered.length > 0 ? "block" : "none";
     }
 
+    // ===== FUNCIÓN ACTUALIZADA PARA USAR NUEVOS ENDPOINTS =====
     async function getAllCarreras() {
         try {
             if (carrerasCache) {
@@ -643,17 +593,26 @@ function handleFloatingNotice() {
             isLoading = true;
             showSkeleton();
 
-            const userResponse = await fetch('/api/usuarios/authenticate');
-            if (!userResponse.ok) throw new Error('Error de autenticación');
-            const userData = await userResponse.json();
-
-            const response = await fetch(`/api/compra/carrera/available/${userData.id_user}`);
+            // 🇦🇷 USAR ENDPOINT ARGENTINO PARA OBTENER CARRERAS CON PRECIOS
+            const response = await fetch('/api/payments-arg/carreras/precios');
             if (!response.ok) throw new Error('Error al obtener las carreras');
-            const carreras = await response.json();
+            const data = await response.json();
 
-            carrerasCache = carreras;
+            if (data.success && data.carreras) {
+                // Adaptar formato para compatibilidad
+                carrerasCache = data.carreras.map(carrera => ({
+                    id_carrera: carrera.id,
+                    nombre: carrera.nombre,
+                    descripcion: carrera.descripcion || '',
+                    imagen: carrera.imagen || './images/default_carrera.jpg',
+                    prices: carrera.prices
+                }));
+            } else {
+                carrerasCache = [];
+            }
+
             isLoading = false;
-            return carreras;
+            return carrerasCache;
         } catch (error) {
             console.error('Error al obtener carreras:', error);
             isLoading = false;
@@ -661,39 +620,19 @@ function handleFloatingNotice() {
         }
     }
     
-    
+    // Función mejorada para guardar el contenido inicial (fixed)
     function storeInitialContent() {
-        initialContent = track.innerHTML;
         originalContent = track.innerHTML;
     }
 
-    // 5. Asegúrate de tener la función para configurar los botones de compra
-function asignarEventoComprar() {
-    // Usamos delegación de eventos para los botones de compra
-    // (Esta función puede estar ya definida en tu código o importarse desde utils.js)
-    // Aquí solo una implementación de respaldo por si no existe
-    if (typeof window.setupComprarBtnListeners === 'function') {
-        window.setupComprarBtnListeners();
-    } else {
-        document.addEventListener('click', function(e) {
-            const comprarBtn = e.target.closest('.comprar-btn');
-            if (comprarBtn) {
-                e.preventDefault();
-                const producto = comprarBtn.getAttribute('data-producto');
-                const dataId = comprarBtn.getAttribute('data-id');
-                
-                if (window.AcadeliaPagos && typeof window.AcadeliaPagos.procesarCompra === 'function') {
-                    window.AcadeliaPagos.procesarCompra(producto, dataId);
-                } else if (typeof window.handleCompra === 'function') {
-                    window.handleCompra(producto, dataId);
-                } else {
-                    console.error('Sistema de pagos no disponible');
-                }
-            }
-        });
+    // ===== CONFIGURAR EVENTOS DE COMPRA (ACTUALIZADO) =====
+    function asignarEventoComprar() {
+        // Los eventos de compra ahora son manejados por argentina-payments.js
+        // Solo necesitamos asegurar que los botones tengan los atributos correctos
+        console.log('🇦🇷 Eventos de compra configurados por argentina-payments.js');
     }
-}
     
+    // Función mejorada para asignar evento Ver más
     function asignarEventoVerMas() {
         const botones = document.querySelectorAll('.vermas-btn');
         botones.forEach(boton => {
@@ -706,10 +645,9 @@ function asignarEventoComprar() {
                 
                 try {
                     isDetailView = true;
-
-                    document.getElementById('mainIvaNotice').classList.add('hidden');
                     regresarBtn.style.display = 'flex';
                     
+                    // Mostrar skeleton mientras cargamos
                     showSkeleton();
                     
                     // CORRECCIÓN: Obtener los AVAs desde la API
@@ -730,6 +668,7 @@ function asignarEventoComprar() {
                         });
                     });
                     
+                    // Actualizar el contenido
                     track.innerHTML = html;
                     
                     // Reiniciar el carrusel
@@ -759,37 +698,7 @@ function asignarEventoComprar() {
         });
     }
     
-    updateIvaNoticeVisibility();
-
-
-function updateIvaNoticeVisibility() {
-    const mainNotice = document.getElementById('mainIvaNotice');
-    const floatingNotice = document.getElementById('floatingIvaNotice');
-    
-    if (!mainNotice || !floatingNotice) return;
-    
-    if (isDetailView) {
-        // En vista detalle: ocultar principal completamente y mostrar flotante
-        mainNotice.classList.add('hidden-detail');
-        floatingNotice.classList.add('show');
-    } else {
-        // En vista normal: mostrar principal y manejar flotante según scroll
-        mainNotice.classList.remove('hidden-detail');
-        
-        // Reiniciar el comportamiento del flotante según responsive
-        if (window.innerWidth <= 768) {
-            floatingNotice.classList.add('show');
-        } else {
-            // En desktop, verificar si el aviso principal está visible
-            const rect = mainNotice.getBoundingClientRect();
-            if (rect.top < 0) {
-                floatingNotice.classList.add('show');
-            } else {
-                floatingNotice.classList.remove('show');
-            }
-        }
-    }
-}
+    // ================= EVENT HANDLERS =================
     function configurarEventos() {
         // Eventos para funciones de drag
         if (track) {
@@ -815,16 +724,14 @@ function updateIvaNoticeVisibility() {
     function handleRegresarClick() {
         if (!originalContent) return;
         
-        document.getElementById('mainIvaNotice').classList.remove('hidden');
         isDetailView = false;
         
+        // Restaurar el track al estado original y reiniciar el carrusel
         track.innerHTML = originalContent;
         
         // Reconfigurar todo
         currentIndex = 0;
         asignarEventoVerMas();
-        
-        // CORRECCIÓN: También configurar los botones de compra
         asignarEventoComprar();
         
         // Asegurarse de que el navegador repinte antes de actualizar el carrusel
@@ -833,11 +740,12 @@ function updateIvaNoticeVisibility() {
             track.style.transform = 'none';
             updateCarousel(false);
             
+            // Restaurar los hover effects
             setupCardHoverEffects();
             
-            // CORRECCIÓN: Actualizar los precios después de restaurar el contenido
-            if (window.AcadeliaPagos && window.AcadeliaPagos.actualizarPrecios) {
-                window.AcadeliaPagos.actualizarPrecios();
+            // 🇦🇷 ACTUALIZAR PRECIOS DESDE ARGENTINA
+            if (window.ArgentinaPagos && window.ArgentinaPagos.updatePricesDisplay) {
+                window.ArgentinaPagos.updatePricesDisplay();
             }
         }, 50);
         
@@ -845,52 +753,52 @@ function updateIvaNoticeVisibility() {
     }
 
     // 3. Añade la función fetchAVAsFromAPI si no existe
-async function fetchAVAsFromAPI(carreraId) {
-    const response = await fetch(`/api/avas/carrera/${carreraId}`);
-    if (!response.ok) throw new Error('Error al obtener los AVAs');
-    return await response.json();
-}
+    async function fetchAVAsFromAPI(carreraId) {
+        const response = await fetch(`/api/avas/carrera/${carreraId}`);
+        if (!response.ok) throw new Error('Error al obtener los AVAs');
+        return await response.json();
+    }
 
-// 4. Añade la función generarTarjeta si no existe
-function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", producto, btnTexto = "Ver más", esVerMas = true, mostrarComprar = true }) {
-    const descripcionCorta = descripcion.length > 120 ? descripcion.substring(0, 120) + "..." : descripcion;
-    
-    return `
-      <div class="content-box" data-product="${producto}">
-            <div class="box-content">
-                <!-- Card Header -->
-                <div class="card-header">
-                    <div class="image-container">
-                        <img src="${imagen}" alt="${alt}" loading="lazy">
+    // 4. Añade la función generarTarjeta si no existe
+    function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", producto, btnTexto = "Ver más", esVerMas = true, mostrarComprar = true }) {
+        const descripcionCorta = descripcion.length > 120 ? descripcion.substring(0, 120) + "..." : descripcion;
+        
+        return `
+          <div class="content-box" data-product="${producto}">
+                <div class="box-content">
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="image-container">
+                            <img src="${imagen}" alt="${alt}" loading="lazy">
+                        </div>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <h2>${titulo}</h2>
+                        <h1 class="price"></h1>
+                        <p>${descripcionCorta}</p>
+                    </div>
+                    
+                    <!-- Card Footer -->
+                    <div class="card-footer">
+                        ${esVerMas 
+                            ? `<button class="vermas-btn" data-alt="${titulo}" data-id="${dataId}">
+                                ${btnTexto} <i class='bx bx-chevron-right'></i>
+                               </button>`
+                            : ""}
+                        ${mostrarComprar 
+                            ? `<button class="comprar-btn" data-alt="${titulo}" data-producto="${producto}" data-id="${dataId}">
+                                Comprar <i class='bx bx-store'></i>
+                               </button>`
+                            : ""}
                     </div>
                 </div>
-                
-                <!-- Card Body -->
-                <div class="card-body">
-                    <h2>${titulo}</h2>
-                    <h1 class="price"></h1>
-                    <p>${descripcionCorta}</p>
-                </div>
-                
-                <!-- Card Footer -->
-                <div class="card-footer">
-                    ${esVerMas 
-                        ? `<button class="vermas-btn" data-alt="${titulo}" data-id="${dataId}">
-                            ${btnTexto} <i class='bx bx-chevron-right'></i>
-                           </button>`
-                        : ""}
-                    ${mostrarComprar 
-                        ? `<button class="comprar-btn" data-alt="${titulo}" data-producto="${producto}" data-id="${dataId}">
-                            Comprar <i class='bx bx-store'></i>
-                           </button>`
-                        : ""}
-                </div>
             </div>
-        </div>
-    `;
-}
+        `;
+    }
 
-
+    // ================= DRAG HANDLERS =================
     function startDrag(e) {
         if (isDetailView) return; // No permitir arrastrar en vista detalle
         
@@ -919,6 +827,7 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         }
     }
 
+    // ================= STYLES INJECTION =================
     
     // Inyectar estilos del skeleton
     const injectSkeletonStyles = () => {
@@ -1061,6 +970,7 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         document.head.appendChild(style);
     };
 
+    // Agregar estilos necesarios
     const searchStyles = document.createElement('style');
     searchStyles.textContent = `
         /* Ocultar botones de navegación por defecto para evitar flasheo */
@@ -1130,18 +1040,23 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
     `;
     document.head.appendChild(searchStyles);
     
+    // ================= INICIALIZACIÓN =================
     async function inicializar() {
         try {
+            // Verificar si los elementos existen
             if (!track) {
                 console.error("Elemento del track no encontrado");
                 return;
             }
             
+            // Iniciar la carga de datos
             await getAllCarreras();
             
+            // Configurar eventos de navegación
             if (prevBtn) prevBtn.addEventListener('click', () => moveSlide(-1));
             if (nextBtn) nextBtn.addEventListener('click', () => moveSlide(1));
             
+            // Configurar eventos de búsqueda
             if (searchInput) {
                 let searchTimeout;
                 searchInput.addEventListener("input", function() {
@@ -1155,12 +1070,14 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                     }, 300);
                 });
                 
+                // Cerrar sugerencias al hacer clic fuera
                 document.addEventListener("click", function(e) {
                     if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
                         suggestionsBox.style.display = "none";
                     }
                 });
                 
+                // Limpiar búsqueda con Escape
                 searchInput.addEventListener("keydown", function(e) {
                     if (e.key === "Escape") {
                         this.value = "";
@@ -1170,8 +1087,10 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                 });
             }
 
+            // Configurar eventos del carrusel
             configurarEventos();
             
+            // Actualizar cuando cambia el tamaño de la ventana
             window.addEventListener('resize', () => {
                 itemsToShow = getItemsToShow();
                 updateCarousel(false);
@@ -1183,6 +1102,7 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                     asignarEventoVerMas();
                     updateCarousel(false);
                     
+                    // Guardar el contenido inicial solo una vez
                     if (!originalContent) {
                         storeInitialContent();
                     }
@@ -1191,6 +1111,17 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
             
             observer.observe(track, { childList: true });
             
+            // 🇦🇷 ESPERAR A QUE ARGENTINA PAGOS ESTÉ LISTO
+            const waitForArgentinaPagos = () => {
+                if (window.ArgentinaPagos && window.ArgentinaPagos.isReady) {
+                    console.log('🇦🇷 Sistema Argentina Pagos integrado correctamente');
+                } else {
+                    setTimeout(waitForArgentinaPagos, 100);
+                }
+            };
+            waitForArgentinaPagos();
+            
+            // Iniciar las mejoras visuales
             setTimeout(() => {
                 // Primero aseguramos que las tarjetas son visibles
                 addEntranceEffects();
@@ -1219,7 +1150,7 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
                 track.innerHTML = `
                     <div class="content-box">
                         <div class="box-content">
-                            <p class="error-message">Error al inicializar: ${error.message}</p>
+                            <p class="error-message">🦫 Error al inicializar: ${error.message}</p>
                         </div>
                     </div>
                 `;
@@ -1227,98 +1158,31 @@ function generarTarjeta({ imagen, alt, titulo, descripcion = "", dataId = "", pr
         }
     }
 
+    // Función para ocultar inmediatamente los botones de navegación
     function ocultarBotonesNavegacion() {
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
     }
 
+    // Iniciar el proceso
     injectSkeletonStyles();
     ocultarBotonesNavegacion();
     showSkeleton();
     inicializar();
 });
 
+// Inicializar el selector personalizado cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
     initCustomSelect();
 });
 
 function initCustomSelect() {
-    const customSelect = document.querySelector('.custom-select');
-    if (!customSelect) return;
-    
-    const selectSelected = customSelect.querySelector('.select-selected');
-    const selectItems = customSelect.querySelector('.select-items');
-    const hiddenSelect = document.getElementById('countrySelect');
-    
-    function closeAllSelect(elmnt) {
-        const selectItems = document.getElementsByClassName('select-items');
-        const selectSelected = document.getElementsByClassName('select-selected');
-        let arrNo = [];
-        
-        for (let i = 0; i < selectSelected.length; i++) {
-            if (elmnt == selectSelected[i]) {
-                arrNo.push(i);
-            } else {
-                selectSelected[i].classList.remove('select-arrow-active');
-            }
-        }
-        
-        for (let i = 0; i < selectItems.length; i++) {
-            if (arrNo.indexOf(i) != -1) {
-                selectItems[i].classList.remove('select-hide');
-            } else {
-                selectItems[i].classList.add('select-hide');
-            }
-        }
-    }
-    
-    // Toggle del dropdown al hacer clic en el select
-    selectSelected.addEventListener('click', function(e) {
-        e.stopPropagation();
-        this.classList.toggle('select-arrow-active');
-        selectItems.classList.toggle('select-hide');
-    });
-    
-    const selectItemElements = customSelect.querySelectorAll('.select-item');
-    selectItemElements.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            const value = this.getAttribute('data-value');
-            const html = this.innerHTML;
-            
-            selectSelected.innerHTML = html;
-            selectSelected.setAttribute('data-value', value);
-            
-            for (let i = 0; i < selectItemElements.length; i++) {
-                selectItemElements[i].classList.remove('same-as-selected');
-            }
-            this.classList.add('same-as-selected');
-            
-            if (hiddenSelect) {
-                for (let i = 0; i < hiddenSelect.options.length; i++) {
-                    if (hiddenSelect.options[i].value === value) {
-                        hiddenSelect.selectedIndex = i;
-                        const event = new Event('change', { bubbles: true });
-                        hiddenSelect.dispatchEvent(event);
-                        break;
-                    }
-                }
-            }
-            
-            selectItems.classList.add('select-hide');
-            selectSelected.classList.remove('select-arrow-active');
-        });
-    });
-    
-    document.addEventListener('click', function() {
-        closeAllSelect();
-    });
+    // 🇦🇷 CONFIGURADO POR argentina-payments.js para fijar Argentina
+    console.log('🇦🇷 Selector de país configurado por argentina-payments.js');
 }
-// Add Back to Top button functionality to misavas.js
+
+// Add Back to Top button functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // ... existing code ...
-    
     // Add back to top button
     const backToTopBtn = document.createElement('button');
     backToTopBtn.id = 'backToTopBtn';
@@ -1359,7 +1223,6 @@ document.addEventListener('DOMContentLoaded', function() {
             border: none;
             border-radius: 50%;
             display: flex;
-
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -1468,6 +1331,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the back to top button
     initBackToTop();
-    
-    // ... rest of your existing code ...
 });
