@@ -682,14 +682,14 @@ Agente:
     <tr>
       <td align="center" width="50%">
         <a href="docs/media/acadelia-marketing1.gif">
-          <img src="docs/media/acadelia-marketing2.gif" alt="Flujo 2 - Contenido Capturado" width="420">
+          <img src="docs/media/acadelia-marketing2.gif" alt="Flujo 2 - Contenido Capturado" width="380">
         </a>
         <br/>
         <sub><em>Captura y procesamiento del contenido ingresado</em></sub>
       </td>
       <td align="center" width="50%">
         <a href="docs/media/acadelia-marketing1.gif">
-          <img src="docs/media/acadelia-marketing3.gif" alt="Flujo 3 - Memoria e Insights" width="420">
+          <img src="docs/media/acadelia-marketing3.gif" alt="Flujo 3 - Memoria e Insights" width="380">
         </a>
         <br/>
         <sub><em>Generación de memoria e insights del sistema</em></sub>
