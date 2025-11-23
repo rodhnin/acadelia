@@ -462,10 +462,10 @@ El **Agente de Marketing** es un sistema multi-agente autónomo especializado en
 ### 🧩 Componentes del Sistema
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    DIRECTOR AGENT                           │
-│  (Orquestador - Decide qué agentes activar)                 │
-└────────────┬────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│                DIRECTOR AGENT                │
+│  (Orquestador - Decide qué agentes activar)  │
+└────────────┬─────────────────────────────────┘
              │
     ┌────────┴───────┐
     │                │
