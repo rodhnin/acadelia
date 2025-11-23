@@ -15,10 +15,11 @@
 Acadelia utiliza **Supabase** (PostgreSQL 14+) como base de datos principal con la extensión **pgvector** para búsquedas vectoriales (RAG).
 
 **Estadísticas**:
-- **82 tablas** en total
-- **40+ tablas de embeddings** (una por agente/materia)
-- **Vector dimension**: 1536 (OpenAI text-embedding-ada-002)
-- **Schemas**: public, auth, storage, realtime, vault
+
+-   **82 tablas** en total
+-   **40+ tablas de embeddings** (una por agente/materia)
+-   **Vector dimension**: 1536 (OpenAI text-embedding-ada-002)
+-   **Schemas**: public, auth, storage, realtime, vault
 
 ---
 
@@ -44,20 +45,21 @@ CREATE EXTENSION IF NOT EXISTS pg_graphql;          -- Soporte GraphQL
 
 #### 1. **Sistema de Usuarios y Autenticación** (10 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `usuario` | Usuarios de la plataforma | id, email, password_hash, plan, created_at |
-| `perfil` | Perfiles extendidos de usuario | user_id, nombre, apellido, avatar_url |
-| `rol` | Roles del sistema | id, nombre (admin, user, premium) |
-| `cookie_consent` | Consentimientos de cookies | user_id, analytics, marketing, accepted_at |
+| Tabla                       | Descripción                          | Campos Principales                                |
+| --------------------------- | ------------------------------------ | ------------------------------------------------- |
+| `usuario`                   | Usuarios de la plataforma            | id, email, password_hash, plan, created_at        |
+| `perfil`                    | Perfiles extendidos de usuario       | user_id, nombre, apellido, avatar_url             |
+| `rol`                       | Roles del sistema                    | id, nombre (admin, user, premium)                 |
+| `cookie_consent`            | Consentimientos de cookies           | user_id, analytics, marketing, accepted_at        |
 | `account_deletion_requests` | Solicitudes de eliminación de cuenta | user_id, reason, requested_at, scheduled_deletion |
-| `deleted_accounts` | Registro de cuentas eliminadas | email, deleted_at, reason |
-| `deletion_log` | Log de eliminaciones | user_id, action, timestamp |
-| `activity_log` | Log de actividad de usuarios | user_id, action, ip_address, timestamp |
-| `login_attempts` | Intentos de login | email, ip_address, success, timestamp |
-| `terms_acceptances` | Aceptación de términos | user_id, version, accepted_at |
+| `deleted_accounts`          | Registro de cuentas eliminadas       | email, deleted_at, reason                         |
+| `deletion_log`              | Log de eliminaciones                 | user_id, action, timestamp                        |
+| `activity_log`              | Log de actividad de usuarios         | user_id, action, ip_address, timestamp            |
+| `login_attempts`            | Intentos de login                    | email, ip_address, success, timestamp             |
+| `terms_acceptances`         | Aceptación de términos               | user_id, version, accepted_at                     |
 
 **Relaciones Clave**:
+
 ```sql
 usuario (1) ──< (N) perfil
 usuario (1) ──< (N) cookie_consent
@@ -68,14 +70,15 @@ usuario (1) ──< (N) activity_log
 
 #### 2. **Sistema de Chat y Conversaciones** (4 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `chat` | Chats creados por usuarios | id, user_id, ava_id, herramienta_id, title, created_at |
-| `chat_history` | Historial de mensajes | id, chat_id, role (user/assistant), content, metadata, created_at |
-| `ava` | Agentes virtuales académicos | id, nombre, descripcion, tipo (matematico/teorico), carrera_id |
-| `herramienta` | Herramientas (PDF, Agente) | id, nombre, descripcion, tipo |
+| Tabla          | Descripción                  | Campos Principales                                                |
+| -------------- | ---------------------------- | ----------------------------------------------------------------- |
+| `chat`         | Chats creados por usuarios   | id, user_id, ava_id, herramienta_id, title, created_at            |
+| `chat_history` | Historial de mensajes        | id, chat_id, role (user/assistant), content, metadata, created_at |
+| `ava`          | Agentes virtuales académicos | id, nombre, descripcion, tipo (matematico/teorico), carrera_id    |
+| `herramienta`  | Herramientas (PDF, Agente)   | id, nombre, descripcion, tipo                                     |
 
 **Relaciones Clave**:
+
 ```sql
 chat (N) ──> (1) usuario
 chat (N) ──> (1) ava
@@ -85,6 +88,7 @@ ava (N) ──> (1) carrera
 ```
 
 **Ejemplo de registro en chat_history**:
+
 ```json
 {
   "id": "uuid",
@@ -123,70 +127,76 @@ CREATE INDEX ON emb_{materia} USING ivfflat (embedding vector_cosine_ops);
 **Tablas de Embeddings por Área**:
 
 **Ingeniería** (11 tablas):
-- `emb_algebra`
-- `emb_calculo`
-- `emb_fisica`
-- `emb_quimica`
-- `emb_estadistica`
-- `emb_electricidad`
-- `emb_matematicaavz` (matemáticas avanzadas)
-- `emb_computacion`
-- `emb_redes` (redes y seguridad)
-- `emb_resismateriales` (resistencia de materiales)
+
+-   `emb_algebra`
+-   `emb_calculo`
+-   `emb_fisica`
+-   `emb_quimica`
+-   `emb_estadistica`
+-   `emb_electricidad`
+-   `emb_matematicaavz` (matemáticas avanzadas)
+-   `emb_computacion`
+-   `emb_redes` (redes y seguridad)
+-   `emb_resismateriales` (resistencia de materiales)
 
 **Medicina** (10 tablas):
-- `emb_patologia`
-- `emb_semiologia`
-- `emb_cienciasbasicas`
-- `emb_cienciasaplicadas`
-- `emb_medicinainterna`
-- `emb_cirugia` (cirugía y urgencias)
-- `emb_especialidmed1`
-- `emb_especialidmed2`
-- `emb_epidemiologia`
-- `emb_medicinamat` (matemática médica)
+
+-   `emb_patologia`
+-   `emb_semiologia`
+-   `emb_cienciasbasicas`
+-   `emb_cienciasaplicadas`
+-   `emb_medicinainterna`
+-   `emb_cirugia` (cirugía y urgencias)
+-   `emb_especialidmed1`
+-   `emb_especialidmed2`
+-   `emb_epidemiologia`
+-   `emb_medicinamat` (matemática médica)
 
 **Economía** (10 tablas):
-- `emb_microeconomia`
-- `emb_macroeconomia`
-- `emb_econometria`
-- `emb_economia_internacional`
-- `emb_economialaboral`
-- `emb_finanzas`
-- `emb_sectorpublico`
-- `emb_historiaeconomica`
-- `emb_desarrolloeconomico`
-- `emb_calculoeconomico`
+
+-   `emb_microeconomia`
+-   `emb_macroeconomia`
+-   `emb_econometria`
+-   `emb_economia_internacional`
+-   `emb_economialaboral`
+-   `emb_finanzas`
+-   `emb_sectorpublico`
+-   `emb_historiaeconomica`
+-   `emb_desarrolloeconomico`
+-   `emb_calculoeconomico`
 
 **Psicología** (10 tablas):
-- `emb_dsm5`
-- `emb_psicoanalisis`
-- `emb_neuropsicologia`
-- `emb_psicologiaev` (psicología evolutiva)
-- `emb_psicologiageneral`
-- `emb_psicologiasocial`
-- `emb_psicopatologia`
-- `emb_psicdiagnostico`
-- `emb_psicoestadistica`
-- `emb_epistemologia`
+
+-   `emb_dsm5`
+-   `emb_psicoanalisis`
+-   `emb_neuropsicologia`
+-   `emb_psicologiaev` (psicología evolutiva)
+-   `emb_psicologiageneral`
+-   `emb_psicologiasocial`
+-   `emb_psicopatologia`
+-   `emb_psicdiagnostico`
+-   `emb_psicoestadistica`
+-   `emb_epistemologia`
 
 **Herramientas** (2 tablas relacionadas):
-- `agentetube` (procesa YouTube/audio/video)
-- `pdfs` (procesa documentos PDF)
+
+-   `agentetube` (procesa YouTube/audio/video)
+-   `pdfs` (procesa documentos PDF)
 
 ---
 
 #### 4. **Sistema de Marketing** (5 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `marketing_trends` | Tendencias detectadas | id, trend_name, embedding, metadata, score |
-| `marketing_profiles` | Perfiles de audiencia | id, profile_name, demographics, interests |
-| `marketing_contents` | Contenido generado | id, content_type, content, channel, performance |
-| `marketing_memory` | Memoria del agente | id, concept, embedding, relationships, created_at |
-| `marketing_interactions` | Interacciones rastreadas | id, user_query, response, insights |
+| Tabla                    | Descripción              | Campos Principales                                |
+| ------------------------ | ------------------------ | ------------------------------------------------- |
+| `marketing_trends`       | Tendencias detectadas    | id, trend_name, embedding, metadata, score        |
+| `marketing_profiles`     | Perfiles de audiencia    | id, profile_name, demographics, interests         |
+| `marketing_contents`     | Contenido generado       | id, content_type, content, channel, performance   |
+| `marketing_memory`       | Memoria del agente       | id, concept, embedding, relationships, created_at |
+| `marketing_interactions` | Interacciones rastreadas | id, user_query, response, insights                |
 
 **Relaciones**:
+
 ```sql
 marketing_trends (N) ──> (N) marketing_memory  -- Grafo de conocimiento
 marketing_contents (N) ──> (1) marketing_profiles
@@ -196,17 +206,18 @@ marketing_contents (N) ──> (1) marketing_profiles
 
 #### 5. **Sistema de Pagos** (7 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `suscripciones` | Suscripciones activas | user_id, plan, status, paddle_subscription_id |
+| Tabla                     | Descripción                | Campos Principales                                |
+| ------------------------- | -------------------------- | ------------------------------------------------- |
+| `suscripciones`           | Suscripciones activas      | user_id, plan, status, paddle_subscription_id     |
 | `historial_transacciones` | Historial de transacciones | user_id, amount, currency, status, payment_method |
-| `payments_arg` | Pagos Argentina (Ualá Bis) | user_id, amount, qr_code, status |
-| `subscriptions_arg` | Suscripciones Argentina | user_id, plan, uala_subscription_id |
-| `webhook_events_arg` | Webhooks Ualá Bis | event_type, payload, processed |
-| `egresos` | Gastos del negocio | monto, categoria_id, descripcion, fecha |
-| `categorias_egresos` | Categorías de gastos | nombre, descripcion |
+| `payments_arg`            | Pagos Argentina (Ualá Bis) | user_id, amount, qr_code, status                  |
+| `subscriptions_arg`       | Suscripciones Argentina    | user_id, plan, uala_subscription_id               |
+| `webhook_events_arg`      | Webhooks Ualá Bis          | event_type, payload, processed                    |
+| `egresos`                 | Gastos del negocio         | monto, categoria_id, descripcion, fecha           |
+| `categorias_egresos`      | Categorías de gastos       | nombre, descripcion                               |
 
 **Relaciones**:
+
 ```sql
 usuario (1) ──< (N) suscripciones
 usuario (1) ──< (N) historial_transacciones
@@ -217,39 +228,40 @@ egresos (N) ──> (1) categorias_egresos
 
 #### 6. **Sistema de Archivos** (3 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `pdfs` | PDFs subidos por usuarios | id, user_id, chat_id, file_name, file_path, ocr_text |
-| `file_attachments` | Archivos adjuntos en chats | id, chat_id, file_type, file_url, metadata |
-| `agentetube` | Audio/Video procesados | id, chat_id, source_url, transcription, duration |
+| Tabla              | Descripción                | Campos Principales                                   |
+| ------------------ | -------------------------- | ---------------------------------------------------- |
+| `pdfs`             | PDFs subidos por usuarios  | id, user_id, chat_id, file_name, file_path, ocr_text |
+| `file_attachments` | Archivos adjuntos en chats | id, chat_id, file_type, file_url, metadata           |
+| `agentetube`       | Audio/Video procesados     | id, chat_id, source_url, transcription, duration     |
 
 ---
 
 #### 7. **Sistema Administrativo** (8 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `config` | Configuración global | key, value, description |
-| `system_config` | Configuración del sistema | setting_name, setting_value, updated_at |
-| `security_events` | Eventos de seguridad | event_type, user_id, ip_address, details, severity |
-| `scheduled_tasks` | Tareas programadas | task_name, schedule, last_run, next_run |
-| `informes` | Informes generados | tipo, contenido, generated_at |
-| `feedback` | Feedback de usuarios | user_id, rating, comment, created_at |
-| `analisis_impuestos` | Análisis de impuestos | periodo, ingresos, gastos, impuestos_calculados |
-| `password_reset_tokens` | Tokens de reset de password | user_id, token, expires_at |
+| Tabla                   | Descripción                 | Campos Principales                                 |
+| ----------------------- | --------------------------- | -------------------------------------------------- |
+| `config`                | Configuración global        | key, value, description                            |
+| `system_config`         | Configuración del sistema   | setting_name, setting_value, updated_at            |
+| `security_events`       | Eventos de seguridad        | event_type, user_id, ip_address, details, severity |
+| `scheduled_tasks`       | Tareas programadas          | task_name, schedule, last_run, next_run            |
+| `informes`              | Informes generados          | tipo, contenido, generated_at                      |
+| `feedback`              | Feedback de usuarios        | user_id, rating, comment, created_at               |
+| `analisis_impuestos`    | Análisis de impuestos       | periodo, ingresos, gastos, impuestos_calculados    |
+| `password_reset_tokens` | Tokens de reset de password | user_id, token, expires_at                         |
 
 ---
 
 #### 8. **Sistema de Referencia** (4 tablas)
 
-| Tabla | Descripción | Campos Principales |
-|-------|-------------|-------------------|
-| `carrera` | Carreras académicas | id, nombre (Ingeniería, Medicina, etc.) |
-| `universidad` | Universidades | id, nombre, pais_id |
-| `pais` | Países | id, nombre, codigo |
-| `anatomia` | Referencias de anatomía | id, estructura, descripcion |
+| Tabla         | Descripción             | Campos Principales                      |
+| ------------- | ----------------------- | --------------------------------------- |
+| `carrera`     | Carreras académicas     | id, nombre (Ingeniería, Medicina, etc.) |
+| `universidad` | Universidades           | id, nombre, pais_id                     |
+| `pais`        | Países                  | id, nombre, codigo                      |
+| `anatomia`    | Referencias de anatomía | id, estructura, descripcion             |
 
 **Relaciones**:
+
 ```sql
 universidad (N) ──> (1) pais
 ava (N) ──> (1) carrera
@@ -269,9 +281,9 @@ ava (N) ──> (1) carrera
 │ - email     │         │ - user_id│         │ - nombre    │
 │ - plan      │         │ - ava_id │         │ - tipo      │
 └─────┬───────┘         └────┬─────┘         └──────┬──────┘
-      │                      │                       │
-      │                      │                       │
-      ▼                      ▼                       ▼
+      │                      │                      │
+      │                      │                      │
+      ▼                      ▼                      ▼
 ┌─────────────┐      ┌──────────────┐       ┌─────────────┐
 │suscripciones│      │chat_history  │       │  carrera    │
 │             │      │              │       │             │
@@ -280,25 +292,25 @@ ava (N) ──> (1) carrera
 │ - status    │      │ - content    │       │             │
 └─────────────┘      └──────────────┘       └─────────────┘
 
-┌──────────────────────────────────────────────────────────┐
-│            SISTEMA RAG (Vector Database)                 │
-│                                                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ emb_algebra  │  │ emb_calculo  │  │ emb_fisica   │  │
-│  │              │  │              │  │              │  │
-│  │ - id         │  │ - id         │  │ - id         │  │
-│  │ - content    │  │ - content    │  │ - content    │  │
-│  │ - embedding  │  │ - embedding  │  │ - embedding  │  │
-│  │   VECTOR     │  │   VECTOR     │  │   VECTOR     │  │
-│  │   (1536)     │  │   (1536)     │  │   (1536)     │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-│                                                          │
+┌─────────────────────────────────────────────────────────┐
+│            SISTEMA RAG (Vector Database)                │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ emb_algebra  │  │ emb_calculo  │  │ emb_fisica   │   │
+│  │              │  │              │  │              │   │
+│  │ - id         │  │ - id         │  │ - id         │   │
+│  │ - content    │  │ - content    │  │ - content    │   │
+│  │ - embedding  │  │ - embedding  │  │ - embedding  │   │
+│  │   VECTOR     │  │   VECTOR     │  │   VECTOR     │   │
+│  │   (1536)     │  │   (1536)     │  │   (1536)     │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
+│                                                         │
 │  ... (40+ tablas más de embeddings)                     │
-└──────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
 
-┌──────────────────────────────────────────────────────────┐
-│              SISTEMA DE MARKETING                        │
-│                                                          │
+┌─────────────────────────────────────────────────────────┐
+│              SISTEMA DE MARKETING                       │
+│                                                         │
 │  ┌──────────────────┐         ┌───────────────────┐     │
 │  │marketing_trends  │────<────│ marketing_memory  │     │
 │  │                  │         │                   │     │
@@ -306,12 +318,12 @@ ava (N) ──> (1) carrera
 │  │ - embedding      │         │ - embedding       │     │
 │  │ - score          │         │ - relationships   │     │
 │  └──────────────────┘         └───────────────────┘     │
-│           │                            │                 │
-│           ▼                            ▼                 │
+│           │                            │                │
+│           ▼                            ▼                │
 │  ┌──────────────────┐         ┌───────────────────┐     │
 │  │marketing_content │         │marketing_profiles │     │
 │  └──────────────────┘         └───────────────────┘     │
-└──────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -334,9 +346,10 @@ SET ivfflat.probes = 10;  -- Número de listas a buscar
 ```
 
 **Explicación**:
-- **IVFFlat**: Inverted File with Flat compression
-- **Lists**: 100 particiones (ajustable según tamaño de datos)
-- **Probes**: Cuántas particiones buscar (trade-off: speed vs accuracy)
+
+-   **IVFFlat**: Inverted File with Flat compression
+-   **Lists**: 100 particiones (ajustable según tamaño de datos)
+-   **Probes**: Cuántas particiones buscar (trade-off: speed vs accuracy)
 
 ### Índices de Texto Completo
 
@@ -650,7 +663,7 @@ LIMIT 10;
 
 ## Recursos
 
-- [Supabase Vector Docs](https://supabase.com/docs/guides/ai/vector-columns)
-- [pgvector GitHub](https://github.com/pgvector/pgvector)
-- [PostgreSQL Indexing](https://www.postgresql.org/docs/current/indexes.html)
-- [Full Text Search](https://www.postgresql.org/docs/current/textsearch.html)
+-   [Supabase Vector Docs](https://supabase.com/docs/guides/ai/vector-columns)
+-   [pgvector GitHub](https://github.com/pgvector/pgvector)
+-   [PostgreSQL Indexing](https://www.postgresql.org/docs/current/indexes.html)
+-   [Full Text Search](https://www.postgresql.org/docs/current/textsearch.html)

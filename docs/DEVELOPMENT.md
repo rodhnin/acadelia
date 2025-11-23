@@ -58,20 +58,22 @@ npm run dev
 ### Herramientas Recomendadas
 
 **Editor**: VSCode con extensiones:
-- ESLint
-- Prettier
-- GitLens
-- Thunder Client (API testing)
+
+-   ESLint
+-   Prettier
+-   GitLens
+-   Thunder Client (API testing)
 
 **Configuración VSCode** (`.vscode/settings.json`):
+
 ```json
 {
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "javascript.preferences.quoteStyle": "single",
-  "files.eol": "\n"
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "javascript.preferences.quoteStyle": "single",
+    "files.eol": "\n"
 }
 ```
 
@@ -163,8 +165,8 @@ frontend/
                 │   Hit?   │
                 └────┬─────┘
                      │
-         ┌───────────┴───────────┐
-         │                       │
+         ┌───────────┴──────────┐
+         │                      │
     ┌────▼─────┐          ┌─────▼─────┐
     │  Return  │          │   Cache   │
     │  Cached  │          │    Miss   │
@@ -185,7 +187,7 @@ frontend/
                                 │
                   ┌─────────────▼──────────────┐
                   │  5. TOOL EXECUTION         │
-                  │  - WolframAlpha (matemático)│
+                  │  - WolframAlpha(matemático)│
                   │  - Brave Search (web)      │
                   │  - DALL-E (imágenes)       │
                   └─────────────┬──────────────┘
@@ -228,105 +230,104 @@ frontend/
 **Archivo**: `backend/lib/supabaseHybridSearch.js`
 
 ```javascript
-import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase';
+import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 
 export class SupabaseHybridSearch {
-  constructor(embeddings, config) {
-    this.embeddings = embeddings;
-    this.supabase = config.client;
-    this.tableName = config.tableName;
-    this.similarityK = config.similarityK || 3;
-    this.keywordK = config.keywordK || 2;
-    this.similarityThreshold = config.similarityThreshold || 0.6;
-  }
-
-  async getRelevantDocuments(query) {
-    // 1. Vector similarity search
-    const vectorResults = await this.vectorSearch(query);
-
-    // 2. Keyword search (BM25)
-    const keywordResults = await this.keywordSearch(query);
-
-    // 3. Merge y rankear resultados
-    const merged = this.mergeAndRank(vectorResults, keywordResults);
-
-    return merged;
-  }
-
-  async vectorSearch(query) {
-    // Generar embedding del query
-    const queryEmbedding = await this.embeddings.embedQuery(query);
-
-    // Búsqueda de similitud coseno en Supabase
-    const { data, error } = await this.supabase
-      .rpc('match_documents', {
-        query_embedding: queryEmbedding,
-        match_threshold: this.similarityThreshold,
-        match_count: this.similarityK,
-        table_name: this.tableName
-      });
-
-    if (error) throw error;
-
-    return data.map(doc => ({
-      content: doc.content,
-      metadata: doc.metadata,
-      similarity: doc.similarity,
-      source: 'vector'
-    }));
-  }
-
-  async keywordSearch(query) {
-    // Full-text search en Supabase
-    const { data, error } = await this.supabase
-      .from(this.tableName)
-      .select('content, metadata')
-      .textSearch('content', query, {
-        type: 'websearch',
-        config: 'spanish'
-      })
-      .limit(this.keywordK);
-
-    if (error) throw error;
-
-    return data.map(doc => ({
-      content: doc.content,
-      metadata: doc.metadata,
-      source: 'keyword'
-    }));
-  }
-
-  mergeAndRank(vectorResults, keywordResults) {
-    // Combinar resultados, eliminando duplicados
-    const seen = new Set();
-    const merged = [];
-
-    // Vector results tienen prioridad (mayor peso)
-    for (const doc of vectorResults) {
-      const key = this.hashContent(doc.content);
-      if (!seen.has(key)) {
-        seen.add(key);
-        merged.push({ ...doc, score: doc.similarity * 1.5 });
-      }
+    constructor(embeddings, config) {
+        this.embeddings = embeddings;
+        this.supabase = config.client;
+        this.tableName = config.tableName;
+        this.similarityK = config.similarityK || 3;
+        this.keywordK = config.keywordK || 2;
+        this.similarityThreshold = config.similarityThreshold || 0.6;
     }
 
-    // Keyword results
-    for (const doc of keywordResults) {
-      const key = this.hashContent(doc.content);
-      if (!seen.has(key)) {
-        seen.add(key);
-        merged.push({ ...doc, score: 1.0 });
-      }
+    async getRelevantDocuments(query) {
+        // 1. Vector similarity search
+        const vectorResults = await this.vectorSearch(query);
+
+        // 2. Keyword search (BM25)
+        const keywordResults = await this.keywordSearch(query);
+
+        // 3. Merge y rankear resultados
+        const merged = this.mergeAndRank(vectorResults, keywordResults);
+
+        return merged;
     }
 
-    // Ordenar por score descendente
-    return merged.sort((a, b) => b.score - a.score);
-  }
+    async vectorSearch(query) {
+        // Generar embedding del query
+        const queryEmbedding = await this.embeddings.embedQuery(query);
 
-  hashContent(content) {
-    // Simple hash para detectar duplicados
-    return content.slice(0, 100);
-  }
+        // Búsqueda de similitud coseno en Supabase
+        const { data, error } = await this.supabase.rpc("match_documents", {
+            query_embedding: queryEmbedding,
+            match_threshold: this.similarityThreshold,
+            match_count: this.similarityK,
+            table_name: this.tableName,
+        });
+
+        if (error) throw error;
+
+        return data.map(doc => ({
+            content: doc.content,
+            metadata: doc.metadata,
+            similarity: doc.similarity,
+            source: "vector",
+        }));
+    }
+
+    async keywordSearch(query) {
+        // Full-text search en Supabase
+        const { data, error } = await this.supabase
+            .from(this.tableName)
+            .select("content, metadata")
+            .textSearch("content", query, {
+                type: "websearch",
+                config: "spanish",
+            })
+            .limit(this.keywordK);
+
+        if (error) throw error;
+
+        return data.map(doc => ({
+            content: doc.content,
+            metadata: doc.metadata,
+            source: "keyword",
+        }));
+    }
+
+    mergeAndRank(vectorResults, keywordResults) {
+        // Combinar resultados, eliminando duplicados
+        const seen = new Set();
+        const merged = [];
+
+        // Vector results tienen prioridad (mayor peso)
+        for (const doc of vectorResults) {
+            const key = this.hashContent(doc.content);
+            if (!seen.has(key)) {
+                seen.add(key);
+                merged.push({ ...doc, score: doc.similarity * 1.5 });
+            }
+        }
+
+        // Keyword results
+        for (const doc of keywordResults) {
+            const key = this.hashContent(doc.content);
+            if (!seen.has(key)) {
+                seen.add(key);
+                merged.push({ ...doc, score: 1.0 });
+            }
+        }
+
+        // Ordenar por score descendente
+        return merged.sort((a, b) => b.score - a.score);
+    }
+
+    hashContent(content) {
+        // Simple hash para detectar duplicados
+        return content.slice(0, 100);
+    }
 }
 ```
 
@@ -335,115 +336,107 @@ export class SupabaseHybridSearch {
 **Archivo**: `backend/utils/chat/AcadelCache.js`
 
 ```javascript
-import { createHash } from 'crypto';
-import { redisClient } from '../../lib/redis.js';
+import { createHash } from "crypto";
+import { redisClient } from "../../lib/redis.js";
 
 export class AcadelCache {
-  constructor() {
-    this.prefix = 'acadelia:cache:';
-    this.metrics = {
-      hits: 0,
-      misses: 0
-    };
-  }
-
-  async get(query, agentType) {
-    const key = this.generateKey(query, agentType);
-    const cached = await redisClient.get(key);
-
-    if (cached) {
-      this.metrics.hits++;
-      return JSON.parse(cached);
+    constructor() {
+        this.prefix = "acadelia:cache:";
+        this.metrics = {
+            hits: 0,
+            misses: 0,
+        };
     }
 
-    this.metrics.misses++;
-    return null;
-  }
+    async get(query, agentType) {
+        const key = this.generateKey(query, agentType);
+        const cached = await redisClient.get(key);
 
-  async set(query, response, agentType, category) {
-    const key = this.generateKey(query, agentType);
-    const ttl = this.getTTL(category);
+        if (cached) {
+            this.metrics.hits++;
+            return JSON.parse(cached);
+        }
 
-    await redisClient.setex(
-      key,
-      ttl,
-      JSON.stringify({
-        response,
-        cached_at: Date.now(),
-        category
-      })
-    );
-  }
-
-  generateKey(query, agentType) {
-    // Hash semántico (normalizar query antes de hashear)
-    const normalized = this.normalizeQuery(query);
-    const hash = createHash('sha256')
-      .update(`${agentType}:${normalized}`)
-      .digest('hex');
-
-    return `${this.prefix}${hash}`;
-  }
-
-  normalizeQuery(query) {
-    return query
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, ' ')  // Multiple spaces → single space
-      .replace(/[^\w\sáéíóúñ]/g, '');  // Remove punctuation
-  }
-
-  categorizeQuery(query) {
-    // Heurísticas para categorización
-    const fundamentalKeywords = [
-      '¿qué es', 'define', 'definición', 'concepto de',
-      'explica', 'explicación de'
-    ];
-
-    const calculationKeywords = [
-      'resuelve', 'calcula', 'deriva', 'integra',
-      'encuentra', 'determina'
-    ];
-
-    const queryLower = query.toLowerCase();
-
-    if (fundamentalKeywords.some(kw => queryLower.includes(kw))) {
-      return 'fundamental';
+        this.metrics.misses++;
+        return null;
     }
 
-    if (calculationKeywords.some(kw => queryLower.includes(kw))) {
-      return 'calculation';
+    async set(query, response, agentType, category) {
+        const key = this.generateKey(query, agentType);
+        const ttl = this.getTTL(category);
+
+        await redisClient.setex(
+            key,
+            ttl,
+            JSON.stringify({
+                response,
+                cached_at: Date.now(),
+                category,
+            })
+        );
     }
 
-    return 'updatable';
-  }
+    generateKey(query, agentType) {
+        // Hash semántico (normalizar query antes de hashear)
+        const normalized = this.normalizeQuery(query);
+        const hash = createHash("sha256").update(`${agentType}:${normalized}`).digest("hex");
 
-  getTTL(category) {
-    const ttls = {
-      'fundamental': 7 * 24 * 60 * 60,    // 7 días
-      'calculation': 3 * 24 * 60 * 60,    // 3 días
-      'updatable': 1 * 24 * 60 * 60       // 1 día
-    };
-
-    return ttls[category] || ttls.updatable;
-  }
-
-  async invalidate(pattern) {
-    // Invalidar cache por patrón
-    const keys = await redisClient.keys(`${this.prefix}${pattern}*`);
-    if (keys.length > 0) {
-      await redisClient.del(...keys);
+        return `${this.prefix}${hash}`;
     }
-  }
 
-  getMetrics() {
-    const total = this.metrics.hits + this.metrics.misses;
-    return {
-      hits: this.metrics.hits,
-      misses: this.metrics.misses,
-      hitRate: total > 0 ? this.metrics.hits / total : 0
-    };
-  }
+    normalizeQuery(query) {
+        return query
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, " ") // Multiple spaces → single space
+            .replace(/[^\w\sáéíóúñ]/g, ""); // Remove punctuation
+    }
+
+    categorizeQuery(query) {
+        // Heurísticas para categorización
+        const fundamentalKeywords = ["¿qué es", "define", "definición", "concepto de", "explica", "explicación de"];
+
+        const calculationKeywords = ["resuelve", "calcula", "deriva", "integra", "encuentra", "determina"];
+
+        const queryLower = query.toLowerCase();
+
+        if (fundamentalKeywords.some(kw => queryLower.includes(kw))) {
+            return "fundamental";
+        }
+
+        if (calculationKeywords.some(kw => queryLower.includes(kw))) {
+            return "calculation";
+        }
+
+        return "updatable";
+    }
+
+    getTTL(category) {
+        const ttls = {
+            fundamental: 7 * 24 * 60 * 60, // 7 días
+            calculation: 3 * 24 * 60 * 60, // 3 días
+            updatable: 1 * 24 * 60 * 60, // 1 día
+        };
+
+        return ttls[category] || ttls.updatable;
+    }
+
+    async invalidate(pattern) {
+        // Invalidar cache por patrón
+        const keys = await redisClient.keys(`${this.prefix}${pattern}*`);
+        if (keys.length > 0) {
+            await redisClient.del(...keys);
+        }
+    }
+
+    getMetrics() {
+        const total = this.metrics.hits + this.metrics.misses;
+        return {
+            hits: this.metrics.hits,
+            misses: this.metrics.misses,
+            hitRate: total > 0 ? this.metrics.hits / total : 0,
+        };
+    }
 }
 ```
 
@@ -483,78 +476,77 @@ USING ivfflat (embedding vector_cosine_ops);
 **Archivo**: `backend/services/chat/nombreAgenteService.js`
 
 ```javascript
-import { ChatOpenAI } from '@langchain/openai';
-import { SupabaseHybridSearch } from '../../lib/supabaseHybridSearch.js';
-import { OpenAIEmbeddings } from '@langchain/openai';
-import { supabase } from '../../lib/supabase.js';
-import { AcadelCache } from '../../utils/chat/AcadelCache.js';
-import logger from '../../utils/logger.js';
+import { ChatOpenAI } from "@langchain/openai";
+import { SupabaseHybridSearch } from "../../lib/supabaseHybridSearch.js";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { supabase } from "../../lib/supabase.js";
+import { AcadelCache } from "../../utils/chat/AcadelCache.js";
+import logger from "../../utils/logger.js";
 
 const llm = new ChatOpenAI({
-  modelName: 'gpt-4o',
-  temperature: 0.7,
-  openAIApiKey: process.env.OPENAI_API_KEY
+    modelName: "gpt-4o",
+    temperature: 0.7,
+    openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
 const embeddings = new OpenAIEmbeddings({
-  openAIApiKey: process.env.OPENAI_API_KEY
+    openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
 const cache = new AcadelCache();
 
 export const processQuery = async ({ chatId, message, userId }) => {
-  try {
-    // 1. Análisis de intención
-    const intention = detectIntention(message);
+    try {
+        // 1. Análisis de intención
+        const intention = detectIntention(message);
 
-    // 2. Categorización para cache
-    const category = cache.categorizeQuery(message);
+        // 2. Categorización para cache
+        const category = cache.categorizeQuery(message);
 
-    // 3. Consultar cache
-    const cached = await cache.get(message, 'nombre-agente');
-    if (cached) {
-      logger.info('Cache hit', { agentType: 'nombre-agente', category });
-      return cached.response;
+        // 3. Consultar cache
+        const cached = await cache.get(message, "nombre-agente");
+        if (cached) {
+            logger.info("Cache hit", { agentType: "nombre-agente", category });
+            return cached.response;
+        }
+
+        // 4. Hybrid Search
+        const retriever = new SupabaseHybridSearch(embeddings, {
+            client: supabase,
+            tableName: "emb_nombre_agente",
+            similarityK: 3,
+            keywordK: 2,
+            similarityThreshold: 0.6,
+        });
+
+        const relevantDocs = await retriever.getRelevantDocuments(message);
+
+        // 5. Cargar memoria híbrida
+        const memory = await loadMemory(chatId, userId);
+
+        // 6. Construcción de prompt
+        const prompt = buildPrompt({
+            systemPrompt: AGENT_SYSTEM_PROMPT,
+            context: relevantDocs,
+            memory,
+            userQuery: message,
+        });
+
+        // 7. Llamada al LLM
+        const response = await llm.call(prompt);
+
+        // 8. Post-procesamiento
+        const formatted = formatResponse(response);
+
+        // 9. Persistencia
+        await saveToChatHistory(chatId, message, formatted);
+        await cache.set(message, formatted, "nombre-agente", category);
+
+        return formatted;
+    } catch (error) {
+        logger.error("Error in nombreAgenteService", { error, chatId });
+        throw error;
     }
-
-    // 4. Hybrid Search
-    const retriever = new SupabaseHybridSearch(embeddings, {
-      client: supabase,
-      tableName: 'emb_nombre_agente',
-      similarityK: 3,
-      keywordK: 2,
-      similarityThreshold: 0.6
-    });
-
-    const relevantDocs = await retriever.getRelevantDocuments(message);
-
-    // 5. Cargar memoria híbrida
-    const memory = await loadMemory(chatId, userId);
-
-    // 6. Construcción de prompt
-    const prompt = buildPrompt({
-      systemPrompt: AGENT_SYSTEM_PROMPT,
-      context: relevantDocs,
-      memory,
-      userQuery: message
-    });
-
-    // 7. Llamada al LLM
-    const response = await llm.call(prompt);
-
-    // 8. Post-procesamiento
-    const formatted = formatResponse(response);
-
-    // 9. Persistencia
-    await saveToChatHistory(chatId, message, formatted);
-    await cache.set(message, formatted, 'nombre-agente', category);
-
-    return formatted;
-
-  } catch (error) {
-    logger.error('Error in nombreAgenteService', { error, chatId });
-    throw error;
-  }
 };
 
 const AGENT_SYSTEM_PROMPT = `
@@ -572,68 +564,66 @@ Formato de respuesta:
 - Estructura clara con headings
 `;
 
-const detectIntention = (message) => {
-  // Implementar lógica de detección de intención
-  // Puede usar un LLM ligero o heurísticas
-  return 'conceptual';  // o 'calculation', 'example', etc.
+const detectIntention = message => {
+    // Implementar lógica de detección de intención
+    // Puede usar un LLM ligero o heurísticas
+    return "conceptual"; // o 'calculation', 'example', etc.
 };
 
 const loadMemory = async (chatId, userId) => {
-  // Cargar últimos mensajes del chat
-  const { data } = await supabase
-    .from('chat_history')
-    .select('role, content')
-    .eq('chat_id', chatId)
-    .order('created_at', { ascending: false })
-    .limit(10);
+    // Cargar últimos mensajes del chat
+    const { data } = await supabase
+        .from("chat_history")
+        .select("role, content")
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: false })
+        .limit(10);
 
-  return data.reverse();  // Orden cronológico
+    return data.reverse(); // Orden cronológico
 };
 
 const buildPrompt = ({ systemPrompt, context, memory, userQuery }) => {
-  const contextStr = context.map(doc =>
-    `[Fuente: ${doc.metadata?.source || 'Base de conocimiento'}]\n${doc.content}`
-  ).join('\n\n---\n\n');
+    const contextStr = context
+        .map(doc => `[Fuente: ${doc.metadata?.source || "Base de conocimiento"}]\n${doc.content}`)
+        .join("\n\n---\n\n");
 
-  const memoryStr = memory.map(msg =>
-    `${msg.role}: ${msg.content}`
-  ).join('\n');
+    const memoryStr = memory.map(msg => `${msg.role}: ${msg.content}`).join("\n");
 
-  return [
-    { role: 'system', content: systemPrompt },
-    { role: 'system', content: `Contexto relevante:\n${contextStr}` },
-    ...memory.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    })),
-    { role: 'user', content: userQuery }
-  ];
+    return [
+        { role: "system", content: systemPrompt },
+        { role: "system", content: `Contexto relevante:\n${contextStr}` },
+        ...memory.map(msg => ({
+            role: msg.role === "user" ? "user" : "assistant",
+            content: msg.content,
+        })),
+        { role: "user", content: userQuery },
+    ];
 };
 
-const formatResponse = (response) => {
-  // Post-procesamiento: LaTeX, Mermaid, etc.
-  return {
-    message: response.content,
-    formatted: true
-  };
+const formatResponse = response => {
+    // Post-procesamiento: LaTeX, Mermaid, etc.
+    return {
+        message: response.content,
+        formatted: true,
+    };
 };
 
 const saveToChatHistory = async (chatId, userMessage, assistantResponse) => {
-  await supabase.from('chat_history').insert([
-    {
-      chat_id: chatId,
-      role: 'user',
-      content: userMessage,
-      created_at: new Date()
-    },
-    {
-      chat_id: chatId,
-      role: 'assistant',
-      content: assistantResponse.message,
-      metadata: { formatted: true },
-      created_at: new Date()
-    }
-  ]);
+    await supabase.from("chat_history").insert([
+        {
+            chat_id: chatId,
+            role: "user",
+            content: userMessage,
+            created_at: new Date(),
+        },
+        {
+            chat_id: chatId,
+            role: "assistant",
+            content: assistantResponse.message,
+            metadata: { formatted: true },
+            created_at: new Date(),
+        },
+    ]);
 };
 ```
 
@@ -642,36 +632,35 @@ const saveToChatHistory = async (chatId, userMessage, assistantResponse) => {
 **Archivo**: `backend/controllers/dominio/nombreAgenteController.js`
 
 ```javascript
-import * as nombreAgenteService from '../../services/chat/nombreAgenteService.js';
-import logger from '../../utils/logger.js';
+import * as nombreAgenteService from "../../services/chat/nombreAgenteService.js";
+import logger from "../../utils/logger.js";
 
 export const queryNombreAgente = async (req, res) => {
-  try {
-    const { chatId, message } = req.body;
-    const userId = req.user.id;
+    try {
+        const { chatId, message } = req.body;
+        const userId = req.user.id;
 
-    // Validaciones
-    if (!chatId || !message) {
-      return res.status(400).json({
-        error: 'chatId y message son requeridos'
-      });
+        // Validaciones
+        if (!chatId || !message) {
+            return res.status(400).json({
+                error: "chatId y message son requeridos",
+            });
+        }
+
+        // Procesar query
+        const response = await nombreAgenteService.processQuery({
+            chatId,
+            message,
+            userId,
+        });
+
+        res.json(response);
+    } catch (error) {
+        logger.error("Error in queryNombreAgente", { error, userId: req.user?.id });
+        res.status(500).json({
+            error: "Error procesando query",
+        });
     }
-
-    // Procesar query
-    const response = await nombreAgenteService.processQuery({
-      chatId,
-      message,
-      userId
-    });
-
-    res.json(response);
-
-  } catch (error) {
-    logger.error('Error in queryNombreAgente', { error, userId: req.user?.id });
-    res.status(500).json({
-      error: 'Error procesando query'
-    });
-  }
 };
 ```
 
@@ -680,16 +669,17 @@ export const queryNombreAgente = async (req, res) => {
 **Archivo**: `server.js`
 
 ```javascript
-import * as nombreAgenteController from './backend/controllers/dominio/nombreAgenteController.js';
+import * as nombreAgenteController from "./backend/controllers/dominio/nombreAgenteController.js";
 
 // ...
 
-app.post('/api/openai/query-nombre-agente',
-  authenticateUser,
-  csrfProtection,
-  chatRateLimiter,
-  verifyAvaAccess,
-  nombreAgenteController.queryNombreAgente
+app.post(
+    "/api/openai/query-nombre-agente",
+    authenticateUser,
+    csrfProtection,
+    chatRateLimiter,
+    verifyAvaAccess,
+    nombreAgenteController.queryNombreAgente
 );
 ```
 
@@ -710,9 +700,10 @@ VALUES (
 ### 6. Frontend (Opcional)
 
 Crear vista para el nuevo agente en:
-- `frontend/views/content/{carrera}/{agente}.html`
-- `frontend/public/scripts/chats/{tipo}/main.js`
-- `frontend/public/css/chats/{tipo}/styles.css`
+
+-   `frontend/views/content/{carrera}/{agente}.html`
+-   `frontend/public/scripts/chats/{tipo}/main.js`
+-   `frontend/public/css/chats/{tipo}/styles.css`
 
 ---
 
@@ -727,36 +718,35 @@ Las herramientas son capacidades adicionales que los agentes pueden usar (ej: Wo
 **Archivo**: `backend/lib/translationAPI.js`
 
 ```javascript
-import axios from 'axios';
+import axios from "axios";
 
 export class TranslationAPI {
-  constructor(apiKey) {
-    this.apiKey = apiKey;
-    this.baseURL = 'https://api.translation-service.com';
-  }
-
-  async translate(text, targetLang) {
-    try {
-      const response = await axios.post(
-        `${this.baseURL}/translate`,
-        {
-          text,
-          target_lang: targetLang
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`
-          }
-        }
-      );
-
-      return response.data.translation;
-
-    } catch (error) {
-      logger.error('Translation API error', { error });
-      throw new Error('Error en traducción');
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseURL = "https://api.translation-service.com";
     }
-  }
+
+    async translate(text, targetLang) {
+        try {
+            const response = await axios.post(
+                `${this.baseURL}/translate`,
+                {
+                    text,
+                    target_lang: targetLang,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                    },
+                }
+            );
+
+            return response.data.translation;
+        } catch (error) {
+            logger.error("Translation API error", { error });
+            throw new Error("Error en traducción");
+        }
+    }
 }
 
 export const translationAPI = new TranslationAPI(process.env.TRANSLATION_API_KEY);
@@ -765,32 +755,32 @@ export const translationAPI = new TranslationAPI(process.env.TRANSLATION_API_KEY
 **2. Integrar en servicio de agente**
 
 ```javascript
-import { translationAPI } from '../../lib/translationAPI.js';
+import { translationAPI } from "../../lib/translationAPI.js";
 
 // En processQuery, antes de llamar al LLM:
 
 if (needsTranslation(message)) {
-  const translated = await translationAPI.translate(message, 'es');
-  message = translated;
+    const translated = await translationAPI.translate(message, "es");
+    message = translated;
 }
 
 // O como herramienta que el LLM puede llamar:
 const tools = [
-  {
-    name: 'translate',
-    description: 'Traduce texto a otro idioma',
-    parameters: {
-      type: 'object',
-      properties: {
-        text: { type: 'string', description: 'Texto a traducir' },
-        targetLang: { type: 'string', description: 'Idioma destino (ej: es, en)' }
-      },
-      required: ['text', 'targetLang']
+    {
+        name: "translate",
+        description: "Traduce texto a otro idioma",
+        parameters: {
+            type: "object",
+            properties: {
+                text: { type: "string", description: "Texto a traducir" },
+                targetLang: { type: "string", description: "Idioma destino (ej: es, en)" },
+            },
+            required: ["text", "targetLang"],
+        },
+        function: async ({ text, targetLang }) => {
+            return await translationAPI.translate(text, targetLang);
+        },
     },
-    function: async ({ text, targetLang }) => {
-      return await translationAPI.translate(text, targetLang);
-    }
-  }
 ];
 ```
 
@@ -801,20 +791,19 @@ const tools = [
 ### Unit Tests (Backend)
 
 **Instalar herramientas**:
+
 ```bash
 npm install --save-dev jest supertest
 ```
 
 **Configurar Jest** (`jest.config.js`):
+
 ```javascript
 export default {
-  testEnvironment: 'node',
-  coverageDirectory: 'coverage',
-  testMatch: ['**/__tests__/**/*.test.js'],
-  collectCoverageFrom: [
-    'backend/**/*.js',
-    '!backend/node_modules/**'
-  ]
+    testEnvironment: "node",
+    coverageDirectory: "coverage",
+    testMatch: ["**/__tests__/**/*.test.js"],
+    collectCoverageFrom: ["backend/**/*.js", "!backend/node_modules/**"],
 };
 ```
 
@@ -823,50 +812,48 @@ export default {
 **Archivo**: `backend/__tests__/services/algebraService.test.js`
 
 ```javascript
-import { processQuery } from '../../services/chat/algebraService.js';
-import { AcadelCache } from '../../utils/chat/AcadelCache.js';
+import { processQuery } from "../../services/chat/algebraService.js";
+import { AcadelCache } from "../../utils/chat/AcadelCache.js";
 
-jest.mock('../../utils/chat/AcadelCache.js');
+jest.mock("../../utils/chat/AcadelCache.js");
 
-describe('algebraService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('debe retornar respuesta cached si existe', async () => {
-    const mockCached = { message: 'Respuesta en cache' };
-    AcadelCache.prototype.get.mockResolvedValue(mockCached);
-
-    const result = await processQuery({
-      chatId: 'test-chat-id',
-      message: '¿Qué es un vector?',
-      userId: 'test-user-id'
+describe("algebraService", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
-    expect(result).toEqual(mockCached);
-    expect(AcadelCache.prototype.get).toHaveBeenCalledWith(
-      '¿Qué es un vector?',
-      'algebra'
-    );
-  });
+    test("debe retornar respuesta cached si existe", async () => {
+        const mockCached = { message: "Respuesta en cache" };
+        AcadelCache.prototype.get.mockResolvedValue(mockCached);
 
-  test('debe procesar query si no hay cache', async () => {
-    AcadelCache.prototype.get.mockResolvedValue(null);
+        const result = await processQuery({
+            chatId: "test-chat-id",
+            message: "¿Qué es un vector?",
+            userId: "test-user-id",
+        });
 
-    // Mock otras dependencias...
-
-    const result = await processQuery({
-      chatId: 'test-chat-id',
-      message: '¿Qué es un vector?',
-      userId: 'test-user-id'
+        expect(result).toEqual(mockCached);
+        expect(AcadelCache.prototype.get).toHaveBeenCalledWith("¿Qué es un vector?", "algebra");
     });
 
-    expect(result).toHaveProperty('message');
-  });
+    test("debe procesar query si no hay cache", async () => {
+        AcadelCache.prototype.get.mockResolvedValue(null);
+
+        // Mock otras dependencias...
+
+        const result = await processQuery({
+            chatId: "test-chat-id",
+            message: "¿Qué es un vector?",
+            userId: "test-user-id",
+        });
+
+        expect(result).toHaveProperty("message");
+    });
 });
 ```
 
 **Ejecutar tests**:
+
 ```bash
 npm test
 npm test -- --coverage
@@ -877,52 +864,43 @@ npm test -- --coverage
 **Archivo**: `backend/__tests__/integration/chat.test.js`
 
 ```javascript
-import request from 'supertest';
-import app from '../../server.js';
+import request from "supertest";
+import app from "../../server.js";
 
-describe('Chat API Integration', () => {
-  let authToken;
-  let chatId;
+describe("Chat API Integration", () => {
+    let authToken;
+    let chatId;
 
-  beforeAll(async () => {
-    // Login y obtener token
-    const loginRes = await request(app)
-      .post('/api/users/login')
-      .send({
-        email: 'test@example.com',
-        password: 'TestPass123!'
-      });
+    beforeAll(async () => {
+        // Login y obtener token
+        const loginRes = await request(app).post("/api/users/login").send({
+            email: "test@example.com",
+            password: "TestPass123!",
+        });
 
-    authToken = loginRes.headers['set-cookie']
-      .find(cookie => cookie.startsWith('auth-token'));
-  });
+        authToken = loginRes.headers["set-cookie"].find(cookie => cookie.startsWith("auth-token"));
+    });
 
-  test('debe crear un chat', async () => {
-    const res = await request(app)
-      .post('/api/chat/create')
-      .set('Cookie', authToken)
-      .send({
-        ava_id: 'test-ava-id',
-        title: 'Test Chat'
-      });
+    test("debe crear un chat", async () => {
+        const res = await request(app).post("/api/chat/create").set("Cookie", authToken).send({
+            ava_id: "test-ava-id",
+            title: "Test Chat",
+        });
 
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('chatId');
-    chatId = res.body.chatId;
-  });
+        expect(res.status).toBe(201);
+        expect(res.body).toHaveProperty("chatId");
+        chatId = res.body.chatId;
+    });
 
-  test('debe enviar mensaje al chat', async () => {
-    const res = await request(app)
-      .post('/api/openai/query-algebra')
-      .set('Cookie', authToken)
-      .send({
-        chatId,
-        message: '¿Qué es un vector?'
-      });
+    test("debe enviar mensaje al chat", async () => {
+        const res = await request(app).post("/api/openai/query-algebra").set("Cookie", authToken).send({
+            chatId,
+            message: "¿Qué es un vector?",
+        });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message');
-  });
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("message");
+    });
 });
 ```
 
@@ -933,30 +911,31 @@ describe('Chat API Integration', () => {
 ### Winston Logger
 
 ```javascript
-import logger from './utils/logger.js';
+import logger from "./utils/logger.js";
 
-logger.debug('Debug info', { variable: value });
-logger.info('Info message', { userId: '123' });
-logger.warn('Warning', { issue: 'something' });
-logger.error('Error occurred', { error: error.message });
+logger.debug("Debug info", { variable: value });
+logger.info("Info message", { userId: "123" });
+logger.warn("Warning", { issue: "something" });
+logger.error("Error occurred", { error: error.message });
 ```
 
 ### Debug con VSCode
 
 **Configuración** (`.vscode/launch.json`):
+
 ```json
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Backend",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/server.js",
-      "envFile": "${workspaceFolder}/.env"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Backend",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/server.js",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
 }
 ```
 
@@ -994,47 +973,49 @@ MONITOR
 ### ESLint
 
 **Configuración** (`.eslintrc.json`):
+
 ```json
 {
-  "env": {
-    "es2021": true,
-    "node": true
-  },
-  "extends": "eslint:recommended",
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
-  "rules": {
-    "indent": ["error", 2],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
-    "no-unused-vars": ["warn"],
-    "no-console": ["warn"]
-  }
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 2],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "no-unused-vars": ["warn"],
+        "no-console": ["warn"]
+    }
 }
 ```
 
 ### Prettier
 
 **Configuración** (`.prettierrc`):
+
 ```json
 {
-  "singleQuote": true,
-  "trailingComma": "es5",
-  "tabWidth": 2,
-  "semi": true,
-  "printWidth": 100
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "printWidth": 100
 }
 ```
 
 ### Naming Conventions
 
-- **Variables**: camelCase (`userId`, `chatHistory`)
-- **Constantes**: UPPER_SNAKE_CASE (`API_KEY`, `MAX_RETRIES`)
-- **Funciones**: camelCase (`processQuery`, `loadMemory`)
-- **Clases**: PascalCase (`AcadelCache`, `SupabaseHybridSearch`)
-- **Archivos**: camelCase (`algebraService.js`, `authMiddleware.js`)
+-   **Variables**: camelCase (`userId`, `chatHistory`)
+-   **Constantes**: UPPER_SNAKE_CASE (`API_KEY`, `MAX_RETRIES`)
+-   **Funciones**: camelCase (`processQuery`, `loadMemory`)
+-   **Clases**: PascalCase (`AcadelCache`, `SupabaseHybridSearch`)
+-   **Archivos**: camelCase (`algebraService.js`, `authMiddleware.js`)
 
 ---
 
@@ -1066,21 +1047,25 @@ chore: actualizar dependencias
 ### Pull Requests
 
 **Template**:
+
 ```markdown
 ## Descripción
+
 [Breve descripción de los cambios]
 
 ## Tipo de cambio
-- [ ] Bug fix
-- [ ] Nueva funcionalidad
-- [ ] Refactoring
-- [ ] Documentación
+
+-   [ ] Bug fix
+-   [ ] Nueva funcionalidad
+-   [ ] Refactoring
+-   [ ] Documentación
 
 ## Checklist
-- [ ] Tests agregados/actualizados
-- [ ] Documentación actualizada
-- [ ] No hay warnings de ESLint
-- [ ] Código testeado localmente
+
+-   [ ] Tests agregados/actualizados
+-   [ ] Documentación actualizada
+-   [ ] No hay warnings de ESLint
+-   [ ] Código testeado localmente
 ```
 
 ---
@@ -1136,11 +1121,11 @@ fly ssh console
 
 ## Recursos Adicionales
 
-- [LangChain Docs](https://js.langchain.com/docs/)
-- [Supabase Docs](https://supabase.com/docs)
-- [OpenAI API Reference](https://platform.openai.com/docs/api-reference)
-- [BullMQ Guide](https://docs.bullmq.io/)
-- [Express Best Practices](https://expressjs.com/en/advanced/best-practice-performance.html)
+-   [LangChain Docs](https://js.langchain.com/docs/)
+-   [Supabase Docs](https://supabase.com/docs)
+-   [OpenAI API Reference](https://platform.openai.com/docs/api-reference)
+-   [BullMQ Guide](https://docs.bullmq.io/)
+-   [Express Best Practices](https://expressjs.com/en/advanced/best-practice-performance.html)
 
 ---
 

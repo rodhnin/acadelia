@@ -25,23 +25,23 @@
 
 ## 📑 Índice
 
-- [📚 Documentación Completa](#-documentación-completa)
-- [🚀 Resumen](#-resumen)
-- [✨ Highlights](#-highlights)
-- [🧱 Arquitectura](#-arquitectura-alto-nivel)
-- [🗨️ Estilos de Chat](#️-estilos-de-chat-4)
-- [🧠 Agente de Marketing](#-agente-de-marketing-autónomo)
-- [📚 Catálogo de Agentes](#-catálogo-de-agentes-por-áreas)
-- [🧑‍🏫 Acadel](#-acadel-la-personalidad)
-- [🔬 Sistema RAG](#-sistema-rag-retrieval-augmented-generation)
-- [💾 Base de Datos](#-base-de-datos-supabase--pgvector)
-- [🚀 Instalación y Ejecución](#-instalación-y-ejecución)
-- [🔌 Endpoints](#-endpoints-clave-extracto)
-- [👥 Autores](#-autores)
-- [🧭 Roadmap](#-roadmap-breve)
-- [🔖 Changelog](#-changelog)
-- [🐛 Bugs](#-encontraste-un-bug)
-- [📝 Licencia](#-licencia)
+-   [📚 Documentación Completa](#-documentación-completa)
+-   [🚀 Resumen](#-resumen)
+-   [✨ Highlights](#-highlights)
+-   [🧱 Arquitectura](#-arquitectura-alto-nivel)
+-   [🗨️ Estilos de Chat](#️-estilos-de-chat-4)
+-   [🧠 Agente de Marketing](#-agente-de-marketing-autónomo)
+-   [📚 Catálogo de Agentes](#-catálogo-de-agentes-por-áreas)
+-   [🧑‍🏫 Acadel](#-acadel-la-personalidad)
+-   [🔬 Sistema RAG](#-sistema-rag-retrieval-augmented-generation)
+-   [💾 Base de Datos](#-base-de-datos-supabase--pgvector)
+-   [🚀 Instalación y Ejecución](#-instalación-y-ejecución)
+-   [🔌 Endpoints](#-endpoints-clave-extracto)
+-   [👥 Autores](#-autores)
+-   [🧭 Roadmap](#-roadmap-breve)
+-   [🔖 Changelog](#-changelog)
+-   [🐛 Bugs](#-encontraste-un-bug)
+-   [📝 Licencia](#-licencia)
 
 ---
 
@@ -49,14 +49,14 @@
 
 Esta documentación está organizada en módulos especializados para facilitar la navegación:
 
-| Documento | Descripción |
-|-----------|-------------|
-| **[README.md](README.md)** | 👋 **Inicio aquí** - Resumen completo del sistema, arquitectura, instalación |
-| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | 🏗️ Arquitectura técnica detallada, patrones de diseño, flujos de datos |
-| **[docs/DATABASE.md](docs/DATABASE.md)** | 💾 Esquema completo de base de datos (82 tablas), índices, queries |
-| **[docs/SECURITY.md](docs/SECURITY.md)** | 🔒 Modelo de seguridad (8 capas), JWT, CSRF, rate limiting, ClamAV |
-| **[docs/API.md](docs/API.md)** | 🔌 Referencia completa de API REST (40+ endpoints documentados) |
-| **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** | 👨‍💻 Guía de desarrollo, cómo crear agentes, testing, debugging |
+| Documento                                        | Descripción                                                                  |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **[README.md](README.md)**                       | 👋 **Inicio aquí** - Resumen completo del sistema, arquitectura, instalación |
+| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | 🏗️ Arquitectura técnica detallada, patrones de diseño, flujos de datos       |
+| **[docs/DATABASE.md](docs/DATABASE.md)**         | 💾 Esquema completo de base de datos (82 tablas), índices, queries           |
+| **[docs/SECURITY.md](docs/SECURITY.md)**         | 🔒 Modelo de seguridad (8 capas), JWT, CSRF, rate limiting, ClamAV           |
+| **[docs/API.md](docs/API.md)**                   | 🔌 Referencia completa de API REST (40+ endpoints documentados)              |
+| **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**   | 👨‍💻 Guía de desarrollo, cómo crear agentes, testing, debugging                |
 
 > **💡 Tip**: Si eres desarrollador nuevo en el proyecto, lee en orden: README → ARCHITECTURE → DEVELOPMENT → API
 
@@ -69,32 +69,38 @@ Esta documentación está organizada en módulos especializados para facilitar l
 ### 🎯 Características Principales
 
 **🧠 Sistema RAG Avanzado**:
+
 -   **100% en Supabase** con pgvector (sin dependencias de bases vectoriales externas)
 -   **Hybrid Search**: BM25 (keywords) + Vector Similarity (embeddings OpenAI)
 -   **40+ bases de conocimiento especializadas** (una por materia)
 -   **Cache inteligente** con categorización automática (AcadelCache)
 
 **🤖 Multi-Agente Autónomo**:
+
 -   **40+ agentes especializados** por materia (Ingeniería, Medicina, Economía, Psicología)
 -   **Agente de Marketing** autónomo con 7 servicios (investigación, análisis, generación)
 -   **4 estilos de chat**: PDF, Audio/Video, Matemáticos, Teóricos
 
 **💾 Base de Datos Robusta**:
+
 -   **82 tablas** en PostgreSQL con pgvector
 -   **RLS (Row Level Security)** para todas las tablas sensibles
 -   **Índices especializados**: IVFFlat (vectores) + GIN (full-text)
 
 **🔒 Seguridad Multicapa**:
+
 -   **8 capas de protección**: Helmet, CORS, CSRF, JWT, Rate Limiting, ClamAV, RBAC, Monitoring
 -   **Single-session enforcement** con Redis
 -   **Ofuscación de endpoints** en producción
 
 **💰 Sistema Completo de Pagos**:
+
 -   Integración con **Paddle** (internacional)
 -   **Ualá Bis** para Argentina
 -   Panel financiero con análisis de impuestos
 
 **🛠️ Procesamiento Multimodal**:
+
 -   **PDF → OCR** (Mistral) → embeddings → chat contextual
 -   **YouTube → MP3** (ytdl) → **Whisper** (STT) → chat sobre videos
 -   **Imágenes** con GPT-4o Vision
@@ -209,18 +215,18 @@ Esta documentación está organizada en módulos especializados para facilitar l
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  CAPA DE PRESENTACIÓN                        │
-│                    (Nginx + Frontend)                        │
-│  - Servidor web estático (HTML/CSS/JS Vanilla)               │
-│  - Reverse proxy hacia el backend                            │
-│  - Cache optimizado para assets estáticos                    │
-│  - Compresión gzip                                           │
+│                  CAPA DE PRESENTACIÓN                       │
+│                    (Nginx + Frontend)                       │
+│  - Servidor web estático (HTML/CSS/JS Vanilla)              │
+│  - Reverse proxy hacia el backend                           │
+│  - Cache optimizado para assets estáticos                   │
+│  - Compresión gzip                                          │
 └────────────────────────┬────────────────────────────────────┘
                          │ HTTP/HTTPS
-┌────────────────────────▼────────────────────────────────────┐
-│                   CAPA DE APLICACIÓN                         │
-│                 (Node.js 22+ Express)                        │
-│                                                              │
+┌────────────────────────▼───────────────────────────────────┐
+│                   CAPA DE APLICACIÓN                       │
+│                 (Node.js 22+ Express)                      │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  MIDDLEWARES DE SEGURIDAD (capas de protección)      │  │
 │  │  1. Helmet (Headers HTTP seguros)                    │  │
@@ -232,7 +238,7 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │  │  7. ClamAV (Antivirus en tiempo real)                │  │
 │  │  8. Request Monitoring & Logging                     │  │
 │  └──────────────────────────────────────────────────────┘  │
-│                                                              │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  SISTEMA DE ENRUTAMIENTO                             │  │
 │  │  - /api/chat/*     → RAG, embeddings, agentes        │  │
@@ -241,7 +247,7 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │  │  - /api/admin/*    → Analytics, seguridad, colas     │  │
 │  │  - /api/shared/*   → Recursos compartidos            │  │
 │  └──────────────────────────────────────────────────────┘  │
-│                                                              │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  CONTROLADORES (40+ agentes especializados)          │  │
 │  │  📐 Ingeniería: Álgebra, Cálculo, Física, etc.       │  │
@@ -250,7 +256,7 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │  │  🧠 Psicología: DSM-5, Psicoanálisis, etc.           │  │
 │  │  🛠️  Herramientas: PDF IA, Agente Multimodal         │  │
 │  └──────────────────────────────────────────────────────┘  │
-│                                                              │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  SERVICIOS DE IA Y PROCESAMIENTO                     │  │
 │  │  - chatServices.js (orquestador central RAG)         │  │
@@ -261,18 +267,18 @@ Esta documentación está organizada en módulos especializados para facilitar l
 │  │  - File Processing (PDF, audio, video, imágenes)     │  │
 │  │  - Image Storage & Analysis (GPT-4o Vision)          │  │
 │  └──────────────────────────────────────────────────────┘  │
-└──┬───────────┬──────────┬──────────┬─────────────────────────┘
-   │           │          │          │
+└──┬──────────┬─────────┬──────────┬─────────────────────────┘
+   │          │         │          │
 ┌──▼─────┐ ┌──▼────┐ ┌──▼──────┐ ┌─▼──────────────────────────┐
 │SUPABASE│ │ REDIS │ │ BullMQ  │ │   APIS EXTERNAS            │
 │        │ │       │ │         │ │                            │
 │- Postgr│ │- Cache│ │- Colas: │ │- OpenAI GPT-4o / Whisper   │
-│  esQL  │ │- Sessi│ │  openai │ │- Mistral OCR               │
-│- Vector│ │  ons  │ │  pdf    │ │- WolframAlpha              │
-│  DB    │ │- Rate │ │  audio  │ │- Brave Search              │
-│  (RAG) │ │  Limit│ │  youtube│ │- DALL-E                    │
-│- Storag│ │- Jobs │ │  Throttl│ │- Paddle (pagos)            │
-│  e     │ │- Locks│ │  ing    │ │- Ualá Bis (pagos ARG)      │
+│  esQL  │ │- Sessi│ │ * openai│ │- Mistral OCR               │
+│- Vector│ │  ons  │ │ * pdf   │ │- WolframAlpha              │
+│  DB    │ │- Rate │ │ * audio │ │- Brave Search              │
+│  (RAG) │ │  Limit│ │ * youtub│ │- DALL-E                    │
+│- Storag│ │- Jobs │ │ * Thrott│ │- Paddle (pagos)            │
+│  e     │ │- Locks│ │ * ing   │ │- Ualá Bis (pagos ARG)      │
 │- Auth  │ │       │ │-Retry   │ │- YouTube (descarga)        │
 └────────┘ └───────┘ └─────────┘ └────────────────────────────┘
 ```
@@ -280,6 +286,7 @@ Esta documentación está organizada en módulos especializados para facilitar l
 ### 🧩 Tecnologías clave
 
 **Backend:**
+
 -   **Runtime:** Node.js 22+ (ESM modules) con UV_THREADPOOL_SIZE=16
 -   **Framework:** Express.js 4.18.2
 -   **IA/LLM:** OpenAI GPT-4o, Whisper, DALL-E, text-embedding-ada-002
@@ -295,12 +302,14 @@ Esta documentación está organizada en módulos especializados para facilitar l
 -   **Cálculo:** WolframAlpha API
 
 **Frontend:**
+
 -   **Core:** HTML5, CSS3, JavaScript Vanilla (sin frameworks)
 -   **Servidor Web:** Nginx (reverse proxy + static files)
 -   **Renderizado:** MathLive (LaTeX), Mermaid (diagramas)
 -   **UI/UX:** Diseño modular temático (Acadel)
 
 **Base de Datos:**
+
 -   **40+ tablas de embeddings** (una por agente/materia)
 -   **Sistema de chat:** `chat`, `chat_history`, `ava`, `herramienta`
 -   **Usuarios:** `users`, `cookie_consent`, `account_deletion_requests`
@@ -308,17 +317,19 @@ Esta documentación está organizada en módulos especializados para facilitar l
 -   **Pagos:** `egresos`, `categorias_egresos`, `analisis_impuestos`
 
 **DevOps:**
+
 -   **Containerización:** Docker multi-stage (development/production)
 -   **Orquestación:** Docker Compose
 -   **CI/CD:** GitHub Actions (Node 20 + LFS)
 -   **Deployment:** Fly.io ready
 
 > **Requisitos críticos** para ejecutar:
-> - **Redis** (versión 7+, para colas y rate limiting)
-> - **ClamAV** (`clamscan`, para escaneo de archivos)
-> - **pdftocairo** (para renderizado de PDFs)
-> - **FFmpeg/ffprobe** (para procesamiento multimedia)
-> - **Node.js** (versión 22+)
+>
+> -   **Redis** (versión 7+, para colas y rate limiting)
+> -   **ClamAV** (`clamscan`, para escaneo de archivos)
+> -   **pdftocairo** (para renderizado de PDFs)
+> -   **FFmpeg/ffprobe** (para procesamiento multimedia)
+> -   **Node.js** (versión 22+)
 
 ---
 
@@ -430,20 +441,23 @@ El **Agente de Marketing** es un sistema multi-agente autónomo especializado en
 ### 🎯 ¿Qué lo hace diferente?
 
 **Sistema Multi-Agente**:
-- No es un solo agente, sino un **sistema orquestado** de 7 servicios especializados
-- Cada servicio tiene un rol específico (extracción, análisis, creatividad, simulación)
-- El **DirectorAgent** actúa como "gerente" que coordina qué agentes se activan según la tarea
+
+-   No es un solo agente, sino un **sistema orquestado** de 7 servicios especializados
+-   Cada servicio tiene un rol específico (extracción, análisis, creatividad, simulación)
+-   El **DirectorAgent** actúa como "gerente" que coordina qué agentes se activan según la tarea
 
 **Memoria Persistente y Evolutiva**:
-- Construye un **grafo de conocimiento** de ideas y tendencias en Supabase
-- Relaciona conceptos automáticamente (ej: "IA en educación" ↔ "personalización del aprendizaje")
-- Evita duplicación mediante clustering y deduplicación semántica
-- Aprende de cada interacción y lo integra a su base de conocimiento
+
+-   Construye un **grafo de conocimiento** de ideas y tendencias en Supabase
+-   Relaciona conceptos automáticamente (ej: "IA en educación" ↔ "personalización del aprendizaje")
+-   Evita duplicación mediante clustering y deduplicación semántica
+-   Aprende de cada interacción y lo integra a su base de conocimiento
 
 **Capacidades de Investigación**:
-- Busca tendencias en tiempo real con **Brave Search API**
-- Analiza competencia, audiencia y oportunidades de mercado
-- Simula diferentes escenarios antes de recomendar estrategias
+
+-   Busca tendencias en tiempo real con **Brave Search API**
+-   Analiza competencia, audiencia y oportunidades de mercado
+-   Simula diferentes escenarios antes de recomendar estrategias
 
 ### 🧩 Componentes del Sistema
 
@@ -453,13 +467,13 @@ El **Agente de Marketing** es un sistema multi-agente autónomo especializado en
 │  (Orquestador - Decide qué agentes activar)                 │
 └────────────┬────────────────────────────────────────────────┘
              │
-    ┌────────┴────────┐
-    │                 │
+    ┌────────┴───────┐
+    │                │
 ┌───▼────────────┐ ┌─▼──────────────┐
 │ STRATEGIST     │ │ ANALYST        │
 │ (Estrategia)   │ │ (Análisis)     │
 └────────────────┘ └────────────────┘
-    │                 │
+    │                │
 ┌───▼────────────┐ ┌─▼──────────────┐
 │ CREATIVE       │ │ PROFILE        │
 │ (Contenido)    │ │ (Audiencia)    │
@@ -467,45 +481,52 @@ El **Agente de Marketing** es un sistema multi-agente autónomo especializado en
 ```
 
 **1. DirectorAgent** (Orquestador):
-- Analiza el input del usuario y determina qué servicios necesita activar
-- Prioriza tareas (investigación → análisis → generación → validación)
-- Coordina el flujo de información entre servicios
-- Usa GPT-4o-mini para decisiones rápidas y económicas
+
+-   Analiza el input del usuario y determina qué servicios necesita activar
+-   Prioriza tareas (investigación → análisis → generación → validación)
+-   Coordina el flujo de información entre servicios
+-   Usa GPT-4o-mini para decisiones rápidas y económicas
 
 **2. ExtractionService** (Investigación):
-- **Detección de tendencias**: Busca en web con Brave Search
-- **Extracción de oportunidades**: Identifica gaps en el mercado
-- **Análisis de competencia**: Detecta qué están haciendo otros
-- **Extracción de entidades**: Identifica temas, personas, empresas relevantes
+
+-   **Detección de tendencias**: Busca en web con Brave Search
+-   **Extracción de oportunidades**: Identifica gaps en el mercado
+-   **Análisis de competencia**: Detecta qué están haciendo otros
+-   **Extracción de entidades**: Identifica temas, personas, empresas relevantes
 
 **3. MatchingService** (Deduplicación):
-- **Clustering de temas**: Agrupa ideas similares automáticamente
-- **Similarity search**: Compara con memoria existente (embeddings)
-- **Deduplicación**: Evita repetir ideas ya exploradas
-- **Scoring**: Califica novedad y relevancia de cada idea
+
+-   **Clustering de temas**: Agrupa ideas similares automáticamente
+-   **Similarity search**: Compara con memoria existente (embeddings)
+-   **Deduplicación**: Evita repetir ideas ya exploradas
+-   **Scoring**: Califica novedad y relevancia de cada idea
 
 **4. MemoryService** (Persistencia):
-- **Almacenamiento en Supabase**: Guarda ideas, tendencias, contenido
-- **Grafo de conocimiento**: Relaciona conceptos entre sí
-- **Embeddings**: Vectoriza todo para búsqueda semántica
-- **Priorización**: Decide qué ideas merecen persistirse
+
+-   **Almacenamiento en Supabase**: Guarda ideas, tendencias, contenido
+-   **Grafo de conocimiento**: Relaciona conceptos entre sí
+-   **Embeddings**: Vectoriza todo para búsqueda semántica
+-   **Priorización**: Decide qué ideas merecen persistirse
 
 **5. ContentService** (Generación):
-- **Briefs de contenido**: Documentos estratégicos completos
-- **Copies**: Textos para redes, emails, landing pages
-- **Matrices de contenido**: Calendarios editoriales estructurados
-- **Diagramas Mermaid**: Visualización de funnels, estrategias, flujos
+
+-   **Briefs de contenido**: Documentos estratégicos completos
+-   **Copies**: Textos para redes, emails, landing pages
+-   **Matrices de contenido**: Calendarios editoriales estructurados
+-   **Diagramas Mermaid**: Visualización de funnels, estrategias, flujos
 
 **6. SimulationService** (Validación):
-- **Simulación de audiencia**: ¿Cómo reaccionaría el público objetivo?
-- **Análisis de competencia**: ¿Qué hacen otros en el nicho?
-- **Evaluación de canales**: ¿Qué canal es mejor para cada objetivo?
-- **Scoring de impacto**: Califica potencial de cada idea
+
+-   **Simulación de audiencia**: ¿Cómo reaccionaría el público objetivo?
+-   **Análisis de competencia**: ¿Qué hacen otros en el nicho?
+-   **Evaluación de canales**: ¿Qué canal es mejor para cada objetivo?
+-   **Scoring de impacto**: Califica potencial de cada idea
 
 **7. ExplainService** (Transparencia):
-- **Explicación de decisiones**: Por qué se eligió X estrategia
-- **Trade-offs identificados**: Ventajas vs desventajas de cada opción
-- **Recomendaciones accionables**: Pasos concretos a seguir
+
+-   **Explicación de decisiones**: Por qué se eligió X estrategia
+-   **Trade-offs identificados**: Ventajas vs desventajas de cada opción
+-   **Recomendaciones accionables**: Pasos concretos a seguir
 
 ### 🔄 Flujo Completo Explicado
 
@@ -589,6 +610,7 @@ sequenceDiagram
 ### 💬 Ejemplos de Uso
 
 **Ejemplo 1: Análisis de Competencia**
+
 ```
 Usuario: "¿Qué estrategias usa Duolingo que podríamos adaptar?"
 
@@ -605,6 +627,7 @@ Agente:
 ```
 
 **Ejemplo 2: Generación de Contenido**
+
 ```
 Usuario: "Necesito contenido para lanzamiento en redes sociales"
 
@@ -622,6 +645,7 @@ Agente:
 ```
 
 **Ejemplo 3: Investigación de Mercado**
+
 ```
 Usuario: "Analiza oportunidades en el mercado latinoamericano"
 
@@ -637,89 +661,134 @@ Agente:
 
 ### 📸 Capturas del Sistema
 
-**Interfaz del Chat de Marketing**:
+#### 🎯 Flujos de IA en Acción
+
+**Flujo Principal: Entrada de Mensaje**
 
 <p align="center">
-  <img src="docs/media/marketing-chat-interface.png" alt="Interfaz del chat de marketing" width="800">
+  <a href="docs/media/acadelia-marketing1.gif">
+    <img src="docs/media/acadelia-marketing1.gif" alt="Flujo 1 - Entrada de Mensaje" width="900">
+  </a>
   <br/>
-  <sub><em>Panel principal del agente de marketing mostrando análisis en tiempo real</em></sub>
+  <sub><em>El usuario ingresa un mensaje que se procesa a través del sistema IA</em></sub>
 </p>
 
-**Generación de Estrategia en Acción**:
+#### 🧠 Procesamiento del Sistema
+
+**Flujo 2: Contenido Capturado**
 
 <p align="center">
-  <img src="docs/media/marketing-strategy-generation.gif" alt="Generación de estrategia" width="800">
-  <br/>
-  <sub><em>GIF mostrando cómo el agente analiza, piensa y genera una estrategia completa</em></sub>
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <a href="docs/media/acadelia-marketing1.gif">
+          <img src="docs/media/acadelia-marketing2.gif" alt="Flujo 2 - Contenido Capturado" width="420">
+        </a>
+        <br/>
+        <sub><em>Captura y procesamiento del contenido ingresado</em></sub>
+      </td>
+      <td align="center" width="50%">
+        <a href="docs/media/acadelia-marketing1.gif">
+          <img src="docs/media/acadelia-marketing3.gif" alt="Flujo 3 - Memoria e Insights" width="420">
+        </a>
+        <br/>
+        <sub><em>Generación de memoria e insights del sistema</em></sub>
+      </td>
+    </tr>
+  </table>
 </p>
 
-**Ejemplo de Brief Generado**:
+#### 📊 Resultados: Memory & Insights Cards
+
+**Cartas de Aprendizaje del Sistema IA**
 
 <p align="center">
-  <img src="docs/media/marketing-brief-example.png" alt="Ejemplo de brief generado" width="800">
-  <br/>
-  <sub><em>Brief de contenido completo con calendario, copies y diagramas Mermaid</em></sub>
-</p>
-
-**Análisis de Tendencias con Brave Search**:
-
-<p align="center">
-  <img src="docs/media/marketing-trend-analysis.gif" alt="Análisis de tendencias" width="800">
-  <br/>
-  <sub><em>Proceso de búsqueda web, extracción de insights y generación de recomendaciones</em></sub>
-</p>
-
-**Grafo de Conocimiento (Memoria)**:
-
-<p align="center">
-  <img src="docs/media/marketing-knowledge-graph.png" alt="Grafo de conocimiento" width="800">
-  <br/>
-  <sub><em>Visualización de cómo el agente relaciona conceptos en su memoria</em></sub>
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <a href="docs/media/card-perfil.png">
+          <img src="docs/media/card-perfil.png" alt="Card - Perfil de Usuario" width="380">
+        </a>
+        <br/>
+        <sub><strong>Perfil de Usuario</strong><br/><em>Análisis comportamental y preferencias</em></sub>
+      </td>
+      <td align="center" width="50%">
+        <a href="docs/media/card-tendencia.png">
+          <img src="docs/media/card-tendencia.png" alt="Card - Tendencias" width="380">
+        </a>
+        <br/>
+        <sub><strong>Tendencias</strong><br/><em>Patrones emergentes detectados</em></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="50%">
+        <a href="docs/media/card-content.png">
+          <img src="docs/media/card-content.png" alt="Card - Generación de Ideas" width="380">
+        </a>
+        <br/>
+        <sub><strong>Generación de Ideas de Contenido</strong><br/><em>Recomendaciones creativas basadas en datos</em></sub>
+      </td>
+      <td align="center" width="50%">
+        <a href="docs/media/card-memoria.png">
+          <img src="docs/media/card-memoria.png" alt="Card - Memoria" width="380">
+        </a>
+        <br/>
+        <sub><strong>Memoria Contextual</strong><br/><em>Conocimiento persistente basado en importancia</em></sub>
+      </td>
+    </tr>
+  </table>
 </p>
 
 ### ⭐ Capacidades Avanzadas
 
 **Calendar Builder (Constructor de Calendarios)**:
-- Genera calendarios editoriales completos
-- Define objetivos por semana/mes
-- Asigna CTAs específicos
-- Recomienda mejores canales por objetivo
-- Incluye métricas de éxito
+
+-   Genera calendarios editoriales completos
+-   Define objetivos por semana/mes
+-   Asigna CTAs específicos
+-   Recomienda mejores canales por objetivo
+-   Incluye métricas de éxito
 
 **Topic Clustering (Agrupación de Temas)**:
-- Agrupa ideas por intención (awareness, consideration, decision)
-- Organiza por etapa del funnel
-- Detecta contenido faltante en el funnel
-- Balancea contenido educativo vs promocional
+
+-   Agrupa ideas por intención (awareness, consideration, decision)
+-   Organiza por etapa del funnel
+-   Detecta contenido faltante en el funnel
+-   Balancea contenido educativo vs promocional
 
 **Trend Mining (Minería de Tendencias)**:
-- Correlaciona tendencias externas con memoria interna
-- Detecta tendencias emergentes antes de que sean mainstream
-- Identifica cuándo una tendencia está saturada
-- Recomienda momento óptimo para actuar
+
+-   Correlaciona tendencias externas con memoria interna
+-   Detecta tendencias emergentes antes de que sean mainstream
+-   Identifica cuándo una tendencia está saturada
+-   Recomienda momento óptimo para actuar
 
 **Idea Graph (Grafo de Ideas)**:
-- Relaciones persistentes entre conceptos
-- Descubre conexiones no obvias
-- Sugiere ideas basadas en relaciones del grafo
-- Evoluciona con cada interacción
+
+-   Relaciones persistentes entre conceptos
+-   Descubre conexiones no obvias
+-   Sugiere ideas basadas en relaciones del grafo
+-   Evoluciona con cada interacción
 
 **Content Scoring (Evaluación de Contenido)**:
-- Califica calidad (coherencia, profundidad)
-- Evalúa potencial SEO (keywords, estructura)
-- Analiza potencial social (viralidad, engagement)
-- Recomienda mejoras específicas
+
+-   Califica calidad (coherencia, profundidad)
+-   Evalúa potencial SEO (keywords, estructura)
+-   Analiza potencial social (viralidad, engagement)
+-   Recomienda mejoras específicas
 
 ### 🔧 Infraestructura
 
 **Corre sobre**:
-- **Redis**: Colas de procesamiento (BullMQ) para tareas asíncronas
-- **Supabase**: Persistencia de memoria, embeddings, grafo de conocimiento
-- **Brave Search**: Investigación de tendencias en tiempo real
-- **OpenAI**: GPT-4o para generación, GPT-4o-mini para decisiones
-- **DALL-E**: Generación de imágenes para contenido (opcional)
+
+-   **Redis**: Colas de procesamiento (BullMQ) para tareas asíncronas
+-   **Supabase**: Persistencia de memoria, embeddings, grafo de conocimiento
+-   **Brave Search**: Investigación de tendencias en tiempo real
+-   **OpenAI**: GPT-4o para generación, GPT-4o-mini para decisiones
+-   **DALL-E**: Generación de imágenes para contenido (opcional)
 
 **Tablas en Supabase**:
+
 ```sql
 marketing_trends      -- Tendencias detectadas (con embeddings)
 marketing_profiles    -- Perfiles de audiencia analizados
@@ -739,12 +808,12 @@ marketing_memory      -- Memoria a largo plazo (grafo)
 
 ### 🚀 Futuras Mejoras
 
-- [ ] Integración con Google Analytics (análisis de métricas reales)
-- [ ] A/B testing automatizado de contenido
-- [ ] Generación de imágenes con DALL-E integrado
-- [ ] Análisis de sentimiento en redes sociales
-- [ ] Predicción de tendencias con ML
-- [ ] Multi-idioma (español, inglés, portugués)
+-   [ ] Integración con Google Analytics (análisis de métricas reales)
+-   [ ] A/B testing automatizado de contenido
+-   [ ] Generación de imágenes con DALL-E integrado
+-   [ ] Análisis de sentimiento en redes sociales
+-   [ ] Predicción de tendencias con ML
+-   [ ] Multi-idioma (español, inglés, portugués)
 
 > **Nota**: Este agente representa el estado del arte en marketing autónomo, combinando investigación en tiempo real, memoria persistente y generación creativa en un solo sistema integrado.
 
@@ -1112,35 +1181,40 @@ flowchart TB
 El sistema usa una búsqueda híbrida que combina dos estrategias:
 
 **1. BM25 (Keyword Search):**
+
 -   Búsqueda tradicional por coincidencia de términos
 -   Excelente para queries específicas con términos técnicos
 -   Ejemplo: "ecuación diferencial de segundo orden"
 
 **2. Vector Similarity:**
+
 -   Búsqueda semántica basada en embeddings
 -   Captura significado y contexto, no solo palabras exactas
 -   Ejemplo: "cómo resolver problemas de movimiento" → encuentra contenido sobre cinemática
 
 **Implementación en código:**
+
 ```javascript
 // backend/services/chat/{materia}Service.js
 const retriever = new SupabaseHybridSearch(embeddings, {
-  client: supabase,
-  tableName: 'emb_algebra',  // Tabla específica del agente
-  similarityK: 3,            // Top 3 resultados por similitud
-  keywordK: 2,               // Top 2 resultados por keywords
-  similarityThreshold: 0.6   // Umbral mínimo de similitud
+    client: supabase,
+    tableName: "emb_algebra", // Tabla específica del agente
+    similarityK: 3, // Top 3 resultados por similitud
+    keywordK: 2, // Top 2 resultados por keywords
+    similarityThreshold: 0.6, // Umbral mínimo de similitud
 });
 ```
 
 ### 🧠 Memoria Híbrida
 
 **Memoria a Corto Plazo:**
+
 -   Últimos 10-20 mensajes de la conversación actual
 -   Cargada en cada request para mantener contexto
 -   Almacenada en `chat_history`
 
 **Memoria a Largo Plazo:**
+
 -   Resúmenes de conversaciones previas vectorizados
 -   Búsqueda semántica de contexto relevante de sesiones anteriores
 -   Consolidación periódica de conocimiento aprendido
@@ -1150,11 +1224,13 @@ const retriever = new SupabaseHybridSearch(embeddings, {
 Sistema de cache con categorización automática:
 
 **Categorías y TTL:**
+
 -   **Conceptos fundamentales**: 7 días (ej: "¿Qué es una integral?")
 -   **Cálculos específicos**: 3 días (ej: "Derivada de x² + 3x")
 -   **Información actualizable**: 1 día (ej: "Últimas investigaciones sobre...")
 
 **Beneficios:**
+
 -   Reducción de costos de API (menos llamadas a OpenAI)
 -   Respuestas más rápidas para queries comunes
 -   Consistencia en respuestas frecuentes
@@ -1170,6 +1246,7 @@ Acadelia utiliza **Supabase** (PostgreSQL 14+) como base de datos principal, apr
 El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
 
 **1. Usuarios & Autenticación (10 tablas)**:
+
 -   `usuario` — Datos principales de usuarios
 -   `perfil` — Información extendida de perfil
 -   `rol`, `rol_usuario`, `permiso_rol` — Sistema RBAC (Role-Based Access Control)
@@ -1180,12 +1257,14 @@ El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
 -   `security_events` — Auditoría de eventos de seguridad
 
 **2. Sistema de Chat (4 tablas)**:
+
 -   `chat` — Metadatos de conversaciones
 -   `chat_history` — Mensajes completos (usuario + IA)
 -   `ava` — Agentes especializados (40+ agentes)
 -   `herramienta` — Herramientas disponibles (PDF IA, Agente General, etc.)
 
 **3. Embeddings RAG (40+ tablas)**:
+
 -   Una tabla por cada agente/materia: `emb_algebra`, `emb_calculo`, `emb_fisica`, etc.
 -   Cada tabla almacena:
     -   `content` (TEXT) — Contenido original
@@ -1196,6 +1275,7 @@ El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
     -   `gin` para búsqueda full-text (BM25)
 
 **4. Marketing (5 tablas)**:
+
 -   `marketing_trends` — Tendencias detectadas por el agente
 -   `marketing_profiles` — Perfiles de audiencia analizados
 -   `marketing_contents` — Contenido generado (briefs, copies)
@@ -1203,17 +1283,20 @@ El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
 -   `marketing_interactions` — Historial de interacciones
 
 **5. Pagos & Suscripciones (7 tablas)**:
+
 -   `suscripciones` — Planes y estados de suscripción
 -   `historial_transacciones` — Registro de todas las transacciones
 -   `payments_arg` — Procesamiento de pagos para Argentina (Ualá Bis)
 -   `egresos`, `categorias_egresos`, `analisis_impuestos` — Panel financiero
 
 **6. Archivos (3 tablas)**:
+
 -   `pdfs` — PDFs procesados con OCR
 -   `file_attachments` — Archivos adjuntos en chats (imágenes, audio)
 -   `agentetube` — Transcripciones de YouTube/videos
 
 **7. Administración (8 tablas)**:
+
 -   `config` — Configuración global del sistema
 -   `system_config` — Parámetros técnicos
 -   `security_events` — Logs de seguridad
@@ -1221,6 +1304,7 @@ El sistema cuenta con **82 tablas** organizadas en 8 categorías principales:
 -   `rate_limit_tracking` — Tracking de rate limiting
 
 **8. Datos de Referencia (4 tablas)**:
+
 -   `carrera` — Carreras universitarias
 -   `universidad` — Instituciones educativas
 -   `pais` — Países y regiones
@@ -1259,6 +1343,7 @@ EXECUTE FUNCTION update_updated_at_column();
 ### 📊 Queries de Ejemplo (Hybrid Search)
 
 **Búsqueda Híbrida Completa**:
+
 ```sql
 WITH vector_search AS (
   SELECT id, content, metadata,
@@ -1287,6 +1372,7 @@ ORDER BY similarity DESC;
 ### 🔐 Row Level Security (RLS)
 
 Todas las tablas sensibles tienen **RLS habilitado**:
+
 ```sql
 -- Ejemplo: Solo el propietario puede ver sus chats
 CREATE POLICY "Users can view their own chats"
@@ -1302,12 +1388,14 @@ WITH CHECK (auth.uid() = (SELECT user_id FROM chat WHERE id = chat_id));
 ### 📈 Migraciones y Mantenimiento
 
 **Importar esquema completo**:
+
 ```bash
 # Desde Supabase Dashboard → SQL Editor
 # Pegar contenido de db/Acadelia-DB.sql y ejecutar
 ```
 
 **Backup automático**:
+
 ```bash
 # Supabase provee backups diarios automáticos
 # Backups manuales vía CLI:
@@ -1323,6 +1411,7 @@ supabase db dump -f backup-$(date +%Y%m%d).sql
 ### Requisitos Previos
 
 **Software requerido:**
+
 ```bash
 # Node.js
 node --version  # Debe ser >= 22
@@ -1362,17 +1451,20 @@ sudo systemctl start clamav-daemon
 ### Configuración del Proyecto
 
 **1. Clonar el repositorio:**
+
 ```bash
 git clone https://github.com/rodhnin/acadelia.git
 cd acadelia
 ```
 
 **2. Instalar dependencias de Node.js:**
+
 ```bash
 npm install
 ```
 
 **3. Configurar variables de entorno:**
+
 ```bash
 # Copiar el archivo de ejemplo
 cp .env.example .env
@@ -1382,6 +1474,7 @@ nano .env
 ```
 
 **Variables críticas que debes configurar:**
+
 ```bash
 # Supabase (OBLIGATORIO)
 SUPABASE_URL=https://tu-proyecto.supabase.co
@@ -1402,6 +1495,7 @@ CSRF_SECRET=csrf-secret-aleatorio
 ```
 
 **4. Configurar Base de Datos:**
+
 ```bash
 # Importar el esquema en Supabase
 # Ve a tu dashboard de Supabase → SQL Editor
@@ -1409,6 +1503,7 @@ CSRF_SECRET=csrf-secret-aleatorio
 ```
 
 **5. Iniciar ClamAV:**
+
 ```bash
 # Actualizar base de datos de virus
 sudo freshclam
@@ -1420,11 +1515,13 @@ sudo systemctl start clamav-daemon
 ### Modos de Ejecución
 
 **Desarrollo (con hot reload):**
+
 ```bash
 npm run dev
 ```
 
 **Producción (código optimizado):**
+
 ```bash
 # Build del frontend (minificación + ofuscación)
 npm run build
@@ -1434,6 +1531,7 @@ npm start
 ```
 
 **Docker (Recomendado para producción):**
+
 ```bash
 # Con docker-compose
 docker-compose -f docker-compose.production.yml up -d
@@ -1448,40 +1546,46 @@ docker-compose down
 ### Verificar que Todo Funciona
 
 **1. Health Check del Backend:**
+
 ```bash
 curl http://localhost:5000/api/config
 ```
 
 Deberías ver:
+
 ```json
 {
-  "status": "operational",
-  "environment": "development",
-  "features": {
-    "avaAccess": true,
-    "herramientaAccess": true
-  }
+    "status": "operational",
+    "environment": "development",
+    "features": {
+        "avaAccess": true,
+        "herramientaAccess": true
+    }
 }
 ```
 
 **2. Verificar Redis:**
+
 ```bash
 redis-cli ping
 # Debe responder: PONG
 ```
 
 **3. Verificar ClamAV:**
+
 ```bash
 sudo clamdscan --version
 ```
 
 **4. Acceder a la aplicación:**
+
 -   Frontend: `http://localhost:3000` (si usas Nginx)
 -   Backend API: `http://localhost:5000`
 
 ### Solución de Problemas Comunes
 
 **Error: "Cannot connect to Redis"**
+
 ```bash
 # Verificar que Redis está corriendo
 sudo systemctl status redis-server
@@ -1491,6 +1595,7 @@ sudo systemctl start redis-server
 ```
 
 **Error: "ClamAV: No such file or directory"**
+
 ```bash
 # Verificar instalación
 which clamscan
@@ -1500,6 +1605,7 @@ sudo apt-get install --reinstall clamav
 ```
 
 **Error: "FFmpeg not found"**
+
 ```bash
 # Verificar instalación
 which ffmpeg
@@ -1509,6 +1615,7 @@ sudo apt-get install ffmpeg
 ```
 
 **Error: "Cannot connect to Supabase"**
+
 -   Verifica que las variables `SUPABASE_URL` y `SUPABASE_ANON_KEY` sean correctas
 -   Verifica que importaste el esquema SQL correctamente
 -   Revisa los logs: `backend/logs/error.log`
@@ -1523,49 +1630,55 @@ La API REST de Acadelia está organizada en 7 categorías principales con más d
 
 ### 📊 Resumen de Endpoints por Categoría
 
-| Categoría | Endpoints | Descripción |
-|-----------|-----------|-------------|
-| **Agentes IA** | 120+ | 40+ agentes con 3 endpoints cada uno (query, multimodal, multimodal-without-saving) |
-| **Chat/RAG** | 15 | Gestión de chats, historial, archivos, transcripciones |
-| **Usuarios** | 25 | Autenticación, perfiles, sesiones, recuperación de contraseña |
-| **Pagos** | 20 | Suscripciones, transacciones, webhooks (Paddle, Ualá Bis) |
-| **Admin** | 15 | Colas, finanzas, seguridad, reportes |
-| **Shared** | 10 | Contacto, feedback, acceso, configuración |
-| **Security** | 5 | Logs, eventos, auditoría |
+| Categoría      | Endpoints | Descripción                                                                         |
+| -------------- | --------- | ----------------------------------------------------------------------------------- |
+| **Agentes IA** | 120+      | 40+ agentes con 3 endpoints cada uno (query, multimodal, multimodal-without-saving) |
+| **Chat/RAG**   | 15        | Gestión de chats, historial, archivos, transcripciones                              |
+| **Usuarios**   | 25        | Autenticación, perfiles, sesiones, recuperación de contraseña                       |
+| **Pagos**      | 20        | Suscripciones, transacciones, webhooks (Paddle, Ualá Bis)                           |
+| **Admin**      | 15        | Colas, finanzas, seguridad, reportes                                                |
+| **Shared**     | 10        | Contacto, feedback, acceso, configuración                                           |
+| **Security**   | 5         | Logs, eventos, auditoría                                                            |
 
 ### 🤖 Agentes IA (40+ agentes especializados)
 
 Cada agente tiene 3 endpoints con el mismo patrón:
 
-| Método | Patrón de Ruta | Descripción |
-|--------|----------------|-------------|
-| POST | `/api/openai/query-{agente}` | Chat de texto estándar |
-| POST | `/api/openai/multimodal-{agente}` | Chat con texto + imágenes |
-| POST | `/api/openai/multimodal-{agente}-without-saving` | Multimodal sin guardar (para retry/edit) |
+| Método | Patrón de Ruta                                   | Descripción                              |
+| ------ | ------------------------------------------------ | ---------------------------------------- |
+| POST   | `/api/openai/query-{agente}`                     | Chat de texto estándar                   |
+| POST   | `/api/openai/multimodal-{agente}`                | Chat con texto + imágenes                |
+| POST   | `/api/openai/multimodal-{agente}-without-saving` | Multimodal sin guardar (para retry/edit) |
 
 **Agentes disponibles** (sustituir `{agente}` por):
 
 **📐 Ingeniería (10 agentes)**:
-- `Algebra`, `Calculo`, `Fisica`, `Quimica`, `ComputacionSistemas`
-- `ElectricidadElectronica`, `Estadistica`, `MatematicaAvz`, `RedesSeguridad`, `ResistenciaMateriales`
+
+-   `Algebra`, `Calculo`, `Fisica`, `Quimica`, `ComputacionSistemas`
+-   `ElectricidadElectronica`, `Estadistica`, `MatematicaAvz`, `RedesSeguridad`, `ResistenciaMateriales`
 
 **🏥 Medicina (10 agentes)**:
-- `CienciasBasicas`, `CienciasAplicadas`, `Patologia`, `Semiologia`, `MedicinaInterna`
-- `EspecialidadesMed1`, `EspecialidadesMedicasII`, `CirugiaYUrgencias`, `Epidemiologia`, `MatematicaMedica`
+
+-   `CienciasBasicas`, `CienciasAplicadas`, `Patologia`, `Semiologia`, `MedicinaInterna`
+-   `EspecialidadesMed1`, `EspecialidadesMedicasII`, `CirugiaYUrgencias`, `Epidemiologia`, `MatematicaMedica`
 
 **💰 Economía (10 agentes)**:
-- `Microeconomia`, `Macroeconomia`, `Econometria`, `CalculoEconomico`, `Finanzas`
-- `HistoriaEconomica`, `DesarrolloEconomico`, `EconomiaInternacional`, `EconomiaLaboral`, `SectorPublico`
+
+-   `Microeconomia`, `Macroeconomia`, `Econometria`, `CalculoEconomico`, `Finanzas`
+-   `HistoriaEconomica`, `DesarrolloEconomico`, `EconomiaInternacional`, `EconomiaLaboral`, `SectorPublico`
 
 **🧠 Psicología (10 agentes)**:
-- `DSM5`, `Psicoanalisis`, `Neuropsicologia`, `PsicologiaEvolutiva`, `PsicologiaGeneral`
-- `PsicologiaSocial`, `Epistemologia`, `Psicopatologia`, `PsicDiagnostico`, `Psicoestadistica`
+
+-   `DSM5`, `Psicoanalisis`, `Neuropsicologia`, `PsicologiaEvolutiva`, `PsicologiaGeneral`
+-   `PsicologiaSocial`, `Epistemologia`, `Psicopatologia`, `PsicDiagnostico`, `Psicoestadistica`
 
 **🛠️ Herramientas (2 agentes)**:
-- `agent` — Agente General multimodal
-- `pdf` — PDF IA (chat sobre documentos)
+
+-   `agent` — Agente General multimodal
+-   `pdf` — PDF IA (chat sobre documentos)
 
 **Ejemplo de uso**:
+
 ```bash
 # Chat de texto con el agente de Álgebra
 POST /api/openai/query-Algebra
@@ -1587,137 +1700,140 @@ POST /api/openai/multimodal-Fisica
 
 ### 💬 Chat y RAG
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| **Gestión de Chats** |
-| GET | `/api/chats/all` | Listar todos los chats del usuario |
-| POST | `/api/chats/create` | Crear nuevo chat |
-| DELETE | `/api/chats/:chatId` | Eliminar chat |
-| GET | `/api/chats/:chatId/history` | Obtener historial de mensajes |
+| Método                        | Ruta                                              | Descripción                               |
+| ----------------------------- | ------------------------------------------------- | ----------------------------------------- |
+| **Gestión de Chats**          |
+| GET                           | `/api/chats/all`                                  | Listar todos los chats del usuario        |
+| POST                          | `/api/chats/create`                               | Crear nuevo chat                          |
+| DELETE                        | `/api/chats/:chatId`                              | Eliminar chat                             |
+| GET                           | `/api/chats/:chatId/history`                      | Obtener historial de mensajes             |
 | **Procesamiento de Archivos** |
-| POST | `/api/documents/process` | Procesar PDF/documento → OCR → embeddings |
-| POST | `/api/file/extract-content/:chatId` | Extraer contenido de PDF |
-| POST | `/api/file/extract-text/:chatId` | Extraer texto plano de PDF |
-| GET | `/api/file/list/:chatId` | Listar archivos adjuntos |
-| DELETE | `/api/file/delete/:fileId` | Eliminar archivo |
-| **Transcripciones** |
-| POST | `/api/media/process-youtube` | YouTube → MP3 → Whisper → embeddings |
-| POST | `/api/video-transcription/process-video-file` | Procesar video subido |
-| POST | `/api/audio-transcription/process-audio-file` | Procesar audio subido |
-| POST | `/api/audio-transcription/process-recorded-audio` | Procesar grabación en tiempo real |
-| **Marketing** |
-| POST | `/api/marketing/query` | Chat con agente de marketing |
-| GET | `/api/marketing/trends` | Obtener tendencias detectadas |
-| GET | `/api/marketing/memory` | Consultar memoria del agente |
+| POST                          | `/api/documents/process`                          | Procesar PDF/documento → OCR → embeddings |
+| POST                          | `/api/file/extract-content/:chatId`               | Extraer contenido de PDF                  |
+| POST                          | `/api/file/extract-text/:chatId`                  | Extraer texto plano de PDF                |
+| GET                           | `/api/file/list/:chatId`                          | Listar archivos adjuntos                  |
+| DELETE                        | `/api/file/delete/:fileId`                        | Eliminar archivo                          |
+| **Transcripciones**           |
+| POST                          | `/api/media/process-youtube`                      | YouTube → MP3 → Whisper → embeddings      |
+| POST                          | `/api/video-transcription/process-video-file`     | Procesar video subido                     |
+| POST                          | `/api/audio-transcription/process-audio-file`     | Procesar audio subido                     |
+| POST                          | `/api/audio-transcription/process-recorded-audio` | Procesar grabación en tiempo real         |
+| **Marketing**                 |
+| POST                          | `/api/marketing/query`                            | Chat con agente de marketing              |
+| GET                           | `/api/marketing/trends`                           | Obtener tendencias detectadas             |
+| GET                           | `/api/marketing/memory`                           | Consultar memoria del agente              |
 
 ### 👤 Usuarios y Autenticación
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| **Autenticación** |
-| POST | `/api/usuarios/login` | Iniciar sesión |
-| POST | `/api/usuarios/logout` | Cerrar sesión |
-| GET | `/api/usuarios/google-login` | Login con Google OAuth |
-| POST | `/api/usuarios/refresh-token` | Refrescar JWT token |
-| GET | `/api/usuarios/auth-status` | Verificar estado de autenticación |
-| POST | `/api/usuarios/revoke-sessions/:userId` | Revocar todas las sesiones |
-| GET | `/api/usuarios/check-session` | Verificar sesión activa |
-| **Registro y Verificación** |
-| POST | `/api/usuarios/register` | Crear nueva cuenta |
-| POST | `/api/usuarios/verify-email` | Verificar correo electrónico |
-| POST | `/api/usuarios/resend-verification` | Reenviar código de verificación |
-| GET | `/api/usuarios/check-registration-status` | Estado de registro |
+| Método                         | Ruta                                      | Descripción                       |
+| ------------------------------ | ----------------------------------------- | --------------------------------- |
+| **Autenticación**              |
+| POST                           | `/api/usuarios/login`                     | Iniciar sesión                    |
+| POST                           | `/api/usuarios/logout`                    | Cerrar sesión                     |
+| GET                            | `/api/usuarios/google-login`              | Login con Google OAuth            |
+| POST                           | `/api/usuarios/refresh-token`             | Refrescar JWT token               |
+| GET                            | `/api/usuarios/auth-status`               | Verificar estado de autenticación |
+| POST                           | `/api/usuarios/revoke-sessions/:userId`   | Revocar todas las sesiones        |
+| GET                            | `/api/usuarios/check-session`             | Verificar sesión activa           |
+| **Registro y Verificación**    |
+| POST                           | `/api/usuarios/register`                  | Crear nueva cuenta                |
+| POST                           | `/api/usuarios/verify-email`              | Verificar correo electrónico      |
+| POST                           | `/api/usuarios/resend-verification`       | Reenviar código de verificación   |
+| GET                            | `/api/usuarios/check-registration-status` | Estado de registro                |
 | **Recuperación de Contraseña** |
-| POST | `/api/usuarios/request-password-reset` | Solicitar reset de contraseña |
-| POST | `/api/usuarios/reset-password` | Confirmar nuevo password |
-| GET | `/api/usuarios/verify-reset-token` | Verificar token de reset |
-| **Perfil** |
-| GET | `/api/perfil/profile` | Obtener perfil completo |
-| PUT | `/api/perfil/update` | Actualizar perfil |
-| POST | `/api/usuarios/delete-account` | Solicitar eliminación de cuenta |
-| GET | `/api/perfil/preferences` | Obtener preferencias |
-| PUT | `/api/perfil/preferences` | Actualizar preferencias |
-| **Avas (Agentes)** |
-| GET | `/api/avas/all` | Listar agentes disponibles |
-| GET | `/api/avas/:avaId` | Detalles de un agente |
-| POST | `/api/compra/purchase-ava` | Comprar acceso a agente |
-| GET | `/api/compra/my-avas` | Mis agentes adquiridos |
+| POST                           | `/api/usuarios/request-password-reset`    | Solicitar reset de contraseña     |
+| POST                           | `/api/usuarios/reset-password`            | Confirmar nuevo password          |
+| GET                            | `/api/usuarios/verify-reset-token`        | Verificar token de reset          |
+| **Perfil**                     |
+| GET                            | `/api/perfil/profile`                     | Obtener perfil completo           |
+| PUT                            | `/api/perfil/update`                      | Actualizar perfil                 |
+| POST                           | `/api/usuarios/delete-account`            | Solicitar eliminación de cuenta   |
+| GET                            | `/api/perfil/preferences`                 | Obtener preferencias              |
+| PUT                            | `/api/perfil/preferences`                 | Actualizar preferencias           |
+| **Avas (Agentes)**             |
+| GET                            | `/api/avas/all`                           | Listar agentes disponibles        |
+| GET                            | `/api/avas/:avaId`                        | Detalles de un agente             |
+| POST                           | `/api/compra/purchase-ava`                | Comprar acceso a agente           |
+| GET                            | `/api/compra/my-avas`                     | Mis agentes adquiridos            |
 
 ### 💳 Pagos y Suscripciones
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
+| Método                     | Ruta                                  | Descripción                    |
+| -------------------------- | ------------------------------------- | ------------------------------ |
 | **Paddle (Internacional)** |
-| POST | `/api/paddle/create-checkout` | Crear sesión de pago |
-| POST | `/api/paddle/webhook` | Webhook de Paddle |
-| GET | `/api/paddle/subscriptions` | Listar suscripciones |
-| POST | `/api/paddle/cancel-subscription` | Cancelar suscripción |
-| **Ualá Bis (Argentina)** |
-| POST | `/api/payments-arg/create-payment` | Crear pago con Ualá |
-| POST | `/api/payments-arg/webhook` | Webhook de Ualá Bis |
-| GET | `/api/payments-arg/status/:paymentId` | Estado de pago |
-| **Transacciones** |
-| GET | `/api/payment/transactions` | Historial de transacciones |
-| GET | `/api/payment/transaction/:id` | Detalles de transacción |
-| POST | `/api/payment/refund` | Procesar reembolso |
-| **Precios** |
-| GET | `/api/price/plans` | Listar planes disponibles |
-| GET | `/api/price/plan/:planId` | Detalles de plan |
-| GET | `/api/price/calculate` | Calcular precio con descuentos |
+| POST                       | `/api/paddle/create-checkout`         | Crear sesión de pago           |
+| POST                       | `/api/paddle/webhook`                 | Webhook de Paddle              |
+| GET                        | `/api/paddle/subscriptions`           | Listar suscripciones           |
+| POST                       | `/api/paddle/cancel-subscription`     | Cancelar suscripción           |
+| **Ualá Bis (Argentina)**   |
+| POST                       | `/api/payments-arg/create-payment`    | Crear pago con Ualá            |
+| POST                       | `/api/payments-arg/webhook`           | Webhook de Ualá Bis            |
+| GET                        | `/api/payments-arg/status/:paymentId` | Estado de pago                 |
+| **Transacciones**          |
+| GET                        | `/api/payment/transactions`           | Historial de transacciones     |
+| GET                        | `/api/payment/transaction/:id`        | Detalles de transacción        |
+| POST                       | `/api/payment/refund`                 | Procesar reembolso             |
+| **Precios**                |
+| GET                        | `/api/price/plans`                    | Listar planes disponibles      |
+| GET                        | `/api/price/plan/:planId`             | Detalles de plan               |
+| GET                        | `/api/price/calculate`                | Calcular precio con descuentos |
 
 ### 🔧 Administración
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| **Colas y Jobs** |
-| GET | `/api/admin/queues/monitor` | Monitor de colas BullMQ |
-| GET | `/api/admin/queues/jobs/:queueName` | Jobs de una cola |
-| POST | `/api/admin/queues/retry/:jobId` | Reintentar job fallido |
-| DELETE | `/api/admin/queues/clean/:queueName` | Limpiar cola |
-| **Finanzas** |
-| GET | `/api/admin/finance/subscriptions` | Gestión de suscripciones |
-| GET | `/api/admin/finance/transactions` | Transacciones completas |
-| GET | `/api/admin/finance/reports` | Reportes financieros |
-| POST | `/api/admin/finance/export` | Exportar datos financieros |
-| GET | `/api/admin/finance/expenses` | Egresos y gastos |
-| POST | `/api/admin/finance/expense` | Registrar egreso |
-| GET | `/api/admin/finance/tax-analysis` | Análisis de impuestos |
+| Método              | Ruta                                 | Descripción                |
+| ------------------- | ------------------------------------ | -------------------------- |
+| **Colas y Jobs**    |
+| GET                 | `/api/admin/queues/monitor`          | Monitor de colas BullMQ    |
+| GET                 | `/api/admin/queues/jobs/:queueName`  | Jobs de una cola           |
+| POST                | `/api/admin/queues/retry/:jobId`     | Reintentar job fallido     |
+| DELETE              | `/api/admin/queues/clean/:queueName` | Limpiar cola               |
+| **Finanzas**        |
+| GET                 | `/api/admin/finance/subscriptions`   | Gestión de suscripciones   |
+| GET                 | `/api/admin/finance/transactions`    | Transacciones completas    |
+| GET                 | `/api/admin/finance/reports`         | Reportes financieros       |
+| POST                | `/api/admin/finance/export`          | Exportar datos financieros |
+| GET                 | `/api/admin/finance/expenses`        | Egresos y gastos           |
+| POST                | `/api/admin/finance/expense`         | Registrar egreso           |
+| GET                 | `/api/admin/finance/tax-analysis`    | Análisis de impuestos      |
 | **Argentina Admin** |
-| GET | `/api/admin/argentina/payments` | Pagos de Argentina |
-| GET | `/api/admin/argentina/analytics` | Analytics ARG |
+| GET                 | `/api/admin/argentina/payments`      | Pagos de Argentina         |
+| GET                 | `/api/admin/argentina/analytics`     | Analytics ARG              |
 
 ### 🔒 Seguridad y Shared
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
+| Método        | Ruta                            | Descripción                          |
+| ------------- | ------------------------------- | ------------------------------------ |
 | **Seguridad** |
-| GET | `/api/security/events` | Logs de eventos de seguridad |
-| GET | `/api/security/failed-logins` | Intentos fallidos de login |
-| POST | `/api/security/report-incident` | Reportar incidente |
-| GET | `/api/activitymente/logs` | Logs de actividad |
-| **Shared** |
-| POST | `/api/contact` | Formulario de contacto |
-| POST | `/api/feedback` | Enviar feedback |
-| GET | `/api/access/status` | Estado de acceso (herramientas/avas) |
-| POST | `/api/cookie-consent` | Registrar consentimiento GDPR |
-| GET | `/api/cookie-consent/status` | Estado de consentimientos |
-| GET | `/api/terminos/latest` | Últimos términos y condiciones |
-| POST | `/api/terminos/accept` | Aceptar términos |
+| GET           | `/api/security/events`          | Logs de eventos de seguridad         |
+| GET           | `/api/security/failed-logins`   | Intentos fallidos de login           |
+| POST          | `/api/security/report-incident` | Reportar incidente                   |
+| GET           | `/api/activitymente/logs`       | Logs de actividad                    |
+| **Shared**    |
+| POST          | `/api/contact`                  | Formulario de contacto               |
+| POST          | `/api/feedback`                 | Enviar feedback                      |
+| GET           | `/api/access/status`            | Estado de acceso (herramientas/avas) |
+| POST          | `/api/cookie-consent`           | Registrar consentimiento GDPR        |
+| GET           | `/api/cookie-consent/status`    | Estado de consentimientos            |
+| GET           | `/api/terminos/latest`          | Últimos términos y condiciones       |
+| POST          | `/api/terminos/accept`          | Aceptar términos                     |
 
 ### 📝 Notas de Implementación
 
 **Rate Limiting**:
-- Endpoints de OpenAI: 20 requests/minuto
-- Endpoints de PDF/OCR: 10 requests/minuto
-- Endpoints de audio/video: 5 requests/minuto
-- Endpoints generales: 100 requests/minuto
+
+-   Endpoints de OpenAI: 20 requests/minuto
+-   Endpoints de PDF/OCR: 10 requests/minuto
+-   Endpoints de audio/video: 5 requests/minuto
+-   Endpoints generales: 100 requests/minuto
 
 **Autenticación**:
-- La mayoría de endpoints requieren JWT token en cookie `auth-token`
-- Endpoints públicos: `/login`, `/register`, `/auth-status`, `/contact`
-- CSRF token requerido para POST/PUT/DELETE (header `x-csrf-token`)
+
+-   La mayoría de endpoints requieren JWT token en cookie `auth-token`
+-   Endpoints públicos: `/login`, `/register`, `/auth-status`, `/contact`
+-   CSRF token requerido para POST/PUT/DELETE (header `x-csrf-token`)
 
 **Respuestas**:
+
 ```json
 // Éxito
 {
@@ -1739,7 +1855,7 @@ POST /api/openai/multimodal-Fisica
 
 ## 👥 Autores
 
--   **Líder / Full‑stack:** Rodney Dhavid Jimenez Chacin — [github.com/rodhnin](https://github.com/rodhnin)
+-   **Líder / Full‑stack:** Rodney Dhavid Jimenez Chacin — [github.com/rodhnin](https://github.com/rodhnin) [Web: rodhnin](https://www.rodhnin.com)
 -   **Backend / APIs / DB / integración FE:** Brandon Jesús Zambrano Alcina — [github.com/Zedkhn](https://github.com/Zedkhn)
 -   **Frontend / UX / Testing:** Leandro Jesús Zambrano Alcina — [github.com/leandronix](https://github.com/leandronix)
 
@@ -1762,6 +1878,7 @@ POST /api/openai/multimodal-Fisica
     RAG + agentes + **4 chats** + **Agente de Marketing**; **sistema de tienda**, **usuarios**, **chats funcionales con agentes IA**, **análisis de imágenes**, **panel de administrador**, **5 carreras con ~10 chats cada una** (teórico + matemático), **marketing agent inteligente y funcional**, **panel de finanzas y administración**, **configuración de usuario**, **páginas de inicio y branding** — todo lo que una página **SaaS** necesita para demostración de arquitectura y capacidades.
 
     **📚 Documentación completa añadida**:
+
     -   ✅ **README.md** mejorado con tabla de contenidos, resumen detallado, arquitectura, RAG, base de datos
     -   ✅ **docs/ARCHITECTURE.md** - Arquitectura técnica completa (3 capas, patrones de diseño, flujos)
     -   ✅ **docs/DATABASE.md** - Esquema completo (82 tablas, índices, queries, migraciones)

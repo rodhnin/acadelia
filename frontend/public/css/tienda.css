@@ -685,7 +685,7 @@ header {
 .copyright {
     font-size: 0.9rem;
     opacity: 0.8;
-    transform: translateX(420px)
+    transform: translateX(550px);
 }
 
 .social-icons {
@@ -1844,7 +1844,7 @@ color: #dcdcdc;
 .copyright {
     font-size: 0.9rem;
     opacity: 0.8;
-    transform: translateX(240px)
+    transform: translateX(420px)
 }
 }
 
@@ -2595,19 +2595,6 @@ color: #dcdcdc;
 .content-box[data-product*="AVAs"] {
     position: relative;
     overflow: hidden;
-}
-
-.content-box[data-product*="AVAs"]::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #74ACDF, #5DADE2);
-    border-radius: 0 0 0 60px;
-    opacity: 0.1;
-    z-index: 1;
 }
 
 /* ===== EFECTOS DE LOADING ESPECÍFICOS ===== */
@@ -4360,4 +4347,206 @@ body {
 [data-theme="dark"]  .notification-title,
 [data-theme="dark"]  .notification-message {
         color: #d5d5d5;
+}
+
+/* ================= ESTILOS COMPACTOS PARA AVISOS DE IVA ================= */
+
+.iva-notice-compact {
+    background: linear-gradient(135deg, #fff9e6, #fff3cd);
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.15);
+    font-size: 0.85rem;
+    color: #856404;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.iva-notice-compact:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+}
+
+.iva-notice-compact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ffc107, transparent);
+    animation: shimmer 4s infinite;
+}
+
+.iva-icon {
+    font-size: 1rem;
+    animation: pulse 3s infinite;
+}
+
+.iva-text {
+    line-height: 1.3;
+}
+
+.iva-text strong {
+    font-weight: 600;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.price-disclaimer {
+    font-size: 0.7rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 0.2rem;
+    opacity: 0.8;
+}
+
+.floating-iva-notice {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff;
+    border: 1px solid #ffc107;
+    border-radius: 20px;
+    padding: 0.4rem 0.8rem;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    font-size: 0.8rem;
+    color: #856404;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.floating-iva-notice.show {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .iva-notice-compact {
+    background: linear-gradient(135deg, #2a2a2a, #333333);
+    border-color: #ffc107;
+    color: #ffd700;
+}
+
+[data-theme="dark"] .price-disclaimer {
+    color: #adb5bd;
+}
+
+[data-theme="dark"] .floating-iva-notice {
+    background: rgba(45, 45, 45, 0.95);
+    color: #ffd700;
+    border-color: #ffc107;
+}
+
+/* Responsive - CAMBIO PRINCIPAL AQUÍ */
+@media (max-width: 768px) {
+    /* Ocultar el aviso principal en móvil */
+    .iva-notice-compact {
+        display: none !important;
+    }
+    
+    /* Asegurar que el flotante sea visible en móvil */
+    .floating-iva-notice {
+        bottom: 15px;
+        right: 15px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .floating-iva-notice.show {
+        display: flex !important;
+    }
+    
+    .price-disclaimer {
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-iva-notice {
+        bottom: 10px;
+        right: -50px;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Asegurar que en desktop se vea el aviso principal */
+@media (min-width: 769px) {
+    .iva-notice-compact {
+        display: flex !important;
+    }
+}
+
+/* ================= ESTADOS DE VISIBILIDAD PARA VISTA DETALLE ================= */
+
+.iva-notice-compact.hidden-detail {
+    transform: translateY(-100px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Asegurar que el flotante sea visible en vista detalle */
+.floating-iva-notice.show {
+    display: flex !important;
+    align-items: center;
+    gap: 0.3rem;
+    animation: slideIn 0.4s ease-out;
+}
+
+/* Mejora para la transición del aviso principal */
+.iva-notice-compact {
+    transition: all 0.3s ease;
+}
+
+/* ================= ESTADOS DE VISIBILIDAD PARA VISTA DETALLE ================= */
+
+
+
+/* Asegurar que el flotante sea visible en vista detalle */
+.floating-iva-notice.show {
+    display: flex !important;
+    align-items: center;
+    gap: 0.3rem;
+    animation: slideIn 0.4s ease-out;
+    margin: 70px !important
+}
+
+.iva-notice-compact.hidden {
+    display: none !important;
 }

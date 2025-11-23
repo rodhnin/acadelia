@@ -4,7 +4,7 @@ Gracias por ayudarnos a mantener este proyecto seguro. **No reportes vulnerabili
 
 ## 📬 Cómo reportar
 
--   Enviar reporte a: **acadelia.system@gmail.com** (o abre un hilo privado en Discussions si necesitas coordinación).
+-   Enviar reporte a: [rodhnin](https://www.rodhnin.com) en el form de contact (o abre un hilo privado en Discussions si necesitas coordinación).
 -   Incluye: descripción clara, pasos para reproducir, impacto y, si es posible, PoC. Evita adjuntar datos sensibles.
 
 ## 🔒 Alcance

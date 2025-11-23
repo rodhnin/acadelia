@@ -21,6 +21,7 @@
 La API de Acadelia es una API RESTful que proporciona acceso a todos los servicios de la plataforma.
 
 **Base URL**:
+
 ```
 Desarrollo: http://localhost:5000
 Producción: https://acadelia.com
@@ -29,6 +30,7 @@ Producción: https://acadelia.com
 **Formato de Respuesta**: JSON
 
 **Headers Requeridos**:
+
 ```
 Content-Type: application/json
 X-CSRF-Token: {csrf-token}  (para POST/PUT/DELETE)
@@ -45,36 +47,40 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Endpoint**: `POST /api/users/login`
 
 **Request Body**:
+
 ```json
 {
-  "email": "usuario@example.com",
-  "password": "password123"
+    "email": "usuario@example.com",
+    "password": "password123"
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Login exitoso",
-  "user": {
-    "id": "uuid",
-    "email": "usuario@example.com",
-    "name": "Usuario",
-    "plan": "free"
-  }
+    "message": "Login exitoso",
+    "user": {
+        "id": "uuid",
+        "email": "usuario@example.com",
+        "name": "Usuario",
+        "plan": "free"
+    }
 }
 ```
 
 **Cookies establecidas**:
-- `auth-token`: JWT token (httpOnly, 1 hora)
-- `refresh-token`: Refresh token (httpOnly, 7 días)
+
+-   `auth-token`: JWT token (httpOnly, 1 hora)
+-   `refresh-token`: Refresh token (httpOnly, 7 días)
 
 **Rate Limit**: 5 requests / 5 minutos por email/IP
 
 **Errores**:
-- `400`: Datos faltantes
-- `401`: Credenciales inválidas
-- `429`: Demasiados intentos de login
+
+-   `400`: Datos faltantes
+-   `401`: Credenciales inválidas
+-   `429`: Demasiados intentos de login
 
 ---
 
@@ -83,27 +89,30 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Endpoint**: `POST /api/users/register`
 
 **Request Body**:
+
 ```json
 {
-  "email": "nuevo@example.com",
-  "password": "SecurePass123!",
-  "name": "Nuevo Usuario",
-  "carrera_id": "uuid"
+    "email": "nuevo@example.com",
+    "password": "SecurePass123!",
+    "name": "Nuevo Usuario",
+    "carrera_id": "uuid"
 }
 ```
 
 **Response** (201 Created):
+
 ```json
 {
-  "message": "Usuario creado exitosamente",
-  "userId": "uuid"
+    "message": "Usuario creado exitosamente",
+    "userId": "uuid"
 }
 ```
 
 **Validaciones**:
-- Email: Formato válido
-- Password: Mínimo 8 caracteres, 1 mayúscula, 1 número
-- Name: 2-100 caracteres
+
+-   Email: Formato válido
+-   Password: Mínimo 8 caracteres, 1 mayúscula, 1 número
+-   Name: 2-100 caracteres
 
 ---
 
@@ -114,16 +123,18 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación (JWT)
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Logout exitoso"
+    "message": "Logout exitoso"
 }
 ```
 
 **Efecto**:
-- Invalida el JWT actual (blacklist)
-- Elimina refresh token de Redis
-- Borra cookies del cliente
+
+-   Invalida el JWT actual (blacklist)
+-   Elimina refresh token de Redis
+-   Borra cookies del cliente
 
 ---
 
@@ -134,14 +145,16 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Cookies requeridas**: `refresh-token`
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Token renovado"
+    "message": "Token renovado"
 }
 ```
 
 **Cookies actualizadas**:
-- `auth-token`: Nuevo JWT (1 hora)
+
+-   `auth-token`: Nuevo JWT (1 hora)
 
 ---
 
@@ -154,25 +167,26 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación
 
 **Response** (200 OK):
+
 ```json
 {
-  "id": "uuid",
-  "email": "usuario@example.com",
-  "name": "Usuario",
-  "plan": "free",
-  "created_at": "2024-01-15T10:30:00Z",
-  "ava_access": [
-    {
-      "ava_id": "uuid",
-      "ava_name": "Álgebra",
-      "access_granted_at": "2024-01-15T10:30:00Z"
+    "id": "uuid",
+    "email": "usuario@example.com",
+    "name": "Usuario",
+    "plan": "free",
+    "created_at": "2024-01-15T10:30:00Z",
+    "ava_access": [
+        {
+            "ava_id": "uuid",
+            "ava_name": "Álgebra",
+            "access_granted_at": "2024-01-15T10:30:00Z"
+        }
+    ],
+    "usage_stats": {
+        "messages_today": 5,
+        "messages_this_hour": 2,
+        "tokens_used_this_month": 15000
     }
-  ],
-  "usage_stats": {
-    "messages_today": 5,
-    "messages_this_hour": 2,
-    "tokens_used_this_month": 15000
-  }
 }
 ```
 
@@ -185,17 +199,19 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "name": "Nuevo Nombre",
-  "preferences": {
-    "theme": "dark",
-    "notifications": true
-  }
+    "name": "Nuevo Nombre",
+    "preferences": {
+        "theme": "dark",
+        "notifications": true
+    }
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
   "message": "Perfil actualizado",
@@ -216,17 +232,19 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "currentPassword": "OldPass123!",
-  "newPassword": "NewPass456!"
+    "currentPassword": "OldPass123!",
+    "newPassword": "NewPass456!"
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Contraseña actualizada exitosamente"
+    "message": "Contraseña actualizada exitosamente"
 }
 ```
 
@@ -241,18 +259,20 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "reason": "No uso más el servicio",
-  "password": "MyPassword123!"
+    "reason": "No uso más el servicio",
+    "password": "MyPassword123!"
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Solicitud de eliminación registrada",
-  "deletion_date": "2024-02-14T10:30:00Z"
+    "message": "Solicitud de eliminación registrada",
+    "deletion_date": "2024-02-14T10:30:00Z"
 }
 ```
 
@@ -269,20 +289,22 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "ava_id": "uuid",        // Para chats de agente
-  "herramienta_id": "uuid", // Para chats de herramienta (PDF, Agente)
-  "title": "Mi chat de Álgebra"
+    "ava_id": "uuid", // Para chats de agente
+    "herramienta_id": "uuid", // Para chats de herramienta (PDF, Agente)
+    "title": "Mi chat de Álgebra"
 }
 ```
 
 **Response** (201 Created):
+
 ```json
 {
-  "chatId": "uuid",
-  "title": "Mi chat de Álgebra",
-  "created_at": "2024-01-15T10:30:00Z"
+    "chatId": "uuid",
+    "title": "Mi chat de Álgebra",
+    "created_at": "2024-01-15T10:30:00Z"
 }
 ```
 
@@ -295,27 +317,29 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación
 
 **Query Params**:
-- `ava_id` (opcional): Filtrar por agente
-- `herramienta_id` (opcional): Filtrar por herramienta
-- `limit` (opcional): Número de chats (default: 20)
-- `offset` (opcional): Para paginación (default: 0)
+
+-   `ava_id` (opcional): Filtrar por agente
+-   `herramienta_id` (opcional): Filtrar por herramienta
+-   `limit` (opcional): Número de chats (default: 20)
+-   `offset` (opcional): Para paginación (default: 0)
 
 **Response** (200 OK):
+
 ```json
 {
-  "chats": [
-    {
-      "id": "uuid",
-      "title": "Límites y Continuidad",
-      "ava_name": "Cálculo",
-      "last_message": "2024-01-15T14:30:00Z",
-      "message_count": 15
-    },
-    // ...
-  ],
-  "total": 25,
-  "limit": 20,
-  "offset": 0
+    "chats": [
+        {
+            "id": "uuid",
+            "title": "Límites y Continuidad",
+            "ava_name": "Cálculo",
+            "last_message": "2024-01-15T14:30:00Z",
+            "message_count": 15
+        }
+        // ...
+    ],
+    "total": 25,
+    "limit": 20,
+    "offset": 0
 }
 ```
 
@@ -328,34 +352,36 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación
 
 **Query Params**:
-- `limit` (opcional): Mensajes a retornar (default: 50)
-- `before` (opcional): Timestamp para paginación
+
+-   `limit` (opcional): Mensajes a retornar (default: 50)
+-   `before` (opcional): Timestamp para paginación
 
 **Response** (200 OK):
+
 ```json
 {
-  "chatId": "uuid",
-  "messages": [
-    {
-      "id": "uuid",
-      "role": "user",
-      "content": "¿Qué es una derivada?",
-      "timestamp": "2024-01-15T10:30:00Z"
-    },
-    {
-      "id": "uuid",
-      "role": "assistant",
-      "content": "Una derivada es...",
-      "timestamp": "2024-01-15T10:30:15Z",
-      "metadata": {
-        "tokens_used": 450,
-        "model": "gpt-4o",
-        "has_references": true
-      }
-    },
-    // ...
-  ],
-  "hasMore": false
+    "chatId": "uuid",
+    "messages": [
+        {
+            "id": "uuid",
+            "role": "user",
+            "content": "¿Qué es una derivada?",
+            "timestamp": "2024-01-15T10:30:00Z"
+        },
+        {
+            "id": "uuid",
+            "role": "assistant",
+            "content": "Una derivada es...",
+            "timestamp": "2024-01-15T10:30:15Z",
+            "metadata": {
+                "tokens_used": 450,
+                "model": "gpt-4o",
+                "has_references": true
+            }
+        }
+        // ...
+    ],
+    "hasMore": false
 }
 ```
 
@@ -368,9 +394,10 @@ Acadelia usa **JWT (JSON Web Tokens)** para autenticación.
 **Headers**: Requiere autenticación + CSRF
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Chat eliminado exitosamente"
+    "message": "Chat eliminado exitosamente"
 }
 ```
 
@@ -385,62 +412,67 @@ Todos los agentes especializados siguen la misma estructura de endpoint.
 **Endpoint**: `POST /api/openai/query-{agente}`
 
 Agentes disponibles:
-- **Ingeniería**: `algebra`, `calculo`, `fisica`, `quimica`, `estadistica`, etc.
-- **Medicina**: `patologia`, `semiologia`, `anatomia`, etc.
-- **Economía**: `microeconomia`, `macroeconomia`, `econometria`, etc.
-- **Psicología**: `dsm5`, `psicoanalisis`, `neuropsicologia`, etc.
+
+-   **Ingeniería**: `algebra`, `calculo`, `fisica`, `quimica`, `estadistica`, etc.
+-   **Medicina**: `patologia`, `semiologia`, `anatomia`, etc.
+-   **Economía**: `microeconomia`, `macroeconomia`, `econometria`, etc.
+-   **Psicología**: `dsm5`, `psicoanalisis`, `neuropsicologia`, etc.
 
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "chatId": "uuid",
-  "message": "Explica el teorema fundamental del cálculo",
-  "options": {
-    "temperature": 0.7,      // Opcional (0-1)
-    "includeReferences": true // Opcional (default: true)
-  }
+    "chatId": "uuid",
+    "message": "Explica el teorema fundamental del cálculo",
+    "options": {
+        "temperature": 0.7, // Opcional (0-1)
+        "includeReferences": true // Opcional (default: true)
+    }
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "El teorema fundamental del cálculo establece...",
-  "references": [
-    {
-      "content": "Fragmento relevante de la base de conocimiento...",
-      "similarity": 0.89,
-      "metadata": {
-        "source": "Cálculo - Thomas, 12va ed.",
-        "page": 245
-      }
+    "message": "El teorema fundamental del cálculo establece...",
+    "references": [
+        {
+            "content": "Fragmento relevante de la base de conocimiento...",
+            "similarity": 0.89,
+            "metadata": {
+                "source": "Cálculo - Thomas, 12va ed.",
+                "page": 245
+            }
+        }
+    ],
+    "metadata": {
+        "tokens_used": 850,
+        "model": "gpt-4o",
+        "processing_time_ms": 2150,
+        "cache_hit": false,
+        "tools_used": ["wolfram"]
+    },
+    "usage": {
+        "messages_remaining_today": 5,
+        "messages_remaining_hour": 2
     }
-  ],
-  "metadata": {
-    "tokens_used": 850,
-    "model": "gpt-4o",
-    "processing_time_ms": 2150,
-    "cache_hit": false,
-    "tools_used": ["wolfram"]
-  },
-  "usage": {
-    "messages_remaining_today": 5,
-    "messages_remaining_hour": 2
-  }
 }
 ```
 
 **Rate Limit**:
-- Free: 3 mensajes/hora, 10 mensajes/día
-- Premium: Ilimitado
+
+-   Free: 3 mensajes/hora, 10 mensajes/día
+-   Premium: Ilimitado
 
 **Errores**:
-- `400`: Datos inválidos
-- `403`: Sin acceso al agente
-- `429`: Límite de mensajes alcanzado
-- `500`: Error procesando query
+
+-   `400`: Datos inválidos
+-   `403`: Sin acceso al agente
+-   `429`: Límite de mensajes alcanzado
+-   `500`: Error procesando query
 
 ---
 
@@ -453,6 +485,7 @@ Agentes disponibles:
 **Content-Type**: `multipart/form-data`
 
 **Form Data**:
+
 ```
 chatId: uuid
 message: "¿Qué muestra esta imagen?"
@@ -476,6 +509,7 @@ image: [archivo]
 **Content-Type**: `multipart/form-data`
 
 **Form Data**:
+
 ```
 chatId: uuid
 document: [archivo PDF]
@@ -483,22 +517,24 @@ ava_id: uuid  // Agente que procesará el documento
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Documento procesado exitosamente",
-  "documentId": "uuid",
-  "stats": {
-    "pages": 25,
-    "chunks_created": 87,
-    "processing_time_ms": 15000
-  }
+    "message": "Documento procesado exitosamente",
+    "documentId": "uuid",
+    "stats": {
+        "pages": 25,
+        "chunks_created": 87,
+        "processing_time_ms": 15000
+    }
 }
 ```
 
 **Límites**:
-- Tamaño máximo: 20MB
-- Formatos: PDF únicamente
-- Procesamiento: Asíncrono (puede tomar tiempo)
+
+-   Tamaño máximo: 20MB
+-   Formatos: PDF únicamente
+-   Procesamiento: Asíncrono (puede tomar tiempo)
 
 ---
 
@@ -509,15 +545,17 @@ ava_id: uuid  // Agente que procesará el documento
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "chatId": "uuid",
-  "message": "¿Qué dice el documento sobre fotosíntesis?",
-  "documentId": "uuid"  // Opcional, usa último documento si no se especifica
+    "chatId": "uuid",
+    "message": "¿Qué dice el documento sobre fotosíntesis?",
+    "documentId": "uuid" // Opcional, usa último documento si no se especifica
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
   "message": "Según el documento, la fotosíntesis es...",
@@ -543,20 +581,22 @@ ava_id: uuid  // Agente que procesará el documento
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "chatId": "uuid",
-  "url": "https://www.youtube.com/watch?v=...",
-  "ava_id": "uuid"
+    "chatId": "uuid",
+    "url": "https://www.youtube.com/watch?v=...",
+    "ava_id": "uuid"
 }
 ```
 
 **Response** (202 Accepted):
+
 ```json
 {
-  "message": "Procesamiento iniciado",
-  "jobId": "uuid",
-  "estimatedTime": "5-10 minutos"
+    "message": "Procesamiento iniciado",
+    "jobId": "uuid",
+    "estimatedTime": "5-10 minutos"
 }
 ```
 
@@ -573,6 +613,7 @@ ava_id: uuid  // Agente que procesará el documento
 **Content-Type**: `multipart/form-data`
 
 **Form Data**:
+
 ```
 chatId: uuid
 audio: [archivo]
@@ -580,10 +621,11 @@ ava_id: uuid
 ```
 
 **Response** (202 Accepted):
+
 ```json
 {
-  "message": "Transcripción iniciada",
-  "jobId": "uuid"
+    "message": "Transcripción iniciada",
+    "jobId": "uuid"
 }
 ```
 
@@ -601,6 +643,7 @@ ava_id: uuid
 **Content-Type**: `multipart/form-data`
 
 **Form Data**:
+
 ```
 chatId: uuid
 video: [archivo]
@@ -608,10 +651,11 @@ ava_id: uuid
 ```
 
 **Response** (202 Accepted):
+
 ```json
 {
-  "message": "Transcripción iniciada",
-  "jobId": "uuid"
+    "message": "Transcripción iniciada",
+    "jobId": "uuid"
 }
 ```
 
@@ -627,17 +671,18 @@ ava_id: uuid
 **Headers**: Requiere autenticación
 
 **Response** (200 OK):
+
 ```json
 {
-  "jobId": "uuid",
-  "status": "processing|completed|failed",
-  "progress": 65,
-  "result": {
-    "transcription": "Texto transcrito...",
-    "duration": 320,
-    "words": 1580
-  },
-  "error": null
+    "jobId": "uuid",
+    "status": "processing|completed|failed",
+    "progress": 65,
+    "result": {
+        "transcription": "Texto transcrito...",
+        "duration": 320,
+        "words": 1580
+    },
+    "error": null
 }
 ```
 
@@ -652,19 +697,21 @@ ava_id: uuid
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "planId": "premium-monthly",
-  "successUrl": "https://acadelia.com/success",
-  "cancelUrl": "https://acadelia.com/cancel"
+    "planId": "premium-monthly",
+    "successUrl": "https://acadelia.com/success",
+    "cancelUrl": "https://acadelia.com/cancel"
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "checkoutUrl": "https://checkout.paddle.com/...",
-  "transactionId": "uuid"
+    "checkoutUrl": "https://checkout.paddle.com/...",
+    "transactionId": "uuid"
 }
 ```
 
@@ -691,18 +738,19 @@ ava_id: uuid
 **Headers**: Requiere autenticación
 
 **Response** (200 OK):
+
 ```json
 {
-  "subscriptions": [
-    {
-      "id": "sub_123",
-      "plan": "premium-monthly",
-      "status": "active",
-      "current_period_start": "2024-01-15T00:00:00Z",
-      "current_period_end": "2024-02-15T00:00:00Z",
-      "cancel_at_period_end": false
-    }
-  ]
+    "subscriptions": [
+        {
+            "id": "sub_123",
+            "plan": "premium-monthly",
+            "status": "active",
+            "current_period_start": "2024-01-15T00:00:00Z",
+            "current_period_end": "2024-02-15T00:00:00Z",
+            "cancel_at_period_end": false
+        }
+    ]
 }
 ```
 
@@ -715,18 +763,20 @@ ava_id: uuid
 **Headers**: Requiere autenticación + CSRF
 
 **Request Body**:
+
 ```json
 {
-  "subscriptionId": "sub_123",
-  "reason": "Opcional: razón de cancelación"
+    "subscriptionId": "sub_123",
+    "reason": "Opcional: razón de cancelación"
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Suscripción cancelada",
-  "cancelsAt": "2024-02-15T00:00:00Z"
+    "message": "Suscripción cancelada",
+    "cancelsAt": "2024-02-15T00:00:00Z"
 }
 ```
 
@@ -743,25 +793,26 @@ ava_id: uuid
 **Headers**: Requiere autenticación + rol admin
 
 **Response** (200 OK):
+
 ```json
 {
-  "queues": [
-    {
-      "name": "throttle-openai",
-      "active": 3,
-      "waiting": 15,
-      "completed": 1250,
-      "failed": 12
-    },
-    {
-      "name": "throttle-pdf",
-      "active": 1,
-      "waiting": 4,
-      "completed": 87,
-      "failed": 2
-    }
-  ],
-  "timestamp": "2024-01-15T10:30:00Z"
+    "queues": [
+        {
+            "name": "throttle-openai",
+            "active": 3,
+            "waiting": 15,
+            "completed": 1250,
+            "failed": 12
+        },
+        {
+            "name": "throttle-pdf",
+            "active": 1,
+            "waiting": 4,
+            "completed": 87,
+            "failed": 2
+        }
+    ],
+    "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 
@@ -774,26 +825,28 @@ ava_id: uuid
 **Headers**: Requiere autenticación + rol admin
 
 **Query Params**:
-- `level` (opcional): `warn`, `error` (default: all)
-- `limit` (opcional): Número de logs (default: 100)
-- `since` (opcional): Timestamp desde cuando obtener logs
+
+-   `level` (opcional): `warn`, `error` (default: all)
+-   `limit` (opcional): Número de logs (default: 100)
+-   `since` (opcional): Timestamp desde cuando obtener logs
 
 **Response** (200 OK):
+
 ```json
 {
-  "logs": [
-    {
-      "timestamp": "2024-01-15T10:25:00Z",
-      "level": "warn",
-      "event": "rate_limit_exceeded",
-      "details": {
-        "userId": "uuid",
-        "endpoint": "/api/chat/query-algebra"
-      }
-    },
-    // ...
-  ],
-  "total": 250
+    "logs": [
+        {
+            "timestamp": "2024-01-15T10:25:00Z",
+            "level": "warn",
+            "event": "rate_limit_exceeded",
+            "details": {
+                "userId": "uuid",
+                "endpoint": "/api/chat/query-algebra"
+            }
+        }
+        // ...
+    ],
+    "total": 250
 }
 ```
 
@@ -806,19 +859,21 @@ ava_id: uuid
 **Headers**: Requiere autenticación + CSRF + rol admin
 
 **Request Body**:
+
 ```json
 {
-  "userId": "uuid",
-  "reason": "Abuso del sistema",
-  "duration": 86400  // Segundos (null = permanente)
+    "userId": "uuid",
+    "reason": "Abuso del sistema",
+    "duration": 86400 // Segundos (null = permanente)
 }
 ```
 
 **Response** (200 OK):
+
 ```json
 {
-  "message": "Usuario baneado",
-  "unbansAt": "2024-01-16T10:30:00Z"
+    "message": "Usuario baneado",
+    "unbansAt": "2024-01-16T10:30:00Z"
 }
 ```
 
@@ -831,29 +886,31 @@ ava_id: uuid
 **Headers**: Requiere autenticación + rol admin
 
 **Query Params**:
-- `metric`: `users`, `messages`, `tokens`, `revenue`
-- `period`: `day`, `week`, `month`
-- `from`: Fecha inicio (ISO 8601)
-- `to`: Fecha fin (ISO 8601)
+
+-   `metric`: `users`, `messages`, `tokens`, `revenue`
+-   `period`: `day`, `week`, `month`
+-   `from`: Fecha inicio (ISO 8601)
+-   `to`: Fecha fin (ISO 8601)
 
 **Response** (200 OK):
+
 ```json
 {
-  "metric": "messages",
-  "period": "day",
-  "data": [
-    {
-      "date": "2024-01-15",
-      "value": 1250,
-      "breakdown": {
-        "algebra": 320,
-        "calculo": 280,
-        "fisica": 150,
-        "otros": 500
-      }
-    },
-    // ...
-  ]
+    "metric": "messages",
+    "period": "day",
+    "data": [
+        {
+            "date": "2024-01-15",
+            "value": 1250,
+            "breakdown": {
+                "algebra": 320,
+                "calculo": 280,
+                "fisica": 150,
+                "otros": 500
+            }
+        }
+        // ...
+    ]
 }
 ```
 
@@ -862,71 +919,78 @@ ava_id: uuid
 ## Códigos de Error
 
 ### 400 Bad Request
+
 ```json
 {
-  "error": "Datos inválidos",
-  "code": "INVALID_DATA",
-  "details": {
-    "field": "email",
-    "message": "Email inválido"
-  }
+    "error": "Datos inválidos",
+    "code": "INVALID_DATA",
+    "details": {
+        "field": "email",
+        "message": "Email inválido"
+    }
 }
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
-  "error": "No autenticado",
-  "code": "NO_TOKEN"
+    "error": "No autenticado",
+    "code": "NO_TOKEN"
 }
 ```
 
 ### 403 Forbidden
+
 ```json
 {
-  "error": "Sin permisos para acceder a este recurso",
-  "code": "ACCESS_DENIED"
+    "error": "Sin permisos para acceder a este recurso",
+    "code": "ACCESS_DENIED"
 }
 ```
 
 ### 404 Not Found
+
 ```json
 {
-  "error": "Recurso no encontrado",
-  "code": "NOT_FOUND"
+    "error": "Recurso no encontrado",
+    "code": "NOT_FOUND"
 }
 ```
 
 ### 429 Too Many Requests
+
 ```json
 {
-  "error": "Demasiadas solicitudes",
-  "code": "RATE_LIMIT_EXCEEDED",
-  "retryAfter": 3600
+    "error": "Demasiadas solicitudes",
+    "code": "RATE_LIMIT_EXCEEDED",
+    "retryAfter": 3600
 }
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
-  "error": "Error interno del servidor",
-  "code": "INTERNAL_ERROR"
+    "error": "Error interno del servidor",
+    "code": "INTERNAL_ERROR"
 }
 ```
 
 **Códigos específicos**:
-- `NO_TOKEN`: Token JWT no proporcionado
-- `INVALID_TOKEN`: Token JWT inválido o expirado
-- `TOKEN_BLACKLISTED`: Token ha sido invalidado
-- `SESSION_EXPIRED`: Sesión expirada
-- `CSRF_TOKEN_INVALID`: Token CSRF inválido
-- `CSRF_TOKEN_MISSING`: Token CSRF no proporcionado
-- `AVA_ACCESS_DENIED`: Sin acceso al agente
-- `MESSAGE_LIMIT_REACHED`: Límite de mensajes alcanzado
-- `RATE_LIMIT_EXCEEDED`: Rate limit excedido
-- `INFECTED_FILE`: Archivo infectado detectado
-- `FILE_TOO_LARGE`: Archivo excede tamaño máximo
-- `INVALID_FILE_TYPE`: Tipo de archivo no permitido
+
+-   `NO_TOKEN`: Token JWT no proporcionado
+-   `INVALID_TOKEN`: Token JWT inválido o expirado
+-   `TOKEN_BLACKLISTED`: Token ha sido invalidado
+-   `SESSION_EXPIRED`: Sesión expirada
+-   `CSRF_TOKEN_INVALID`: Token CSRF inválido
+-   `CSRF_TOKEN_MISSING`: Token CSRF no proporcionado
+-   `AVA_ACCESS_DENIED`: Sin acceso al agente
+-   `MESSAGE_LIMIT_REACHED`: Límite de mensajes alcanzado
+-   `RATE_LIMIT_EXCEEDED`: Rate limit excedido
+-   `INFECTED_FILE`: Archivo infectado detectado
+-   `FILE_TOO_LARGE`: Archivo excede tamaño máximo
+-   `INVALID_FILE_TYPE`: Tipo de archivo no permitido
 
 ---
 
@@ -944,14 +1008,14 @@ X-RateLimit-Reset: 1705318800
 
 ### Límites por Endpoint
 
-| Endpoint | Free | Premium |
-|----------|------|---------|
-| Login | 5 / 5 min | 5 / 5 min |
-| Chat (por hora) | 3 | Ilimitado |
-| Chat (por día) | 10 | Ilimitado |
-| Upload PDF | 5 / día | 50 / día |
-| Upload Audio/Video | 3 / día | 30 / día |
-| API General | 100 / hora | 1000 / hora |
+| Endpoint           | Free       | Premium     |
+| ------------------ | ---------- | ----------- |
+| Login              | 5 / 5 min  | 5 / 5 min   |
+| Chat (por hora)    | 3          | Ilimitado   |
+| Chat (por día)     | 10         | Ilimitado   |
+| Upload PDF         | 5 / día    | 50 / día    |
+| Upload Audio/Video | 3 / día    | 30 / día    |
+| API General        | 100 / hora | 1000 / hora |
 
 ---
 
@@ -962,68 +1026,68 @@ X-RateLimit-Reset: 1705318800
 ```javascript
 // Login
 const login = async (email, password) => {
-  const response = await fetch('/api/users/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',  // Importante para cookies
-    body: JSON.stringify({ email, password })
-  });
+    const response = await fetch("/api/users/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Importante para cookies
+        body: JSON.stringify({ email, password }),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error);
-  }
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+    }
 
-  return await response.json();
+    return await response.json();
 };
 
 // Query a agente
 const queryAgent = async (chatId, message, agentType) => {
-  // Obtener CSRF token
-  const csrfToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrf-token='))
-    ?.split('=')[1];
+    // Obtener CSRF token
+    const csrfToken = document.cookie
+        .split("; ")
+        .find(row => row.startsWith("csrf-token="))
+        ?.split("=")[1];
 
-  const response = await fetch(`/api/openai/query-${agentType}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': csrfToken
-    },
-    credentials: 'include',
-    body: JSON.stringify({ chatId, message })
-  });
+    const response = await fetch(`/api/openai/query-${agentType}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+        },
+        credentials: "include",
+        body: JSON.stringify({ chatId, message }),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error);
-  }
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+    }
 
-  return await response.json();
+    return await response.json();
 };
 
 // Upload PDF
 const uploadPDF = async (chatId, file, avaId) => {
-  const formData = new FormData();
-  formData.append('chatId', chatId);
-  formData.append('document', file);
-  formData.append('ava_id', avaId);
+    const formData = new FormData();
+    formData.append("chatId", chatId);
+    formData.append("document", file);
+    formData.append("ava_id", avaId);
 
-  const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
 
-  const response = await fetch('/api/chat/document', {
-    method: 'POST',
-    headers: {
-      'X-CSRF-Token': csrfToken
-    },
-    credentials: 'include',
-    body: formData
-  });
+    const response = await fetch("/api/chat/document", {
+        method: "POST",
+        headers: {
+            "X-CSRF-Token": csrfToken,
+        },
+        credentials: "include",
+        body: formData,
+    });
 
-  return await response.json();
+    return await response.json();
 };
 ```
 
@@ -1104,19 +1168,19 @@ Siempre manejar errores de la API:
 
 ```javascript
 try {
-  const result = await queryAgent(chatId, message, 'algebra');
-  // Procesar resultado
+    const result = await queryAgent(chatId, message, "algebra");
+    // Procesar resultado
 } catch (error) {
-  if (error.code === 'RATE_LIMIT_EXCEEDED') {
-    // Mostrar mensaje al usuario sobre límite
-    showRateLimitError(error.retryAfter);
-  } else if (error.code === 'MESSAGE_LIMIT_REACHED') {
-    // Sugerir upgrade a Premium
-    showUpgradePrompt();
-  } else {
-    // Error genérico
-    showError(error.message);
-  }
+    if (error.code === "RATE_LIMIT_EXCEEDED") {
+        // Mostrar mensaje al usuario sobre límite
+        showRateLimitError(error.retryAfter);
+    } else if (error.code === "MESSAGE_LIMIT_REACHED") {
+        // Sugerir upgrade a Premium
+        showUpgradePrompt();
+    } else {
+        // Error genérico
+        showError(error.message);
+    }
 }
 ```
 
@@ -1126,22 +1190,22 @@ Para errores temporales (500, 503):
 
 ```javascript
 const fetchWithRetry = async (url, options, maxRetries = 3) => {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const response = await fetch(url, options);
-      if (response.ok) return response;
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) return response;
 
-      if (response.status >= 500 && i < maxRetries - 1) {
-        // Esperar con exponential backoff
-        await sleep(Math.pow(2, i) * 1000);
-        continue;
-      }
+            if (response.status >= 500 && i < maxRetries - 1) {
+                // Esperar con exponential backoff
+                await sleep(Math.pow(2, i) * 1000);
+                continue;
+            }
 
-      throw new Error(`HTTP ${response.status}`);
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
+            throw new Error(`HTTP ${response.status}`);
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+        }
     }
-  }
 };
 ```
 
@@ -1149,22 +1213,22 @@ const fetchWithRetry = async (url, options, maxRetries = 3) => {
 
 ```javascript
 const apiCall = async (url, options) => {
-  let response = await fetch(url, options);
+    let response = await fetch(url, options);
 
-  if (response.status === 401) {
-    // Intentar renovar token
-    const refreshed = await fetch('/api/users/refresh', {
-      method: 'POST',
-      credentials: 'include'
-    });
+    if (response.status === 401) {
+        // Intentar renovar token
+        const refreshed = await fetch("/api/users/refresh", {
+            method: "POST",
+            credentials: "include",
+        });
 
-    if (refreshed.ok) {
-      // Reintentar request original
-      response = await fetch(url, options);
+        if (refreshed.ok) {
+            // Reintentar request original
+            response = await fetch(url, options);
+        }
     }
-  }
 
-  return response;
+    return response;
 };
 ```
 
@@ -1175,14 +1239,14 @@ Para requests largos (transcripciones, OCR):
 ```javascript
 const controller = new AbortController();
 
-fetch('/api/chat/youtubeAudio', {
-  signal: controller.signal,
-  // ...
+fetch("/api/chat/youtubeAudio", {
+    signal: controller.signal,
+    // ...
 });
 
 // Cancelar si el usuario navega a otra página
-window.addEventListener('beforeunload', () => {
-  controller.abort();
+window.addEventListener("beforeunload", () => {
+    controller.abort();
 });
 ```
 
@@ -1193,27 +1257,20 @@ window.addEventListener('beforeunload', () => {
 Actualmente, Acadelia está en **v1** (implícito, sin prefijo en rutas).
 
 Futuras versiones usarán prefijo:
-- `v1`: `/api/v1/...`
-- `v2`: `/api/v2/...`
+
+-   `v1`: `/api/v1/...`
+-   `v2`: `/api/v2/...`
 
 Versiones antiguas se mantendrán por al menos 12 meses después del lanzamiento de una nueva versión mayor.
-
----
-
-## Soporte
-
-Para preguntas o problemas con la API:
-- Documentación: https://docs.acadelia.com
-- Email: api@acadelia.com
-- Discord: https://discord.gg/acadelia
 
 ---
 
 ## Changelog de API
 
 ### v1.0.0 (2024-01-15)
-- Lanzamiento inicial
-- 40+ agentes especializados
-- Sistema RAG completo
-- Herramientas PDF y Audio/Video
-- Sistema de pagos (Paddle + Ualá Bis)
+
+-   Lanzamiento inicial
+-   40+ agentes especializados
+-   Sistema RAG completo
+-   Herramientas PDF y Audio/Video
+-   Sistema de pagos (Paddle + Ualá Bis)
