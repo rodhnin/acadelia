@@ -1,3 +1,13 @@
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=slice&color=0:582f0e,60:7f4f24,100:c8956b&height=200&text=Acadelia&fontAlign=70&fontAlignY=25&fontSize=65&fontColor=f0efe7&rotate=13&desc=Learn%20with%20AI%20agents%20%E2%80%94%20not%20just%20content&descAlign=62&descAlignY=44&descSize=18&descFontColor=f0efe7&animation=scaleIn" width="100%" />
+
+<br/>
+
+[![Launch Demo →](https://img.shields.io/badge/-Launch%20Demo%20%E2%86%92-582f0e?style=for-the-badge&logo=bookstack&logoColor=f0efe7&labelColor=7f4f24)](https://acadelia.rodhnin.com)
+</div>
+
+---
+
 ![Node](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-✓-E34F26?logo=html5&logoColor=white)
